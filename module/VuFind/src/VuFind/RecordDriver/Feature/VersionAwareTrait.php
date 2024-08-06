@@ -31,7 +31,8 @@
 
 namespace VuFind\RecordDriver\Feature;
 
-use VuFindSearch\Command\WorkExpressionsCommand;
+use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\Query\WorkKeysQuery;
 
 /**
  * Logic for record versions support.
@@ -70,7 +71,7 @@ trait VersionAwareTrait
         }
 
         if (!isset($this->otherVersionsCount)) {
-            if (!($workKeys = $this->tryMethod('getWorkKeys'))) {
+            if (!($keys = $this->tryMethod('getWorkKeys'))) {
                 if (!($this instanceof VersionAwareInterface)) {
                     throw new \Exception(
                         'VersionAwareTrait requires VersionAwareInterface'
@@ -79,13 +80,11 @@ trait VersionAwareTrait
                 return false;
             }
 
-            $params = new \VuFindSearch\ParamBag();
-            $params->add('rows', 0);
-            $command = new WorkExpressionsCommand(
+            $command = new SearchCommand(
                 $this->getSourceIdentifier(),
-                $this->getUniqueID(),
-                $workKeys,
-                $params
+                new WorkKeysQuery($this->getUniqueID(), false, $keys),
+                0,
+                0
             );
             $results = $this->searchService->invoke($command)->getResult();
             $this->otherVersionsCount = $results->getTotal();
@@ -104,27 +103,18 @@ trait VersionAwareTrait
      */
     public function getVersions($includeSelf = false, $count = 20, $offset = 0)
     {
-        if (null === $this->searchService) {
-            return false;
-        }
-
-        if (!($workKeys = $this->getWorkKeys())) {
+        if (null === $this->searchService || !($keys = $this->getWorkKeys())) {
             return false;
         }
 
         if (!isset($this->otherVersions)) {
-            $params = new \VuFindSearch\ParamBag();
-            $params->add('rows', $count);
-            $params->add('start', $offset);
-            $command = new WorkExpressionsCommand(
+            $command = new SearchCommand(
                 $this->getSourceIdentifier(),
-                $includeSelf ? '' : $this->getUniqueID(),
-                $workKeys,
-                $params
+                new WorkKeysQuery($this->getUniqueID(), false, $keys),
+                $offset,
+                $count
             );
-            $this->otherVersions = $this->searchService->invoke(
-                $command
-            )->getResult();
+            $this->otherVersions = $this->searchService->invoke($command)->getResult();
         }
         return $this->otherVersions;
     }

@@ -337,8 +337,12 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Spellcheck
         if ($config->Spelling->enabled ?? true) {
-            $dictionaries = ($config->Spelling->simple ?? false)
-                ? ['basicSpell'] : ['default', 'basicSpell'];
+            $dictionaries = $config->Spelling->dictionaries?->toArray() ?? [];
+            if (empty($dictionaries)) {
+                // Respect the deprecated 'simple' configuration setting.
+                $dictionaries = ($config->Spelling->simple ?? false)
+                    ? ['basicSpell'] : ['default', 'basicSpell'];
+            }
             $spellingListener = new InjectSpellingListener(
                 $backend,
                 $dictionaries,
@@ -479,6 +483,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $timeout = $this->getIndexConfig('timeout', 30);
         $searchConfig = $this->config->get($this->searchConfig);
         $defaultFields = $searchConfig->General->default_record_fields ?? '*';
+
+        if (($searchConfig->Explain->enabled ?? false) && !str_contains($defaultFields, 'score')) {
+            $defaultFields .= ',score';
+        }
 
         $handlers = [
             'select' => [

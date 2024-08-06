@@ -33,6 +33,9 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Table Definition for ratings
@@ -43,8 +46,10 @@ use VuFind\Db\Row\RowGateway;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Ratings extends Gateway
+class Ratings extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -75,9 +80,9 @@ class Ratings extends Gateway
      */
     public function getForResource(string $id, string $source, ?int $userId): array
     {
-        $resourceTable = $this->getDbTable('Resource');
-        $resource = $resourceTable->findResource($id, $source, false);
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return [
                 'count' => 0,
                 'rating' => 0,
@@ -113,7 +118,7 @@ class Ratings extends Gateway
 
         $result = $this->select($callback)->current();
         return [
-            'count' => $result->count,
+            'count' => $result->count ?? 0,
             'rating' => $result->rating ?? 0,
         ];
     }
@@ -142,9 +147,9 @@ class Ratings extends Gateway
             $result['groups'][$key] = 0;
         }
 
-        $resourceTable = $this->getDbTable('Resource');
-        $resource = $resourceTable->findResource($id, $source, false);
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return $result;
         }
 

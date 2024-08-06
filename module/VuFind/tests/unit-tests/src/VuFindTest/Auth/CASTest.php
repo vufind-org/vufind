@@ -54,7 +54,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
      */
     public function getAuthObject(?Config $config = null): CAS
     {
-        $obj = new CAS();
+        $obj = new CAS($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
         $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }

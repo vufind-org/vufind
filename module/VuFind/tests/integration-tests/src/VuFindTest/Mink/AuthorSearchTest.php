@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -49,7 +48,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testCorporateAuthorSearch(): void
     {
         $page = $this->performSearch('corporate', 'Author');
-        $facets = $this->findCss($page, '#side-collapse-building a')->getText();
+        $facets = $this->findCssAndGetText($page, '#side-collapse-building a');
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
         $this->assertStringContainsString('author_relators.mrc 10', $facets);
@@ -63,7 +62,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testPrimaryAuthorSearch(): void
     {
         $page = $this->performSearch('primary', 'Author');
-        $facets = $this->findCss($page, '#side-collapse-building a')->getText();
+        $facets = $this->findCssAndGetText($page, '#side-collapse-building a');
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
         $this->assertStringContainsString('author_relators.mrc 11', $facets);

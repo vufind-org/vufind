@@ -1,0 +1,13 @@
+{
+    "ResultId": 1,
+    "Header": {
+        "DbId": "edsgob",
+        "DbLabel": "GOBI E-books",
+        "An": "edsgob.14707011",
+        "RelevancyScore": 908,
+        "PubType": "unit-test-format",
+        "PubTypeId": "ebook",
+        "PreciseRelevancyScore": 908.217102050781,
+        "AccessLevel": false
+    }
+}

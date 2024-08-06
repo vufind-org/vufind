@@ -142,7 +142,7 @@ class ObalkyKnihService implements
      */
     protected function createCacheKey(array $ids)
     {
-        $key = $ids['recordid'];
+        $key = $ids['recordid'] ?? '';
         $key = !empty($key) ? $key
             : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
         $key = !empty($key) ? $key : sha1(json_encode($ids));
@@ -199,7 +199,7 @@ class ObalkyKnihService implements
         $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid'] ?? '');
         $uuid = null;
         if (isset($ids['uuid'])) {
-            $uuid = (substr($ids['uuid'], 0, 5) === 'uuid:')
+            $uuid = str_starts_with($ids['uuid'], 'uuid:')
                 ? $ids['uuid']
                 : ('uuid:' . $ids['uuid']);
         }

@@ -44,7 +44,7 @@ use function call_user_func_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
+class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
      * Get makeTag helper with mock view
@@ -63,7 +63,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      *
      * @return array
      */
-    public function htmlAttributesTests(): array
+    public static function htmlAttributesTests(): array
     {
         return [
             'Basic' => [
@@ -93,7 +93,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      *
      * @return array
      */
-    public function helperOptionTests(): array
+    public static function helperOptionTests(): array
     {
         return [
             'escapes innerHTML' => [
@@ -131,7 +131,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      *
      * @return array
      */
-    public function voidTags(): array
+    public static function voidTags(): array
     {
         return [
             'self closing tag' => [
@@ -189,7 +189,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      *
      * @return array
      */
-    public function validTags(): array
+    public static function validTags(): array
     {
         return [
             ['SPAN'], // CAPITAL
@@ -228,7 +228,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      *
      * @return array
      */
-    public function invalidTags(): array
+    public static function invalidTags(): array
     {
         return [
             ['nohyphencustom'],

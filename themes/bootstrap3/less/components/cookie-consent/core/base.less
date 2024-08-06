@@ -5,7 +5,6 @@
  */
 
 :root{
-/* #LESS> */
     --cc-font-family: @font-family-base;
     --cc-modal-border-radius: @border-radius-base;
     --cc-btn-border-radius: @btn-border-radius-base;
@@ -13,16 +12,6 @@
     --cc-link-color: @link-color;
     --cc-modal-margin: 1rem;
     --cc-z-index: @zindex-cookie-consent;
-/* <#LESS */
-/* #SCSS>
-    --cc-font-family: #{$font-family-base};
-    --cc-modal-border-radius: #{$border-radius-base};
-    --cc-btn-border-radius: #{$btn-border-radius-base};
-    --cc-modal-transition-duration: .25s;
-    --cc-link-color: #{$link-color};
-    --cc-modal-margin: 1rem;
-    --cc-z-index: #{$zindex-cookie-consent};
-<#SCSS */
 }
 
 #cc-main {
@@ -93,10 +82,10 @@
         }
 
         ::-webkit-scrollbar-thumb{
-            border: .25em solid var(--cc-bg);
+            border: .25rem solid var(--cc-bg);
             -webkit-background-clip: padding-box;
             background-clip: padding-box;
-            border-radius: 1em;
+            border-radius: 1rem;
             background: var(--cc-toggle-readonly-bg);
 
             &:hover {

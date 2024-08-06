@@ -31,6 +31,7 @@ namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
+use Laminas\Uri\Http;
 
 /**
  * Action helper to deal with login followup; responsible for remembering URLs
@@ -123,8 +124,14 @@ class Followup extends AbstractPlugin
     public function store($extras = [], $overrideUrl = null)
     {
         // Store the current URL:
-        $this->session->url = !empty($overrideUrl)
-            ? $overrideUrl : $this->getController()->getServerUrl();
+        $url = new Http(
+            !empty($overrideUrl)
+            ? $overrideUrl : $this->getController()->getServerUrl()
+        );
+        $query = $url->getQueryAsArray();
+        unset($query['lightboxParent']);
+        $url->setQuery($query);
+        $this->session->url = $url->toString();
 
         // Store the extra parameters:
         foreach ($extras as $key => $value) {

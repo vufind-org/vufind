@@ -62,6 +62,27 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $limit;
 
     /**
+     * Sort order for results (null = default)
+     *
+     * @var ?string
+     */
+    protected $sort;
+
+    /**
+     * Heading for this recommendation module
+     *
+     * @var string
+     */
+    protected $heading;
+
+    /**
+     * Config section with filters for this search
+     *
+     * @var string
+     */
+    protected $filterIniSection;
+
+    /**
      * Name of request parameter to use for search query
      *
      * @var string
@@ -76,13 +97,22 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $runner;
 
     /**
+     * Config PluginManager
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configManager;
+
+    /**
      * Constructor
      *
-     * @param SearchRunner $runner Search runner
+     * @param SearchRunner                 $runner        Search runner
+     * @param \VuFind\Config\PluginManager $configManager Config manager
      */
-    public function __construct(SearchRunner $runner)
+    public function __construct(SearchRunner $runner, \VuFind\Config\PluginManager $configManager)
     {
         $this->runner = $runner;
+        $this->configManager = $configManager;
     }
 
     /**
@@ -99,6 +129,10 @@ abstract class AbstractSearchObject implements RecommendInterface
         $this->limit
             = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
             ? intval($settings[1]) : 5;
+
+        $this->heading = $settings[2] ?? $this->getDefaultHeading();
+        $this->filterIniSection = $settings[3] ?? false;
+        $this->sort = $settings[4] ?? null;
     }
 
     /**
@@ -132,13 +166,31 @@ abstract class AbstractSearchObject implements RecommendInterface
         }
 
         // Set up the callback to initialize the parameters:
-        $limit = $this->limit;
-        $callback = function ($runner, $params) use ($lookfor, $limit, $typeLabel) {
-            $params->setLimit($limit);
+        $callback = function ($runner, $params) use ($lookfor, $typeLabel) {
+            $params->setLimit($this->limit);
+            if ($this->sort) {
+                $params->setSort($this->sort, true);
+            }
             $params->setBasicSearch(
                 $lookfor,
                 $params->getOptions()->getHandlerForLabel($typeLabel)
             );
+
+            // Set any filters configured for this search
+            if (!empty($this->filterIniSection)) {
+                $ini = $params->getOptions()->getSearchIni();
+                $config = $this->configManager->get($ini);
+                try {
+                    $filters = $config->{$this->filterIniSection}->toArray() ?? [];
+                } catch (\Error $e) {
+                    throw new \Exception(
+                        "No section found matching '$this->filterIniSection' in $ini.ini."
+                    );
+                }
+                foreach ($filters as $filter) {
+                    $params->addFilter($filter);
+                }
+            }
         };
 
         // Perform the search:
@@ -171,9 +223,26 @@ abstract class AbstractSearchObject implements RecommendInterface
     }
 
     /**
+     * Get the heading.
+     *
+     * @return string
+     */
+    public function getHeading()
+    {
+        return $this->heading;
+    }
+
+    /**
      * Get the search class ID to use for building search objects.
      *
      * @return string
      */
     abstract protected function getSearchClassId();
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    abstract protected function getDefaultHeading();
 }

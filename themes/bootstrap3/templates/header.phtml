@@ -32,7 +32,7 @@
             </li>
           <?php endif; ?>
           <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-            <?php if ($account->isLoggedIn()): ?>
+            <?php if ($account->getIdentity()): ?>
               <li class="logoutOptions<?php if ($account->dropdownEnabled()): ?> with-dropdown<?php endif ?>">
                 <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" class="icon-link">
                   <span id="account-icon" class="icon-link__icon"><?=$this->icon('my-account') ?></span>
@@ -40,10 +40,10 @@
                 </a>
               </li>
               <?php if ($account->dropdownEnabled()): ?>
-                <li id="login-dropdown" class="dropdown">
+                <li id="login-dropdown" class="dropdown hidden-xs">
                   <a href="#" data-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
                   <div class="dropdown-menu">
-                    <?=$this->render('myresearch/menu'); ?>
+                    <?=$this->accountMenu()->render('', 'header_')?>
                   </div>
                 </li>
               <?php endif; ?>
@@ -73,6 +73,7 @@
           <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
               <?=$this->component('menu-button', [
                   'toggleLabel' => 'Theme',
+                  'wrapperClass' => 'theme-selector',
                   'wrapperTag' => 'li',
                   'menuItems' => array_map(
                       function ($item) {

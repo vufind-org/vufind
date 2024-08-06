@@ -30,7 +30,6 @@
 namespace VuFindSearch\Backend\EIT;
 
 use Laminas\Http\Client;
-use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\ParamBag;
 
@@ -136,7 +135,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param \Laminas\Http\Response $result The response to check.
      *
-     * @throws BackendException
+     * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
     public function checkForHttpError($result)
@@ -156,7 +155,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function call($method = 'GET', $params = null)
     {
-        $queryString = null;
+        $queryString = '';
         if ($params) {
             $query = [];
             foreach ($params as $function => $value) {
@@ -179,17 +178,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $dblist .= '&db=' . $db;
         }
 
-        $this->debug(
-            'Connect: ' . print_r($this->base . '?' . $queryString . $dblist, true)
-        );
+        $url = $this->base . '?' . $queryString . $dblist;
+        $this->debug('Connect: ' . $url);
 
         // Send Request
         $this->client->resetParameters();
-        $this->client->setUri($this->base . '?' . $queryString . $dblist);
+        $this->client->setUri($url);
         $result = $this->client->setMethod($method)->send();
         $body = $result->getBody();
         $xml = simplexml_load_string($body);
-        $this->debug(print_r($xml, true));
+        $this->debug($this->varDump($xml));
         return $body;
     }
 

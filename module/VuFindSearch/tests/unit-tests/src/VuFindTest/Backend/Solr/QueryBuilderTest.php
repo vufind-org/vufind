@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\QueryBuilder;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
@@ -594,7 +595,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function globalExtraParamsIndividualQueryDataProvider(): array
+    public static function globalExtraParamsIndividualQueryDataProvider(): array
     {
         return [
             'Single value, no extra params' => [
@@ -609,7 +610,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Single value' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -625,7 +626,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Two values' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => [
@@ -650,7 +651,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SearchTypeIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -673,7 +674,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SearchTypeNotIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -696,13 +697,59 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with NoDisMaxParams = [bf] condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
                         'conditions' => [
                             [
                                 'NoDismaxParams' => ['bf'],
+                            ],
+                        ],
+                    ],
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => null,
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => ['a:foo'],
+                ],
+            ],
+            'Value with SortIn condition' => [
+                'globalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SortIn' => [
+                                    'score desc',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => ['a:foo'],
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => null,
+                ],
+            ],
+            'Value with SortNotIn condition' => [
+                'globalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SortNotIn' => [
+                                    'score desc',
+                                ],
                             ],
                         ],
                     ],
@@ -736,7 +783,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $expected2
     ) {
         $q1 = new Query('q', 'test');
+        $params1 = new ParamBag(['sort' => 'score desc']);
         $q2 = new Query('q', 'test2');
+        $params2 = new ParamBag(['sort' => 'title asc']);
 
         $specs = [
             'test' => [
@@ -751,7 +800,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         }
 
         $qb = new QueryBuilder($specs);
-        $response = $qb->build($q1);
+        $response = $qb->build($q1, $params1);
         foreach ($expected1 as $field => $expected) {
             $values = $response->get($field);
             $this->assertEquals(
@@ -760,7 +809,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'query 1'
             );
         }
-        $response = $qb->build($q2);
+        $response = $qb->build($q2, $params2);
         foreach ($expected2 as $field => $expected) {
             $values = $response->get($field);
             $this->assertEquals(
@@ -776,11 +825,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function globalExtraParamsGroupedQueryDataProvider(): array
+    public static function globalExtraParamsGroupedQueryDataProvider(): array
     {
         return [
             'Search type in [test]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -791,12 +840,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, test2]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -807,12 +856,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, no]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -823,12 +872,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => null,
                 ],
             ],
             'All search types in [test, test2, no]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -839,7 +888,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],

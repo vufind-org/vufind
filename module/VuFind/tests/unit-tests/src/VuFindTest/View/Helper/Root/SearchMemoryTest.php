@@ -108,7 +108,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getLastSearchParamsProvider(): array
+    public static function getLastSearchParamsProvider(): array
     {
         return [
             'no parameters' => ['?', []],

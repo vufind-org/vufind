@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,10 +29,15 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Ratings\RatingsService;
+use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\Tags\TagsService;
 use VuFindSearch\ParamBag;
 
 use function in_array;
@@ -162,21 +167,20 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $table = $this->getTable('Resource');
-            $resource = $table->findResource(
-                $driver->getUniqueId(),
-                $driver->getSourceIdentifier(),
-                true,
-                $driver
+            $populator = $this->serviceLocator->get(ResourcePopulator::class);
+            $resource = $populator->getOrCreateResourceForDriver($driver);
+            $commentsService = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
             );
-            $resource->addComment($comment, $user);
+            $commentsService->addComment($comment, $user, $resource);
 
             // Save rating if allowed:
             if (
                 $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
-                $driver->addOrUpdateRating($user->id, intval($rating));
+                $ratingsService = $this->serviceLocator->get(RatingsService::class);
+                $ratingsService->saveRating($driver, $user->getId(), intval($rating));
             }
 
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -204,8 +208,10 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin();
         }
         $id = $this->params()->fromQuery('delete');
-        $table = $this->getTable('Comments');
-        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
+        $commentsService = $this->getDbService(
+            \VuFind\Db\Service\CommentsServiceInterface::class
+        );
+        if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
@@ -235,10 +241,8 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $driver->addTags($user, $tagParser->parse($tags));
-            $this->flashMessenger()
-                ->addMessage(['msg' => 'add_tag_success'], 'success');
+            $this->serviceLocator->get(TagsService::class)->linkTagsToRecord($driver, $user, $tags);
+            $this->flashMessenger()->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
         }
 
@@ -268,9 +272,13 @@ class AbstractRecord extends AbstractBase
         // Obtain the current record object:
         $driver = $this->loadRecord();
 
-        // Save tags, if any:
+        // Delete tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $driver->deleteTags($user, [$tag]);
+            $this->serviceLocator->get(TagsService::class)->unlinkTagsFromRecord(
+                $driver,
+                $user,
+                [$tag]
+            );
             $this->flashMessenger()->addMessage(
                 [
                     'msg' => 'tags_deleted',
@@ -307,8 +315,10 @@ class AbstractRecord extends AbstractBase
             ) {
                 throw new BadRequestException('error_inconsistent_parameters');
             }
-            $driver->addOrUpdateRating(
-                $user->id,
+            $ratingsService = $this->serviceLocator->get(RatingsService::class);
+            $ratingsService->saveRating(
+                $driver,
+                $user->getId(),
                 '' === $rating ? null : intval($rating)
             );
             $this->flashMessenger()->addSuccessMessage('rating_add_success');
@@ -319,12 +329,10 @@ class AbstractRecord extends AbstractBase
         }
 
         // Display the "add rating" form:
-        $view = $this->createViewModel(
-            [
-                'currentRating' => $user ? $driver->getRatingData($user->id) : null,
-            ]
-        );
-        return $view;
+        $currentRating = $user
+            ? $this->serviceLocator->get(RatingsService::class)->getRatingData($driver, $user->getId())
+            : null;
+        return $this->createViewModel(compact('currentRating'));
     }
 
     /**
@@ -378,6 +386,7 @@ class AbstractRecord extends AbstractBase
      */
     public function ajaxtabAction()
     {
+        $this->disableSessionWrites();
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
@@ -403,12 +412,10 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-        $post['mytags']
-            = $tagParser->parse($post['mytags'] ?? '');
-        $favorites = $this->serviceLocator
-            ->get(\VuFind\Favorites\FavoritesService::class);
-        $results = $favorites->save($post, $user, $driver);
+        $tagsService = $this->serviceLocator->get(TagsService::class);
+        $post['mytags'] = $tagsService->parse($post['mytags'] ?? '');
+        $favorites = $this->serviceLocator->get(\VuFind\Favorites\FavoritesService::class);
+        $results = $favorites->saveRecordToFavorites($post, $user, $driver);
 
         // Display a success status message:
         $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
@@ -421,8 +428,7 @@ class AbstractRecord extends AbstractBase
         $this->flashMessenger()->addMessage($message, 'success');
 
         // redirect to followup url saved in saveAction
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
+        if ($url = $this->getAndClearFollowupUrl()) {
             return $this->redirect()->toUrl($url);
         }
 
@@ -450,7 +456,7 @@ class AbstractRecord extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             return $this->processSave();
         }
 
@@ -467,8 +473,9 @@ class AbstractRecord extends AbstractBase
         // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (
-            substr($referer, -5) != '/Save'
+            !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
+            && $this->isLocalUrl($referer)
         ) {
             $this->setFollowupUrlToReferer();
         } else {
@@ -480,24 +487,27 @@ class AbstractRecord extends AbstractBase
 
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
-        $resources = $user->getSavedData(
+        $resources = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
             $driver->getUniqueId(),
+            $driver->getSourceIdentifier(),
             null,
-            $driver->getSourceIdentifier()
+            $user
         );
         foreach ($resources as $userResource) {
-            $listIds[] = $userResource->list_id;
+            if ($currentList = $userResource->getUserList()) {
+                $listIds[] = $currentList->getId();
+            }
         }
 
         // Loop through all user lists and sort out containing/non-containing lists
         $containingLists = $nonContainingLists = [];
-        foreach ($user->getLists() as $list) {
+        foreach ($this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user) as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
-            if (in_array($list->id, $listIds)) {
-                $containingLists[] = $list->toArray();
+            if (in_array($list->getId(), $listIds)) {
+                $containingLists[] = $list;
             } else {
-                $nonContainingLists[] = $list->toArray();
+                $nonContainingLists[] = $list;
             }
         }
 
@@ -541,7 +551,7 @@ class AbstractRecord extends AbstractBase
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
@@ -605,7 +615,7 @@ class AbstractRecord extends AbstractBase
         $view->to = $this->params()->fromPost('to');
         $view->provider = $this->params()->fromPost('provider');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Do CSRF check
             $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
@@ -740,6 +750,34 @@ class AbstractRecord extends AbstractBase
     {
         $this->getRequest()->getQuery()->set('style', 'RDF');
         return $this->exportAction();
+    }
+
+    /**
+     * Show explanation for why a record was found and how its relevancy is computed
+     *
+     * @return mixed
+     */
+    public function explainAction()
+    {
+        $record = $this->loadRecord();
+
+        $view = $this->createViewModel();
+        $view->setTemplate('record/explain');
+        if (!$record->tryMethod('explainEnabled')) {
+            $view->disabled = true;
+            return $view;
+        }
+
+        $explanation = $this->serviceLocator
+            ->get(\VuFind\Search\Explanation\PluginManager::class)
+            ->get($record->getSourceIdentifier());
+
+        $params = $explanation->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        $explanation->performRequest($record->getUniqueID());
+
+        $view->explanation = $explanation;
+        return $view;
     }
 
     /**

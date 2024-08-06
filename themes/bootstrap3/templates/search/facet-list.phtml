@@ -7,59 +7,62 @@
           'facetop' => $this->operator,
           'facetexclude' => $this->exclude,
       ],
-      '',
-      '&amp;'
   );
   if (empty($this->sortOptions)) {
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
-  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams(false) . "&$facetLightboxParams";
   $searchAction = $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
-    $urlBase .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
+    $urlBase .= '&baseUriExtra=' . urlencode($this->baseUriExtra);
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
 <?php if (count($this->sortOptions) > 1): ?>
-  <div class="full-facet-sort-options">
-    <label><?=$this->translate('Sort') ?></label>
-    <div class="btn-group">
-      <?php foreach ($this->sortOptions as $key => $sort): ?>
-        <a href="<?=$urlBase . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<?php if ($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
-      <?php endforeach; ?>
-    </div>
-  </div>
-<?php endif; ?>
-<div class="lightbox-scroll full-facets">
-  <?php foreach ($this->sortOptions as $key => $sort): ?>
-    <?php $active = $this->sort == $key; ?>
-    <ul class="full-facet-list facet__list facet-group<?php if (!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
-      <?php if ($active): ?>
-        <?php if ($this->page > 1): ?>
-          <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . urlencode($this->sort) ?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev_ellipsis') ?></a>
-        <?php endif; ?>
-        <?php foreach ($this->data as $item): ?>
-          <li>
-            <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
-              'exclude' => $this->exclude,
-              'facet' => $item,
-              'group' => $this->facet,
-              'url' => $this->results->getUrlQuery(),
-              'urlBase' => $searchAction,
-            ]) ?>
-          </li>
+  <form class="form-inline">
+
+    <div class="full-facet-sort-options form-group" role="group" aria-labelledby="full-facet-sort-label">
+      <label id="full-facet-sort-label" class="control-label"><?=$this->translate('Sort') ?></label>
+      <div id="btn-group-sort" class="btn-group">
+        <?php foreach ($this->sortOptions as $key => $sort): ?>
+          <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => 1, 'facetsort' => $key, 'contains' => $contains])) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
         <?php endforeach; ?>
+      </div>
+    </div>
+
+    <div class="facet-lightbox-filter form-group hidden" role="group" aria-labelledby="facet-lightbox-filter-label">
+      <?php if ($this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
+        <label id="facet-lightbox-filter-label" class="control-label" for="input-contains"><?=$this->transEsc('Filter') ?></label>
+        <input id="input-contains" class="ajax_param form-control" data-name="contains" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
+        <button id="btn-reset-contains" class="btn btn-default <?=strlen($this->contains) < 1 ? 'hidden' : ''?>" type="reset" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
       <?php endif; ?>
-      <?php if ($this->anotherPage): ?>
-        <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page + 1) . '&amp;facetsort=' . urlencode($key) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
-          <span class="text"><?=$this->translate('more_ellipsis') ?></span>
-        </a>
-      <?php endif; ?>
-    </ul>
-  <?php endforeach; ?>
+
+      <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction]; ?>
+      <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
+      <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+    </div>
+
+  </form>
+<?php endif; ?>
+
+<?php $this->headScript()->appendFile('facets.js'); ?>
+
+<div id="facet-info-result" class="lightbox-scroll full-facets">
+  <?php
+    // The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
+    $params = $this->delegateParams;
+    $params['urlBase'] = $urlBase;
+    $params['searchAction'] = $searchAction;
+    $params['inLightbox'] = $this->inLightbox;
+  ?>
+  <?=$this->render('search/facet-list-content.phtml', $params) ?>
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '(typeof VuFind.lightbox_facets !== "undefined") && VuFind.lightbox_facets.setup();', 'SET'); ?>
+
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.facetList.setup();', 'SET')?>
+<?php if ($this->inLightbox): ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.lightbox_facets.setup();', 'SET')?>
+<?php endif; ?>

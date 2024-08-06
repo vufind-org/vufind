@@ -123,13 +123,56 @@ class LibGuides implements
      */
     public function getAccounts()
     {
+        if (!$this->authenticateAndSetHeaders()) {
+            return null;
+        }
+
+        $result = $this->doGet(
+            $this->baseUrl . '/accounts?expand=profile,subjects'
+        );
+
+        if (isset($result->errorCode)) {
+            return null;
+        }
+        return $result;
+    }
+
+    /**
+     * Load all LibGuides AZ databases.
+     *
+     * @return object|null A JSON object of all LibGuides databases, or null
+     * if an error occurs
+     */
+    public function getAZ()
+    {
+        if (!$this->authenticateAndSetHeaders()) {
+            return null;
+        }
+
+        $result = $this->doGet(
+            $this->baseUrl . '/az?expand=az_props'
+        );
+
+        if (isset($result->errorCode)) {
+            return null;
+        }
+        return $result;
+    }
+
+    /**
+     * Authenticate to the LibGuides API and set authentication headers.
+     *
+     * @return bool Indicates if authentication succeeded.
+     */
+    protected function authenticateAndSetHeaders()
+    {
         $tokenData = $this->authenticateWithClientCredentials(
             $this->baseUrl . '/oauth/token',
             $this->clientId,
             $this->clientSecret
         );
         if (!$tokenData) {
-            return null;
+            return false;
         }
 
         $headers = [];
@@ -143,10 +186,21 @@ class LibGuides implements
         $headers[] = 'User-Agent: ' . $this->userAgent;
 
         $this->client->setHeaders($headers);
+
+        return true;
+    }
+
+    /**
+     * Perform a GET request to the LibGuides API.
+     *
+     * @param string $url Full request url
+     *
+     * @return object|null A JSON object of the response data, or null if an error occurs
+     */
+    protected function doGet($url)
+    {
         $this->client->setMethod('GET');
-        $this->client->setUri(
-            $this->baseUrl . '/accounts?expand=profile,subjects'
-        );
+        $this->client->setUri($url);
         try {
             $response = $this->client->send();
         } catch (Exception $ex) {
@@ -169,7 +223,7 @@ class LibGuides implements
         $body = $response->getBody();
         $returnVal = json_decode($body);
         $this->debug(
-            'Return from LibGuides API Call: ' . print_r($returnVal, true)
+            'Return from LibGuides API Call: ' . $this->varDump($returnVal)
         );
         if ($returnVal != null) {
             if (isset($returnVal->errorCode)) {
@@ -182,7 +236,7 @@ class LibGuides implements
                 'LibGuides API Error: Nothing returned from API call.'
             );
             $this->debug(
-                'Body return from LibGuides API Call: ' . print_r($body, true)
+                'Body return from LibGuides API Call: ' . $this->varDump($body)
             );
         }
         return null;

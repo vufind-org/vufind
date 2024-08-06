@@ -32,6 +32,9 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -243,8 +246,7 @@ class InstallController extends AbstractBase
     {
         try {
             // Try to read the tags table just to see if we can connect to the DB:
-            $tags = $this->getTable('Tags');
-            $tags->getByText('test', false);
+            $this->getDbService(TagServiceInterface::class)->getTagsByText('test');
             $status = true;
         } catch (\Exception $e) {
             $status = false;
@@ -394,7 +396,7 @@ class InstallController extends AbstractBase
         } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
                 ->addMessage('Database user must be alphanumeric.', 'error');
-        } elseif ($skip || $this->formWasSubmitted('submit')) {
+        } elseif ($skip || $this->formWasSubmitted()) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
@@ -569,7 +571,11 @@ class InstallController extends AbstractBase
         if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
-            $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
+            try {
+                $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
+            } catch (\Exception $e) {
+                $status = false;
+            }
         }
         return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }
@@ -617,9 +623,9 @@ class InstallController extends AbstractBase
             while ($line = readdir($dir)) {
                 if (
                     stristr($line, '.php') && !in_array($line, $excludeList)
-                    && substr($line, 0, 8) !== 'Abstract'
-                    && substr($line, -11) !== 'Factory.php'
-                    && substr($line, -9) !== 'Trait.php'
+                    && !str_starts_with($line, 'Abstract')
+                    && !str_ends_with($line, 'Factory.php')
+                    && !str_ends_with($line, 'Trait.php')
                 ) {
                     $drivers[] = str_replace('.php', '', $line);
                 }
@@ -768,8 +774,8 @@ class InstallController extends AbstractBase
         }
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
-        $userRows = $this->getTable('user')->getInsecureRows();
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+        $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
@@ -806,7 +812,8 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
-        $userRows = $this->getTable('user')->getInsecureRows();
+        $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
+        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
             foreach ($userRows as $row) {
@@ -814,8 +821,8 @@ class InstallController extends AbstractBase
                     $row->pass_hash = $bcrypt->create($row->password);
                     $row->password = '';
                 }
-                if ($row->cat_password) {
-                    $row->saveCredentials($row->cat_username, $row->cat_password);
+                if ($rawPassword = $row->getRawCatPassword()) {
+                    $ilsAuthenticator->saveUserCatalogCredentials($row, $row->getCatUsername(), $rawPassword);
                 } else {
                     $row->save();
                 }
@@ -823,15 +830,13 @@ class InstallController extends AbstractBase
             $msg = count($userRows) . ' user row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
         }
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $cardRows = $cardService->getInsecureRows();
         if (count($cardRows) > 0) {
-            // Create a dummy user for encryption purposes...
-            $dummyUser = $this->getTable('user')->createRow();
             foreach ($cardRows as $row) {
-                $dummyUser->setCredentials($row->cat_username, $row->cat_password);
-                $row->cat_pass_enc = $dummyUser->cat_pass_enc;
-                $row->cat_password = null;
-                $row->save();
+                $row->setCatPassEnc($ilsAuthenticator->encrypt($row->getRawCatPassword()));
+                $row->setRawCatPassword(null);
+                $cardService->persistEntity($row);
             }
             $msg = count($cardRows) . ' user_card row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
@@ -953,7 +958,7 @@ class InstallController extends AbstractBase
         $methods = get_class_methods($this);
         $checks = [];
         foreach ($methods as $method) {
-            if (substr($method, 0, 5) == 'check') {
+            if (str_starts_with($method, 'check')) {
                 $checks[] = $this->$method();
             }
         }

@@ -30,7 +30,7 @@
 
 namespace VuFindTest\Recommend;
 
-use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use Laminas\Config\Config;
 use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFind\Connection\LibGuides;
@@ -200,7 +200,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     {
         // Mock caching logic in LibGuidesProfile.
         // Caching is from a trait, which is not the point of this test suite.
-        $this->cacheAdapter = $this->getMockBuilder(CacheAdapter::class)->getMock();
+        $this->cacheAdapter = $this->createMock(CacheAdapter::class);
 
         // For the target class LibGuidesProfile, only mock the caching methods
         $libGuidesProfile = $this->getMockBuilder(LibGuidesProfile::class)

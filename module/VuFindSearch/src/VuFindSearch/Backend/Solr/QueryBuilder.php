@@ -126,18 +126,19 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Return SOLR search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
-        $params = new ParamBag();
+        $newParams = new ParamBag();
 
         // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:
         if ($this->createSpellingQuery) {
-            $params->set(
+            $newParams->set(
                 'spellcheck.q',
                 $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms())
             );
@@ -169,17 +170,17 @@ class QueryBuilder implements QueryBuilderInterface
                     // If a boost was added, we don't want to highlight based on
                     // the boost query, so we should use the non-boosted version:
                     if ($highlight && $oldString != $string) {
-                        $params->set('hl.q', $oldString);
+                        $newParams->set('hl.q', $oldString);
                     }
                 }
             } elseif ($handler->hasDismax()) {
-                $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                $params->set('qt', $handler->getDismaxHandler());
+                $newParams->set('qf', implode(' ', $handler->getDismaxFields()));
+                $newParams->set('qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
-                    $params->add(reset($param), next($param));
+                    $newParams->add(reset($param), next($param));
                 }
                 if ($handler->hasFilterQuery()) {
-                    $params->add('fq', $handler->getFilterQuery());
+                    $newParams->add('fq', $handler->getFilterQuery());
                 }
             } else {
                 $string = $handler->createSimpleQueryString($string);
@@ -188,9 +189,9 @@ class QueryBuilder implements QueryBuilderInterface
         // Set an appropriate highlight field list when applicable:
         if ($highlight) {
             $filter = $handler ? $handler->getAllFields() : [];
-            $params->add('hl.fl', $this->getFieldsToHighlight($filter));
+            $newParams->add('hl.fl', $this->getFieldsToHighlight($filter));
         }
-        $params->set('q', $string);
+        $newParams->set('q', $string);
 
         // Handle any extra parameters:
         foreach ($this->globalExtraParams as $extraParam) {
@@ -198,28 +199,30 @@ class QueryBuilder implements QueryBuilderInterface
                 continue;
             }
             if (
-                !$this->checkParamConditions($query, $extraParam['conditions'] ?? [])
+                !$this->checkParamConditions($query, $params, $extraParam['conditions'] ?? [])
             ) {
                 continue;
             }
             foreach ((array)$extraParam['value'] as $value) {
-                $params->add($extraParam['param'], $value);
+                $newParams->add($extraParam['param'], $value);
             }
         }
 
-        return $params;
+        return $newParams;
     }
 
     /**
      * Check if the conditions match for an extra parameter
      *
      * @param AbstractQuery $query      Search query
+     * @param ?ParamBag     $params     Search backend parameters
      * @param array         $conditions Required conditions
      *
      * @return bool
      */
     protected function checkParamConditions(
         AbstractQuery $query,
+        ?ParamBag $params,
         array $conditions
     ): bool {
         if (empty($conditions)) {
@@ -253,6 +256,18 @@ class QueryBuilder implements QueryBuilderInterface
                         if ($this->hasDismaxParamsField($searchTypes, $value)) {
                             return false;
                         }
+                    }
+                    break;
+                case 'SortIn':
+                    $sort = $params?->get('sort');
+                    if (empty(array_intersect((array)$values, (array)$sort))) {
+                        return false;
+                    }
+                    break;
+                case 'SortNotIn':
+                    $sort = $params?->get('sort');
+                    if (!empty(array_intersect((array)$values, (array)$sort))) {
+                        return false;
                     }
                     break;
                 default:
@@ -422,8 +437,8 @@ class QueryBuilder implements QueryBuilderInterface
                 $searchString = trim($searchString);
                 if (
                     strlen($searchString) > 1
-                    && substr($searchString, 0, 1) == '"'
-                    && substr($searchString, -1, 1) == '"'
+                    && str_starts_with($searchString, '"')
+                    && str_ends_with($searchString, '"')
                 ) {
                     return $this->exactSpecs[$handler];
                 }

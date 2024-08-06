@@ -151,7 +151,7 @@ class QueryGroup extends AbstractQuery
     /**
      * Add a query to the group.
      *
-     * @param \VuFind\Search\AbstractQuery $query Query to add
+     * @param AbstractQuery $query Query to add
      *
      * @return void
      */

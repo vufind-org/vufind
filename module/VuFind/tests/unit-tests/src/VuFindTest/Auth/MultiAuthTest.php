@@ -34,8 +34,6 @@ use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\Auth\MultiAuth;
 
-use function get_class;
-
 /**
  * LDAP authentication test class.
  *
@@ -56,9 +54,9 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      */
     public function getAuthObject(Config $config = null): MultiAuth
     {
-        $manager = new \VuFind\Auth\PluginManager(
-            new \VuFindTest\Container\MockContainer($this)
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+        $manager = new \VuFind\Auth\PluginManager($container);
         $obj = $manager->get('MultiAuth');
         $obj->setPluginManager($manager);
         $obj->setConfig($config ?? $this->getAuthConfig());
@@ -138,7 +136,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test login with handler configured to load a class which does not conform
-     * to the appropriate authentication interface. (We'll use this test class
+     * to the appropriate authentication interface. (We'll use the factory class
      * as an arbitrary inappropriate class).
      *
      * @return void
@@ -146,13 +144,13 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     public function testLoginWithBadClass(): void
     {
         $this->expectException(InvalidServiceException::class);
+        $badClass = \VuFind\Auth\MultiAuthFactory::class;
         $this->expectExceptionMessage(
-            'Plugin VuFindTest\Auth\MultiAuthTest does not belong to '
-            . 'VuFind\Auth\AbstractBase'
+            'Plugin ' . ltrim($badClass, '\\') . ' does not belong to VuFind\Auth\AbstractBase'
         );
 
         $config = $this->getAuthConfig();
-        $config->MultiAuth->method_order = get_class($this) . ',Database';
+        $config->MultiAuth->method_order = $badClass . ',Database';
 
         $request = $this->getLoginRequest();
         $this->getAuthObject($config)->authenticate($request);

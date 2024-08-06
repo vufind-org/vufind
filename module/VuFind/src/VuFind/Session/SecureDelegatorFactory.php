@@ -32,7 +32,6 @@
 namespace VuFind\Session;
 
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Psr\Container\ContainerInterface;
 
 use function call_user_func;
@@ -91,28 +90,6 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         HandlerInterface $handler
     ): HandlerInterface {
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
-        $config = $container->get(\ProxyManager\Configuration::class);
-        $factory = new LazyLoadingValueHolderFactory($config);
-        $delegator = new SecureDelegator($cookieManager, $handler);
-        /**
-         * The handler proxy.
-         *
-         * @var HandlerInterface $handler
-         */
-        $handler = $factory->createProxy(
-            HandlerInterface::class,
-            function (
-                &$target,
-                $proxy,
-                $method,
-                array $params,
-                &$init
-            ) use ($delegator) {
-                $init = null;
-                $target = $delegator;
-                return true;
-            }
-        );
-        return $handler;
+        return new SecureDelegator($cookieManager, $handler);
     }
 }

@@ -83,7 +83,7 @@
             }
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "GET",
@@ -144,13 +144,13 @@
             }
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "GET",
-        "expectedPath": "\/item-storage\/items",
+        "expectedPath": "\/inventory\/items-by-holdings-id",
         "expectedParams": {
-            "query": "(holdingsRecordId==\"holdingid\" NOT discoverySuppress==true) sortby volume",
+            "query": "(holdingsRecordId==\"holdingid\") sortby volume",
             "offset": 0,
             "limit": 1000
         },
@@ -176,7 +176,9 @@
                     "materialTypeId": "materialid",
                     "permanentLoanTypeId": "loantypeid",
                     "permanentLocationId": "location-id",
-                    "effectiveLocationId": "location-id",
+                    "effectiveLocation": {
+                        "id": "location-id"
+                    },
                     "electronicAccess": [],
                     "statisticalCodeIds": []
                 }
@@ -189,7 +191,7 @@
             }
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "GET",
@@ -220,6 +222,6 @@
             "totalRecords": 1
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     }
 ]

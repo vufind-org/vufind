@@ -60,7 +60,7 @@ class WorldCatSimilar extends Similar
         if (!empty($deweyClass)) {
             // Skip "English Fiction" Dewey class -- this won't give us useful
             // matches because there's too much of it and it's too broad.
-            if (substr($deweyClass, 0, 3) != '823') {
+            if (!str_starts_with($deweyClass, '823')) {
                 $parts[] = 'srw.dd any "' . $deweyClass . '"';
             }
         }

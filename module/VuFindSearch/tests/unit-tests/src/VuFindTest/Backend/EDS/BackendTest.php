@@ -303,7 +303,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @param \VuFindSearch\Backend\EDS\Connector                     $connector Connector
      * @param \VuFindSearch\Response\RecordCollectionFactoryInterface $factory   Record collection factory
-     * @param \Laminas\Cache\Storage\Adapter\AbstractAdapter          $cache     Object cache adapter
+     * @param \Laminas\Cache\Storage\StorageInterface                 $cache     Object cache adapter
      * @param \Laminas\Session\Container                              $container Session container
      * @param array                                                   $settings  Additional settings
      * @param array                                                   $mock      Methods to mock (or null for a
@@ -323,7 +323,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             $factory = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         }
         if (null === $cache) {
-            $cache = $this->getMockForAbstractClass(\Laminas\Cache\Storage\Adapter\AbstractAdapter::class);
+            $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         }
         if (null === $container) {
             $container = $this->getMockBuilder(\Laminas\Session\Container::class)

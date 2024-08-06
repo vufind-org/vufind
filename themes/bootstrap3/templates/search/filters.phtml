@@ -94,7 +94,7 @@
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
-        <a class="filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
+        <a class="<?=$dropdown ? 'dropdown-item ' : ''?>filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
           <span class="sr-only">
             <?=$this->translate('Remove filter') ?>
           </span>
@@ -128,7 +128,7 @@
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
     <span class="sr-only"><?=$this->transEscAttr('page_reload_on_deselect_hint') ?></span>
-    <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+    <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
       <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
     <?php elseif ($advancedSearch): ?>
       <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
@@ -143,7 +143,7 @@
   <div class="active-filters visible-xs">
     <span class="sr-only"><?=$this->transEscAttr('page_reload_on_deselect_hint') ?></span>
     <div class="filters-toggle-bar">
-      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+      <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
         <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
       <?php endif; ?>
       <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">

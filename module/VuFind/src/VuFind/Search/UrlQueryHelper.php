@@ -32,6 +32,7 @@ namespace VuFind\Search;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\WorkKeysQuery;
 
 use function call_user_func;
 use function count;
@@ -182,6 +183,9 @@ class UrlQueryHelper
             if (!empty($type)) {
                 $this->urlParams['type'] = $type;
             }
+        } elseif ($this->queryObject instanceof WorkKeysQuery) {
+            $this->urlParams['id'] = $this->queryObject->getId();
+            $this->urlParams['search'] = 'versions';
         }
     }
 
@@ -595,14 +599,14 @@ class UrlQueryHelper
                     if (!$this->filtered($paramName, $paramValue2, $filter)) {
                         $retVal .= '<input type="hidden" name="' .
                             htmlspecialchars($paramName) . '[]" value="' .
-                            htmlspecialchars($paramValue2) . '">';
+                            htmlspecialchars($paramValue2 ?? '') . '">';
                     }
                 }
             } else {
                 if (!$this->filtered($paramName, $paramValue, $filter)) {
                     $retVal .= '<input type="hidden" name="' .
                         htmlspecialchars($paramName) . '" value="' .
-                        htmlspecialchars($paramValue) . '">';
+                        htmlspecialchars($paramValue ?? '') . '">';
                 }
             }
         }

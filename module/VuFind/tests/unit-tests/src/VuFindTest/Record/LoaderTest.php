@@ -51,6 +51,8 @@ use function count;
  */
 class LoaderTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test exception for missing record.
      *
@@ -232,13 +234,16 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $arguments2 = [['test3'], new ParamBag()];
         $arguments3 = [['test4'], $worldCatParams];
 
-        $service->expects($this->exactly(3))->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->callback($this->getCommandChecker($arguments1, $class))],
                 [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
-                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))]
-            )
-            ->will($this->returnValue($commandObj));
+                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))],
+            ],
+            $commandObj
+        );
 
         $loader = $this->getLoader($service, $factory);
         $input = [
@@ -284,12 +289,15 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $arguments1 = [['test1', 'test2'], $solrParams];
         $arguments2 = [['test3'], new ParamBag()];
         $class = \VuFindSearch\Command\RetrieveBatchCommand::class;
-        $service->expects($this->exactly(2))->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->callback($this->getCommandChecker($arguments1, $class))],
-                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))]
-            )
-            ->will($this->returnValue($commandObj));
+                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
+            ],
+            $commandObj
+        );
 
         $fallbackLoader = $this->getFallbackLoader([$driver3]);
         $loader = $this->getLoader($service, null, null, $fallbackLoader);

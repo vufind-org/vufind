@@ -133,7 +133,7 @@ CREATE TABLE `resource_tags` (
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `search` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) DEFAULT NULL,
   `session_id` varchar(128) DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `title` varchar(20) DEFAULT NULL,
@@ -247,7 +247,9 @@ CREATE TABLE `user` (
   `last_language` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`(190)),
-  UNIQUE KEY `cat_id` (`cat_id`(190))
+  UNIQUE KEY `cat_id` (`cat_id`(190)),
+  KEY `email` (`email`(190)),
+  KEY `verify_hash` (`verify_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -408,4 +410,25 @@ CREATE TABLE `access_token` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `access_token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `login_token`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `login_token` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `series` varchar(255) NOT NULL,
+  `last_login` datetime NOT NULL,
+  `browser` varchar(255) NULL,
+  `platform` varchar(255) NULL,
+  `expires` int NOT NULL,
+  `last_session_id` varchar(255) NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id_series` (`user_id`, `series`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

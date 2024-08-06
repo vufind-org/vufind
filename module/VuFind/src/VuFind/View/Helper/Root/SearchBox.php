@@ -274,6 +274,16 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get an array of the configured virtual keyboard layouts
+     *
+     * @return array
+     */
+    public function getKeyboardLayouts()
+    {
+        return $this->config['VirtualKeyboard']['layouts'] ?? [];
+    }
+
+    /**
      * Get an array of information on search handlers for use in generating a
      * drop-down or hidden field. Returns an array of arrays with 'value', 'label',
      * 'indent' and 'selected' keys.
@@ -416,7 +426,6 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     {
         // Build settings:
         $handlers = [];
-        $selectedFound = false;
         $backupSelectedIndex = false;
         $addedBrowseHandlers = false;
         $settings = $this->getCombinedHandlerConfig($activeSearchClass);
@@ -437,10 +446,9 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                     $j++;
                     $selected = $target == $activeSearchClass
                         && $activeHandler == $searchVal;
-                    if ($selected) {
-                        $selectedFound = true;
-                    } elseif (
-                        $backupSelectedIndex === false
+                    if (
+                        !$selected
+                        && $backupSelectedIndex === false
                         && $target == $activeSearchClass
                     ) {
                         $backupSelectedIndex = count($handlers);
@@ -493,7 +501,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         }
 
         // If we didn't find an exact match for a selected index, use a fuzzy
-        // match:
+        // match (do the check here since it could be an AlphaBrowse index too):
+        $selectedFound = in_array(true, array_column($handlers, 'selected'), true);
         if (!$selectedFound && $backupSelectedIndex !== false) {
             $handlers[$backupSelectedIndex]['selected'] = true;
         }

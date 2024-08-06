@@ -48,7 +48,7 @@ class NonceGenerator
      *
      * @var string
      */
-    protected $nonce;
+    protected string $nonce = '';
 
     /**
      * Generates a random nonce parameter.

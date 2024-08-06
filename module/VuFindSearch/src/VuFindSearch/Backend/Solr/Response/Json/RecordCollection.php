@@ -257,6 +257,26 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
+     * Gets the highest relevance to search.
+     *
+     * @return mixed
+     */
+    public function getMaxScore()
+    {
+        return $this->response['response']['maxScore'] ?? null;
+    }
+
+    /**
+     * Get response header.
+     *
+     * @return array
+     */
+    public function getResponseHeader()
+    {
+        return $this->response['responseHeader'] ?? [];
+    }
+
+    /**
      * Get raw Solr input parameters from the response.
      *
      * @return array

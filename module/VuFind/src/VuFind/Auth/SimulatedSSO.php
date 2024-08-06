@@ -30,7 +30,12 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Session\ManagerInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Exception\Auth as AuthException;
+
+use function is_array;
 
 /**
  * Simulated single sign-on authentication module (for testing purposes only).
@@ -51,13 +56,39 @@ class SimulatedSSO extends AbstractBase
     protected $getSessionInitiatorCallback;
 
     /**
+     * Configuration settings
+     *
+     * @var array
+     */
+    protected $simulatedSSOConfig;
+
+    /**
+     * Default user attributes, if not overridden by configuration.
+     *
+     * @var array
+     */
+    protected $defaultAttributes = [
+        'firstname' => 'Test',
+        'lastname' => 'User',
+        'email' => 'fake@example.com',
+    ];
+
+    /**
      * Constructor
      *
-     * @param callable $url Session initiator URL callback
+     * @param callable         $url              Session initiator URL callback
+     * @param array            $config           Configuration settings
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     * @param ManagerInterface $sessionManager   Session manager
      */
-    public function __construct($url)
-    {
+    public function __construct(
+        $url,
+        array $config,
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected ManagerInterface $sessionManager
+    ) {
         $this->getSessionInitiatorCallback = $url;
+        $this->simulatedSSOConfig = $config;
     }
 
     /**
@@ -66,18 +97,48 @@ class SimulatedSSO extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername('fakeuser1');
-        $user->firstname = 'Test';
-        $user->lastname = 'User';
-        $user->email = 'fake@example.com';
+        $username = $this->simulatedSSOConfig['General']['username'] ?? 'fakeuser1';
+        if (!$username) {
+            throw new AuthException('Simulated failure');
+        }
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($username);
+
+        // Get attribute configuration -- use defaults if no value is set, and use an
+        // empty array if something invalid was provided.
+        $attribs = $this->simulatedSSOConfig['General']['attributes']
+            ?? $this->defaultAttributes;
+        if (!is_array($attribs)) {
+            $attribs = [];
+        }
+
+        $catPassword = null;
+        foreach ($attribs as $attribute => $value) {
+            if ($attribute == 'email') {
+                $userService->updateUserEmail($user, $value);
+            } elseif ($attribute != 'cat_password') {
+                $this->setUserValueByField($user, $attribute, $value ?? '');
+            } else {
+                $catPassword = $value;
+            }
+        }
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $this->ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
+            );
+        }
+
+        $this->storeExternalSession();
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 
@@ -92,6 +153,21 @@ class SimulatedSSO extends AbstractBase
      */
     public function getSessionInitiator($target)
     {
+        $target .= (str_contains($target, '?') ? '&' : '?') . 'auth_method=SimulatedSSO';
         return ($this->getSessionInitiatorCallback)($target);
+    }
+
+    /**
+     * Add session id mapping to external_session table for single logout support
+     *
+     * Using 'EXTERNAL_SESSION_ID' as the id -- for testing only.
+     *
+     * @return void
+     */
+    protected function storeExternalSession(): void
+    {
+        $localSessionId = $this->sessionManager->getId();
+        $this->getDbService(ExternalSessionServiceInterface::class)
+            ->addSessionMapping($localSessionId, 'EXTERNAL_SESSION_ID');
     }
 }

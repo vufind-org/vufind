@@ -6,8 +6,8 @@ $finder->in(__DIR__ . '/../config')
     ->in(__DIR__ . '/../public');
 
 $rules = [
-    '@PHP80Migration' => true,
-    '@PHPUnit84Migration:risky' => true,
+    '@PHP81Migration' => true,
+    '@PHPUnit100Migration:risky' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
     'binary_operator_spaces' => [
@@ -45,8 +45,8 @@ $rules = [
     'no_php4_constructor' => true,
     'no_singleline_whitespace_before_semicolons' => true,
     'no_spaces_around_offset' => true,
+    'no_unneeded_braces' => true,
     'no_unneeded_control_parentheses' => true,
-    'no_unneeded_curly_braces' => true,
     'no_unneeded_final_method' => true,
     'no_unreachable_default_argument_value' => true,
     'no_unused_imports' => true,

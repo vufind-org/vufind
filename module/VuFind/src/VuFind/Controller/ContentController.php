@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2014-2016.
+ * Copyright (C) The National Library of Finland 2014-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -65,28 +65,42 @@ class ContentController extends AbstractBase
      */
     public function contentAction()
     {
-        $page = $this->params()->fromRoute('page');
         $pathPrefix = 'templates/content/';
-        $pageLocator = $this->serviceLocator
-            ->get(\VuFind\Content\PageLocator::class);
+        $page = $this->params()->fromRoute('page');
+        // Path regex should prevent dots, but double-check to make sure:
+        if (str_contains($page, '..')) {
+            return $this->notFoundAction();
+        }
+        // Find last slash and add preceding part to path if found:
+        if (false !== ($p = strrpos($page, '/'))) {
+            $subPath = substr($page, 0, $p + 1);
+            $pathPrefix .= $subPath;
+            // Ensure the the path prefix does not contain extra slashes:
+            if (str_ends_with($pathPrefix, '//')) {
+                return $this->notFoundAction();
+            }
+            $page = substr($page, $p + 1);
+        }
+        $pageLocator = $this->serviceLocator->get(\VuFind\Content\PageLocator::class);
         $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
 
         $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;
 
         return $method && is_callable([$this, $method])
-            ? $this->$method($data['page'], $data['path'])
+            ? $this->$method($data['page'], $data['relativePath'], $data['path'])
             : $this->notFoundAction();
     }
 
     /**
      * Get ViewModel for markdown based page
      *
-     * @param string $page Page name/route (if applicable)
-     * @param string $path Full path to file with content (if applicable)
+     * @param string $page    Page name/route (if applicable)
+     * @param string $relPath Relative path to file with content (if applicable)
+     * @param string $path    Full path to file with content (if applicable)
      *
      * @return ViewModel
      */
-    protected function getViewForMd(string $page, string $path): ViewModel
+    protected function getViewForMd(string $page, string $relPath, string $path): ViewModel
     {
         $view = $this->createViewModel(['data' => file_get_contents($path)]);
         $view->setTemplate('content/markdown');
@@ -96,13 +110,26 @@ class ContentController extends AbstractBase
     /**
      * Get ViewModel for phtml base page
      *
-     * @param string $page Page name/route (if applicable)
-     * @param string $path Full path to file with content (if applicable)
+     * @param string $page    Page name/route (if applicable)
+     * @param string $relPath Relative path to file with content (if applicable)
+     * @param string $path    Full path to file with content (if applicable)
      *
      * @return ViewModel
      */
-    protected function getViewForPhtml(string $page, string $path): ViewModel
+    protected function getViewForPhtml(string $page, string $relPath, string $path): ViewModel
     {
-        return $this->createViewModel(['page' => $page]);
+        // Convert relative path to a relative page name:
+        $relPage = $relPath;
+        if (str_starts_with($relPage, 'content/')) {
+            $relPage = substr($relPage, 8);
+        }
+        if (str_ends_with($relPage, '.phtml')) {
+            $relPage = substr($relPage, 0, -6);
+        }
+        // Prevent circular inclusion:
+        if ('content' === $relPage) {
+            return $this->notFoundAction();
+        }
+        return $this->createViewModel(['page' => $relPage]);
     }
 }

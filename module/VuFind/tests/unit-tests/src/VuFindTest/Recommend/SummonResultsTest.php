@@ -49,13 +49,16 @@ class SummonResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $class = new \ReflectionClass('VuFind\Recommend\SummonResults');
+        $class = new \ReflectionClass(SummonResults::class);
         $method = $class->getMethod('getSearchClassId');
         $method->setAccessible(true);
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $obj = new SummonResults($runner);
+        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $obj = new SummonResults($runner, $configManager);
         $this->assertSame('Summon', $method->invoke($obj));
     }
 }

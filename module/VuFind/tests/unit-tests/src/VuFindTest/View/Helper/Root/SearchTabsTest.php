@@ -58,7 +58,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getCurrentHiddenFilterParamsProvider(): array
+    public static function getCurrentHiddenFilterParamsProvider(): array
     {
         return [
             [
@@ -164,7 +164,8 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                     'label' => 'Local Index',
                     'permission' => null,
                     'selected' => false,
-                    'url' => '',
+                    'url' => '?hiddenFilters%5B%5D=building%3A%22main%22'
+                        . '&hiddenFilters%5B%5D=format%3A%22journal%22',
                 ],
                 [
                     'id' => 'Solr:filtered',
@@ -180,7 +181,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         ];
 
         $expectedSelected = $expected;
-        unset($expectedSelected['tabs'][0]['url']);
+        $expected['tabs'][0]['url'] = '';
         $expectedSelected['tabs'][0]['selected'] = true;
         $expectedSelected['selected'] = $expectedSelected['tabs'][0];
 

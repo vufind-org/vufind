@@ -29,10 +29,21 @@
 
 namespace VuFind\Db\Row;
 
-use Laminas\Crypt\BlockCipher as BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
+use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Config\AccountCapabilities;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsService;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Favorites\FavoritesService;
 
 use function count;
 
@@ -69,24 +80,13 @@ use function count;
  * @property string  $last_language
  */
 class User extends RowGateway implements
+    UserEntityInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;
-
-    /**
-     * Is encryption enabled?
-     *
-     * @var bool
-     */
-    protected $encryptionEnabled = null;
-
-    /**
-     * Encryption key used for catalog passwords (null if encryption disabled):
-     *
-     * @var string
-     */
-    protected $encryptionKey = null;
 
     /**
      * VuFind configuration
@@ -98,10 +98,17 @@ class User extends RowGateway implements
     /**
      * Constructor
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
+     * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
+     * @param AccountCapabilities         $capabilities     Account capabilities configuration (null for defaults)
+     * @param FavoritesService            $favoritesService Favorites service
      */
-    public function __construct($adapter)
-    {
+    public function __construct(
+        $adapter,
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected AccountCapabilities $capabilities,
+        protected FavoritesService $favoritesService,
+    ) {
         parent::__construct('id', 'user', $adapter);
     }
 
@@ -111,6 +118,8 @@ class User extends RowGateway implements
      * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setConfig(\Laminas\Config\Config $config)
     {
@@ -121,6 +130,8 @@ class User extends RowGateway implements
      * Reset ILS login credentials.
      *
      * @return void
+     *
+     * @deprecated Use setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null)
      */
     public function clearCredentials()
     {
@@ -136,6 +147,8 @@ class User extends RowGateway implements
      *
      * @return mixed        The output of the save method.
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use UserEntityInterface::setCatId() and \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveCatalogId($catId)
     {
@@ -146,21 +159,16 @@ class User extends RowGateway implements
     /**
      * Set ILS login credentials without saving them.
      *
-     * @param string $username Username to save
-     * @param string $password Password to save
+     * @param string  $username Username to save
+     * @param ?string $password Password to save (null for none)
      *
      * @return void
+     *
+     * @deprecated Use ILSAuthenticator::setUserCatalogCredentials()
      */
     public function setCredentials($username, $password)
     {
-        $this->cat_username = $username;
-        if ($this->passwordEncryptionEnabled()) {
-            $this->cat_password = null;
-            $this->cat_pass_enc = $this->encryptOrDecrypt($password, true);
-        } else {
-            $this->cat_password = $password;
-            $this->cat_pass_enc = null;
-        }
+        $this->ilsAuthenticator->setUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -169,19 +177,14 @@ class User extends RowGateway implements
      * @param string $username Username to save
      * @param string $password Password to save
      *
-     * @return mixed           The output of the save method.
+     * @return void
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::saveUserCatalogCredentials()
      */
     public function saveCredentials($username, $password)
     {
-        $this->setCredentials($username, $password);
-        $result = $this->save();
-
-        // Update library card entry after saving the user so that we always have a
-        // user id:
-        $this->updateLibraryCardEntry();
-
-        return $result;
+        $this->ilsAuthenticator->saveUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -190,6 +193,9 @@ class User extends RowGateway implements
      * @param string $datetime optional date/time to save.
      *
      * @return mixed           The output of the save method.
+     *
+     * @deprecated Use UserEntityInterface::setEmailVerified() and
+     * \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveEmailVerified($datetime = null)
     {
@@ -207,28 +213,24 @@ class User extends RowGateway implements
      *
      * @return string The Catalog password in plain text
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::getCatPasswordForUser()
      */
     public function getCatPassword()
     {
-        if ($this->passwordEncryptionEnabled()) {
-            return isset($this->cat_pass_enc)
-                ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
-        }
-        return $this->cat_password ?? null;
+        return $this->ilsAuthenticator->getCatPasswordForUser($this);
     }
 
     /**
      * Is ILS password encryption enabled?
      *
      * @return bool
+     *
+     * @deprecated
      */
     protected function passwordEncryptionEnabled()
     {
-        if (null === $this->encryptionEnabled) {
-            $this->encryptionEnabled
-                = $this->config->Authentication->encrypt_ils_password ?? false;
-        }
-        return $this->encryptionEnabled;
+        return $this->ilsAuthenticator->passwordEncryptionEnabled();
     }
 
     /**
@@ -241,52 +243,13 @@ class User extends RowGateway implements
      *
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::encrypt() or ILSAuthenticator::decrypt()
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
-        // Ignore empty text:
-        if (empty($text)) {
-            return $text;
-        }
-
-        $configAuth = $this->config->Authentication;
-
-        // Load encryption key from configuration if not already present:
-        if ($this->encryptionKey === null) {
-            if (empty($configAuth->ils_encryption_key)) {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'ILS password encryption on, but no key set.'
-                );
-            }
-
-            $this->encryptionKey = $configAuth->ils_encryption_key;
-        }
-
-        // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
-
-        // Check if OpenSSL error is caused by blowfish support
-        try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
-            if ($algo == 'blowfish') {
-                trigger_error(
-                    'Deprecated encryption algorithm (blowfish) detected',
-                    E_USER_DEPRECATED
-                );
-            }
-        } catch (\InvalidArgumentException $e) {
-            if ($algo == 'blowfish') {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'The blowfish encryption algorithm ' .
-                    'is not supported by your version of OpenSSL. ' .
-                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
-                );
-            } else {
-                throw $e;
-            }
-        }
-        $cipher->setKey($this->encryptionKey);
-        return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
+        $method = $encrypt ? 'encrypt' : 'decrypt';
+        return $this->ilsAuthenticator->$method($text);
     }
 
     /**
@@ -298,18 +261,20 @@ class User extends RowGateway implements
      * to be used
      *
      * @return mixed               The output of the save method.
+     *
+     * @deprecated Use ILSAuthenticator::updateUserHomeLibrary()
      */
     public function changeHomeLibrary($homeLibrary)
     {
-        $this->home_library = $homeLibrary;
-        $this->updateLibraryCardEntry();
-        return $this->save();
+        return $this->ilsAuthenticator->updateUserHomeLibrary($this, $homeLibrary);
     }
 
     /**
      * Check whether the email address has been verified yet.
      *
      * @return bool
+     *
+     * @deprecated Use getEmailVerified()
      */
     public function checkEmailVerified()
     {
@@ -321,19 +286,17 @@ class User extends RowGateway implements
      * the returned list WILL NOT include tags attached to records that are not
      * saved in favorites lists.
      *
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source.
-     * (null for no filter).
+     * @param string $resourceId Filter for tags tied to a specific resource (null for no filter).
+     * @param int    $listId     Filter for tags tied to a specific list (null for no filter).
+     * @param string $source     Filter for tags tied to a specific record source. (null for no filter).
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getUserTagsFromFavorites()
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
-        return $this->getDbTable('Tags')
-            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
+        return $this->getDbTable('Tags')->getListTagsForUser($this->getId(), $resourceId, $listId, $source);
     }
 
     /**
@@ -341,12 +304,13 @@ class User extends RowGateway implements
      *
      * @param int $listId List id
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getListTags()
      */
     public function getListTags($listId)
     {
-        return $this->getDbTable('Tags')
-            ->getForList($listId, $this->id);
+        return $this->getDbTable('Tags')->getForList($listId, $this->getId());
     }
 
     /**
@@ -361,6 +325,8 @@ class User extends RowGateway implements
      * (null for no filter).
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::getTagStringForEditing()
      */
     public function getTagString($resourceId = null, $listId = null, $source = null)
     {
@@ -373,16 +339,18 @@ class User extends RowGateway implements
      * @param array $tags Tags
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::formatTagStringForEditing()
      */
     public function formatTagString($tags)
     {
         $tagStr = '';
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
-                if (strstr($tag->tag, ' ')) {
-                    $tagStr .= "\"$tag->tag\" ";
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= "\"{$tag['tag']}\" ";
                 } else {
-                    $tagStr .= "$tag->tag ";
+                    $tagStr .= "{$tag['tag']} ";
                 }
             }
         }
@@ -393,6 +361,8 @@ class User extends RowGateway implements
      * Get all of the lists associated with this user.
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
+     *
+     * @deprecated Use UserListServiceInterface::getUserListsAndCountsByUser()
      */
     public function getLists()
     {
@@ -437,6 +407,8 @@ class User extends RowGateway implements
      * @param string $source     Source of record to look up
      *
      * @return array
+     *
+     * @deprecated Use UserResourceServiceInterface::getFavoritesForRecord()
      */
     public function getSavedData(
         $resourceId,
@@ -460,6 +432,8 @@ class User extends RowGateway implements
      * existing tags (true) or append to the existing list (false).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::saveResourceToFavorites()
      */
     public function saveResource(
         $resource,
@@ -468,15 +442,14 @@ class User extends RowGateway implements
         $notes,
         $replaceExisting = true
     ) {
-        // Create the resource link if it doesn't exist and update the notes in any
-        // case:
-        $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
+        // Create the resource link if it doesn't exist and update the notes in any case:
+        $this->getDbService(UserResourceServiceInterface::class)->createOrUpdateLink($resource, $this, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
         if ($replaceExisting) {
-            $resource->deleteTags($this, $list->id);
+            $this->getDbService(ResourceTagsService::class)
+                ->destroyResourceTagsLinksForUser($resource->getId(), $this, $list);
         }
 
         // Add the new tags:
@@ -492,16 +465,17 @@ class User extends RowGateway implements
      * @param string $source Type of resource identified by IDs
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::removeUserResourcesById()
      */
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         // Retrieve a list of resource IDs:
-        $resourceTable = $this->getDbTable('Resource');
-        $resources = $resourceTable->findResources($ids, $source);
+        $resources = $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
 
         $resourceIDs = [];
         foreach ($resources as $current) {
-            $resourceIDs[] = $current->id;
+            $resourceIDs[] = $current->getId();
         }
 
         // Remove Resource (related tags are also removed implicitly)
@@ -514,11 +488,12 @@ class User extends RowGateway implements
      * Whether library cards are enabled
      *
      * @return bool
+     *
+     * @deprecated use \VuFind\Config\AccountCapabilities::libraryCardsEnabled()
      */
     public function libraryCardsEnabled()
     {
-        return isset($this->config->Catalog->library_cards)
-            && $this->config->Catalog->library_cards;
+        return $this->capabilities->libraryCardsEnabled();
     }
 
     /**
@@ -526,10 +501,12 @@ class User extends RowGateway implements
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::getLibraryCards()
      */
     public function getLibraryCards()
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             return new \Laminas\Db\ResultSet\ResultSet();
         }
         $userCard = $this->getDbTable('UserCard');
@@ -543,35 +520,12 @@ class User extends RowGateway implements
      *
      * @return UserCard|false Card data if found, false otherwise
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use LibraryCardServiceInterface::getOrCreateLibraryCard()
      */
     public function getLibraryCard($id = null)
     {
-        if (!$this->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-
-        $userCard = $this->getDbTable('UserCard');
-        if ($id === null) {
-            $row = $userCard->createRow();
-            $row->card_name = '';
-            $row->user_id = $this->id;
-            $row->cat_username = '';
-            $row->cat_password = '';
-        } else {
-            $row = $userCard->select(['user_id' => $this->id, 'id' => $id])
-                ->current();
-            if ($row === false) {
-                throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
-            }
-            if ($this->passwordEncryptionEnabled()) {
-                $row->cat_password = $this->encryptOrDecrypt(
-                    $row->cat_pass_enc,
-                    false
-                );
-            }
-        }
-
-        return $row;
+        return $this->getUserCardService()->getOrCreateLibraryCard($this, $id);
     }
 
     /**
@@ -581,33 +535,12 @@ class User extends RowGateway implements
      *
      * @return void
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::deleteLibraryCard()
      */
     public function deleteLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-
-        $userCard = $this->getDbTable('UserCard');
-        $row = $userCard->select(['id' => $id, 'user_id' => $this->id])->current();
-
-        if (empty($row)) {
-            throw new \Exception('Library card not found');
-        }
-        $row->delete();
-
-        if ($row->cat_username == $this->cat_username) {
-            // Activate another card (if any) or remove cat_username and cat_password
-            $cards = $this->getLibraryCards();
-            if ($cards->count() > 0) {
-                $this->activateLibraryCard($cards->current()->id);
-            } else {
-                $this->cat_username = null;
-                $this->cat_password = null;
-                $this->cat_pass_enc = null;
-                $this->save();
-            }
-        }
+        return $this->getUserCardService()->deleteLibraryCard($this, $id);
     }
 
     /**
@@ -617,22 +550,12 @@ class User extends RowGateway implements
      *
      * @return void
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::activateLibraryCard()
      */
     public function activateLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-        $userCard = $this->getDbTable('UserCard');
-        $row = $userCard->select(['id' => $id, 'user_id' => $this->id])->current();
-
-        if (!empty($row)) {
-            $this->cat_username = $row->cat_username;
-            $this->cat_password = $row->cat_password;
-            $this->cat_pass_enc = $row->cat_pass_enc;
-            $this->home_library = $row->home_library;
-            $this->save();
-        }
+        return $this->getUserCardService()->activateLibraryCard($this, $id);
     }
 
     /**
@@ -646,6 +569,8 @@ class User extends RowGateway implements
      *
      * @return int Card ID
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::persistLibraryCardData()
      */
     public function saveLibraryCard(
         $id,
@@ -654,56 +579,9 @@ class User extends RowGateway implements
         $password,
         $homeLib = ''
     ) {
-        if (!$this->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-        $userCard = $this->getDbTable('UserCard');
-
-        // Check that the username is not already in use in another card
-        $row = $userCard->select(
-            ['user_id' => $this->id, 'cat_username' => $username]
-        )->current();
-        if (!empty($row) && ($id === null || $row->id != $id)) {
-            throw new \VuFind\Exception\LibraryCard(
-                'Username is already in use in another library card'
-            );
-        }
-
-        $row = null;
-        if ($id !== null) {
-            $row = $userCard->select(['user_id' => $this->id, 'id' => $id])
-                ->current();
-        }
-        if (empty($row)) {
-            $row = $userCard->createRow();
-            $row->user_id = $this->id;
-            $row->created = date('Y-m-d H:i:s');
-        }
-        $row->card_name = $cardName;
-        $row->cat_username = $username;
-        if (!empty($homeLib)) {
-            $row->home_library = $homeLib;
-        }
-        if ($this->passwordEncryptionEnabled()) {
-            $row->cat_password = null;
-            $row->cat_pass_enc = $this->encryptOrDecrypt($password, true);
-        } else {
-            $row->cat_password = $password;
-            $row->cat_pass_enc = null;
-        }
-
-        $row->save();
-
-        // If this is the first or active library card, or no credentials are
-        // currently set, activate the card now
-        if (
-            $this->getLibraryCards()->count() == 1 || empty($this->cat_username)
-            || $this->cat_username === $row->cat_username
-        ) {
-            $this->activateLibraryCard($row->id);
-        }
-
-        return $row->id;
+        return $this->getUserCardService()
+            ->persistLibraryCardData($this, $id, $cardName, $username, $password, $homeLib)
+            ->getId();
     }
 
     /**
@@ -712,30 +590,22 @@ class User extends RowGateway implements
      *
      * @return void
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use UserCardServiceInterface::synchronizeUserLibraryCardData()
      */
     protected function updateLibraryCardEntry()
     {
-        if (!$this->libraryCardsEnabled() || empty($this->cat_username)) {
-            return;
-        }
+        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
+    }
 
-        $userCard = $this->getDbTable('UserCard');
-        $row = $userCard->select(
-            ['user_id' => $this->id, 'cat_username' => $this->cat_username]
-        )->current();
-        if (empty($row)) {
-            $row = $userCard->createRow();
-            $row->user_id = $this->id;
-            $row->cat_username = $this->cat_username;
-            $row->card_name = $this->cat_username;
-            $row->created = date('Y-m-d H:i:s');
-        }
-        // Always update home library and password
-        $row->home_library = $this->home_library;
-        $row->cat_password = $this->cat_password;
-        $row->cat_pass_enc = $this->cat_pass_enc;
-
-        $row->save();
+    /**
+     * Get a UserCard service object.
+     *
+     * @return UserCardServiceInterface
+     */
+    protected function getUserCardService()
+    {
+        return $this->getDbService(UserCardServiceInterface::class);
     }
 
     /**
@@ -745,26 +615,25 @@ class User extends RowGateway implements
      * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
+     *
+     * @deprecated Use \VuFind\Account\UserAccountService::purgeUserData()
      */
     public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
-        $lists = $this->getLists();
-        $table = $this->getDbTable('UserList');
-        foreach ($lists as $current) {
-            // The rows returned by getLists() are read-only, so we need to retrieve
-            // a new object for each row in order to perform a delete operation:
-            $list = $table->getExisting($current->id);
-            $list->delete($this, true);
+        $listService = $this->getDbService(UserListServiceInterface::class);
+        foreach ($listService->getUserListsByUser($this) as $current) {
+            $this->favoritesService->destroyList($current, $this, true);
         }
-        $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyResourceLinks(null, $this->id);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $this);
         if ($removeComments) {
-            $comments = $this->getDbTable('Comments');
-            $comments->deleteByUser($this);
+            $comments = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
-            $ratings = $this->getDbTable('Ratings');
+            $ratings = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
             $ratings->deleteByUser($this);
         }
 
@@ -776,6 +645,8 @@ class User extends RowGateway implements
      * Update the verification hash for this user
      *
      * @return bool save success
+     *
+     * @deprecated Use \VuFind\Auth\Manager::updateUserVerifyHash()
      */
     public function updateHash()
     {
@@ -792,6 +663,9 @@ class User extends RowGateway implements
      * @param string $language New language
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Entity\UserEntityInterface::setLastLanguage()
+     * and \VuFind\Db\Service\UserService::persistEntity() instead.
      */
     public function updateLastLanguage($language)
     {
@@ -802,23 +676,19 @@ class User extends RowGateway implements
     /**
      * Update the user's email address, if appropriate. Note that this does NOT
      * automatically save the row; it assumes a subsequent call will be made to
-     * the save() method.
+     * persist the data.
      *
      * @param string $email        New email address
      * @param bool   $userProvided Was this email provided by the user (true) or
      * an automated lookup (false)?
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Service\UserServiceInterface::updateUserEmail()
      */
     public function updateEmail($email, $userProvided = false)
     {
-        // Only change the email if it is a non-empty value and was user provided
-        // (the user is always right) or the previous email was NOT user provided
-        // (a value may have changed in an upstream system).
-        if (!empty($email) && ($userProvided || !$this->user_provided_email)) {
-            $this->email = $email;
-            $this->user_provided_email = $userProvided ? 1 : 0;
-        }
+        $this->getDbService(UserServiceInterface::class)->updateUserEmail($this, $email, $userProvided);
     }
 
     /**
@@ -829,5 +699,498 @@ class User extends RowGateway implements
     public function getRoles()
     {
         return ['loggedin'];
+    }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Username setter
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function setUsername(string $username): UserEntityInterface
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * Get username.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Set raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @param string $password Password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawPassword(string $password): UserEntityInterface
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @return string
+     */
+    public function getRawPassword(): string
+    {
+        return $this->password ?? '';
+    }
+
+    /**
+     * Set hashed password. This should only be used when hashing is enabled.
+     *
+     * @param ?string $hash Password hash
+     *
+     * @return UserEntityInterface
+     */
+    public function setPasswordHash(?string $hash): UserEntityInterface
+    {
+        $this->pass_hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get hashed password. This should only be used when hashing is enabled.
+     *
+     * @return ?string
+     */
+    public function getPasswordHash(): ?string
+    {
+        return $this->pass_hash ?? null;
+    }
+
+    /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface
+    {
+        $this->firstname = $firstName;
+        return $this;
+    }
+
+    /**
+     * Get firstname.
+     *
+     * @return string
+     */
+    public function getFirstname(): string
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface
+    {
+        $this->lastname = $lastName;
+        return $this;
+    }
+
+    /**
+     * Get lastname.
+     *
+     * @return string
+     */
+    public function getLastname(): string
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Set email.
+     *
+     * @param string $email Email address
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmail(string $email): UserEntityInterface
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * Get email.
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set pending email.
+     *
+     * @param string $email New pending email
+     *
+     * @return UserEntityInterface
+     */
+    public function setPendingEmail(string $email): UserEntityInterface
+    {
+        $this->pending_email = $email;
+        return $this;
+    }
+
+    /**
+     * Get pending email.
+     *
+     * @return string
+     */
+    public function getPendingEmail(): string
+    {
+        return $this->pending_email ?? '';
+    }
+
+    /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface
+    {
+        $this->cat_id = $catId;
+        return $this;
+    }
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string
+    {
+        return $this->cat_id;
+    }
+
+    /**
+     * Catalog username setter
+     *
+     * @param ?string $catUsername Catalog username
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatUsername(?string $catUsername): UserEntityInterface
+    {
+        $this->cat_username = $catUsername;
+        return $this;
+    }
+
+    /**
+     * Get catalog username.
+     *
+     * @return ?string
+     */
+    public function getCatUsername(): ?string
+    {
+        return $this->cat_username ?? '';
+    }
+
+    /**
+     * Home library setter
+     *
+     * @param ?string $homeLibrary Home library
+     *
+     * @return UserEntityInterface
+     */
+    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface
+    {
+        $this->home_library = $homeLibrary;
+        return $this;
+    }
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string
+    {
+        return $this->home_library;
+    }
+
+    /**
+     * Raw catalog password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawCatPassword(?string $catPassword): UserEntityInterface
+    {
+        $this->cat_password = $catPassword;
+        return $this;
+    }
+
+    /**
+     * Get raw catalog password.
+     *
+     * @return ?string
+     */
+    public function getRawCatPassword(): ?string
+    {
+        return $this->cat_password;
+    }
+
+    /**
+     * Encrypted catalog password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatPassEnc(?string $passEnc): UserEntityInterface
+    {
+        $this->cat_pass_enc = $passEnc;
+        return $this;
+    }
+
+    /**
+     * Get encrypted catalog password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string
+    {
+        return $this->cat_pass_enc;
+    }
+
+    /**
+     * Set college.
+     *
+     * @param string $college College
+     *
+     * @return UserEntityInterface
+     */
+    public function setCollege(string $college): UserEntityInterface
+    {
+        $this->college = $college;
+        return $this;
+    }
+
+    /**
+     * Get college.
+     *
+     * @return string
+     */
+    public function getCollege(): string
+    {
+        return $this->college ?? '';
+    }
+
+    /**
+     * Set major.
+     *
+     * @param string $major Major
+     *
+     * @return UserEntityInterface
+     */
+    public function setMajor(string $major): UserEntityInterface
+    {
+        $this->major = $major;
+        return $this;
+    }
+
+    /**
+     * Get major.
+     *
+     * @return string
+     */
+    public function getMajor(): string
+    {
+        return $this->major ?? '';
+    }
+
+    /**
+     * Set verification hash for recovery.
+     *
+     * @param string $hash Hash value to save
+     *
+     * @return UserEntityInterface
+     */
+    public function setVerifyHash(string $hash): UserEntityInterface
+    {
+        $this->verify_hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get verification hash for recovery.
+     *
+     * @return string
+     */
+    public function getVerifyHash(): string
+    {
+        return $this->verify_hash ?? '';
+    }
+
+    /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    {
+        $this->auth_method = $authMethod;
+        return $this;
+    }
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string
+    {
+        return $this->auth_method;
+    }
+
+    /**
+     * Set last language.
+     *
+     * @param string $lang Last language
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLanguage(string $lang): UserEntityInterface
+    {
+        $this->last_language = $lang;
+        return $this;
+    }
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string
+    {
+        return $this->last_language ?? '';
+    }
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool
+    {
+        return (bool)($this->user_provided_email ?? false);
+    }
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    {
+        $this->user_provided_email = $userProvided ? 1 : 0;
+        return $this;
+    }
+
+    /**
+     * Last login setter.
+     *
+     * @param DateTime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    {
+        $this->last_login = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Last login getter
+     *
+     * @return DateTime
+     */
+    public function getLastLogin(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
+    }
+
+    /**
+     * Created setter
+     *
+     * @param DateTime $dateTime Creation date
+     *
+     * @return UserEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set email verification date (or null for unverified).
+     *
+     * @param ?DateTime $dateTime Verification date (or null)
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface
+    {
+        $this->email_verified = $dateTime?->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get email verification date (or null for unverified).
+     *
+     * @return ?DateTime
+     */
+    public function getEmailVerified(): ?DateTime
+    {
+        return $this->email_verified ? DateTime::createFromFormat('Y-m-d H:i:s', $this->email_verified) : null;
     }
 }

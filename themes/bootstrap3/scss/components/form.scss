@@ -1,4 +1,10 @@
 form {
+    .form-control {
+        border-color: #888;
+        &:focus {
+            border-color: #3F9AE4;
+        }
+      }
     textarea:invalid,
     input:invalid {
         box-shadow: 0 0 2px 1px rgba(255, 0, 0, 0.9);

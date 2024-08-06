@@ -1,0 +1,174 @@
+[
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/instance-storage\/instances",
+        "expectedParams": {
+            "query": "(id==\"record1\")"
+        },
+        "body": {
+            "instances": [
+                {
+                    "id": "record1",
+                    "_version": 2,
+                    "hrid": "hr-record1",
+                    "source": "MARC",
+                    "title": "Test Title",
+                    "indexTitle": "Test Title",
+                    "alternativeTitles": [],
+                    "editions": [],
+                    "series": [],
+                    "identifiers": [],
+                    "contributors": [],
+                    "subjects": [],
+                    "classifications": [],
+                    "publication": [],
+                    "publicationFrequency": [],
+                    "publicationRange": [],
+                    "publicationPeriod": {
+                        "start": 1900
+                    },
+                    "electronicAccess": [],
+                    "instanceTypeId": "instancetype1",
+                    "instanceFormatIds": [],
+                    "instanceFormats": [],
+                    "physicalDescriptions": [],
+                    "languages": [
+                        "eng"
+                    ],
+                    "notes": [
+                    ],
+                    "modeOfIssuanceId": "issuance1",
+                    "previouslyHeld": false,
+                    "staffSuppress": false,
+                    "discoverySuppress": false,
+                    "statisticalCodeIds": [],
+                    "statusUpdatedDate": "2022-12-22T23:05:36.209+0000",
+                    "metadata": {
+                        "createdDate": "2022-12-22T23:05:36.215+00:00",
+                        "createdByUserId": "user2",
+                        "updatedDate": "2022-12-22T23:05:36.215+00:00",
+                        "updatedByUserId": "user2"
+                    },
+                    "holdingsRecords2": [],
+                    "natureOfContentTermIds": []
+                }
+            ],
+            "totalRecords": 1,
+            "resultInfo": {
+                "totalRecords": 1,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/_\/proxy\/tenants\/config_tenant\/modules?filter=mod-circulation&latest=1",
+        "expectedParams": [],
+        "body": [
+            {
+                "id": "mod-circulation-23.5.7"
+            }
+        ],
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "POST",
+        "expectedPath": "\/circulation\/requests",
+        "expectedParamsRegEx": "/{\"instanceId\":\"record1\",\"requestLevel\":\"Title\",\"requesterId\":\"user1\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2000-01-01\",\"pickupServicePointId\":\"servicepoint1\",\"requestType\":\"Recall\"}/",
+        "body": {
+            "errors": [
+                {
+                    "message": "Request has no loan or recallable item",
+                    "parameters": [
+                        {
+                            "key": "loan",
+                            "value": null
+                        }
+                    ]
+                },
+                {
+                    "message": "Hold\/Recall TLR not allowed: pageable available item found for instance",
+                    "parameters": [
+                        {
+                            "key": "itemId",
+                            "value": "item1"
+                        },
+                        {
+                            "key": "instanceId",
+                            "value": "record1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "bodyType": "json",
+        "status": 422
+    },
+    {
+        "expectedMethod": "POST",
+        "expectedPath": "\/circulation\/requests",
+        "expectedParamsRegEx": "{\"instanceId\":\"record1\",\"requestLevel\":\"Title\",\"requesterId\":\"user1\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2000-01-01\",\"pickupServicePointId\":\"servicepoint1\",\"requestType\":\"Page\"}",
+        "body": {
+            "id": "req1",
+            "requestLevel": "Title",
+            "requestType": "Page",
+            "requestDate": "2024-02-05T15:54:40.000+00:00",
+            "requesterId": "user1",
+            "instanceId": "record1",
+            "holdingsRecordId": "holdings1",
+            "itemId": "item1",
+            "status": "Open - Not yet filled",
+            "instance": {
+                "title": "Test Title"
+            },
+            "item": {
+                "barcode": "barcode1",
+                "location": {
+                    "name": "Primary Location",
+                    "libraryName": "Sample Library",
+                    "code": "location1"
+                },
+                "status": "Paged",
+                "callNumber": "callno1",
+                "callNumberComponents": {
+                    "callNumber": "callno1"
+                },
+                "copyNumber": "1"
+            },
+            "requester": {
+                "lastName": "Person",
+                "firstName": "Fake",
+                "middleName": "F.",
+                "barcode": "userbarcode1",
+                "patronGroupId": "patrongroup1"
+            },
+            "fulfilmentPreference": "Hold Shelf",
+            "requestExpirationDate": "2000-01-01T04:59:59.000+00:00",
+            "pickupServicePointId": "servicepoint1",
+            "metadata": {
+                "createdDate": "2024-02-05T15:54:43.170+00:00",
+                "createdByUserId": "creator1",
+                "updatedDate": "2024-02-05T15:54:43.170+00:00",
+                "updatedByUserId": "creator1"
+            },
+            "position": 1,
+            "pickupServicePoint": {
+                "name": "Service Desk",
+                "code": "desk1",
+                "discoveryDisplayName": "Circulation",
+                "description": "Service Desk",
+                "shelvingLagTime": 1440,
+                "pickupLocation": true
+            }
+        },
+        "bodyType": "json",
+        "status": 201
+    }
+]

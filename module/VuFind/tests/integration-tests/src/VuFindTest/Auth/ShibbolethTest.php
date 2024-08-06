@@ -119,17 +119,16 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
         if (null === $config) {
             $config = $this->getAuthConfig($useHeaders, $requiredAttributes);
         }
-        $loader = null;
-        if ($shibConfig == null) {
-            $loader = new SingleIdPConfigurationLoader($config);
-        } else {
-            $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
-        }
+        $loader = ($shibConfig == null)
+            ? new SingleIdPConfigurationLoader($config)
+            : new MultiIdPConfigurationLoader($config, $shibConfig);
         $obj = new Shibboleth(
             $this->createMock(\Laminas\Session\ManagerInterface::class),
             $loader,
-            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class)
+            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class),
+            $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
         );
+        $obj->setDbServiceManager($this->getLiveDbServiceManager());
         $obj->setDbTableManager($this->getLiveTableManager());
         $obj->setConfig($config);
         return $obj;
@@ -358,7 +357,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     public function testFailedLogin()
     {
         $this->expectException(\VuFind\Exception\Auth::class);
-        $user = $this->getAuthObject(null, $this->getShibbolethConfig())
+        $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user3, false));
     }
 

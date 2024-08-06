@@ -1,0 +1,72 @@
+<?php
+  $this->headLink()->appendStylesheet('vendor/slick.css');
+  $this->headLink()->appendStylesheet('vendor/slick-theme.css');
+  $this->headScript()->appendFile('vendor/slick.min.js');
+  $this->headScript()->appendFile('channels.js');
+  $this->jsTranslations()->addStrings([
+    'channel_browse' => 'channel_browse',
+    'channel_expand' => 'channel_expand',
+    'channel_search' => 'channel_search',
+    'nohit_heading' => 'nohit_heading',
+    'View Record' => 'View Record',
+  ]);
+
+  $finalChannels = [];
+  $finalCount = 0;
+  foreach ($channels as $current) {
+      if (isset($current['contents'])) {
+          $finalChannels[] = $current;
+          $finalCount++;
+      } elseif ($finalCount > 0 && isset($current['token'])) {
+          $finalChannels[$finalCount - 1]['relatedTokens'][] = $current;
+      }
+  }
+?>
+
+<?php if (empty($token)): ?>
+  <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
+    <?=$this->transEsc('channel_searchbox_label')?>
+    <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>" aria-label="<?=$this->transEscAttr('search_terms') ?>">
+    <input type="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-default">
+  </form>
+<?php endif; ?>
+
+<?php $insideButton = false; ?>
+<?php foreach ($finalChannels as $channel): ?>
+  <?php
+    $groupId = $channel['groupId'] ?? $channel['providerId'];
+    $channelID = 'channel-' . md5(serialize($channel));
+  ?>
+  <div class="channel-wrapper">
+    <div class="channel-title">
+      <h2><?=$this->escapeHtml($channel['title'])?></h2>
+    </div>
+
+    <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
+      <div class="channel-add-menu hidden" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
+        <button type="button" class="add-btn btn btn-link"><?=$this->transEsc('channel_add_more') ?></button><!--
+     --><button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="<?=$this->transEscAttr('toggle_dropdown') ?>">
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <?php foreach ($channel['relatedTokens'] as $related): ?>
+            <li><a class="dropdown-item" href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($related['providerId']) ?>&amp;channelToken=<?=urlencode($related['token']) ?>&amp;layout=lightbox" data-token="<?=$this->escapeHtmlAttr($related['token']) ?>"><?=$this->escapeHtml($this->truncate($related['title'], 100)) ?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+
+    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'>
+      <!-- Wrapper for slides -->
+      <?php foreach ($channel['contents'] as $index => $item): ?>
+        <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
+        <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
+          <div class="thumb">
+            <img <?=$index < 6 ? 'src' : 'src="#" data-lazy' ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
+          </div>
+          <p class="channel-record-title"><?=$this->escapeHtml($item['title'])?></p>
+        </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+<?php endforeach; ?>

@@ -30,14 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Set;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.log4j.Logger;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
@@ -45,12 +41,7 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 import org.solrmarc.index.indexer.ValueIndexerFactory;
-import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.PropertyUtils;
-import org.solrmarc.tools.SolrMarcIndexerException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Geographic indexing routines.
@@ -141,7 +132,7 @@ public class GeoTools
      * @param  HashMap coords
      * @param  String error message
      */
-    public static void logErrorMessage(Record record, HashMap coords, String message) {
+    public static void logErrorMessage(Record record, HashMap<Character, String> coords, String message) {
         // Initialize error logging variables
         String msgError = message;
         String recNum = "Not available";
@@ -213,7 +204,7 @@ public class GeoTools
      */
     protected HashMap<Character, String> getCoordinateValues(VariableField vf) {
         DataField df = (DataField) vf;
-        HashMap<Character, String> coords = new HashMap();
+        HashMap<Character, String> coords = new HashMap<Character, String>();
         for (char code = 'd'; code <= 'g'; code++) {
             Subfield subfield = df.getSubfield(code);
             if (subfield != null) {
@@ -231,7 +222,7 @@ public class GeoTools
      * @param  HashMap coords
      * @return HashMap full_coords
      */
-    protected HashMap<Character, String> fillEmptyPointCoordinates(HashMap coords) {
+    protected HashMap<Character, String> fillEmptyPointCoordinates(HashMap<Character, String> coords) {
         HashMap<Character, String> full_coords = coords;
         if (coords.containsKey('d') && !coords.containsKey('e') && coords.containsKey('f') && !coords.containsKey('g')) {
             full_coords.put('e', coords.get('d').toString());
@@ -251,7 +242,7 @@ public class GeoTools
     * @param  HashMap coords
     * @return boolean
     */
-   protected boolean validateCoordinateValues(Record record, HashMap coords) {
+   protected boolean validateCoordinateValues(Record record, HashMap<Character, String> coords) {
         if (coords.containsKey('d') && coords.containsKey('e') && coords.containsKey('f') && coords.containsKey('g')) {
             return true;
         }
@@ -493,8 +484,8 @@ public class GeoTools
     * @param  Double west, east, north, south
     * @return HashMap coords
     */
-   public HashMap buildCoordinateHashMap (Double west, Double east, Double north, Double south) {
-        HashMap<Character, String> coords = new HashMap();
+   public HashMap<Character, String> buildCoordinateHashMap (Double west, Double east, Double north, Double south) {
+        HashMap<Character, String> coords = new HashMap<Character, String>();
         coords.put('d', Double.toString(west));
         coords.put('e', Double.toString(east));
         coords.put('f', Double.toString(north));

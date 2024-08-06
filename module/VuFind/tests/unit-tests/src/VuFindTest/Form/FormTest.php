@@ -172,7 +172,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -298,7 +298,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -338,7 +338,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -390,7 +390,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -801,7 +801,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getEmailSubjectsData(): array
+    public static function getEmailSubjectsData(): array
     {
         return [
             'with placeholders' => [
@@ -901,7 +901,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -956,7 +956,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],

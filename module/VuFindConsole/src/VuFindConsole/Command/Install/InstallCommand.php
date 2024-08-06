@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Install;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -47,18 +48,15 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'install/install',
+    description: 'VuFind installer'
+)]
 class InstallCommand extends Command
 {
     public const MULTISITE_NONE = 0;
     public const MULTISITE_DIR_BASED = 1;
     public const MULTISITE_HOST_BASED = 2;
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'install/install';
 
     /**
      * Base directory of VuFind installation.
@@ -110,6 +108,13 @@ class InstallCommand extends Command
     protected $solrPort = '8983';
 
     /**
+     * Should we make backups of existing files?
+     *
+     * @var bool
+     */
+    protected $makeBackups = true;
+
+    /**
      * Constructor
      *
      * @param string|null $name The name of the command; passing null means it must
@@ -134,7 +139,6 @@ class InstallCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('VuFind installer')
             ->setHelp('Set up (or modify) initial VuFind installation.')
             ->addOption(
                 'use-defaults',
@@ -182,6 +186,11 @@ class InstallCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Use settings if provided via arguments, otherwise use defaults'
+            )->addOption(
+                'skip-backups',
+                null,
+                InputOption::VALUE_NONE,
+                'Overwrite existing files without creating backups'
             );
     }
 
@@ -273,7 +282,7 @@ class InstallCommand extends Command
     {
         // There is one special case for Windows, and a variety of different
         // Unix-flavored possibilities that all work similarly.
-        $msg = (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
+        $msg = PHP_OS_FAMILY === 'Windows'
             ? $this->getWindowsApacheMessage() : $this->getLinuxApacheMessage();
         $output->writeln($msg);
     }
@@ -598,7 +607,7 @@ class InstallCommand extends Command
      */
     protected function backUpFile(OutputInterface $output, string $filename, string $desc)
     {
-        if (file_exists($filename)) {
+        if ($this->makeBackups && file_exists($filename)) {
             $bak = $filename . '.bak.' . time();
             if (!copy($filename, $bak)) {
                 return "Problem backing up $filename to $bak";
@@ -747,11 +756,8 @@ class InstallCommand extends Command
     protected function buildImportConfig(OutputInterface $output, $filename)
     {
         $target = $this->overrideDir . '/import/' . $filename;
-        if (file_exists($target)) {
-            $output->writeln(
-                "Warning: $target already exists; skipping file creation."
-            );
-            return true;
+        if (($msg = $this->backUpFile($output, $target, 'import configuration')) !== true) {
+            return $msg;
         }
         $import = @file_get_contents($this->baseDir . '/import/' . $filename);
         $import = str_replace(
@@ -1021,6 +1027,10 @@ class InstallCommand extends Command
         // Normalize the module setting to remove whitespace:
         $this->module = preg_replace('/\s/', '', $this->module);
 
+        // Should we make backups of existing files?
+        if ($input->getOption('skip-backups')) {
+            $this->makeBackups = false;
+        }
         return 0;
     }
 

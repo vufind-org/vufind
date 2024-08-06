@@ -75,7 +75,7 @@ class RelaisController extends AbstractBase
 
     /**
      * Given patron data from the catalogLogin() method, return the appropriate
-     * identifer for use with Relais.
+     * identifier for use with Relais.
      *
      * @param array $patron Patron details
      *

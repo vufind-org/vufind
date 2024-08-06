@@ -29,6 +29,8 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -43,20 +45,15 @@ use VuFind\Exception\Auth as AuthException;
 class Email extends AbstractBase
 {
     /**
-     * Email Authenticator
-     *
-     * @var EmailAuthenticator
-     */
-    protected $emailAuthenticator;
-
-    /**
      * Constructor
      *
-     * @param EmailAuthenticator $emailAuth Email authenticator
+     * @param EmailAuthenticator $emailAuthenticator Email authenticator
+     * @param ILSAuthenticator   $ilsAuthenticator   ILS authenticator
      */
-    public function __construct(EmailAuthenticator $emailAuth)
-    {
-        $this->emailAuthenticator = $emailAuth;
+    public function __construct(
+        protected EmailAuthenticator $emailAuthenticator,
+        protected ILSAuthenticator $ilsAuthenticator
+    ) {
     }
 
     /**
@@ -66,7 +63,7 @@ class Email extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -75,7 +72,7 @@ class Email extends AbstractBase
         // a login link.
         // Second, log the user in with the hash from the login link.
 
-        $email = trim($request->getPost()->get('username'));
+        $email = trim($request->getPost()->get('username', ''));
         $hash = $request->getQuery('hash');
         if (!$email && !$hash) {
             throw new AuthException('authentication_error_blank');
@@ -83,15 +80,15 @@ class Email extends AbstractBase
 
         if (!$hash) {
             // Validate the credentials:
-            $user = $this->getUserTable()->getByEmail($email);
+            $user = $this->getUserService()->getUserByEmail($email);
             if ($user) {
                 $loginData = [
-                    'vufind_id' => $user['id'],
+                    'vufind_id' => $user->getId(),
                 ];
                 $this->emailAuthenticator->sendAuthenticationLink(
-                    $user['email'],
+                    $user->getEmail(),
                     $loginData,
-                    ['auth_method' => 'email']
+                    ['auth_method' => 'Email']
                 );
             }
             // Don't reveal the result
@@ -100,9 +97,20 @@ class Email extends AbstractBase
 
         $loginData = $this->emailAuthenticator->authenticate($hash);
         if (isset($loginData['vufind_id'])) {
-            return $this->getUserTable()->getById($loginData['vufind_id']);
+            return $this->getUserService()->getUserById($loginData['vufind_id']);
         } else {
-            return $this->processUser($loginData);
+            // Check if we have more granular data available:
+            if (isset($loginData['userData'])) {
+                $userData = $loginData['userData'];
+                if ($loginData['rememberMe'] ?? false) {
+                    // TODO: This is not a very nice way of carrying this information
+                    // over to the authentication manager:
+                    $request->getPost()->set('remember_me', '1');
+                }
+            } else {
+                $userData = $loginData;
+            }
+            return $this->processUser($userData);
         }
 
         // If we got this far, we have a problem:
@@ -128,33 +136,34 @@ class Email extends AbstractBase
      * @param array $info User details returned by the login initiator like ILS.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
     protected function processUser($info)
     {
         // Check to see if we already have an account for this user:
-        $userTable = $this->getUserTable();
         if (!empty($info['id'])) {
-            $user = $userTable->getByCatalogId($info['id']);
+            $user = $this->getUserService()->getUserByCatId($info['id']);
             if (empty($user)) {
-                $user = $userTable->getByUsername($info['email']);
-                $user->saveCatalogId($info['id']);
+                $user = $this->getOrCreateUserByUsername($info['email']);
+                $user->setCatId($info['id']);
+                $this->getDbService(UserServiceInterface::class)->persistEntity($user);
             }
         } else {
-            $user = $userTable->getByUsername($info['email']);
+            $user = $this->getOrCreateUserByUsername($info['email']);
         }
 
         // No need to store a password in VuFind's main password field:
-        $user->password = '';
+        $user->setRawPassword('');
 
         // Update user information based on received data:
         $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
         foreach ($fields as $field) {
-            $user->$field = $info[$field] ?? ' ';
+            $this->setUserValueByField($user, $field, $info[$field] ?? ' ');
         }
 
         // Update the user in the database, then return it to the caller:
-        $user->saveCredentials(
+        $this->ilsAuthenticator->saveUserCatalogCredentials(
+            $user,
             $info['cat_username'] ?? ' ',
             $info['cat_password'] ?? ' '
         );

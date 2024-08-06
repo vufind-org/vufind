@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Tags\TagsService;
 
 use function array_slice;
 use function in_array;
@@ -330,7 +331,7 @@ class BrowseController extends AbstractBase implements
 
         if ($this->params()->fromQuery('findby')) {
             $params = $this->getRequest()->getQuery()->toArray();
-            $tagTable = $this->getTable('Tags');
+            $tagsService = $this->serviceLocator->get(TagsService::class);
             // Special case -- display alphabet selection if necessary:
             if ($params['findby'] == 'alphabetical') {
                 $legalLetters = $this->getAlphabetList();
@@ -340,7 +341,7 @@ class BrowseController extends AbstractBase implements
                     // Note -- this does not need to be escaped because
                     // $params['query'] has already been validated against
                     // the getAlphabetList() method below!
-                    $tags = $tagTable->matchText($params['query']);
+                    $tags = $tagsService->getNonListTagsFuzzilyMatchingString($params['query']);
                     $tagList = [];
                     foreach ($tags as $tag) {
                         if ($tag['cnt'] > 0) {
@@ -359,15 +360,9 @@ class BrowseController extends AbstractBase implements
                 }
             } else {
                 // Default case: always display tag list for non-alphabetical modes:
-                $callback = function ($select) {
-                    // Discard user list tags
-                    $select->where->isNotNull('resource_tags.resource_id');
-                };
-
-                $tagList = $tagTable->getTagList(
+                $tagList = $tagsService->getTagBrowseList(
                     $params['findby'],
-                    $this->config->Browse->result_limit,
-                    $callback
+                    (int)($this->config->Browse->result_limit ?? 100)
                 );
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {
@@ -747,7 +742,7 @@ class BrowseController extends AbstractBase implements
         }
 
         // ALPHABET TO ['value','displayText']
-        // (value has asterix appended for Solr, but is unmodified for tags)
+        // (value has asterisk appended for Solr, but is unmodified for tags)
         $action = $this->getCurrentAction();
         $callback = function ($letter) use ($action) {
             // Tag is a special case because it is database-backed; for everything

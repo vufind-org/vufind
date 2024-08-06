@@ -47,7 +47,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function newHandlerNameProvider(): array
+    public static function newHandlerNameProvider(): array
     {
         return ['Test1' => ['foo:bar', 'bar'],
                 'Test2' => ['foo', 'All Fields'],
@@ -58,7 +58,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      * Test the description of new search handler.
      *
      * @param string $settings       Settings from searches.ini
-     * @param bool   $expectedResult Expected return value from isActive
+     * @param string $expectedResult Expected return value from isActive
      *
      * @return void
      *
@@ -76,7 +76,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function newHandlerProvider(): array
+    public static function newHandlerProvider(): array
     {
         return ['Test1' => ['foo:bar', 'foo', false],
                 'Test2' => ['', 'foo', 'AllFields'],

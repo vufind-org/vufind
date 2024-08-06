@@ -34,8 +34,6 @@ use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
-use function is_callable;
-
 /**
  * VuFind Bootstrapper
  *
@@ -100,10 +98,24 @@ class Bootstrapper
         // automatically call all methods starting with "init":
         $methods = get_class_methods($this);
         foreach ($methods as $method) {
-            if (substr($method, 0, 4) == 'init') {
+            if (str_starts_with($method, 'init')) {
                 $this->$method();
             }
         }
+    }
+
+    /**
+     * Get a database service object.
+     *
+     * @param class-string<T> $name Name of service to retrieve
+     *
+     * @template T
+     *
+     * @return T
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
+    {
+        return $this->container->get(\VuFind\Db\Service\PluginManager::class)->get($name);
     }
 
     /**
@@ -146,23 +158,12 @@ class Bootstrapper
     }
 
     /**
-     * Initializes locale and timezone values
+     * Initializes timezone value
      *
      * @return void
      */
-    protected function initLocaleAndTimeZone(): void
+    protected function initTimeZone(): void
     {
-        // Try to set the locale to UTF-8, but fail back to the exact string from
-        // the config file if this doesn't work -- different systems may vary in
-        // their behavior here.
-        setlocale(
-            LC_ALL,
-            [
-                "{$this->config->Site->locale}.UTF8",
-                "{$this->config->Site->locale}.UTF-8",
-                $this->config->Site->locale,
-            ]
-        );
         date_default_timezone_set($this->config->Site->timezone);
     }
 
@@ -215,16 +216,21 @@ class Bootstrapper
      */
     protected function initUserLanguage(): void
     {
-        // Store last selected language in user account, if applicable:
-        $settings = $this->container->get(LocaleSettings::class);
-        $language = $settings->getUserLocale();
-        $authManager = $this->container->get(\VuFind\Auth\Manager::class);
-        if (
-            ($user = $authManager->isLoggedIn())
-            && $user->last_language != $language
-        ) {
-            $user->updateLastLanguage($language);
-        }
+        $callback = function ($event) {
+            // Store last selected language in user account, if applicable:
+            $settings = $this->container->get(LocaleSettings::class);
+            $language = $settings->getUserLocale();
+            $authManager = $this->container->get(\VuFind\Auth\Manager::class);
+            if (
+                ($user = $authManager->getUserObject())
+                && $user->getLastLanguage() != $language
+            ) {
+                $user->setLastLanguage($language);
+                $this->getDbService(\VuFind\Db\Service\UserServiceInterface::class)->persistEntity($user);
+            }
+        };
+        $this->events->attach('dispatch.error', $callback);
+        $this->events->attach('dispatch', $callback);
     }
 
     /**
@@ -243,6 +249,25 @@ class Bootstrapper
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
+    }
+
+    /**
+     * The login token manager needs to be informed after the theme has been initialized,
+     * so that it can send warning emails if necessary.
+     *
+     * @return void
+     */
+    protected function initLoginTokenManager(): void
+    {
+        $dispatchCallback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->themeIsReady();
+        };
+        $finishCallback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->requestIsFinished();
+        };
+        $this->events->attach('dispatch.error', $dispatchCallback, 8000);
+        $this->events->attach('dispatch', $dispatchCallback, 8000);
+        $this->events->attach('finish', $finishCallback, 8000);
     }
 
     /**
@@ -281,7 +306,7 @@ class Bootstrapper
         $bm = $this->container->get(\VuFind\Search\BackendManager::class);
         $events = $this->container->get('SharedEventManager');
         $events->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_RESOLVE,
             [$bm, 'onResolve']
         );
@@ -297,7 +322,7 @@ class Bootstrapper
         $callback = function ($event) {
             if ($this->container->has(\VuFind\Log\Logger::class)) {
                 $log = $this->container->get(\VuFind\Log\Logger::class);
-                if (is_callable([$log, 'logException'])) {
+                if ($log instanceof \VuFind\Log\ExtendedLoggerInterface) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
                     // so use a dummy in that case.
@@ -345,8 +370,36 @@ class Bootstrapper
         $headers = $this->event->getResponse()->getHeaders();
         $cspHeaderGenerator = $this->container
             ->get(\VuFind\Security\CspHeaderGenerator::class);
-        if ($cspHeader = $cspHeaderGenerator->getHeader()) {
+        foreach ($cspHeaderGenerator->getHeaders() as $cspHeader) {
             $headers->addHeader($cspHeader);
         }
+    }
+
+    /**
+     * Set up rate limiter
+     *
+     * @return void
+     */
+    protected function initRateLimiter(): void
+    {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        $callback = function ($event) {
+            // Create rate limiter manager here so that we don't e.g. initialize the session too early:
+            $rateLimiterManager = $this->container->get(\VuFind\RateLimiter\RateLimiterManager::class);
+            if (!$rateLimiterManager->isEnabled()) {
+                return;
+            }
+            $result = $rateLimiterManager->check($event);
+            if (!$result['allow']) {
+                $response = $event->getResponse();
+                $response->setStatusCode(429);
+                $response->setContent($result['message']);
+                $event->stopPropagation(true);
+                return $response;
+            }
+        };
+        $this->events->attach('dispatch', $callback, 11000);
     }
 }

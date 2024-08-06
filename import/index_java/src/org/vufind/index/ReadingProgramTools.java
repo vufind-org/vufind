@@ -36,8 +36,6 @@ package org.vufind.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.VariableField;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Reading program logic courtesy of Chanel Wheeler

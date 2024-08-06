@@ -37,10 +37,28 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
 {
+    /**
+     * Standard setup method that runs before each test.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        // Setup config
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Content' => ['authors' => false], // turn off Wikipedia for testing
+                ],
+            ]
+        );
+    }
+
     /**
      * Test searching for an author in the author module
      *
@@ -57,8 +75,8 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // We should have some results:
         $this->assertMatchesRegularExpression(
-            "/Showing 1 - \d+ results for search 'shakespeare', query time: .*/",
-            trim($this->findCss($page, '.search-stats')->getText())
+            "/Showing 1 - \d+ results/",
+            trim($this->findCssAndGetText($page, '.search-stats'))
         );
         // We should be on the author results page:
         $this->assertStringEndsWith(
@@ -77,7 +95,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function authorPathsProvider(): array
+    public static function authorPathsProvider(): array
     {
         return [
             'home page' => ['/Author/Home'],

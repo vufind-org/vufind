@@ -60,22 +60,16 @@ class Params extends \VuFind\Search\Solr\Params
      * Pull the search parameters from the query and set up additional options using
      * a record driver representing a collection.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver    Record driver
+     * @param bool                              $hasSearch Is the user performing a search?
      *
      * @return void
      */
-    public function initFromRecordDriver($driver)
+    public function initFromRecordDriver($driver, bool $hasSearch = false)
     {
-        $this->collectionID = $driver->getUniqueID();
+        $this->collectionID = $driver->tryMethod('getCollectionSearchId') ?? $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
-            switch ($hierarchyDriver->getCollectionLinkType()) {
-                case 'All':
-                    $this->collectionField = 'hierarchy_parent_id';
-                    break;
-                case 'Top':
-                    $this->collectionField = 'hierarchy_top_id';
-                    break;
-            }
+            $this->collectionField = $hierarchyDriver->getCollectionField($hasSearch);
         }
 
         if (null === $this->collectionID) {

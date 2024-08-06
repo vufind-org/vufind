@@ -29,7 +29,10 @@
 
 namespace VuFindTest\Command\Util;
 
+use DateTime;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 use VuFind\Db\Table\Gateway;
 use VuFindConsole\Command\Util\AbstractExpireCommand;
 
@@ -44,6 +47,8 @@ use VuFindConsole\Command\Util\AbstractExpireCommand;
  */
 class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Name of class being tested
      *
@@ -52,11 +57,11 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $targetClass = AbstractExpireCommand::class;
 
     /**
-     * Name of a valid table class to test with
+     * Name of a valid service class (or interface) to test with
      *
      * @var string
      */
-    protected $validTableClass = \VuFind\Db\Table\AuthHash::class;
+    protected $validServiceClass = \VuFind\Db\Service\Feature\DeleteExpiredInterface::class;
 
     /**
      * Label to use for rows in help messages.
@@ -80,33 +85,14 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $expectedMinAge = 2;
 
     /**
-     * Test an unsupported table class.
-     *
-     * @return void
-     */
-    public function testUnsupportedTableClass()
-    {
-        $table = $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage(
-            $table::class . ' does not support deleteExpired()'
-        );
-        new $this->targetClass($table, 'foo');
-    }
-
-    /**
      * Test an illegal age parameter.
      *
      * @return void
      */
     public function testIllegalAgeInput()
     {
-        $table = $this->getMockBuilder($this->validTableClass)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $command = new $this->targetClass($table, 'foo');
+        $service = $this->createMock($this->validServiceClass);
+        $command = new $this->targetClass($service, 'foo');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['age' => $this->illegalAge]);
         $expectedMinAge = number_format($this->expectedMinAge, 1, '.', '');
@@ -124,14 +110,15 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessfulExpiration()
     {
-        $date = date('Y-m-d H:i:s');
-        $table = $this->getMockBuilder($this->validTableClass)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $table->expects($this->exactly(3))->method('deleteExpired')
-            ->withConsecutive([$date, 1000], [$date, 1000], [$date, 1000])
-            ->willReturnOnConsecutiveCalls(1000, 7, false);
-        $command = $this->getCommand($table, $date);
+        $date = new DateTime();
+        $service = $this->createMock($this->validServiceClass);
+        $this->expectConsecutiveCalls(
+            $service,
+            'deleteExpired',
+            [[$date, 1000], [$date, 1000], [$date, 1000]],
+            [1000, 7, 0]
+        );
+        $command = $this->getCommand($service, $date);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--sleep' => 1]);
         $response = $commandTester->getDisplay();
@@ -161,14 +148,12 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessfulNonExpiration()
     {
-        $date = date('Y-m-d H:i:s');
-        $table = $this->getMockBuilder($this->validTableClass)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $table->expects($this->once())->method('deleteExpired')
+        $date = new DateTime();
+        $service = $this->createMock($this->validServiceClass);
+        $service->expects($this->once())->method('deleteExpired')
             ->with($this->equalTo($date))
-            ->will($this->returnValue(0));
-        $command = $this->getCommand($table, $date);
+            ->willReturn(0);
+        $command = $this->getCommand($service, $date);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $response = $commandTester->getDisplay();
@@ -186,17 +171,17 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get the command class
      *
-     * @param Gateway $table Table to process
-     * @param string  $date  Expiration date threshold
+     * @param Gateway|DeleteExpiredInterface $service Table to process
+     * @param DateTime                       $date    Expiration date threshold
      *
      * @return MockObject&AbstractExpireCommand
      */
     protected function getCommand(
-        Gateway $table,
-        string $date
-    ): AbstractExpireCommand {
+        Gateway|DeleteExpiredInterface $service,
+        DateTime $date
+    ): MockObject&AbstractExpireCommand {
         $command = $this->getMockBuilder($this->targetClass)
-            ->setConstructorArgs([$table, 'foo'])
+            ->setConstructorArgs([$service, 'foo'])
             ->onlyMethods(['getDateThreshold'])
             ->getMock();
         $command->expects($this->once())

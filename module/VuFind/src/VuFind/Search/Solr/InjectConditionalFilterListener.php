@@ -88,7 +88,7 @@ class InjectConditionalFilterListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
@@ -115,7 +115,7 @@ class InjectConditionalFilterListener
 
         // if the filter condition starts with a minus (-), it should not match
         // to get the filter applied
-        if (substr($filterCondition, 0, 1) == '-') {
+        if (str_starts_with($filterCondition, '-')) {
             if (!$authService->isGranted(substr($filterCondition, 1))) {
                 $this->filterList[] = $filter;
             }

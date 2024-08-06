@@ -42,6 +42,8 @@ use function count;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
+
     /**
      * Advanced search operators
      *
@@ -82,15 +84,10 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $searchSettings->General->default_limit;
         }
         if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions
-                = explode(',', $searchSettings->General->limit_options);
+            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
         }
 
         // Load search preferences:
-        if (isset($searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $searchSettings->General->retain_filters_by_default;
-        }
         if (isset($searchSettings->General->default_filters)) {
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
@@ -161,6 +158,28 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'primo-advanced';
+    }
+
+    /**
+     * Return the route name for the "cites" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitesAction()
+    {
+        return 'primo-cites';
+    }
+
+    /**
+     * Return the route name for the "cited by" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitedByAction()
+    {
+        return 'primo-citedby';
     }
 
     /**

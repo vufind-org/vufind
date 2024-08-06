@@ -317,11 +317,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'AND',
                     'values' => ['barPrimo'],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -355,16 +357,18 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             [
-                'pcAvailability' => [
-                    'facetOp' => 'AND',
-                    'values' => ['false'],
-                ],
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'OR',
                     'values' => [
                         'barPrimo',
                         'bazPrimo',
                     ],
+                ],
+                [
+                    'field' => 'pcAvailability',
+                    'facetOp' => 'AND',
+                    'values' => ['false'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -383,7 +387,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['false'],
                 ],
@@ -403,7 +408,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -424,7 +430,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['false'],
                 ],
@@ -452,14 +459,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $primoParams = $params->getBackendParameters()->get('params_Primo')[0];
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'OR',
                     'values' => [
                         'double1',
                         'double2',
                     ],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -476,14 +485,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'NOT',
                     'values' => [
                         'double1',
                         'double2',
                     ],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -499,7 +510,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -520,7 +532,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -556,11 +569,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['publishDate:[2020 TO 2022]'], $solrParams->get('fq'));
         $this->assertEquals(
             [
-                'creationdate' => [
+                [
+                    'field' => 'creationdate',
                     'facetOp' => 'AND',
                     'values' => ['[2020 TO 2022]'],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -604,11 +619,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'AND',
                     'values' => ['barPrimo'],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],
@@ -686,7 +703,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ParamBag::class, $primoParams);
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
                     'values' => ['true'],
                 ],

@@ -76,7 +76,8 @@ class CookieConsentFactory implements FactoryInterface
             $config->toArray(),
             $consentConfig['CookieConsent'] ?? [],
             $container->get(\VuFind\Cookie\CookieManager::class),
-            $container->get(\VuFind\Date\Converter::class)
+            $container->get(\VuFind\Date\Converter::class),
+            $container->get(\VuFind\Auth\LoginTokenManager::class)
         );
     }
 }

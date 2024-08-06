@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Moravian Library 2022.
+ * Copyright (C) Moravian Library 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,10 +31,10 @@ declare(strict_types=1);
 
 namespace VuFindAdmin\Controller;
 
-use Laminas\Db\Sql\Select;
-use VuFind\Db\Table\Feedback;
+use VuFind\Db\Service\FeedbackServiceInterface;
 
 use function count;
+use function intval;
 use function is_array;
 
 /**
@@ -53,15 +53,16 @@ class FeedbackController extends AbstractAdmin
      *
      * @param string $param          A key to check the url params for
      * @param bool   $prioritizePost If true, check the POST params first
+     * @param mixed  $default        Default value if no value found
      *
-     * @return string
+     * @return string|string[]
      */
-    protected function getParam($param, $prioritizePost = false)
+    protected function getParam($param, $prioritizePost = false, $default = null)
     {
         $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
         $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
         return $this->params()->$primary($param)
-            ?? $this->params()->$secondary($param);
+            ?? $this->params()->$secondary($param, $default);
     }
 
     /**
@@ -71,19 +72,19 @@ class FeedbackController extends AbstractAdmin
      */
     public function homeAction()
     {
-        $feedbackTable = $this->getFeedbackTable();
-        $feedback = $feedbackTable->getFeedbackByFilter(
+        $feedbackService = $this->getDbService(FeedbackServiceInterface::class);
+        $feedback = $feedbackService->getFeedbackPaginator(
             $this->convertFilter($this->getParam('form_name')),
             $this->convertFilter($this->getParam('site_url')),
             $this->convertFilter($this->getParam('status')),
-            $this->getParam('page')
+            intval($this->getParam('page', default: '1'))
         );
         $view = $this->createViewModel(
             [
                 'feedback' => $feedback,
                 'statuses' => $this->getStatuses(),
-                'uniqueForms' => $this->getUniqueColumn('form_name'),
-                'uniqueSites' => $this->getUniqueColumn('site_url'),
+                'uniqueForms' => $feedbackService->getUniqueColumn('form_name'),
+                'uniqueSites' => $feedbackService->getUniqueColumn('site_url'),
                 'params'
                     => $this->params()->fromQuery() + $this->params()->fromPost(),
             ]
@@ -100,7 +101,6 @@ class FeedbackController extends AbstractAdmin
     public function deleteAction()
     {
         $confirm = $this->getParam('confirm', true);
-        $feedbackTable = $this->getFeedbackTable();
         $originUrl = $this->url()->fromRoute('admin/feedback');
         $formName = $this->getParam('form_name', true);
         $siteUrl = $this->getParam('site_url', true);
@@ -125,7 +125,7 @@ class FeedbackController extends AbstractAdmin
         if (!$confirm) {
             return $this->confirmDelete($ids, $originUrl, $newUrl);
         }
-        $delete = $feedbackTable->deleteByIdArray($ids);
+        $delete = $this->getDbService(FeedbackServiceInterface::class)->deleteByIdArray($ids);
         if (0 == $delete) {
             $this->flashMessenger()->addMessage('feedback_delete_failure', 'error');
             return $this->redirect()->toUrl($originUrl);
@@ -217,12 +217,19 @@ class FeedbackController extends AbstractAdmin
      */
     public function updateStatusAction()
     {
-        $feedbackTable = $this->getFeedbackTable();
         $newStatus = $this->getParam('new_status', true);
-        $id = $this->getParam('id', true);
-        $feedback = $feedbackTable->select(['id' => $id])->current();
-        $feedback->status = $newStatus;
-        $success = $feedback->save();
+        $id = intval($this->getParam('id', true));
+        $success = false;
+        $feedbackService = $this->getDbService(FeedbackServiceInterface::class);
+        try {
+            $feedback = $feedbackService->getFeedbackById($id);
+            if ($feedback) {
+                $feedback->setStatus($newStatus);
+                $feedbackService->persistEntity($feedback);
+                $success = true;
+            }
+        } catch (\Exception $e) {
+        }
         if ($success) {
             $this->flashMessenger()->addMessage(
                 'feedback_status_update_success',
@@ -247,36 +254,6 @@ class FeedbackController extends AbstractAdmin
                 ),
             ]
         );
-    }
-
-    /**
-     * Get Feedback table
-     *
-     * @return Feedback
-     */
-    protected function getFeedbackTable(): Feedback
-    {
-        return $this->getTable(Feedback::class);
-    }
-
-    /**
-     * Get unique values for a column
-     *
-     * @param string $column Column name
-     *
-     * @return array
-     */
-    protected function getUniqueColumn(string $column): array
-    {
-        $feedbackTable = $this->getFeedbackTable();
-        $feedback = $feedbackTable->select(
-            function (Select $select) use ($column) {
-                $select->columns(['id', $column]);
-                $select->order($column);
-            }
-        );
-        $feedbackArray = $feedback->toArray();
-        return array_unique(array_column($feedbackArray, $column));
     }
 
     /**

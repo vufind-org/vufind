@@ -138,7 +138,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         \Laminas\Http\PhpEnvironment\Request $request
     ) {
         $this->url = $config->Matomo->url ?? '';
-        if ($this->url && substr($this->url, -1) != '/') {
+        if ($this->url && !str_ends_with($this->url, '/')) {
             $this->url .= '/';
         }
         $this->siteId = $config->Matomo->site_id ?? 1;
@@ -505,9 +505,9 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $routeMatch = $this->router->match($this->request);
         if (
             $routeMatch
-            && substr($routeMatch->getMatchedRouteName(), -8) === '-ajaxtab'
-            && null !== ($pos = strrpos($path, '/AjaxTab'))
             && ($tab = $this->request->getPost('tab'))
+            && str_ends_with($routeMatch->getMatchedRouteName(), '-ajaxtab')
+            && null !== ($pos = strrpos($path, '/AjaxTab'))
         ) {
             $path = substr_replace($path, $tab, $pos + 1, 7);
         }

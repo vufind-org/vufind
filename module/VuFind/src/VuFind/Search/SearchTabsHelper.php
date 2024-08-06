@@ -196,8 +196,8 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      * Check if given hidden filters match with the hidden filters from configuration
      *
      * @param string $class         Search class ID
-     * @param string $hiddenFilters Hidden filters
-     * @param string $configFilters Filters from filter configuration
+     * @param array  $hiddenFilters Hidden filters
+     * @param array  $configFilters Filters from filter configuration
      *
      * @return bool
      */

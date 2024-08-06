@@ -78,7 +78,7 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
     public function homeAction()
     {
         // Load different configurations depending on whether we're logged in or not:
-        if ($this->authManager->isLoggedIn()) {
+        if ($this->authManager->getIdentity()) {
             $controller = $this->config->Site->defaultLoggedInModule ?? 'MyResearch';
             $actionConfig = 'defaultLoggedInAction';
         } else {

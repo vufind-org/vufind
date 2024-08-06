@@ -43,7 +43,6 @@ use function count;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -87,7 +86,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
 
         // Go to second page:
-        $this->clickCss($page, '.pagination li > a');
+        $this->clickCss($page, '.pagination li:not(.active) > a');
         $this->waitForPageLoad($page);
         $this->assertResultTitles($page, 20, 'Test Publication 20021', 'Test Publication 20040');
 
@@ -100,6 +99,79 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
         // Check that url no longer contains the page parameter:
         $this->assertStringNotContainsString('&page', $this->getCurrentQueryString());
+
+        // Change sort back to relevance (first option) and verify:
+        $this->clickCss($page, $this->sortControlSelector . ' option');
+        $this->waitForPageLoad($page);
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
+    }
+
+    /**
+     * Test the sort control
+     *
+     * @return void
+     */
+    public function testHiddenSort(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_sort' => 'title',
+                    ],
+                    'Sorting' => [
+                        'title' => 'Title',
+                    ],
+                    'HiddenSorting' => [
+                        'pattern' => [
+                            '.* desc',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=title');
+        $page = $session->getPage();
+
+        // Check expected first and last record on first page:
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
+
+        // Change sort to title reversed (hidden option) and verify:
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=title desc');
+        $page = $session->getPage();
+
+        // Check expected first and last record:
+        $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
+    }
+
+    /**
+     * Test sort stickiness
+     *
+     * @return void
+     */
+    public function testSortStickiness(): void
+    {
+        // Call number has a custom default sort; if we do a regular search and leave
+        // the sort at default, then do a call number search, we expect the sort to
+        // change accordingly. We also expect it to change back if we do a non-call-no
+        // search.
+        $page = $this->performSearch('*:*');
+        $this->assertSelectedSort($page, 'relevance');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'callnumber-sort');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'relevance');
+
+        // However, if we choose a non-default sort, we expect it to stick across
+        // all search types:
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, 2);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'year asc');
     }
 
     /**

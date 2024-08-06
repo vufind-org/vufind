@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
+use VuFind\Db\Entity\ShortlinksEntityInterface;
+
 /**
  * Row Definition for shortlinks
  *
@@ -37,8 +40,13 @@ namespace VuFind\Db\Row;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int    $id
+ * @property string $path
+ * @property string $hash
+ * @property string $created
  */
-class Shortlinks extends RowGateway
+class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntityInterface
 {
     /**
      * Constructor
@@ -48,5 +56,85 @@ class Shortlinks extends RowGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'shortlinks', $adapter);
+    }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
+     * Get the path of the URL.
+     *
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path ?? '';
+    }
+
+    /**
+     * Set the path (e.g. /Search/Results?lookfor=foo) of the URL being shortened;
+     * shortened URLs are always assumed to be within the hostname where VuFind is running.
+     *
+     * @param string $path Path
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setPath(string $path): ShortlinksEntityInterface
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * Get shortlinks hash.
+     *
+     * @return ?string
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash ?? null;
+    }
+
+    /**
+     * Set shortlinks hash.
+     *
+     * @param ?string $hash Shortlinks hash
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setHash(?string $hash): ShortlinksEntityInterface
+    {
+        $this->hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get creation timestamp.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set creation timestamp.
+     *
+     * @param DateTime $dateTime Creation timestamp
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): ShortlinksEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
     }
 }

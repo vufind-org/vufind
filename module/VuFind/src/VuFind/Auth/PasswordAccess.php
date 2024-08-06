@@ -30,7 +30,7 @@
 
 namespace VuFind\Auth;
 
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function in_array;
@@ -72,18 +72,18 @@ class PasswordAccess extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
         $config = $this->getConfig()->toArray();
-        $req_password = trim($request->getPost()->get('password'));
-
-        if (!in_array($req_password, $config['PasswordAccess']['access_user'])) {
+        $req_password = trim($request->getPost()->get('password', ''));
+        $accessConfig = $config['PasswordAccess']['access_user'] ?? [];
+        if (!in_array($req_password, $accessConfig)) {
             throw new AuthException('authentication_error_invalid');
         }
 
-        $userMap = array_flip($config['PasswordAccess']['access_user']);
-        return $this->getUserTable()->getByUsername($userMap[$req_password]);
+        $userMap = array_flip($accessConfig);
+        return $this->getOrCreateUserByUsername($userMap[$req_password]);
     }
 }

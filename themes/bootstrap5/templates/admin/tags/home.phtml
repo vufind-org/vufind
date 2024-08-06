@@ -1,0 +1,20 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Tag Management'));
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->translate('Tag Management')?></h2>
+
+  <?=$this->render('admin/tags/menu.phtml')?>
+
+  <h3><?=$this->translate('Statistics')?></h3>
+  <table class="table table-striped">
+    <tr><th><?=$this->transEsc('total_users')?></th><th><?=$this->transEsc('total_resources')?></th><th><?=$this->transEsc('total_tags')?></th><th><?=$this->transEsc('unique_tags')?></th><th><?=$this->transEsc('anonymous_tags')?></th></tr>
+    <tr><td><?=$statistics['users']?></td><td><?=$statistics['resources']?></td><td><?=$statistics['total']?></td><td><?=$statistics['unique']?></td><td><?=$statistics['anonymous']?></td></tr>
+  </table>
+
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render('admin/menu.phtml')?>
+</div>

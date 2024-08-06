@@ -97,14 +97,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('building:main');
         $this->assertEquals(
             [
-                'format' => [
+                [
+                    'field' => 'format',
                     'facetOp' => 'OR',
                     'values' => [
                         'foo',
                         'bar',
                     ],
                 ],
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'main',
@@ -118,7 +120,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('building:main');
         $this->assertEquals(
             [
-                'format' => [
+                [
+                    'field' => 'format',
                     'facetOp' => 'OR',
                     'values' => [
                         'foo',
@@ -134,18 +137,20 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addHiddenFilter('building:sub');
         $this->assertEquals(
             [
-                'format' => [
-                    'facetOp' => 'OR',
-                    'values' => [
-                        'foo',
-                        'bar',
-                    ],
-                ],
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
                         'main',
+                    ],
+                ],
+                [
+                    'field' => 'format',
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'foo',
+                        'bar',
                     ],
                 ],
             ],
@@ -156,7 +161,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeAllFilters('~format');
         $this->assertEquals(
             [
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
@@ -171,7 +177,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('building:main');
         $this->assertEquals(
             [
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',

@@ -99,7 +99,7 @@ class Connection
     {
         if (is_dir($cacheDir) && is_writable($cacheDir)) {
             $this->cachePath = $cacheDir;
-            if (!(substr($this->cachePath, -1) == '/')) {
+            if (!str_ends_with($this->cachePath, '/')) {
                 $this->cachePath .= '/';
             }
         }

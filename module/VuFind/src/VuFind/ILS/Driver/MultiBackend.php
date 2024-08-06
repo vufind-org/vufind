@@ -32,7 +32,6 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 
-use function array_key_exists;
 use function call_user_func_array;
 use function func_get_args;
 use function in_array;
@@ -54,7 +53,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class MultiBackend extends AbstractMultiDriver
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -66,13 +65,6 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public const HOLD_ID_FIELDS = ['id', 'item_id', 'cat_username'];
 
     /**
-     * The array of configured driver names.
-     *
-     * @var string[]
-     */
-    protected $drivers = [];
-
-    /**
      * The default driver to use
      *
      * @var string
@@ -80,46 +72,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     protected $defaultDriver;
 
     /**
-     * The path to the driver configurations relative to the config path
-     *
-     * @var string
-     */
-    protected $driversConfigPath;
-
-    /**
-     * The array of cached drivers
-     *
-     * @var object[]
-     */
-    protected $driverCache = [];
-
-    /**
-     * The array of driver configuration options.
-     *
-     * @var string[]
-     */
-    protected $config = [];
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * ILS authenticator
      *
      * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuth;
-
-    /**
-     * ILS driver manager
-     *
-     * @var PluginManager
-     */
-    protected $driverManager;
 
     /**
      * An array of methods that should determine source from a specific parameter
@@ -171,21 +128,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         \VuFind\Auth\ILSAuthenticator $ilsAuth,
         PluginManager $dm
     ) {
-        $this->configLoader = $configLoader;
+        parent::__construct($configLoader, $dm);
         $this->ilsAuth = $ilsAuth;
-        $this->driverManager = $dm;
-    }
-
-    /**
-     * Set the driver configuration.
-     *
-     * @param Config $config The configuration to be set
-     *
-     * @return void
-     */
-    public function setConfig($config)
-    {
-        $this->config = $config;
     }
 
     /**
@@ -199,13 +143,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function init()
     {
-        if (empty($this->config)) {
-            throw new ILSException('Configuration needs to be set.');
-        }
-        $this->drivers = $this->config['Drivers'];
+        parent::init();
         $this->defaultDriver = $this->config['General']['default_driver'] ?? null;
-        $this->driversConfigPath
-            = $this->config['General']['drivers_config_path'] ?? null;
     }
 
     /**
@@ -227,7 +166,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             $status = $driver->getStatus($this->getLocalId($id));
             return $this->addIdPrefixes($status, $source);
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
@@ -330,7 +269,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             );
             return $this->addIdPrefixes($holdings, $source);
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
@@ -352,7 +291,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver = $this->getDriver($source)) {
             return $driver->getPurchaseHistory($this->getLocalId($id));
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
@@ -500,7 +439,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $source
             );
         }
-        // Return an empy array if driver is not available; cat_username can point
+        // Return an empty array if driver is not available; cat_username can point
         // to an ILS that's not currently configured.
         return [];
     }
@@ -1231,7 +1170,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @param string $source The source name of the driver to get.
      *
-     * @return mixed  On success a driver object, otherwise null.
+     * @return mixed On success a driver object, otherwise null.
      */
     protected function getDriver($source)
     {
@@ -1242,69 +1181,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $source = $this->defaultDriver;
             }
         }
-
-        // Check for a cached driver
-        if (!array_key_exists($source, $this->driverCache)) {
-            // Create the driver
-            $this->driverCache[$source] = $this->createDriver($source);
-            if (null === $this->driverCache[$source]) {
-                $this->debug("Could not initialize driver for source '$source'");
-                return null;
-            }
-        }
-        return $this->driverCache[$source];
-    }
-
-    /**
-     * Create a driver for the given source.
-     *
-     * @param string $source Source id for the driver.
-     *
-     * @return mixed On success a driver object, otherwise null.
-     */
-    protected function createDriver($source)
-    {
-        if (!isset($this->drivers[$source])) {
-            return null;
-        }
-        $driver = $this->drivers[$source];
-        $config = $this->getDriverConfig($source);
-        if (!$config) {
-            $this->error("No configuration found for source '$source'");
-            return null;
-        }
-        $driverInst = clone $this->driverManager->get($driver);
-        $driverInst->setConfig($config);
-        $driverInst->init();
-        return $driverInst;
-    }
-
-    /**
-     * Get configuration for the ILS driver. We will load an .ini file named
-     * after the driver class and number if it exists;
-     * otherwise we will return an empty array.
-     *
-     * @param string $source The source id to use for determining the
-     * configuration file
-     *
-     * @return array   The configuration of the driver
-     */
-    protected function getDriverConfig($source)
-    {
-        // Determine config file name based on class name:
-        try {
-            $path = empty($this->driversConfigPath)
-                ? $source
-                : $this->driversConfigPath . '/' . $source;
-
-            $config = $this->configLoader->get($path);
-        } catch (\Laminas\Config\Exception\RuntimeException $e) {
-            // Configuration loading failed; probably means file does not
-            // exist -- just return an empty array in that case:
-            $this->error("Could not load config for $source");
-            return [];
-        }
-        return $config->toArray();
+        return parent::getDriver($source);
     }
 
     /**
@@ -1398,26 +1275,6 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             }
         }
         return is_array($data) ? $array : $array[0];
-    }
-
-    /**
-     * Check whether the given driver supports the given method
-     *
-     * @param object $driver ILS Driver
-     * @param string $method Method name
-     * @param array  $params Array of passed parameters
-     *
-     * @return bool
-     */
-    protected function driverSupportsMethod($driver, $method, $params = null)
-    {
-        if (is_callable([$driver, $method])) {
-            if (method_exists($driver, 'supportsMethod')) {
-                return $driver->supportsMethod($method, $params ?: []);
-            }
-            return true;
-        }
-        return false;
     }
 
     /**

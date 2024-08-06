@@ -205,7 +205,7 @@ class Wikipedia implements TranslatorAwareInterface
                 'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia',
             ];
             foreach ($infoboxTags as $tag) {
-                if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
+                if (str_starts_with($m, '{' . $tag)) {
                     // We found an infobox!!
                     return '{' . $m . '}';
                 }
@@ -274,8 +274,8 @@ class Wikipedia implements TranslatorAwareInterface
                 foreach ((array)$nm as $n) {
                     // If it's a file link get rid of it
                     if (
-                        strtolower(substr($n, 0, 7)) == '[[file:'
-                        || strtolower(substr($n, 0, 8)) == '[[image:'
+                        str_starts_with(strtolower($n), '[[file:')
+                        || str_starts_with(strtolower($n), '[[image:')
                     ) {
                         $body = str_replace($n, '', $body);
                     }

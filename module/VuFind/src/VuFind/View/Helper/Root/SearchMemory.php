@@ -33,8 +33,6 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\Search\Memory;
 
-use function strlen;
-
 /**
  * View helper for remembering recent user searches/parameters.
  *
@@ -182,9 +180,8 @@ class SearchMemory extends AbstractHelper
         // different backend, we don't want to display irrelevant filters. If there
         // is a backend mismatch, don't initialize the parameter object!
         if ($lastUrl) {
-            $expectedPath
-                = $this->view->url($params->getOptions()->getSearchAction());
-            if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
+            $expectedPath = $this->view->url($params->getOptions()->getSearchAction());
+            if (str_starts_with($lastUrl, $expectedPath)) {
                 $params->initFromRequest($request);
             }
         }

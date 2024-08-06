@@ -35,7 +35,7 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
-use VuFind\ILS\Logic\ItemStatus;
+use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Marc\MarcReader;
 
 use function count;
@@ -248,8 +248,8 @@ class Alma extends AbstractBase implements
             $errorMsg = "Alma error for $method request '$url' (status code"
                 . " $statusCode): $almaErrorMsg";
             $this->logError(
-                $errorMsg . '. GET params: ' . var_export($paramsGet, true)
-                . '. POST params: ' . var_export($paramsPost, true)
+                $errorMsg . '. GET params: ' . $this->varDump($paramsGet)
+                . '. POST params: ' . $this->varDump($paramsPost)
                 . '. Result body: ' . $result->getBody()
             );
             throw new ILSException($errorMsg, $statusCode);
@@ -297,8 +297,8 @@ class Alma extends AbstractBase implements
         // Normal check for availability if no mapping found above:
         if (null === $available) {
             $available = (string)$item->item_data->base_status === '1'
-                ? ItemStatus::STATUS_AVAILABLE
-                : ItemStatus::STATUS_UNAVAILABLE;
+                ? AvailabilityStatusInterface::STATUS_AVAILABLE
+                : AvailabilityStatusInterface::STATUS_UNAVAILABLE;
         }
 
         return [$available, $status];
@@ -323,13 +323,13 @@ class Alma extends AbstractBase implements
         if (isset($parts[1])) {
             switch ($parts[1]) {
                 case 'unavailable':
-                    $available = ItemStatus::STATUS_UNAVAILABLE;
+                    $available = AvailabilityStatusInterface::STATUS_UNAVAILABLE;
                     break;
                 case 'uncertain':
-                    $available = ItemStatus::STATUS_UNCERTAIN;
+                    $available = AvailabilityStatusInterface::STATUS_UNCERTAIN;
                     break;
                 default:
-                    $available = ItemStatus::STATUS_AVAILABLE;
+                    $available = AvailabilityStatusInterface::STATUS_AVAILABLE;
                     break;
             }
         }
@@ -1685,7 +1685,7 @@ class Alma extends AbstractBase implements
     {
         // Remove trailing Z from end of date
         // e.g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
-        if (!str_contains($date, 'T') && substr($date, -1) === 'Z') {
+        if (!str_contains($date, 'T') && str_ends_with($date, 'Z')) {
             $date = substr($date, 0, -1);
         }
 

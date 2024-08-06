@@ -32,6 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use InvalidArgumentException;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
+use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\XCNCIP2;
 
 /**
@@ -424,15 +425,15 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'lookupItemSet.xml',
             'result' => [
                 [
-                    'status' => 'Available on shelf', 'location' => null,
-                    'callnumber' => '621.3 ANG', 'availability' => true,
+                    'status' => 'Not For Loan', 'location' => null,
+                    'callnumber' => '621.3 ANG', 'availability' => false,
                     'reserve' => 'N', 'id' => '123456',
                     'item_id' => 'MZK01000000421-MZK50000000421000010',
                     'bib_id' => 'MZK01000000421', 'duedate' => '', 'volume' => '',
                     'number' => '', 'is_holdable' => false, 'addLink' => false,
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
-                    'item_agency_id' => 'My university', 'holdtype' => 'Hold',
+                    'item_agency_id' => 'My university', 'holdtype' => 'Recall',
                     'barcode' => 'MZK01000000421-MZK50000000421000010',
                 ], [
                     'status' => 'Available On Shelf', 'location' => null,
@@ -445,15 +446,15 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
                 ], [
-                    'status' => 'Available On Shelf',
+                    'status' => 'In Library Use Only',
                     'location' => 'Some holding location',
-                    'callnumber' => '2-0997.767,2', 'availability' => true,
+                    'callnumber' => '2-0997.767,2', 'availability' => false,
                     'reserve' => 'N', 'id' => '123456',
                     'item_id' => 'MZK01000000425-MZK50000000425000020',
                     'bib_id' => 'MZK01000000425', 'item_agency_id' => 'Test agency',
                     'duedate' => '', 'volume' => '', 'number' => '',
                     'barcode' => 'Unknown barcode', 'is_holdable' => true,
-                    'addLink' => true, 'holdtype' => 'Hold',
+                    'addLink' => true, 'holdtype' => 'Recall',
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
                     'collection_desc' => 'Some holding sublocation',
@@ -770,7 +771,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test disable renewals configutaion
+     * Test disable renewals configuration
      *
      * @return void
      */
@@ -782,7 +783,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'agency' => 'Test agency',
                 'pickupLocationsFile' => 'XCNCIP2_locations.txt',
                 'disableRenewals' => true,
-            ], 'NCIP' => [],
+            ],
         ];
         foreach ($this->notRenewableTransactionsTests as $test) {
             $this->configureDriver($config);
@@ -978,8 +979,20 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetHolding()
     {
+        $config = [
+            'Catalog' => [
+                'url' => 'https://test.ncip.example',
+                'consortium' => false,
+                'agency' => 'Test agency',
+                'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                'itemUseRestrictionTypesForStatus' => [
+                    'In Library Use Only',
+                    'Not For Loan',
+                ],
+            ],
+        ];
         foreach ($this->holdingTests as $test) {
-            $this->configureDriver();
+            $this->configureDriver($config);
             $this->mockResponse($test['file']);
             $holdings = $this->driver->getHolding('123456');
             $this->assertEquals(
@@ -1015,10 +1028,10 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         // Test reading pickup locations from NCIP responder
         $this->configureDriver(
             [
-            'Catalog' => [
-                'url' => 'https://test.ncip.example', 'consortium' => false,
-                'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
-            ], 'NCIP' => [],
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example', 'consortium' => false,
+                    'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
+                ],
             ]
         );
         $this->mockResponse('LookupAgencyResponse.xml');
@@ -1042,7 +1055,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'url' => 'https://test.ncip.example', 'consortium' => false,
                     'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
                 ],
-                'NCIP' => [],
             ]
         );
         $this->mockResponse('LookupAgencyResponseWithoutLocations.xml');
@@ -1211,7 +1223,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'agency' => ['Test agency'],
                         'pickupLocationsFile' => 'XCNCIP2_locations.txt',
                         'fromAgency' => 'My portal',
-                    ], 'NCIP' => [],
+                    ],
                 ], 'params' => [['1'], null, 'Test agency'],
                 'result' => 'LookupItemSetRequest.xml',
             ], '2' => [
@@ -1235,7 +1247,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'agency' => ['default agency'],
                         'pickupLocationsFile' => 'XCNCIP2_locations.txt',
                         'fromAgency' => 'My portal',
-                    ], 'NCIP' => [],
+                    ],
                 ], 'params' => [
                     'username', 'password', 'patron agency', '', 'rq1', 'Hold',
                     'item1', '12345',
@@ -1251,7 +1263,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'agency' => ['default agency'],
                         'pickupLocationsFile' => 'XCNCIP2_locations.txt',
                         'fromAgency' => 'My portal',
-                    ], 'NCIP' => [],
+                    ],
                 ],
                 'params' => ['username', 'password', 'item1', '', 'patron agency'],
                 'result' => 'RenewItemDefaultAgencyRequest.xml',
@@ -1267,7 +1279,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'agency' => ['Test agency'],
                         'pickupLocationsFile' => 'XCNCIP2_locations.txt',
                         'fromAgency' => 'My portal',
-                    ], 'NCIP' => [],
+                    ],
                 ], 'params' => [
                     'username', '', 'bib1', 'item1', 'patron agency', 'item agency',
                     'Hold', 'Item', '2020-12-20T00:00:00.000Z', null, 'patron1',
@@ -1287,7 +1299,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'agency' => ['Test agency'],
                         'pickupLocationsFile' => 'XCNCIP2_locations.txt',
                         'fromAgency' => 'My portal',
-                    ], 'NCIP' => [],
+                    ],
                 ], 'params' => ['item1', 'Accession Number'],
                 'result' => 'LookupItemRequest.xml',
             ],
@@ -1333,7 +1345,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $method->setAccessible(true);
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No identifiers for CancelRequest');
-        $request = $method->invokeArgs(
+        $method->invokeArgs(
             $this->driver,
             [
                 'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
@@ -1443,7 +1455,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'agency' => 'Test agency',
                 'pickupLocationsFile' => 'XCNCIP2_locations.txt',
                 'otherAcceptedHttpStatusCodes' => '400,404',
-            ], 'NCIP' => [],
+            ],
         ];
         $this->configureDriver($config);
         $this->mockResponse('RenewItemResponse404.xml');
@@ -1475,7 +1487,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'url' => 'https://test.ncip.example', 'consortium' => false,
                 'agency' => 'Test agency',
                 'pickupLocationsFile' => 'XCNCIP2_locations.txt',
-            ], 'NCIP' => [],
+            ],
         ];
         $this->configureDriver($config);
         $this->mockResponse('RenewItemResponse404.xml');
@@ -1483,7 +1495,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->expectExceptionMessage(
             'HTTP error: ProblemType: Item Not Renewable, ProblemDetail: No active registration.'
         );
-        $renew = $this->driver->renewMyItems(
+        $this->driver->renewMyItems(
             [
                 'patron' => [
                     'cat_username' => 'my_login',
@@ -1550,6 +1562,66 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test init method
+     *
+     * @return void
+     * @throws ILSException
+     */
+    public function testInitDriver()
+    {
+        $driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $driver->setConfig(
+            [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => 'Test agency',
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'itemUseRestrictionTypesForStatus' => 'In Library Use Only',
+                ],
+            ]
+        );
+        $driver->init();
+        $property = new \ReflectionProperty(\VuFind\ILS\Driver\XCNCIP2::class, 'itemUseRestrictionTypesForStatus');
+        $property->setAccessible(true);
+        $this->assertEquals(['In Library Use Only'], $property->getValue($driver));
+
+        $driver->setConfig(
+            [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'agency' => 'Test agency',
+                ],
+            ]
+        );
+        $driver->init();
+        $driver->setConfig(
+            [
+                'Catalog' => [
+                    'agency' => 'Test agency',
+                ],
+            ]
+        );
+        try {
+            $this->expectException(ILSException::class);
+            $this->expectExceptionMessage('Missing Catalog/url config setting.');
+            $driver->init();
+        } catch (ILSException) {
+            // No action - we need to pass otherwise the next test is not run
+        }
+        $driver->setConfig(
+            [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                ],
+            ]
+        );
+        $this->expectException(ILSException::class);
+        $this->expectExceptionMessage('Missing Catalog/agency config setting.');
+        $driver->init();
+    }
+
+    /**
      * Mock fixture as HTTP client response
      *
      * @param string|array|null $fixture Fixture file
@@ -1606,7 +1678,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'url' => 'https://test.ncip.example', 'consortium' => false,
                     'agency' => 'Test agency',
                     'pickupLocationsFile' => 'XCNCIP2_locations.txt',
-                ], 'NCIP' => [],
+                ],
             ]
         );
         $this->driver->init();

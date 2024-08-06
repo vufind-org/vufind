@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -63,6 +62,24 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Start a session, perform a combined search, and return the resulting page.
+     *
+     * @param string $query Combined search query to perform.
+     *
+     * @return Element
+     */
+    protected function performCombinedSearch(string $query): Element
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
      * Several different methods perform the same query against different
      * configurations of the combined feature; this support method makes a
      * standard set of assertions against the final results.
@@ -81,7 +98,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($expectedResults as $container => $title) {
             $this->assertEquals(
                 $title,
-                $this->findCss($page, "$container a.title")->getText()
+                $this->findCssAndGetText($page, "$container a.title")
             );
             // Check for sample driver location/call number in output (this will
             // only appear after AJAX returns):
@@ -89,11 +106,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $this->unFindCss($page, '.location.ajax-availability');
             $this->assertEquals(
                 'A1234.567',
-                $this->findCss($page, "$container .callnumber")->getText()
+                $this->findCssAndGetText($page, "$container .callnumber")
             );
             $this->assertEquals(
                 '3rd Floor Main Library',
-                $this->findCss($page, "$container .location")->getText()
+                $this->findCssAndGetText($page, "$container .location")
             );
         }
     }
@@ -109,13 +126,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $this->getCombinedIniOverrides()],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->unFindCss($page, '.fa-spinner.icon--spin');
         $this->assertResultsForDefaultQuery($page);
     }
@@ -190,13 +201,24 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $config],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
+     * Test that combined results work in mixed AJAX mode when Explain is turned on.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsMixedAjaxWithExplain(): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:two']['ajax'] = true;
+        $this->changeConfigs(
+            ['combined' => $config, 'searches' => ['Explain' => ['enabled' => true]]],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -213,13 +235,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $config],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -251,22 +267,16 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('*:*');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('*:*');
         // Whether the combined column was loaded inline or via AJAX, it should
         // now include a DOI link:
         $this->assertStringStartsWith(
             'Demonstrating DOI link for 10.1234/FAKETYFAKE1',
-            $this->findCss($page, '#combined_Solr____one .doiLink a')->getText()
+            $this->findCssAndGetText($page, '#combined_Solr____one .doiLink a')
         );
         $this->assertStringStartsWith(
             'Demonstrating DOI link for 10.1234/FAKETYFAKE2',
-            $this->findCss($page, '#combined_Solr____two .doiLink a')->getText()
+            $this->findCssAndGetText($page, '#combined_Solr____two .doiLink a')
         );
     }
 }

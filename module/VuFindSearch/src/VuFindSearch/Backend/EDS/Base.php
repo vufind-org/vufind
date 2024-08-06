@@ -133,20 +133,6 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Print a message if debug is enabled.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     *
-     * @deprecated Use $this->debug function.
-     */
-    protected function debugPrint($msg)
-    {
-        $this->debug($msg);
-    }
-
-    /**
      * Obtain edsapi search critera and application related settings
      *
      * @param string $authenticationToken Authentication token
@@ -296,7 +282,7 @@ abstract class Base implements LoggerAwareInterface
         $json = $method === 'GET' ? null : $query->convertToSearchRequestJSON();
         $qs = $method === 'GET' ? $query->convertToQueryStringParameterArray() : [];
         $this->debug(
-            'Query: ' . ($method === 'GET' ? print_r($qs, true) : $json)
+            'Query: ' . ($method === 'GET' ? $this->varDump($qs) : $json)
         );
         $url = $this->apiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);

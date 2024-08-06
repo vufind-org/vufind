@@ -70,7 +70,7 @@ class AbstractIlsAndUserActionFactory implements \Laminas\ServiceManager\Factory
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             ...($options ?: [])
         );
     }

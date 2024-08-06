@@ -266,6 +266,22 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test spellchecker changes.
+     *
+     * @return void
+     */
+    public function testSpelling()
+    {
+        $upgrader = $this->getUpgrader('spelling');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure spellcheck 'simple' is replaced by 'dictionaries'
+        $this->assertFalse(isset($results['config.ini']['Spelling']['simple']));
+        $this->assertTrue(isset($results['config.ini']['Spelling']['dictionaries']));
+    }
+
+    /**
      * Test Syndetics upgrade.
      *
      * @return void
@@ -512,6 +528,44 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 'fileContainsMeaningfulLines',
                 [$meaningful]
             )
+        );
+    }
+
+    /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction()
+    {
+        $upgrader = $this->getUpgrader('comments');
+        $config = $this->getFixtureDir() . 'configs/comments/config.ini';
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $this->callMethod($upgrader, 'extractComments', [$config])
         );
     }
 

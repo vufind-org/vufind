@@ -20,8 +20,6 @@ package org.vufind.index;
 
 import org.marc4j.marc.Record;
 import java.io.*;
-import java.util.Iterator;
-import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;

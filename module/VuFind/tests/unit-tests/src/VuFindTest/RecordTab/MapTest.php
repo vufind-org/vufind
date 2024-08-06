@@ -42,6 +42,8 @@ use VuFind\RecordTab\Map;
  */
 class MapTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Get a Map object
      *
@@ -183,9 +185,12 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->exactly(2))->method('tryMethod')
-            ->withConsecutive(['getGeoLocation'], ['getDisplayCoordinates'])
-            ->willReturnOnConsecutiveCalls($coordinates, $displayCoord);
+        $this->expectConsecutiveCalls(
+            $recordDriver,
+            'tryMethod',
+            [['getGeoLocation'], ['getDisplayCoordinates']],
+            [$coordinates, $displayCoord]
+        );
 
         $obj->setRecordDriver($recordDriver);
         $expected = [[25.8,4.6,43.9,5.0,'','89 87 45 56']];

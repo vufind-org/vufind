@@ -1,6 +1,4 @@
 <?php
-  $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
-  $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
   $this->headScript()->appendFile('facets.js');
 
   $results = $this->recommend->getResults();
@@ -41,6 +39,7 @@
     }
   }
 ?>
+<?=$this->component('hide-offcanvas-button')?>
 <?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
   <?php
@@ -65,8 +64,6 @@
 <?php endif; ?>
 <?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
-<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
-<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
   <?php foreach ($activeFacets as $field => $facetName): ?>
     <?php $collapsed = in_array($field, $collapsedFacets); ?>
@@ -76,28 +73,11 @@
         <span class="facet-title"><?=$this->transEsc($facetName)?></span>
         <?=$this->icon('collapse', 'facet-title-icon') ?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>"<?php if (!in_array($field, $hierarchicalFacets)):?> data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php endif ?><?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
-        <?php if (in_array($field, $hierarchicalFacets)): ?>
-          <?=
-            $this->context($this)->renderInContext(
-                'Recommend/SideFacets/hierarchical-facet.phtml',
-                [
-                  'allowExclude' => $this->recommend->excludeAllowed($field),
-                  // Allow hierarchical facets to be untruncated with showMore setting < 1
-                  'facets_before_more' => $this->recommend->getShowMoreSetting($field, 0),
-                  'title' => $field,
-                  'sortOptions' => $hierarchicalFacetSortOptions[$field] ?? $hierarchicalFacetSortOptions['*'] ?? null,
-                  'collapsedFacets' => $collapsedFacets,
-                  'results' => $this->results,
-                ]
-            );
-          ?>
-        <?php else: ?>
-          <div class="facet-load-indicator hidden">
-            <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
-          </div>
-        <?php endif; ?>
+        <div class="facet-load-indicator hidden">
+          <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
+        </div>
       </div>
     </div>
   <?php endforeach; ?>

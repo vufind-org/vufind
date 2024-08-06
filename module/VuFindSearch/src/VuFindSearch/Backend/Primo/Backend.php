@@ -52,7 +52,7 @@ class Backend extends AbstractBackend
     /**
      * Connector.
      *
-     * @var Connector
+     * @var ConnectorInterface
      */
     protected $connector;
 
@@ -66,14 +66,14 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param Connector                        $connector Primo connector
+     * @param ConnectorInterface               $connector Primo connector
      * @param RecordCollectionFactoryInterface $factory   Record collection factory
      * (null for default)
      *
      * @return void
      */
     public function __construct(
-        Connector $connector,
+        ConnectorInterface $connector,
         RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
@@ -247,12 +247,14 @@ class Backend extends AbstractBackend
         }
 
         // Use special pcAvailability filter if it has been set:
-        if ($values = $params['filterList']['pcAvailability']['values'] ?? []) {
-            $value = reset($values);
-            // Note that '' is treated as true for the simple case with no value
-            $options['pcAvailability']
-                = !in_array($value, [false, 0, '0', 'false'], true);
-            unset($options['filterList']['pcAvailability']);
+        foreach ($options['filterList'] ?? [] as $i => $filter) {
+            if ('pcAvailability' === $filter['field']) {
+                $value = reset($filter['values']);
+                // Note that '' is treated as true for the simple case with no value
+                $options['pcAvailability'] = !in_array($value, [false, 0, '0', 'false'], true);
+                unset($options['filterList'][$i]);
+                break;
+            }
         }
 
         return $options;

@@ -160,7 +160,7 @@ class Form extends \Laminas\Form\Form implements
      * @param array  $prefill Prefill form with these values.
      *
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function setFormId($formId, $params = [], $prefill = [])
     {
@@ -186,7 +186,7 @@ class Form extends \Laminas\Form\Form implements
      */
     public function getDisplayString($translationKey, $escape = null)
     {
-        $escape ??= substr($translationKey, -5) !== '_html';
+        $escape ??= !str_ends_with($translationKey, '_html');
         $helper = $this->viewHelperManager->get($escape ? 'transEsc' : 'translate');
         return $helper($translationKey);
     }
@@ -257,7 +257,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @param array $postParams Posted form data
      *
-     * @return array of reciepients, each consisting of an array with
+     * @return array of recipients, each consisting of an array with
      * name, email or null if not configured
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -345,7 +345,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return reponse that is shown after successful form submit.
+     * Return response that is shown after successful form submit.
      *
      * @return string
      */
@@ -561,13 +561,11 @@ class Form extends \Laminas\Form\Form implements
      * @param string $formId Form id
      *
      * @return mixed null|array
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getFormConfig($formId = null)
     {
         $confName = 'FeedbackForms.yaml';
-        $localConfig = $config = null;
-
         $config = $this->yamlReader->get($confName, false, true);
         $localConfig = $this->yamlReader->get($confName, true, true);
 
@@ -755,7 +753,7 @@ class Form extends \Laminas\Form\Form implements
 
         $elements[] = [
             'type' => 'submit',
-            'name' => 'submit',
+            'name' => 'submitButton',
             'label' => 'Send',
         ];
 
@@ -937,8 +935,6 @@ class Form extends \Laminas\Form\Form implements
 
         $conf['type'] = $class;
         $conf['options'] = [];
-
-        $attributes = $el['settings'] ?? [];
 
         $attributes = [
             'id' => $this->getElementId($el['name']),

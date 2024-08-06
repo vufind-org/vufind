@@ -44,6 +44,8 @@ use function is_array;
  */
 class ResourceContainer
 {
+    use \VuFind\Log\VarDumperTrait;
+
     /**
      * Less CSS files
      *
@@ -125,7 +127,7 @@ class ResourceContainer
         } elseif ($js === []) {
             return;
         } else {
-            throw new \Exception('Invalid JS entry format: ' . print_r($js, true));
+            throw new \Exception('Invalid JS entry format: ' . $this->varDump($js));
         }
     }
 
@@ -318,7 +320,7 @@ class ResourceContainer
         // Special case: don't explode URLs:
         if (
             ($parts[0] === 'http' || $parts[0] === 'https')
-            && '//' === substr($parts[1], 0, 2)
+            && str_starts_with($parts[1], '//')
         ) {
             $protocol = array_shift($parts);
             $parts[0] = $protocol . ':' . $parts[0];

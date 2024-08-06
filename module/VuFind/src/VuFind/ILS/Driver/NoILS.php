@@ -140,22 +140,17 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
         if ($useStatus == 'custom') {
-            $status = $this->translate($this->config['Status']['status']);
+            $status = $this->translate($this->config['Status']['status'] ?? '');
             return [
                 [
                     'id' => $id,
-                    'availability' => $this->config['Status']['availability'],
+                    'availability' => $this->config['Status']['availability'] ?? false,
                     'status' => $status,
-                    'use_unknown_message' =>
-                        $this->config['Status']['use_unknown_message'],
+                    'use_unknown_message' => (bool)($this->config['Status']['use_unknown_message'] ?? false),
                     'status_array' => [$status],
-                    'location' => $this->translate(
-                        $this->config['Status']['location']
-                    ),
-                    'reserve' => $this->config['Status']['reserve'],
-                    'callnumber' => $this->translate(
-                        $this->config['Status']['callnumber']
-                    ),
+                    'location' => $this->translate($this->config['Status']['location'] ?? ''),
+                    'reserve' => $this->config['Status']['reserve'] ?? 'N',
+                    'callnumber' => $this->translate($this->config['Status']['callnumber'] ?? ''),
                 ],
             ];
         } elseif ($useStatus == 'marc') {
@@ -210,28 +205,18 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     public function getHolding($id, array $patron = null, array $options = [])
     {
         $useHoldings = $this->config['settings']['useHoldings'] ?? 'none';
-
         if ($useHoldings == 'custom') {
             return [
                 [
                     'id' => $id,
-                    'number' => $this->translate(
-                        $this->config['Holdings']['number']
-                    ),
-                    'availability' => $this->config['Holdings']['availability'],
-                    'status' => $this->translate(
-                        $this->config['Holdings']['status']
-                    ),
-                    'use_unknown_message' =>
-                        $this->config['Holdings']['use_unknown_message'],
-                    'location' => $this->translate(
-                        $this->config['Holdings']['location']
-                    ),
-                    'reserve' => $this->config['Holdings']['reserve'],
-                    'callnumber' => $this->translate(
-                        $this->config['Holdings']['callnumber']
-                    ),
-                    'barcode' => $this->config['Holdings']['barcode'],
+                    'number' => $this->translate($this->config['Holdings']['number'] ?? ''),
+                    'availability' => $this->config['Holdings']['availability'] ?? false,
+                    'status' => $this->translate($this->config['Holdings']['status'] ?? ''),
+                    'use_unknown_message' => (bool)($this->config['Holdings']['use_unknown_message'] ?? false),
+                    'location' => $this->translate($this->config['Holdings']['location'] ?? ''),
+                    'reserve' => $this->config['Holdings']['reserve'] ?? 'N',
+                    'callnumber' => $this->translate($this->config['Holdings']['callnumber'] ?? ''),
+                    'barcode' => $this->config['Holdings']['barcode'] ?? '',
                     'notes' => $this->config['Holdings']['notes'] ?? [],
                     'summary' => $this->config['Holdings']['summary'] ?? [],
                 ],
@@ -269,8 +254,9 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             // ID prefix, strip it off!
             $idPrefix = $this->getIdPrefix();
             if (
-                isset($result[0]['id']) && strlen($idPrefix)
-                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
+                isset($result[0]['id'])
+                && '' !== $idPrefix
+                && str_starts_with($result[0]['id'], $idPrefix)
             ) {
                 $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));
             }

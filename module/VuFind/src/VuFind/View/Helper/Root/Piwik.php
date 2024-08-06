@@ -129,7 +129,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     public function __construct($url, $options, $customVars, $router, $request)
     {
         $this->url = $url;
-        if ($url && substr($url, -1) != '/') {
+        if ($url && !str_ends_with($url, '/')) {
             $this->url .= '/';
         }
         if (is_array($options)) {

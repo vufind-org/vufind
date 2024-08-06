@@ -309,7 +309,8 @@ abstract class Results
     {
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
-        $this->resultTotal = 0;
+        // The value of -1 indicates that resultTotal is not available.
+        $this->resultTotal = -1;
         $this->results = [];
         $this->suggestions = [];
         $this->errors = [];
@@ -471,9 +472,8 @@ abstract class Results
      */
     public function isSavedSearch()
     {
-        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called... blow up if somebody tries to get data that is not yet
-        // available.
+        // This data is not available until the search has been saved; blow up if somebody
+        // tries to get data that is not yet available.
         if (null === $this->savedSearch) {
             throw new \Exception(
                 'Cannot retrieve save status before updateSaveStatus is called.'
@@ -491,13 +491,11 @@ abstract class Results
      */
     public function getNotificationFrequency(): int
     {
-        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called... blow up if somebody tries to get data that is not yet
-        // available.
+        // This data is not available until the search has been saved; blow up if somebody
+        // tries to get data that is not yet available.
         if (null === $this->notificationFrequency) {
             throw new \Exception(
-                'Cannot retrieve notification frequency before '
-                . 'updateSaveStatus is called.'
+                'Cannot retrieve notification frequency before updateSaveStatus is called.'
             );
         }
         return $this->notificationFrequency;
@@ -507,16 +505,15 @@ abstract class Results
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
-     * @param \VuFind\Db\Row\Search $row Relevant database row.
+     * @param SearchEntityInterface $row Relevant database row.
      *
      * @return void
      */
     public function updateSaveStatus($row)
     {
-        $this->searchId = $row->id;
-        $this->savedSearch = ($row->saved == true);
-        $this->notificationFrequency = $this->savedSearch
-            ? $row->notification_frequency : 0;
+        $this->searchId = $row->getId();
+        $this->savedSearch = $row->getSaved();
+        $this->notificationFrequency = $this->savedSearch ? $row->getNotificationFrequency() : 0;
     }
 
     /**
@@ -609,6 +606,28 @@ abstract class Results
     }
 
     /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        // Not implemented in the base class
+        return [];
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return ?float
+     */
+    public function getMaxScore()
+    {
+        // Not implemented in the base class
+        return null;
+    }
+
+    /**
      * Get extra data for the search.
      *
      * Extra data can be used to store local implementation-specific information.
@@ -639,6 +658,24 @@ abstract class Results
     }
 
     /**
+     * Add settings to a minified object.
+     *
+     * @param \VuFind\Search\Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function minify(&$minified): void
+    {
+        $minified->id = $this->getSearchId();
+        $minified->i  = $this->getStartTime();
+        $minified->s  = $this->getQuerySpeed();
+        $minified->r  = $this->getResultTotal();
+        $minified->ex = $this->getExtraData();
+
+        $this->getParams()->minify($minified);
+    }
+
+    /**
      * Restore settings from a minified object found in the database.
      *
      * @param \VuFind\Search\Minified $minified Minified Search Object
@@ -652,6 +689,8 @@ abstract class Results
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
         $this->setExtraData($minified->ex);
+
+        $this->getParams()->deminify($minified);
     }
 
     /**
@@ -837,6 +876,11 @@ abstract class Results
             = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
             ? $this->getOptions()->getHierarchicalFacets()
             : [];
+        $hierarchicalFacetSortSettings
+            = is_callable([$this->getOptions(), 'getHierarchicalFacetSortSettings'])
+            ? $this->getOptions()->getHierarchicalFacetSortSettings()
+            : [];
+
         foreach (array_keys($filter) as $field) {
             $data = $facetList[$field] ?? [];
             // Skip empty arrays:
@@ -852,6 +896,7 @@ abstract class Results
             $translate = in_array($field, $translatedFacets);
             $hierarchical = in_array($field, $hierarchicalFacets);
             $operator = $this->getParams()->getFacetOperator($field);
+            $resultList = [];
             // Loop through values:
             foreach ($data as $value => $count) {
                 $displayText = $this->getParams()
@@ -873,7 +918,7 @@ abstract class Results
                     || $this->getParams()->hasFilter("~$field:" . $value);
 
                 // Store the collected values:
-                $result[$field]['list'][] = compact(
+                $resultList[] = compact(
                     'value',
                     'displayText',
                     'count',
@@ -881,6 +926,17 @@ abstract class Results
                     'isApplied'
                 );
             }
+
+            if ($hierarchical) {
+                $sort = $hierarchicalFacetSortSettings[$field]
+                    ?? $hierarchicalFacetSortSettings['*'] ?? 'count';
+                $this->hierarchicalFacetHelper->sortFacetList($resultList, $sort);
+
+                $resultList
+                    = $this->hierarchicalFacetHelper->buildFacetArray($field, $resultList);
+            }
+
+            $result[$field]['list'] = $resultList;
         }
         return $result;
     }

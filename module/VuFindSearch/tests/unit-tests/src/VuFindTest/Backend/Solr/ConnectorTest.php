@@ -50,6 +50,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
 class ConnectorTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Current response.
@@ -95,7 +96,7 @@ class ConnectorTest extends TestCase
         $this->expectExceptionCode(500);
 
         $conn = $this->createConnector('internal-server-error');
-        $resp = $conn->retrieve('id');
+        $conn->retrieve('id');
     }
 
     /**
@@ -109,7 +110,7 @@ class ConnectorTest extends TestCase
         $this->expectExceptionCode(400);
 
         $conn = $this->createConnector('bad-request');
-        $resp = $conn->retrieve('id');
+        $conn->retrieve('id');
     }
 
     /**
@@ -125,8 +126,7 @@ class ConnectorTest extends TestCase
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
         // The client will be reset before it is given the expected mime type:
-        $client->expects($this->exactly(2))->method('setEncType')
-            ->withConsecutive(['application/x-www-form-urlencoded'], ['text/csv']);
+        $this->expectConsecutiveCalls($client, 'setEncType', [['application/x-www-form-urlencoded'], ['text/csv']]);
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($csvData));
         $conn = $this->getConnectorMock(['send'], $client);
@@ -149,9 +149,13 @@ class ConnectorTest extends TestCase
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
         // The client will be reset before it is given the expected mime type:
-        $client->expects($this->exactly(2))->method('setEncType')->withConsecutive(
-            ['application/x-www-form-urlencoded'],
-            ['application/json']
+        $this->expectConsecutiveCalls(
+            $client,
+            'setEncType',
+            [
+                ['application/x-www-form-urlencoded'],
+                ['application/json'],
+            ]
         );
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($jsonData));

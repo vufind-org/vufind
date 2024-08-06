@@ -81,7 +81,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         \VuFind\Search\Blender\Options::class => OptionsFactory::class,
         \VuFind\Search\BrowZine\Options::class => OptionsFactory::class,
-        \VuFind\Search\Combined\Options::class => OptionsFactory::class,
+        \VuFind\Search\Combined\Options::class => \VuFind\Search\Combined\OptionsFactory::class,
         \VuFind\Search\EDS\Options::class =>
             \VuFind\Search\EDS\OptionsFactory::class,
         \VuFind\Search\EIT\Options::class => OptionsFactory::class,

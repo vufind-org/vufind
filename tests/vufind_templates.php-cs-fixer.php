@@ -5,7 +5,7 @@ $finder->in(__DIR__ . '/../themes')
     ->name('*.phtml');
 
 $rules = [
-    '@PHP80Migration' => true,
+    '@PHP81Migration' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
     'binary_operator_spaces' => [
@@ -43,8 +43,8 @@ $rules = [
     'no_singleline_whitespace_before_semicolons' => true,
     'no_spaces_around_offset' => true,
     'no_trailing_whitespace_in_comment' => false, // disabled for readability; we want < ?php // comment ? > not < ?php //comment? >
+    'no_unneeded_braces' => true,
     'no_unneeded_control_parentheses' => true,
-    'no_unneeded_curly_braces' => true,
     'no_unneeded_final_method' => true,
     'no_unreachable_default_argument_value' => true,
     'no_unused_imports' => true,

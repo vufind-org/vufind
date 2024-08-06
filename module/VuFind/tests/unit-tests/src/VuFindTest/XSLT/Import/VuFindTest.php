@@ -54,12 +54,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     protected function getMockContainer()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $tableManager = new \VuFindTest\Container\MockDbTablePluginManager($this);
-        $tableManager->set(
-            'ChangeTracker',
-            $tableManager->get(\VuFind\Db\Table\ChangeTracker::class)
-        );
-        $container->set(\VuFind\Db\Table\PluginManager::class, $tableManager);
+        $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
+        $container->set(\VuFind\Db\Service\PluginManager::class, $serviceManager);
         return $container;
     }
 
@@ -72,7 +68,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     {
         VuFind::setServiceLocator($this->getMockContainer());
         $this->assertTrue(
-            VuFind::getChangeTracker() instanceof \VuFind\Db\Table\ChangeTracker
+            VuFind::getChangeTracker() instanceof \VuFind\Db\Service\ChangeTrackerServiceInterface
         );
     }
 
@@ -257,7 +253,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function nameProvider(): array
+    public static function nameProvider(): array
     {
         return [
             'single name' => ['foo', 'foo'],
@@ -271,7 +267,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isInvertedNameProvider(): array
+    public static function isInvertedNameProvider(): array
     {
         return [
             ['foo bar', false],
@@ -337,7 +333,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function titleSortLowerProvider(): array
+    public static function titleSortLowerProvider(): array
     {
         return [
             'basic lowercasing' => ['ABCDEF', 'abcdef'],

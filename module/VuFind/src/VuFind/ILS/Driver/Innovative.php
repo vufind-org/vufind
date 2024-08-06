@@ -29,6 +29,7 @@
 
 namespace VuFind\ILS\Driver;
 
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
@@ -134,11 +135,7 @@ class Innovative extends AbstractBase implements
         $id_ = $this->prepID($id);
 
         // Load Record Page
-        if (substr($this->config['Catalog']['url'], -1) == '/') {
-            $host = substr($this->config['Catalog']['url'], 0, -1);
-        } else {
-            $host = $this->config['Catalog']['url'];
-        }
+        $host = rtrim($this->config['Catalog']['url'], '/');
 
         // Grab the full item list view
         //$result = $this->sendRequest($host . '/record=b' . $id_);
@@ -278,7 +275,7 @@ class Innovative extends AbstractBase implements
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,

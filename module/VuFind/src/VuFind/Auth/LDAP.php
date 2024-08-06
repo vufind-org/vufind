@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function in_array;
@@ -46,6 +47,15 @@ use function in_array;
  */
 class LDAP extends AbstractBase
 {
+    /**
+     * Constructor
+     *
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     */
+    public function __construct(protected ILSAuthenticator $ilsAuthenticator)
+    {
+    }
+
     /**
      * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
@@ -95,12 +105,12 @@ class LDAP extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
-        $username = trim($request->getPost()->get('username'));
-        $password = trim($request->getPost()->get('password'));
+        $username = trim($request->getPost()->get('username', ''));
+        $password = trim($request->getPost()->get('password', ''));
         if ($username == '' || $password == '') {
             throw new AuthException('authentication_error_blank');
         }
@@ -114,7 +124,7 @@ class LDAP extends AbstractBase
      * @param string $password Password
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     protected function checkLdap($username, $password)
     {
@@ -261,7 +271,7 @@ class LDAP extends AbstractBase
      * @param string $username Username
      * @param array  $data     Details from ldap_get_entries call.
      *
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     protected function processLDAPUser($username, $data)
     {
@@ -272,10 +282,10 @@ class LDAP extends AbstractBase
         ];
 
         // User object to populate from LDAP:
-        $user = $this->getUserTable()->getByUsername($username);
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
-        // attributes since we need to use saveCredentials method to store it):
+        // attributes since we need to use setUserCatalogCredentials method to store it):
         $catPassword = null;
 
         // Loop through LDAP response and map fields to database object based
@@ -299,7 +309,7 @@ class LDAP extends AbstractBase
                         }
 
                         if ($field != 'cat_password') {
-                            $user->$field = $value ?? '';
+                            $this->setUserValueByField($user, $field, $value ?? '');
                         } else {
                             $catPassword = $value;
                         }
@@ -316,15 +326,16 @@ class LDAP extends AbstractBase
         // see https://github.com/vufind-org/vufind/pull/612). Note that in the
         // (unlikely) scenario that a password can actually change from non-blank
         // to blank, additional work may need to be done here.
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $this->ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
 
         // Update the user in the database, then return it to the caller:
-        $user->save();
+        $this->getUserService()->persistEntity($user);
         return $user;
     }
 }

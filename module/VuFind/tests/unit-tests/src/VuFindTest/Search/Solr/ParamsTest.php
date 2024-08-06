@@ -164,7 +164,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function sortValueProvider(): array
+    public static function sortValueProvider(): array
     {
         return ['Test1' => ['year', 'id', 'publishDateSort desc,id asc'],
                 'Test2' => ['year', 'id desc', 'publishDateSort desc,id desc'],

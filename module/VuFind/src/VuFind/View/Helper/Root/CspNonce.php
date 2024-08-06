@@ -62,6 +62,8 @@ class CspNonce extends \Laminas\View\Helper\AbstractHelper
      *
      * Result is a base64 encoded string that does not need escaping.
      *
+     * @deprecated Use Csp::getNonce() instead
+     *
      * @return string
      */
     public function __invoke()

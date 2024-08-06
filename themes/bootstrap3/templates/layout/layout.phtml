@@ -1,5 +1,17 @@
 <?=$this->doctype()?>
-
+<?php
+  // Set up the search box -- there are three possible cases:
+  // 1. No search box was set; we should default to the normal box
+  // 2. It was set to false; we should display nothing
+  // 3. It is set to a custom string; we should display the provided version
+  // Set up default search box if no data was provided from the template;
+  // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+  // Note: The searchbox needs to be rendered before the HTML header is build.
+  // Otherwise, the Javascript will not be loaded correctly.
+  if (!isset($this->layout()->searchbox)) {
+    $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', []);
+  }
+?>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
@@ -66,7 +78,7 @@
           }
         }
         $this->headScript()->prependScript(
-            'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+            'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
         );
       }
 
@@ -87,18 +99,31 @@
       }
 
       $root = rtrim($this->url('home'), '/');
+      $jsConfig = !isset($this->renderingError) ? $this->render('js-configs.phtml') : '{}';
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $cspNonce = $this->cspNonce();
+      $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($this->layout()->searchId);
       $appendScripts[] = <<<JS
           VuFind.path = '{$root}';
           VuFind.defaultSearchBackend = '{$dsb}';
+          VuFind.config.add({$jsConfig});
           VuFind.addTranslations({$translations});
           VuFind.addIcons({$icons});
           VuFind.setCspNonce('{$cspNonce}');
           VuFind.setCurrentSearchId($searchId);
           JS;
+
+      if (!empty($lightboxParent)) {
+        $lightboxParent = json_encode((string)$lightboxParent);
+        $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent;
+      }
+
+      if (!empty($lightboxChild)) {
+        $lightboxChild = json_encode((string)$lightboxChild);
+        $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild;
+      }
+
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
       if ($this->config()->ajaxCoversEnabled()) {
@@ -109,30 +134,20 @@
     <?=$this->headScript() ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
-    <?php // Set up the search box -- there are three possible cases:
-      // 1. No search box was set; we should default to the normal box
-      // 2. It was set to false; we should display nothing
-      // 3. It is set to a custom string; we should display the provided version
-      // Set up default search box if no data was provided from the template;
-      // this covers case 1.  Cases 2 and 3 are then covered by logic below.
-      if (!isset($this->layout()->searchbox)) {
-        $this->layout()->searchbox = $this->render('search/searchbox.phtml');
-      }
-    ?>
     <header class="hidden-print">
       <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
         <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
       <?php endif; ?>
-      <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+      <a class="sr-only sr-only-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
-      <div class="container">
-        <?php if (!empty($this->layout()->showBreadcrumbs ?? true) && !empty($this->layout()->breadcrumbs)): ?>
+    <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
+      <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
+        <div class="container">
           <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
-        <?php endif; ?>
-      </div>
-    </nav>
+        </div>
+      </nav>
+    <?php endif; ?>
     <div role="main" class="main">
       <div id="content" class="container">
         <?=$this->layout()->content ?>
@@ -150,11 +165,8 @@
         </div>
       </div>
     </div>
-    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
-    <?=$this->googleTagManager()->getBodyCode()?>
-    <?=$this->googleanalytics()?>
-    <?=$this->piwik()?>
-    <?=$this->matomo()?>
+    <div class="vufind-offcanvas-overlay" data-toggle="vufind-offcanvas"></div>
+    <?=$this->render('Helpers/analytics.phtml')?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
     <?php endforeach; ?>

@@ -44,6 +44,8 @@ use VuFindSearch\ParamBag;
  */
 class RetrieveBatchCommandTest extends TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test RetrieveBatch with RetrieveBatchInterface
      *
@@ -84,15 +86,12 @@ class RetrieveBatchCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->exactly(2))->method('retrieve')
-            ->withConsecutive(
-                [ $this->equalTo('id1'), $this->equalTo($params)],
-                [$this->equalTo('id2'), $this->equalTo($params)]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $this->returnValue($rci),
-                $this->returnValue($rci)
-            );
+        $this->expectConsecutiveCalls(
+            $backend,
+            'retrieve',
+            [['id1', $params], ['id2', $params]],
+            $rci
+        );
         $rci->expects($this->once())->method('first')->will($this->returnValue($record));
         $rci->expects($this->once())->method('add')->with($this->equalTo($record));
         $this->assertEquals($rci, $command->execute($backend)->getResult());

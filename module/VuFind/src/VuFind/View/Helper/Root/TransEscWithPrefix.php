@@ -51,21 +51,32 @@ class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterf
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Translate and escape a location
+     * Translate and escape a value while applying a prefix
      *
-     * @param string        $prefix  Translation key prefix
-     * @param string|object $str     String to translate
-     * @param array         $tokens  Tokens to inject into the translated string
-     * @param string        $default Default value to use if no translation is found
-     * (null for no default).
+     * @param string              $prefix          Translation key prefix
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function __invoke($prefix, $str, $tokens = [], $default = null)
-    {
+    public function __invoke(
+        $prefix,
+        $str,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
         $escaper = $this->getView()->plugin('escapeHtml');
         return $escaper(
-            $this->translateWithPrefix($prefix, $str, $tokens, $default)
+            $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter, $fallbackDomains)
         );
     }
 }

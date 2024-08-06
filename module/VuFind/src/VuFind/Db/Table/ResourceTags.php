@@ -29,10 +29,14 @@
 
 namespace VuFind\Db\Table;
 
+use DateTime;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 
 use function count;
 use function in_array;
@@ -47,14 +51,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ResourceTags extends Gateway
+class ResourceTags extends Gateway implements DbServiceAwareInterface
 {
-    /**
-     * Are tags case sensitive?
-     *
-     * @var bool
-     */
-    protected $caseSensitive;
+    use DbServiceAwareTrait;
 
     /**
      * Constructor
@@ -71,10 +70,9 @@ class ResourceTags extends Gateway
         PluginManager $tm,
         $cfg,
         ?RowGateway $rowObj = null,
-        $caseSensitive = false,
+        protected $caseSensitive = false,
         $table = 'resource_tags'
     ) {
-        $this->caseSensitive = $caseSensitive;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
@@ -88,6 +86,8 @@ class ResourceTags extends Gateway
      * @param string $posted   Posted date (optional -- omit for current)
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::createLink()
      */
     public function createLink(
         $resource,
@@ -96,38 +96,13 @@ class ResourceTags extends Gateway
         $list = null,
         $posted = null
     ) {
-        $callback = function ($select) use ($resource, $tag, $user, $list) {
-            $select->where->equalTo('resource_id', $resource)
-                ->equalTo('tag_id', $tag);
-            if (null !== $list) {
-                $select->where->equalTo('list_id', $list);
-            } else {
-                $select->where->isNull('list_id');
-            }
-            if (null !== $user) {
-                $select->where->equalTo('user_id', $user);
-            } else {
-                $select->where->isNull('user_id');
-            }
-        };
-        $result = $this->select($callback)->current();
-
-        // Only create row if it does not already exist:
-        if (empty($result)) {
-            $result = $this->createRow();
-            $result->resource_id = $resource;
-            $result->tag_id = $tag;
-            if (null !== $list) {
-                $result->list_id = $list;
-            }
-            if (null !== $user) {
-                $result->user_id = $user;
-            }
-            if (null !== $posted) {
-                $result->posted = $posted;
-            }
-            $result->save();
-        }
+        $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+            $resource,
+            $tag,
+            $user,
+            $list,
+            $posted ? DateTime::createFromFormat('Y-m-d H:i:s', $posted) : null
+        );
     }
 
     /**
@@ -136,6 +111,8 @@ class ResourceTags extends Gateway
      * @param array $ids IDs to check.
      *
      * @return array     Associative array with two keys: present and missing
+     *
+     * @deprecated
      */
     public function checkForTags($ids)
     {
@@ -168,15 +145,16 @@ class ResourceTags extends Gateway
     /**
      * Get resources associated with a particular tag.
      *
-     * @param string $tag    Tag to match
-     * @param string $userId ID of user owning favorite list
-     * @param string $listId ID of list to retrieve (null for all favorites)
+     * @param string $tag           Tag to match
+     * @param string $userId        ID of user owning favorite list
+     * @param string $listId        ID of list to retrieve (null for all favorites)
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getResourcesForTag($tag, $userId, $listId = null)
+    public function getResourcesForTag($tag, $userId, $listId = null, $caseSensitive = null)
     {
-        $callback = function ($select) use ($tag, $userId, $listId) {
+        $callback = function ($select) use ($tag, $userId, $listId, $caseSensitive) {
             $select->columns(
                 [
                     'resource_id' => new Expression(
@@ -191,7 +169,7 @@ class ResourceTags extends Gateway
                 'resource_tags.tag_id = t.id',
                 []
             );
-            if ($this->caseSensitive) {
+            if ($caseSensitive ?? $this->caseSensitive) {
                 $select->where->equalTo('t.tag', $tag);
             } else {
                 $select->where->literal('lower(t.tag) = lower(?)', [$tag]);
@@ -208,10 +186,11 @@ class ResourceTags extends Gateway
     /**
      * Get lists associated with a particular tag.
      *
-     * @param string|array      $tag        Tag to match
-     * @param null|string|array $listId     List ID to retrieve (null for all)
-     * @param bool              $publicOnly Whether to return only public lists
-     * @param bool              $andTags    Use AND operator when filtering by tag.
+     * @param string|array|null $tag           Tag to match (null for all)
+     * @param string|array|null $listId        List ID to retrieve (null for all)
+     * @param bool              $publicOnly    Whether to return only public lists
+     * @param bool              $andTags       Use AND operator when filtering by tag.
+     * @param ?bool             $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
@@ -219,16 +198,18 @@ class ResourceTags extends Gateway
         $tag,
         $listId = null,
         $publicOnly = true,
-        $andTags = true
+        $andTags = true,
+        $caseSensitive = null
     ) {
-        $tag = (array)$tag;
+        $tag = (array)($tag ?? []);
         $listId = $listId ? (array)$listId : null;
 
         $callback = function ($select) use (
             $tag,
             $listId,
             $publicOnly,
-            $andTags
+            $andTags,
+            $caseSensitive
         ) {
             $select->columns(
                 ['id' => new Expression('min(resource_tags.id)'), 'list_id']
@@ -261,7 +242,7 @@ class ResourceTags extends Gateway
                 $select->where->and->equalTo('public', 1);
             }
             if ($tag) {
-                if ($this->caseSensitive) {
+                if ($caseSensitive ?? $this->caseSensitive) {
                     $select->where->and->in('t.tag', $tag);
                 } else {
                     $lowerTags = array_map(
@@ -298,11 +279,12 @@ class ResourceTags extends Gateway
     /**
      * Get statistics on use of tags.
      *
-     * @param bool $extended Include extended (unique/anonymous) stats.
+     * @param bool  $extended          Include extended (unique/anonymous) stats.
+     * @param ?bool $caseSensitiveTags Should we treat tags as case-sensitive? (null for configured behavior)
      *
      * @return array
      */
-    public function getStatistics($extended = false)
+    public function getStatistics($extended = false, $caseSensitiveTags = null)
     {
         $select = $this->sql->select();
         $select->columns(
@@ -324,7 +306,7 @@ class ResourceTags extends Gateway
         $result = $statement->execute();
         $stats = (array)$result->current();
         if ($extended) {
-            $stats['unique'] = count($this->getUniqueTags());
+            $stats['unique'] = count($this->getUniqueTags(caseSensitive: $caseSensitiveTags));
             $stats['anonymous'] = $this->getAnonymousCount();
         }
         return $stats;
@@ -342,6 +324,10 @@ class ResourceTags extends Gateway
      * for ALL matching tags)
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyResourceTagsLinksForUser() or
+     * ResourceTagsServiceInterface::destroyNonListResourceTagsLinksForUser() or
+     * ResourceTagsServiceInterface::destroyAllListResourceTagsLinksForUser()
      */
     public function destroyResourceLinks($resource, $user, $list = null, $tag = null)
     {
@@ -383,6 +369,8 @@ class ResourceTags extends Gateway
      * for ALL matching tags)
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyUserListLinks()
      */
     public function destroyListLinks($list, $user, $tag = null)
     {
@@ -411,6 +399,8 @@ class ResourceTags extends Gateway
      * @param Object $callback Callback function for selecting deleted rows.
      *
      * @return void
+     *
+     * @deprecated
      */
     protected function processDestroyLinks($callback)
     {
@@ -530,15 +520,16 @@ class ResourceTags extends Gateway
     /**
      * Gets unique tags from the table
      *
-     * @param string $userId     ID of user
-     * @param string $resourceId ID of the resource
-     * @param string $tagId      ID of the tag
+     * @param string $userId        ID of user
+     * @param string $resourceId    ID of the resource
+     * @param string $tagId         ID of the tag
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getUniqueTags($userId = null, $resourceId = null, $tagId = null)
+    public function getUniqueTags($userId = null, $resourceId = null, $tagId = null, $caseSensitive = null)
     {
-        $callback = function ($select) use ($userId, $resourceId, $tagId) {
+        $callback = function ($select) use ($userId, $resourceId, $tagId, $caseSensitive) {
             $select->columns(
                 [
                     'resource_id' => new Expression(
@@ -572,8 +563,7 @@ class ResourceTags extends Gateway
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
                 [
-                    'tag' =>
-                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
+                    'tag' => ($caseSensitive ?? $this->caseSensitive) ? 'tag' : new Expression('lower(tag)'),
                 ]
             );
             if (null !== $userId) {
@@ -586,7 +576,7 @@ class ResourceTags extends Gateway
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
             $select->group(['tag_id', 'tag']);
-            $select->order([new Expression('lower(tag)')]);
+            $select->order([new Expression('lower(tag)'), 'tag']);
         };
         return $this->select($callback);
     }
@@ -676,12 +666,13 @@ class ResourceTags extends Gateway
     /**
      * Get Resource Tags
      *
-     * @param string $userId     ID of user
-     * @param string $resourceId ID of the resource
-     * @param string $tagId      ID of the tag
-     * @param string $order      The order in which to return the data
-     * @param string $page       The page number to select
-     * @param string $limit      The number of items to fetch
+     * @param string $userId        ID of user
+     * @param string $resourceId    ID of the resource
+     * @param string $tagId         ID of the tag
+     * @param string $order         The order in which to return the data
+     * @param string $page          The page number to select
+     * @param string $limit         The number of items to fetch
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Paginator\Paginator
      */
@@ -691,7 +682,8 @@ class ResourceTags extends Gateway
         $tagId = null,
         $order = null,
         $page = null,
-        $limit = 20
+        $limit = 20,
+        $caseSensitive = null
     ) {
         $order = (null !== $order)
             ? [$order]
@@ -703,8 +695,7 @@ class ResourceTags extends Gateway
             ['t' => 'tags'],
             'resource_tags.tag_id = t.id',
             [
-                'tag' =>
-                    $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
+                'tag' => ($caseSensitive ?? $this->caseSensitive) ? 'tag' : new Expression('lower(tag)'),
             ]
         );
         $select->join(

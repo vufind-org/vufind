@@ -76,7 +76,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
         // Special case: if the class name ends in Plus, we need to strip off
         // the "Plus" and instead configure the base Syndetics class into "plus"
         // mode.
-        $plus = substr($requestedName, -4) === 'Plus';
+        $plus = str_ends_with($requestedName, 'Plus');
         $className = $plus
             ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
 

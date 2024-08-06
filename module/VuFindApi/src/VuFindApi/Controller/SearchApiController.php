@@ -23,12 +23,16 @@
  * @category VuFind
  * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
 namespace VuFindApi\Controller;
 
+use Exception;
+use Laminas\Http\Exception\InvalidArgumentException;
+use Laminas\Mvc\Exception\DomainException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
@@ -44,6 +48,7 @@ use function is_array;
  * @category VuFind
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -200,7 +205,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
-     * @throws Exception\DomainException
+     * @throws DomainException|InvalidArgumentException|Exception
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
@@ -259,7 +264,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             } else {
                 $results[] = $loader->load($request['id'], $this->searchClassId);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->output(
                 [],
                 self::STATUS_ERROR,
@@ -346,7 +351,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                     }
                 }
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->output([], self::STATUS_ERROR, 400, $e->getMessage());
         }
 
@@ -420,6 +425,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $results->getUrlQuery(),
                 false
             );
+            $facetList[$facet] = $facetHelper->filterFacets($facet, $facetList[$facet], $results->getOptions());
         }
 
         return $facetList;

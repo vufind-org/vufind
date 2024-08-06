@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Factory for Util/SwitchDbHashCommand.
@@ -65,13 +67,12 @@ class SwitchDbHashCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $config,
-            $tableManager->get(\VuFind\Db\Table\User::class),
-            $tableManager->get(\VuFind\Db\Table\UserCard::class),
+            $serviceManager->get(UserServiceInterface::class),
+            $serviceManager->get(UserCardServiceInterface::class),
             null,
             $container->get(\VuFind\Config\PathResolver::class),
             ...($options ?? [])

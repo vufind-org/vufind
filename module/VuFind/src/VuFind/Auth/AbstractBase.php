@@ -30,12 +30,15 @@
 
 namespace VuFind\Auth;
 
+use Exception;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function get_class;
 use function in_array;
+use function is_callable;
 
 /**
  * Abstract authentication base class
@@ -48,27 +51,42 @@ use function in_array;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
-    \VuFind\Db\Table\DbTableAwareInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Has the configuration been validated?
      *
-     * @param bool
+     * @var bool
      */
     protected $configValidated = false;
 
     /**
      * Configuration settings
      *
-     * @param \Laminas\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
+
+    /**
+     * Map of database column name to setter method for UserEntityInterface objects.
+     *
+     * @return array
+     */
+    protected $userSetterMap = [
+        'cat_username' => 'setCatUsername',
+        'college' => 'setCollege',
+        'email' => 'setEmail',
+        'firstname' => 'setFirstname',
+        'lastname' => 'setLastname',
+        'home_library' => 'setHomeLibrary',
+        'major' => 'setMajor',
+    ];
 
     /**
      * Get configuration (load automatically if not previously set). Throw an
@@ -178,7 +196,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     abstract public function authenticate($request);
 
@@ -199,7 +217,7 @@ abstract class AbstractBase implements
         } catch (AuthException $e) {
             return false;
         }
-        return $user instanceof User;
+        return $user instanceof UserEntityInterface;
     }
 
     /**
@@ -219,7 +237,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface New user entity.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -236,7 +254,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface Updated user entity.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -343,20 +361,6 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Return a canned password policy hint when available
-     *
-     * @param ?string $pattern Current policy pattern
-     *
-     * @return ?string
-     *
-     * @deprecated Use getCannedPolicyHint instead
-     */
-    protected function getCannedPasswordPolicyHint($pattern)
-    {
-        return $this->getCannedPolicyHint('password', $pattern);
-    }
-
-    /**
      * Get a policy configuration
      *
      * @param string $type Policy type (password or username)
@@ -420,16 +424,16 @@ abstract class AbstractBase implements
     /**
      * Get access to the user table.
      *
-     * @return \VuFind\Db\Table\User
+     * @return UserServiceInterface
      */
-    public function getUserTable()
+    public function getUserService(): UserServiceInterface
     {
-        return $this->getDbTableManager()->get('User');
+        return $this->getDbService(UserServiceInterface::class);
     }
 
     /**
      * Verify that a username fulfills the username policy. Throws exception if
-     * the usernmae is invalid.
+     * the username is invalid.
      *
      * @param string $username Password to verify
      *
@@ -533,5 +537,39 @@ abstract class AbstractBase implements
                 throw new AuthException($this->translate("{$type}_error_invalid"));
             }
         }
+    }
+
+    /**
+     * Look up a user by username; create a new entity if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     * @throws Exception
+     */
+    protected function getOrCreateUserByUsername(string $username): UserEntityInterface
+    {
+        $userService = $this->getUserService();
+        $user = $userService->getUserByUsername($username);
+        return $user ? $user : $userService->createEntityForUsername($username);
+    }
+
+    /**
+     * Set a value in a UserEntityObject using a field name.
+     *
+     * @param UserEntityInterface $user  User to update
+     * @param string              $field Field name being updated
+     * @param mixed               $value New value to set
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function setUserValueByField(UserEntityInterface $user, string $field, $value): void
+    {
+        $setter = $this->userSetterMap[$field] ?? null;
+        if (!$setter || !is_callable([$user, $setter])) {
+            throw new Exception("Unsupported field: $field");
+        }
+        $user->$setter($value);
     }
 }

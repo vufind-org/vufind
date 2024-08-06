@@ -12,7 +12,7 @@
 @import "rtl";
 
 html {
-  font-size: 16px;
+  font-size: @font-size-base;
   overflow-x: hidden;
 }
 body {
@@ -23,33 +23,41 @@ body {
 
 /* -- Layout --- */
 .main .container { background-color: @white; }
-.mainbody { padding-top: 1rem; }
+.mainbody {
+  padding-top: 1rem;
+  // If an h2 is the first element in mainbody, avoid excessive space due to the padding:
+  & > h2:first-child {
+    margin-top: 0;
+  }
+}
 
 /* --- Header --- */
 .navbar { border-radius: 0; }
 .banner {
   width: auto;
-  color: #fff;
+  color: @white;
 
   a { color: #fff; }
+  .dropdown-menu {
+    color: @black;
+  }
 }
 .banner .navbar-right { margin-top: calc((@banner-height-sm - 50px) / 2); } // Put right nav in the middle
 .banner .navbar-brand {
-  width: (170 / 65) * @banner-height-sm;
+  width: calc((170 / 65) * @banner-height-sm);
   height: @banner-height-sm;
+  display: inline-block;
 }
 @media (min-width: 768px) {
   .banner .navbar-right { margin-top: calc((@banner-height - 50px) / 2); }
   .banner .navbar-brand {
-    width: (170 / 65) * @banner-height;
+    width: calc((170 / 65) * @banner-height);
     height: @banner-height;
   }
 }
 
 header {
   background-color: @header-bg;
-  font-size: @reduced-font-size;
-  font-weight: 500;
   color: @white;
 
   .navbar-nav { margin-top: 0; }
@@ -69,8 +77,8 @@ header {
     background-color: @header-light;
     border-color: @black;
   }
-  .nav > li > a,
-  .navbar-nav button.dropdown-toggle {
+  .nav.navbar-nav > li > a,
+  .nav.navbar-nav button.dropdown-toggle {
     &:hover,
     &:focus {
       color: @black;
@@ -84,18 +92,17 @@ header {
     padding-right: 1rem;
     font-size: @reduced-font-size;
   }
-  .dropdown-menu a { color: @black; }
-  .dropdown-menu a:hover {
-    background-color: @header-light;
-    color: @black;
+  .navbar-nav .open .dropdown-menu {
+    background-color: @white;
+    a { color: @black; }
+    .active a { background-color: @header-bg; }
   }
-  .dropdown-menu .active a,
-  .dropdown-menu .active a:hover { background-color: @header-bg; }
-
-  .form-control { border: 0; }
-  .form-control:focus {
-    padding-bottom: 3px; // Smaller font-size means smaller jump
-    border-bottom: 3px solid @gold;
+  @media (min-width: 768px) {
+    .dropdown-menu a:hover {
+      background-color: @header-light;
+      color: @black;
+    }
+    .dropdown-menu .active a:hover { background-color: @header-bg; }
   }
 
   .navbar-brand {
@@ -114,15 +121,15 @@ header {
   }
 }
 
-#account-icon.text-success,
-#account-icon.text-warning,
-#account-icon.text-danger {
-  margin-left: -.25rem;
-  margin-top: -0.5rem;
-  margin-bottom: -.5rem;
-  padding: 0.5rem;
-  background-color: @header-light;
-  border-radius: 100%;
+#account-icon {
+  &.notification-level-1, &.notification-level-2, &.notification-level-3 {
+    margin-left: -.25rem;
+    margin-top: -0.5rem;
+    margin-bottom: -.5rem;
+    padding: 0.5rem;
+    background-color: @header-light;
+    border-radius: 100%;
+  }
 }
 #login-dropdown .login-dropdown-caret:hover,
 a:hover .login-dropdown-caret {
@@ -177,7 +184,6 @@ a:hover .login-dropdown-caret {
   margin-top: 1rem;
   margin-right: auto;
 }
-.info-col { font-size: @reduced-font-size; }
 .info-col h3 {
   margin-top: 0;
   font-weight: 500;
@@ -187,7 +193,6 @@ a:hover .login-dropdown-caret {
 .comment { margin-bottom: .5rem; }
 .comment .delete { font-size: @reduced-font-size; }
 .comment-form .btn-primary { margin-top: .25rem; }
-.tagList { line-height: 2rem; }
 .tagList .tag .fa-close { margin: 0; }
 
 /* --- Sidebar --- */
@@ -221,9 +226,7 @@ a:hover .login-dropdown-caret {
   .facet.active,
   .facet.active:hover,
   .active-filters .facet,
-  .active-filters .facet:hover,
-  .active .jstree-anchor,
-  .jstree-facet .jstree-container-ul > .active {
+  .active-filters .facet:hover {
     border-color: @sidebar-active-bg;
     background-color: @sidebar-active-bg;
     color: @sidebar-active-color;
@@ -241,7 +244,8 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    padding: 0;
+    border-bottom: 1px solid @list-group-border;
+    border-radius: 0;
   }
 }
 
@@ -250,11 +254,6 @@ a:hover .login-dropdown-caret {
   max-height: 19px;
   line-height: .8;
   background-color: @sidebar-item-badge;
-}
-
-.jstree-facet {
-  .main .fa-check { margin-top: 3px; }
-  .jstree-icon::before { margin-top: 2px; }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {

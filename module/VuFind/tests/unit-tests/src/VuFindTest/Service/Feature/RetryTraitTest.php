@@ -178,7 +178,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function backoffDataProvider(): array
+    public static function backoffDataProvider(): array
     {
         return [
             [0, 0],

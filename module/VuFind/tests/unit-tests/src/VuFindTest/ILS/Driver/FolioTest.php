@@ -463,7 +463,40 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ];
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('hold_date_invalid');
+        $this->driver->placeHold($details);
+    }
+
+    /**
+     * Test successful place hold using request type fallback
+     *
+     * @depends testTokens
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceTitleLevelHoldAfterRequestTypeFallback(): void
+    {
+        $config = [
+            'API' => $this->defaultDriverConfig['API'],
+            'Holds' => [
+                'default_request' => 'Recall',
+                'fallback_request_type' => ['Page'],
+            ],
+        ];
+        $this->createConnector('request-type-fallback', $config);
+        $details = [
+            'requiredBy' => '2000-01-01',
+            'requiredByTS' => 946739390,
+            'patron' => ['id' => 'user1'],
+            'id' => 'record1',
+            'level' => 'title',
+            'pickUpLocation' => 'servicepoint1',
+        ];
         $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'Open - Not yet filled',
+        ];
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -866,29 +899,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     protected function getExpectedGetHoldingResult(): array
     {
         return [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'foo',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => null,
-                'item_notes' => null,
-                'summary' => ['foo', 'bar baz'],
-                'supplements' => [],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'foo',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => null,
+                    'item_notes' => null,
+                    'summary' => ['foo', 'bar baz'],
+                    'supplements' => [],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                    'folio_location_is_active' => true,
+                ],
             ],
+            'electronic_holdings' => [],
         ];
     }
 
@@ -921,7 +960,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig = $this->defaultDriverConfig;
         $driverConfig['IDs']['type'] = 'hrid';
         $this->createConnector('get-holding', $driverConfig);
-        $this->assertEquals([$this->getExpectedGetHoldingResult()], $this->driver->getStatuses(['foo']));
+        $this->assertEquals(
+            [$this->getExpectedGetHoldingResult()['holdings']],
+            $this->driver->getStatuses(['foo'])
+        );
     }
 
     /**
@@ -937,29 +979,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig['Holdings']['folio_sort'] = 'volume';
         $this->createConnector('get-holding-sorted', $driverConfig);
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                    'folio_location_is_active' => true,
+                ],
             ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
@@ -977,29 +1025,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig['Holdings']['folio_sort'] = 'volume';
         $this->createConnector('get-holding-empty-statements', $driverConfig);
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => ['summ1', 'summ2'],
-                'supplements' => ['supp1', 'supp2'],
-                'indexes' => ['ind1', 'ind2'],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => ['summ1', 'summ2'],
+                    'supplements' => ['supp1', 'supp2'],
+                    'indexes' => ['ind1', 'ind2'],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                    'folio_location_is_active' => true,
+                ],
             ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
@@ -1015,29 +1069,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-holding-checkedout');
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Checked out',
-                'duedate' => '06-01-2023',
-                'availability' => false,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Checked out',
+                    'duedate' => '06-01-2023',
+                    'availability' => false,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                    'folio_location_is_active' => true,
+                ],
             ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
@@ -1055,52 +1115,60 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig['Holdings']['vufind_sort'] = 'enumchron';
         $this->createConnector('get-holding-multi-volume', $driverConfig);
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid2',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => 'v.2',
-                'barcode' => 'barcode-test2',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 2,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid2',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => 'v.2',
+                    'barcode' => 'barcode-test2',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                    'folio_location_is_active' => true,
+                ],
+                1 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 2,
+                    'enumchron' => 'v.100',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                    'folio_location_is_active' => true,
+                ],
             ],
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 2,
-                'enumchron' => 'v.100',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
-            ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
@@ -1223,5 +1291,57 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $result = iterator_to_array($result, false);
 
         $this->assertCount(2, $result);
+    }
+
+    /**
+     * Test getBoundWithRecords with an item with six boundWithTitles.
+     *
+     * @depends testTokens
+     *
+     * @return void
+     */
+    public function testGetBoundWithRecords(): void
+    {
+        $this->createConnector('get-bound-with-records');
+        $item = [
+            'id' => 'bc3fd525-4254-4075-845b-1428986d811b',
+        ];
+        $result = $this->callMethod($this->driver, 'getBoundWithRecords', [(object)$item]);
+        $expected = [
+            [
+                'title' => 'Slavery as it once prevailed in Massachusetts : A lecture for the Massachusetts ' .
+                    'Historical Society ...',
+                'bibId' => '12cb5553-c1bb-48c8-b439-aebc5202970f',
+            ],
+            [
+                'title' => 'Ueber sclaverei, sclaven-emancipation und die einwanderung "freier neger" nach ' .
+                    'den colonieen; aufzeichnungen eines weitgereisten.',
+                'bibId' => 'f56d3ce3-b31f-4320-8e08-dfc2f9a96c4a',
+            ],
+            [
+                'title' => 'Concerning a full understanding of the southern attitude toward slavery, by ' .
+                    'John Douglass Van Horne.',
+                'bibId' => '6abe72a5-f518-408a-8a67-fe1ec15627b8',
+            ],
+            [
+                'title' => 'American slavery : echoes and glimpses of prophecy / by Daniel S. Whitney.',
+                'bibId' => '1c4cda9b-3506-45e7-b444-0e901cc661e3',
+            ],
+            [
+                'title' => 'The Tract society and slavery. Speeches of Chief Justice Williams, Judge Parsons, ' .
+                    'and ex-Governor Ellsworth: delivered in the Center Church, Hartford, Conn., at the ' .
+                    'anniversary of the Hartford branch of the American Tract Society, January 9th, 1859.',
+                'bibId' => '03684060-3bc0-4a66-874c-854e50ed84fe',
+            ],
+            [
+                'title' => 'Case of Passmore Williamson : report of the proceedings on the writ of habeas corpus, ' .
+                    'issued by the Hon. John K. Kane, judge of the District Court of the United States for the ' .
+                    'Eastern District of Pennsylvania, in the case of the United States of America ex rel. John H. ' .
+                    'Wheeler vs. Passmore Williamson, including the several opinions delivered, and the arguments of ' .
+                    'counsel / reported by Arthur Cannon.',
+                'bibId' => '080e5167-7a50-4513-b0f3-0f5bf835df7b',
+            ],
+        ];
+        $this->assertEquals($expected, $result);
     }
 }

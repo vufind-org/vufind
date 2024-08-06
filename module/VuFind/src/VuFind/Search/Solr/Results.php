@@ -105,6 +105,13 @@ class Results extends \VuFind\Search\Base\Results
     protected $cursorMark = null;
 
     /**
+     * Highest relevance of all the results
+     *
+     * @var null|float
+     */
+    protected $maxScore = null;
+
+    /**
      * Get spelling processor.
      *
      * @return SpellingProcessor
@@ -149,6 +156,33 @@ class Results extends \VuFind\Search\Base\Results
     public function setCursorMark($cursorMark)
     {
         $this->cursorMark = $cursorMark;
+    }
+
+    /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        $scoreMap = [];
+        foreach ($this->results as $record) {
+            $data = $record->getRawData();
+            if ($data['score'] ?? false) {
+                $scoreMap[$record->getUniqueId()] = $data['score'];
+            }
+        }
+        return $scoreMap;
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return null|float
+     */
+    public function getMaxScore()
+    {
+        return $this->maxScore;
     }
 
     /**
@@ -211,6 +245,7 @@ class Results extends \VuFind\Search\Base\Results
         $this->responseQueryFacets = $collection->getQueryFacets();
         $this->responsePivotFacets = $collection->getPivotFacets();
         $this->resultTotal = $collection->getTotal();
+        $this->maxScore = $collection->getMaxScore();
 
         // Process spelling suggestions
         $spellcheck = $collection->getSpellcheck();
@@ -225,6 +260,9 @@ class Results extends \VuFind\Search\Base\Results
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
+
+        // Store any errors:
+        $this->errors = $collection->getErrors();
     }
 
     /**

@@ -31,6 +31,8 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -49,13 +51,6 @@ use function get_class;
 class ILS extends AbstractBase
 {
     /**
-     * ILS Authenticator
-     *
-     * @var object
-     */
-    protected $authenticator;
-
-    /**
      * Catalog connection
      *
      * @var \VuFind\ILS\Connection
@@ -63,27 +58,18 @@ class ILS extends AbstractBase
     protected $catalog = null;
 
     /**
-     * Email Authenticator
-     *
-     * @var EmailAuthenticator
-     */
-    protected $emailAuthenticator;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection        $connection    ILS connection to set
-     * @param \VuFind\Auth\ILSAuthenticator $authenticator ILS authenticator
-     * @param EmailAuthenticator            $emailAuth     Email authenticator
+     * @param \VuFind\ILS\Connection        $connection         ILS connection to set
+     * @param \VuFind\Auth\ILSAuthenticator $authenticator      ILS authenticator
+     * @param ?EmailAuthenticator           $emailAuthenticator Email authenticator
      */
     public function __construct(
         \VuFind\ILS\Connection $connection,
-        \VuFind\Auth\ILSAuthenticator $authenticator,
-        EmailAuthenticator $emailAuth = null
+        protected \VuFind\Auth\ILSAuthenticator $authenticator,
+        protected ?EmailAuthenticator $emailAuthenticator = null
     ) {
         $this->setCatalog($connection);
-        $this->authenticator = $authenticator;
-        $this->emailAuthenticator = $emailAuth;
     }
 
     /**
@@ -115,15 +101,16 @@ class ILS extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
-        $username = trim($request->getPost()->get('username'));
-        $password = trim($request->getPost()->get('password'));
+        $username = trim($request->getPost()->get('username', ''));
+        $password = trim($request->getPost()->get('password', ''));
         $loginMethod = $this->getILSLoginMethod();
+        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
-        return $this->handleLogin($username, $password, $loginMethod);
+        return $this->handleLogin($username, $password, $loginMethod, $rememberMe);
     }
 
     /**
@@ -169,7 +156,7 @@ class ILS extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return UserEntityInterface Updated user entity.
      */
     public function updatePassword($request)
     {
@@ -201,8 +188,8 @@ class ILS extends AbstractBase
 
         // Update the user and send it back to the caller:
         $username = $patron[$this->getUsernameField()];
-        $user = $this->getUserTable()->getByUsername($username);
-        $user->saveCredentials($patron['cat_username'], $params['password']);
+        $user = $this->getOrCreateUserByUsername($username);
+        $this->authenticator->saveUserCatalogCredentials($user, $patron['cat_username'], $params['password']);
         return $user;
     }
 
@@ -242,11 +229,12 @@ class ILS extends AbstractBase
      * @param string $username    User name
      * @param string $password    Password
      * @param string $loginMethod Login method
+     * @param bool   $rememberMe  Whether to remember the login
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
-    protected function handleLogin($username, $password, $loginMethod)
+    protected function handleLogin($username, $password, $loginMethod, $rememberMe)
     {
         if ($username == '' || ('password' === $loginMethod && $password == '')) {
             throw new AuthException('authentication_error_blank');
@@ -274,7 +262,10 @@ class ILS extends AbstractBase
                 }
                 $this->emailAuthenticator->sendAuthenticationLink(
                     $patron['email'],
-                    $patron,
+                    [
+                        'userData' => $patron,
+                        'rememberMe' => $rememberMe,
+                    ],
                     ['auth_method' => $class]
                 );
             }
@@ -295,7 +286,7 @@ class ILS extends AbstractBase
      * @param array $info User details returned by ILS driver.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
     protected function processILSUser($info)
     {
@@ -307,29 +298,31 @@ class ILS extends AbstractBase
         }
 
         // Check to see if we already have an account for this user:
-        $userTable = $this->getUserTable();
+        $userService = $this->getUserService();
         if (!empty($info['id'])) {
-            $user = $userTable->getByCatalogId($info['id']);
+            $user = $userService->getUserByCatId($info['id']);
             if (empty($user)) {
-                $user = $userTable->getByUsername($info[$usernameField]);
-                $user->saveCatalogId($info['id']);
+                $user = $this->getOrCreateUserByUsername($info[$usernameField]);
+                $user->setCatId($info['id']);
+                $this->getDbService(UserServiceInterface::class)->persistEntity($user);
             }
         } else {
-            $user = $userTable->getByUsername($info[$usernameField]);
+            $user = $this->getOrCreateUserByUsername($info[$usernameField]);
         }
 
         // No need to store the ILS password in VuFind's main password field:
-        $user->password = '';
+        $user->setRawPassword('');
 
         // Update user information based on ILS data:
         $fields = ['firstname', 'lastname', 'major', 'college'];
         foreach ($fields as $field) {
-            $user->$field = $info[$field] ?? ' ';
+            $this->setUserValueByField($user, $field, $info[$field] ?? ' ');
         }
-        $user->updateEmail($info['email'] ?? '');
+        $userService->updateUserEmail($user, $info['email'] ?? '');
 
         // Update the user in the database, then return it to the caller:
-        $user->saveCredentials(
+        $this->authenticator->saveUserCatalogCredentials(
+            $user,
             $info['cat_username'] ?? ' ',
             $info['cat_password'] ?? ' '
         );

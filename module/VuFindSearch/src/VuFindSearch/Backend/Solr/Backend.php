@@ -40,7 +40,6 @@ use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
-use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\WorkKeysQuery;
@@ -64,8 +63,7 @@ class Backend extends AbstractBackend implements
     RetrieveBatchInterface,
     RandomInterface,
     ExtraRequestDetailsInterface,
-    GetIdsInterface,
-    WorkExpressionsInterface
+    GetIdsInterface
 {
     /**
      * Limit for records per query in a batch retrieval.
@@ -137,7 +135,7 @@ class Backend extends AbstractBackend implements
         ParamBag $params = null
     ) {
         if ($query instanceof WorkKeysQuery) {
-            return $this->workExpressions($query->getId(), $query->getWorkKeys(), $params);
+            return $this->workKeysSearch($query, $offset, $limit, $params);
         }
         $json = $this->rawJsonSearch($query, $offset, $limit, $params);
         $collection = $this->createRecordCollection($json);
@@ -167,7 +165,7 @@ class Backend extends AbstractBackend implements
 
         $params->set('rows', $limit);
         $params->set('start', $offset);
-        $params->mergeWith($this->getQueryBuilder()->build($query));
+        $params->mergeWith($this->getQueryBuilder()->build($query, $params));
         return $this->connector->search($params);
     }
 
@@ -214,7 +212,12 @@ class Backend extends AbstractBackend implements
 
         $params->set('rows', $limit);
         $params->set('start', $offset);
-        $params->set('fl', $this->getConnector()->getUniqueKey());
+        $flParts = [$this->getConnector()->getUniqueKey()];
+        if ($fl = $params->get('fl')) {
+            // Merge multiple values if necessary, then split on delimiter:
+            $flParts = array_unique(array_merge($flParts, explode(',', implode(',', $fl))));
+        }
+        $params->set('fl', implode(',', $flParts));
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
@@ -416,36 +419,6 @@ class Backend extends AbstractBackend implements
             $this->refineBrowseException($e);
         }
         return $this->deserialize($response);
-    }
-
-    /**
-     * Return work expressions.
-     *
-     * @param string   $id            Id of record to compare with
-     * @param array    $workKeys      Work identification keys
-     * @param ParamBag $defaultParams Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     */
-    public function workExpressions($id, $workKeys, ParamBag $defaultParams = null)
-    {
-        $params = $defaultParams ? clone $defaultParams
-            : new \VuFindSearch\ParamBag();
-        $this->injectResponseWriter($params);
-        $params->set('q', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
-        if ($id) {
-            $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
-        }
-        if (!$params->hasParam('rows')) {
-            $params->add('rows', 100);
-        }
-        if (!$params->hasParam('sort')) {
-            $params->add('sort', 'publishDateSort desc, title_sort asc');
-        }
-        $response = $this->connector->search($params);
-        $collection = $this->createRecordCollection($response);
-        $this->injectSourceIdentifier($collection);
-        return $collection;
     }
 
     /**
@@ -653,5 +626,51 @@ class Backend extends AbstractBackend implements
         }
         $params->set('wt', ['json']);
         $params->set('json.nl', ['arrarr']);
+    }
+
+    /**
+     * Return work expressions.
+     *
+     * @param WorkKeysQuery $query         Search query
+     * @param int           $offset        Search offset
+     * @param int           $limit         Search limit
+     * @param ParamBag      $defaultParams Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    protected function workKeysSearch(
+        WorkKeysQuery $query,
+        int $offset,
+        int $limit,
+        ParamBag $defaultParams = null
+    ): RecordCollectionInterface {
+        $id = $query->getId();
+        if ('' === $id) {
+            throw new BackendException('Record ID empty in work keys query');
+        }
+        if (!($workKeys = $query->getWorkKeys())) {
+            $recordResponse = $this->connector->retrieve($id);
+            $recordCollection = $this->createRecordCollection($recordResponse);
+            $record = $recordCollection->first();
+            if (!$record || !($workKeys = $record->tryMethod('getWorkKeys'))) {
+                return $this->createRecordCollection('{}');
+            }
+        }
+
+        $params = $defaultParams ? clone $defaultParams : new \VuFindSearch\ParamBag();
+        $this->injectResponseWriter($params);
+        $params->set('q', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
+        if (!$query->getIncludeSelf()) {
+            $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
+        }
+        $params->set('rows', $limit);
+        $params->set('start', $offset);
+        if (!$params->hasParam('sort')) {
+            $params->add('sort', 'publishDateSort desc, title_sort asc');
+        }
+        $response = $this->connector->search($params);
+        $collection = $this->createRecordCollection($response);
+        $this->injectSourceIdentifier($collection);
+        return $collection;
     }
 }

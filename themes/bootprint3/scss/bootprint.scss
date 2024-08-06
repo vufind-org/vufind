@@ -165,9 +165,7 @@ ul.random.image li img { margin: 0 auto; }
     background-color: $active-orange;
     border-color: $active-orange;
   }
-  .facet.active .badge,
-  .jstree-node.active .badge,
-  .jstree-node.active .badge .fa { color: $active-orange; }
+  .facet.active .badge { color: $active-orange; }
   .facet .badge a { color: #fff; }
 }
 .checkboxFilter .facet { padding-left: 1px; }
@@ -184,8 +182,4 @@ ul.random.image li img { margin: 0 auto; }
 .top-row .badge a {
   color: #fff;
   &:hover { color: $brand-danger; }
-}
-
-.jstree-facet .active > .jstree-anchor .facet {
-  background-color: $active-orange;
 }

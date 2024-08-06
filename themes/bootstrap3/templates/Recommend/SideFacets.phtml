@@ -18,17 +18,8 @@
       }
     }
   }
-
-  $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
-  if ($hierarchicalFacets) {
-    // jstree.min.js used to be injected by hierarchical-facet.js, but with deferred
-    // processing it's called too late to append anything to the headers.
-    $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
-    $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
-
-  }
 ?>
-<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
+<?=$this->component('hide-offcanvas-button')?>
 <?php
   $checkboxFilters = $this->recommend->getCheckboxFacetSet();
   $hasVisibleCheckboxes = false;
@@ -52,8 +43,6 @@
 <?php endif; ?>
 <?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
-<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
-<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
     <?php $collapsed = in_array($title, $collapsedFacets); ?>
@@ -65,7 +54,7 @@
           <?=$this->icon('collapse', 'facet-title-icon') ?>
         </button>
       </h3>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" aria-expanded="<?=$collapsed ? 'false' : 'true'?>" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <?=
           $this->context($this)->renderInContext(
               'Recommend/SideFacets/facet.phtml',

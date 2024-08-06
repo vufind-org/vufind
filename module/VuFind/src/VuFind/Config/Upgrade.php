@@ -709,6 +709,18 @@ class Upgrade
             unset($newConfig['Syndetics']['url']);
         }
 
+        // Convert spellchecker 'simple' option
+        if (
+            // If 'simple' is set
+            isset($newConfig['Spelling']['simple']) &&
+            // and 'dictionaries' is set to default
+            ($newConfig['Spelling']['dictionaries'] == ['default', 'basicSpell'])
+        ) {
+            $newConfig['Spelling']['dictionaries'] = $newConfig['Spelling']['simple']
+                ? ['basicSpell'] : ['default', 'basicSpell'];
+        }
+        unset($newConfig['Spelling']['simple']);
+
         // Translate obsolete permission settings:
         $this->upgradeAdminPermissions();
 
@@ -1279,7 +1291,7 @@ class Upgrade
         // Does the file contain any meaningful lines?
         foreach (file($src) as $line) {
             $line = trim($line);
-            if (!empty($line) && substr($line, 0, 1) != '#') {
+            if ('' !== $line && !str_starts_with($line, '#')) {
                 return true;
             }
         }
@@ -1472,16 +1484,16 @@ class Upgrade
 
             // Is the current line a comment?  If so, add to the currentComments
             // string. Note that we treat blank lines as comments.
-            if (substr($trimmed, 0, 1) == ';' || empty($trimmed)) {
+            if ('' === $trimmed || str_starts_with($trimmed, ';')) {
                 $comments .= $line;
             } elseif (
-                substr($trimmed, 0, 1) == '['
+                str_starts_with($trimmed, '[')
                 && ($closeBracket = strpos($trimmed, ']')) > 1
             ) {
                 // Is the current line the start of a section?  If so, create the
                 // appropriate section of the return value:
                 $section = substr($trimmed, 1, $closeBracket - 1);
-                if (!empty($section)) {
+                if ('' !== $section) {
                     // Grab comments at the end of the line, if any:
                     if (($semicolon = strpos($trimmed, ';')) !== false) {
                         $inline = trim(substr($trimmed, $semicolon));
@@ -1498,7 +1510,7 @@ class Upgrade
                 // Is the current line a setting?  If so, add to the return value:
                 $set = trim(substr($trimmed, 0, $equals));
                 $set = trim(str_replace('[]', '', $set));
-                if (!empty($section) && !empty($set)) {
+                if ('' !== $section && '' !== $set) {
                     // Grab comments at the end of the line, if any:
                     if (($semicolon = strpos($trimmed, ';')) !== false) {
                         $inline = trim(substr($trimmed, $semicolon));

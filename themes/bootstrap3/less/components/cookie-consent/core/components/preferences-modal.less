@@ -1,7 +1,8 @@
 @import "../global";
 
+/* #LESS> */
 @cc-padding-y: 1em;
-@cc-padding-x: 1.5em;
+@cc-padding-x: 1.4em;
 
 @cc-toggle-knob-height: 23px;
 @cc-toggle-knob-width: 50px;
@@ -10,6 +11,19 @@
 @cc-service-toggle-knob-height: 19px;
 @cc-service-toggle-knob-width: 42px;
 @cc-service-toggle-knob-icon-width: 1.7px;
+/* <#LESS */
+/* #SCSS>
+$cc-padding-y: 1em !default;
+$cc-padding-x: 1.4em !default;
+
+$cc-toggle-knob-height: 23px !default;
+$cc-toggle-knob-width: 50px !default;
+$cc-toggle-knob-icon-width: 2px !default;
+
+$cc-service-toggle-knob-height: 19px !default;
+$cc-service-toggle-knob-width: 42px !default;
+$cc-service-toggle-knob-icon-width: 1.7px !default;
+<#SCSS */
 
 :root{
     --cc-pm-toggle-border-radius: 4em;
@@ -372,7 +386,7 @@
         background: var(--cc-toggle-off-knob-bg);
         box-shadow: 0 1px 2px rgba(24, 32, 3, .36);
         transition: transform .25s ease, background-color .25s ease;
-        border-radius: 100%;
+        border-radius: var(--cc-pm-toggle-border-radius);
     }
 
     .toggle__icon-on,
@@ -454,16 +468,15 @@
         flex-direction: column;
         font-size: .9em;
         color: var(--cc-secondary-color);
+
+        & > *:not(:last-child) {
+            border-bottom: 1px solid var(--cc-cookie-category-block-border);
+        }
     }
 
     .pm__section-services{
         display: flex;
         flex-direction: column;
-
-        & + div,
-        & + table{
-            border-top: 1px solid var(--cc-cookie-category-block-border);
-        }
     }
 
     .pm__service{
@@ -491,7 +504,7 @@
         height: 8px;
         border: 2px solid currentColor;
         border-radius: 100%;
-        margin-left: 7px;
+        margin-left: 6px;
         margin-right: 20px;
         margin-top: 1px;
     }
@@ -519,7 +532,7 @@
 
     .pm__table-caption {
         border-top: 1px solid var(--cc-cookie-category-block-border);
-        text-align: start;
+        text-align: left;
     }
 
     .pm__table-caption,
@@ -633,6 +646,7 @@
         height: 100%;
         max-height: none;
         max-width: 29em;
+        width: 100%;
         margin: 0;
         opacity: 1;
 
@@ -722,7 +736,7 @@
             .pm__header,
             .pm__body,
             .pm__footer{
-                padding: 1em 1.65em;
+                padding: 1em 1.4em;
             }
 
             &.pm--flip{
@@ -888,7 +902,7 @@
         }
     }
 }
-/* End: Fix RTL alyout */
+/* End: Fix RTL layout */
 
 
 @media screen and (max-width: 640px){

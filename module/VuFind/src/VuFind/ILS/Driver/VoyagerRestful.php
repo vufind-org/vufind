@@ -208,7 +208,7 @@ class VoyagerRestful extends Voyager implements
     protected $checkLoans;
 
     /**
-     * Item locations exluded from item availability check.
+     * Item locations excluded from item availability check.
      *
      * @var string
      */
@@ -2381,10 +2381,9 @@ class VoyagerRestful extends Voyager implements
                         'institution_id' => (string)$institution->attributes()->id,
                         'institution_name' => (string)$item->dbName,
                         'institution_dbkey' => (string)$item->dbKey,
-                        'in_transit' => (substr((string)$item->statusText, 0, 13)
-                            == 'In transit to')
-                          ? substr((string)$item->statusText, 14)
-                          : '',
+                        'in_transit' => str_starts_with((string)$item->statusText, 'In transit to')
+                            ? substr((string)$item->statusText, 14)
+                            : '',
                     ];
                 }
             }
@@ -2465,15 +2464,13 @@ class VoyagerRestful extends Voyager implements
                         'institution_id' => (string)$institution->attributes()->id,
                         'institution_name' => (string)$item->dbName,
                         'institution_dbkey' => (string)$item->dbKey,
-                        'processed' => substr((string)$item->statusText, 0, 6)
-                            == 'Filled'
+                        'processed' => str_starts_with((string)$item->statusText, 'Filled')
                             ? $this->dateFormat->convertToDisplayDate(
                                 'Y-m-d',
                                 substr((string)$item->statusText, 7)
                             )
                             : '',
-                        'canceled' => substr((string)$item->statusText, 0, 8)
-                            == 'Canceled'
+                        'canceled' => str_starts_with((string)$item->statusText, 'Canceled')
                             ? $this->dateFormat->convertToDisplayDate(
                                 'Y-m-d',
                                 substr((string)$item->statusText, 9)
@@ -3323,7 +3320,7 @@ class VoyagerRestful extends Voyager implements
         // in others, it may be something like '1@LOCAL' -- for now,
         // let's try checking the last 5 characters. If other options
         // exist in the wild, we can make this method more sophisticated.
-        return substr($institution, -5) == 'LOCAL';
+        return str_ends_with($institution, 'LOCAL');
     }
 
     /**

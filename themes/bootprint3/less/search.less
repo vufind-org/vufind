@@ -41,7 +41,10 @@
   .btn-primary[multiple],
   .form-control[multiple] { height: auto; }
   @media (min-width: 768px) {
-    .search-query { width: 400px; }
+    .input-group {
+      width: 400px;
+    }
+    .form-control.search-query { width: 400px; }
   }
   .nav-tabs {
     border-bottom: 0;
@@ -64,6 +67,44 @@
     border-bottom: 0;
     text-decoration: none;
     z-index: 5;
+  }
+
+  .keyboard-selection {
+    button.dropdown-toggle {
+      color: @input-color;
+      background-color: white;
+
+      &:hover, &:focus {
+        color: white;
+        background-color: @brand-primary;
+      }
+    }
+
+    &:not(.open) {
+      .activated:not(:hover){
+        background: lighten(@brand-primary, 35%);
+      }
+    }
+
+    .btn-primary {
+      height: 20px;
+    }
+  }
+}
+
+.keyboard-box {
+  width: 85%;
+
+  @media (min-width: 768px) {
+    width: 635px;
+  }
+
+  @media (min-width: 992px) {
+    width: 832px;
+  }
+
+  @media (min-width: 1200px) {
+    width: 832px;
   }
 }
 
@@ -118,7 +159,7 @@ legend {
 
 /* --- Combined --- */
 .template-dir-combined.template-name-results {
-  &.offcanvas {
+  &.vufind-offcanvas {
     margin-left: .5rem;
     margin-right: .5rem;
   }
@@ -155,7 +196,7 @@ legend {
 @media (min-width: 768px) {
   .template-dir-combined.template-name-results {
     &,
-    &.offcanvas { // overcoming specificity
+    &.vufind-offcanvas { // overcoming specificity
       margin-left: 1rem;
       margin-right: 1rem;
     }

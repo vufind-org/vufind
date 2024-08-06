@@ -32,7 +32,9 @@
 namespace VuFind\Search\Base;
 
 use VuFind\I18n\TranslatableString;
+use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;
+use VuFind\Search\QueryAdapterInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Query\AbstractQuery;
@@ -228,6 +230,20 @@ class Params
     protected $configLoader;
 
     /**
+     * Query adapter
+     *
+     * @var ?QueryAdapterInterface
+     */
+    protected $queryAdapter = null;
+
+    /**
+     * Default query adapter class
+     *
+     * @var string
+     */
+    protected $queryAdapterClass = QueryAdapter::class;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -281,6 +297,31 @@ class Params
     public function setOptions(Options $options)
     {
         $this->options = $options;
+    }
+
+    /**
+     * Get query adapter
+     *
+     * @return QueryAdapterInterface
+     */
+    public function getQueryAdapter(): QueryAdapterInterface
+    {
+        if (null === $this->queryAdapter) {
+            $this->queryAdapter = new ($this->queryAdapterClass)();
+        }
+        return $this->queryAdapter;
+    }
+
+    /**
+     * Set query adapter
+     *
+     * @param QueryAdapterInterface $queryAdapter Query adapter
+     *
+     * @return void
+     */
+    public function setQueryAdapter(QueryAdapterInterface $queryAdapter)
+    {
+        $this->queryAdapter = $queryAdapter;
     }
 
     /**
@@ -524,7 +565,7 @@ class Params
      */
     protected function initAdvancedSearch($request)
     {
-        $this->query = QueryAdapter::fromRequest(
+        $this->query = $this->getQueryAdapter()->fromRequest(
             $request,
             $this->getOptions()->getDefaultHandler()
         );
@@ -691,7 +732,15 @@ class Params
 
         // Validate and assign the sort value:
         $valid = array_keys($this->getOptions()->getSortOptions());
-        if (!empty($sort) && in_array($sort, $valid)) {
+
+        $matchedHiddenPatterns = array_filter(
+            $this->getOptions()->getHiddenSortOptions(),
+            function ($pattern) use ($sort) {
+                return preg_match('/' . $pattern . '/', $sort);
+            }
+        );
+
+        if (!empty($sort) && (in_array($sort, $valid) || count($matchedHiddenPatterns) > 0)) {
             $this->sort = $sort;
         } else {
             $this->sort = $this->getDefaultSort();
@@ -761,7 +810,7 @@ class Params
         $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
-        return QueryAdapter::display($this->getQuery(), $translate, $showField);
+        return $this->getQueryAdapter()->display($this->getQuery(), $translate, $showField);
     }
 
     /**
@@ -786,10 +835,10 @@ class Params
         $value = count($temp) > 0 ? $temp[0] : '';
 
         // Remove quotes from the value if there are any
-        if (substr($value, 0, 1) == '"') {
+        if (str_starts_with($value, '"')) {
             $value = substr($value, 1);
         }
-        if (substr($value, -1, 1) == '"') {
+        if (str_ends_with($value, '"')) {
             $value = substr($value, 0, -1);
         }
         // One last little clean on whitespace
@@ -901,10 +950,7 @@ class Params
      */
     public function isAdvancedFilter($filter)
     {
-        if (substr($filter, 0, 1) == '(' || substr($filter, 0, 2) == '-(') {
-            return true;
-        }
-        return false;
+        return str_starts_with($filter, '(') || str_starts_with($filter, '-(');
     }
 
     /**
@@ -1771,11 +1817,13 @@ class Params
     {
         // Loop through all the current limits
         $valid = $this->getOptions()->getLimitOptions();
+        $defaultLimit = $this->getOptions()->getDefaultLimit();
         $list = [];
         foreach ($valid as $limit) {
             $list[$limit] = [
                 'desc' => $limit,
                 'selected' => ($limit == $this->getLimit()),
+                'default' => $limit == $defaultLimit,
             ];
         }
         return $list;
@@ -1791,14 +1839,43 @@ class Params
     {
         // Loop through all the current filter fields
         $valid = $this->getOptions()->getSortOptions();
+        $defaultSort = $this->getDefaultSort();
         $list = [];
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
                 'selected' => ($sort == $this->getSort()),
+                'default' => $sort == $defaultSort,
             ];
         }
         return $list;
+    }
+
+    /**
+     * Store settings to a minified object
+     *
+     * @param Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function minify(Minified &$minified): void
+    {
+        $minified->ty = $this->getSearchType();
+        $minified->cl = $this->getSearchClassId();
+
+        // Search terms, we'll shorten keys
+        $query = $this->getQuery();
+        $minified->t = $this->getQueryAdapter()->minify($query);
+
+        // It would be nice to shorten filter fields too, but
+        //      it would be a nightmare to maintain.
+        $minified->f = $this->getRawFilters();
+        $minified->hf = $this->getHiddenFilters();
+
+        $minified->scp = [
+            'page' => $this->getPage(),
+            'limit' => $this->getLimit(),
+        ];
     }
 
     /**
@@ -1824,7 +1901,7 @@ class Params
         }
 
         // Search terms, we need to expand keys
-        $this->query = QueryAdapter::deminify($minified->t);
+        $this->query = $this->getQueryAdapter()->deminify($minified->t);
     }
 
     /**
@@ -2004,7 +2081,7 @@ class Params
             ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
         $retVal = false;
         // If the section is in reverse order, the tilde will flag this:
-        if (substr($facetList, 0, 1) == '~') {
+        if (str_starts_with($facetList, '~')) {
             foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;
@@ -2016,5 +2093,18 @@ class Params
             }
         }
         return $retVal;
+    }
+
+    /**
+     * Check whether a specific facet supports filtering
+     *
+     * @param string $facet The facet to check
+     *
+     * @return bool
+     */
+    public function supportsFacetFiltering($facet)
+    {
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        return method_exists($this, 'setFacetContains') && !in_array($facet, $translatedFacets);
     }
 }

@@ -31,8 +31,10 @@
 
 namespace VuFind\Controller\Plugin;
 
+use Exception;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory as SearchMemory;
@@ -127,7 +129,7 @@ class ResultScroller extends AbstractPlugin
     public function init($searchObject)
     {
         // Do nothing if disabled or search is empty:
-        if (!$this->enabled || $searchObject->getResultTotal() === 0) {
+        if (!$this->enabled || $searchObject->getResultTotal() <= 0) {
             return false;
         }
 
@@ -150,8 +152,7 @@ class ResultScroller extends AbstractPlugin
         $data->limit = $searchObject->getParams()->getLimit();
         $data->sort = $searchObject->getParams()->getSort();
         $data->total = $searchObject->getResultTotal();
-        $data->firstlast = $searchObject->getOptions()
-            ->supportsFirstLastNavigation();
+        $data->firstlast = $searchObject->getOptions()->recordFirstLastNavigationEnabled();
 
         // save the IDs of records on the current page to the session
         // so we can "slide" from one record to the next/previous records
@@ -660,15 +661,17 @@ class ResultScroller extends AbstractPlugin
      */
     protected function restoreSearch(int $searchId): ?Results
     {
-        $searchTable = $this->getController()->getTable('Search');
-        $row = $searchTable->getOwnedRowById(
+        $searchService = $this->getController()->getDbService(SearchServiceInterface::class);
+        $row = $searchService->getSearchByIdAndOwner(
             $searchId,
             $this->session->getManager()->getId(),
             null
         );
         if (!empty($row)) {
-            $minSO = $row->getSearchObject();
-            $search = $minSO->deminify($this->resultsManager);
+            $search = $row->getSearchObject()?->deminify($this->resultsManager);
+            if (!$search) {
+                throw new Exception("Problem getting search object from search {$row->getId()}.");
+            }
             // The saved search does not remember its original limit or sort;
             // we should reapply them from the session data:
             $search->getParams()->setLimit(

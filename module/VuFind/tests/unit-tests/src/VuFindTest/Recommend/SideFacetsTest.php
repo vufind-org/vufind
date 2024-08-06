@@ -30,7 +30,6 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SideFacets;
-use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
 
@@ -78,44 +77,9 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             [],
             $this->once()
         );
-        $sf = $this->getSideFacets($configLoader, null, '', null, null);
+        $sf = $this->getSideFacets($configLoader, null, '', null);
         $this->assertEquals(['format'], $sf->getHierarchicalFacets());
         $this->assertEquals(['a', 'b', 'c'], $sf->getHierarchicalFacetSortOptions());
-    }
-
-    /**
-     * Test missing hierarchical facet helper
-     *
-     * @return void
-     */
-    public function testMissingHierarchicalFacetHelper(): void
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage(
-            'VuFind\\Recommend\\SideFacets: hierarchical facet helper unavailable'
-        );
-
-        $configLoader = $this->getMockConfigPluginManager(
-            [
-                'facets' => [
-                    'Results' => [
-                        'format' => 'Format',
-                    ],
-                    'SpecialFacets' => [
-                        'hierarchical' => ['format'],
-                    ],
-                ],
-            ],
-            [],
-            $this->once()
-        );
-        $results = $this->getMockResults();
-        $response = ['format' => ['dummy']];
-        $results->expects($this->once())->method('getFacetList')
-            ->with($this->equalTo(['format' => 'Format']))
-            ->will($this->returnValue($response));
-        $sf = $this->getSideFacets($configLoader, $results, '', null, null);
-        $sf->getFacetSet();
     }
 
     /**
@@ -392,8 +356,6 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      * @param Results                      $results      results object
      * @param string                       $settings     settings
      * @param \Laminas\Stdlib\Parameters   $request      request
-     * @param HierarchicalFacetHelper      $facetHelper  hierarchical facet helper
-     * (true to build default, null to omit)
      *
      * @return SideFacets
      */
@@ -401,16 +363,12 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         \VuFind\Config\PluginManager $configLoader = null,
         Results $results = null,
         string $settings = '',
-        \Laminas\Stdlib\Parameters $request = null,
-        $facetHelper = true
+        \Laminas\Stdlib\Parameters $request = null
     ): SideFacets {
         if (null === $results) {
             $results = $this->getMockResults();
         }
-        $sf = new SideFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
-            true === $facetHelper ? new HierarchicalFacetHelper() : $facetHelper
-        );
+        $sf = new SideFacets($configLoader ?? $this->getMockConfigPluginManager([]));
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),

@@ -726,7 +726,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             }
             array_push($newwords, $word);
 
-            $followsColon = substr($word, -1) == ':';
+            $followsColon = str_ends_with($word, ':');
         }
 
         // We've dealt with capitalization of words; now we need to deal with
