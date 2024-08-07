@@ -53,11 +53,8 @@ class HelpController extends AbstractBase
     public function homeAction()
     {
         $topic = $this->params()->fromRoute('topic');
-        if (empty($topic)) {
+        if (empty($topic) || $topic === 'Home') {
             $topic = $this->params()->fromQuery('topic');
-        }
-        if ($topic === 'Home') {
-            $topic = null;
         }
 
         $this->layout()->setTemplate('layout/help');
