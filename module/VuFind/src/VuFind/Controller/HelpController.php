@@ -53,6 +53,9 @@ class HelpController extends AbstractBase
     public function homeAction()
     {
         $topic = $this->params()->fromRoute('topic');
+        // The 'Home' check is for backward compatibility in case the legacy
+        // Help/Home route is eventually removed from the configuration. Old
+        // URLs were of the form /Help/Home?topic=x; new URLs are /Help/x.
         if (empty($topic) || $topic === 'Home') {
             $topic = $this->params()->fromQuery('topic');
         }
