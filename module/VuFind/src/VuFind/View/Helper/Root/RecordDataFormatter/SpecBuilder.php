@@ -91,6 +91,18 @@ class SpecBuilder
     }
 
     /**
+     * Remove a previously set generic spec line.
+     *
+     * @param string $key Label associated with this spec line
+     *
+     * @return void
+     */
+    public function removeLine($key)
+    {
+        unset($this->spec[$key]);
+    }
+
+    /**
      * Construct a multi-function template spec line.
      *
      * @param string   $key        Label to associate with this spec line
