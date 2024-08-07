@@ -56,6 +56,9 @@ class HelpController extends AbstractBase
         if (empty($topic)) {
             $topic = $this->params()->fromQuery('topic');
         }
+        if ($topic === 'Home') {
+            $topic = null;
+        }
 
         $this->layout()->setTemplate('layout/help');
         return $this->createViewModel(
