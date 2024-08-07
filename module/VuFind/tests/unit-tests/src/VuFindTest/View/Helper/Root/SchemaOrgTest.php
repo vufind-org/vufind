@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
 use VuFind\View\Helper\Root\SchemaOrg;
+use VuFindTest\RecordDriver\TestHarness;
 
 /**
  * SchemaOrg View Helper Test Class
@@ -87,5 +88,39 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('', $helper->getTag('foo', ['bar' => 'baz']));
         $this->assertEquals('', $helper->getLink('http://foo', 'bar', ['baz' => 'xyzzy']));
         $this->assertEquals('', $helper->getMeta('foo', 'bar', ['baz' => 'xyzzy']));
+    }
+
+    /**
+     * Data provider for testGetRecordTypes().
+     *
+     * @return void
+     */
+    public static function getRecordTypesProvider(): array
+    {
+        return [
+            'no types' => [[], ''],
+            'one type' => [['foo'], 'foo'],
+            'two types' => [['foo', 'bar'], 'foo bar'],
+        ];
+    }
+
+    /**
+     * Test that we can get a formatted list of record types.
+     *
+     * @param string[] $types    Types to test with
+     * @param string   $expected Expected return value
+     *
+     * @return void
+     *
+     * @dataProvider getRecordTypesProvider
+     */
+    public function testGetRecordTypes(array $types, string $expected): void
+    {
+        $helper = $this->getHelper(true);
+        $driver = new TestHarness();
+        $driver->setRawData(
+            ['SchemaOrgFormatsArray' => $types]
+        );
+        $this->assertEquals($expected, $helper->getRecordTypes($driver));
     }
 }

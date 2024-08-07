@@ -2,10 +2,31 @@
 return [
     'extends' => 'root',
     'css' => [
-        //'vendor/bootstrap.min.css',
-        //'vendor/bootstrap-accessibility.css',
-        'compiled.css',
-        'print.css:print',
+        /**
+         * Entries in this section can either be specified as array or as string.
+         * Array format is preferred.
+         *
+         * Available array options:
+         * - file: the path to the file (either relative to the css directory of your
+         *   theme, or a URL)
+         * - load_after: Use this to explicitly load the file after the given other
+         *   file. This may NOT be used together with a priority setting.
+         * - priority: an optional priority (lower value means higher priority).
+         *      Default convention for VuFind's own themes:
+         *          - 1xx => vendor (third-party code)
+         *          - 2xx => VuFind library (general-purpose code)
+         *          - 3xx => VuFind scripts (highly VuFind-specific code)
+         * - media: e.g. 'print'
+         * - conditional: e.g. '!IE'
+         * - extras: array of additional attributes
+         *
+         * Strings are supported for backwards compatibility reasons. examples:
+         * - 'example.css' => same as ['file' => 'example.css']
+         * - 'example.css:print:!IE' => same as
+         *   ['file' => 'example.css', 'media' => 'print', 'conditional' => '!IE']
+         */
+        ['file' => 'compiled.css'],
+        ['file' => 'print.css', 'media' => 'print'],
     ],
     'js' => [
         /**

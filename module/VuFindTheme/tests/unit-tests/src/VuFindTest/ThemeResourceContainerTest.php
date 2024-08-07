@@ -43,18 +43,97 @@ use VuFindTheme\ResourceContainer;
 class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test CSS add/remove.
+     * Test CSS add/remove using strings.
      *
      * @return void
      */
-    public function testCss()
+    public function testCssStringSupport(): void
     {
         $container = new ResourceContainer();
         $container->addCss(['a', 'b', 'c']);
         $container->addCss('c');
         $container->addCss('d');
         $container->addCss('e');
-        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getCss()));
+        $expectedResult = [
+            ['file' => 'a'],
+            ['file' => 'b'],
+            ['file' => 'c'],
+            ['file' => 'd'],
+            ['file' => 'e'],
+        ];
+        $this->assertEquals($expectedResult, $container->getCss());
+    }
+
+    /**
+     * Test CSS add/remove with a mix of strings/arrays (and using advanced features).
+     *
+     * @return void
+     */
+    public function testCssMixedSupport(): void
+    {
+        $container = new ResourceContainer();
+        $container->addCss('a');
+        $container->addCss(['file' => 'p2', 'priority' => 220]);
+        $container->addCss(['b', 'c', 'd']);
+        $container->addCss('http://foo/bar:(min-width: 768px):!IE');
+        $container->addCss(['file' => 'd1', 'load_after' => 'd']);
+        $container->addCss(['file' => 'p1', 'priority' => 110]);
+        $container->addCss(['file' => 'd2', 'load_after' => 'd1']);
+        $container->addCss([]);
+
+        $expectedResult = [
+            ['file' => 'p1', 'priority' => 110],
+            ['file' => 'p2', 'priority' => 220],
+            ['file' => 'a'],
+            ['file' => 'b'],
+            ['file' => 'c'],
+            ['file' => 'd'],
+            ['file' => 'd1', 'load_after' => 'd'],
+            ['file' => 'd2', 'load_after' => 'd1'],
+            [
+                'file' => 'http://foo/bar',
+                'media' => '(min-width: 768px)',
+                'conditional' => '!IE',
+            ],
+        ];
+        $this->assertEquals($expectedResult, $container->getCss());
+    }
+
+    /**
+     * Test disabling CSS.
+     *
+     * @return void
+     */
+    public function testCssDisabling(): void
+    {
+        $container = new ResourceContainer();
+        $container->addCss(['a', 'b', 'c']);
+        $container->addCss(['file' => 'b', 'disabled' => true]);
+        $this->assertEquals(
+            [
+                ['file' => 'a'],
+                ['file' => 'c'],
+            ],
+            array_values($container->getCss())
+        );
+    }
+
+    /**
+     * Test Exception for priority + load_after in same CSS entry.
+     *
+     * @return void
+     */
+    public function testCsssException(): void
+    {
+        $cssEntry = ['file' => 'test', 'priority' => 100, 'load_after' => 'a'];
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            'Using "priority" as well as "load_after" in the same entry '
+                . 'is not supported: "' . $cssEntry['file'] . '"'
+        );
+
+        $container = new ResourceContainer();
+        $container->addCss($cssEntry);
     }
 
     /**
@@ -62,7 +141,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testJs()
+    public function testJs(): void
     {
         $container = new ResourceContainer();
         $container->addJs('a');
@@ -128,7 +207,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testJsDisabling()
+    public function testJsDisabling(): void
     {
         $container = new ResourceContainer();
         $container->addJs(['a', 'b', 'c']);
@@ -147,7 +226,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testJsException()
+    public function testJsException(): void
     {
         $jsEntry = ['file' => 'test', 'priority' => 100, 'load_after' => 'a'];
         $this->expectException(\Exception::class);
@@ -165,7 +244,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEncoding()
+    public function testEncoding(): void
     {
         $container = new ResourceContainer();
         $container->setEncoding('fake');
@@ -177,7 +256,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFavicon()
+    public function testFavicon(): void
     {
         $container = new ResourceContainer();
         $container->setFavicon('fake');
@@ -189,7 +268,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGenerator()
+    public function testGenerator(): void
     {
         $container = new ResourceContainer();
         $container->setGenerator('fake');
@@ -201,7 +280,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConfigParsing()
+    public function testConfigParsing(): void
     {
         $container = new ResourceContainer();
         $tests = [
