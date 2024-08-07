@@ -254,7 +254,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var string
      */
-    protected $locationConfig = 'branch';
+    protected $locationField = 'branch';
 
     /**
      * Constructor
@@ -338,8 +338,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $this->sortItemsBySerialIssue
             = $this->config['Holdings']['sortBySerialIssue'] ?? true;
 
-        $this->locationConfig
-        = strtolower(trim($this->config['ItemTypeRenewalBlockMappings']['Location'] ?? 'branch'));
+        $this->locationField
+            = strtolower(trim($this->config['Holdings']['locationField'] ?? 'branch'));
 
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
@@ -2511,7 +2511,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-        switch ($this->locationConfig) {
+        switch ($this->locationField) {
             case 'shelving':
                 $shelvingLocationId = $item['location'];
                 $name = $this->translateLocation($shelvingLocationId);
