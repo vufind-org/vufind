@@ -219,7 +219,7 @@
         <ul class="facet-group" data-title="<?=$this->escapeHtmlAttr('Search Tips') ?>">
           <?php foreach ($helpTopics as $topic => $title): ?>
             <li class="facet">
-              <a class="help-link" data-lightbox href="<?=$this->url('help-home', [], ['query' => ['topic' => $topic, '_' => time()]])?>"><?=$this->transEsc($title)?></a>
+              <a class="help-link" data-lightbox href="<?=$this->url('help', ['topic' => $topic])?>"><?=$this->transEsc($title)?></a>
             </li>
           <?php endforeach; ?>
         </ul>

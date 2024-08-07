@@ -1784,7 +1784,9 @@ class SierraRest extends AbstractBase implements
     {
         foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
-                return trim($varField['subfields'][0]['content'] ?? '');
+                // Depending on Sierra version/configuration, the content may be in a couple
+                // of different places. This logic checks both possibilities.
+                return trim($varField['subfields'][0]['content'] ?? $varField['content'] ?? '');
             }
         }
         return '';
