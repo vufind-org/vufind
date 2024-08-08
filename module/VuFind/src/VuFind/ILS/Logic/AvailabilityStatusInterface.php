@@ -94,6 +94,15 @@ interface AvailabilityStatusInterface
     public function isVisibleInHoldings(): bool;
 
     /**
+     * Set visibility status.
+     *
+     * @param bool $visibility Visibility toggle
+     *
+     * @return AvailabilityStatus
+     */
+    public function setVisibility(bool $visibility): AvailabilityStatus;
+
+    /**
      * Get status description.
      *
      * @return string

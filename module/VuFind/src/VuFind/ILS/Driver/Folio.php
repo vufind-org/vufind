@@ -35,7 +35,7 @@ use Exception;
 use Laminas\Http\Response;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\ILS\Logic\InvisibleAvailabilityStatus;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
@@ -860,6 +860,8 @@ class Folio extends AbstractAPI implements
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using InvisibleAvailabilityStatus()
             if ($number == 0) {
+                $invisibleAvailabilityStatus = new AvailabilityStatus(true, 'See full record');
+                $invisibleAvailabilityStatus->setVisibility(false);
                 $nextBatch[] = [
                     'callnumber' => $holdingDetails['holdingCallNumber'],
                     'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
@@ -869,7 +871,7 @@ class Folio extends AbstractAPI implements
                     'location' => $holdingDetails['holdingLocationName'],
                     'id' => $bibId,
                     'reserve' => 'n',
-                    'availability' => new InvisibleAvailabilityStatus(true, 'See full record')
+                    'availability' => $invisibleAvailabilityStatus
                 ];
             }
             $items = array_merge(
