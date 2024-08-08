@@ -33,6 +33,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use VuFindTest\Feature\SearchFacetFilterTrait;
+use VuFindTest\Feature\SearchLimitTrait;
 use VuFindTest\Feature\SearchSortTrait;
 
 /**
@@ -47,6 +48,7 @@ use VuFindTest\Feature\SearchSortTrait;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchLimitTrait;
     use SearchSortTrait;
     use SearchFacetFilterTrait;
 
@@ -244,22 +246,22 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         ];
 
         return [
-            [
+            'non-deferred AND facets' => [
                 false,
                 false,
                 $andFacets,
             ],
-            [
+            'deferred AND facets' => [
                 true,
                 false,
                 $andFacets,
             ],
-            [
+            'non-deferred OR facets' => [
                 false,
                 true,
                 $orFacets,
             ],
-            [
+            'deferred OR facets' => [
                 true,
                 true,
                 $orFacets,
@@ -286,6 +288,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     'General' => [
                         'default_side_recommend[]'
                             => ($deferred ? 'SideFacetsDeferred' : 'SideFacets') . ':Results:CheckboxFacets',
+                        'limit_options' => '20,40',
                     ],
                 ],
                 'facets' => [
@@ -298,6 +301,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
+        $this->setResultLimit($page, 40);
         $this->waitForPageLoad($page);
 
         // Confirm that we ARE using the correct sidebar type:
@@ -312,6 +317,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Verify that sort order is still correct:
         $this->assertSelectedSort($page, 'title');
+
+        // Verify that limit is still correct:
+        $this->assertLimitControl($page, [20, 40], 40);
     }
 
     /**
