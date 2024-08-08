@@ -858,7 +858,7 @@ class Folio extends AbstractAPI implements
 
             // If there are no item records at this location, we're going to create a fake one,
             // fill it with data from the FOLIO holdings record, and make it not appear in
-            // the full record display using InvisibleAvailabilityStatus()
+            // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0) {
                 $invisibleAvailabilityStatus = new AvailabilityStatus(true, 'See full record');
                 $invisibleAvailabilityStatus->setVisibility(false);
