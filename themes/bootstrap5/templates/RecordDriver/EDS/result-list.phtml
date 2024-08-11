@@ -40,17 +40,19 @@
                     <?php $authors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
 		    <?php $authorCount = count($authors) ?>
 		    <?php $authorNameLimit = $edsConfig->AuthorResultListInfo->AuthorNameLimit ?? 3; ?>
-                    <?php if (!empty($authors)): ?>
-                        <b><?=$this->transEsc($item['Label'])?>:</b>
-                        <?php foreach ($authors as $i => $author): ?>
-                            <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
-                            if ($authorCount == ($i + 1)) {
-                              break;
-                            } elseif (($i + 1) >= $authorNameLimit) {
-                              echo ' ' . $this->transEsc('more_authors_abbrev');
-                              break;
-                            }
-                        ?><?php endforeach; ?>
+		    <?php if ($authorCount > 1): ?>
+                        <p>
+                            <b><?=$this->transEsc($item['Label'])?>:</b>
+                            <?php foreach ($authors as $i => $author): ?>
+                                <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
+                                if ($authorCount == ($i + 1)) {
+                                    break;
+                                } elseif (($i + 1) >= $authorNameLimit) {
+                                    echo ' ' . $this->transEsc('more_authors_abbrev');
+                                    break;
+                                }
+			    ?><?php endforeach; ?>
+                        </p>
                     <?php else: ?>
                         <p>
                             <b><?=$this->transEsc($item['Label'])?>:</b>
