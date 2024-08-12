@@ -137,7 +137,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      */
     protected function createQueryBuilder()
     {
-        $exclude = $this->config->WorldCat->OCLCCode ?? null;
+        $exclude = $this->wcConfig->General->exclude_code ?? null;
         return new QueryBuilder($exclude);
     }
 
