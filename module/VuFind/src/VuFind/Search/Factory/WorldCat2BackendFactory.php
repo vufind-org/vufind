@@ -123,7 +123,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
             ? $this->wcConfig->Connector->toArray() : [];
         $connector = new Connector(
             $this->createHttpClient(),
-            new Container('WorldCat2'),
+            new Container('WorldCat2', $this->serviceLocator->get(\Laminas\Session\SessionManager::class)),
             $connectorOptions
         );
         $connector->setLogger($this->logger);
