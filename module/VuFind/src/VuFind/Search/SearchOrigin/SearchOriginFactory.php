@@ -67,7 +67,7 @@ class SearchOriginFactory implements \Laminas\Log\LoggerAwareInterface
     /**
      * From (request) parameters return an AbstractSearchOrigin object by name
      *
-     * @param array  $params    Parameters
+     * @param array $params Parameters
      *
      * @return AlphaBrowseSearchOrigin|null
      * @throws Exception
