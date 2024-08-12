@@ -147,7 +147,7 @@
       <a class="sr-only sr-only-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <?= $this->render('search/backtoorigin.phtml', ['searchOrigin' => $searchOrigin]); ?>
+    <?= $this->render('search/back-to-origin.phtml', ['searchOrigin' => $searchOrigin]); ?>
     <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
       <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
         <div class="container">

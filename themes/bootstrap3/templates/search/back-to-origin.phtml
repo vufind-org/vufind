@@ -5,7 +5,7 @@ if (isset($searchOrigin)) {
   $link = $this->url($searchOrigin->getRouteName()) . '?' . http_build_query($searchOrigin->getOriginUrlParamsArray());
   $fieldValue = $this->translate($searchOrigin->getDisplayName());
   echo
-      '<nav class="backtoorigin container">' .
+      '<nav class="back-to-origin container">' .
       '<p><a href="' . $link . '">' . $this->translate('back_to_browse_by', ['%%field%%' => $fieldValue]) . '</a></p>' .
       '</nav>';
 }
