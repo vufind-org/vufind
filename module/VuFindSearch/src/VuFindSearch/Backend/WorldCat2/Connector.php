@@ -30,11 +30,13 @@
 
 namespace VuFindSearch\Backend\WorldCat2;
 
+use Exception;
 use Laminas\Http\Client\Exception\RuntimeException as ExceptionRuntimeException;
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Exception\RuntimeException;
 use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Session\Container;
 use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -62,15 +64,28 @@ class Connector implements LoggerAwareInterface
     protected $authProvider;
 
     /**
+     * API base URL
+     *
+     * @var string
+     */
+    protected $baseUrl;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Http\Client $client  An HTTP client object
+     * @param Container            $session Session container for persisting data
      * @param array                $options Additional config settings
      */
     public function __construct(
         protected \Laminas\Http\Client $client,
+        protected Container $session,
         protected array $options = []
     ) {
+        if (empty($options['base_url'])) {
+            throw new \Exception('base_url setting is required');
+        }
+        $this->baseUrl = $options['base_url'];
         $authOptions = [
             'clientId' => $options['wskey'],
             'clientSecret' => $options['secret'],
@@ -83,81 +98,12 @@ class Connector implements LoggerAwareInterface
     }
 
     /**
-     * Return a fake API response for development purposes.
-     * TODO: delete when no longer needed.
-     *
-     * @return array
-     */
-    protected function getFakeResponse()
-    {
-        $sampleResponse = <<<SAMPLE
-              {
-                "numberOfRecords": 2,
-                "briefRecords": [
-                  {
-                    "oclcNumber": "44959645",
-                    "title": "Pride and prejudice.",
-                    "creator": "Jane Austen",
-                    "date": "199u",
-                    "language": "eng",
-                    "generalFormat": "Book",
-                    "specificFormat": "Digital",
-                    "publisher": "Project Gutenberg",
-                    "publicationPlace": "Champaign, Ill.",
-                    "isbns": [
-                      "0585013365",
-                      "9780585013367",
-                      "9781925480337",
-                      "192548033X"
-                    ],
-                    "mergedOclcNumbers": [
-                      "818363152",
-                      "854852439",
-                      "859164912",
-                      "956345342"
-                    ],
-                    "catalogingInfo": {
-                      "catalogingAgency": "N\$T",
-                      "transcribingAgency": "N\$T",
-                      "catalogingLanguage": "eng",
-                      "levelOfCataloging": "L"
-                    }
-                  },
-                  {
-                    "oclcNumber": "1103229133",
-                    "title": "Pride and Prejudice [eBook - RBdigital].",
-                    "creator": "Jane Austen",
-                    "date": "1998",
-                    "language": "eng",
-                    "generalFormat": "Book",
-                    "specificFormat": "Digital",
-                    "publisher": "Project Gutenberg Literary Archive Foundation",
-                    "publicationPlace": "Salt Lake City",
-                    "isbns": [
-                      "9781470398842",
-                      "1470398842"
-                    ],
-                    "mergedOclcNumbers": null,
-                    "catalogingInfo": {
-                      "catalogingAgency": "HQD",
-                      "transcribingAgency": "HQD",
-                      "catalogingLanguage": "eng",
-                      "levelOfCataloging": " "
-                    }
-                  }
-                ]
-              }
-            SAMPLE;
-        return json_decode($sampleResponse, true);
-    }
-
-    /**
      * Get an OAuth2 token.
      *
      * @return string
      * @throws IdentityProviderException
      */
-    public function getToken(): string
+    protected function getToken(): string
     {
         return $this->authProvider->getAccessToken('client_credentials', ['scope' => 'wcapi'])->getToken();
     }
@@ -174,14 +120,23 @@ class Connector implements LoggerAwareInterface
      * @throws RuntimeException
      * @throws ExceptionRuntimeException
      */
-    public function makeApiCall(string $path, array $query = [])
+    protected function makeApiCall(string $path, array $query = [])
     {
-        $headers = [
-            'Authorization: Bearer ' . $this->getToken(),
-        ];
+        if (!isset($this->session->token)) {
+            $this->session->token = $this->getToken();
+        }
+        $headers = ['Authorization: Bearer ' . $this->session->token];
         $this->client->setHeaders($headers);
-        $this->client->setUri("https://metadata.api.oclc.org$path?" . http_build_query($query));
-        return $this->client->send();
+        $this->client->setUri($this->baseUrl . $path . '?' . http_build_query($query));
+        $response = $this->client->send();
+        // If authorization failed, the token may be expired; re-request and try again:
+        if ($response->getStatusCode() === 401) {
+            $this->session->token = $this->getToken();
+            $headers = ['Authorization: Bearer ' . $this->session->token];
+            $this->client->setHeaders($headers);
+            $response = $this->client->send();
+        }
+        return $response;
     }
 
     /**
@@ -195,17 +150,9 @@ class Connector implements LoggerAwareInterface
      */
     public function getRecord($id, ParamBag $params = null)
     {
-        // TODO: implement something real here.
-        $this->debug("Fetching record $id");
-        //$result = $this->makeApiCall('/worldcat/search/brief-bibs/' . urlencode($id));
-        $result = $this->getFakeResponse();
-        $found = false;
-        foreach ($result['briefRecords'] as $record) {
-            if ($record['oclcNumber'] === $id) {
-                $found = true;
-                break;
-            }
-        }
+        $response = $this->makeApiCall('/bibs/' . urlencode($id));
+        $record = json_decode($response->getBody(), true);
+        $found = isset($record['identifier']['oclcNumber']);
         return [
             'docs' => $found ? [$record] : [],
             'offset' => 0,
@@ -224,11 +171,13 @@ class Connector implements LoggerAwareInterface
      */
     public function search(ParamBag $params, $offset, $limit)
     {
-        // TODO: implement something real here.
-        //$result = $this->makeApiCall("/worldcat/search/brief-bibs", ['q' => 'test']);
-        $response = $this->getFakeResponse();
-        $docs = $response['briefRecords'];
-        $total = $response['numberOfRecords'];
+        $response = $this->makeApiCall('/bibs', ['q' => 'test']);
+        $result = json_decode($response->getBody(), true);
+        if (!isset($result['bibRecords']) || !isset($result['numberOfRecords'])) {
+            throw new Exception('Unexpected response format.');
+        }
+        $docs = $result['bibRecords'];
+        $total = $result['numberOfRecords'];
         return compact('docs', 'offset', 'total');
     }
 }

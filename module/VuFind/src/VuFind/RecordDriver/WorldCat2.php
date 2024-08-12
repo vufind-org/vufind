@@ -49,10 +49,10 @@ class WorldCat2 extends DefaultRecord
      */
     public function getUniqueID()
     {
-        if (!isset($this->fields['oclcNumber'])) {
+        if (!isset($this->fields['identifier']['oclcNumber'])) {
             throw new \Exception('ID not set!');
         }
-        return $this->fields['oclcNumber'];
+        return $this->fields['identifier']['oclcNumber'];
     }
 
     /**
@@ -64,8 +64,8 @@ class WorldCat2 extends DefaultRecord
     {
         $formats = [];
         foreach (['generalFormat', 'specificFormat'] as $key) {
-            if (isset($this->fields[$key])) {
-                $formats[] = $this->fields[$key];
+            if (isset($this->fields['format'][$key])) {
+                $formats[] = $this->fields['format'][$key];
             }
         }
         return $formats;
@@ -78,7 +78,17 @@ class WorldCat2 extends DefaultRecord
      */
     public function getISBNs()
     {
-        return (array)($this->fields['isbns'] ?? []);
+        return (array)($this->fields['identifier']['isbns'] ?? []);
+    }
+
+    /**
+     * Get an array of all the languages associated with the record.
+     *
+     * @return array
+     */
+    public function getLanguages()
+    {
+        return (array)($this->fields['language']['itemLanguage'] ?? []);
     }
 
     /**
@@ -90,7 +100,7 @@ class WorldCat2 extends DefaultRecord
     {
         return array_merge(
             [$this->getUniqueID()],
-            $this->fields['mergedOclcNumbers'] ?? []
+            $this->fields['identifier']['mergedOclcNumbers'] ?? []
         );
     }
 
@@ -101,7 +111,33 @@ class WorldCat2 extends DefaultRecord
      */
     public function getPlacesOfPublication()
     {
-        return (array)($this->fields['publicationPlace'] ?? []);
+        return array_map(
+            fn ($publisher) => $publisher['publicationPlace'] ?? '',
+            $this->fields['publishers'] ?? []
+        );
+    }
+
+    /**
+     * Convert an author array into a string.
+     *
+     * @param array $data Author data
+     *
+     * @return string
+     */
+    protected function formatCreatorName(array $data): string
+    {
+        return implode(
+            ', ',
+            array_filter(
+                array_merge(
+                    [
+                        $data['secondName']['text'] ?? null,
+                        $data['firstName']['text'] ?? null,
+                    ],
+                    $data['creatorNotes'] ?? []
+                )
+            )
+        );
     }
 
     /**
@@ -111,7 +147,13 @@ class WorldCat2 extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        return (array)($this->fields['creator'] ?? []);
+        return array_map(
+            [$this, 'formatCreatorName'],
+            array_filter(
+                $this->fields['contributor']['creators'] ?? [],
+                fn ($creator) => $creator['isPrimary'] ?? false
+            )
+        );
     }
 
     /**
@@ -121,7 +163,45 @@ class WorldCat2 extends DefaultRecord
      */
     public function getPublicationDates()
     {
-        return (array)($this->fields['date'] ?? []);
+        return (array)($this->fields['date']['machineReadableDate'] ?? []);
+    }
+
+    /**
+     * Get the publishers of the record.
+     *
+     * @return array
+     */
+    public function getPublishers()
+    {
+        return array_map(
+            fn ($publisher) => $publisher['publisherName']['text'] ?? '',
+            $this->fields['publishers'] ?? []
+        );
+    }
+
+    /**
+     * Get an array of summary strings for the record.
+     *
+     * @return array
+     */
+    public function getSummary()
+    {
+        return array_map(
+            fn ($summary) => $summary['text'] ?? '',
+            $this->fields['description']['summaries'] ?? []
+        );
+    }
+
+    /**
+     * Get the full title of the record.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        $full = $this->fields['title']['mainTitles'][0]['text'] ?? '';
+        $parts = explode(' / ', $full);
+        return $parts[0];
     }
 
     /**

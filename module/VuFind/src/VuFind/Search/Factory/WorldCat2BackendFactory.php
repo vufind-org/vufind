@@ -30,6 +30,7 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\Session\Container;
 use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\WorldCat2\Backend;
 use VuFindSearch\Backend\WorldCat2\Connector;
@@ -122,6 +123,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
             ? $this->wcConfig->Connector->toArray() : [];
         $connector = new Connector(
             $this->createHttpClient(),
+            new Container('WorldCat2'),
             $connectorOptions
         );
         $connector->setLogger($this->logger);
