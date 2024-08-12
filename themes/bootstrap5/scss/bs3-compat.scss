@@ -229,6 +229,7 @@ button.list-group-item {
   gap: 0.25em;
 }
 .dropdown-toggle::after {
+  content: "";
   width: 0.3em;
   height: 0.3em;
 }
