@@ -47,17 +47,19 @@ use function count;
  */
 class QueryBuilder
 {
-    /**
-     * Lucene syntax helper
-     *
-     * @var LuceneSyntaxHelper
-     */
-    protected $luceneHelper = null;
-
     /// Public API
 
     /**
-     * Return Summon search parameters based on a user query and params.
+     * Constructor
+     *
+     * @param ?string $oclcCodeToExclude OCLC code to exclude from results
+     */
+    public function __construct(protected $oclcCodeToExclude = null)
+    {
+    }
+
+    /**
+     * Return WorldCat search parameters based on a user query and params.
      *
      * @param AbstractQuery $query  User query
      * @param ?ParamBag     $params Search backend parameters
@@ -70,6 +72,9 @@ class QueryBuilder
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);
+        if ($this->oclcCodeToExclude) {
+            $queryStr = "($queryStr) NOT li:{$this->oclcCodeToExclude}";
+        }
 
         // Send back results
         $newParams = new ParamBag();
