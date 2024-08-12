@@ -155,11 +155,16 @@ class QueryBuilder
     protected function queryToString(Query $query)
     {
         // Clean and validate input:
-        $index = $query->getHandler();
+        $indexParts = explode(':', $query->getHandler());
         $lookfor = $query->getString();
 
         // Prepend the index name, unless it's the special "AllFields"
         // index:
-        return ($index != 'AllFields') ? "{$index}:($lookfor)" : $lookfor;
+        $parts = [];
+        foreach ($indexParts as $index) {
+            $parts[] = ($index != 'AllFields') ? "{$index}:($lookfor)" : $lookfor;
+        }
+
+        return count($parts) > 1 ? '(' . implode(' OR ', $parts) . ')' : $parts[0];
     }
 }
