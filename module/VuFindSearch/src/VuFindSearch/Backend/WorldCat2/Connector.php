@@ -173,7 +173,15 @@ class Connector implements LoggerAwareInterface
         $response = $this->makeApiCall('/bibs?' . implode('&', $params->request()));
         $result = json_decode($response->getBody(), true);
         if (!isset($result['bibRecords']) && !isset($result['numberOfRecords'])) {
-            throw new Exception('Unexpected response format.');
+            $msgParts = [];
+            $errorFields = ['type', 'title', 'detail'];
+            foreach ($errorFields as $field) {
+                if (isset($result[$field])) {
+                    $msgParts[] = $field . ': ' . $result[$field];
+                }
+            }
+            $msg = empty($msgParts) ? 'Unexpected response format.' : implode('; ', $msgParts);
+            throw new Exception($msg);
         }
         $docs = $result['bibRecords'] ?? [];
         $total = $result['numberOfRecords'];

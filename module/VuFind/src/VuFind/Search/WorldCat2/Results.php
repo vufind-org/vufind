@@ -31,6 +31,8 @@ namespace VuFind\Search\WorldCat2;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function strlen;
+
 /**
  * WorldCat v2 Search Parameters
  *
@@ -58,20 +60,26 @@ class Results extends \VuFind\Search\Base\Results
     protected function performSearch()
     {
         $query  = $this->getParams()->getQuery();
-        $limit  = $this->getParams()->getLimit();
-        $offset = $this->getStartRecord();
-        $params = $this->getParams()->getBackendParameters();
-        $command = new SearchCommand(
-            $this->backendId,
-            $query,
-            $offset,
-            $limit,
-            $params
-        );
-        $collection = $this->getSearchService()->invoke($command)->getResult();
+        if (strlen($query->getAllTerms())) {
+            $limit  = $this->getParams()->getLimit();
+            $offset = $this->getStartRecord();
+            $params = $this->getParams()->getBackendParameters();
+            $command = new SearchCommand(
+                $this->backendId,
+                $query,
+                $offset,
+                $limit,
+                $params
+            );
+            $collection = $this->getSearchService()->invoke($command)->getResult();
 
-        $this->resultTotal = $collection->getTotal();
-        $this->results = $collection->getRecords();
+            $this->resultTotal = $collection->getTotal();
+            $this->results = $collection->getRecords();
+        } else {
+            // Empty queries are not supported, so treat the response as empty.
+            $this->resultTotal = 0;
+            $this->results = [];
+        }
     }
 
     /**
