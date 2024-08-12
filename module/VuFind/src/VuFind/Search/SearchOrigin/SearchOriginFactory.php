@@ -53,12 +53,11 @@ class SearchOriginFactory implements \Laminas\Log\LoggerAwareInterface
      */
     public function createObject(array $params): ?AbstractSearchOrigin
     {
-        $nameParam = AbstractSearchOrigin::PARAM_NAME;
-        if (empty($params[$nameParam])) {
+        if (empty($params[AbstractSearchOrigin::PARAM_NAME])) {
             return null;
         }
         try {
-            return self::createObjectByName($params, $nameParam);
+            return self::createObjectByName($params);
         } catch (Exception $e) {
             $this->logWarning('Error while trying to build search origin object : ' . $e->getMessage());
             return null;
@@ -68,15 +67,14 @@ class SearchOriginFactory implements \Laminas\Log\LoggerAwareInterface
     /**
      * From (request) parameters return an AbstractSearchOrigin object by name
      *
-     * @param array  $params
-     * @param string $nameParam
+     * @param array  $params    Parameters
      *
      * @return AlphaBrowseSearchOrigin|null
      * @throws Exception
      */
-    public static function createObjectByName(array $params, string $nameParam): ?AlphaBrowseSearchOrigin
+    public static function createObjectByName(array $params): ?AlphaBrowseSearchOrigin
     {
-        return match ($params[$nameParam]) {
+        return match ($params[AbstractSearchOrigin::PARAM_NAME]) {
             AlphaBrowseSearchOrigin::getName() => new AlphaBrowseSearchOrigin(
                 $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_PARAM] ?? null,
                 $params[AlphaBrowseSearchOrigin::SEARCH_FROM_PARAM] ?? null,
