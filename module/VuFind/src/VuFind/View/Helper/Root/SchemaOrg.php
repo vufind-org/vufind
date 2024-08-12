@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * View helper for injecting schema.org metadata
@@ -48,8 +49,10 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      * @param HtmlAttributes $htmlAttributes HtmlAttributes view helper
      * @param bool           $enabled        Is schema.org metadata enabled?
      */
-    public function __construct(protected HtmlAttributes $htmlAttributes, protected bool $enabled = true)
-    {
+    public function __construct(
+        protected HtmlAttributes $htmlAttributes,
+        protected bool $enabled = true
+    ) {
     }
 
     /**
@@ -105,5 +108,29 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     public function getMeta(string $property, string $content, array $attributes = []): string
     {
         return $this->getTag('meta', compact('property', 'content') + $attributes);
+    }
+
+    /**
+     * Get all record types for the given record.
+     *
+     * @param RecordDriver $driver Record Driver
+     *
+     * @return array
+     */
+    public function getRecordTypesArray(RecordDriver $driver): array
+    {
+        return $driver->tryMethod('getSchemaOrgFormatsArray') ?? [];
+    }
+
+    /**
+     * Get all record types for the given record.
+     *
+     * @param RecordDriver $driver Record Driver
+     *
+     * @return string
+     */
+    public function getRecordTypes(RecordDriver $driver): string
+    {
+        return implode(' ', $this->getRecordTypesArray($driver));
     }
 }

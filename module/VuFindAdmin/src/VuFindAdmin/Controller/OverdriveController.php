@@ -69,8 +69,7 @@ class OverdriveController extends AbstractAdmin
      */
     public function homeAction()
     {
-        $connector  = $this->serviceLocator
-            ->get(\VuFind\DigitalContent\OverdriveConnector::class);
+        $connector  = $this->getService(\VuFind\DigitalContent\OverdriveConnector::class);
 
         $view = $this->createViewModel();
         $view->setTemplate('admin/overdrive/home');

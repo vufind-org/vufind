@@ -1043,7 +1043,7 @@ class Folio extends AbstractAPI implements
      *
      * @param string $responseKey Key containing values to collect in response
      * @param string $interface   FOLIO api interface to call
-     * @param array  $query       CQL query
+     * @param array  $query       Extra GET parameters (e.g. ['query' => 'your cql here'])
      * @param int    $limit       How many results to retrieve from FOLIO per call
      *
      * @return array

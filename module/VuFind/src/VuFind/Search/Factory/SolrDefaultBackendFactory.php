@@ -62,8 +62,7 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
      */
     protected function getCreateRecordCallback(): ?callable
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         return [$manager, 'getSolrRecord'];
     }
 }

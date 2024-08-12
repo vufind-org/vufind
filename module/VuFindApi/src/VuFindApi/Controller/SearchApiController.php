@@ -253,7 +253,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getService(\VuFind\Record\Loader::class);
         $results = [];
         try {
             if (is_array($request['id'])) {
@@ -324,7 +324,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
 
-        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+        $runner = $this->getService(\VuFind\Search\SearchRunner::class);
         try {
             $results = $runner->run(
                 $request,
@@ -410,8 +410,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
         $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
 
-        $facetHelper = $this->serviceLocator
-            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+        $facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $facetList = [];
         foreach ($facets as $facet) {

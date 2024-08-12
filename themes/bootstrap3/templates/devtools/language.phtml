@@ -62,7 +62,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
               <ul class="dropdown-menu" aria-labelledby="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
               <?php foreach ($row['files'] as $k => $v): ?>
                 <li>
-                  <a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url('help-home') . '?lng=' . $this->escapeHtmlAttr($row['lang']) . '&amp;topic=' . $this->escapeHtmlAttr(str_replace('.phtml', '', $v));?>">
+                  <a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url('help', ['topic' => $this->escapeHtmlAttr(str_replace('.phtml', '', $v))]) . '?lng=' . $this->escapeHtmlAttr($row['lang'])?>">
                     <?=$this->escapeHtml($v)?>
                   </a>
                 </li>

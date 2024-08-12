@@ -25,10 +25,11 @@
     "build-dev:less": "grunt lessdev && npm run lessToSass",
     "watch-dev:less": "grunt watch:lessdev",
 
-    "build:scss": "grunt scss",
-    "check:scss": "grunt check:scss",
-    "watch:scss": "grunt watch:scss",
-    "build:scssonly": "grunt scssonly",
+    "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
+    "build:scss": "npm run install:scss-dependencies && grunt scss",
+    "check:scss": "npm run install:scss-dependencies && grunt check:scss",
+    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss",
+    "build:scssonly": "npm run install:scss-dependencies && grunt scssonly",
 
     "lessToSass": "grunt lessToSass",
     "watch:lessToSass": "grunt watch:lessToSass"

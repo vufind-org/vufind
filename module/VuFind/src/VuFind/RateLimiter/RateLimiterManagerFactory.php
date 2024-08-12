@@ -43,6 +43,7 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
 use Symfony\Component\RateLimiter\Storage\StorageInterface;
 use VuFind\RateLimiter\Storage\CredisStorage;
+use VuFind\Service\GetServiceTrait;
 
 /**
  * Rate limiter manager factory.
@@ -55,12 +56,7 @@ use VuFind\RateLimiter\Storage\CredisStorage;
  */
 class RateLimiterManagerFactory implements FactoryInterface
 {
-    /**
-     * Service locator
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
      * Create an object
@@ -151,7 +147,7 @@ class RateLimiterManagerFactory implements FactoryInterface
 
         if ('vufind' === $adapterLc) {
             // Use cache manager for "VuFind" cache (only for testing purposes):
-            $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+            $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
             $laminasCache = $cacheManager->getCache('object', $storageConfig['options']['namespace']);
             // Fake the capabilities to include static TTL support:
             $eventManager = $laminasCache->getEventManager();
@@ -178,8 +174,7 @@ class RateLimiterManagerFactory implements FactoryInterface
                 'adapter' => $adapter,
                 'options' => $storageConfig['options'],
             ];
-            $laminasCache = $this->serviceLocator
-                ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+            $laminasCache = $this->getService(\Laminas\Cache\Service\StorageAdapterFactory::class)
                 ->createFromArrayConfiguration($settings);
         }
 
