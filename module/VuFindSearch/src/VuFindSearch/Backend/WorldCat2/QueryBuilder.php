@@ -29,6 +29,13 @@
 
 namespace VuFindSearch\Backend\WorldCat2;
 
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
+
+use function count;
+
 /**
  * WorldCat Search API v2 query builder.
  *
@@ -38,7 +45,116 @@ namespace VuFindSearch\Backend\WorldCat2;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryBuilder extends \VuFindSearch\Backend\WorldCat\QueryBuilder
+class QueryBuilder
 {
-    // TODO: implement a distinct query builder here when ready.
+    /**
+     * Lucene syntax helper
+     *
+     * @var LuceneSyntaxHelper
+     */
+    protected $luceneHelper = null;
+
+    /// Public API
+
+    /**
+     * Return Summon search parameters based on a user query and params.
+     *
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
+     *
+     * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
+    {
+        // Build base query
+        $queryStr = $this->abstractQueryToString($query);
+
+        // Send back results
+        $newParams = new ParamBag();
+        $newParams->set('q', $queryStr);
+        return $newParams;
+    }
+
+    /// Internal API
+
+    /**
+     * Convert an AbstractQuery object to a query string.
+     *
+     * @param AbstractQuery $query Query to convert
+     *
+     * @return string
+     */
+    protected function abstractQueryToString(AbstractQuery $query)
+    {
+        return $query instanceof Query
+            ? $this->queryToString($query)
+            : $this->queryGroupToString($query);
+    }
+
+    /**
+     * Convert a QueryGroup object to a query string.
+     *
+     * @param QueryGroup $query QueryGroup to convert
+     *
+     * @return string
+     */
+    protected function queryGroupToString(QueryGroup $query)
+    {
+        $groups = $excludes = [];
+
+        foreach ($query->getQueries() as $params) {
+            // Advanced Search
+            if ($params instanceof QueryGroup) {
+                $thisGroup = [];
+                // Process each search group
+                foreach ($params->getQueries() as $group) {
+                    // Build this group individually as a basic search
+                    $thisGroup[] = $this->abstractQueryToString($group);
+                }
+                // Is this an exclusion (NOT) group or a normal group?
+                if ($params->isNegated()) {
+                    $excludes[] = implode(' OR ', $thisGroup);
+                } else {
+                    $groups[]
+                        = implode(' ' . $params->getOperator() . ' ', $thisGroup);
+                }
+            } else {
+                // Basic Search
+                $groups[] = $this->queryToString($params);
+            }
+        }
+
+        // Put our advanced search together
+        $queryStr = '';
+        if (count($groups) > 0) {
+            $queryStr
+                .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
+        }
+        // and concatenate exclusion after that
+        if (count($excludes) > 0) {
+            $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
+        }
+
+        return $queryStr;
+    }
+
+    /**
+     * Convert a single Query object to a query string.
+     *
+     * @param Query $query Query to convert
+     *
+     * @return string
+     */
+    protected function queryToString(Query $query)
+    {
+        // Clean and validate input:
+        $index = $query->getHandler();
+        $lookfor = $query->getString();
+
+        // Prepend the index name, unless it's the special "AllFields"
+        // index:
+        return ($index != 'AllFields') ? "{$index}:($lookfor)" : $lookfor;
+    }
 }

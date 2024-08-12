@@ -111,8 +111,7 @@ class Connector implements LoggerAwareInterface
     /**
      * Make an API call.
      *
-     * @param string $path  Path to query
-     * @param array  $query Query parameters
+     * @param string $path Path to query (including GET parameters)
      *
      * @return Response
      * @throws IdentityProviderException
@@ -120,14 +119,14 @@ class Connector implements LoggerAwareInterface
      * @throws RuntimeException
      * @throws ExceptionRuntimeException
      */
-    protected function makeApiCall(string $path, array $query = [])
+    protected function makeApiCall(string $path)
     {
         if (!isset($this->session->token)) {
             $this->session->token = $this->getToken();
         }
         $headers = ['Authorization: Bearer ' . $this->session->token];
         $this->client->setHeaders($headers);
-        $this->client->setUri($this->baseUrl . $path . '?' . http_build_query($query));
+        $this->client->setUri($this->baseUrl . $path);
         $response = $this->client->send();
         // If authorization failed, the token may be expired; re-request and try again:
         if ($response->getStatusCode() === 401) {
@@ -171,12 +170,12 @@ class Connector implements LoggerAwareInterface
      */
     public function search(ParamBag $params, $offset, $limit)
     {
-        $response = $this->makeApiCall('/bibs', ['q' => 'test']);
+        $response = $this->makeApiCall('/bibs?' . implode('&', $params->request()));
         $result = json_decode($response->getBody(), true);
-        if (!isset($result['bibRecords']) || !isset($result['numberOfRecords'])) {
+        if (!isset($result['bibRecords']) && !isset($result['numberOfRecords'])) {
             throw new Exception('Unexpected response format.');
         }
-        $docs = $result['bibRecords'];
+        $docs = $result['bibRecords'] ?? [];
         $total = $result['numberOfRecords'];
         return compact('docs', 'offset', 'total');
     }
