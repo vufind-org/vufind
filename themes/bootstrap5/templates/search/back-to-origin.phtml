@@ -4,8 +4,13 @@
 if (isset($searchOrigin)) {
   $link = $this->url($searchOrigin->getRouteName()) . '?' . http_build_query($searchOrigin->getOriginUrlParamsArray());
   $fieldValue = $this->translate($searchOrigin->getDisplayName());
-  echo
-      '<nav class="back-to-origin container">' .
-      '<p><a href="' . $link . '">' . $this->translate('back_to_browse_by', ['%%field%%' => $fieldValue]) . '</a></p>' .
-      '</nav>';
+    ?>
+    <nav class="container">
+      <p><a href="<?= $link ?>">
+        <?= $this->icon('fa-long-arrow-left', 'fa-long-arrow-left') ?>
+        <?= $this->transEsc($searchOrigin->getTranslationKey(), ['%%field%%' => $fieldValue]) ?>
+      </a></p>
+    </nav>
+    <?php
 }
+?>

@@ -74,4 +74,11 @@ abstract class AbstractSearchOrigin
      * @return string
      */
     abstract public function getRouteName(): string;
+
+    /**
+     * Get translation label
+     *
+     * @return string
+     */
+    abstract public function getTranslationKey(): string;
 }

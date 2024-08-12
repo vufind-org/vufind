@@ -296,10 +296,3 @@
 #searchForm-reset {
   color: #000;
 }
-
-.back-to-origin > p > a {
-  text-decoration: none;
-  &::before {
-    content:"← ";
-  }
-}

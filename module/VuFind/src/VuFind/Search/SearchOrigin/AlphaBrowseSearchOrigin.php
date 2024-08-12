@@ -57,6 +57,13 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
     protected const ROUTE_NAME = 'alphabrowse-home';
 
     /**
+     * Name of the route to get back to
+     *
+     * @var string
+     */
+    protected const TRANSLATION_KEY = 'back_to_browse_by';
+
+    /**
      * URL Parameter for "source" in search URL
      *
      * @var string
@@ -218,5 +225,15 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
     public function getRouteName(): string
     {
         return self::ROUTE_NAME;
+    }
+
+    /**
+     * Get translation label
+     *
+     * @return string
+     */
+    public function getTranslationKey(): string
+    {
+        return self::TRANSLATION_KEY;
     }
 }

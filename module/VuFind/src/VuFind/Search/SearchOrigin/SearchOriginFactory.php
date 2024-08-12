@@ -45,7 +45,7 @@ class SearchOriginFactory implements \Laminas\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * From a request return an AbstractSearchOrigin object
+     * From request parameters return an AbstractSearchOrigin object
      *
      * @param array $params URL GET parameters
      *
@@ -58,18 +58,31 @@ class SearchOriginFactory implements \Laminas\Log\LoggerAwareInterface
             return null;
         }
         try {
-            return match ($params[$nameParam]) {
-                AlphaBrowseSearchOrigin::getName() => new AlphaBrowseSearchOrigin(
-                    $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_DISPLAY_PARAM] ?? null,
-                    $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_PARAM] ?? null,
-                    $params[AlphaBrowseSearchOrigin::SEARCH_FROM_PARAM] ?? null,
-                    $params[AlphaBrowseSearchOrigin::SEARCH_PAGE_PARAM] ?? null
-                ),
-                default => null,
-            };
+            return self::createObjectByName($params, $nameParam);
         } catch (Exception $e) {
             $this->logWarning('Error while trying to build search origin object : ' . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * From (request) parameters return an AbstractSearchOrigin object by name
+     *
+     * @param array  $params
+     * @param string $nameParam
+     *
+     * @return AlphaBrowseSearchOrigin|null
+     * @throws Exception
+     */
+    public static function createObjectByName(array $params, string $nameParam): ?AlphaBrowseSearchOrigin
+    {
+        return match ($params[$nameParam]) {
+            AlphaBrowseSearchOrigin::getName() => new AlphaBrowseSearchOrigin(
+                $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_PARAM] ?? null,
+                $params[AlphaBrowseSearchOrigin::SEARCH_FROM_PARAM] ?? null,
+                $params[AlphaBrowseSearchOrigin::SEARCH_PAGE_PARAM] ?? null
+            ),
+            default => null,
+        };
     }
 }
