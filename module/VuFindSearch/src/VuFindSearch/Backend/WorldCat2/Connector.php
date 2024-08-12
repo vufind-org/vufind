@@ -30,7 +30,14 @@
 
 namespace VuFindSearch\Backend\WorldCat2;
 
+use Laminas\Http\Client\Exception\RuntimeException as ExceptionRuntimeException;
+use Laminas\Http\Exception\InvalidArgumentException;
+use Laminas\Http\Exception\RuntimeException;
+use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
+use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Provider\GenericProvider;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\ParamBag;
 
@@ -48,17 +55,11 @@ class Connector implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Fake record for simulation purposes.
-     * TODO: delete when no longer needed.
+     * OAuth2 provider
      *
-     * @var array
+     * @var GenericProvider
      */
-    protected $fakeRecord = [
-        'id' => 'foo',
-        'title' => 'Fake simulated record',
-        'title_short' => 'Fake simulated record',
-        'title_full' => 'Fake simulated record',
-    ];
+    protected $authProvider;
 
     /**
      * Constructor
@@ -70,6 +71,117 @@ class Connector implements LoggerAwareInterface
         protected \Laminas\Http\Client $client,
         protected array $options = []
     ) {
+        $authOptions = [
+            'clientId' => $options['wskey'],
+            'clientSecret' => $options['secret'],
+            'urlAuthorize' => 'https://oauth.oclc.org/auth',
+            'urlAccessToken' => 'https://oauth.oclc.org/token',
+            'urlResourceOwnerDetails' => '',
+        ];
+        $optionProvider = new HttpBasicAuthOptionProvider();
+        $this->authProvider = new GenericProvider($authOptions, compact('optionProvider'));
+    }
+
+    /**
+     * Return a fake API response for development purposes.
+     * TODO: delete when no longer needed.
+     *
+     * @return array
+     */
+    protected function getFakeResponse()
+    {
+        $sampleResponse = <<<SAMPLE
+              {
+                "numberOfRecords": 2,
+                "briefRecords": [
+                  {
+                    "oclcNumber": "44959645",
+                    "title": "Pride and prejudice.",
+                    "creator": "Jane Austen",
+                    "date": "199u",
+                    "language": "eng",
+                    "generalFormat": "Book",
+                    "specificFormat": "Digital",
+                    "publisher": "Project Gutenberg",
+                    "publicationPlace": "Champaign, Ill.",
+                    "isbns": [
+                      "0585013365",
+                      "9780585013367",
+                      "9781925480337",
+                      "192548033X"
+                    ],
+                    "mergedOclcNumbers": [
+                      "818363152",
+                      "854852439",
+                      "859164912",
+                      "956345342"
+                    ],
+                    "catalogingInfo": {
+                      "catalogingAgency": "N\$T",
+                      "transcribingAgency": "N\$T",
+                      "catalogingLanguage": "eng",
+                      "levelOfCataloging": "L"
+                    }
+                  },
+                  {
+                    "oclcNumber": "1103229133",
+                    "title": "Pride and Prejudice [eBook - RBdigital].",
+                    "creator": "Jane Austen",
+                    "date": "1998",
+                    "language": "eng",
+                    "generalFormat": "Book",
+                    "specificFormat": "Digital",
+                    "publisher": "Project Gutenberg Literary Archive Foundation",
+                    "publicationPlace": "Salt Lake City",
+                    "isbns": [
+                      "9781470398842",
+                      "1470398842"
+                    ],
+                    "mergedOclcNumbers": null,
+                    "catalogingInfo": {
+                      "catalogingAgency": "HQD",
+                      "transcribingAgency": "HQD",
+                      "catalogingLanguage": "eng",
+                      "levelOfCataloging": " "
+                    }
+                  }
+                ]
+              }
+            SAMPLE;
+        return json_decode($sampleResponse, true);
+    }
+
+    /**
+     * Get an OAuth2 token.
+     *
+     * @return string
+     * @throws IdentityProviderException
+     */
+    public function getToken(): string
+    {
+        return $this->authProvider->getAccessToken('client_credentials', ['scope' => 'wcapi'])->getToken();
+    }
+
+    /**
+     * Make an API call.
+     *
+     * @param string $path  Path to query
+     * @param array  $query Query parameters
+     *
+     * @return Response
+     * @throws IdentityProviderException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws ExceptionRuntimeException
+     */
+    public function makeApiCall(string $path, array $query = [])
+    {
+        $headers = [
+            'Authorization: Bearer ' . $this->getToken(),
+        ];
+        $this->client->setHeaders($headers);
+        $this->client->setUri("https://metadata.api.oclc.org$path?" . http_build_query($query));
+        return $this->client->send();
     }
 
     /**
@@ -85,12 +197,19 @@ class Connector implements LoggerAwareInterface
     {
         // TODO: implement something real here.
         $this->debug("Fetching record $id");
-        $error = false;
-        $body = $this->fakeRecord;
+        //$result = $this->makeApiCall('/worldcat/search/brief-bibs/' . urlencode($id));
+        $result = $this->getFakeResponse();
+        $found = false;
+        foreach ($result['briefRecords'] as $record) {
+            if ($record['oclcNumber'] === $id) {
+                $found = true;
+                break;
+            }
+        }
         return [
-            'docs' => $error ? [] : [$body],
+            'docs' => $found ? [$record] : [],
             'offset' => 0,
-            'total' => $error ? 0 : 1,
+            'total' => $found ? 1 : 0,
         ];
     }
 
@@ -106,8 +225,10 @@ class Connector implements LoggerAwareInterface
     public function search(ParamBag $params, $offset, $limit)
     {
         // TODO: implement something real here.
-        $docs = [$this->fakeRecord];
-        $total = 1;
+        //$result = $this->makeApiCall("/worldcat/search/brief-bibs", ['q' => 'test']);
+        $response = $this->getFakeResponse();
+        $docs = $response['briefRecords'];
+        $total = $response['numberOfRecords'];
         return compact('docs', 'offset', 'total');
     }
 }

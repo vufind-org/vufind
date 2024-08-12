@@ -40,4 +40,98 @@ namespace VuFind\RecordDriver;
  */
 class WorldCat2 extends DefaultRecord
 {
+    /**
+     * Return the unique identifier of this record within the index;
+     * useful for retrieving additional information (like tags and user
+     * comments) from the external MySQL database.
+     *
+     * @return string Unique identifier.
+     */
+    public function getUniqueID()
+    {
+        if (!isset($this->fields['oclcNumber'])) {
+            throw new \Exception('ID not set!');
+        }
+        return $this->fields['oclcNumber'];
+    }
+
+    /**
+     * Get an array of all the formats associated with the record.
+     *
+     * @return array
+     */
+    public function getFormats()
+    {
+        $formats = [];
+        foreach (['generalFormat', 'specificFormat'] as $key) {
+            if (isset($this->fields[$key])) {
+                $formats[] = $this->fields[$key];
+            }
+        }
+        return $formats;
+    }
+
+    /**
+     * Get an array of all ISBNs associated with the record (may be empty).
+     *
+     * @return array
+     */
+    public function getISBNs()
+    {
+        return (array)($this->fields['isbns'] ?? []);
+    }
+
+    /**
+     * Get the OCLC number of the record.
+     *
+     * @return array
+     */
+    public function getOCLC()
+    {
+        return array_merge(
+            [$this->getUniqueID()],
+            $this->fields['mergedOclcNumbers'] ?? []
+        );
+    }
+
+    /**
+     * Get the item's place of publication.
+     *
+     * @return array
+     */
+    public function getPlacesOfPublication()
+    {
+        return (array)($this->fields['publicationPlace'] ?? []);
+    }
+
+    /**
+     * Get the main authors of the record.
+     *
+     * @return array
+     */
+    public function getPrimaryAuthors()
+    {
+        return (array)($this->fields['creator'] ?? []);
+    }
+
+    /**
+     * Get the publication dates of the record.  See also getDateSpan().
+     *
+     * @return array
+     */
+    public function getPublicationDates()
+    {
+        return (array)($this->fields['date'] ?? []);
+    }
+
+    /**
+     * Get the short (pre-subtitle) title of the record.
+     *
+     * @return string
+     */
+    public function getShortTitle()
+    {
+        // WorldCat v2 API doesn't have a separate short title field.
+        return $this->getTitle();
+    }
 }
