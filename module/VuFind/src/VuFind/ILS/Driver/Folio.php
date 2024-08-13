@@ -40,6 +40,7 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 use function array_key_exists;
 use function count;
 use function in_array;
+use function is_callable;
 use function is_int;
 use function is_object;
 use function is_string;
@@ -119,6 +120,13 @@ class Folio extends AbstractAPI implements
         'Open - In transit',
         'Open - Awaiting delivery',
     ];
+
+    /**
+     * Cache for course reserves course data (null if not yet populated)
+     *
+     * @var ?array
+     */
+    protected $courseCache = null;
 
     /**
      * Constructor
@@ -1835,24 +1843,27 @@ class Folio extends AbstractAPI implements
      */
     public function getCourses()
     {
-        $showCodes = $this->config['CourseReserves']['displayCourseCodes'] ?? false;
-        // Unless we explicitly want to include expired course data, set up a filter to exclude it:
-        $includeExpired = $this->config['CourseReserves']['includeExpiredCourses'] ?? false;
-        $filterCallback = $includeExpired ? null : function ($item) {
-            return isset($item->courseListingObject->termObject->endDate)
-                && strtotime($item->courseListingObject->termObject->endDate) < time();
-        };
-        $courses = $this->getCourseResourceList(
-            'courses',
-            null,
-            $showCodes ? ['courseNumber', 'name'] : ['name'],
-            $showCodes ? '%s: %s' : '%s',
-            $filterCallback
-        );
-        $callback = function ($course) {
-            return trim(ltrim($course, ':'));
-        };
-        return array_map($callback, $courses);
+        if ($this->courseCache === null) {
+            $showCodes = $this->config['CourseReserves']['displayCourseCodes'] ?? false;
+            // Unless we explicitly want to include expired course data, set up a filter to exclude it:
+            $includeExpired = $this->config['CourseReserves']['includeExpiredCourses'] ?? false;
+            $filterCallback = $includeExpired ? null : function ($item) {
+                return isset($item->courseListingObject->termObject->endDate)
+                    && strtotime($item->courseListingObject->termObject->endDate) < time();
+            };
+            $courses = $this->getCourseResourceList(
+                'courses',
+                null,
+                $showCodes ? ['courseNumber', 'name'] : ['name'],
+                $showCodes ? '%s: %s' : '%s',
+                $filterCallback
+            );
+            $callback = function ($course) {
+                return trim(ltrim($course, ':'));
+            };
+            $this->courseCache = array_map($callback, $courses);
+        }
+        return $this->courseCache;
     }
 
     /**
@@ -1911,6 +1922,7 @@ class Folio extends AbstractAPI implements
     {
         $retVal = [];
         $query = [];
+        $legalCourses = $this->getCourses();
 
         $includeSuppressed = $this->config['CourseReserves']['includeSuppressed'] ?? false;
 
@@ -1939,6 +1951,11 @@ class Folio extends AbstractAPI implements
                     $item->courseListingId ?? null
                 );
                 foreach ($courseData as $courseId => $departmentId) {
+                    // If the present course ID is not in the legal course list, it is likely
+                    // expired data and should be skipped.
+                    if (!isset($legalCourses[$courseId])) {
+                        continue;
+                    }
                     foreach ($instructorIds as $instructorId) {
                         $retVal[] = [
                             'BIB_ID' => $bibId,
