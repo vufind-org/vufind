@@ -236,23 +236,3 @@ h3.facet-title {
 .apply-filters.fixed {
   top: 0;
 }
-
-.multiFacetSelection {
-  .facet {
-    a.exclude {
-      outline: none;
-    }
-    .exclude.selected {
-      .icon {
-        outline: 2px dotted $list-group-active-bg;
-      }
-    }
-    .exclude {
-      .icon {
-        outline: 2px hidden $list-group-active-bg;
-        width: 1.5em;
-        height: 1.5em;
-      }
-    }
-  }
-}
