@@ -1744,7 +1744,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return [
                 'itemLimit' => $this->config['Holdings']['itemLimitByType'][$type]
                 ?? $this->config['Holdings']['itemLimit']
-                ?? '',
+                ?? null,
             ];
         }
 
@@ -2017,7 +2017,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'errors' => true,
         ];
         if (($options['itemLimit'] ?? 0) > 0) {
-            $requestParams['query'] = [ 'limit' => $options['itemLimit'] ];
+            $requestParams['query'] = [
+                'limit'  => $options['itemLimit'],
+                'offset' => $options['offset'],
+            ];
         }
         $result = $this->makeRequest($requestParams);
 
