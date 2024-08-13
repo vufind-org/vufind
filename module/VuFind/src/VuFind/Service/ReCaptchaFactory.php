@@ -96,6 +96,12 @@ class ReCaptchaFactory implements FactoryInterface
 
         $siteKey = $recaptchaConfig['recaptcha_siteKey'] ?? '';
         $secretKey = $recaptchaConfig['recaptcha_secretKey'] ?? '';
+        if (
+            $recaptchaConfig['recaptcha_secretKey_file'] !== null
+            && $content = file_get_contents($recaptchaConfig['recaptcha_secretKey_file'])
+        ) {
+            $secretKey = $content;
+        }
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $language = $container->get(LocaleSettings::class)->getUserLocale();

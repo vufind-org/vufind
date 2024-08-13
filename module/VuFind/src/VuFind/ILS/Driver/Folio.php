@@ -251,9 +251,16 @@ class Folio extends AbstractAPI implements
     protected function renewTenantToken()
     {
         $this->token = null;
+        $password = $this->config['API']['password'];
+        if (
+            $this->config['API']['password_file'] !== null
+            && $content = file_get_contents($this->config['API']['password_file'])
+        ) {
+            $password = $content;
+        }
         $response = $this->performOkapiUsernamePasswordAuthentication(
             $this->config['API']['username'],
-            $this->config['API']['password']
+            $password
         );
         $this->token = $this->extractTokenFromResponse($response);
         $this->sessionCache->folio_token = $this->token;

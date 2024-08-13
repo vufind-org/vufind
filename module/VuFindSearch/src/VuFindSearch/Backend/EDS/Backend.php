@@ -174,6 +174,12 @@ class Backend extends AbstractBackend
         // Extract key values from configuration:
         $this->userName = $config->EBSCO_Account->user_name ?? null;
         $this->password = $config->EBSCO_Account->password ?? null;
+        if (
+            $config->EBSCO_Account->password_file !== null
+            && $content = file_get_contents($config->EBSCO_Account->password_file)
+        ) {
+            $this->password = $content;
+        }
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
@@ -757,7 +763,7 @@ class Backend extends AbstractBackend
     /**
      * Set the EBSCO backend type. Backend/EDS is used for both EDS and EPF.
      *
-     * @param str $backendType 'EDS' or 'EPF'
+     * @param string $backendType 'EDS' or 'EPF'
      *
      * @return void
      */
