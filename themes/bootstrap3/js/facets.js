@@ -547,7 +547,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   function setup() {
     if (multiFacetsSelectionEnabled === true) {
-      VuFind.multiFacetsSelection.addSwitchAndButton(document.getElementById('facet-list-count'));
+      VuFind.multiFacetsSelection.addSwitchAndButton(document.getElementById('facet-info-result').children[0]);
       VuFind.multiFacetsSelection.applyClickHandling(document.getElementById('facet-list-count'));
     }
     lightboxFacetSorting();
