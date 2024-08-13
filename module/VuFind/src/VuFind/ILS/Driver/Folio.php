@@ -1731,13 +1731,15 @@ class Folio extends AbstractAPI implements
     /**
      * Obtain a list of course resources, creating an id => value associative array.
      *
-     * @param string       $type        Type of resource to retrieve from the API.
-     * @param string       $responseKey Key containing useful values in response
+     * @param string       $type           Type of resource to retrieve from the API.
+     * @param string       $responseKey    Key containing useful values in response
      * (defaults to $type if unspecified)
-     * @param string|array $valueKey    Key containing value(s) to extract from
+     * @param string|array $valueKey       Key containing value(s) to extract from
      * response (defaults to 'name')
-     * @param string       $formatStr   A sprintf format string for assembling the
+     * @param string       $formatStr      A sprintf format string for assembling the
      * parameters retrieved using $valueKey
+     * @param callable     $filterCallback An optional callback that can return true
+     * to flag values that should be filtered out.
      *
      * @return array
      */
@@ -1745,7 +1747,8 @@ class Folio extends AbstractAPI implements
         $type,
         $responseKey = null,
         $valueKey = 'name',
-        $formatStr = '%s'
+        $formatStr = '%s',
+        $filterCallback = null
     ) {
         $retVal = [];
 
@@ -1756,6 +1759,9 @@ class Folio extends AbstractAPI implements
                 '/coursereserves/' . $type
             ) as $item
         ) {
+            if (is_callable($filterCallback) && $filterCallback($item)) {
+                continue;
+            }
             $callback = function ($key) use ($item) {
                 return $item->$key ?? '';
             };
@@ -1778,6 +1784,26 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get the callback (or null for no callback) for filtering the course listings used to retrieve instructor data.
+     *
+     * @return ?callable
+     */
+    protected function getInstructorsCourseListingsFilterCallback(): ?callable
+    {
+        // Unless we explicitly want to include expired course data, set up a filter to exclude it:
+        if ($this->config['CourseReserves']['includeExpiredCourses'] ?? false) {
+            return null;
+        }
+        $termsFilterCallback = function ($item) {
+            return isset($item->endDate) && strtotime($item->endDate) < time();
+        };
+        $activeTerms = $this->getCourseResourceList('terms', filterCallback: $termsFilterCallback);
+        return function ($item) use ($activeTerms) {
+            return !isset($activeTerms[$item->termId ?? null]);
+        };
+    }
+
+    /**
      * Get Instructors
      *
      * Obtain a list of instructors for use in limiting the reserves list.
@@ -1787,8 +1813,9 @@ class Folio extends AbstractAPI implements
     public function getInstructors()
     {
         $retVal = [];
+        $filterCallback = $this->getInstructorsCourseListingsFilterCallback();
         $ids = array_keys(
-            $this->getCourseResourceList('courselistings', 'courseListings')
+            $this->getCourseResourceList('courselistings', 'courseListings', filterCallback: $filterCallback)
         );
         foreach ($ids as $id) {
             $retVal += $this->getCourseResourceList(
@@ -1809,11 +1836,18 @@ class Folio extends AbstractAPI implements
     public function getCourses()
     {
         $showCodes = $this->config['CourseReserves']['displayCourseCodes'] ?? false;
+        // Unless we explicitly want to include expired course data, set up a filter to exclude it:
+        $includeExpired = $this->config['CourseReserves']['includeExpiredCourses'] ?? false;
+        $filterCallback = $includeExpired ? null : function ($item) {
+            return isset($item->courseListingObject->termObject->endDate)
+                && strtotime($item->courseListingObject->termObject->endDate) < time();
+        };
         $courses = $this->getCourseResourceList(
             'courses',
             null,
             $showCodes ? ['courseNumber', 'name'] : ['name'],
-            $showCodes ? '%s: %s' : '%s'
+            $showCodes ? '%s: %s' : '%s',
+            $filterCallback
         );
         $callback = function ($course) {
             return trim(ltrim($course, ':'));
