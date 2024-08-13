@@ -257,6 +257,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $locationField = 'branch';
 
     /**
+     * Whether to include suspended holds in hold queue length calculation.
+     *
+     * @var bool
+     */
+    protected $includeSuspendedHoldsInQueueLength = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter     Date converter object
@@ -340,6 +347,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->locationField
             = strtolower(trim($this->config['Holdings']['locationField'] ?? 'branch'));
+
+        $this->includeSuspendedHoldsInQueueLength
+            = $this->config['Holdings']['includeSuspendedHoldsInQueueLength'] ?? false;
 
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
@@ -2015,15 +2025,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'search',
             ],
             'errors' => true,
-        ];
+            'query' => [],
+        ];       
         if (($options['itemLimit'] ?? 0) > 0) {
             $requestParams['query'] = [
                 'limit'  => $options['itemLimit'],
                 'offset' => $options['offset'],
             ];
         }
+        if ($this->includeSuspendedHoldsInQueueLength) {
+            $requestParams['query']['include_suspended_in_hold_queue'] = '1';
+        }
         $result = $this->makeRequest($requestParams);
-
         if (404 == $result['code']) {
             return [];
         }
