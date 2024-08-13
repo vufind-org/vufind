@@ -2012,6 +2012,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'search',
             ],
             'errors' => true,
+            'query' => [],
         ];
         if ($this->includeSuspendedHoldsInQueueLength) {
             $requestParams['query']['include_suspended_in_hold_queue'] = '1';
