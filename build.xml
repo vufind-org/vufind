@@ -63,6 +63,8 @@
   <property name="test_theme" value="" /><!-- set to a theme name to override the default theme for Mink tests -->
   <property name="psql_needs_sudo" value="true" /><!-- set to false if psql (Postgresql) must be run with current user instead of sudo -->
   <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
+  <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
+  <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
   <property name="version" value="10.0" />
 
@@ -876,7 +878,7 @@ return [
   <!-- Import test biblio data -->
   <target name="import_biblios" description="import all biblio test records">
     <foreach param="relfilename" absparam="filename" target="importrec">
-      <fileset dir="${srcdir}/tests/data">
+      <fileset dir="${marc_bib_dir}">
           <include name="*.mrc" />
           <include name="*.xml" />
       </fileset>
@@ -885,11 +887,16 @@ return [
 
   <!-- Import test authority data -->
   <target name="import_authorities" description="import all authority test records">
-    <foreach param="relfilename" absparam="filename" target="importauthrec">
-      <fileset dir="${srcdir}/tests/data/authority">
-          <include name="*.mrc" />
-      </fileset>
-    </foreach>
+    <if>
+      <available file="${marc_authority_dir}" />
+      <then>
+        <foreach param="relfilename" absparam="filename" target="importauthrec">
+          <fileset dir="${marc_authority_dir}">
+              <include name="*.mrc" />
+          </fileset>
+        </foreach>
+      </then>
+    </if>
   </target>
 
   <!-- Delete some fake record IDs so we have deleted records to test with -->

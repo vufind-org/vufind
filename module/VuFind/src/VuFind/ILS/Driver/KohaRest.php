@@ -246,6 +246,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sortItemsBySerialIssue = true;
 
     /**
+     * Whether the location field in holdings/status results is populated from
+     * - branch (Koha library branch/physical location)
+     * or
+     * - shelving (Koha permanent shelving location of an item)
+     * Default is 'branch'.
+     *
+     * @var string
+     */
+    protected $locationField = 'branch';
+
+    /**
      * Whether to include suspended holds in hold queue length calculation.
      *
      * @var bool
@@ -333,6 +344,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->sortItemsBySerialIssue
             = $this->config['Holdings']['sortBySerialIssue'] ?? true;
+
+        $this->locationField
+            = strtolower(trim($this->config['Holdings']['locationField'] ?? 'branch'));
 
         $this->includeSuspendedHoldsInQueueLength
             = $this->config['Holdings']['includeSuspendedHoldsInQueueLength'] ?? false;
@@ -2323,6 +2337,27 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get shelving locations from cache or from the API
+     *
+     * @return array
+     */
+    protected function getShelvingLocations()
+    {
+        $cacheKey = 'shelvingLocations';
+        $shelvingLocations = $this->getCachedData($cacheKey);
+        if (null === $shelvingLocations) {
+            $result = $this->makeRequest('v1/authorised_value_categories/loc/authorised_values?_per_page=-1');
+
+            $shelvingLocations = [];
+            foreach ($result['data'] as $shelvingLocation) {
+                $shelvingLocations[$shelvingLocation['value']] = $shelvingLocation;
+            }
+            $this->putCachedData($cacheKey, $shelvingLocations, 3600);
+        }
+        return $shelvingLocations;
+    }
+
+    /**
      * Get library name
      *
      * @param string $library Library ID
@@ -2480,7 +2515,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Return a location for a Koha item
+     * Return a location (branch or shelving) for a Koha item
      *
      * @param array $item Item
      *
@@ -2488,14 +2523,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-        $libraryId = (!$this->useHomeLibrary && null !== $item['holding_library_id'])
-            ? $item['holding_library_id'] : $item['home_library_id'];
-        $name = $this->translateLocation($libraryId);
-        if ($name === $libraryId) {
-            $libraries = $this->getLibraries();
-            $name = isset($libraries[$libraryId])
-                ? $libraries[$libraryId]['name'] : $libraryId;
+        switch ($this->locationField) {
+            case 'shelving':
+                $shelvingLocationId = $item['location'];
+                $name = $this->translateLocation($shelvingLocationId);
+                if ($name === $shelvingLocationId) {
+                    $shelvingLocations = $this->getShelvingLocations();
+                    $name = $shelvingLocations[$shelvingLocationId]['description'] ?? $shelvingLocationId;
+                }
+                break;
+            default:
+                $libraryId = (!$this->useHomeLibrary && null !== $item['holding_library_id'])
+                    ? $item['holding_library_id'] : $item['home_library_id'];
+                $name = $this->translateLocation($libraryId);
+                if ($name === $libraryId) {
+                    $libraries = $this->getLibraries();
+                    $name = $libraries[$libraryId]['name'] ?? $libraryId;
+                }
         }
+
         return $name;
     }
 
