@@ -136,6 +136,26 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for makeRequest to process an unexpected status code. Can return true to trigger
+     * a retry of the API call or false to throw an exception.
+     *
+     * @param Response $response    HTTP response
+     * @param int      $retryNumber Counter to keep track of retries (starts at 0 for the first attempt)
+     *
+     * @return bool
+     */
+    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $retryNumber): bool
+    {
+        // If the unexpected status is 401, and the token renews successfully, and we have not yet
+        // retried, we should try again:
+        if ($response->getStatusCode() === 401 && !$this->checkTenantToken() && $retryNumber < 1) {
+            $this->debug('Retrying request after token expired...');
+            return true;
+        }
+        return parent::shouldRetryAfterUnexpectedStatusCode($response, $retryNumber);
+    }
+
+    /**
      * Set the configuration for the driver.
      *
      * @param array $config Configuration array (usually loaded from a VuFind .ini
@@ -264,11 +284,11 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Check if our token is still valid
+     * Check if our token is still valid. Return true if the token was already valid, false if it had to be renewed.
      *
      * Method taken from Stripes JS (loginServices.js:validateUser)
      *
-     * @return void
+     * @return bool
      */
     protected function checkTenantToken()
     {
@@ -276,7 +296,9 @@ class Folio extends AbstractAPI implements
         if ($response->getStatusCode() >= 400) {
             $this->token = null;
             $this->renewTenantToken();
+            return false;
         }
+        return true;
     }
 
     /**

@@ -29,6 +29,7 @@
 
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
@@ -116,6 +117,21 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
+     * Support method for makeRequest to process an unexpected status code. Can return true to trigger
+     * a retry of the API call or false to throw an exception.
+     *
+     * @param Response $response    HTTP response
+     * @param int      $retryNumber Counter to keep track of retries (starts at 0 for the first attempt)
+     *
+     * @return bool
+     */
+    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $retryNumber): bool
+    {
+        // No retries by default.
+        return false;
+    }
+
+    /**
      * Make requests
      *
      * @param string            $method              GET/POST/PUT/DELETE/etc
@@ -127,6 +143,8 @@ abstract class AbstractAPI extends AbstractBase implements
      * expression, or boolean true to allow all codes.
      * @param string|array      $debugParams         Value to use in place of $params
      * in debug messages (useful for concealing sensitive data, etc.)
+     * @param int               $retryNumber         Counter to keep track of retries
+     * (starts at 0 for the first attempt)
      *
      * @return \Laminas\Http\Response
      * @throws ILSException
@@ -137,7 +155,8 @@ abstract class AbstractAPI extends AbstractBase implements
         $params = [],
         $headers = [],
         $allowedFailureCodes = [],
-        $debugParams = null
+        $debugParams = null,
+        $retryNumber = 0
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
@@ -176,10 +195,22 @@ abstract class AbstractAPI extends AbstractBase implements
             && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
         ) {
             $this->logError(
-                "Unexpected error response; code: $code, body: "
-                . $response->getBody()
+                'Unexpected error response (attempt #' . ($retryNumber + 1)
+                . "); code: {$response->getStatusCode()}, body: {$response->getBody()}"
             );
-            throw new ILSException('Unexpected error code.');
+            if ($this->shouldRetryAfterUnexpectedStatusCode($response, $retryNumber)) {
+                return $this->makeRequest(
+                    $method,
+                    $path,
+                    $params,
+                    $headers,
+                    $allowedFailureCodes,
+                    $debugParams,
+                    $retryNumber + 1
+                );
+            } else {
+                throw new ILSException('Unexpected error code.');
+            }
         }
         if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {
             if (APPLICATION_ENV !== 'development') {
