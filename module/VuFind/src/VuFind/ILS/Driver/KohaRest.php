@@ -2026,7 +2026,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ],
             'errors' => true,
             'query' => [],
-        ];       
+        ];
         if (($options['itemLimit'] ?? 0) > 0) {
             $requestParams['query'] = [
                 'limit'  => $options['itemLimit'],
