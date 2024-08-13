@@ -143,25 +143,36 @@ VuFind.register('sideFacets', function SideFacets() {
     if (facetList.length === 0) {
       return;
     }
-    // Update existing query from the current URL since it may have changed
-    // parameters (we can't use it as is, because it doesn't contain any suppressed query):
-    const query = new URLSearchParams($container.data('query'));
-    const windowQuery = new URLSearchParams(window.location.search.substring(1));
-    for (const [key, value] of windowQuery) {
-      query.set(key, value);
+    const querySuppressed = $container.data('querySuppressed');
+    let query = window.location.search.substring(1);
+    if (querySuppressed) {
+      // When the query is suppressed we can't use the page URL directly since it
+      // doesn't contain the actual query, so take the full query and update any
+      // parameters that may have been dynamically modified (we deliberately avoid)
+      // touching anything else to avoid encoding issues e.g. with brackets):
+      const storedQuery = new URLSearchParams($container.data('query'));
+      const windowQuery = new URLSearchParams(query);
+      ['sort', 'limit', 'page'].forEach(key => {
+        const val = windowQuery.get(key);
+        if (null !== val) {
+          storedQuery.set(key, val);
+        } else {
+          storedQuery.delete(key);
+        }
+      });
+      query = storedQuery.toString();
     }
     var request = {
       method: 'getSideFacets',
       searchClassId: $container.data('searchClassId'),
       location: $container.data('location'),
       configIndex: $container.data('configIndex'),
-      query: query.toString(),
-      querySuppressed: $container.data('querySuppressed'),
+      querySuppressed: querySuppressed,
       extraFields: $container.data('extraFields'),
       enabledFacets: facetList
     };
     $container.find('.facet-load-indicator').removeClass('hidden');
-    $.getJSON(VuFind.path + '/AJAX/JSON?' + request.query, request)
+    $.getJSON(VuFind.path + '/AJAX/JSON?' + query, request)
       .done(function onGetSideFacetsDone(response) {
         $.each(response.data.facets, function initFacet(facet, facetData) {
           var containerSelector = typeof facetData.checkboxCount !== 'undefined'
