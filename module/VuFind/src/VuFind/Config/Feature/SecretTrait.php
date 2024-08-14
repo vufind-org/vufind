@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Trait to import secret from file rather than a hardcoded config
  *
