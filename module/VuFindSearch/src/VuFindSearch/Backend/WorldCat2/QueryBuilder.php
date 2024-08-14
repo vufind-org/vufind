@@ -158,11 +158,10 @@ class QueryBuilder
         $indexParts = explode(':', $query->getHandler());
         $lookfor = $query->getString();
 
-        // Prepend the index name, unless it's the special "AllFields"
-        // index:
+        // Prepend the index name:
         $parts = [];
         foreach ($indexParts as $index) {
-            $parts[] = ($index != 'AllFields') ? "{$index}:($lookfor)" : $lookfor;
+            $parts[] = "{$index}:($lookfor)";
         }
 
         return count($parts) > 1 ? '(' . implode(' OR ', $parts) . ')' : $parts[0];

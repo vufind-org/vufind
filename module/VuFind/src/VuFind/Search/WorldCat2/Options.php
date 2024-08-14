@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\WorldCat2;
 
-use function count;
-
 /**
  * WorldCat v2 Search Options
  *
@@ -56,34 +54,23 @@ class Options extends \VuFind\Search\Base\Options
         $searchSettings = $configLoader->get($this->searchIni);
 
         // Search handler setup:
-        $this->defaultHandler = 'srw.kw';
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
+        $this->defaultHandler = 'kw';
+        foreach ($searchSettings->Basic_Searches ?? [] as $key => $value) {
+            $this->basicHandlers[$key] = $value;
         }
-        if (isset($searchSettings->Advanced_Searches)) {
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                $this->advancedHandlers[$key] = $value;
-            }
+        foreach ($searchSettings->Advanced_Searches ?? [] as $key => $value) {
+            $this->advancedHandlers[$key] = $value;
         }
 
         // Load sort preferences:
-        if (isset($searchSettings->Sorting)) {
-            foreach ($searchSettings->Sorting as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
+        foreach ($searchSettings->Sorting ?? [] as $key => $value) {
+            $this->sortOptions[$key] = $value;
         }
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
-        if (
-            isset($searchSettings->DefaultSortingByType)
-            && count($searchSettings->DefaultSortingByType) > 0
-        ) {
-            foreach ($searchSettings->DefaultSortingByType as $key => $val) {
-                $this->defaultSortByHandler[$key] = $val;
-            }
+        foreach ($searchSettings->DefaultSortingByType ?? [] as $key => $val) {
+            $this->defaultSortByHandler[$key] = $val;
         }
         // Load list view for result (controls AJAX embedding vs. linking)
         if (isset($searchSettings->List->view)) {
