@@ -51,11 +51,9 @@ class Params extends \VuFind\Search\Base\Params
     {
         $backendParams = new ParamBag();
 
-        // TODO: make sure this works correctly for real!
-
         // Sort
         $sort = $this->getSort();
-        $backendParams->set('sortKeys', empty($sort) ? 'relevance' : $sort);
+        $backendParams->set('orderBy', empty($sort) ? 'bestMatch' : $sort);
 
         return $backendParams;
     }

@@ -66,9 +66,7 @@ class Options extends \VuFind\Search\Base\Options
         foreach ($searchSettings->Sorting ?? [] as $key => $value) {
             $this->sortOptions[$key] = $value;
         }
-        if (isset($searchSettings->General->default_sort)) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
+        $this->defaultSort = $searchSettings->General->default_sort ?? 'bestMatch';
         foreach ($searchSettings->DefaultSortingByType ?? [] as $key => $val) {
             $this->defaultSortByHandler[$key] = $val;
         }
