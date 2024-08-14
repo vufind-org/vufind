@@ -887,7 +887,7 @@ class Folio extends AbstractAPI implements
                     'callnumber' => $holdingDetails['holdingCallNumber'],
                     'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
                     'reserve' => 'n',
-                    'availability' => $invisibleAvailabilityStatus
+                    'availability' => $invisibleAvailabilityStatus,
                 ];
             }
             $items = array_merge(
