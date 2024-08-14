@@ -147,13 +147,25 @@
       <a class="sr-only sr-only-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <?= $this->render('search/back-to-origin.phtml', ['searchOrigin' => $searchOrigin]); ?>
-    <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
+    <?php
+    if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false):
+      if (isset($searchOrigin)) {
+        $link = $this->url($searchOrigin->getRouteName()) . '?' . http_build_query($searchOrigin->getOriginUrlParamsArray());
+        $fieldValue = $this->translate($searchOrigin->getDisplayName());
+        $searchOriginBreadcrumb = '<li><a href="' . $link . '">' .
+          $this->transEsc($searchOrigin->getTranslationKey(), ['%%field%%' => $fieldValue]) .
+          '</a></li>';
+      } else {
+        $searchOriginBreadcrumb = '';
+      }
+      ?>
       <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
         <div class="container">
-          <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
+          <ul class="breadcrumb hidden-print"><?= $searchOriginBreadcrumb . $this->layout()->breadcrumbs ?></ul>
         </div>
       </nav>
+    <?php else: ?>
+      <?= $this->render('search/back-to-origin.phtml', ['searchOrigin' => $searchOrigin]); ?>
     <?php endif; ?>
     <div role="main" class="main">
       <div id="content" class="container">

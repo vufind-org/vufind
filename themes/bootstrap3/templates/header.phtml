@@ -1,7 +1,4 @@
-<?php
-/** @var \Laminas\View\Renderer\PhpRenderer $this */
-$account = $this->auth()->getManager();
-?>
+<?php $account = $this->auth()->getManager(); ?>
 <div class="banner container navbar">
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">

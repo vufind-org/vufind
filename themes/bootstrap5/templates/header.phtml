@@ -1,7 +1,4 @@
-<?php
-/** @var \Laminas\View\Renderer\PhpRenderer $this */
-$account = $this->auth()->getManager();
-?>
+<?php $account = $this->auth()->getManager(); ?>
 <div class="banner container navbar">
   <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
   <button type="button" class="navbar-toggle" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
