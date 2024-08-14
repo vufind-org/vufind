@@ -54,7 +54,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @var bool
      */
-    protected bool $visibility;
+    protected bool $visibility = true;
 
     /**
      * Constructor
@@ -69,7 +69,6 @@ class AvailabilityStatus implements AvailabilityStatusInterface
         protected array $extraStatusInformation = []
     ) {
         $this->availability = (int)$availability;
-        $this->visibility = true;
     }
 
     /**

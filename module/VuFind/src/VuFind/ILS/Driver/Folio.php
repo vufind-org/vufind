@@ -615,9 +615,6 @@ class Folio extends AbstractAPI implements
             return $statement;
         };
         $id = $holding->id;
-        $locationData = $this->getLocationData($holding->effectiveLocationId);
-        $holdingLocationName = $locationData['name'];
-        $holdingLocationCode = $locationData['code'];
         $holdingNotes = array_filter(
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
@@ -638,8 +635,6 @@ class Folio extends AbstractAPI implements
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
         return compact(
             'id',
-            'holdingLocationName',
-            'holdingLocationCode',
             'holdingNotes',
             'hasHoldingNotes',
             'holdingsStatements',
@@ -648,6 +643,41 @@ class Folio extends AbstractAPI implements
             'holdingCallNumber',
             'holdingCallNumberPrefix'
         );
+    }
+
+    /**
+     * Support method for getHolding() -- return an array of item-level details from
+     * both FOLIO holdings and item records.
+     *
+     * Depending on where this method is called, $locationId will be the holdings record
+     * location (in the case where no items are attached to a holding) or the item record
+     * location (in cases where there are attached items).
+     *
+     * @param string $locationId     Location identifier from FOLIO
+     * @param array  $holdingDetails Holding details produced by
+     *                               getHoldingDetailsForItem()
+     *
+     * @return array
+     */
+    protected function makeStubVuFindItem(
+        string $locationId,
+        array $holdingDetails,
+    ): array {
+        $locationData = $this->getLocationData($locationId);
+        $locationName = $locationData['name'];
+        $locationCode = $locationData['code'];
+        $locationIsActive = $locationData['isActive'];
+        return [
+            'is_holdable' => $this->isHoldable($locationName),
+            'holdings_notes' => $holdingDetails['hasHoldingNotes']
+                ? $holdingDetails['holdingNotes'] : null,
+            'summary' => array_unique($holdingDetails['holdingsStatements']),
+            'supplements' => $holdingDetails['holdingsSupplements'],
+            'indexes' => $holdingDetails['holdingsIndexes'],
+            'location' => $locationName,
+            'location_code' => $locationCode,
+            'folio_location_is_active' => $locationIsActive,
+        ];
     }
 
     /**
@@ -677,10 +707,7 @@ class Folio extends AbstractAPI implements
             array_map([$this, 'formatNote'], $item->notes ?? [])
         );
         $locationId = $item->effectiveLocation->id;
-        $locationData = $this->getLocationData($locationId);
-        $locationName = $locationData['name'];
-        $locationCode = $locationData['code'];
-        $locationIsActive = $locationData['isActive'];
+
         // concatenate enumeration fields if present
         $enum = implode(
             ' ',
@@ -700,8 +727,9 @@ class Folio extends AbstractAPI implements
             $item->effectiveCallNumberComponents->callNumber
                 ?? $item->itemLevelCallNumber ?? ''
         );
+        $stubVuFindItem = $this->makeStubVuFindItem($locationId, $holdingDetails);
 
-        return $callNumberData + [
+        return $callNumberData + $stubVuFindItem + [
             'id' => $bibId,
             'item_id' => $item->id,
             'holdings_id' => $holdingDetails['id'],
@@ -711,16 +739,7 @@ class Folio extends AbstractAPI implements
             'status' => $item->status->name,
             'duedate' => $dueDateValue,
             'availability' => $item->status->name == 'Available',
-            'is_holdable' => $this->isHoldable($locationName),
-            'holdings_notes' => $holdingDetails['hasHoldingNotes']
-                ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-            'summary' => array_unique($holdingDetails['holdingsStatements']),
-            'supplements' => $holdingDetails['holdingsSupplements'],
-            'indexes' => $holdingDetails['holdingsIndexes'],
-            'location' => $locationName,
-            'location_code' => $locationCode,
-            'folio_location_is_active' => $locationIsActive,
             'reserve' => 'TODO',
             'addLink' => true,
             'bound_with_records' => $boundWithRecords,
@@ -860,16 +879,13 @@ class Folio extends AbstractAPI implements
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0) {
+                $stubVuFindItem = $this->makeStubVuFindItem($holding->effectiveLocationId, $holdingDetails);
                 $invisibleAvailabilityStatus = new AvailabilityStatus(true, 'See full record');
                 $invisibleAvailabilityStatus->setVisibility(false);
-                $nextBatch[] = [
+                $nextBatch[] = $stubVuFindItem + [
+                    'id' => $bibId,
                     'callnumber' => $holdingDetails['holdingCallNumber'],
                     'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
-                    'holdings_notes' => $holdingDetails['holdingsStatements'],
-                    'indexes' => $holdingDetails['holdingsIndexes'],
-                    'supplements' => $holdingDetails['holdingsSupplements'],
-                    'location' => $holdingDetails['holdingLocationName'],
-                    'id' => $bibId,
                     'reserve' => 'n',
                     'availability' => $invisibleAvailabilityStatus
                 ];
