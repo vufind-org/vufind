@@ -76,6 +76,7 @@ class SearchOriginFactory implements \Laminas\Log\LoggerAwareInterface
     {
         return match ($params[AbstractSearchOrigin::PARAM_NAME]) {
             AlphaBrowseSearchOrigin::getName() => new AlphaBrowseSearchOrigin(
+                $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_DISPLAY_PARAM] ?? null,
                 $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_PARAM] ?? null,
                 $params[AlphaBrowseSearchOrigin::SEARCH_FROM_PARAM] ?? null,
                 $params[AlphaBrowseSearchOrigin::SEARCH_PAGE_PARAM] ?? null
