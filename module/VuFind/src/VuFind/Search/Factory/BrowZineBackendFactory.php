@@ -30,6 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
@@ -46,6 +47,8 @@ use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
  */
 class BrowZineBackendFactory extends AbstractBackendFactory
 {
+    use SecretTrait;
+
     /**
      * Logger.
      *
@@ -118,18 +121,11 @@ class BrowZineBackendFactory extends AbstractBackendFactory
         if (empty($this->browzineConfig->General->library_id)) {
             throw new \Exception('Missing library ID in BrowZine.ini');
         }
-        $accessToken = $this->browzineConfig->General->access_token ?? null;
-        if (
-            !empty($this->browzineConfig->General->access_token_file)
-            && $content = file_get_contents($this->browzineConfig->General->access_token_file)
-        ) {
-            $accessToken = $content;
-        }
 
         // Create connector:
         $connector = new Connector(
             $this->createHttpClient($this->browzineConfig->General->timeout ?? 30),
-            $accessToken,
+            $this->getSecretFromConfigOrSecretFile($this->browzineConfig->General, 'access_token'),
             $this->browzineConfig->General->library_id
         );
         $connector->setLogger($this->logger);

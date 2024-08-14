@@ -34,6 +34,7 @@ use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
@@ -54,6 +55,8 @@ use function in_array;
  */
 class Backend extends AbstractBackend
 {
+    use SecretTrait;
+
     /**
      * Client user to make the actually requests to the EdsApi
      *
@@ -173,13 +176,7 @@ class Backend extends AbstractBackend
 
         // Extract key values from configuration:
         $this->userName = $config->EBSCO_Account->user_name ?? null;
-        $this->password = $config->EBSCO_Account->password ?? null;
-        if (
-            $config->EBSCO_Account->password_file !== null
-            && $content = file_get_contents($config->EBSCO_Account->password_file)
-        ) {
-            $this->password = $content;
-        }
+        $this->password = $this->getSecretFromConfigOrSecretFile($config->EBSCO_Account, 'password');
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;

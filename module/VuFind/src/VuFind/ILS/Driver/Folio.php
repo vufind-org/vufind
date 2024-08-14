@@ -33,6 +33,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Laminas\Http\Response;
+use VuFind\Config\Feature\SecretTrait;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
@@ -57,6 +58,7 @@ class Folio extends AbstractAPI implements
     HttpServiceAwareInterface,
     TranslatorAwareInterface
 {
+    use SecretTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -251,16 +253,9 @@ class Folio extends AbstractAPI implements
     protected function renewTenantToken()
     {
         $this->token = null;
-        $password = $this->config['API']['password'];
-        if (
-            $this->config['API']['password_file'] !== null
-            && $content = file_get_contents($this->config['API']['password_file'])
-        ) {
-            $password = $content;
-        }
         $response = $this->performOkapiUsernamePasswordAuthentication(
             $this->config['API']['username'],
-            $password
+            $this->getSecretFromConfigOrSecretFile($this->config['API'], 'password')
         );
         $this->token = $this->extractTokenFromResponse($response);
         $this->sessionCache->folio_token = $this->token;
