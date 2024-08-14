@@ -111,11 +111,9 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
+        $token = $this->getSecretFromConfigOrSecretFile($this->browzineConfig->General, 'access_token');
         // Validate configuration:
-        if (
-            empty($this->browzineConfig->General->access_token)
-            && empty($this->browzineConfig->General->access_token_file)
-        ) {
+        if (!isset($token)) {
             throw new \Exception('Missing access token in BrowZine.ini');
         }
         if (empty($this->browzineConfig->General->library_id)) {
@@ -125,7 +123,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
         // Create connector:
         $connector = new Connector(
             $this->createHttpClient($this->browzineConfig->General->timeout ?? 30),
-            $this->getSecretFromConfigOrSecretFile($this->browzineConfig->General, 'access_token'),
+            $token,
             $this->browzineConfig->General->library_id
         );
         $connector->setLogger($this->logger);

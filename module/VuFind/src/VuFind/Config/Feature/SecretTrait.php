@@ -44,13 +44,16 @@ use Laminas\Config\Config;
 trait SecretTrait
 {
     /**
+     * Load a secret value from the specified configuration and key.
+     * Will look for a _file-suffixed version of the key first,
+     * and load the data from a separate file if configured to do so.
+     *
      * @param Config|array|null $config The config to read from
      * @param string            $key    The key to retrieve
-     * @param bool              $trim   (default: false) trim the input config
      *
      * @return string|null
      */
-    protected function getSecretFromConfigOrSecretFile(Config|array|null $config, string $key, bool $trim = false): ?string
+    protected function getSecretFromConfigOrSecretFile(Config|array|null $config, string $key): ?string
     {
         if (!$config) {
             return null;
@@ -63,6 +66,6 @@ trait SecretTrait
         } else {
             $value = $config[$key];
         }
-        return ($trim ? trim($value) : $value) ?? null;
+        return trim($value) ?? null;
     }
 }
