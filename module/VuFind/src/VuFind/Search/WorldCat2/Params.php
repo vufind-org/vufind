@@ -53,7 +53,11 @@ class Params extends \VuFind\Search\Base\Params
 
         // Sort
         $sort = $this->getSort();
-        $backendParams->set('orderBy', empty($sort) ? 'bestMatch' : $sort);
+        // Translate internal default/relevance sort to WorldCat equivalent:
+        if (empty($sort) || $sort === 'relevance') {
+            $sort = 'bestMatch';
+        }
+        $backendParams->set('orderBy', $sort);
 
         return $backendParams;
     }
