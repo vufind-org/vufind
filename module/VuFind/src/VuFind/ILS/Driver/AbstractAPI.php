@@ -120,12 +120,14 @@ abstract class AbstractAPI extends AbstractBase implements
      * Support method for makeRequest to process an unexpected status code. Can return true to trigger
      * a retry of the API call or false to throw an exception.
      *
-     * @param Response $response    HTTP response
-     * @param int      $retryNumber Counter to keep track of retries (starts at 0 for the first attempt)
+     * @param Response $response      HTTP response
+     * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $retryNumber): bool
+    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
     {
         // No retries by default.
         return false;
@@ -143,8 +145,8 @@ abstract class AbstractAPI extends AbstractBase implements
      * expression, or boolean true to allow all codes.
      * @param string|array      $debugParams         Value to use in place of $params
      * in debug messages (useful for concealing sensitive data, etc.)
-     * @param int               $retryNumber         Counter to keep track of retries
-     * (starts at 0 for the first attempt)
+     * @param int               $attemptNumber       Counter to keep track of attempts
+     * (starts at 1 for the first attempt)
      *
      * @return \Laminas\Http\Response
      * @throws ILSException
@@ -156,7 +158,7 @@ abstract class AbstractAPI extends AbstractBase implements
         $headers = [],
         $allowedFailureCodes = [],
         $debugParams = null,
-        $retryNumber = 0
+        $attemptNumber = 1
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
@@ -195,10 +197,10 @@ abstract class AbstractAPI extends AbstractBase implements
             && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
         ) {
             $this->logError(
-                'Unexpected error response (attempt #' . ($retryNumber + 1)
+                "Unexpected error response (attempt #$attemptNumber"
                 . "); code: {$response->getStatusCode()}, body: {$response->getBody()}"
             );
-            if ($this->shouldRetryAfterUnexpectedStatusCode($response, $retryNumber)) {
+            if ($this->shouldRetryAfterUnexpectedStatusCode($response, $attemptNumber)) {
                 return $this->makeRequest(
                     $method,
                     $path,
@@ -206,7 +208,7 @@ abstract class AbstractAPI extends AbstractBase implements
                     $headers,
                     $allowedFailureCodes,
                     $debugParams,
-                    $retryNumber + 1
+                    $attemptNumber + 1
                 );
             } else {
                 throw new ILSException('Unexpected error code.');

@@ -139,20 +139,20 @@ class Folio extends AbstractAPI implements
      * Support method for makeRequest to process an unexpected status code. Can return true to trigger
      * a retry of the API call or false to throw an exception.
      *
-     * @param Response $response    HTTP response
-     * @param int      $retryNumber Counter to keep track of retries (starts at 0 for the first attempt)
+     * @param Response $response      HTTP response
+     * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
      *
      * @return bool
      */
-    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $retryNumber): bool
+    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
     {
         // If the unexpected status is 401, and the token renews successfully, and we have not yet
         // retried, we should try again:
-        if ($response->getStatusCode() === 401 && !$this->checkTenantToken() && $retryNumber < 1) {
+        if ($response->getStatusCode() === 401 && !$this->checkTenantToken() && $attemptNumber < 2) {
             $this->debug('Retrying request after token expired...');
             return true;
         }
-        return parent::shouldRetryAfterUnexpectedStatusCode($response, $retryNumber);
+        return parent::shouldRetryAfterUnexpectedStatusCode($response, $attemptNumber);
     }
 
     /**
