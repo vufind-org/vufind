@@ -658,7 +658,7 @@ class Folio extends AbstractAPI implements
      *
      * @return array
      */
-    protected function makeStubVuFindItem(
+    protected function getItemFieldsFromLocAndHolding(
         string $locationId,
         array $holdingDetails,
     ): array {
@@ -726,9 +726,9 @@ class Folio extends AbstractAPI implements
             $item->effectiveCallNumberComponents->callNumber
                 ?? $item->itemLevelCallNumber ?? ''
         );
-        $stubVuFindItem = $this->makeStubVuFindItem($locationId, $holdingDetails);
+        $locAndHoldings = $this->getItemFieldsFromLocAndHolding($locationId, $holdingDetails);
 
-        return $callNumberData + $stubVuFindItem + [
+        return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
             'item_id' => $item->id,
             'holdings_id' => $holdingDetails['id'],
@@ -878,10 +878,10 @@ class Folio extends AbstractAPI implements
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0) {
-                $stubVuFindItem = $this->makeStubVuFindItem($holding->effectiveLocationId, $holdingDetails);
-                $invisibleAvailabilityStatus = new AvailabilityStatus(true, 'See full record');
+                $locAndHoldings = $this->getItemFieldsFromLocAndHolding($holding->effectiveLocationId, $holdingDetails);
+                $invisibleAvailabilityStatus = new AvailabilityStatus(true, 'holding_no_items_availability_message');
                 $invisibleAvailabilityStatus->setVisibility(false);
-                $nextBatch[] = $stubVuFindItem + [
+                $nextBatch[] = $locAndHoldings + [
                     'id' => $bibId,
                     'callnumber' => $holdingDetails['holdingCallNumber'],
                     'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
