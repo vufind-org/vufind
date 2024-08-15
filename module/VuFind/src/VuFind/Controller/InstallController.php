@@ -407,12 +407,8 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.', 'error');
             } else {
                 // Connect to database:
-                $connection = $view->driver . '://' . $view->dbrootuser . ':'
-                    . $this->params()->fromPost('dbrootpass') . '@'
-                    . $view->dbhost;
                 try {
-                    $dbName = ($view->driver == 'pgsql')
-                        ? 'template1' : $view->driver;
+                    $dbName = ($view->driver == 'pgsql') ? 'template1' : $view->driver;
                     $db = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray([
                         'driver' => $view->driver,
                         'hostname' => $view->dbhost,

@@ -54,7 +54,7 @@ trait SecretTrait
      */
     protected function getSecretFromConfig(Config|array|null $config, string $key): ?string
     {
-        if (!$config) {
+        if ($config === null) {
             return null;
         }
         if ($config instanceof Config) {

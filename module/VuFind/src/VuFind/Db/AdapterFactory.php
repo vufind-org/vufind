@@ -290,7 +290,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             $options['port'] = $config['port'];
         }
         // Get extra custom options from config:
-        $extraOptions = isset($config->extra_options) ? $this->config->Database->extra_options->toArray() : [];
+        $extraOptions = isset($this->config->Database->extra_options) ? $this->config->Database->extra_options->toArray() : [];
         // Note: $options takes precedence over $extraOptions -- we don't want users
         // using extended settings to override values from core settings.
         return $this->getAdapterFromOptions($options + $extraOptions);
