@@ -250,7 +250,8 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      *
      * @return Adapter
      */
-    public function getAdapterFromConfig($overrideUser = null, $overridePass = null) {
+    public function getAdapterFromConfig($overrideUser = null, $overridePass = null)
+    {
         if (!isset($this->config->Database)) {
             throw new \Exception('"database" settings missing');
         }
@@ -268,12 +269,13 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     /**
      * Obtain a Laminas\DB connection using a set of given element.
      *
-     * @param string $connectionString Config array to connect to the DB containing
+     * @param array $config Config array to connect to the DB containing
      * driver (ie: mysql), username, password, hostname, database (db name), port
      *
      * @return Adapter
      */
-    public function getAdapterFromArray(array $config) {
+    public function getAdapterFromArray(array $config)
+    {
         $driverName = $this->getDriverName($config['driver']);
 
         // Set up default options:
@@ -290,7 +292,8 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             $options['port'] = $config['port'];
         }
         // Get extra custom options from config:
-        $extraOptions = isset($this->config->Database->extra_options) ? $this->config->Database->extra_options->toArray() : [];
+        $extraOptions = isset($this->config->Database->extra_options) ?
+            $this->config->Database->extra_options->toArray() : [];
         // Note: $options takes precedence over $extraOptions -- we don't want users
         // using extended settings to override values from core settings.
         return $this->getAdapterFromOptions($options + $extraOptions);

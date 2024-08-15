@@ -62,7 +62,7 @@ trait SecretTrait
         }
         if (isset($config[$key . '_file']) && $value = file_get_contents($config[$key . '_file'])) {
             return trim($value);
-        } else if(isset($config[$key])) {
+        } elseif (isset($config[$key])) {
             return trim($config[$key]);
         }
         return null;
