@@ -54,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'similar' => Similar::class,
         'worldcateditions' => Deprecated::class,
         'worldcatsimilar' => WorldCatSimilar::class,
+        'worldcat2similar' => WorldCat2Similar::class,
     ];
 
     /**
@@ -67,6 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Deprecated::class => InvokableFactory::class,
         Similar::class => SimilarFactory::class,
         WorldCatSimilar::class => SimilarFactory::class,
+        WorldCat2Similar::class => SimilarFactory::class,
     ];
 
     /**
