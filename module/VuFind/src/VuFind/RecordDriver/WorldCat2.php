@@ -43,13 +43,6 @@ use function count;
 class WorldCat2 extends DefaultRecord
 {
     /**
-     * Map converting OCLC format codes into strings supported by our language files.
-     */
-    protected $formatMap = [
-        'Jrnl' => 'Journal',
-    ];
-
-    /**
      * Return the unique identifier of this record within the index;
      * useful for retrieving additional information (like tags and user
      * comments) from the external MySQL database.
@@ -108,13 +101,13 @@ class WorldCat2 extends DefaultRecord
         $formats = [];
         foreach (['generalFormat', 'specificFormat'] as $key) {
             if (isset($this->fields['format'][$key])) {
-                $formats[] = $this->fields['format'][$key];
+                $formats[] = $this->translate(
+                    'WorldCatFormats::' . strtolower($this->fields['format'][$key]),
+                    default: $this->fields['format'][$key]
+                );
             }
         }
-        return array_map(
-            fn ($format) => $this->formatMap[$format] ?? $format,
-            $formats
-        );
+        return $formats;
     }
 
     /**
