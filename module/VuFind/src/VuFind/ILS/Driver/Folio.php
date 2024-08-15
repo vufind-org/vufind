@@ -879,7 +879,10 @@ class Folio extends AbstractAPI implements
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0) {
                 $locAndHoldings = $this->getItemFieldsFromLocAndHolding($holding->effectiveLocationId, $holdingDetails);
-                $invisibleAvailabilityStatus = new AvailabilityStatus(true, 'holding_no_items_availability_message');
+                $invisibleAvailabilityStatus = new AvailabilityStatus(
+                    true,
+                    'HoldingStatus::holding_no_items_availability_message'
+                );
                 $invisibleAvailabilityStatus->setVisibility(false);
                 $nextBatch[] = $locAndHoldings + [
                     'id' => $bibId,
