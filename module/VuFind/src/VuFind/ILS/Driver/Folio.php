@@ -255,7 +255,7 @@ class Folio extends AbstractAPI implements
         $this->token = null;
         $response = $this->performOkapiUsernamePasswordAuthentication(
             $this->config['API']['username'],
-            $this->getSecretFromConfigOrSecretFile($this->config['API'], 'password')
+            $this->getSecretFromConfig($this->config['API'], 'password')
         );
         $this->token = $this->extractTokenFromResponse($response);
         $this->sessionCache->folio_token = $this->token;

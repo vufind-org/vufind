@@ -52,7 +52,7 @@ trait SecretTrait
      *
      * @return string|null
      */
-    protected function getSecretFromConfigOrSecretFile(Config|array|null $config, string $key): ?string
+    protected function getSecretFromConfig(Config|array|null $config, string $key): ?string
     {
         if (!$config) {
             return null;
@@ -60,11 +60,11 @@ trait SecretTrait
         if ($config instanceof Config) {
             $config = $config->toArray();
         }
-        if ($config[$key . '_file']) {
-            $value = file_get_contents($config[$key . '_file']);
-        } else {
-            $value = $config[$key];
+        if (isset($config[$key . '_file']) && $value = file_get_contents($config[$key . '_file'])) {
+            return trim($value);
+        } else if(isset($config[$key])) {
+            return trim($config[$key]);
         }
-        return trim($value) ?? null;
+        return null;
     }
 }

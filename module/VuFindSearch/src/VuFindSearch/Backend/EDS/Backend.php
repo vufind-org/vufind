@@ -176,7 +176,7 @@ class Backend extends AbstractBackend
 
         // Extract key values from configuration:
         $this->userName = $config->EBSCO_Account->user_name ?? null;
-        $this->password = $this->getSecretFromConfigOrSecretFile($config->EBSCO_Account, 'password');
+        $this->password = $this->getSecretFromConfig($config->EBSCO_Account, 'password');
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
