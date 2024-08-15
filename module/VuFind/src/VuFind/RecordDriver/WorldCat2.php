@@ -527,6 +527,9 @@ class WorldCat2 extends DefaultRecord
      */
     public function getURLs()
     {
+        if (!($this->recordConfig->Record->show_urls ?? false)) {
+            return [];
+        }
         $raw = array_map(
             fn ($loc) => $loc['uri'],
             (array)($this->fields['digitalAccessAndLocations'] ?? [])
