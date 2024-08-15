@@ -654,8 +654,7 @@ class Folio extends AbstractAPI implements
      * location (in cases where there are attached items).
      *
      * @param string $locationId     Location identifier from FOLIO
-     * @param array  $holdingDetails Holding details produced by
-     *                               getHoldingDetailsForItem()
+     * @param array  $holdingDetails Holding details produced by getHoldingDetailsForItem()
      *
      * @return array
      */
@@ -886,7 +885,7 @@ class Folio extends AbstractAPI implements
                     'id' => $bibId,
                     'callnumber' => $holdingDetails['holdingCallNumber'],
                     'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
-                    'reserve' => 'n',
+                    'reserve' => 'N',
                     'availability' => $invisibleAvailabilityStatus,
                 ];
             }
