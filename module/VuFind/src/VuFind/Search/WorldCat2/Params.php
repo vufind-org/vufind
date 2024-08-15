@@ -43,6 +43,16 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
+     * Some facet fields are named differently than the corresponding filter parameters;
+     * this map lists those exceptions.
+     *
+     * @var array
+     */
+    protected $facetToFilterFieldMap = [
+        'language' => 'inLanguage',
+    ];
+
+    /**
      * Create search backend parameters for advanced features.
      *
      * @return ParamBag
@@ -65,6 +75,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Given a facet field name, return the filter parameter to use to apply the filter.
+     *
+     * @param string $field Name of facet field.
+     *
+     * @return string
+     */
+    public function mapFacetFieldToFilterParam(string $field): string
+    {
+        return $this->facetToFilterFieldMap[$field] ?? $field;
+    }
+
+    /**
      * Set up filters based on VuFind settings.
      *
      * @param ParamBag $params Parameter collection to update
@@ -80,14 +102,14 @@ class Params extends \VuFind\Search\Base\Params
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
-                    $params->add($filt['field'], $filt['value']);
+                    $params->add($this->mapFacetFieldToFilterParam($filt['field']), $filt['value']);
                 }
             }
         }
         if (!empty($hiddenFilterList)) {
             foreach ($hiddenFilterList as $field => $hiddenFilters) {
                 foreach ($hiddenFilters as $value) {
-                    $params->add($field, $value);
+                    $params->add($this->mapFacetFieldToFilterParam($field), $value);
                 }
             }
         }
