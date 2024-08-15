@@ -75,9 +75,8 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     public function __construct($recordFactory = null, $collectionClass = null)
     {
         if (null === $recordFactory) {
-            $recordFactory = function ($i) {
-                // TODO: come up with reasonable default factory.
-                throw new \Exception('No default record factory defined for WorldCat2!');
+            $recordFactory = function ($data) {
+                return new Record($data);
             };
         } elseif (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
