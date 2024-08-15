@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\WorldCat2;
 
+use function count;
+
 /**
  * WorldCat v2 Search Options
  *
@@ -73,6 +75,13 @@ class Options extends \VuFind\Search\Base\Options
         // Load list view for result (controls AJAX embedding vs. linking)
         if (isset($searchSettings->List->view)) {
             $this->listviewOption = $searchSettings->List->view;
+        }
+
+        $facetConf = $configLoader->get($this->facetsIni);
+        if (count($facetConf->Advanced_Facet_Settings->translated_facets ?? []) > 0) {
+            $this->setTranslatedFacets(
+                $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
+            );
         }
     }
 

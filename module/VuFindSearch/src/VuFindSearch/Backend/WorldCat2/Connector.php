@@ -127,6 +127,7 @@ class Connector implements LoggerAwareInterface
         $headers = ['Authorization: Bearer ' . $this->session->token];
         $this->client->setHeaders($headers);
         $this->client->setUri($this->baseUrl . $path);
+        $this->debug($path);
         $response = $this->client->send();
         // If authorization failed, the token may be expired; re-request and try again:
         if ($response->getStatusCode() === 401) {
@@ -145,7 +146,7 @@ class Connector implements LoggerAwareInterface
      * @param ParamBag $params Parameters
      *
      * @throws \Exception
-     * @return string    MARC XML
+     * @return array
      */
     public function getRecord($id, ParamBag $params = null)
     {
@@ -166,7 +167,7 @@ class Connector implements LoggerAwareInterface
      * @param int      $offset Search offset
      * @param int      $limit  Search limit
      *
-     * @return string
+     * @return array
      */
     public function search(ParamBag $params, $offset, $limit)
     {
@@ -185,6 +186,7 @@ class Connector implements LoggerAwareInterface
         }
         $docs = $result['bibRecords'] ?? [];
         $total = $result['numberOfRecords'];
-        return compact('docs', 'offset', 'total');
+        $facets = $result['searchFacets'] ?? [];
+        return compact('docs', 'offset', 'total', 'facets');
     }
 }

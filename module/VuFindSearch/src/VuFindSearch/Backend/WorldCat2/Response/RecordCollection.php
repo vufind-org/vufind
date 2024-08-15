@@ -74,6 +74,16 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return []; // not supported by WorldCat
+        $result = [];
+        foreach ($this->response['facets'] ?? [] as $field) {
+            if (!isset($field['facetType'])) {
+                continue;
+            }
+            $result[$field['facetType']] = [];
+            foreach ($field['values'] as $value) {
+                $result[$field['facetType']][$value['value']] = $value['count'];
+            }
+        }
+        return $result;
     }
 }

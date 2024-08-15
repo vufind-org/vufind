@@ -52,6 +52,13 @@ class Results extends \VuFind\Search\Base\Results
     protected $backendId = 'WorldCat2';
 
     /**
+     * Facet list
+     *
+     * @var array|null
+     */
+    protected $responseFacets = null;
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -75,10 +82,12 @@ class Results extends \VuFind\Search\Base\Results
 
             $this->resultTotal = $collection->getTotal();
             $this->results = $collection->getRecords();
+            $this->responseFacets = $collection->getFacets();
         } else {
             // Empty queries are not supported, so treat the response as empty.
             $this->resultTotal = 0;
             $this->results = [];
+            $this->responseFacets = [];
         }
     }
 
@@ -92,7 +101,9 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        // No facets in WorldCat:
-        return [];
+        if (null === $this->responseFacets) {
+            $this->performAndProcessSearch();
+        }
+        return $this->buildFacetList($this->responseFacets, $filter);
     }
 }

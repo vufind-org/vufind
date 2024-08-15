@@ -58,7 +58,38 @@ class Params extends \VuFind\Search\Base\Params
             $sort = 'bestMatch';
         }
         $backendParams->set('orderBy', $sort);
+        $backendParams->set('facets', array_keys($this->getFacetConfig()));
+        $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
+    }
+
+    /**
+     * Set up filters based on VuFind settings.
+     *
+     * @param ParamBag $params Parameter collection to update
+     *
+     * @return void
+     */
+    public function createBackendFilterParameters(ParamBag $params)
+    {
+        // Which filters should be applied to our query?
+        $filterList = $this->getFilterList();
+        $hiddenFilterList = $this->getHiddenFilters();
+        if (!empty($filterList)) {
+            // Loop through all filters and add appropriate values to request:
+            foreach ($filterList as $filterArray) {
+                foreach ($filterArray as $filt) {
+                    $params->add($filt['field'], $filt['value']);
+                }
+            }
+        }
+        if (!empty($hiddenFilterList)) {
+            foreach ($hiddenFilterList as $field => $hiddenFilters) {
+                foreach ($hiddenFilters as $value) {
+                    $params->add($field, $value);
+                }
+            }
+        }
     }
 }
