@@ -109,10 +109,19 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      */
     public function getAdapter($overrideUser = null, $overridePass = null)
     {
-        return $this->getAdapterFromConfig(
-            $overrideUser,
-            $overridePass
-        );
+        if (isset($this->config->Database->database)) {
+            // Parse details from connection string:
+            return $this->getAdapterFromConnectionString(
+                $this->config->Database->database,
+                $overrideUser,
+                $overridePass
+            );
+        } else {
+            return $this->getAdapterFromConfig(
+                $overrideUser,
+                $overridePass
+            );
+        }
     }
 
     /**
