@@ -78,7 +78,7 @@ class WorldCat2 extends DefaultRecord
      */
     public function getDeweyCallNumber()
     {
-        return ((array)$this->fields['classification']['dewey'] ?? [])[0] ?? '';
+        return ((array)($this->fields['classification']['dewey'] ?? []))[0] ?? '';
     }
 
     /**
@@ -88,7 +88,7 @@ class WorldCat2 extends DefaultRecord
      */
     protected function getRawLCCN()
     {
-        return ((array)$this->fields['classification']['lc'] ?? [])[0] ?? '';
+        return ((array)($this->fields['classification']['lc'] ?? []))[0] ?? '';
     }
 
     /**
@@ -367,7 +367,7 @@ class WorldCat2 extends DefaultRecord
      */
     public function getEdition()
     {
-        return ((array)$this->fields['edition']['statement'] ?? [])[0] ?? '';
+        return ((array)($this->fields['edition']['statement'] ?? []))[0] ?? '';
     }
 
     /**
@@ -377,7 +377,7 @@ class WorldCat2 extends DefaultRecord
      */
     public function getPhysicalDescriptions()
     {
-        return ((array)$this->fields['description']['physicalDescription'] ?? [])[0] ?? '';
+        return ((array)($this->fields['description']['physicalDescription'] ?? []))[0] ?? '';
     }
 
     /**
