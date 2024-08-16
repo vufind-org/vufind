@@ -71,14 +71,14 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
     protected const BREADCRUMBS_TRANSLATION_KEY = 'Browse Alphabetically';
 
     /**
-     * URL Parameter for "source" in search URL
+     * URL Parameter for "source to display" in search URL to be displayed (call number instead if lcc)
      *
      * @var string
      */
     public const SEARCH_SOURCE_DISPLAY_PARAM = 'AB-sd';
 
     /**
-     * URL Parameter for "source" in search URL
+     * URL Parameter for "source" in search URL to be used in URL
      *
      * @var string
      */

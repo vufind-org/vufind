@@ -31,7 +31,6 @@
 namespace VuFind\Search;
 
 use VuFind\Search\Base\Results;
-use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 
 /**
  * A minified search object used exclusively for trimming a search object down to its
@@ -142,13 +141,6 @@ class Minified
      * @var array
      */
     public $scp = [];
-
-    /**
-     * Search origin
-     *
-     * @var AbstractSearchOrigin|null
-     */
-    public $o;
 
     /**
      * Constructor.
