@@ -239,7 +239,12 @@ class AlphabrowseController extends AbstractBase
         $from   = $this->params()->fromQuery('from', false);
         $page   = intval($this->params()->fromQuery('page', 0));
         try {
-            $origin = new AlphaBrowseSearchOrigin($this->getTypes($config)[$source] ?? null, $source, $from, $page ?: null);
+            $origin = new AlphaBrowseSearchOrigin(
+                $this->getTypes($config)[$source] ?? null,
+                $source,
+                $from,
+                $page ?: null
+            );
         } catch (Exception) {
             $origin = null;
         }
