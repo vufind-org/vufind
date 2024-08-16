@@ -383,7 +383,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getStatus($id)
     {
-        return $this->getItemStatusesForBiblio($id);
+        $holdings = $this->getItemStatusesForBiblio($id);
+        return $holdings['holdings'];
     }
 
     /**
@@ -400,7 +401,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $items = [];
         foreach ($ids as $id) {
-            $items[] = $this->getItemStatusesForBiblio($id);
+            $holdings = $this->getItemStatusesForBiblio($id);
+            $items[] = $holdings['holdings'];
         }
         return $items;
     }
@@ -2014,11 +2016,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $patron  Patron information, if available
      * @param array  $options Extra options
      *
-     * @return array An associative array with the following keys:
+     * @return array On success an array with the key "total" containing the total
+     * number of items for the given bib id, and the key "holdings" containing an
+     * array of holding information each one with these keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
     protected function getItemStatusesForBiblio($id, $patron = null, array $options = [])
     {
+        // Prepare result array with default values. If no API result can be received
+        // these will be returned.
+        $results = ['total' => 0, 'holdings' => []];
+
         $requestParams = [
             'path' => [
                 'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
@@ -2047,6 +2055,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (empty($result['data']['item_availabilities'])) {
             return [];
         }
+
+        // Get the total number of items returned from the API call and set it to
+        // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
+        // the items paginator
+        $results['total'] = (int)$result['data']['items_total'];
 
         $statuses = [];
         foreach ($result['data']['item_availabilities'] as $i => $item) {
@@ -2110,11 +2123,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $entry['addStorageRetrievalRequestLink'] = 'check';
             }
 
-            $statuses[] = $entry;
+            $results['holdings'][] = $entry;
         }
 
-        usort($statuses, [$this, 'statusSortFunction']);
-        return $statuses;
+        usort($results['holdings'], [$this, 'statusSortFunction']);
+        return $results;
     }
 
     /**
