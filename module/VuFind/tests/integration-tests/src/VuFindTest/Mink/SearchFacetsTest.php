@@ -33,6 +33,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use VuFindTest\Feature\SearchFacetFilterTrait;
+use VuFindTest\Feature\SearchLimitTrait;
 use VuFindTest\Feature\SearchSortTrait;
 
 /**
@@ -47,6 +48,7 @@ use VuFindTest\Feature\SearchSortTrait;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchLimitTrait;
     use SearchSortTrait;
     use SearchFacetFilterTrait;
 
@@ -72,11 +74,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Helper function for simple facet application test
      *
-     * @param Element $page Mink page object
+     * @param Element $page   Mink page object
+     * @param array   $facets Facets to apply (title and expected counts)
      *
      * @return void
      */
-    protected function facetApplyProcedure(Element $page): void
+    protected function facetApplyProcedure(Element $page, array $facets): void
     {
         // Confirm that we have 9 results and no filters to begin with:
         $this->assertStringStartsWith(
@@ -86,19 +89,33 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertCount(0, $items);
 
-        // Facet to Fiction (after making sure we picked the right link):
-        $fictionSelector = '#side-collapse-genre_facet a[data-title="Fiction"]';
-        $this->assertEquals('Fiction 7 results 7', $this->findCssAndGetText($page, $fictionSelector));
-        $this->clickCss($page, $fictionSelector);
+        $active = 0;
+        foreach ($facets as $facet) {
+            $title = $facet['title'];
+            $count = $facet['count'];
+            $resultCount = $facet['resultCount'];
+            // Apply the facet (after making sure we picked the right link):
+            $facetSelector = '#side-collapse-genre_facet a[data-title="' . $title . '"]';
+            $this->assertEquals("$title $count results $count", $this->findCssAndGetText($page, $facetSelector));
+            $this->clickCss($page, $facetSelector);
+            ++$active;
 
-        // Check that when the page reloads, we have fewer results and a filter:
-        $this->waitForPageLoad($page);
-        $this->assertStringStartsWith(
-            'Showing 1 - 7 results of 7',
-            $this->findCssAndGetText($page, '.search-stats')
-        );
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount(1, $items);
+            // Check that when the page reloads, we have fewer results and a filter:
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                "Showing 1 - $resultCount results of $resultCount",
+                $this->findCssAndGetText($page, '.search-stats')
+            );
+            $items = $page->findAll('css', $this->activeFilterSelector);
+            $this->assertCount($active, $items);
+        }
+
+        // Confirm that all selected facets show as active:
+        foreach ($facets as $facet) {
+            $title = $facet['title'];
+            $activeFacetSelector = '#side-collapse-genre_facet a[data-title="' . $title . '"].active';
+            $this->findCss($page, $activeFacetSelector);
+        }
     }
 
     /**
@@ -196,43 +213,87 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test applying a facet to filter results (standard facet sidebar)
+     * Data provider for testApplyFacet
      *
-     * @return void
+     * @return array
      */
-    public function testApplyFacet(): void
+    public static function applyFacetProvider(): array
     {
-        $page = $this->performSearch('building:weird_ids.mrc');
-        $this->sortResults($page, 'title');
-        $this->waitForPageLoad($page);
+        $andFacets = [
+            [
+                'title' => 'Fiction',
+                'count' => 7,
+                'resultCount' => 7,
+            ],
+        ];
 
-        // Confirm that we are NOT using the AJAX sidebar:
-        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertCount(0, $ajaxContainer);
+        $orFacets = [
+            [
+                'title' => 'Fiction',
+                'count' => 7,
+                'resultCount' => 7,
+            ],
+            [
+                'title' => 'The Study Of P|pes',
+                'count' => 1,
+                'resultCount' => 8,
+            ],
+            [
+                'title' => 'Weird IDs',
+                'count' => 9,
+                'resultCount' => 9,
+            ],
+        ];
 
-        // Now run the body of the test procedure:
-        $this->facetApplyProcedure($page);
-
-        // Verify that sort order is still correct:
-        $this->assertSelectedSort($page, 'title');
+        return [
+            'non-deferred AND facets' => [
+                false,
+                false,
+                $andFacets,
+            ],
+            'deferred AND facets' => [
+                true,
+                false,
+                $andFacets,
+            ],
+            'non-deferred OR facets' => [
+                false,
+                true,
+                $orFacets,
+            ],
+            'deferred OR facets' => [
+                true,
+                true,
+                $orFacets,
+            ],
+        ];
     }
 
     /**
      * Test applying a facet to filter results (deferred facet sidebar)
      *
+     * @param bool  $deferred Are deferred facets enabled?
+     * @param bool  $orFacets Are OR facets enabled?
+     * @param array $facets   Facets to apply
+     *
+     * @dataProvider applyFacetProvider
+     *
      * @return void
      */
-    public function testApplyFacetDeferred(): void
+    public function testApplyFacet(bool $deferred, bool $orFacets, array $facets): void
     {
         $this->changeConfigs(
             [
                 'searches' => [
                     'General' => [
-                        'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
+                        'default_side_recommend[]'
+                            => ($deferred ? 'SideFacetsDeferred' : 'SideFacets') . ':Results:CheckboxFacets',
+                        'limit_options' => '20,40',
                     ],
                 ],
                 'facets' => [
                     'Results_Settings' => [
+                        'orFacets' => $orFacets ? '*' : 'false',
                         'collapsedFacets' => '*',
                     ],
                 ],
@@ -241,19 +302,24 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc');
         $this->sortResults($page, 'title');
         $this->waitForPageLoad($page);
+        $this->setResultLimit($page, 40);
+        $this->waitForPageLoad($page);
 
-        // Confirm that we ARE using the AJAX sidebar:
+        // Confirm that we ARE using the correct sidebar type:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertCount(1, $ajaxContainer);
+        $this->assertCount($deferred ? 1 : 0, $ajaxContainer);
 
         // Uncollapse the genre facet to load its contents:
         $this->clickCss($page, '#side-panel-genre_facet .collapsed');
 
         // Now run the body of the test procedure:
-        $this->facetApplyProcedure($page);
+        $this->facetApplyProcedure($page, $facets);
 
         // Verify that sort order is still correct:
         $this->assertSelectedSort($page, 'title');
+
+        // Verify that limit is still correct:
+        $this->assertLimitControl($page, [20, 40], 40);
     }
 
     /**

@@ -167,7 +167,7 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $populator = $this->serviceLocator->get(ResourcePopulator::class);
+            $populator = $this->getService(ResourcePopulator::class);
             $resource = $populator->getOrCreateResourceForDriver($driver);
             $commentsService = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class
@@ -179,7 +179,7 @@ class AbstractRecord extends AbstractBase
                 $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
-                $ratingsService = $this->serviceLocator->get(RatingsService::class);
+                $ratingsService = $this->getService(RatingsService::class);
                 $ratingsService->saveRating($driver, $user->getId(), intval($rating));
             }
 
@@ -241,7 +241,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $this->serviceLocator->get(TagsService::class)->linkTagsToRecord($driver, $user, $tags);
+            $this->getService(TagsService::class)->linkTagsToRecord($driver, $user, $tags);
             $this->flashMessenger()->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
         }
@@ -274,7 +274,7 @@ class AbstractRecord extends AbstractBase
 
         // Delete tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->serviceLocator->get(TagsService::class)->unlinkTagsFromRecord(
+            $this->getService(TagsService::class)->unlinkTagsFromRecord(
                 $driver,
                 $user,
                 [$tag]
@@ -315,7 +315,7 @@ class AbstractRecord extends AbstractBase
             ) {
                 throw new BadRequestException('error_inconsistent_parameters');
             }
-            $ratingsService = $this->serviceLocator->get(RatingsService::class);
+            $ratingsService = $this->getService(RatingsService::class);
             $ratingsService->saveRating(
                 $driver,
                 $user->getId(),
@@ -330,7 +330,7 @@ class AbstractRecord extends AbstractBase
 
         // Display the "add rating" form:
         $currentRating = $user
-            ? $this->serviceLocator->get(RatingsService::class)->getRatingData($driver, $user->getId())
+            ? $this->getService(RatingsService::class)->getRatingData($driver, $user->getId())
             : null;
         return $this->createViewModel(compact('currentRating'));
     }
@@ -412,9 +412,9 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagsService = $this->serviceLocator->get(TagsService::class);
+        $tagsService = $this->getService(TagsService::class);
         $post['mytags'] = $tagsService->parse($post['mytags'] ?? '');
-        $favorites = $this->serviceLocator->get(\VuFind\Favorites\FavoritesService::class);
+        $favorites = $this->getService(\VuFind\Favorites\FavoritesService::class);
         $results = $favorites->saveRecordToFavorites($post, $user, $driver);
 
         // Display a success status message:
@@ -422,8 +422,8 @@ class AbstractRecord extends AbstractBase
         $message = [
             'html' => true,
             'msg' => $this->translate('bulk_save_success') . '. '
-            . '<a href="' . $listUrl . '" class="gotolist">'
-            . $this->translate('go_to_list') . '</a>.',
+                . '<a href="' . $listUrl . '" class="gotolist">'
+                . $this->translate('go_to_list') . '</a>.',
         ];
         $this->flashMessenger()->addMessage($message, 'success');
 
@@ -541,7 +541,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
+        $mailer = $this->getService(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(
             null,
             $mailer->getDefaultRecordSubject($driver)
@@ -584,8 +584,7 @@ class AbstractRecord extends AbstractBase
      */
     protected function smsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getSmsSetting() !== 'disabled';
     }
 
@@ -605,7 +604,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $sms = $this->serviceLocator->get(\VuFind\SMS\SMSInterface::class);
+        $sms = $this->getService(\VuFind\SMS\SMSInterface::class);
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
@@ -617,7 +616,7 @@ class AbstractRecord extends AbstractBase
         // Process form submission:
         if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Do CSRF check
-            $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
+            $csrf = $this->getService(\VuFind\Validator\SessionCsrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
@@ -679,7 +678,7 @@ class AbstractRecord extends AbstractBase
         $format = $this->params()->fromQuery('style');
 
         // Display export menu if missing/invalid option
-        $export = $this->serviceLocator->get(\VuFind\Export::class);
+        $export = $this->getService(\VuFind\Export::class);
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
                 $this->flashMessenger()
@@ -768,8 +767,7 @@ class AbstractRecord extends AbstractBase
             return $view;
         }
 
-        $explanation = $this->serviceLocator
-            ->get(\VuFind\Search\Explanation\PluginManager::class)
+        $explanation = $this->getService(\VuFind\Search\Explanation\PluginManager::class)
             ->get($record->getSourceIdentifier());
 
         $params = $explanation->getParams();

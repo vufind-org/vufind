@@ -273,7 +273,7 @@ class UpgradeController extends AbstractBase
         // subsequent calls.
         static $adapter = false;
         if (!$adapter) {
-            $factory = $this->serviceLocator->get(AdapterFactory::class);
+            $factory = $this->getService(AdapterFactory::class);
             $adapter = $factory->getAdapter(
                 $this->session->dbRootUser,
                 $this->session->dbRootPass
@@ -346,7 +346,7 @@ class UpgradeController extends AbstractBase
      */
     protected function fixSearchChecksumsInDatabase()
     {
-        $manager = $this->serviceLocator->get(ResultsManager::class);
+        $manager = $this->getService(ResultsManager::class);
         $searchService = $this->getDbService(SearchServiceInterface::class);
         $searchRows = $searchService->getSavedSearchesWithMissingChecksums();
         if (count($searchRows) > 0) {
@@ -561,8 +561,7 @@ class UpgradeController extends AbstractBase
                 // If this is a MySQL connection, we can do an automatic upgrade;
                 // if VuFind is using a different database, we have to prompt the
                 // user to check the migrations directory and upgrade manually.
-                $adapter = $this->serviceLocator
-                    ->get(Adapter::class);
+                $adapter = $this->getService(Adapter::class);
                 $platform = $adapter->getDriver()->getDatabasePlatformName();
                 if (strtolower($platform) == 'mysql') {
                     $upgradeResult = $this->upgradeMySQL($adapter);
@@ -589,7 +588,7 @@ class UpgradeController extends AbstractBase
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $this->serviceLocator->get(TagsService::class)->getDuplicateTags();
+            $dupeTags = $this->getService(TagsService::class)->getDuplicateTags();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
@@ -683,8 +682,7 @@ class UpgradeController extends AbstractBase
                 // Test the connection:
                 try {
                     // Query a table known to exist
-                    $factory = $this->serviceLocator
-                        ->get(AdapterFactory::class);
+                    $factory = $this->getService(AdapterFactory::class);
                     $db = $factory->getAdapter($dbrootuser, $pass);
                     $db->query('SELECT * FROM user;');
                     $this->session->dbRootUser = $dbrootuser;
@@ -757,7 +755,7 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $this->serviceLocator->get(TagsService::class)->fixDuplicateTags();
+            $this->getService(TagsService::class)->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 
@@ -793,7 +791,7 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted()) {
-            $resourcePopulator = $this->serviceLocator->get(ResourcePopulator::class);
+            $resourcePopulator = $this->getService(ResourcePopulator::class);
             foreach ($problems as $problem) {
                 $recordId = $problem->getRecordId();
                 $source = $problem->getSource();
@@ -960,7 +958,7 @@ class UpgradeController extends AbstractBase
     {
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = $this->serviceLocator->get(CacheManager::class);
+        $cache = $this->getService(CacheManager::class);
         if ($cache->hasDirectoryCreationError()) {
             return $this->redirect()->toRoute('install-fixcache');
         }

@@ -105,7 +105,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var string
      */
     protected $firstOpenDropdownMenuItemSelector
-        = '.mainbody .open .dropdown-menu li:nth-child(1) a, .mainbody .dropdown-menu.show li:nth-child(1) a';
+        = '.mainbody .open .dropdown-menu li:nth-child(2) a, .mainbody .dropdown-menu.show li:nth-child(2) a';
 
     /**
      * Selector for popover content

@@ -115,8 +115,7 @@ class AbstractSearch extends AbstractBase
         // If we have default filters, set them up as a fake "saved" search
         // to properly populate special controls on the advanced screen.
         if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
-            $view->saved = $this->serviceLocator
-                ->get(\VuFind\Search\Results\PluginManager::class)
+            $view->saved = $this->getService(\VuFind\Search\Results\PluginManager::class)
                 ->get($this->searchClassId);
             $view->saved->getParams()->initFromRequest(
                 new \Laminas\Stdlib\Parameters([])
@@ -234,8 +233,7 @@ class AbstractSearch extends AbstractBase
             return null;
         }
 
-        $rManager = $this->serviceLocator
-            ->get(\VuFind\Recommend\PluginManager::class);
+        $rManager = $this->getService(\VuFind\Recommend\PluginManager::class);
 
         $override = $this->params()->fromQuery('recommendOverride');
 
@@ -269,7 +267,7 @@ class AbstractSearch extends AbstractBase
      */
     public function homeAction()
     {
-        $blocks = $this->serviceLocator->get(\VuFind\ContentBlock\BlockLoader::class)
+        $blocks = $this->getService(\VuFind\ContentBlock\BlockLoader::class)
             ->getFromSearchClassId($this->searchClassId);
         return $this->createViewModel(compact('blocks'));
     }
@@ -325,7 +323,7 @@ class AbstractSearch extends AbstractBase
         $writer->render();
 
         // Apply XSLT if we can find a relevant file:
-        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
+        $themeInfo = $this->getService(\VuFindTheme\ThemeInfo::class);
         $themeHits = $themeInfo->findInThemes('assets/xsl/rss.xsl');
         if ($themeHits) {
             $xsl = $this->url()->fromRoute('home') . 'themes/'
@@ -364,7 +362,7 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+        $runner = $this->getService(\VuFind\Search\SearchRunner::class);
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
@@ -437,9 +435,7 @@ class AbstractSearch extends AbstractBase
         }
 
         // Schedule options for footer tools
-        $view->scheduleOptions = $this->serviceLocator
-            ->get(\VuFind\Search\History::class)
-            ->getScheduleOptions();
+        $view->scheduleOptions = $this->getService(\VuFind\Search\History::class)->getScheduleOptions();
         $view->saveToHistory = $this->saveToHistory;
         return $view;
     }
@@ -508,7 +504,10 @@ class AbstractSearch extends AbstractBase
         return $this->redirect()->toRoute(
             $details['route'],
             $details['params'],
-            ['query' => $queryParams]
+            array_merge_recursive(
+                $details['options'] ?? [],
+                ['query' => $queryParams]
+            )
         );
     }
 
@@ -522,7 +521,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function retrieveSearchSecurely($searchId)
     {
-        $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
+        $sessId = $this->getService(SessionManager::class)->getId();
         return $this->getDbService(SearchServiceInterface::class)
             ->getSearchByIdAndOwner($searchId, $sessId, $this->getUser());
     }
@@ -536,8 +535,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function saveSearchToHistory($results)
     {
-        $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
-        $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class)->saveNormalizedSearch(
+        $sessId = $this->getService(SessionManager::class)->getId();
+        $this->getService(\VuFind\Search\SearchNormalizer::class)->saveNormalizedSearch(
             $results,
             $sessId,
             $this->getUser()?->getId()
@@ -589,8 +588,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class);
+        return $this->getService(\VuFind\Search\Results\PluginManager::class);
     }
 
     /**
@@ -648,7 +646,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+        $config = $this->getService(\VuFind\Config\PluginManager::class)
             ->get($config);
         $fields = isset($config->SpecialFacets->$section)
             ? $config->SpecialFacets->$section->toArray() : [];
@@ -820,7 +818,7 @@ class AbstractSearch extends AbstractBase
         $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+        $config = $this->getService(\VuFind\Config\PluginManager::class)
             ->get($config);
 
         // Process checkbox settings in config:
@@ -891,7 +889,7 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+        $config = $this->getService(\VuFind\Config\PluginManager::class)
             ->get($options->getFacetsIni());
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
@@ -941,8 +939,6 @@ class AbstractSearch extends AbstractBase
      */
     public function getOptionsForClass(): \VuFind\Search\Base\Options
     {
-        return $this->serviceLocator
-            ->get(\VuFind\Search\Options\PluginManager::class)
-            ->get($this->searchClassId);
+        return $this->getService(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
     }
 }
