@@ -16,11 +16,10 @@
   if ($this->facet['operator'] == 'AND') {
     $classList[] = 'facetAND';
   }
-
   $displayText = '-';
-  if (!empty($this->facet['displayText'])) {
+  if ('' !== (string)($this->facet['displayText'] ?? '')) {
     $displayText = $this->escapeHtml($this->facet['displayText']);
-  } elseif (!empty($this->facet['value'])) {
+  } elseif ('' !== (string)($this->facet['value'] ?? '')) {
     $displayText = $this->escapeHtml($this->facet['value']);
   }
   $displayText = '<span class="facet-value' . ($hasCheckbox ? ' icon-link__label' : '') . '">' . $displayText . '</span>';
