@@ -8,7 +8,7 @@ if (isset($searchOrigin)) {
     <nav class="container">
       <p><a href="<?= $link ?>">
         <?= $this->icon('fa-long-arrow-left', 'fa-long-arrow-left') ?>
-        <?= $this->transEsc($searchOrigin->getTranslationKey(), ['%%field%%' => $fieldValue]) ?>
+        <?= $this->transEsc($searchOrigin->getLinkTranslationKey(), ['%%field%%' => $fieldValue]) ?>
       </a></p>
     </nav>
     <?php

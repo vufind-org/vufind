@@ -153,7 +153,7 @@
         $link = $this->url($searchOrigin->getRouteName()) . '?' . http_build_query($searchOrigin->getOriginUrlParamsArray());
         $fieldValue = $this->translate($searchOrigin->getDisplayName());
         $searchOriginBreadcrumb = '<li><a href="' . $link . '">' .
-          $this->transEsc($searchOrigin->getTranslationKey(), ['%%field%%' => $fieldValue]) .
+          $this->transEsc($searchOrigin->getBreadcrumbsTranslationKey()) .
           '</a></li>';
       } else {
         $searchOriginBreadcrumb = '';

@@ -80,5 +80,12 @@ abstract class AbstractSearchOrigin
      *
      * @return string
      */
-    abstract public function getTranslationKey(): string;
+    abstract public function getLinkTranslationKey(): string;
+
+    /**
+     * Get translation label for breadcrumbs
+     *
+     * @return string
+     */
+    abstract public function getBreadcrumbsTranslationKey(): string;
 }

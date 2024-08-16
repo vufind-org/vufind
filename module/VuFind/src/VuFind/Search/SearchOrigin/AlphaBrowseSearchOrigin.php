@@ -57,11 +57,18 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
     protected const ROUTE_NAME = 'alphabrowse-home';
 
     /**
-     * Name of the route to get back to
+     * Config key for translation
      *
      * @var string
      */
     protected const TRANSLATION_KEY = 'back_to_browse_by';
+
+    /**
+     * Config key for translation for the purpose of breadcrumbs
+     *
+     * @var string
+     */
+    protected const BREADCRUMBS_TRANSLATION_KEY = 'Browse Alphabetically';
 
     /**
      * URL Parameter for "source" in search URL
@@ -232,8 +239,18 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
      *
      * @return string
      */
-    public function getTranslationKey(): string
+    public function getLinkTranslationKey(): string
     {
         return self::TRANSLATION_KEY;
+    }
+
+    /**
+     * Get translation label for breadcrumbs
+     *
+     * @return string
+     */
+    public function getBreadcrumbsTranslationKey(): string
+    {
+        return self::BREADCRUMBS_TRANSLATION_KEY;
     }
 }
