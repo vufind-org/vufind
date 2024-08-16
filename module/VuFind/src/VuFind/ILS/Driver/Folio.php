@@ -874,7 +874,7 @@ class Folio extends AbstractAPI implements
                 $nextBatch[] = $nextItem;
             }
 
-            // If there are no item records at this location, we're going to create a fake one,
+            // If there are no item records on this holding, we're going to create a fake one,
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0) {
@@ -883,7 +883,7 @@ class Folio extends AbstractAPI implements
                     true,
                     'HoldingStatus::holding_no_items_availability_message'
                 );
-                $invisibleAvailabilityStatus->setVisibility(false);
+                $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
                 $nextBatch[] = $locAndHoldings + [
                     'id' => $bibId,
                     'callnumber' => $holdingDetails['holdingCallNumber'],

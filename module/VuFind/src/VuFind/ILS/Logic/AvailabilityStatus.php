@@ -54,7 +54,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @var bool
      */
-    protected bool $visibility = true;
+    protected bool $visibilityInHoldingsTab = true;
 
     /**
      * Constructor
@@ -100,20 +100,19 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      */
     public function isVisibleInHoldings(): bool
     {
-        // Can be overridden if the status should not be visible in the holdings tab,
-        return true;
+        return $this->visibilityInHoldingsTab;
     }
 
     /**
      * Set visibility in holdings tab.
      *
-     * @param bool $visibility Visibility toggle
+     * @param bool $visibilityInHoldingsTab Visibility toggle
      *
      * @return AvailabilityStatus
      */
-    public function setVisibility(bool $visibility): AvailabilityStatus
+    public function setVisibilityInHoldings(bool $visibilityInHoldingsTab): AvailabilityStatus
     {
-        $this->visibility = $visibility;
+        $this->visibilityInHoldingsTab = $visibilityInHoldingsTab;
         return $this;
     }
 
