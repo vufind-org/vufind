@@ -409,13 +409,15 @@ class InstallController extends AbstractBase
                 // Connect to database:
                 try {
                     $dbName = ($view->driver == 'pgsql') ? 'template1' : $view->driver;
-                    $db = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray([
+                    $connectionParams = [
                         'driver' => $view->driver,
                         'hostname' => $view->dbhost,
                         'username' => $view->dbrootuser,
                         'password' => $this->params()->fromPost('dbrootpass'),
-                        'database' => $dbName,
-                    ]);
+                    ];
+                    $db = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                        $connectionParams + ['database' => $dbName]
+                    );
                 } catch (\Exception $e) {
                     $this->flashMessenger()
                         ->addMessage(
@@ -451,13 +453,9 @@ class InstallController extends AbstractBase
                         foreach ($preCommands as $query) {
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
-                        $db = $this->getService(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray([
-                            'driver' => $view->driver,
-                            'hostname' => $view->dbhost,
-                            'username' => $view->dbrootuser,
-                            'password' => $this->params()->fromPost('dbrootpass'),
-                            'database' => $view->dbname,
-                        ]);
+                        $db = $this->getService(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                            $connectionParams + ['database' => $view->dbname]
+                        );
                         $statements = explode(';', $sql);
                         foreach ($statements as $current) {
                             // Skip empty sections:
