@@ -1747,16 +1747,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => '+due_date',
             ];
         } elseif ('Holdings' === $function) {
-            $limitByType = $this->config['Holdings']['itemLimitByType'];
+            $limitByType = $this->config['Holdings']['itemLimitByType'] ?? [];
             $type = '';
             if ($limitByType) {
                 $biblio = $this->getBiblio($params['id']);
                 $type   = $biblio['item_type'];
             }
             return [
-                'itemLimit' => $this->config['Holdings']['itemLimitByType'][$type]
-                ?? $this->config['Holdings']['itemLimit']
-                ?? null,
+                'itemLimit' => $limitByType[$type]
+                    ?? $this->config['Holdings']['itemLimit']
+                    ?? null,
             ];
         }
 
@@ -2056,12 +2056,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return [];
         }
 
-        // Get the total number of items returned from the API call and set it to
-        // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
+        // Get the total number of items returned from the API call and save it to
+        // a local array. It is then used in VuFind\RecordTab\HoldingsILS for
         // the items paginator
         $results['total'] = (int)$result['data']['items_total'];
 
-        $statuses = [];
         foreach ($result['data']['item_availabilities'] as $i => $item) {
             $avail = $item['availability'];
             $available = $avail['available'];
