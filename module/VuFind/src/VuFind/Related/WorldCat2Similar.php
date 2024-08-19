@@ -29,10 +29,12 @@
 
 namespace VuFind\Related;
 
+use Exception;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
+use function array_slice;
 use function count;
 
 /**
@@ -66,15 +68,15 @@ class WorldCat2Similar extends Similar
         }
 
         // Add subjects to query
-        $subjects = $driver->getAllSubjectHeadings();
+        $subjects = array_slice($driver->getAllSubjectHeadings(), 0, 4);
         foreach ($subjects as $current) {
-            $parts[] = 'su:"' . implode(' ', $current) . '"';
+            $queryObj->addQuery(new Query('"' . implode(' ', $current) . '"', 'su'));
         }
 
         // Add title to query
         $title = $driver->getTitle();
         if (!empty($title)) {
-            $parts[] = 'ti:"' . str_replace('"', '', $title) . '"';
+            $queryObj->addQuery(new Query('"' . str_replace('"', '', $title) . '"', 'ti'));
         }
 
         // Not current record ID if this is already a WorldCat v2 record:
@@ -84,12 +86,16 @@ class WorldCat2Similar extends Similar
         // Perform the search and save filtered results:
         $maxRecommendations = 5;
         $command = new SearchCommand('WorldCat2', $queryObj, 0, $maxRecommendations + 1);
-        $result = $this->searchService->invoke($command)->getResult();
         $this->results = [];
-        foreach ($result->getRecords() as $record) {
-            if ($record->getUniqueId() !== $idToExclude && count($this->results) < $maxRecommendations) {
-                $this->results[] = $record;
+        try {
+            $result = $this->searchService->invoke($command)->getResult();
+            foreach ($result->getRecords() as $record) {
+                if ($record->getUniqueId() !== $idToExclude && count($this->results) < $maxRecommendations) {
+                    $this->results[] = $record;
+                }
             }
+        } catch (Exception $e) {
+            error_log('Unexpected error in WorldCat2 similar records module: ' . ((string)$e));
         }
     }
 }
