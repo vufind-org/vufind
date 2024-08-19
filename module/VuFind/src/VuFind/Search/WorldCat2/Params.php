@@ -81,7 +81,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-    public function mapFacetFieldToFilterParam(string $field): string
+    protected function mapFacetFieldToFilterParam(string $field): string
     {
         return $this->facetToFilterFieldMap[$field] ?? $field;
     }
@@ -93,7 +93,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function createBackendFilterParameters(ParamBag $params)
+    protected function createBackendFilterParameters(ParamBag $params): void
     {
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
