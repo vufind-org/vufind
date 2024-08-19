@@ -199,11 +199,13 @@ class WorldCat2 extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        return array_map(
-            [$this, 'formatCreatorName'],
-            array_filter(
-                $this->fields['contributor']['creators'] ?? [],
-                fn ($creator) => ($creator['isPrimary'] ?? false) && ($creator['type'] ?? '') !== 'corporation'
+        return array_values(
+            array_map(
+                [$this, 'formatCreatorName'],
+                array_filter(
+                    $this->fields['contributor']['creators'] ?? [],
+                    fn ($creator) => ($creator['isPrimary'] ?? false) && ($creator['type'] ?? '') !== 'corporation'
+                )
             )
         );
     }
@@ -215,11 +217,13 @@ class WorldCat2 extends DefaultRecord
      */
     public function getSecondaryAuthors()
     {
-        return array_map(
-            [$this, 'formatCreatorName'],
-            array_filter(
-                $this->fields['contributor']['creators'] ?? [],
-                fn ($creator) => !($creator['isPrimary'] ?? false) && ($creator['type'] ?? '') !== 'corporation'
+        return array_values(
+            array_map(
+                [$this, 'formatCreatorName'],
+                array_filter(
+                    $this->fields['contributor']['creators'] ?? [],
+                    fn ($creator) => !($creator['isPrimary'] ?? false) && ($creator['type'] ?? '') !== 'corporation'
+                )
             )
         );
     }
@@ -408,7 +412,7 @@ class WorldCat2 extends DefaultRecord
         // Now convert to the expected format:
         return array_map(
             fn ($value) => [$value],
-            array_filter($values)
+            array_values(array_filter($values))
         );
     }
 

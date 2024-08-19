@@ -151,6 +151,7 @@ class Connector implements LoggerAwareInterface
     public function getRecord($id, ParamBag $params = null)
     {
         $response = $this->makeApiCall('/bibs/' . urlencode($id));
+        echo $response->getBody();
         $record = json_decode($response->getBody(), true);
         $found = isset($record['identifier']['oclcNumber']);
         return [
