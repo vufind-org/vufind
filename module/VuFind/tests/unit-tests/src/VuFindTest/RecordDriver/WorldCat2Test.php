@@ -175,14 +175,15 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
                 'worldcat2/pride.json',
             ],
 
+            'non-default short title' => ['getShortTitle', 'title :', 'worldcat2/title-subtitle.json'],
+            'non-default subtitle' => ['getSubtitle', 'the subtitle', 'worldcat2/title-subtitle.json'],
+
             //'non-default ISSNs' => ['getISSNs', [], 'worldcat2/pride.json'],
             //'non-default corporate authors' => ['getCorporateAuthors', [], 'worldcat2/pride.json'],
             //'non-default date span' => ['getDateSpan', [], 'worldcat2/pride.json'],
             //'non-default newer titles' => ['getNewerTitles', [], 'worldcat2/pride.json'],
             //'non-default previous titles' => ['getPreviousTitles', [], 'worldcat2/pride.json'],
             //'non-default summary' => ['getSummary', [], 'worldcat2/pride.json'],
-            //'non-default short title' => ['getShortTitle', '', 'worldcat2/pride.json'],
-            //'non-default subtitle' => ['getSubtitle', '', 'worldcat2/pride.json'],
             //'non-default edition' => ['getEdition', '', 'worldcat2/pride.json'],
             //'non-default awards' => ['getAwards', [], 'worldcat2/pride.json'],
             //'non-default bibliography notes' => ['getBibliographyNotes', [], 'worldcat2/pride.json'],
