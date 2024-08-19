@@ -200,7 +200,7 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
                     'This book contains tools a Dungeon Master needs to provide stories and game play. A resource for '
                     . 'new and existing Dungeon Masters to engage in both adventure and world creation, with rules, '
                     . 'guidelines, and advice from the game\'s experts. Created as part of a massive public playtest '
-                    . 'involving more than 170,000 fans of the game'
+                    . 'involving more than 170,000 fans of the game',
                 ],
                 'worldcat2/dmg.json',
             ],
@@ -210,9 +210,9 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
                     'D&D lead designers, Mike Mearls, Jeremy Crawford ; Dungeon master\'s guide leads, Jeremy '
                     . 'Crawford, Christopher Perkins, James Wyatt ; designers, Robert J. Schwalb, Rodney '
                     . 'Thompson, Peter Lee ; editors, Scott Fitzgerald Gray, Michele Carter, Chris Sims, '
-                    . 'Jennifer Clarke Wilkes ; producer, Greg Bilsland.'
+                    . 'Jennifer Clarke Wilkes ; producer, Greg Bilsland.',
                 ],
-                'worldcat2/dmg.json'
+                'worldcat2/dmg.json',
             ],
             'non-default edition' => ['getEdition', 'Fifth edition', 'worldcat2/dmg.json'],
             'non-default table of contents' => [
@@ -222,7 +222,7 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
                     . 'Creating nonplayer characters -- Adventure environments -- Between adventures -- '
                     . 'Treasure -- Running the game -- Dungeon master\'s workshop -- Appendix A: '
                     . 'Random dungeons -- Appendix B: Monster lists -- Appendix C: Maps -- Appendix '
-                    . 'D: Dungeon Master inspiration.'
+                    . 'D: Dungeon Master inspiration.',
                 ],
                 'worldcat2/dmg.json',
             ],
