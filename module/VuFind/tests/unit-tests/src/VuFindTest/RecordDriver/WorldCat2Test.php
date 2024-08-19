@@ -168,6 +168,12 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
                 'worldcat2/pride.json',
                 ['Record' => ['show_urls' => true]],
             ],
+            'non-default ID' => ['getUniqueID', '49569228', 'worldcat2/pride.json'],
+            'non-default OCLC numbers' => [
+                'getOCLC',
+                ['49569228', '530699569', '702096151', '1036823755', '1332980563'],
+                'worldcat2/pride.json',
+            ],
 
             //'non-default ISSNs' => ['getISSNs', [], 'worldcat2/pride.json'],
             //'non-default corporate authors' => ['getCorporateAuthors', [], 'worldcat2/pride.json'],
@@ -208,5 +214,18 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
             );
         }
         $this->assertEquals($expected, $driver->$method());
+    }
+
+    /**
+     * Test that an exception is thrown if the OCLC number is missing.
+     *
+     * @return void
+     */
+    public function testMissingIdentifier(): void
+    {
+        $configObj = new Config([]);
+        $driver = new WorldCat2($configObj, $configObj, $configObj);
+        $this->expectExceptionMessage('ID not set!');
+        $driver->getOCLC();
     }
 }
