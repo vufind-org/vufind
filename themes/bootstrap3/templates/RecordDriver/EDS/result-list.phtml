@@ -36,10 +36,10 @@
                     <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
                     <?=$item['Data']?> </a>
 		  </h2>
-		<?php elseif ('Au' == $item['Group'] && strtolower($edsConfig->AuthorResultListInfo->ResultListPage ?? 'Short') == 'short'): ?>
+		<?php elseif ('Au' == $item['Group'] && strtolower($edsConfig->AuthorDisplay->ResultListFormat ?? 'Short') == 'short'): ?>
                     <?php $authors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
 		    <?php $authorCount = count($authors) ?>
-		    <?php $authorNameLimit = $edsConfig->AuthorResultListInfo->AuthorNameLimit ?? 3; ?>
+		    <?php $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3; ?>
 		    <?php if ($authorCount > 1): ?>
                         <p>
                             <b><?=$this->transEsc($item['Label'])?>:</b>
