@@ -2056,9 +2056,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return [];
         }
 
-        // Get the total number of items returned from the API call and save it to
-        // a local array. It is then used in VuFind\RecordTab\HoldingsILS for
-        // the items paginator
+        // Return total number of results for pagination.
         $results['total'] = (int)$result['data']['items_total'];
 
         foreach ($result['data']['item_availabilities'] as $i => $item) {
