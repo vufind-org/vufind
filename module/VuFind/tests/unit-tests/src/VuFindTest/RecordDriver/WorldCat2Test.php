@@ -178,17 +178,26 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
             'non-default short title' => ['getShortTitle', 'title :', 'worldcat2/title-subtitle.json'],
             'non-default subtitle' => ['getSubtitle', 'the subtitle', 'worldcat2/title-subtitle.json'],
 
+            'non-default newer titles' => ['getNewerTitles', ['New York Saturday journal'], 'worldcat2/star.json'],
+            'non-default previous titles' => ['getPreviousTitles', ['Saturday weekly journal'], 'worldcat2/star.json'],
+            'non-default publication frequency' => ['getPublicationFrequency', ['Weekly'], 'worldcat2/star.json'],
+            'non-default date span' => [
+                'getDateSpan',
+                ['Vol. 2, no. 97 (Jan. 20, 1872)-v. 3, no. 156 (Mar. 8, 1873).'],
+                'worldcat2/star.json',
+            ],
+            'non-default corporate authors' => [
+                'getCorporateAuthors',
+                ['Beadle and Adams (1872-1898)', 'Johannsen Collection'],
+                'worldcat2/star.json',
+            ],
+
             //'non-default ISSNs' => ['getISSNs', [], 'worldcat2/pride.json'],
-            //'non-default corporate authors' => ['getCorporateAuthors', [], 'worldcat2/pride.json'],
-            //'non-default date span' => ['getDateSpan', [], 'worldcat2/pride.json'],
-            //'non-default newer titles' => ['getNewerTitles', [], 'worldcat2/pride.json'],
-            //'non-default previous titles' => ['getPreviousTitles', [], 'worldcat2/pride.json'],
             //'non-default summary' => ['getSummary', [], 'worldcat2/pride.json'],
             //'non-default edition' => ['getEdition', '', 'worldcat2/pride.json'],
             //'non-default awards' => ['getAwards', [], 'worldcat2/pride.json'],
             //'non-default bibliography notes' => ['getBibliographyNotes', [], 'worldcat2/pride.json'],
             //'non-default production credits' => ['getProductionCredits', [], 'worldcat2/pride.json'],
-            //'non-default publication frequency' => ['getPublicationFrequency', [], 'worldcat2/pride.json'],
             //'non-default table of contents' => ['getTOC', [], 'worldcat2/pride.json'],
         ];
     }
