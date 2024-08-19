@@ -35,30 +35,29 @@
                   <h2>
                     <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
                     <?=$item['Data']?> </a>
-		  </h2>
-		<?php elseif ('Au' == $item['Group'] && strtolower($edsConfig->AuthorDisplay->ResultListFormat ?? 'Short') == 'short'): ?>
-                    <?php $authors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
-		    <?php $authorCount = count($authors) ?>
-		    <?php $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3; ?>
-		    <?php if ($authorCount > 1): ?>
-                        <p>
-                            <b><?=$this->transEsc($item['Label'])?>:</b>
-                            <?php foreach ($authors as $i => $author): ?>
-                                <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
-                                if ($authorCount == ($i + 1)) {
-                                    break;
-                                } elseif (($i + 1) >= $authorNameLimit) {
-                                    echo ' ' . $this->transEsc('more_authors_abbrev');
-                                    break;
-                                }
-                            ?><?php endforeach; ?>
-                        </p>
+                  </h2>
+                <?php elseif ('Au' == $item['Group'] && strtolower($edsConfig->AuthorDisplay->ResultListFormat ?? 'Short') == 'short'): ?>
+                  <p>
+                    <b><?=$this->transEsc($item['Label'])?>:</b>
+                    <?php
+                      $authors = $driver->getPrimaryAuthorsWithHighlighting();
+                      $authorCount = count($authors);
+                      $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3;
+                    ?>
+                    <?php if ($authorCount > 1): ?>
+                      <?php foreach ($authors as $i => $author): ?>
+                        <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
+                        if ($authorCount == ($i + 1)) {
+                          break;
+                        } elseif (($i + 1) >= $authorNameLimit) {
+                          echo ' ' . $this->transEsc('more_authors_abbrev');
+                          break;
+                        }
+                      ?><?php endforeach; ?>
                     <?php else: ?>
-                        <p>
-                            <b><?=$this->transEsc($item['Label'])?>:</b>
-                            <?=$this->driver->linkUrls($item['Data'])?>
-                        </p>
+                      <?=$this->driver->linkUrls($item['Data'])?>
                     <?php endif; ?>
+                  </p>
                 <?php else:?>
                   <p>
                     <b><?=$this->transEsc($item['Label'])?>:</b>
