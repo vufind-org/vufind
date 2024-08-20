@@ -94,7 +94,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return Connector
      */
-    protected function getConnector(Client $client)
+    protected function getConnector(Client $client): Connector
     {
         $container = new Container('WorldCat2Test');
         $connector = new Connector(
