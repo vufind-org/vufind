@@ -206,11 +206,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function dateSelectorInit() {
-    let parentElement = document.querySelector('div.facet form .date-fields').parentElement;
-    if (parentElement) {
-      dateSelectorId = parentElement.id;
-      let form = document.querySelector('form#' + dateSelectorId);
-      form.addEventListener('submit', function switchAction(e) {
+    let elem = document.querySelector('div.facet form .date-fields');
+    if (elem !== null) {
+      dateSelectorId = elem.parentElement.id;
+      elem.parentElement.addEventListener('submit', function switchAction(e) {
         if (isMultiFacetsSelectionActivated) {
           e.preventDefault();
         }
@@ -547,8 +546,9 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   function setup() {
     if (multiFacetsSelectionEnabled === true) {
-      VuFind.multiFacetsSelection.addSwitchAndButton(document.getElementById('facet-info-result').children[0]);
-      VuFind.multiFacetsSelection.applyClickHandling(document.getElementById('facet-list-count'));
+      let elem = document.getElementById('facet-info-result').children[0];
+      VuFind.multiFacetsSelection.applyClickHandling(elem);
+      VuFind.multiFacetsSelection.addSwitchAndButton(elem);
     }
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
