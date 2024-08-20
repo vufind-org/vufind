@@ -107,7 +107,7 @@ trait MarcBasicTrait
     }
 
     /**
-     * Get the call numbers associated with the record (empty string if none).
+     * Get the call numbers associated with the record (empty array if none).
      *
      * @return array
      */

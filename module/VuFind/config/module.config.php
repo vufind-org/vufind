@@ -45,6 +45,19 @@ $config = [
                     'spec' => '/Content/%page%',
                 ],
             ],
+            'help' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Help/[:topic]',
+                    'constraints' => [
+                        'topic'     => '[a-zA-Z0-9_-]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Help',
+                        'action'     => 'Home',
+                    ],
+                ],
+            ],
             'shortlink' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [

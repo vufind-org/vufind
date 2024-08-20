@@ -29,7 +29,6 @@
 
 namespace VuFindTheme\View\Helper;
 
-use function count;
 use function in_array;
 use function is_array;
 
@@ -115,17 +114,11 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $parts = $this->container->parseSetting($current);
-            // Special case for media with parentheses
-            // ie. (min-width: 768px)
-            if (count($parts) > 1 && str_starts_with($parts[1], '(')) {
-                $parts[1] .= ':' . $parts[2];
-                array_splice($parts, 2, 1);
-            }
             $headLink()->forcePrependStylesheet(
-                trim($parts[0]),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
+                $current['file'],
+                empty($current['media']) ? 'all' : $current['media'],
+                $current['conditional'] ?? '',
+                $current['extras'] ?? []
             );
         }
 

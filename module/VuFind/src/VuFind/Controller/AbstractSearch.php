@@ -513,7 +513,10 @@ class AbstractSearch extends AbstractBase
         return $this->redirect()->toRoute(
             $details['route'],
             $details['params'],
-            ['query' => $queryParams]
+            array_merge_recursive(
+                $details['options'] ?? [],
+                ['query' => $queryParams]
+            )
         );
     }
 
