@@ -575,7 +575,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#renewAll');
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
-            'Renewal Successful',
+            'Successfully renewed 1 item.',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
     }

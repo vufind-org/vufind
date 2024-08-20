@@ -31,6 +31,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFindTest\Feature\SearchLimitTrait;
 
 use function intval;
 
@@ -46,6 +47,8 @@ use function intval;
  */
 class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchLimitTrait;
+
     /**
      * Selector for limit control
      *
@@ -87,40 +90,6 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         $text = $this->findCssAndGetText($page, '.search-stats strong');
         [, $actualSize] = explode(' - ', $text);
         $this->assertEquals($size, intval($actualSize));
-    }
-
-    /**
-     * Assert the contents and selected element of the limit control.
-     *
-     * @param Element $page    Current page
-     * @param int[]   $options Expected options
-     * @param int     $active  Expected active option
-     *
-     * @return void
-     */
-    protected function assertLimitControl(Element $page, array $options, int $active)
-    {
-        $limit = $this->findCss($page, $this->limitControlSelector);
-        $this->assertEquals((string)$active, $limit->getValue());
-        $optionElements
-            = $page->findAll('css', $this->limitControlSelector . ' option');
-        $callback = function (Element $element): string {
-            return intval($element->getText());
-        };
-        $actualOptions = array_map($callback, $optionElements);
-        $this->assertEquals($options, $actualOptions);
-    }
-
-    /**
-     * Assert that no limit control is present on the page.
-     *
-     * @param Element $page Current page
-     *
-     * @return void
-     */
-    protected function assertNoLimitControl(Element $page)
-    {
-        $this->assertNull($page->find('css', $this->limitControlSelector));
     }
 
     /**
@@ -231,7 +200,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 'Test Publication 20021', 'Test Publication 20040', 20);
 
         // Change limit and verify:
-        $this->clickCss($page, $this->limitControlSelector . ' option', null, 1);
+        $this->setResultLimit($page, 40);
         $this->waitForPageLoad($page);
         // Check expected first and last record (page should be reset):
         $this->assertResultTitles($page, 'Test Publication 20001', 'Test Publication 20040', 40);

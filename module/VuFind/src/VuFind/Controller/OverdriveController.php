@@ -112,8 +112,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
                     try {
                         $this->debug("loading checkout using: $idToLoad");
-                        $mycheckout['record']
-                            = $this->serviceLocator->get(\VuFind\Record\Loader::class)
+                        $mycheckout['record'] = $this->getService(\VuFind\Record\Loader::class)
                             ->load($idToLoad);
                         $checkouts[] = $mycheckout;
                     } catch (\VuFind\Exception\RecordMissing $e) {
@@ -148,7 +147,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                     $myhold['hold'] = $hold;
                     try {
                         $myhold['record']
-                            = $this->serviceLocator->get(\VuFind\Record\Loader::class)
+                            = $this->getService(\VuFind\Record\Loader::class)
                             ->load(strtolower($hold->reserveId));
                         $holds[] = $myhold;
                     } catch (\VuFind\Exception\RecordMissing $e) {
@@ -241,7 +240,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
         // Load the Record Driver. Should be a SolrOverdrive driver.
-        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
+        $driver = $this->getService(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
 
@@ -345,7 +344,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');
         // Load the Record Driver. Should be a SolrOverdrive driver.
-        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
+        $driver = $this->getService(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
         $formats = $driver->getDigitalFormats();
@@ -473,7 +472,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $result = $this->connector->getResultObject();
         $rec_id = $this->params()->fromQuery('rec_id');
         // Load the SolrOverdrive driver.
-        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
+        $driver = $this->getService(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
         $formats = $driver->getDigitalFormats();

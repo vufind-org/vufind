@@ -25,7 +25,7 @@
       <?php $this->slot('footer-right')->start(); ?>
         <h2><?=$this->transEsc('footer_header_need_help')?></h2>
         <ul>
-          <li><a href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
+          <li><a href="<?=$this->url('help', ['topic' => 'search'])?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
           <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>
           <li><a href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQs')?></a></li>
           <?php if ($this->cookieConsent()->isEnabled()): ?>

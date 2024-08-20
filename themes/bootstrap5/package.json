@@ -2,7 +2,7 @@
   "name": "vufind-bootstrap5",
   "description": "Dependencies for the bootstrap5 theme",
   "scripts": {
-    "installBuildDeps": "npm install && node tools/copyDependencies.mjs --only-build-deps",
+    "installBuildDeps": "npm install --no-audit && node tools/copyDependencies.mjs --only-build-deps",
     "updateDeps": "npm update && node tools/copyDependencies.mjs"
   },
   "dependencies": {

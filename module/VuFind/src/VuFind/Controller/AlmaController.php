@@ -284,7 +284,7 @@ class AlmaController extends AbstractBase
             $user = $this->userService->getUserByCatId($primaryId);
             if ($user) {
                 try {
-                    $this->serviceLocator->get(UserAccountService::class)->purgeUserData($user);
+                    $this->getService(UserAccountService::class)->purgeUserData($user);
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully deleted user with primary ID \'' . $primaryId .
                         '\' in VuFind.',
@@ -377,7 +377,7 @@ class AlmaController extends AbstractBase
                 ]
             );
             // Send the email
-            $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
+            $this->getService(\VuFind\Mailer\Mailer::class)->send(
                 $user->getEmail(),
                 $config->Site->email,
                 $this->translate(

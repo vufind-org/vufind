@@ -1160,4 +1160,14 @@ trait MarcAdvancedTrait
         return $this->getMarcReader()
             ->getLinkedFieldsSubfields('880', '245', ['n', 'p']);
     }
+
+    /**
+     * Get an array of textual holdings for the holdings on a record.
+     *
+     * @return array
+     */
+    public function getTextualHoldings()
+    {
+        return $this->getFieldArray('866');
+    }
 }
