@@ -37,7 +37,6 @@ use Laminas\Http\Exception\RuntimeException;
 use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
-use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use VuFind\Log\LoggerAwareTrait;
@@ -57,13 +56,6 @@ class Connector implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * OAuth2 provider
-     *
-     * @var GenericProvider
-     */
-    protected $authProvider;
-
-    /**
      * API base URL
      *
      * @var string
@@ -73,12 +65,14 @@ class Connector implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Http\Client $client  An HTTP client object
-     * @param Container            $session Session container for persisting data
-     * @param array                $options Additional config settings
+     * @param \Laminas\Http\Client $client       An HTTP client object
+     * @param GenericProvider      $authProvider OAuth2 provider
+     * @param Container            $session      Session container for persisting data
+     * @param array                $options      Additional config settings
      */
     public function __construct(
         protected \Laminas\Http\Client $client,
+        protected GenericProvider $authProvider,
         protected Container $session,
         protected array $options = []
     ) {
@@ -86,15 +80,6 @@ class Connector implements LoggerAwareInterface
             throw new \Exception('base_url setting is required');
         }
         $this->baseUrl = $options['base_url'];
-        $authOptions = [
-            'clientId' => $options['wskey'],
-            'clientSecret' => $options['secret'],
-            'urlAuthorize' => 'https://oauth.oclc.org/auth',
-            'urlAccessToken' => 'https://oauth.oclc.org/token',
-            'urlResourceOwnerDetails' => '',
-        ];
-        $optionProvider = new HttpBasicAuthOptionProvider();
-        $this->authProvider = new GenericProvider($authOptions, compact('optionProvider'));
     }
 
     /**
@@ -151,7 +136,6 @@ class Connector implements LoggerAwareInterface
     public function getRecord($id, ParamBag $params = null)
     {
         $response = $this->makeApiCall('/bibs/' . urlencode($id));
-        echo $response->getBody();
         $record = json_decode($response->getBody(), true);
         $found = isset($record['identifier']['oclcNumber']);
         return [

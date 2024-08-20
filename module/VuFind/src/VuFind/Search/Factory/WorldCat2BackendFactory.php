@@ -31,7 +31,10 @@
 namespace VuFind\Search\Factory;
 
 use Laminas\Session\Container;
+use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
+use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\GuzzleService;
 use VuFindSearch\Backend\WorldCat2\Backend;
 use VuFindSearch\Backend\WorldCat2\Connector;
 use VuFindSearch\Backend\WorldCat2\QueryBuilder;
@@ -84,13 +87,11 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $this->config = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $this->wcConfig = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class)->get('WorldCat2');
+        $configManager = $this->getService(\VuFind\Config\PluginManager::class);
+        $this->config = $configManager->get('config');
+        $this->wcConfig = $configManager->get('WorldCat2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -113,17 +114,46 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     }
 
     /**
+     * Create the OAuth2 provider for the connector.
+     *
+     * @param array $options Configuration options
+     *
+     * @return GenericProvider
+     */
+    protected function createAuthProvider(array $options): GenericProvider
+    {
+        foreach (['wskey', 'secret'] as $param) {
+            if (empty($options[$param])) {
+                throw new \Exception($param . ' setting is required in WorldCat2.ini [Connector] section');
+            }
+        }
+        $authOptions = [
+            'clientId' => $options['wskey'],
+            'clientSecret' => $options['secret'],
+            'urlAuthorize' => $options['auth_url'] ?? 'https://oauth.oclc.org/auth',
+            'urlAccessToken' => $options['token_url'] ?? 'https://oauth.oclc.org/token',
+            'urlResourceOwnerDetails' => '',
+        ];
+        $optionProvider = new HttpBasicAuthOptionProvider();
+        $provider = new GenericProvider($authOptions, compact('optionProvider'));
+        $provider->setHttpClient(
+            $this->getService(GuzzleService::class)->createClient()
+        );
+        return $provider;
+    }
+
+    /**
      * Create the WorldCat connector.
      *
      * @return Connector
      */
     protected function createConnector()
     {
-        $connectorOptions = isset($this->wcConfig->Connector)
-            ? $this->wcConfig->Connector->toArray() : [];
+        $connectorOptions = $this?->wcConfig?->Connector?->toArray() ?? [];
         $connector = new Connector(
             $this->createHttpClient(),
-            new Container('WorldCat2', $this->serviceLocator->get(\Laminas\Session\SessionManager::class)),
+            $this->createAuthProvider($connectorOptions),
+            new Container('WorldCat2', $this->getService(\Laminas\Session\SessionManager::class)),
             $connectorOptions
         );
         $connector->setLogger($this->logger);
@@ -148,8 +178,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('WorldCat2');
             $driver->setRawData($data);
