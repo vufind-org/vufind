@@ -29,7 +29,7 @@ function waitForItemStatuses(fn) {
   });
 }
 
-(function triggerPrint() {
+VuFind.listen("ready", function triggerPrint() {
   if (!VuFind.isPrinting()) {
     return;
   }
@@ -63,4 +63,4 @@ function waitForItemStatuses(fn) {
     // ajax loaded page content before showing the print dialog.
     defer(function doPrint() { window.print(); });
   });
-})();
+});

@@ -788,6 +788,7 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  VuFind.emit("ready");
   // Start up all of our submodules
   VuFind.init();
   // Off canvas
