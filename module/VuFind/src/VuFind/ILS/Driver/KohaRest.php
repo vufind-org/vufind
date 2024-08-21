@@ -2612,9 +2612,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $pageSize = $params['limit'] ?? 50;
         $sort = $params['sort'] ?? '+due_date';
         if ('+title' === $sort) {
-            $sort = '+title|+subtitle';
+            $sort = '+title,+subtitle';
         } elseif ('-title' === $sort) {
-            $sort = '-title|-subtitle';
+            $sort = '-title,-subtitle';
         }
         $queryParams = [
             '_order_by' => $sort,
