@@ -27,7 +27,7 @@
  * @link     https://vufind.org
  */
 
-namespace VuFindTest\Backend\WorldCat;
+namespace VuFindTest\Backend\WorldCat2;
 
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\WorldCat2\Backend;
