@@ -155,7 +155,7 @@ class QueryBuilder
     protected function queryToString(Query $query)
     {
         // Clean and validate input:
-        $indexParts = explode(':', $query->getHandler());
+        $indexParts = explode(':', $query->getHandler() ?? 'kw');
         $lookfor = $query->getString();
 
         // Prepend the index name:
