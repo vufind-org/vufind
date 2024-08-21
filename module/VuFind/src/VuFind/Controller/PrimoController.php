@@ -64,8 +64,7 @@ class PrimoController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('Primo');
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('Primo');
         return $config->Record->next_prev_navigation ?? false;
     }
 

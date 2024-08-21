@@ -82,6 +82,25 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that we can jump to a record with an ID containing slashes
+     *
+     * @return void
+     */
+    public function testJumpToRecordWithIdContainingSlashes(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'author');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', 'will b. broke');
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'td.author a');
+        $this->waitForPageLoad($page);
+        $this->assertStringContainsString('Record/dollar$ign%2Fslashcombo', $session->getCurrentUrl());
+    }
+
+    /**
      * Test that extra attributes are escaped correctly.
      *
      * @return void
