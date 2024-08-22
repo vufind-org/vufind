@@ -45,20 +45,13 @@ use VuFindSearch\Service;
 class HoldingsWorldCat2 extends AbstractBase
 {
     /**
-     * Search service
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
      * Constructor
      *
      * @param Service $searchService Search service
+     * @param array   $defaults      Default parameters to include in API requests
      */
-    public function __construct(Service $searchService)
+    public function __construct(protected Service $searchService, protected array $defaults)
     {
-        $this->searchService = $searchService;
     }
 
     /**
@@ -82,7 +75,7 @@ class HoldingsWorldCat2 extends AbstractBase
         if (!$ids) {
             return null;
         }
-        $command = new GetHoldingsCommand('WorldCat2', new ParamBag($ids));
+        $command = new GetHoldingsCommand('WorldCat2', new ParamBag($ids + $this->defaults));
         return $this->searchService->invoke($command)->getResult();
     }
 
