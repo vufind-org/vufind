@@ -216,7 +216,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $multipleLocations  Configuration setting for multiple locations
      * @param bool   $loadBatchWise      If status should be loaded batch wise
      * @param bool   $loadObservableOnly If status of only observable records should be loaded
-     * @param string $customTemplate    Include extra steps to test custom template?
+     * @param string $customTemplate     Include extra steps to test custom template?
      *
      * @dataProvider itemStatusAndHoldingsProvider
      * @dataProvider itemStatusAndHoldingsCustomTemplateProvider
