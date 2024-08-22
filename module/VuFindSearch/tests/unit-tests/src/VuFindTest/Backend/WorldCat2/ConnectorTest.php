@@ -153,7 +153,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSearch(): void
     {
-        $expectedUri = 'http://foo/bibs?foo=bar&foo=baz';
+        $expectedUri = 'http://foo/bibs?foo=bar&foo=baz&offset=0&limit=5';
         $body = '{"numberOfRecords": 0, "bibRecords": []}';
         $connector = $this->getConnector(
             $this->getMockClient($expectedUri, $body)
@@ -172,7 +172,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSearchWithError(): void
     {
-        $expectedUri = 'http://foo/bibs?foo=bar&foo=baz';
+        $expectedUri = 'http://foo/bibs?foo=bar&foo=baz&offset=0&limit=5';
         $body = '{"type": "error", "title": "foo"}';
         $container = new Container('WorldCat2Test');
         $connector = new Connector(

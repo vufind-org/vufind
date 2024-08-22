@@ -156,6 +156,8 @@ class Connector implements LoggerAwareInterface
      */
     public function search(ParamBag $params, $offset, $limit)
     {
+        $params->set('offset', $offset);
+        $params->set('limit', $limit);
         $response = $this->makeApiCall('/bibs?' . implode('&', $params->request()));
         $result = json_decode($response->getBody(), true);
         if (!isset($result['bibRecords']) && !isset($result['numberOfRecords'])) {

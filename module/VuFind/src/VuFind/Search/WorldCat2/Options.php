@@ -42,6 +42,8 @@ use function count;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
+
     /**
      * Constructor
      *
@@ -54,6 +56,14 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load the configuration file:
         $searchSettings = $configLoader->get($this->searchIni);
+
+        // Limit setup:
+        if (isset($searchSettings->General->default_limit)) {
+            $this->defaultLimit = $searchSettings->General->default_limit;
+        }
+        if (isset($searchSettings->General->limit_options)) {
+            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
+        }
 
         // Search handler setup:
         $this->defaultHandler = 'kw';
