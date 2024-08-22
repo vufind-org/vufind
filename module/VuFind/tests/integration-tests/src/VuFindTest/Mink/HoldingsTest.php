@@ -48,7 +48,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for test methods
      *
-     * @return array
+     * @return array[]
      */
     public static function itemStatusAndHoldingsProvider(): array
     {
@@ -83,6 +83,16 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         return [...$msgSet, ...$groupSet, ...$allSet];
+    }
+
+    /**
+     * Supplemental data provider for testItemStatusFull().
+     *
+     * @return array[]
+     */
+    public static function itemStatusAndHoldingsCustomTemplateProvider(): array
+    {
+        return ['custom template test' => [true, 'On Shelf', 'On Shelf', 'success', 'msg', true]];
     }
 
     /**
@@ -188,8 +198,10 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expected          Expected availability display status
      * @param string $expectedType      Expected status type (e.g. 'success')
      * @param string $multipleLocations Configuration setting for multiple locations
+     * @param string $customTemplate    Include extra steps to test custom template?
      *
      * @dataProvider itemStatusAndHoldingsProvider
+     * @dataProvider itemStatusAndHoldingsCustomTemplateProvider
      *
      * @return void
      */
@@ -198,11 +210,17 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         string $status,
         string $expected,
         string $expectedType,
-        string $multipleLocations
+        string $multipleLocations,
+        bool $customTemplate = false
     ): void {
+        $config = $this->getConfigIniOverrides(true, $multipleLocations);
+        // If testing with the custom template, switch to the minktest theme:
+        if ($customTemplate) {
+            $config['Site']['theme'] = 'minktest';
+        }
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(true, $multipleLocations),
+                'config' => $config,
                 'Demo' => $this->getDemoIniOverrides($availability, $status, true),
             ]
         );
@@ -221,6 +239,11 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         } else {
             // No extra items to care for:
             $this->assertEquals('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation'));
+        }
+        // If testing with the custom template, be sure its custom script executed as expected:
+        if ($customTemplate) {
+            $this->findCss($page, '.js-status-test');
+            $this->unFindCss($page, '.js-status-test.hidden');
         }
     }
 
