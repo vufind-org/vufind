@@ -20,4 +20,6 @@
       </li>
     <?php endforeach; ?>
   </ul>
+<?php elseif (isset($holdings['detail'])): ?>
+  <p><?=$this->escapeHtml($holdings['detail'])?>
 <?php endif; ?>
