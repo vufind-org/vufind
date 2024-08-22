@@ -573,6 +573,7 @@ class Folio extends AbstractAPI implements
         $name = '';
         $code = '';
         $isActive = true;
+        $servicePointIds = [];
         if (array_key_exists($locationId, $locationMap)) {
             return $locationMap[$locationId];
         } else {
