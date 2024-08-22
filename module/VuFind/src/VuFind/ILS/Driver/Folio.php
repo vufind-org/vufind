@@ -552,7 +552,8 @@ class Folio extends AbstractAPI implements
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $isActive = $location->isActive ?? true;
-                $locationMap[$location->id] = compact('name', 'code', 'isActive');
+                $servicePointIds = $location->servicePointIds;
+                $locationMap[$location->id] = compact('name', 'code', 'isActive', 'servicePointIds');
             }
             $this->putCachedData($cacheKey, $locationMap);
         }
@@ -586,10 +587,11 @@ class Folio extends AbstractAPI implements
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $isActive = $location->isActive ?? $isActive;
+                $servicePointIds = $location->servicePointIds;
             }
         }
 
-        return compact('name', 'code', 'isActive');
+        return compact('name', 'code', 'isActive', 'servicePointIds');
     }
 
     /**
@@ -1394,6 +1396,20 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
+        $limitedServicePoints = false;
+        if (
+            str_contains($this->config['Holds']['limitPickupLocations'] ?? '', 'itemEffectiveLocation')
+            && $holdInfo['item_id'] ?? false
+        ) {
+            $response = $this->makeRequest(
+                'GET',
+                '/item-storage/items/' . $holdInfo['item_id']
+            );
+            $item = json_decode($response->getBody());
+            $itemLocationId = $item->effectiveLocationId;
+            $limitedServicePoints = $this->getLocationData($itemLocationId)['servicePointIds'];
+        }
+
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
         foreach (
@@ -1401,11 +1417,15 @@ class Folio extends AbstractAPI implements
                 'servicepoints',
                 '/service-points',
                 $query
-            ) as $servicepoint
+            ) as $servicePoint
         ) {
+            if ($limitedServicePoints && !in_array($servicePoint->id, $limitedServicePoints)) {
+                continue;
+            }
+
             $locations[] = [
-                'locationID' => $servicepoint->id,
-                'locationDisplay' => $servicepoint->discoveryDisplayName,
+                'locationID' => $servicePoint->id,
+                'locationDisplay' => $servicePoint->discoveryDisplayName,
             ];
         }
         return $locations;
