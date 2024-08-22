@@ -125,15 +125,28 @@ class Connector implements LoggerAwareInterface
     }
 
     /**
-     * Retrieve a specific record.
+     * Retrieve holdings details for a record.
      *
-     * @param string   $id     Record ID to retrieve
-     * @param ParamBag $params Parameters
+     * @param ParamBag $params Parameters to look up
      *
      * @throws \Exception
      * @return array
      */
-    public function getRecord($id, ParamBag $params = null)
+    public function getHoldings(ParamBag $params)
+    {
+        $response = $this->makeApiCall('/bibs-holdings?' . implode('&', $params->request()));
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Retrieve a specific record.
+     *
+     * @param string $id Record ID to retrieve
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getRecord($id)
     {
         $response = $this->makeApiCall('/bibs/' . urlencode($id));
         $record = json_decode($response->getBody(), true);

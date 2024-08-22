@@ -165,6 +165,19 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Get holdings information matching the specified criteria.
+     *
+     * @param ParamBag $params Parameters to look up
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getHoldings(ParamBag $params): array
+    {
+        return $this->getConnector()->getHoldings($params);
+    }
+
+    /**
      * Return the WorldCat v2 connector.
      *
      * @return Connector
