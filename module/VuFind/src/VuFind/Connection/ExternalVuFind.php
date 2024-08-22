@@ -119,6 +119,6 @@ class ExternalVuFind implements
             return [];
         }
 
-        return $arr ?? [];
+        return $arr;
     }
 }
