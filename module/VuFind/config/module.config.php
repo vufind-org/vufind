@@ -606,6 +606,7 @@ $config = [
         ],
         'shared' => [
             'VuFind\Form\Form' => false,
+            'VuFind\Http\CachingDownloader' => false,
         ],
     ],
     'translator' => [],
