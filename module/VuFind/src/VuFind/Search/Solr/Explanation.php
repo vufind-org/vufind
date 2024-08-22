@@ -108,6 +108,13 @@ class Explanation extends \VuFind\Search\Base\Explanation
     protected $explanationForRest = [];
 
     /**
+     * Raw explanation.
+     *
+     * @var string
+     */
+    protected $rawExplanation = null;
+
+    /**
      * Get relevance value of best scoring title.
      *
      * @return float
@@ -185,6 +192,16 @@ class Explanation extends \VuFind\Search\Base\Explanation
     public function getExplanationForRest()
     {
         return $this->explanationForRest;
+    }
+
+    /**
+     * Get the raw explanation.
+     *
+     * @return string
+     */
+    public function getRawExplanation()
+    {
+        return $this->rawExplanation;
     }
 
     /**
@@ -280,7 +297,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
             );
         }
 
-        $this->debug($lines);
+        $this->rawExplanation = $lines;
         $lines = $this->cleanLines($lines);
 
         // get basic values
