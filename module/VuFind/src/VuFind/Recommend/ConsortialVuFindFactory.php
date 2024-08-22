@@ -70,9 +70,20 @@ class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\Factory
             throw new \Exception('Unexpected options passed to factory.');
         }
 
+        $externalVuFind = $container->get(\VuFind\Connection\ExternalVuFind::class);
+
+        // Doing the construction of CachingDownloader explicitly until it is not a singleton
+        // $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
+        $cachingDownloader = new \VuFind\Http\CachingDownloader(
+            $container->get(\VuFind\Cache\Manager::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+        );
+        $cachingDownloader->setHttpService($container->get(\VuFindHttp\HttpService::class));
+
+        $externalVuFind->setCachingDownloader($cachingDownloader);
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class)->get('ExternalVuFind'),
-            $container->get(\VuFind\Connection\ExternalVuFind::class)
+            $externalVuFind
         );
     }
 }

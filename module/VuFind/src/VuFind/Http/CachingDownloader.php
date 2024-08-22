@@ -192,10 +192,10 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return stdClass
      */
-    public function downloadJson($url, $params = [])
+    public function downloadJson($url, $params = [], $associative = null)
     {
-        $decodeJson = function (\Laminas\Http\Response $response, $url) {
-            $decodedJson = json_decode($response->getBody());
+        $decodeJson = function (\Laminas\Http\Response $response, $url) use ($associative) {
+            $decodedJson = json_decode($response->getBody(), $associative);
             if ($decodedJson === null) {
                 throw new HttpDownloadException(
                     'Invalid response body',
