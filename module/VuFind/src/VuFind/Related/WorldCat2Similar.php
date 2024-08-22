@@ -85,7 +85,7 @@ class WorldCat2Similar extends Similar
 
         // Perform the search and save filtered results:
         $maxRecommendations = 5;
-        $command = new SearchCommand('WorldCat2', $queryObj, 0, $maxRecommendations + 1);
+        $command = new SearchCommand('WorldCat2', $queryObj, 1, $maxRecommendations + 1);
         $this->results = [];
         try {
             $result = $this->searchService->invoke($command)->getResult();

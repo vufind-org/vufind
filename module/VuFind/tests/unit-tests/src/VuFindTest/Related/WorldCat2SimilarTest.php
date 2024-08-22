@@ -99,7 +99,7 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals('WorldCat2', $command->getTargetIdentifier());
             $this->assertEquals($expectedTerms, $command->getArguments()[0]->getAllTerms());
             $args = $command->getArguments();
-            $this->assertEquals(0, $args[1]);
+            $this->assertEquals(1, $args[1]);
             $this->assertEquals(6, $args[2]);
             return true;
         };
