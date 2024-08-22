@@ -3,6 +3,11 @@
   $institutions = (array)($holdings['briefRecords'][0]['institutionHolding']['briefHoldings'] ?? []);
   $formatAddress = function ($holding) {
     $fields = [$holding['institutionName']];
+    // Strip country code off state code:
+    if (isset($holding['address']['state'])) {
+        $stateParts = explode('-', $holding['address']['state']);
+        $holding['address']['state'] = array_pop($stateParts);
+    }
     foreach (['street1', 'city', 'state', 'postalCode', 'country'] as $field) {
         if (!empty($holding['address'][$field])) {
             $fields[] = $holding['address'][$field];
@@ -20,4 +25,6 @@
       </li>
     <?php endforeach; ?>
   </ul>
+<?php elseif (isset($holdings['detail'])): ?>
+  <p><?=$this->escapeHtml($holdings['detail'])?>
 <?php endif; ?>
