@@ -62,7 +62,7 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
 
         $shortLabel = '';
         if ($function !== null) {
-            $shortLabel = $view->translate('Function') . ': ' . $function;
+            $shortLabel = $view->translate('explain_function_query_label') . ': ' . $function;
         } else {
             if (count($fieldName) > 1) {
                 $shortLabel .= $view->translate('Synonym') . '[';
