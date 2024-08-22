@@ -200,9 +200,12 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         string $expectedType,
         string $multipleLocations
     ): void {
+        $config = $this->getConfigIniOverrides(true, $multipleLocations);
+        // Switch to the minktest theme:
+        $config['Site']['theme'] = 'minktest';
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(true, $multipleLocations),
+                'config' => $config,
                 'Demo' => $this->getDemoIniOverrides($availability, $status, true),
             ]
         );
@@ -222,6 +225,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             // No extra items to care for:
             $this->assertEquals('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation'));
         }
+        $this->findCss($page, '.js-status-test');
+        $this->unFindCss($page, '.js-status-test.hidden');
     }
 
     /**
