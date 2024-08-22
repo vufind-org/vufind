@@ -187,8 +187,9 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      * Download a resource using the cache in the background,
      * including decoding for JSON.
      *
-     * @param string $url    URL
-     * @param array  $params Request parameters (e.g. additional headers)
+     * @param string    $url         URL
+     * @param array     $params      Request parameters (e.g. additional headers)
+     * @param bool|null $associative Sent to json_decode
      *
      * @return stdClass
      */
