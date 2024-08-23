@@ -1,7 +1,8 @@
 <?php
   $recordLinker = $this->recordLinker($this->results);
   $largeImage = $this->record($this->driver)->getThumbnail('large');
-  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $largeImage);
+  $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $linkAttributes);
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
