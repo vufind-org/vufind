@@ -746,6 +746,7 @@
         <!-- avoid PHP Errors by creating each level separately -->
         <mkdir dir="${themedir}" />
         <mkdir dir="${themedir}/templates" />
+        <mkdir dir="${themedir}/templates/ajax" />
         <mkdir dir="${contentdir}" />
         <mkdir dir="${contentdir}/test" />
         <mkdir dir="${contentdir}/test/sub" />
@@ -756,6 +757,16 @@ return [
     'extends' =&gt; 'sandal',
 ];
 </echo>
+
+    <copy file="${srcdir}/themes/bootstrap3/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
+    <!-- Add a script for testing that inline scripts work -->
+    <echo file="${themedir}/templates/ajax/status-full.phtml" append="true">
+&lt;div class="js-status-test hidden"&gt;&lt;/div&gt;
+&lt;script nonce="foo"&gt;
+  document.querySelector('.js-status-test').classList.remove('hidden');
+&lt;/script&gt;
+</echo>
+
     <echo file="${contentdir}/content.phtml">&lt;?php include $this-&gt;parentTemplate('content/content.phtml');?&gt;
 
 &lt;div class="content-footer"&gt;Content page footer&lt;/div&gt;

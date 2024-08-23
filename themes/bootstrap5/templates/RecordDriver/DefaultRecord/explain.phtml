@@ -96,6 +96,21 @@ $link = $this->recordLinker()->getUrl($this->driver);
       <br>
     </div>
   <?php endif; ?>
+  <button
+    class="btn btn-default raw-explanation-btn"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#raw-explanation"
+    aria-expanded="false"
+    aria-controls="raw-explanation"
+  >
+    <?=$this->transEsc('explain_show_raw')?> <?=$this->icon('dropdown-caret')?>
+  </button>
+  <div id="raw-explanation" class="collapse">
+    <pre class="card card-body">
+      <?=$explanation->getRawExplanation()?>
+    </pre>
+  </div>
   <?php if ($totalScore > 0): ?>
     <?php
       $values = implode(';', $shortExplain);
