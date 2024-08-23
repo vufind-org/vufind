@@ -532,10 +532,14 @@ VuFind.register('lightbox', function Lightbox() {
       // Disable bootstrap-accessibility.js "enforceFocus" events.
       // retainFocus() above handles it better.
       // This is moot once that library (and bootstrap3) are retired.
-      var focEls = _modal.find(":tabbable");
-      var firstEl = $(focEls[0]);
-      var lastEl = $(focEls[focEls.length - 1]);
-      $(firstEl).add(lastEl).off('keydown.bs.modal');
+      try {
+        var focEls = _modal.find(":tabbable");
+        var firstEl = $(focEls[0]);
+        var lastEl = $(focEls[focEls.length - 1]);
+        $(firstEl).add(lastEl).off('keydown.bs.modal');
+      } catch (ex) {
+        // :tabbable won't work if bootstrap-accessibility.js isn't loaded, in which case we're already good
+      }
     });
 
     VuFind.modal = function modalShortcut(cmd) {
