@@ -136,4 +136,11 @@ interface AvailabilityStatusInterface
      * @return int
      */
     public function compareTo(AvailabilityStatusInterface $other): int;
+
+    /**
+     * Get status priority.
+     *
+     * @return int
+     */
+    public function getPriority(): int;
 }
