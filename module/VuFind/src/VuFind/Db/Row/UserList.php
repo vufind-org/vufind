@@ -37,7 +37,6 @@ use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Tags\TagsService;
@@ -115,7 +114,7 @@ class UserList extends RowGateway implements
      *
      * @return array
      *
-     * @deprecated Use TagServiceInterface::getListTags()
+     * @deprecated Use \VuFind\Db\Service\TagServiceInterface::getListTags()
      */
     public function getListTags()
     {
