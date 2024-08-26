@@ -166,7 +166,8 @@ class Resource extends Gateway implements DbServiceAwareInterface
             function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $caseSensitiveTags) {
                 $columns = [Select::SQL_STAR];
                 $s->columns($columns);
-                $s->join('user_resource', 'resource.id = user_resource.resource_id');
+                $s->quantifier(Select::QUANTIFIER_DISTINCT);
+                $s->join('user_resource', 'resource.id = user_resource.resource_id', []);
                 $s->where->equalTo('user_resource.user_id', $user);
                 // Adjust for list if necessary:
                 if (null !== $list) {
