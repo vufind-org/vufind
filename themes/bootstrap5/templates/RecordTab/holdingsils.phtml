@@ -41,7 +41,7 @@
       <div class="alert alert-info">
         <a id="hold-login" href="<?=$this->serverUrl($this->url('myresearch-completelogin'))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
       </div>
-    <?php elseif (!$user->cat_username): ?>
+    <?php elseif (!$user->getCatUsername()): ?>
       <div class="alert alert-info">
         <?php
           // Add a data-lightbox attribute to the link in the translation; we do this here to keep
