@@ -803,19 +803,21 @@ return [
           </then>
           <else>
             <exec executable="sudo">
-              <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo">
-              <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'CREATE DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" />
+              <!-- due to deep quote nesting and Phing bugs, we need to use a variable to make this work -->
+              <env key="PG_COMMAND" value="&quot;\&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot;" />
+              <arg line="su -c &quot;psql -c $PG_COMMAND &quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>
@@ -959,10 +961,10 @@ ${git_status}
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
         <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+          <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
         </exec>
         <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+          <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
         </exec>
       </then>
       <else>
