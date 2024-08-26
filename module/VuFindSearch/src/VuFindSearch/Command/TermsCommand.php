@@ -109,7 +109,7 @@ class TermsCommand extends CallMethodCommand
     /**
      * Return index field.
      *
-     * @return string
+     * @return ?string
      */
     public function getField(): ?string
     {
@@ -119,7 +119,7 @@ class TermsCommand extends CallMethodCommand
     /**
      * Return starting term.
      *
-     * @return string
+     * @return ?string
      */
     public function getStart(): ?string
     {
@@ -129,7 +129,7 @@ class TermsCommand extends CallMethodCommand
     /**
      * Return maximum number of terms.
      *
-     * @return int
+     * @return ?int
      */
     public function getLimit(): ?int
     {
