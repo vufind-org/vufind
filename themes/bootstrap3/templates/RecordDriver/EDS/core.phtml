@@ -77,10 +77,33 @@
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
       <?php foreach ($items as $key => $item): ?>
         <?php if (!empty($item['Data'])): ?>
-        <tr>
-          <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
-          <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
-        </tr>
+          <?php if ('Au' == $item['Group'] && strtolower($edsConfig->AuthorDisplay->ResultListFormat ?? 'Long') == 'short'): ?>
+            <tr>
+	      <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
+              <?php
+                $authors = $driver->getPrimaryAuthorsWithHighlighting();
+                $authorCount = count($authors);
+                $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3;
+              ?>
+              <?php if ($authorCount > 1): ?>
+                <?php foreach ($authors as $i => $author): ?>
+                  <td class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></td><?php
+                  if ($authorCount == ($i + 1)) {
+                    break;
+                  } elseif (($i + 1) >= $authorNameLimit) {
+                    echo ' ' . $this->transEsc('more_authors_abbrev');
+                    break;
+                  }
+                ?><?php endforeach; ?>
+              <?php else: ?>
+                <?=$this->driver->linkUrls($item['Data'])?>
+              <?php endif; ?>
+	    </tr>
+          <?php endif; ?>
+          <tr>
+            <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
+            <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
+          </tr>
         <?php endif; ?>
       <?php endforeach; ?>
 
