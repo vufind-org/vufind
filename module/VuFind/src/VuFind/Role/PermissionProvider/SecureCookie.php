@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Secure cookie permission provider for VuFind.
+ * Secure cookie permission provider.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Role\PermissionProvider;
 use VuFind\Cookie\CookieManager;
 
 /**
- * Secure cookie permission provider for VuFind.
+ * Secure cookie permission provider.
  *
  * @category VuFind
  * @package  Authorization
