@@ -80,6 +80,10 @@ trait CachingDownloaderAwareTrait
     public function setCachingDownloader(CachingDownloader $cachingDownloader)
     {
         $this->cachingDownloader = $cachingDownloader;
-        $this->cachingDownloader->setUpCache($this->downloaderCacheId, $this->cacheOptionsSection, $this->cacheOptionsFile);
+        $this->cachingDownloader->setUpCache(
+            $this->downloaderCacheId,
+            $this->cacheOptionsSection,
+            $this->cacheOptionsFile
+        );
     }
 }
