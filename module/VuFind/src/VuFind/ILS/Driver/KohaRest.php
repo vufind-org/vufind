@@ -2056,8 +2056,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return [];
         }
 
-        // Return total number of results for pagination.
-        $results['total'] = (int)$result['data']['items_total'];
+        // Return total number of results for pagination (with fallback for older
+        // Koha DI plugin versions that don't support paging).
+        $results['total'] = (int)($result['data']['items_total'] ?? count($result['data']['item_availabilities']));
 
         foreach ($result['data']['item_availabilities'] as $i => $item) {
             $avail = $item['availability'];
