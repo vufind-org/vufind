@@ -63,6 +63,7 @@ class ExternalVuFind implements
     public function __construct()
     {
         $this->cacheOptionsSection = 'ExternalVuFind';
+        $this->cacheOptionsFile = 'ExternalVuFind';
     }
 
     /**

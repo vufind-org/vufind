@@ -117,17 +117,18 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @param string $cacheId             Cache ID
      * @param string $cacheOptionsSection Cache Options Section
+     * @param string $cacheOptionsFile    Config file defining the cache options
      *
      * @return void
      */
-    public function setUpCache(string $cacheId, string $cacheOptionsSection = null)
+    public function setUpCache(string $cacheId, string $cacheOptionsSection = null, string $cacheOptionsFile = null)
     {
         $this->cache = null;
         $this->cacheId = $cacheId;
 
         if (!empty($cacheOptionsSection)) {
             $fullCacheOptionsSection = 'Cache_' . $cacheOptionsSection;
-            $section = $this->configManager->get('config')->$fullCacheOptionsSection;
+            $section = $this->configManager->get($cacheOptionsFile ?? 'config')->$fullCacheOptionsSection;
             $this->cacheOptions = !empty($section) ? $section->toArray() : [];
         }
     }
