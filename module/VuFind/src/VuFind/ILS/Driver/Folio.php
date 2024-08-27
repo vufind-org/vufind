@@ -1397,7 +1397,7 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
-        $limitedServicePoints = false;
+        $limitedServicePoints = null;
         if (
             str_contains($this->config['Holds']['limitPickupLocations'] ?? '', 'itemEffectiveLocation')
             && $holdInfo['item_id'] ?? false
