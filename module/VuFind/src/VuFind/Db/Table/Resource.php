@@ -166,8 +166,11 @@ class Resource extends Gateway implements DbServiceAwareInterface
             function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $caseSensitiveTags) {
                 $columns = [Select::SQL_STAR];
                 $s->columns($columns);
-                $s->quantifier(Select::QUANTIFIER_DISTINCT);
-                $s->join('user_resource', 'resource.id = user_resource.resource_id', []);
+                $s->join(
+                    'user_resource',
+                    'resource.id = user_resource.resource_id',
+                    ['last_saved' => new Expression('MAX(saved)')]
+                );
                 $s->where->equalTo('user_resource.user_id', $user);
                 // Adjust for list if necessary:
                 if (null !== $list) {
@@ -191,9 +194,11 @@ class Resource extends Gateway implements DbServiceAwareInterface
                     $s->limit($limit);
                 }
 
+                $s->group(['resource.id']);
+
                 // Apply sorting, if necessary:
-                if ($sort == 'saved' || $sort == 'saved DESC') {
-                    Resource::applySort($s, $sort, 'user_resource', $columns);
+                if ($sort == 'last_saved' || $sort == 'last_saved DESC') {
+                    $s->order($sort);
                 } elseif (!empty($sort)) {
                     Resource::applySort($s, $sort, 'resource', $columns);
                 }
@@ -282,7 +287,7 @@ class Resource extends Gateway implements DbServiceAwareInterface
     {
         // Apply sorting, if necessary:
         $legalSorts = [
-            'title', 'title desc', 'author', 'author desc', 'year', 'year desc', 'saved', 'saved desc',
+            'title', 'title desc', 'author', 'author desc', 'year', 'year desc',
         ];
         if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
             // Strip off 'desc' to obtain the raw field name -- we'll need it
