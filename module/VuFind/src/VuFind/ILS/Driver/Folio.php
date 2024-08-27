@@ -1400,6 +1400,8 @@ class Folio extends AbstractAPI implements
         $limitedServicePoints = null;
         if (
             str_contains($this->config['Holds']['limitPickupLocations'] ?? '', 'itemEffectiveLocation')
+            // If there's no item ID, it must be a title-level hold,
+            // so limiting by itemEffectiveLocation does not apply
             && $holdInfo['item_id'] ?? false
         ) {
             $response = $this->makeRequest(
