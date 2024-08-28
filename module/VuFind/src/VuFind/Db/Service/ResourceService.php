@@ -178,7 +178,7 @@ class ResourceService extends AbstractDbService implements
     {
         // Apply sorting, if necessary:
         $legalSorts = [
-            'title', 'title desc', 'author', 'author desc', 'year', 'year desc',
+            'title', 'title desc', 'author', 'author desc', 'year', 'year desc', 'last_saved', 'last_saved desc',
         ];
         $orderByClause = $extraSelect = '';
         if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
@@ -190,16 +190,25 @@ class ResourceService extends AbstractDbService implements
             // Start building the list of sort fields:
             $order = [];
 
+            // Only include the table alias on non-virtual fields:
+            $fieldPrefix = (strtolower($rawField) === 'last_saved') ? '' : "$alias.";
+
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
-            if (strtolower($rawField) != 'title') {
-                $extraSelect = 'CASE WHEN ' . $alias . '.' . $rawField . ' IS NULL THEN 1 ELSE 0 END AS HIDDEN '
+            if (strtolower($rawField) === 'title') {
+                // Do nothing
+            } elseif (strtolower($rawField) === 'last_saved') {
+                $extraSelect = 'ur.saved AS HIDDEN last_saved, '
+                    . 'CASE WHEN ur.saved IS NULL THEN 1 ELSE 0 END AS HIDDEN last_savedsort';
+                $order[] = 'last_savedsort';
+            } else {
+                $extraSelect = 'CASE WHEN ' . $fieldPrefix . $rawField . ' IS NULL THEN 1 ELSE 0 END AS HIDDEN '
                     . $rawField . 'sort';
                 $order[] = "{$rawField}sort";
             }
 
             // Apply the user-specified sort:
-            $order[] = $alias . '.' . $sort;
+            $order[] = $fieldPrefix . $sort;
             // Inject the sort preferences into the query object:
             $orderByClause = ' ORDER BY ' . implode(', ', $order);
         }
@@ -289,6 +298,7 @@ class ResourceService extends AbstractDbService implements
             $parameters['ids'] = $matches;
         }
         $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        //$dql .= ' GROUP BY r.id';
         if (!empty($orderByDetails['orderByClause'])) {
             $dql .= $orderByDetails['orderByClause'];
         }
