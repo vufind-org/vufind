@@ -178,6 +178,16 @@ class AccountCapabilities
     }
 
     /**
+     * Get email setting.
+     *
+     * @return bool
+     */
+    public function getEmailSetting(): bool
+    {
+        return !($this->config?->Mail?->require_login ?? true) || $this->getAuth()->loginEnabled();
+    }
+
+    /**
      * Is a user account capable of saving data currently available?
      *
      * @return bool
