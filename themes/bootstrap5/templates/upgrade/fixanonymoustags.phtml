@@ -28,7 +28,7 @@ an administrator) to associate with old anonymous tags.</p>
 $skipText = $this->transEsc('skip_confirm');
 $script = <<<JS
     $('#skip').click(function(e) {
-        return confirm('${skipText}');
+        return confirm('{$skipText}');
     });
     JS;
 ?>
