@@ -42,11 +42,9 @@ use Laminas\Log\LoggerAwareInterface;
  * @link     https://vufind.org
  */
 class ExternalVuFind implements
-    \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\Http\CachingDownloaderAwareInterface,
     LoggerAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Http\CachingDownloaderAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
