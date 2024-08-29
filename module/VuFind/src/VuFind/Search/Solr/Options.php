@@ -146,7 +146,7 @@ class Options extends \VuFind\Search\Base\Options
             }
         } else {
             $this->sortOptions = ['relevance' => 'sort_relevance',
-                'year' => 'sort_year', 'year asc' => 'sort_year asc',
+                'year' => 'sort_year', 'year asc' => 'sort_year_asc',
                 'callnumber-sort' => 'sort_callnumber', 'author' => 'sort_author',
                 'title' => 'sort_title'];
         }
