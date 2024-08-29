@@ -178,11 +178,11 @@ class AccountCapabilities
     }
 
     /**
-     * Get email setting.
+     * Check if emailing of records is available.
      *
      * @return bool
      */
-    public function getEmailSetting(): bool
+    public function isEmailActionAvailable(): bool
     {
         return !($this->config?->Mail?->require_login ?? true) || $this->getAuth()->loginEnabled();
     }

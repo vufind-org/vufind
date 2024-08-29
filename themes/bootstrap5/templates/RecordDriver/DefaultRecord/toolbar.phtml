@@ -24,7 +24,7 @@
       </li>
     <?php endif; ?>
 
-    <?php if ($this->accountCapabilities()->getEmailSetting()): ?>
+    <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
       <li role="none">
         <a class="mail-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email'))?>" rel="nofollow">
           <?=$this->icon('send-email') ?>

@@ -10,7 +10,7 @@
   $checkboxSelectAllType = $socialConfig['checkbox_select_all_favorites_type'] ?? 'both';
   ?>
   <ul class="action-toolbar">
-    <?php if ($this->accountCapabilities()->getEmailSetting()): ?>
+    <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
       <?=
         $this->bulkAction()->button(
             'email',

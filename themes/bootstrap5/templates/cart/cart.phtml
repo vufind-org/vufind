@@ -31,7 +31,7 @@
             )
           ?>
         <?php endif; ?>
-        <?php if ($this->accountCapabilities()->getEmailSetting()): ?>
+        <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
           <?=
             $this->bulkAction()->button(
                 'email',

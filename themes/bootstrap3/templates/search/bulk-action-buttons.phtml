@@ -5,7 +5,7 @@
   <nav class="bulkActionButtons">
     <ul class="action-toolbar">
       <?php if ($searchSettings->bulkOptionsEnabled()): ?>
-        <?php if ($this->accountCapabilities()->getEmailSetting()): ?>
+        <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
           <?=
             $this->bulkAction()->button(
                 'email',
