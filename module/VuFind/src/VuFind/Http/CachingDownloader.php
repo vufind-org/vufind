@@ -192,7 +192,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      * @param array     $params      Request parameters (e.g. additional headers)
      * @param bool|null $associative Sent to json_decode
      *
-     * @return stdClass|array
+     * @return \stdClass|array
      */
     public function downloadJson($url, $params = [], $associative = null)
     {
