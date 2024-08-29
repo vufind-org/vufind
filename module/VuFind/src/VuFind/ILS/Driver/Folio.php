@@ -893,7 +893,7 @@ class Folio extends AbstractAPI implements
                     && $dueDateItemCount < $maxNumDueDateItems
                 ) {
                     $currentLoan = $this->getCurrentLoan($item->id);
-                    $dueDateValue == $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
+                    $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
                     $dueDateItemCount++;
                 }
                 if ($item->isBoundWith ?? false) {
@@ -1816,21 +1816,21 @@ class Folio extends AbstractAPI implements
      *
      * @return array Two entries: 'valid' (boolean) plus 'status' (message to display to user)
      */
-    public function checkRequestIsValid($id, $data, $patron)
-    {
-        // Check outstanding loans
-        $currentLoan = $this->getCurrentLoan($data['item_id']);
-        if (!$currentLoan || $this->isHoldableByCurrentLoan($currentLoan)) {
-            return [
-                'valid' => true,
-            ];
-        } else {
-            return [
-                'valid' => false,
-                'status' => 'hold_error_current_loan_patron_group',
-            ];
-        }
-    }
+    // public function checkRequestIsValid($id, $data, $patron)
+    // {
+    //     // Check outstanding loans
+    //     $currentLoan = $this->getCurrentLoan($data['item_id']);
+    //     if (!$currentLoan || $this->isHoldableByCurrentLoan($currentLoan)) {
+    //         return [
+    //             'valid' => true,
+    //         ];
+    //     } else {
+    //         return [
+    //             'valid' => false,
+    //             'status' => 'hold_error_current_loan_patron_group',
+    //         ];
+    //     }
+    // }
 
     /**
      * Obtain a list of course resources, creating an id => value associative array.
