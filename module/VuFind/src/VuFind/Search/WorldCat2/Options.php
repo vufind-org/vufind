@@ -99,6 +99,11 @@ class Options extends \VuFind\Search\Base\Options
             $this->listviewOption = $searchSettings->List->view;
         }
 
+        // Load default filters, if any:
+        if (isset($searchSettings->General->default_filters)) {
+            $this->defaultFilters = $searchSettings->General->default_filters->toArray();
+        }
+
         $facetConf = $configLoader->get($this->facetsIni);
         if (count($facetConf->Advanced_Facet_Settings->translated_facets ?? []) > 0) {
             $this->setTranslatedFacets(
