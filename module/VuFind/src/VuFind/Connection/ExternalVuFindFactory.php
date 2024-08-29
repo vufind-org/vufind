@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database access token service factory
+ * ExternalVuFind connection factory
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @package  Connection
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Db\Service;
+namespace VuFind\Connection;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,15 +35,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Database access token service factory
+ * ExternalVuFind connection factory
  *
  * @category VuFind
- * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @package  Connection
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AccessTokenServiceFactory extends AbstractDbServiceFactory
+class ExternalVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -58,6 +58,8 @@ class AccessTokenServiceFactory extends AbstractDbServiceFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -65,10 +67,11 @@ class AccessTokenServiceFactory extends AbstractDbServiceFactory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory!');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $accessTokenTable = $container->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('accesstoken');
-        return parent::__invoke($container, $requestedName, [$accessTokenTable]);
+
+        return new $requestedName(
+            $container->get(\VuFind\Http\CachingDownloader::class)
+        );
     }
 }

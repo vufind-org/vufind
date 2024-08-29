@@ -415,7 +415,7 @@ $config = [
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
-            'VuFind\Connection\ExternalVuFind' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Connection\ExternalVuFind' => 'VuFind\Connection\ExternalVuFindFactory',
             'VuFind\Connection\LibGuides' => 'VuFind\Connection\LibGuidesFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
@@ -609,6 +609,7 @@ $config = [
         ],
         'shared' => [
             'VuFind\Form\Form' => false,
+            'VuFind\Http\CachingDownloader' => false,
         ],
     ],
     'caches' => [
