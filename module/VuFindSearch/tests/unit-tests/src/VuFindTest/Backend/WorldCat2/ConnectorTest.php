@@ -121,6 +121,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
                 'docs' => [['identifier' => ['oclcNumber' => 'baz']]],
                 'offset' => 0,
                 'total' => 1,
+                'errors' => [],
             ],
             $connector->getRecord('baz')
         );
@@ -141,6 +142,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
                 'docs' => [],
                 'offset' => 0,
                 'total' => 0,
+                'errors' => [],
             ],
             $connector->getRecord('baz')
         );
@@ -160,7 +162,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
         );
         $params = new ParamBag(['foo' => ['bar', 'baz']]);
         $this->assertEquals(
-            ['docs' => [], 'offset' => 0, 'total' => 0, 'facets' => []],
+            ['docs' => [], 'offset' => 0, 'total' => 0, 'facets' => [], 'errors' => []],
             $connector->search($params, 0, 5)
         );
     }
