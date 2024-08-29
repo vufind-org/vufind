@@ -57,11 +57,14 @@ class ExternalVuFind implements
 
     /**
      * Constructor
+     *
+     * @param \VuFind\Http\CachingDownloader $cachingDownloader The caching downloader
      */
-    public function __construct()
+    public function __construct(\VuFind\Http\CachingDownloader $cachingDownloader)
     {
         $this->cacheOptionsSection = 'ExternalVuFind_Defaults';
         $this->cacheOptionsFile = 'ExternalVuFind';
+        $this->setCachingDownloader($cachingDownloader);
     }
 
     /**
@@ -95,9 +98,6 @@ class ExternalVuFind implements
         if (!$this->baseUrl) {
             $this->logError('Must call setBaseUrl() before searching.');
             return [];
-        }
-        if (!isset($this->cachingDownloader)) {
-            throw new \Exception('CachingDownloader initialization failed.');
         }
 
         $params = [];

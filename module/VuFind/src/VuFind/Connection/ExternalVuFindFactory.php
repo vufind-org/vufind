@@ -70,9 +70,8 @@ class ExternalVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryIn
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
-        $externalVuFind = new $requestedName();
-        $externalVuFind->setCachingDownloader($cachingDownloader);
-        return $externalVuFind;
+        return new $requestedName(
+            $container->get(\VuFind\Http\CachingDownloader::class)
+        );
     }
 }
