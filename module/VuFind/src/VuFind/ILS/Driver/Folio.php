@@ -353,11 +353,7 @@ class Folio extends AbstractAPI implements
                 if ($itemId == null) {
                     throw new \Exception('No IDs provided to getInstanceObject.');
                 }
-                $response = $this->makeRequest(
-                    'GET',
-                    '/item-storage/items/' . $itemId
-                );
-                $item = json_decode($response->getBody());
+                $item = $this->getItemById($itemId);
                 $holdingId = $item->holdingsRecordId;
             }
             $response = $this->makeRequest(
@@ -372,6 +368,23 @@ class Folio extends AbstractAPI implements
             '/inventory/instances/' . $instanceId
         );
         return json_decode($response->getBody());
+    }
+
+    /**
+     * Get an item record by its UUID.
+     *
+     * @param string $itemId UUID
+     *
+     * @return stdClass The item
+     */
+    protected function getItemById($itemId)
+    {
+        $response = $this->makeRequest(
+            'GET',
+            '/item-storage/items/' . $itemId
+        );
+        $item = json_decode($response->getBody());
+        return $item;
     }
 
     /**
@@ -1404,11 +1417,7 @@ class Folio extends AbstractAPI implements
             // so limiting by itemEffectiveLocation does not apply
             && $holdInfo['item_id'] ?? false
         ) {
-            $response = $this->makeRequest(
-                'GET',
-                '/item-storage/items/' . $holdInfo['item_id']
-            );
-            $item = json_decode($response->getBody());
+            $item = $this->getItemById($holdInfo['item_id']);
             $itemLocationId = $item->effectiveLocationId;
             $limitedServicePoints = $this->getLocationData($itemLocationId)['servicePointIds'];
         }
