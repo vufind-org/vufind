@@ -31,6 +31,7 @@ namespace VuFind\Search\WorldCat2;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function count;
 use function strlen;
 
 /**
@@ -59,6 +60,21 @@ class Results extends \VuFind\Search\Base\Results
     protected $responseFacets = null;
 
     /**
+     * Store an empty response with an error message instead of performing a search.
+     *
+     * @param string|array $error Error message(s) to display to user.
+     *
+     * @return void
+     */
+    protected function storeErrorResponse(string|array $error): void
+    {
+        $this->resultTotal = 0;
+        $this->results = [];
+        $this->responseFacets = [];
+        $this->errors = (array)$error;
+    }
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -67,28 +83,40 @@ class Results extends \VuFind\Search\Base\Results
     protected function performSearch()
     {
         $query  = $this->getParams()->getQuery();
-        if (strlen($query->getAllTerms())) {
-            $limit  = $this->getParams()->getLimit();
-            $offset = $this->getStartRecord();
-            $params = $this->getParams()->getBackendParameters();
-            $command = new SearchCommand(
-                $this->backendId,
-                $query,
-                $offset,
-                $limit,
-                $params
-            );
-            $collection = $this->getSearchService()->invoke($command)->getResult();
-
-            $this->resultTotal = $collection->getTotal();
-            $this->results = $collection->getRecords();
-            $this->responseFacets = $collection->getFacets();
-        } else {
-            // Empty queries are not supported, so treat the response as empty.
-            $this->resultTotal = 0;
-            $this->results = [];
-            $this->responseFacets = [];
+        $allTerms = $query->getAllTerms();
+        if (!strlen($allTerms)) {
+            $this->storeErrorResponse('empty_search_disallowed');
+            return;
         }
+        $termCount = count(explode(' ', $allTerms));
+        $termLimit = $this->getOptions()->getQueryTermsLimit();
+        if ($termCount > $termLimit) {
+            $this->storeErrorResponse(
+                [
+                    [
+                        'msg' => 'too_many_query_terms',
+                        'tokens' => ['%%terms%%' => $termCount, '%%maxTerms%%' => $termLimit],
+                    ],
+                ]
+            );
+            return;
+        }
+        $limit  = $this->getParams()->getLimit();
+        $offset = $this->getStartRecord();
+        $params = $this->getParams()->getBackendParameters();
+        $command = new SearchCommand(
+            $this->backendId,
+            $query,
+            $offset,
+            $limit,
+            $params
+        );
+        $collection = $this->getSearchService()->invoke($command)->getResult();
+
+        $this->resultTotal = $collection->getTotal();
+        $this->results = $collection->getRecords();
+        $this->responseFacets = $collection->getFacets();
+        $this->errors = $collection->getErrors();
     }
 
     /**

@@ -68,7 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Deprecated::class => InvokableFactory::class,
         Similar::class => SimilarFactory::class,
         WorldCatSimilar::class => SimilarFactory::class,
-        WorldCat2Similar::class => SimilarFactory::class,
+        WorldCat2Similar::class => WorldCat2SimilarFactory::class,
     ];
 
     /**

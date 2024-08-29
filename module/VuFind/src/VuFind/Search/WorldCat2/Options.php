@@ -45,6 +45,13 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Config\Feature\ExplodeSettingTrait;
 
     /**
+     * Max number of terms allowed in a search.
+     *
+     * @var int
+     */
+    protected int $termsLimit = 30;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -56,6 +63,11 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load the configuration file:
         $searchSettings = $configLoader->get($this->searchIni);
+
+        // Term limit setup:
+        if (isset($searchSettings->General->terms_limit)) {
+            $this->termsLimit = $searchSettings->General->terms_limit;
+        }
 
         // Limit setup:
         if (isset($searchSettings->General->default_limit)) {
@@ -114,5 +126,15 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'worldcat2-advanced';
+    }
+
+    /**
+     * Get limit of terms per query.
+     *
+     * @return int
+     */
+    public function getQueryTermsLimit(): int
+    {
+        return $this->termsLimit;
     }
 }

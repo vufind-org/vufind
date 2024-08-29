@@ -135,4 +135,16 @@ class WorldCat2Similar extends Similar
             error_log('Unexpected error in WorldCat2 similar records module: ' . ((string)$e));
         }
     }
+
+    /**
+     * Set the term limit.
+     *
+     * @param int $limit Term limit
+     *
+     * @return void
+     */
+    public function setTermLimit(int $limit): void
+    {
+        $this->termLimit = $limit;
+    }
 }
