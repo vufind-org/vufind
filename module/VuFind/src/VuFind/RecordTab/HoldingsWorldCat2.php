@@ -50,7 +50,7 @@ class HoldingsWorldCat2 extends AbstractBase
      * @param Service $searchService Search service
      * @param array   $defaults      Default parameters to include in API requests
      */
-    public function __construct(protected Service $searchService, protected array $defaults)
+    public function __construct(protected Service $searchService, protected array $defaults = [])
     {
     }
 
