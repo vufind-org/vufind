@@ -7,12 +7,14 @@
         <span class="icon-link__label"><?=$this->transEsc('Get RSS Feed')?></span>
       </a>
     </li>
-    <li>
-      <a class="icon-link mailSearch" href="<?=$this->url('search-email')?>" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" rel="nofollow">
-        <?=$this->icon('send-email', 'icon-link__icon') ?>
-        <span class="icon-link__label"><?=$this->transEsc('Email this Search')?></span>
-      </a>
-    </li>
+    <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+      <li>
+        <a class="icon-link mailSearch" href="<?=$this->url('search-email')?>" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" rel="nofollow">
+          <?=$this->icon('send-email', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Email this Search')?></span>
+        </a>
+      </li>
+    <?php endif; ?>
     <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled' && is_numeric($this->results->getSearchId())): ?>
       <li>
         <?php if ($this->results->isSavedSearch()): ?>

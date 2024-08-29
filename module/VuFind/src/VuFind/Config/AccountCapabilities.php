@@ -178,13 +178,15 @@ class AccountCapabilities
     }
 
     /**
-     * Check if emailing of records is available.
+     * Check if emailing of records and searches is available.
      *
      * @return bool
      */
     public function isEmailActionAvailable(): bool
     {
-        return !($this->config?->Mail?->require_login ?? true) || $this->getAuth()->loginEnabled();
+        $emailActionSettings = $this->config?->Mail?->email_action ?? 'require_login';
+        return $emailActionSettings === 'enabled'
+            || $emailActionSettings === 'require_login' && $this->getAuth()->loginEnabled();
     }
 
     /**

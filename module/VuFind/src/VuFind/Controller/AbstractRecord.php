@@ -528,10 +528,14 @@ class AbstractRecord extends AbstractBase
      */
     public function emailAction()
     {
-        // Force login if necessary:
         $config = $this->getConfig();
+        $emailActionSettings = $config?->Mail?->email_action ?? 'require_login';
+        if ($emailActionSettings === 'disabled') {
+            throw new ForbiddenException('Email action disabled');
+        }
+        // Force login if necessary:
         if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
+            $emailActionSettings !== 'enabled'
             && !$this->getUser()
         ) {
             return $this->forceLogin();

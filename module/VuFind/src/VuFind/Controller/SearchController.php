@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 
@@ -135,9 +136,16 @@ class SearchController extends AbstractSolrSearch
             throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
         }
 
-        // Force login if necessary:
         $config = $this->getConfig();
-        if (($config->Mail->require_login ?? true) && !$this->getUser()) {
+        $emailActionSettings = $config?->Mail?->email_action ?? 'require_login';
+        if ($emailActionSettings === 'disabled') {
+            throw new ForbiddenException('Email action disabled');
+        }
+        // Force login if necessary:
+        if (
+            $emailActionSettings !== 'enabled'
+            && !$this->getUser()
+        ) {
             return $this->forceLogin(null, ['emailurl' => $view->url]);
         }
 
