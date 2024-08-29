@@ -55,6 +55,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc',
+            'last_saved DESC' => 'sort_saved', 'last_saved' => 'sort_saved asc',
         ];
         $config = $configLoader->get($this->mainIni);
         if (isset($config->Social->lists_default_limit)) {
