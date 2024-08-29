@@ -104,7 +104,7 @@ class Connector implements LoggerAwareInterface
      * @throws RuntimeException
      * @throws ExceptionRuntimeException
      */
-    protected function makeApiCall(string $path)
+    protected function makeApiCall(string $path): Response
     {
         if (!isset($this->session->token)) {
             $this->session->token = $this->getToken();
@@ -122,6 +122,22 @@ class Connector implements LoggerAwareInterface
             $response = $this->client->send();
         }
         return $response;
+    }
+
+    /**
+     * Return user-readable error messages based on the HTTP response.
+     *
+     * @param Response $response HTTP response object
+     *
+     * @return array
+     */
+    protected function getErrorsFromResponse(Response $response): array
+    {
+        $errors = [];
+        if ($response->getStatusCode() === 429) {
+            $errors[] = 'nohit_busy';
+        }
+        return $errors;
     }
 
     /**
@@ -155,6 +171,7 @@ class Connector implements LoggerAwareInterface
             'docs' => $found ? [$record] : [],
             'offset' => 0,
             'total' => $found ? 1 : 0,
+            'errors' => $this->getErrorsFromResponse($response),
         ];
     }
 
@@ -187,6 +204,8 @@ class Connector implements LoggerAwareInterface
         $docs = $result['bibRecords'] ?? [];
         $total = $result['numberOfRecords'];
         $facets = $result['searchFacets'] ?? [];
-        return compact('docs', 'offset', 'total', 'facets');
+        $errors = $this->getErrorsFromResponse($response);
+
+        return compact('docs', 'offset', 'total', 'facets', 'errors');
     }
 }

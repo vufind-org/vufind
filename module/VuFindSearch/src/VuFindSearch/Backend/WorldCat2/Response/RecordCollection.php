@@ -86,4 +86,17 @@ class RecordCollection extends AbstractRecordCollection
         }
         return $result;
     }
+
+    /**
+     * Return any errors.
+     *
+     * Each error can be a translatable string or an array that the Flashmessages
+     * view helper understands.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->response['errors'] ?? [];
+    }
 }
