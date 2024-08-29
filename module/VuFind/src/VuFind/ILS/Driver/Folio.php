@@ -375,7 +375,7 @@ class Folio extends AbstractAPI implements
      *
      * @param string $itemId UUID
      *
-     * @return stdClass The item
+     * @return \stdClass The item
      */
     protected function getItemById($itemId)
     {
