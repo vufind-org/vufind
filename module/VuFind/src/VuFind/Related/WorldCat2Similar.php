@@ -31,11 +31,13 @@ namespace VuFind\Related;
 
 use Exception;
 use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 use function array_slice;
 use function count;
+use function in_array;
 
 /**
  * Related Records: WorldCat v2-based similarity
@@ -49,6 +51,37 @@ use function count;
 class WorldCat2Similar extends Similar
 {
     /**
+     * Maximum number of recommendations to return.
+     *
+     * @var int
+     */
+    protected int $maxRecommendations = 5;
+
+    /**
+     * Maximum term count in query.
+     *
+     * @var int
+     */
+    protected int $termLimit = 30;
+
+    /**
+     * Add a phrase to the query if it's not already too long.
+     *
+     * @param QueryGroup $queryObj Query object being updated
+     * @param string     $phrase   Query phrase
+     * @param string     $type     Search type
+     *
+     * @return void
+     */
+    protected function addPhraseToQuery(QueryGroup $queryObj, string $phrase, string $type): void
+    {
+        $terms = explode(' ', $queryObj->getAllTerms() . ' ' . $phrase);
+        if (count($terms) < $this->termLimit) {
+            $queryObj->addQuery(new Query('"' . $phrase . '"', $type));
+        }
+    }
+
+    /**
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini
@@ -61,36 +94,40 @@ class WorldCat2Similar extends Similar
         // Create advanced query:
         $queryObj = new QueryGroup('OR');
 
-        // Add author to query
-        $author = $driver->getPrimaryAuthor();
-        if (!empty($author)) {
-            $queryObj->addQuery(new Query($author, 'au'));
+        // Add subjects to query
+        $subjects = array_slice($driver->tryMethod('getAllSubjectHeadings', default: []), 0, 4);
+        foreach ($subjects as $current) {
+            $this->addPhraseToQuery($queryObj, implode(' ', $current), 'su');
         }
 
-        // Add subjects to query
-        $subjects = array_slice($driver->getAllSubjectHeadings(), 0, 4);
-        foreach ($subjects as $current) {
-            $queryObj->addQuery(new Query('"' . implode(' ', $current) . '"', 'su'));
+        // Add author to query
+        $author = $driver->tryMethod('getPrimaryAuthor', default: '');
+        if (!empty($author)) {
+            $this->addPhraseToQuery($queryObj, $author, 'au');
         }
 
         // Add title to query
-        $title = $driver->getTitle();
+        $title = $driver->tryMethod('getTitle', default: '');
         if (!empty($title)) {
-            $queryObj->addQuery(new Query('"' . str_replace('"', '', $title) . '"', 'ti'));
+            $this->addPhraseToQuery($queryObj, str_replace('"', '', $title), 'ti');
         }
 
-        // Not current record ID if this is already a WorldCat v2 record:
-        $idToExclude = $driver->getSourceIdentifier() == 'WorldCat2'
-            ? $driver->getUniqueId() : null;
+        // We don't want to show a recommendation that represents the same OCLC record.
+        $idsToExclude = (array)($driver->tryMethod('getOCLC', default: []));
+
+        // Group together related editions to ensure that suggestions are more diverse:
+        $extraParams = new ParamBag(['groupRelatedEditions' => 'true', 'groupVariantEditions' => 'true']);
 
         // Perform the search and save filtered results:
-        $maxRecommendations = 5;
-        $command = new SearchCommand('WorldCat2', $queryObj, 1, $maxRecommendations + 1);
+        $command = new SearchCommand('WorldCat2', $queryObj, 1, $this->maxRecommendations + 1, $extraParams);
         $this->results = [];
         try {
             $result = $this->searchService->invoke($command)->getResult();
             foreach ($result->getRecords() as $record) {
-                if ($record->getUniqueId() !== $idToExclude && count($this->results) < $maxRecommendations) {
+                if (
+                    !in_array($record->getUniqueId(), $idsToExclude)
+                    && count($this->results) < $this->maxRecommendations
+                ) {
                     $this->results[] = $record;
                 }
             }

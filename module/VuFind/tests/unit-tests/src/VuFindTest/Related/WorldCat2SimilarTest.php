@@ -59,14 +59,19 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
                     'getPrimaryAuthor',
                     'getAllSubjectHeadings',
                     'getTitle',
-                    'getUniqueId',
+                    'getOCLC',
                     'getSourceIdentifier',
+                    'getUniqueId',
                 ]
             )->getMock();
         $driver->method('getPrimaryAuthor')->willReturn('fakepa');
-        $driver->method('getAllSubjectHeadings')->willReturn([['fakesh1a', 'fakesh1b'], ['fakesh2']]);
+        // Create a 100-term subject that will get ignored due to the query length limits:
+        $longTermThatWillGetSkipped = implode(' ', range(1, 100));
+        $driver->method('getAllSubjectHeadings')
+            ->willReturn([['fakesh1a', 'fakesh1b'], ['fakesh2'], [$longTermThatWillGetSkipped]]);
         $driver->method('getTitle')->willReturn('faketitle');
         $driver->method('getSourceIdentifier')->willReturn('WorldCat2');
+        $driver->method('getOCLC')->willReturn([$id]);
         $driver->method('getUniqueID')->willReturn($id);
         return $driver;
     }
@@ -94,7 +99,7 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')->willReturn($response);
 
         $checkCommand = function ($command) {
-            $expectedTerms = 'fakepa "fakesh1a fakesh1b" "fakesh2" "faketitle"';
+            $expectedTerms = '"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"';
             $this->assertEquals(\VuFindSearch\Command\SearchCommand::class, $command::class);
             $this->assertEquals('WorldCat2', $command->getTargetIdentifier());
             $this->assertEquals($expectedTerms, $command->getArguments()[0]->getAllTerms());
