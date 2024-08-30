@@ -353,11 +353,7 @@ class Folio extends AbstractAPI implements
                 if ($itemId == null) {
                     throw new \Exception('No IDs provided to getInstanceObject.');
                 }
-                $response = $this->makeRequest(
-                    'GET',
-                    '/item-storage/items/' . $itemId
-                );
-                $item = json_decode($response->getBody());
+                $item = $this->getItemById($itemId);
                 $holdingId = $item->holdingsRecordId;
             }
             $response = $this->makeRequest(
@@ -372,6 +368,23 @@ class Folio extends AbstractAPI implements
             '/inventory/instances/' . $instanceId
         );
         return json_decode($response->getBody());
+    }
+
+    /**
+     * Get an item record by its UUID.
+     *
+     * @param string $itemId UUID
+     *
+     * @return \stdClass The item
+     */
+    protected function getItemById($itemId)
+    {
+        $response = $this->makeRequest(
+            'GET',
+            '/item-storage/items/' . $itemId
+        );
+        $item = json_decode($response->getBody());
+        return $item;
     }
 
     /**
@@ -552,7 +565,8 @@ class Folio extends AbstractAPI implements
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $isActive = $location->isActive ?? true;
-                $locationMap[$location->id] = compact('name', 'code', 'isActive');
+                $servicePointIds = $location->servicePointIds;
+                $locationMap[$location->id] = compact('name', 'code', 'isActive', 'servicePointIds');
             }
             $this->putCachedData($cacheKey, $locationMap);
         }
@@ -572,6 +586,7 @@ class Folio extends AbstractAPI implements
         $name = '';
         $code = '';
         $isActive = true;
+        $servicePointIds = [];
         if (array_key_exists($locationId, $locationMap)) {
             return $locationMap[$locationId];
         } else {
@@ -586,10 +601,11 @@ class Folio extends AbstractAPI implements
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $isActive = $location->isActive ?? $isActive;
+                $servicePointIds = $location->servicePointIds;
             }
         }
 
-        return compact('name', 'code', 'isActive');
+        return compact('name', 'code', 'isActive', 'servicePointIds');
     }
 
     /**
@@ -1394,6 +1410,18 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
+        $limitedServicePoints = null;
+        if (
+            str_contains($this->config['Holds']['limitPickupLocations'] ?? '', 'itemEffectiveLocation')
+            // If there's no item ID, it must be a title-level hold,
+            // so limiting by itemEffectiveLocation does not apply
+            && $holdInfo['item_id'] ?? false
+        ) {
+            $item = $this->getItemById($holdInfo['item_id']);
+            $itemLocationId = $item->effectiveLocationId;
+            $limitedServicePoints = $this->getLocationData($itemLocationId)['servicePointIds'];
+        }
+
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
         foreach (
@@ -1401,11 +1429,15 @@ class Folio extends AbstractAPI implements
                 'servicepoints',
                 '/service-points',
                 $query
-            ) as $servicepoint
+            ) as $servicePoint
         ) {
+            if ($limitedServicePoints && !in_array($servicePoint->id, $limitedServicePoints)) {
+                continue;
+            }
+
             $locations[] = [
-                'locationID' => $servicepoint->id,
-                'locationDisplay' => $servicepoint->discoveryDisplayName,
+                'locationID' => $servicePoint->id,
+                'locationDisplay' => $servicePoint->discoveryDisplayName,
             ];
         }
         return $locations;

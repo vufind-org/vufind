@@ -117,17 +117,18 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @param string $cacheId             Cache ID
      * @param string $cacheOptionsSection Cache Options Section
+     * @param string $cacheOptionsFile    Config file defining the cache options
      *
      * @return void
      */
-    public function setUpCache(string $cacheId, string $cacheOptionsSection = null)
+    public function setUpCache(string $cacheId, string $cacheOptionsSection = null, string $cacheOptionsFile = null)
     {
         $this->cache = null;
         $this->cacheId = $cacheId;
 
         if (!empty($cacheOptionsSection)) {
             $fullCacheOptionsSection = 'Cache_' . $cacheOptionsSection;
-            $section = $this->configManager->get('config')->$fullCacheOptionsSection;
+            $section = $this->configManager->get($cacheOptionsFile ?? 'config')->$fullCacheOptionsSection;
             $this->cacheOptions = !empty($section) ? $section->toArray() : [];
         }
     }
@@ -187,15 +188,16 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      * Download a resource using the cache in the background,
      * including decoding for JSON.
      *
-     * @param string $url    URL
-     * @param array  $params Request parameters (e.g. additional headers)
+     * @param string    $url         URL
+     * @param array     $params      Request parameters (e.g. additional headers)
+     * @param bool|null $associative Sent to json_decode
      *
-     * @return stdClass
+     * @return \stdClass|array
      */
-    public function downloadJson($url, $params = [])
+    public function downloadJson($url, $params = [], $associative = null)
     {
-        $decodeJson = function (\Laminas\Http\Response $response, $url) {
-            $decodedJson = json_decode($response->getBody());
+        $decodeJson = function (\Laminas\Http\Response $response, $url) use ($associative) {
+            $decodedJson = json_decode($response->getBody(), $associative);
             if ($decodedJson === null) {
                 throw new HttpDownloadException(
                     'Invalid response body',

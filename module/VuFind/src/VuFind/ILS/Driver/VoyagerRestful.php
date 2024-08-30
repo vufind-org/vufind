@@ -747,7 +747,7 @@ class VoyagerRestful extends Voyager implements
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $pickResponse[] = [
                     'locationID' => $row['LOCATION_ID'],
-                    'locationDisplay' => utf8_encode($row['LOCATION_NAME']),
+                    'locationDisplay' => $this->utf8Encode($row['LOCATION_NAME']),
                 ];
             }
         }
@@ -1007,7 +1007,7 @@ class VoyagerRestful extends Voyager implements
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = [
                 'id' => $row['GROUP_ID'],
-                'name' => utf8_encode($row['GROUP_NAME']),
+                'name' => $this->utf8Encode($row['GROUP_NAME']),
             ];
         }
 

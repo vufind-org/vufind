@@ -460,6 +460,18 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             ['Dewey browse test', 'Fake Record 1 with multiple relators/']
         );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Fake Record 1 with multiple relators/', 'Dewey browse test']
+        );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved DESC', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Dewey browse test', 'Fake Record 1 with multiple relators/']
+        );
     }
 
     /**

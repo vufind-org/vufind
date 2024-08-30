@@ -132,7 +132,7 @@ class Search extends Gateway implements DbServiceAwareInterface
      *
      * @return void
      *
-     * @deprecated Use SessionServiceInterface::destroySession()
+     * @deprecated Use SearchServiceInterface::destroySession()
      */
     public function destroySession($sid, $uid = null)
     {
@@ -147,7 +147,7 @@ class Search extends Gateway implements DbServiceAwareInterface
      *
      * @return array      Matching SearchEntry objects.
      *
-     * @deprecated Use SessionServiceInterface::getSearches()
+     * @deprecated Use SearchServiceInterface::getSearches()
      */
     public function getSearches($sid, $uid = null)
     {
@@ -185,7 +185,7 @@ class Search extends Gateway implements DbServiceAwareInterface
      *
      * @return ?\VuFind\Db\Row\Search
      *
-     * @deprecated Use SessionServiceInterface::getSearchByIdAndOwner()
+     * @deprecated Use SearchServiceInterface::getSearchByIdAndOwner()
      */
     public function getOwnedRowById($id, $sessId, $userId)
     {
@@ -197,7 +197,7 @@ class Search extends Gateway implements DbServiceAwareInterface
      *
      * @return array Array of VuFind\Db\Row\Search objects.
      *
-     * @deprecated Use SessionServiceInterface::getScheduledSearches()
+     * @deprecated Use SearchServiceInterface::getScheduledSearches()
      */
     public function getScheduledSearches()
     {
