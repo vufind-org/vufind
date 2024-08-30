@@ -48,6 +48,26 @@ use VuFindSearch\Query\Query;
 class BackendTest extends TestCase
 {
     /**
+     * Test getting holdings.
+     *
+     * @return void
+     */
+    public function testGetHoldings(): void
+    {
+        $params = new ParamBag();
+        $mockResponse = ['foo' => 'bar'];
+
+        $conn = $this->createMock(Connector::class);
+        $conn->expects($this->once())
+            ->method('getHoldings')
+            ->with($this->equalTo($params))
+            ->willReturn($mockResponse);
+
+        $back = new Backend($conn);
+        $this->assertEquals($mockResponse, $back->getHoldings($params));
+    }
+
+    /**
      * Test retrieving a record.
      *
      * @return void
