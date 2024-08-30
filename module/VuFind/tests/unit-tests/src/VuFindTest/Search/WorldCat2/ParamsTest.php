@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\WorldCat2;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
 use VuFind\Search\WorldCat2\Options;
 use VuFind\Search\WorldCat2\Params;
