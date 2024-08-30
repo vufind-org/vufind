@@ -178,13 +178,24 @@ class AccountCapabilities
     }
 
     /**
+     * Get email action setting ('enabled', 'require_login' or 'disabled').
+     *
+     * @return string
+     */
+    public function getEmailActionSetting(): string
+    {
+        return $this->config?->Mail?->email_action ??
+            (($this->config?->Mail?->require_login ?? true) ? 'require_login' : 'enabled');
+    }
+
+    /**
      * Check if emailing of records and searches is available.
      *
      * @return bool
      */
     public function isEmailActionAvailable(): bool
     {
-        $emailActionSettings = $this->config?->Mail?->email_action ?? 'require_login';
+        $emailActionSettings = $this->getEmailActionSetting();
         return $emailActionSettings === 'enabled'
             || $emailActionSettings === 'require_login' && $this->getAuth()->loginEnabled();
     }

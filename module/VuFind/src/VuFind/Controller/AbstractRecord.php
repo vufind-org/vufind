@@ -528,8 +528,7 @@ class AbstractRecord extends AbstractBase
      */
     public function emailAction()
     {
-        $config = $this->getConfig();
-        $emailActionSettings = $config?->Mail?->email_action ?? 'require_login';
+        $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
         if ($emailActionSettings === 'disabled') {
             throw new ForbiddenException('Email action disabled');
         }

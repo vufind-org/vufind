@@ -136,8 +136,7 @@ class SearchController extends AbstractSolrSearch
             throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
         }
 
-        $config = $this->getConfig();
-        $emailActionSettings = $config?->Mail?->email_action ?? 'require_login';
+        $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
         if ($emailActionSettings === 'disabled') {
             throw new ForbiddenException('Email action disabled');
         }
