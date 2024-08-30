@@ -21,18 +21,6 @@ mark { background-color: $highlighter-color; }
   border-radius: .25rem;
   border-color: $silver;
 }
-/* Not sure why these are here, but don't want to remove for fear of breaking something; could use a review */
-.btn-default:hover,
-.btn-default:focus {
-  color: $white;
-  border-color: transparent;
-}
-/* Fix for white-on-white .btn-info buttons caused by the above .btn-default styles */
-.btn-info:hover,
-.btn-info:focus {
-  color: $brand-primary;
-  border-color: $brand-primary;
-}
 .btn-link,
 .btn-primary { border-color: transparent; }
 .btn-primary:hover {

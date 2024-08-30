@@ -10,17 +10,17 @@
 $script = <<<JS
       $(document).ready(function copyToClipboard() {
         if (navigator.clipboard) {
-          const button = $("#copyToClipboard${buttonNumber}");
+          const button = $("#copyToClipboard{$buttonNumber}");
           button.removeClass('hidden');
           button.click(function copyToClipboard() {
-            navigator.clipboard.writeText($('${selector}').text()).then(
+            navigator.clipboard.writeText($('{$selector}').text()).then(
                 function copySuccess() {
-                    $("#copyFailureMessage${buttonNumber}").addClass("hidden");
-                    $("#copySuccessMessage${buttonNumber}").removeClass("hidden");
+                    $("#copyFailureMessage{$buttonNumber}").addClass("hidden");
+                    $("#copySuccessMessage{$buttonNumber}").removeClass("hidden");
                 },
                 function copyFailure() {
-                    $("#copySuccessMessage${buttonNumber}").addClass("hidden");
-                    $("#copyFailureMessage${buttonNumber}").removeClass("hidden");
+                    $("#copySuccessMessage{$buttonNumber}").addClass("hidden");
+                    $("#copyFailureMessage{$buttonNumber}").removeClass("hidden");
                 }
             );
           });

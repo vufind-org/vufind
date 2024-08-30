@@ -817,9 +817,9 @@ class InstallController extends AbstractBase
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
             foreach ($userRows as $row) {
-                if ($row->password != '') {
-                    $row->pass_hash = $bcrypt->create($row->password);
-                    $row->password = '';
+                if ($row->getRawPassword() != '') {
+                    $row->setPasswordHash($bcrypt->create($row->getRawPassword()));
+                    $row->setRawPassword('');
                 }
                 if ($rawPassword = $row->getRawCatPassword()) {
                     $ilsAuthenticator->saveUserCatalogCredentials($row, $row->getCatUsername(), $rawPassword);

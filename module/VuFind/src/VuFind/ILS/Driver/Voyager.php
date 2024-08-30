@@ -492,7 +492,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                     'status_array' => [$row['STATUS']],
                     'location' => $row['TEMP_LOCATION'] > 0
                         ? $this->getLocationName($row['TEMP_LOCATION'])
-                        : utf8_encode($row['LOCATION']),
+                        : $this->utf8Encode($row['LOCATION']),
                     'reserve' => $row['ON_RESERVE'],
                     'callnumber' => $row['CALLNUMBER'],
                     'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
@@ -846,7 +846,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         $raw = $processed = [];
         // Collect raw data:
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            $raw[] = $row['MFHD_ID'] . '||' . utf8_encode($row['ENUMCHRON']);
+            $raw[] = $row['MFHD_ID'] . '||' . $this->utf8Encode($row['ENUMCHRON']);
         }
         // Deduplicate data and format it:
         foreach (array_unique($raw) as $current) {
@@ -986,7 +986,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             $bind = ['id' => $id];
             $sqlStmt = $this->executeSQL($sql, $bind);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            $cache[$id] = utf8_encode($sqlRow['LOCATION']);
+            $cache[$id] = $this->utf8Encode($sqlRow['LOCATION']);
         }
 
         return $cache[$id];
@@ -1008,7 +1008,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'status' => $sqlRow['STATUS'],
             'location' => $sqlRow['TEMP_LOCATION'] > 0
                 ? $this->getLocationName($sqlRow['TEMP_LOCATION'])
-                : utf8_encode($sqlRow['LOCATION']),
+                : $this->utf8Encode($sqlRow['LOCATION']),
             'reserve' => $sqlRow['ON_RESERVE'],
             'callnumber' => $sqlRow['CALLNUMBER'],
             'barcode' => $sqlRow['ITEM_BARCODE'],
@@ -1110,7 +1110,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                 $holding[$i] += [
                     'availability' => $availability['available'],
                     'enumchron' => isset($row['ITEM_ENUM'])
-                        ? utf8_encode($row['ITEM_ENUM']) : null,
+                        ? $this->utf8Encode($row['ITEM_ENUM']) : null,
                     'duedate' => $this->processHoldingDueDate($row),
                     'number' => $number,
                     'requests_placed' => $requests_placed,
@@ -1293,7 +1293,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         }
 
         try {
-            $bindUsername = strtolower(utf8_decode($username));
+            $bindUsername = strtolower(mb_convert_encoding($username, 'ISO-8859-1', 'UTF-8'));
             $compareLogin = mb_strtolower($login, 'UTF-8');
 
             $sqlStmt = $this->executeSQL($sql, [':username' => $bindUsername]);
@@ -1301,10 +1301,10 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $primary = null !== $row['LOGIN']
-                    ? mb_strtolower(utf8_encode($row['LOGIN']), 'UTF-8')
+                    ? mb_strtolower($this->utf8Encode($row['LOGIN']), 'UTF-8')
                     : null;
                 $fallback = $fallbackLoginField && null === $row['LOGIN']
-                    ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
+                    ? mb_strtolower($this->utf8Encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
                 if (
@@ -1314,9 +1314,9 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                     && $fallback == $compareLogin)
                 ) {
                     return [
-                        'id' => utf8_encode($row['PATRON_ID']),
-                        'firstname' => utf8_encode($row['FIRST_NAME']),
-                        'lastname' => utf8_encode($row['LAST_NAME']),
+                        'id' => $this->utf8Encode($row['PATRON_ID']),
+                        'firstname' => $this->utf8Encode($row['FIRST_NAME']),
+                        'lastname' => $this->utf8Encode($row['LAST_NAME']),
                         'cat_username' => $username,
                         'cat_password' => $login,
                         // There's supposed to be a getPatronEmailAddress stored
@@ -1474,10 +1474,10 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         $transaction = [
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
-            'barcode' => utf8_encode($sqlRow['ITEM_BARCODE']),
+            'barcode' => $this->utf8Encode($sqlRow['ITEM_BARCODE']),
             'duedate' => $dueDate,
             'dueStatus' => $dueStatus,
-            'volume' => str_replace('v.', '', utf8_encode($sqlRow['ITEM_ENUM'])),
+            'volume' => str_replace('v.', '', $this->utf8Encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
             'title' => empty($sqlRow['TITLE_BRIEF'])
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
@@ -1495,7 +1495,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         }
         if (!empty($this->config['Loans']['display_borrowing_location'])) {
             $transaction['borrowingLocation']
-                = utf8_encode($sqlRow['BORROWING_LOCATION']);
+                = $this->utf8Encode($sqlRow['BORROWING_LOCATION']);
         }
 
         return $transaction;
@@ -1619,7 +1619,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         }
 
         return ['amount' => $sqlRow['FINE_FEE_AMOUNT'],
-              'fine' => utf8_encode($sqlRow['FINE_FEE_DESC']),
+              'fine' => $this->utf8Encode($sqlRow['FINE_FEE_DESC']),
               'balance' => $sqlRow['FINE_FEE_BALANCE'],
               'createdate' => $createDate,
               'checkout' => $chargeDate,
@@ -1765,7 +1765,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'available' => $available,
             'reqnum' => $sqlRow['HOLD_RECALL_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
-            'volume' => str_replace('v.', '', utf8_encode($sqlRow['ITEM_ENUM'])),
+            'volume' => str_replace('v.', '', $this->utf8Encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
             'title' => empty($sqlRow['TITLE_BRIEF'])
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
@@ -1957,13 +1957,13 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
         return [
             'id' => $sqlRow['BIB_ID'],
-            'status' => utf8_encode($sqlRow['STATUS_DESC']),
+            'status' => $this->utf8Encode($sqlRow['STATUS_DESC']),
             'statusDate' => $statusDate,
             'location' => $this->getLocationName($sqlRow['PICKUP_LOCATION_ID']),
             'create' => $createDate,
             'processed' => $processedDate,
             'expire' => $expireDate,
-            'reply' => utf8_encode($sqlRow['REPLY_NOTE']),
+            'reply' => $this->utf8Encode($sqlRow['REPLY_NOTE']),
             'available' => $available,
             'canceled' => $sqlRow['STATUS'] == 7 ? $statusDate : false,
             'reqnum' => $sqlRow['CALL_SLIP_ID'],
@@ -1971,10 +1971,10 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'volume' => str_replace(
                 'v.',
                 '',
-                utf8_encode($sqlRow['ITEM_ENUM'])
+                $this->utf8Encode($sqlRow['ITEM_ENUM'])
             ),
-            'issue' => utf8_encode($sqlRow['ITEM_CHRON']),
-            'year' => utf8_encode($sqlRow['ITEM_YEAR']),
+            'issue' => $this->utf8Encode($sqlRow['ITEM_CHRON']),
+            'year' => $this->utf8Encode($sqlRow['ITEM_YEAR']),
             'title' => empty($sqlRow['TITLE_BRIEF'])
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
         ];
@@ -2042,23 +2042,23 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             $patron = [];
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 if (!empty($row['FIRST_NAME'])) {
-                    $patron['firstname'] = utf8_encode($row['FIRST_NAME']);
+                    $patron['firstname'] = $this->utf8Encode($row['FIRST_NAME']);
                 }
                 if (!empty($row['LAST_NAME'])) {
-                    $patron['lastname'] = utf8_encode($row['LAST_NAME']);
+                    $patron['lastname'] = $this->utf8Encode($row['LAST_NAME']);
                 }
                 if (!empty($row['PHONE_NUMBER'])) {
                     if ($primaryPhoneType === $row['PHONE_DESC']) {
-                        $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                        $patron['phone'] = $this->utf8Encode($row['PHONE_NUMBER']);
                     } elseif ($mobilePhoneType === $row['PHONE_DESC']) {
-                        $patron['mobile_phone'] = utf8_encode($row['PHONE_NUMBER']);
+                        $patron['mobile_phone'] = $this->utf8Encode($row['PHONE_NUMBER']);
                     }
                 }
                 if (!empty($row['PATRON_GROUP_NAME'])) {
-                    $patron['group'] = utf8_encode($row['PATRON_GROUP_NAME']);
+                    $patron['group'] = $this->utf8Encode($row['PATRON_GROUP_NAME']);
                 }
                 $validator = new EmailAddressValidator();
-                $addr1 = utf8_encode($row['ADDRESS_LINE1']);
+                $addr1 = $this->utf8Encode($row['ADDRESS_LINE1']);
                 if ($validator->isValid($addr1)) {
                     $patron['email'] = $addr1;
                 } elseif (!isset($patron['address1'])) {
@@ -2066,16 +2066,16 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                         $patron['address1'] = $addr1;
                     }
                     if (!empty($row['ADDRESS_LINE2'])) {
-                        $patron['address2'] = utf8_encode($row['ADDRESS_LINE2']);
+                        $patron['address2'] = $this->utf8Encode($row['ADDRESS_LINE2']);
                     }
                     if (!empty($row['ZIP_POSTAL'])) {
-                        $patron['zip'] = utf8_encode($row['ZIP_POSTAL']);
+                        $patron['zip'] = $this->utf8Encode($row['ZIP_POSTAL']);
                     }
                     if (!empty($row['CITY'])) {
-                        $patron['city'] = utf8_encode($row['CITY']);
+                        $patron['city'] = $this->utf8Encode($row['CITY']);
                     }
                     if (!empty($row['COUNTRY'])) {
-                        $patron['country'] = utf8_encode($row['COUNTRY']);
+                        $patron['country'] = $this->utf8Encode($row['COUNTRY']);
                     }
                 }
             }
@@ -2637,5 +2637,17 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         $sqlStmt->execute($bind);
 
         return $sqlStmt;
+    }
+
+    /**
+     * Convert string from ISO 8859-1 into UTF-8
+     *
+     * @param string $iso88591 String to convert
+     *
+     * @return string
+     */
+    protected function utf8Encode(string $iso88591): string
+    {
+        return mb_convert_encoding($iso88591, 'UTF-8', 'ISO-8859-1');
     }
 }

@@ -58,19 +58,24 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
         $fieldName = $explainElement['fieldName'] ?? [];
         $fieldValue = $explainElement['fieldValue'] ?? [];
         $fieldModifier = $explainElement['fieldModifier'] ?? [];
+        $function = $explainElement['function'] ?? null;
 
         $shortLabel = '';
-        if (count($fieldName) > 1) {
-            $shortLabel .= $view->translate('Synonym') . '[';
-        }
-        $shortLabel .= implode(
-            ', ',
-            array_map(function ($name, $value) {
-                return $name . '(' . $value . ')';
-            }, $fieldName, $fieldValue)
-        );
-        if (count($fieldName) > 1) {
-            $shortLabel .= ']';
+        if ($function !== null) {
+            $shortLabel = $view->translate('explain_function_query_label') . ': ' . $function;
+        } else {
+            if (count($fieldName) > 1) {
+                $shortLabel .= $view->translate('Synonym') . '[';
+            }
+            $shortLabel .= implode(
+                ', ',
+                array_map(function ($name, $value) {
+                    return $name . '(' . $value . ')';
+                }, $fieldName, $fieldValue)
+            );
+            if (count($fieldName) > 1) {
+                $shortLabel .= ']';
+            }
         }
 
         if ($fieldModifier) {
@@ -78,17 +83,10 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
         }
 
         $shortValue = $explainElement['value'];
-        $completeLine = $view->render('RecordDriver/DefaultRecord/explain-line.phtml', [
-            'explainElement' => $explainElement,
-            'fieldName' => $fieldName,
-            'fieldValue' => $fieldValue,
-            'fieldModifier' => $fieldModifier,
-            'decimalPlaces' => $decimalPlaces,
-        ]);
-        return [
-            'shortLabel' => $shortLabel,
-            'shortValue' => $shortValue,
-            'completeLine' => $completeLine,
-        ];
+        $completeLine = $view->render(
+            'RecordDriver/DefaultRecord/explain-line.phtml',
+            compact('explainElement', 'fieldName', 'fieldValue', 'fieldModifier', 'decimalPlaces', 'function')
+        );
+        return compact('shortLabel', 'shortValue', 'completeLine');
     }
 }

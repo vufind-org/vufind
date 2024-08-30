@@ -132,13 +132,9 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     }
 
     const records = container.querySelectorAll(".result,.record");
-
-    if (records.length === 0) {
-      VuFind.emit("save-status-done");
-      return;
-    }
-
     records.forEach(checkSaveStatus);
+
+    VuFind.emit("save-status-done");
   }
 
   function refresh() {
