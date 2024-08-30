@@ -75,8 +75,8 @@ class WorldCat2Similar extends Similar
      */
     protected function addPhraseToQuery(QueryGroup $queryObj, string $phrase, string $type): void
     {
-        $terms = explode(' ', $queryObj->getAllTerms() . ' ' . $phrase);
-        if (count($terms) < $this->termLimit) {
+        $terms = explode(' ', trim($queryObj->getAllTerms() . ' ' . $phrase));
+        if (count($terms) <= $this->termLimit) {
             $queryObj->addQuery(new Query('"' . $phrase . '"', $type));
         }
     }

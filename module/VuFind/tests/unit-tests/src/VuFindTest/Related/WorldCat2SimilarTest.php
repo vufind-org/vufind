@@ -77,11 +77,31 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test results.
+     * Data provider for testGetResults()
      *
      * @return void
      */
-    public function testGetResults(): void
+    public static function getResultsProvider(): array
+    {
+        return [
+            'default limit' => ['"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"', null],
+            'limit of 1' => ['"fakesh2"', 1],
+            'limit of 2' => ['"fakesh1a fakesh1b"', 2],
+            'limit of 3' => ['"fakesh1a fakesh1b" "fakesh2"', 3],
+        ];
+    }
+
+    /**
+     * Test results.
+     *
+     * @param string $expectedTerms Terms expected in generated query
+     * @param ?int   $termLimit     Term limit setting (null = default)
+     *
+     * @return void
+     *
+     * @dataProvider getResultsProvider
+     */
+    public function testGetResults(string $expectedTerms, ?int $termLimit): void
     {
         $driver1 = $this->getMockRecordDriver('1');
         $driver2 = $this->getMockRecordDriver('2');
@@ -98,8 +118,7 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')->willReturn($response);
 
-        $checkCommand = function ($command) {
-            $expectedTerms = '"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"';
+        $checkCommand = function ($command) use ($expectedTerms) {
             $this->assertEquals(\VuFindSearch\Command\SearchCommand::class, $command::class);
             $this->assertEquals('WorldCat2', $command->getTargetIdentifier());
             $this->assertEquals($expectedTerms, $command->getArguments()[0]->getAllTerms());
@@ -113,6 +132,9 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
             ->willReturn($commandObj);
 
         $similar = new WorldCat2Similar($service);
+        if ($termLimit) {
+            $similar->setTermLimit($termLimit);
+        }
         $similar->init('', $driver1);
         $this->assertEquals([$driver2, $driver3], $similar->getResults());
     }
