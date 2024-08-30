@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat2 Search Object Parameters Test
+ * WorldCat2 Search Object Results Test
  *
  * PHP version 8
  *
@@ -30,11 +30,14 @@
 namespace VuFindTest\Search\WorldCat2;
 
 use VuFind\Config\PluginManager;
+use VuFind\Record\Loader;
 use VuFind\Search\WorldCat2\Options;
 use VuFind\Search\WorldCat2\Params;
+use VuFind\Search\WorldCat2\Results;
+use VuFindSearch\Query\Query;
 
 /**
- * WorldCat2 Search Object Parameters Test
+ * WorldCat2 Search Object Results Test
  *
  * @category VuFind
  * @package  Tests
@@ -42,49 +45,24 @@ use VuFind\Search\WorldCat2\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ParamsTest extends \PHPUnit\Framework\TestCase
+class ResultsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
 
     /**
-     * Test that appropriate default backend parameters are created.
+     * Test that empty searches are blocked.
      *
      * @return void
      */
-    public function testDefaultGetBackendParameters(): void
+    public function testEmptySearch(): void
     {
-        $config = [];
-        $configManager = $this->getMockConfigPluginManager($config);
-        $params = $this->getParams(null, $configManager);
-        $expected = [
-            'orderBy' => ['bestMatch'],
-            'facets' => [],
-        ];
-        $this->assertEquals($expected, $params->getBackendParameters()->getArrayCopy());
-    }
-
-    /**
-     * Test that configured backend parameters are passed through as expected.
-     *
-     * @return void
-     */
-    public function testNonDefaultGetBackendParameters(): void
-    {
-        $config = [];
-        $configManager = $this->getMockConfigPluginManager($config);
-        $params = $this->getParams(null, $configManager);
-        $params->setSort('foo', true);
-        $params->addFacet('bar');
-        $params->addFacet('baz');
-        $params->addFilter('bar:zoop');
-        $params->addHiddenFilter('baz:zap');
-        $expected = [
-            'orderBy' => ['foo'],
-            'facets' => ['bar', 'baz'],
-            'bar' => ['zoop'],
-            'baz' => ['zap'],
-        ];
-        $this->assertEquals($expected, $params->getBackendParameters()->getArrayCopy());
+        $query = new Query();
+        $params = $this->getParams();
+        $params->setQuery($query);
+        $results = $this->getResults($params);
+        $this->assertEquals([], $results->getFacetList());
+        $this->assertEquals([], $results->getResults());
+        $this->assertEquals(['empty_search_disallowed'], $results->getErrors());
     }
 
     /**
@@ -103,6 +81,27 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig
+        );
+    }
+
+    /**
+     * Get Results object
+     *
+     * @param ?Params                $params Params object (null to create)
+     * @param ?\VuFindSearch\Service $search Search service (null to create)
+     * @param ?Loader                $loader Record loader (null to create)
+     *
+     * @return Results
+     */
+    protected function getResults(
+        ?Params $params = null,
+        ?\VuFindSearch\Service $search = null,
+        ?Loader $loader = null,
+    ): Results {
+        return new Results(
+            $params ?? $this->getParams(),
+            $search ?? $this->createMock(\VuFindSearch\Service::class),
+            $loader ?? $this->createMock(Loader::class)
         );
     }
 }
