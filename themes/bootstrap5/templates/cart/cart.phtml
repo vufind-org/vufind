@@ -31,16 +31,18 @@
             )
           ?>
         <?php endif; ?>
-        <?=
-          $this->bulkAction()->button(
-              'email',
-              'send-email',
-              'Email',
-              [
-                'title' => $this->translate('bulk_email_cart'),
-              ]
-          )
-        ?>
+        <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+          <?=
+            $this->bulkAction()->button(
+                'email',
+                'send-email',
+                'Email',
+                [
+                  'title' => $this->translate('bulk_email_cart'),
+                ]
+            )
+          ?>
+        <?php endif; ?>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
         <?php if (count($exportOptions) > 0): ?>
           <?=
