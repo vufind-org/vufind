@@ -30,8 +30,6 @@
 
 namespace VuFind\Search\Base;
 
-use Laminas\Log\LoggerAwareInterface;
-use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -46,10 +44,8 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class Explanation implements LoggerAwareInterface
+abstract class Explanation
 {
-    use LoggerAwareTrait;
-
     /**
      * Configuration
      *

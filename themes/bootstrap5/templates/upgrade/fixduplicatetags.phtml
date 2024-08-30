@@ -27,7 +27,7 @@ otherwise, it is recommended that you fix these.  Click Submit to proceed.</p>
 $confirmText = $this->transEsc('skip_confirm');
 $script = <<<JS
     $('#skip').click(function(e) {
-      return confirm('${confirmText}');
+      return confirm('{$confirmText}');
     });
     JS;
 ?>

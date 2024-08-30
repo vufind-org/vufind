@@ -1,6 +1,8 @@
 <?php
   $recordLinker = $this->recordLinker($this->results);
-  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
+  $largeImage = $this->record($this->driver)->getThumbnail('large');
+  $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $linkAttributes);
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
@@ -172,6 +174,12 @@
       <?php if ($this->cart()->isActiveInSearch() && isset($this->params) && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
         <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
       <?php endif; ?>
+
+      <?php /* This link is hidden by default but is displayed in embedded record (tab/accordion) mode */ ?>
+      <a class="hidden full-record-link icon-link" href="<?=$recordLinker->getUrl($this->driver)?>">
+        <?=$this->icon('link', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('standalone_record_link')?></span>
+      </a><br>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>

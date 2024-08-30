@@ -7,7 +7,9 @@
   $useFor = $this->driver->getUseFor();
   $recordLinker = $this->recordLinker($this->results);
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
-  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
+  $largeImage = $this->record($this->driver)->getThumbnail('large');
+  $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $linkAttributes);
   $cover = $coverDetails['html'];
 ?>
 <?php if ($cover): ?>
