@@ -21,7 +21,7 @@ but it will improve the user experience by allowing proper sorting of favorites 
 $confirmText = $this->transEsc('skip_confirm');
 $script = <<<JS
     $('#skip').click(function(e) {
-      return confirm('${confirmText}');
+      return confirm('{$confirmText}');
     });
     JS;
 ?>
