@@ -29,7 +29,7 @@
 
 namespace VuFind\Role\PermissionProvider;
 
-use \Laminas\Session\Container;
+use Laminas\Session\Container;
 use VuFind\Cookie\CookieManager;
 
 /**
@@ -76,15 +76,36 @@ class SecureCookie implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
-        foreach ((array)$options as $cookieName) {
-            $this->debug("getPermissions: option cookieName '{$cookieName}'");
-            $cookie = $this->cookieManager->get($cookieName);
-            if (!(isset($cookie))) {
-                $this->debug('getPermissions: result = false');
-                return [];
-            }
-            $this->debug('getPermissions: result = true');
+        $sessionUUID = $this->session->uuid;
+        $cookie = $this->cookieManager->get('uuid');
+        if (!(isset($cookie))) {
+            $this->debug('getPermissions: result = false');
+            return [];
+        } elseif ($cookie != $sessionUUID) {
+            $this->debug('getPermissions: result = false');
+            return [];
         }
+        $this->debug('getPermissions: result = true');
         return ['guest', 'loggedin'];
+    }
+
+    /**
+     * Create a UUID. Store it in the Session container and in the cookie.
+     *
+     * @return string
+     */
+    public function setSecret()
+    {
+        // Create a secret
+        $secret = uniqid();
+
+        // Clear then store secret in cookie
+        $this->cookieManager->clear('uuid');
+        $this->cookieManager->set('uuid', $secret);
+
+        // Store secret in session
+        $this->session->uuid = $secret;
+
+        return $this->session->uuid;
     }
 }
