@@ -53,10 +53,11 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $expectedUri URI expected by client.
      * @param string $body        Response body returned by client.
+     * @param int    $status      Response status
      *
      * @return MockObject&Client
      */
-    protected function getMockClient($expectedUri, $body = '{ "foo": "bar" }'): MockObject&Client
+    protected function getMockClient($expectedUri, $body = '{ "foo": "bar" }', $status = 200): MockObject&Client
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         $client->expects($this->once())->method('setUri')
@@ -65,7 +66,8 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
         $response->expects($this->once())->method('getBody')
             ->willReturn($body);
         $response->expects($this->any())->method('isSuccess')
-            ->willReturn(true);
+            ->willReturn($status === 200);
+        $response->method('getStatusCode')->willReturn($status);
         $client->expects($this->once())->method('send')
             ->willReturn($response);
         return $client;
@@ -107,11 +109,28 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "get record"
+     * Test getHoldings()
      *
      * @return void
      */
-    public function testGetRecord(): void
+    public function testGetHoldings(): void
+    {
+        $expectedUri = 'http://foo/bibs-holdings?bar=baz';
+        $body = '{ "test" : "example" }';
+        $connector = $this->getConnector($this->getMockClient($expectedUri, $body));
+        $params = new ParamBag(['bar' => 'baz']);
+        $this->assertEquals(
+            ['test' => 'example'],
+            $connector->getHoldings($params)
+        );
+    }
+
+    /**
+     * Test "get record" success
+     *
+     * @return void
+     */
+    public function testGetRecordSuccess(): void
     {
         $expectedUri = 'http://foo/bibs/baz';
         $body = '{ "identifier": { "oclcNumber": "baz" }}';
@@ -122,6 +141,27 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
                 'offset' => 0,
                 'total' => 1,
                 'errors' => [],
+            ],
+            $connector->getRecord('baz')
+        );
+    }
+
+    /**
+     * Test "get record" 429 response
+     *
+     * @return void
+     */
+    public function testGetRecord429Response(): void
+    {
+        $expectedUri = 'http://foo/bibs/baz';
+        $body = '{}';
+        $connector = $this->getConnector($this->getMockClient($expectedUri, $body, 429));
+        $this->assertEquals(
+            [
+                'docs' => [],
+                'offset' => 0,
+                'total' => 0,
+                'errors' => ['nohit_busy'],
             ],
             $connector->getRecord('baz')
         );
