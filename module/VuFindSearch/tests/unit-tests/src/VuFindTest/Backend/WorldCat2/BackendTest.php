@@ -91,6 +91,7 @@ class BackendTest extends TestCase
         $coll = $back->retrieve('foobar');
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertEquals([], $coll->getErrors());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals($fakeRecord, $rec->getRawData());
@@ -133,6 +134,7 @@ class BackendTest extends TestCase
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals($rec3, $recs[2]->getRawData());
         $this->assertEquals(['foo' => ['a' => 2]], $coll->getFacets());
+        $this->assertEquals([], $coll->getErrors());
     }
 
     /**
