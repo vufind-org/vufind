@@ -29,6 +29,7 @@
 
 namespace VuFind\Role\PermissionProvider;
 
+use \Laminas\Session\Container;
 use VuFind\Cookie\CookieManager;
 
 /**
@@ -46,13 +47,23 @@ class SecureCookie implements PermissionProviderInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
+     * Session container
+     *
+     * @var Container
+     */
+    protected $session;
+
+    /**
      * Constructor
      *
      * @param CookieManager $cookieManager Cookie manager
+     * @param $session       Session container
      */
     public function __construct(
-        protected CookieManager $cookieManager
+        protected CookieManager $cookieManager,
+        Container $session
     ) {
+        $this->session = $session;
     }
 
     /**

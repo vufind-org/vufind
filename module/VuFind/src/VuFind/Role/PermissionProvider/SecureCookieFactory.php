@@ -70,7 +70,10 @@ class SecureCookieFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Cookie\CookieManager::class)
+            new \Laminas\Session\Container(
+                'SecureCookie',
+                $container->get(\Laminas\Session\SessionManager::class)
+            )
         );
     }
 }
