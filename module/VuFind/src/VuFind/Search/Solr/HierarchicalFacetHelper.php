@@ -456,7 +456,6 @@ class HierarchicalFacetHelper implements
         if ($excludeFilters) {
             foreach ($facets as $key => &$facet) {
                 $value = $facet['value'];
-                $match = false;
                 foreach ($excludeFilters as $filterItem) {
                     if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
                         unset($facets[$key]);

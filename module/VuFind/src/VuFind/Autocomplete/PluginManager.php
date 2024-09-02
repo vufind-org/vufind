@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -83,7 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SolrAuth::class => SolrFactory::class,
         SolrCN::class => SolrFactory::class,
         SolrReserves::class => SolrFactory::class,
-        Tag::class => InvokableFactory::class,
+        Tag::class => TagFactory::class,
         SolrPrefix::class => SolrFactory::class,
     ];
 

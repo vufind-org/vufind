@@ -23,7 +23,13 @@ body {
 
 /* -- Layout --- */
 .main .container { background-color: @white; }
-.mainbody { padding-top: 1rem; }
+.mainbody {
+  padding-top: 1rem;
+  // If an h2 is the first element in mainbody, avoid excessive space due to the padding:
+  & > h2:first-child {
+    margin-top: 0;
+  }
+}
 
 /* --- Header --- */
 .navbar { border-radius: 0; }
@@ -71,7 +77,7 @@ header {
     background-color: @header-light;
     border-color: @black;
   }
-  .nav > li > a,
+  .nav.navbar-nav > li > a,
   .nav.navbar-nav button.dropdown-toggle {
     &:hover,
     &:focus {
@@ -86,18 +92,17 @@ header {
     padding-right: 1rem;
     font-size: @reduced-font-size;
   }
-  .dropdown-menu a { color: @black; }
-  .dropdown-menu a:hover {
-    background-color: @header-light;
-    color: @black;
+  .navbar-nav .open .dropdown-menu {
+    background-color: @white;
+    a { color: @black; }
+    .active a { background-color: @header-bg; }
   }
-  .dropdown-menu .active a,
-  .dropdown-menu .active a:hover { background-color: @header-bg; }
-
-  .form-control { border: 0; }
-  .form-control:focus {
-    padding-bottom: 3px; // Smaller font-size means smaller jump
-    border-bottom: 3px solid @gold;
+  @media (min-width: 768px) {
+    .dropdown-menu a:hover {
+      background-color: @header-light;
+      color: @black;
+    }
+    .dropdown-menu .active a:hover { background-color: @header-bg; }
   }
 
   .navbar-brand {
@@ -188,7 +193,6 @@ a:hover .login-dropdown-caret {
 .comment { margin-bottom: .5rem; }
 .comment .delete { font-size: @reduced-font-size; }
 .comment-form .btn-primary { margin-top: .25rem; }
-.tagList { line-height: 2rem; }
 .tagList .tag .fa-close { margin: 0; }
 
 /* --- Sidebar --- */
@@ -240,7 +244,8 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    padding: 0;
+    border-bottom: 1px solid @list-group-border;
+    border-radius: 0;
   }
 }
 

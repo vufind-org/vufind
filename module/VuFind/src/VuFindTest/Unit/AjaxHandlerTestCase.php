@@ -32,6 +32,9 @@ namespace VuFindTest\Unit;
 use Laminas\Http\Request;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Base class for AjaxHandler tests.
@@ -64,28 +67,28 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Create mock user object.
      *
-     * @return \VuFind\Db\Row\User
+     * @return MockObject&UserEntityInterface
      */
-    protected function getMockUser()
+    protected function getMockUser(): MockObject&UserEntityInterface
     {
-        return $this->container->get(\VuFind\Db\Row\User::class);
+        return $this->container->get(UserEntityInterface::class);
     }
 
     /**
-     * Get an auth manager with a value set for isLoggedIn.
+     * Get an auth manager with a value set for getUserObject.
      *
-     * @param \VuFind\Db\Row\User $user Return value for isLoggedIn()
+     * @param ?UserEntityInterface $user Return value for getUserObject()
      *
-     * @return \VuFind\Auth\Manager
+     * @return MockObject&AuthManager
      */
-    protected function getMockAuthManager($user)
+    protected function getMockAuthManager(?UserEntityInterface $user = null): MockObject&AuthManager
     {
         $authManager = $this->container->createMock(
             \VuFind\Auth\Manager::class,
-            ['isLoggedIn', 'loginEnabled']
+            ['getUserObject', 'loginEnabled']
         );
-        $authManager->expects($this->any())->method('isLoggedIn')
-            ->will($this->returnValue($user));
+        $authManager->expects($this->any())->method('getUserObject')
+            ->willReturn($user);
         $authManager->expects($this->any())->method('loginEnabled')
             ->willReturn(true);
         return $authManager;
@@ -99,7 +102,7 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return Params
      */
-    protected function getParamsHelper($get = [], $post = [])
+    protected function getParamsHelper(array $get = [], array $post = []): Params
     {
         $params = new Params();
         $request = new Request();

@@ -40,6 +40,8 @@ namespace VuFindTheme\View\Helper;
  */
 class ImageLink extends \Laminas\View\Helper\AbstractHelper
 {
+    use RelativePathTrait;
+
     /**
      * Theme information service
      *
@@ -66,7 +68,11 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($image)
     {
-        // Normalize href to account for themes:
+        // If this is an absolute path, return it as-is:
+        if (!$this->isRelativePath($image)) {
+            return $image;
+        }
+        // Otherwise, normalize href to account for themes:
         $relPath = 'images/' . $image;
         $details = $this->themeInfo->findContainingTheme(
             $relPath,
@@ -79,7 +85,7 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
 
         $urlHelper = $this->getView()->plugin('url');
         $parts = explode('/', $relPath);
-        $encodedRelPath = implode('/', array_map('urlencode', $parts));
+        $encodedRelPath = implode('/', array_map('rawurlencode', $parts));
         $url = $urlHelper('home') . "themes/{$details['theme']}/" . $encodedRelPath;
         $url .= strstr($url, '?') ? '&_=' : '?_=';
         $url .= filemtime($details['path']);

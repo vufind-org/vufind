@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,9 +33,8 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use VuFindTest\Feature\SearchFacetFilterTrait;
+use VuFindTest\Feature\SearchLimitTrait;
 use VuFindTest\Feature\SearchSortTrait;
-
-use function count;
 
 /**
  * Mink search facet/filter functionality test class.
@@ -49,8 +48,16 @@ use function count;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchLimitTrait;
     use SearchSortTrait;
     use SearchFacetFilterTrait;
+
+    /**
+     * CSS selector for the genre facet "more" link.
+     *
+     * @var string
+     */
+    protected $genreMoreSelector = '#side-collapse-genre_facet .more-facets';
 
     /**
      * Get filtered search
@@ -67,11 +74,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Helper function for simple facet application test
      *
-     * @param Element $page Mink page object
+     * @param Element $page   Mink page object
+     * @param array   $facets Facets to apply (title and expected counts)
      *
      * @return void
      */
-    protected function facetApplyProcedure(Element $page): void
+    protected function facetApplyProcedure(Element $page, array $facets): void
     {
         // Confirm that we have 9 results and no filters to begin with:
         $this->assertStringStartsWith(
@@ -81,19 +89,33 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertCount(0, $items);
 
-        // Facet to Fiction (after making sure we picked the right link):
-        $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
-        $this->assertEquals('Fiction 7 results 7', $facetList->getText());
-        $facetList->click();
+        $active = 0;
+        foreach ($facets as $facet) {
+            $title = $facet['title'];
+            $count = $facet['count'];
+            $resultCount = $facet['resultCount'];
+            // Apply the facet (after making sure we picked the right link):
+            $facetSelector = '#side-collapse-genre_facet a[data-title="' . $title . '"]';
+            $this->assertEquals("$title $count results $count", $this->findCssAndGetText($page, $facetSelector));
+            $this->clickCss($page, $facetSelector);
+            ++$active;
 
-        // Check that when the page reloads, we have fewer results and a filter:
-        $this->waitForPageLoad($page);
-        $this->assertStringStartsWith(
-            'Showing 1 - 7 results of 7',
-            $this->findCssAndGetText($page, '.search-stats')
-        );
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount(1, $items);
+            // Check that when the page reloads, we have fewer results and a filter:
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                "Showing 1 - $resultCount results of $resultCount",
+                $this->findCssAndGetText($page, '.search-stats')
+            );
+            $items = $page->findAll('css', $this->activeFilterSelector);
+            $this->assertCount($active, $items);
+        }
+
+        // Confirm that all selected facets show as active:
+        foreach ($facets as $facet) {
+            $title = $facet['title'];
+            $activeFacetSelector = '#side-collapse-genre_facet a[data-title="' . $title . '"].active';
+            $this->findCss($page, $activeFacetSelector);
+        }
     }
 
     /**
@@ -112,12 +134,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount($limit, $items);
         $excludes = $page
             ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
+        $this->assertCount($exclusionActive ? $limit : 0, $excludes);
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertEquals($limit * 2, count($items));
+        $this->assertCount($limit * 2, $items);
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
         $this->assertEquals(
             'Weird IDs 9 results 9 ' . $excludeControl
@@ -133,7 +155,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $excludes = $page
             ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertEquals($exclusionActive ? $limit * 2 : 0, count($excludes));
+        $this->assertCount($exclusionActive ? $limit * 2 : 0, $excludes);
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
@@ -150,12 +172,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $excludes = $page
             ->findAll('css', '#modal #facet-list-index .exclude');
-        $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
+        $this->assertCount($exclusionActive ? $limit : 0, $excludes);
         // sort by count again
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertEquals($limit * 2, count($items)); // maintain number of items
+        $this->assertCount($limit, $items); // reload, resetting to just one page of results
         // now back to title, to see if loading a second page works
         $this->clickCss($page, '[data-sort="index"]');
         $this->waitForPageLoad($page);
@@ -191,39 +213,88 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test applying a facet to filter results (standard facet sidebar)
+     * Data provider for testApplyFacet
      *
-     * @return void
+     * @return array
      */
-    public function testApplyFacet(): void
+    public static function applyFacetProvider(): array
     {
-        $page = $this->performSearch('building:weird_ids.mrc');
-        $this->sortResults($page, 'title');
-        $this->waitForPageLoad($page);
+        $andFacets = [
+            [
+                'title' => 'Fiction',
+                'count' => 7,
+                'resultCount' => 7,
+            ],
+        ];
 
-        // Confirm that we are NOT using the AJAX sidebar:
-        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertCount(0, $ajaxContainer);
+        $orFacets = [
+            [
+                'title' => 'Fiction',
+                'count' => 7,
+                'resultCount' => 7,
+            ],
+            [
+                'title' => 'The Study Of P|pes',
+                'count' => 1,
+                'resultCount' => 8,
+            ],
+            [
+                'title' => 'Weird IDs',
+                'count' => 9,
+                'resultCount' => 9,
+            ],
+        ];
 
-        // Now run the body of the test procedure:
-        $this->facetApplyProcedure($page);
-
-        // Verify that sort order is still correct:
-        $this->assertSelectedSort($page, 'title');
+        return [
+            'non-deferred AND facets' => [
+                false,
+                false,
+                $andFacets,
+            ],
+            'deferred AND facets' => [
+                true,
+                false,
+                $andFacets,
+            ],
+            'non-deferred OR facets' => [
+                false,
+                true,
+                $orFacets,
+            ],
+            'deferred OR facets' => [
+                true,
+                true,
+                $orFacets,
+            ],
+        ];
     }
 
     /**
      * Test applying a facet to filter results (deferred facet sidebar)
      *
+     * @param bool  $deferred Are deferred facets enabled?
+     * @param bool  $orFacets Are OR facets enabled?
+     * @param array $facets   Facets to apply
+     *
+     * @dataProvider applyFacetProvider
+     *
      * @return void
      */
-    public function testApplyFacetDeferred(): void
+    public function testApplyFacet(bool $deferred, bool $orFacets, array $facets): void
     {
         $this->changeConfigs(
             [
                 'searches' => [
                     'General' => [
-                        'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
+                        'default_side_recommend[]'
+                            => ($deferred ? 'SideFacetsDeferred' : 'SideFacets') . ':Results:CheckboxFacets',
+                        'limit_options' => '20,40',
+                    ],
+                ],
+                'facets' => [
+                    'Results_Settings' => [
+                        'orFacets' => $orFacets ? '*' : 'false',
+                        'collapsedFacets' => '*',
                     ],
                 ],
             ]
@@ -231,16 +302,24 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc');
         $this->sortResults($page, 'title');
         $this->waitForPageLoad($page);
+        $this->setResultLimit($page, 40);
+        $this->waitForPageLoad($page);
 
-        // Confirm that we ARE using the AJAX sidebar:
+        // Confirm that we ARE using the correct sidebar type:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertCount(1, $ajaxContainer);
+        $this->assertCount($deferred ? 1 : 0, $ajaxContainer);
+
+        // Uncollapse the genre facet to load its contents:
+        $this->clickCss($page, '#side-panel-genre_facet .collapsed');
 
         // Now run the body of the test procedure:
-        $this->facetApplyProcedure($page);
+        $this->facetApplyProcedure($page, $facets);
 
         // Verify that sort order is still correct:
         $this->assertSelectedSort($page, 'title');
+
+        // Verify that limit is still correct:
+        $this->assertLimitControl($page, [20, 40], 40);
     }
 
     /**
@@ -263,13 +342,172 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-facets');
-        $genreMore->click();
+        $this->clickCss($page, $this->genreMoreSelector);
         $this->facetListProcedure($page, $limit);
-        $genreMore->click();
+        $this->clickCss($page, $this->genreMoreSelector);
         $this->clickCss($page, '#modal .js-facet-item.active');
         // facet removed
         $this->unFindCss($page, $this->activeFilterSelector);
+    }
+
+    /**
+     * Test filtering and unfiltering the expanded facets in the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxFilteringAndClearing(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the genre facet
+        $this->clickCss($page, $this->genreMoreSelector);
+        $this->waitForPageLoad($page);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
+        // from the list:
+        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $this->assertEqualsWithTimeout(
+            'Weird IDs 9 results 9 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
+            function () use ($page) {
+                return $this->findCssAndGetText($page, '#modal #facet-list-count');
+            }
+        );
+
+        // now clear the filter
+        $this->clickCss($page, '#modal button[type="reset"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Weird IDs 9 results 9 '
+            . 'Fiction 7 results 7 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
+            $this->findCssAndGetText($page, '#modal #facet-list-count')
+        );
+    }
+
+    /**
+     * Test filtering and sorting the expanded facets in the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxFilteringAndSorting(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the genre facet
+        $this->clickCss($page, $this->genreMoreSelector);
+        $this->waitForPageLoad($page);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
+        // from the list:
+        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $this->assertEqualsWithTimeout(
+            'Weird IDs 9 results 9 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
+            function () use ($page) {
+                return $this->findCssAndGetText($page, '#modal #facet-list-count');
+            }
+        );
+
+        // sort by title
+        $this->clickCss($page, '[data-sort="index"]');
+        $this->assertEqualsWithTimeout(
+            'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1 '
+            . 'Weird IDs 9 results 9',
+            function () use ($page) {
+                return $this->findCssAndGetText($page, '#modal #facet-list-index');
+            }
+        );
+
+        // now clear the filter
+        $this->clickCss($page, '#modal button[type="reset"]');
+        $this->assertEqualsWithTimeout(
+            'Fiction 7 results 7 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1 '
+            . 'Weird IDs 9 results 9',
+            function () use ($page) {
+                return $this->findCssAndGetText($page, '#modal #facet-list-index');
+            }
+        );
+
+        // ...and restore the original sort
+        $this->clickCss($page, '[data-sort="count"]');
+        $this->assertEqualsWithTimeout(
+            'Weird IDs 9 results 9 '
+            . 'Fiction 7 results 7 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
+            function () use ($page) {
+                return $this->findCssAndGetText($page, '#modal #facet-list-count');
+            }
+        );
     }
 
     /**
@@ -323,7 +561,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, '#side-collapse-genre_facet .more-facets');
+        $this->clickCss($page, $this->genreMoreSelector);
         $this->facetListProcedure($page, $limit, true);
         $this->assertCount(1, $page->findAll('css', $this->activeFilterSelector));
     }
@@ -353,7 +591,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, '#side-collapse-genre_facet .more-facets');
+        $this->clickCss($page, $this->genreMoreSelector);
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertCount($limit - 1, $items); // (-1 is for the filtered value)
@@ -361,7 +599,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertEquals($limit * 2 - 1, count($items));
+        $this->assertCount($limit * 2 - 1, $items);
         $this->assertEquals(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '

@@ -32,7 +32,11 @@ namespace VuFind\Db\Table;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 use function count;
 use function is_object;
@@ -46,8 +50,10 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Comments extends Gateway
+class Comments extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -77,9 +83,9 @@ class Comments extends Gateway
      */
     public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $resourceTable = $this->getDbTable('Resource');
-        $resource = $resourceTable->findResource($id, $source, false);
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return [];
         }
 
@@ -102,14 +108,14 @@ class Comments extends Gateway
      * Delete a comment if the owner is logged in. Returns true on success.
      *
      * @param int                 $id   ID of row to delete
-     * @param \VuFind\Db\Row\User $user Logged in user object
+     * @param UserEntityInterface $user Logged in user object
      *
      * @return bool
      */
     public function deleteIfOwnedByUser($id, $user)
     {
         // User must be object with ID:
-        if (!is_object($user) || !isset($user->id)) {
+        if (!is_object($user) || !($userId = $user->getId())) {
             return false;
         }
 
@@ -120,7 +126,7 @@ class Comments extends Gateway
         }
 
         // Row must be owned by user:
-        if ($row->user_id != $user->id) {
+        if ($row->user_id != $userId) {
             return false;
         }
 

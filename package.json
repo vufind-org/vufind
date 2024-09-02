@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "9.1.1",
+  "version": "10.0.0",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
     "build-dev": "npm run build-dev:css",
     "watch-dev": "npm run watch-dev:css",
 
-    "build:css": "npm run build:less",
+    "build:css": "npm run build:less && npm run build:scssonly",
     "watch:css": "npm run watch:less",
     "build-dev:css": "npm run build-dev:less",
     "watch-dev:css": "npm run watch-dev:less",
@@ -25,9 +25,11 @@
     "build-dev:less": "grunt lessdev && npm run lessToSass",
     "watch-dev:less": "grunt watch:lessdev",
 
-    "build:scss": "grunt scss",
-    "check:scss": "grunt check:scss",
-    "watch:scss": "grunt watch:scss",
+    "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
+    "build:scss": "npm run install:scss-dependencies && grunt scss",
+    "check:scss": "npm run install:scss-dependencies && grunt check:scss",
+    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss",
+    "build:scssonly": "npm run install:scss-dependencies && grunt scssonly",
 
     "lessToSass": "grunt lessToSass",
     "watch:lessToSass": "grunt watch:lessToSass"

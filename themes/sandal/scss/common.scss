@@ -22,11 +22,6 @@ mark { background-color: $highlighter-color; }
   border-radius: .25rem;
   border-color: $silver;
 }
-.btn-default:hover,
-.btn-default:focus {
-  color: $white;
-  border-color: transparent;
-}
 .btn-link,
 .btn-primary { border-color: transparent; }
 .btn-primary:hover {
@@ -53,7 +48,7 @@ mark { background-color: $highlighter-color; }
   outline: 4px solid var(--outline-color);
 }
 .form-control:focus {
-  --outline-color: $gold;
+  --outline-color: #{$gold};
 }
 
 .breadcrumb a { color: $dark-gray; }

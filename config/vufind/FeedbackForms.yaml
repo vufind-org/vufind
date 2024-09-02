@@ -40,7 +40,7 @@
 #     - name: Recipient 2
 #       email: recipient2@email
 #
-#   response (string) Reponse after form submit (translation key)
+#   response (string) Response after form submit (translation key)
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field

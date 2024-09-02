@@ -1,0 +1,6 @@
+<?php if ($this->recommend->hasFilters()): ?>
+  <div class="alert alert-info">
+    <?=$this->transEsc('nohit_active_filters')?> 
+    <a href="<?=$this->recommend->getFilterlessUrl()?>"><?=$this->transEsc('nohit_query_without_filters')?></a>
+  </div>
+<?php endif; ?>

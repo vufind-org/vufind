@@ -15,6 +15,14 @@
 
 # Authorization server configuration
 Server:
+  # User field to be used as identifier in tokens.
+  # Needs to be one of the unique fields id, username, cat_id.
+  # Note: The field needs to be unique and required for every user. There are systems
+  # where the cat_id is not required. Creating tokens for users without a cat_id will
+  # result in an error.
+  # Security Warning! The tokens are not encrypted. Hence, the used field will be readable
+  # by everyone who has access to the token.
+  userIdentifierField: "id"
   # Create keys e.g. as above and point the following setting to it. The paths can be
   # absolute or relative to the config directory.
   privateKeyPath: "oauth2_private.key"
@@ -28,6 +36,8 @@ Server:
   # Uncomment to disable key permission checks. Only meant for testing, so avoid in
   # any production-like environment if possible.
   #keyPermissionChecks: false
+  # Optional URL for public documentation (returned in the discovery response)
+  documentationUrl: ""
 
 # Known clients configuration
 Clients:
@@ -40,7 +50,7 @@ Clients:
     # be enabled for non-confidential clients.
     pkce: true
     # Whether the client is confidential (as opposed to a public one such as an
-    # in-browser app). Only condidential clients can be verified by the client
+    # in-browser app). Only confidential clients can be verified by the client
     # secret.
     isConfidential: false
     # Hash of a client secret. You can use the following command to get a hash for a
@@ -67,6 +77,14 @@ Scopes:
     claims:
       - sub   # A built-in claim, required for proper functionality
       - nonce # A built-in claim, required for proper functionality
+  username:
+    description: external_auth_scope_username
+    claims:
+      - username
+  cat_id:
+    description: external_auth_scope_cat_id
+    claims:
+      - cat_id
   address: # A predefined set required for OpenID; do not specify claims here
     description: external_auth_scope_address
     ils: true
@@ -135,25 +153,28 @@ Scopes:
       - library_user_id
 
 # Mappings from claim id to VuFind user or patron profile fields.
-# Claims can be any of the user (database row) or ILS profile fields or one of the
-# following:
+# Claims can be mapped to any of the user entity methods or ILS profile fields or one
+# of the following:
 # - full_name     User's full name
+# - age           User's age in years
 # - block_status  Whether the user has blocks in ILS (true/false or null if unknown)
 # - address_json  Address fields in JSON (see
 #                 https://openid.net/specs/openid-connect-core-1_0.html#AddressClaim)
-# - cat_username_hash  A unique hash of user's cat_username (typically library card
-#                      number but can be e.g. an email as well). The field is padded
-#                      with encyptionKey before hashing.
+# - library_user_id_hash A unique hash of cat_id or getCatUsername (typically library
+#                        card number but can be e.g. an email as well). The field is
+#                        padded with hashSalt before hashing.
 #
 ClaimMappings:
-  id: id
-  name: full_name # special field created from firstname + ' ' + lastname
-  given_name: firstname
-  family_name: lastname
-  email: email
+  id: getId
+  username: getUsername
+  cat_id: getCatId
+  name: full_name # special field created from getFirstname + ' ' + getLastname
+  given_name: getFirstname
+  family_name: getLastname
+  email: getEmail
   age: age
   birthdate: birthdate
-  locale: last_language
+  locale: getLastLanguage
   phone: phone
   address: address_json # special field including all address fields
   block_status: block_status # special field indicating whether the patron has blocks

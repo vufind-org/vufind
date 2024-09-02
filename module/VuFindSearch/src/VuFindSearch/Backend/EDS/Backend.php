@@ -273,8 +273,9 @@ class Backend extends AbstractBackend
                         $e
                     );
                 default:
-                    $response = [];
-                    break;
+                    $errorMessage = "Unhandled EDS API error {$e->getApiErrorCode()} : {$e->getMessage()}";
+                    $this->logError($errorMessage);
+                    throw new BackendException($errorMessage, $e->getCode(), $e);
             }
         } catch (Exception $e) {
             $this->debug('Exception found: ' . $e->getMessage());
@@ -587,20 +588,6 @@ class Backend extends AbstractBackend
             }
         }
         return $autocompleteData;
-    }
-
-    /**
-     * Print a message.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     *
-     * @deprecated Use $this->debug directly.
-     */
-    protected function debugPrint($msg)
-    {
-        $this->debug($msg);
     }
 
     /**

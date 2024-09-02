@@ -32,8 +32,6 @@ namespace VuFindApi\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Cache\Manager as CacheManager;
 
-use function in_array;
-
 /**
  * Admin Api Controller
  *
@@ -72,13 +70,6 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
      * @var string
      */
     protected $cacheAccessPermission = 'access.api.admin.cache';
-
-    /**
-     * Caches that are not cleared by the clearCache command by default
-     *
-     * @var array
-     */
-    protected $defaultIgnoredCaches = ['cover'];
 
     /**
      * Clear the cache
@@ -175,10 +166,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
     protected function getDefaultCachesToClear(): array
     {
         $result = [];
-        foreach ($this->cacheManager->getCacheList() as $id) {
-            if (in_array($id, $this->defaultIgnoredCaches)) {
-                continue;
-            }
+        foreach ($this->cacheManager->getNonPersistentCacheList() as $id) {
             $cache = $this->cacheManager->getCache($id);
             if ($cache instanceof \Laminas\Cache\Storage\FlushableInterface) {
                 $result[] = $id;

@@ -37,11 +37,13 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Service\GetServiceTrait;
 
 use function intval;
 use function is_object;
@@ -58,7 +60,6 @@ use function is_object;
  *
  * @method Plugin\Captcha captcha() Captcha plugin
  * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
- * @method Plugin\Favorites favorites() Favorites plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
@@ -76,6 +77,7 @@ use function is_object;
  */
 class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
+    use GetServiceTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -96,13 +98,6 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @var string
      */
     protected $accessDeniedBehavior = null;
-
-    /**
-     * Service manager
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Constructor
@@ -253,28 +248,18 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Set default values if applicable:
-        if (
-            (!isset($view->to) || empty($view->to)) && $user
-            && isset($config->Mail->user_email_in_to)
-            && $config->Mail->user_email_in_to
-        ) {
-            $view->to = $user->email;
+        if (empty($view->to) && $user && ($config->Mail->user_email_in_to ?? false)) {
+            $view->to = $user->getEmail();
         }
-        if (!isset($view->from) || empty($view->from)) {
-            if (
-                $user && isset($config->Mail->user_email_in_from)
-                && $config->Mail->user_email_in_from
-            ) {
+        if (empty($view->from)) {
+            if ($user && ($config->Mail->user_email_in_from ?? false)) {
                 $view->userEmailInFrom = true;
-                $view->from = $user->email;
-            } elseif (
-                isset($config->Mail->default_from)
-                && $config->Mail->default_from
-            ) {
+                $view->from = $user->getEmail();
+            } elseif ($config->Mail->default_from ?? false) {
                 $view->from = $config->Mail->default_from;
             }
         }
-        if (!isset($view->subject) || empty($view->subject)) {
+        if (empty($view->subject)) {
             $view->subject = $defaultSubject;
         }
 
@@ -298,7 +283,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getAuthManager()
     {
-        return $this->serviceLocator->get(\VuFind\Auth\Manager::class);
+        return $this->getService(\VuFind\Auth\Manager::class);
     }
 
     /**
@@ -310,8 +295,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getAuthorizationService()
     {
-        return $this->serviceLocator
-            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
+        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
     }
 
     /**
@@ -321,17 +305,17 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getILSAuthenticator()
     {
-        return $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
+        return $this->getService(\VuFind\Auth\ILSAuthenticator::class);
     }
 
     /**
      * Get the user object if logged in, false otherwise.
      *
-     * @return \VuFind\Db\Row\User|bool
+     * @return ?UserEntityInterface
      */
-    protected function getUser()
+    protected function getUser(): ?UserEntityInterface
     {
-        return $this->getAuthManager()->isLoggedIn();
+        return $this->getAuthManager()->getUserObject();
     }
 
     /**
@@ -341,7 +325,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getViewRenderer()
     {
-        return $this->serviceLocator->get('ViewRenderer');
+        return $this->getService('ViewRenderer');
     }
 
     /**
@@ -390,7 +374,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
-        if ($account->isLoggedIn() == false) {
+        if (!$account->getIdentity()) {
             return $this->forceLogin();
         }
 
@@ -469,8 +453,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get($id);
+        return $this->getService(\VuFind\Config\PluginManager::class)->get($id);
     }
 
     /**
@@ -480,7 +463,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getILS()
     {
-        return $this->serviceLocator->get(\VuFind\ILS\Connection::class);
+        return $this->getService(\VuFind\ILS\Connection::class);
     }
 
     /**
@@ -490,7 +473,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getRecordLoader()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        return $this->getService(\VuFind\Record\Loader::class);
     }
 
     /**
@@ -500,7 +483,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getRecordCache()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Cache::class);
+        return $this->getService(\VuFind\Record\Cache::class);
     }
 
     /**
@@ -510,7 +493,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getRecordRouter()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Router::class);
+        return $this->getService(\VuFind\Record\Router::class);
     }
 
     /**
@@ -522,8 +505,21 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
-            ->get($table);
+        return $this->getService(\VuFind\Db\Table\PluginManager::class)->get($table);
+    }
+
+    /**
+     * Get a database service object.
+     *
+     * @param class-string<T> $name Name of service to retrieve
+     *
+     * @template T
+     *
+     * @return T
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
+    {
+        return $this->getService(\VuFind\Db\Service\PluginManager::class)->get($name);
     }
 
     /**
@@ -565,19 +561,29 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * Check to see if a form was submitted from its post value
      * Also validate the Captcha, if it's activated
      *
-     * @param string $submitElement Name of the post field of the submit button
-     * @param bool   $useCaptcha    Are we using captcha in this situation?
+     * @param string|string[]|null $submitElements Name of the post field(s) to check
+     * to indicate a form submission (or null for default)
+     * @param bool                 $useCaptcha     Are we using captcha in this situation?
      *
      * @return bool
      */
     protected function formWasSubmitted(
-        $submitElement = 'submit',
+        $submitElements = null,
         $useCaptcha = false
     ) {
-        // Fail if the expected submission element was missing from the POST:
-        // Form was submitted; if CAPTCHA is expected, validate it now.
-        return $this->params()->fromPost($submitElement, false)
-            && (!$useCaptcha || $this->captcha()->verify());
+        $buttonFound = false;
+        // Use of 'submit' as an input name was deprecated in release 10.0, but the
+        // check is retained for backward compatibility with custom templates.
+        $defaultSubmitElements = ['submitButton', 'submit'];
+        foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
+            if ($this->params()->fromPost($submitElement, false)) {
+                $buttonFound = true;
+                break;
+            }
+        }
+        // Fail if all expected submission elements were missing from the POST or
+        // if the form was submitted but expected CAPTCHA does not validate.
+        return $buttonFound && (!$useCaptcha || $this->captcha()->verify());
     }
 
     /**
@@ -623,7 +629,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function disableSessionWrites()
     {
-        $this->serviceLocator->get(\VuFind\Session\Settings::class)->disableWrite();
+        $this->getService(\VuFind\Session\Settings::class)->disableWrite();
     }
 
     /**
@@ -633,7 +639,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getSearchMemory()
     {
-        return $this->serviceLocator->get(\VuFind\Search\Memory::class);
+        return $this->getService(\VuFind\Search\Memory::class);
     }
 
     /**
@@ -643,8 +649,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function commentsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getCommentSetting() !== 'disabled';
     }
 
@@ -655,8 +660,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function listsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getListSetting() !== 'disabled';
     }
 
@@ -667,8 +671,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function tagsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getTagSetting() !== 'disabled';
     }
 
@@ -692,23 +695,16 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             'lbreferer',
             $this->getRequest()->getServer()->get('HTTP_REFERER', null)
         );
-        // Get the referer -- if it's empty, there's nothing to store!
-        if (empty($referer)) {
-            return;
-        }
-        $refererNorm = $this->normalizeUrlForComparison($referer);
-
-        // If the referer lives outside of VuFind, don't store it! We only
+        // Get the referer -- if it's empty, there's nothing to store! Also,
+        // if the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
-        $baseUrl = $this->getServerUrl('home');
-        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (!str_starts_with($refererNorm, $baseUrlNorm)) {
+        if (empty($referer) || !$this->isLocalUrl($referer)) {
             return;
         }
-
         // If the referer is the MyResearch/Home action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
+        $refererNorm = $this->normalizeUrlForComparison($referer);
         $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
         $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
         if ($mrhuNorm === $refererNorm) {
@@ -809,7 +805,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getRecordTabManager()
     {
-        return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
+        return $this->getService(\VuFind\RecordTab\TabManager::class);
     }
 
     /**
@@ -879,5 +875,18 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $response = $this->getResponse();
         $response->setStatusCode(205);
         return $response;
+    }
+
+    /**
+     * Is the provided URL local to this instance?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    protected function isLocalUrl(string $url): bool
+    {
+        $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
+        return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
     }
 }

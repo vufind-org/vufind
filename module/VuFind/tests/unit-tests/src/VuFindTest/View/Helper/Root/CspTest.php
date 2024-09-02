@@ -151,7 +151,6 @@ class CspTest extends \PHPUnit\Framework\TestCase
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
 
         $response = new \Laminas\Http\Response();
-        $headers = $response->getHeaders();
         $header = $cspHeaderGenerator->getHeader();
         $this->assertNull($header);
 

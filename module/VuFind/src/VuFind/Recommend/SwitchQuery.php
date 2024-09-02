@@ -232,7 +232,7 @@ class SwitchQuery implements RecommendInterface
     protected function checkLowercaseBools($query)
     {
         // This test only applies if booleans are case-sensitive and there is a
-        // capitalizaton method available:
+        // capitalization method available:
         $lh = $this->getLuceneHelper();
         if (!$lh || !$lh->hasCaseSensitiveBooleans()) {
             return false;

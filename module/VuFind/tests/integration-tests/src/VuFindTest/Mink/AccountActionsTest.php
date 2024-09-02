@@ -49,6 +49,7 @@ use function count;
  */
 final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
     use \VuFindTest\Feature\DemoDriverTestTrait;
@@ -270,7 +271,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the email:
         $this->findCssAndSetValue($page, '[name="email"]', 'new@email.com');
-        $this->clickCss($page, '[name="submit"]');
+        $this->clickCss($page, '[name="submitButton"]');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your email address has been changed successfully',
@@ -329,7 +330,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check the default library and possible values:
         $userTable = $this->getTable(User::class);
-        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
         $this->assertEquals(
             '',
             $this->findCssAndGetValue($page, '#home_library')
@@ -356,7 +357,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
         $this->assertEquals(
             'B',
-            $userTable->getByUsername('username2')->home_library
+            $userTable->getByUsername('username2')->getHomeLibrary()
         );
 
         // Change to "Always ask me":
@@ -367,7 +368,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ' ** ',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertNull($userTable->getByUsername('username2')->home_library);
+        $this->assertNull($userTable->getByUsername('username2')->getHomeLibrary());
 
         // Back to default:
         $this->findCssAndSetValue($page, '#home_library', '');
@@ -377,7 +378,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
     }
 
     /**
@@ -413,6 +414,106 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test account deletion.
+     *
+     * @return void
+     *
+     * @depends testDefaultPickUpLocation
+     */
+    public function testAccountDeletion(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => ['account_deletion' => true],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Delete the account
+        $this->clickCss($page, '.fa-trash-o');
+        $this->clickCss($page, '.modal #delete-account-submit');
+        $this->waitForPageLoad($page);
+
+        // Try to log back in; it shouldn't work:
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Invalid login -- please try again.', $this->findCssAndGetText($page, '.alert-danger'));
+    }
+
+    /**
+     * Test recovering a password by username.
+     *
+     * @return void
+     *
+     * @depends testChangePassword
+     */
+    public function testRecoverPasswordByUsername(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'recover_password' => true,
+                        'recover_interval' => 0,
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Recover account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .recover-account-link');
+        $this->findCssAndSetValue($page, '#recovery_username', 'bad');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
+        $this->findCssAndSetValue($page, '#recovery_username', 'username1');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->assertEquals(
+            'Password recovery instructions have been sent to the email address registered with this account.',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        // Extract URL from email:
+        $email = file_get_contents($this->getEmailLogPath());
+        preg_match('/You can reset your password at this URL: (http.*)/', $email, $matches);
+        $link = $matches[1];
+
+        // Reset the password:
+        $session->visit($link);
+        $this->assertEquals('username1', $this->findCssAndGetText($page, '.form-control-static'));
+        $this->findCssAndSetValue($page, '#password', 'recovered');
+        $this->findCssAndSetValue($page, '#password2', 'recovered');
+        $this->clickCss($page, '.form-new-password .btn-primary');
+        $this->assertEquals(
+            'Your password has successfully been changed',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        $this->resetEmailLog();
     }
 
     /**

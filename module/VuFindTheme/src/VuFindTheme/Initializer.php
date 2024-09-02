@@ -341,14 +341,6 @@ class Initializer
             $resources->setGenerator($this->config->generator);
         }
 
-        $lessActive = false;
-        // Find LESS activity
-        foreach ($themes as $key => $currentThemeInfo) {
-            if (isset($currentThemeInfo['less']['active'])) {
-                $lessActive = $currentThemeInfo['less']['active'];
-            }
-        }
-
         // Determine doctype and apply it:
         $doctype = 'HTML5';
         foreach ($themes as $key => $currentThemeInfo) {

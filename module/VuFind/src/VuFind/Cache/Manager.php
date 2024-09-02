@@ -96,9 +96,11 @@ class Manager
      *
      * Following settings are supported:
      *
-     *   cliOverride   Set to false to not allow cache directory override in CLI mode (optional, enabled by default)
+     *   cliOverride   Set to false to not allow cache directory override in CLI mode (optional, true by default)
      *   directory     Cache directory (required)
      *   options       Array of cache options (optional, e.g. disabled, ttl)
+     *   persistent    Set to true to disable clearing of the cache by default with the admin API clearCache command
+     *                 (optional, false by default)
      *
      * @var array
      */
@@ -110,12 +112,14 @@ class Manager
                 'ttl' => 0, // no expiration - cache is updated with console util/browscap
                 'keyPattern' => '/^[a-z0-9_\+\-\.]*$/Di',
             ],
+            'persistent' => true,
         ],
         'config' => [
             'directory' => 'configs',
         ],
         'cover' => [
             'directory' => 'covers',
+            'persistent' => true,
         ],
         'language' => [
             'directory' => 'languages',
@@ -244,6 +248,22 @@ class Manager
                 ...array_keys($this->cacheSettings),
             ]
         );
+    }
+
+    /**
+     * Get the names of all non-persistent caches (ones that can be cleared).
+     *
+     * @return array
+     */
+    public function getNonPersistentCacheList(): array
+    {
+        $result = [];
+        foreach ($this->getCacheList() as $cache) {
+            if (!($this->cacheSpecs[$cache]['persistent'] ?? false)) {
+                $result[] = $cache;
+            }
+        }
+        return $result;
     }
 
     /**

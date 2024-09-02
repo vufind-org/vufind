@@ -164,7 +164,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     protected $showPermanentLocation;
 
     /**
-     * Should we show homebranchinstead of holdingbranch
+     * Should we show homebranch instead of holdingbranch
      *
      * @var bool
      */
@@ -284,7 +284,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             //Return result set like mysql_fetch_assoc()
             $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            // set communication enoding to utf8
+            // set communication encoding to utf8
             $this->db->exec('SET NAMES utf8');
 
             // Drop the ONLY_FULL_GROUP_BY entry from sql_mode as it breaks this
@@ -720,7 +720,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             ];
         }
 
-        $this->debug('patron: ' . print_r($patron, true));
+        $this->debug('patron: ' . $this->varDump($patron));
         $this->debug('patron_id: ' . $patron_id);
         $this->debug('request_location: ' . $request_location);
         $this->debug('item_id: ' . $item_id);
@@ -1037,8 +1037,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
         }
-
-        //file_put_contents('holding.txt', print_r($holding,TRUE), FILE_APPEND);
 
         $this->debug(
             'Processing finished, rows processed: '

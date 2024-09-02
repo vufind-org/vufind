@@ -32,6 +32,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Driver\MultiBackend;
 
@@ -57,7 +58,7 @@ class MultiILS extends ILS
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -65,6 +66,7 @@ class MultiILS extends ILS
         $password = trim($request->getPost()->get('password', ''));
         $target = trim($request->getPost()->get('target', ''));
         $loginMethod = $this->getILSLoginMethod($target);
+        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
         // We should have target either separately or already embedded into username
         if ($target) {
@@ -78,7 +80,7 @@ class MultiILS extends ILS
             throw new AuthException('authentication_error_admin');
         }
 
-        return $this->handleLogin($username, $password, $loginMethod);
+        return $this->handleLogin($username, $password, $loginMethod, $rememberMe);
     }
 
     /**

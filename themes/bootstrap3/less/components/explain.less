@@ -1,6 +1,16 @@
 .result-list-explain {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+
   .js-result-list-explain {
+    display: flex;
     max-width: 100px;
+
+    @media (min-width: @screen-xs-min) and (max-width: @screen-sm-max) {
+      max-width: 90px;
+    }
 
     .bar-chart {
       display: inline-block !important;
@@ -64,5 +74,13 @@
 
   .unknown-match {
     color: red;
+  }
+
+  .raw-explanation-btn {
+    margin: 1rem 0;
+  }
+
+  #raw-explanation {
+    margin-bottom: 1rem;
   }
 }

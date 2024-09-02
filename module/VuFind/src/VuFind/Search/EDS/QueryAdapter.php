@@ -61,8 +61,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
         callable $translate,
         callable $showName
     ) {
-        $output = '';
-        //There should only ever be 1 group with EDS queries.
+        // There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {
             if ($search instanceof QueryGroup) {
@@ -86,8 +85,6 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                 throw new \Exception('Unexpected ' . $search::class);
             }
         }
-        $output = '(' . implode(' ', $all) . ')';
-
-        return $output;
+        return '(' . implode(' ', $all) . ')';
     }
 }

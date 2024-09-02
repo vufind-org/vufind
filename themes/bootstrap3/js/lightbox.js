@@ -32,22 +32,6 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modal.modal('handleUpdate');
   }
-  function _emit(msg, _details) {
-    var details = _details || {};
-    var event;
-    try {
-      event = new CustomEvent(msg, {
-        detail: details,
-        bubbles: true,
-        cancelable: true
-      });
-    } catch (e) {
-      // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
-      event = document.createEvent('CustomEvent');
-      event.initCustomEvent(msg, true, true, details);
-    }
-    return document.dispatchEvent(event);
-  }
 
   function _addQueryParameters(url, params) {
     let fragmentSplit = url.split('#');
@@ -106,7 +90,7 @@ VuFind.register('lightbox', function Lightbox() {
     if (alerts.length > 0) {
       var msgs = alerts.toArray().map(function getSuccessHtml(el) {
         return el.innerHTML;
-      }).join('<br/>');
+      }).join('<br>');
       var href = alerts.find('.download').attr('href');
       if (typeof href !== 'undefined') {
         location.href = href;
@@ -203,7 +187,7 @@ VuFind.register('lightbox', function Lightbox() {
             if (errorMsgs.length && testDiv.find('.record').length) {
               var msgs = errorMsgs.toArray().map(function getAlertHtml(el) {
                 return el.innerHTML;
-              }).join('<br/>');
+              }).join('<br>');
               showAlert(msgs, 'danger');
               return false;
             }
@@ -220,12 +204,20 @@ VuFind.register('lightbox', function Lightbox() {
             || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
           ) && flashMessages.length === 0
         ) {
-          var eventResult = _emit('VuFind.lightbox.login', {
-            originalUrl: _originalUrl,
-            formUrl: obj.url
-          });
+          let doRefresh = true;
+          const cancelRefresh = () => doRefresh = false;
+
+          VuFind.emit(
+            'lightbox.login',
+            {
+              formUrl: obj.url,
+              originalUrl: _originalUrl,
+            },
+            cancelRefresh // call this function to cancel refresh
+          );
+
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
-            if (eventResult) {
+            if (doRefresh) {
               VuFind.refreshPage();
             }
             return false;
@@ -241,7 +233,7 @@ VuFind.register('lightbox', function Lightbox() {
         render(content);
       })
       .fail(function lbAjaxFail(deferred, errorType, msg) {
-        showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
+        showAlert(VuFind.translate('error_occurred') + '<br>' + msg, 'danger');
       });
     return _xhr;
   }
@@ -313,7 +305,7 @@ VuFind.register('lightbox', function Lightbox() {
     // Add submit button information
     var submit = $(_clickedButton);
     _clickedButton = null;
-    var buttonData = { name: 'submit', value: 1 };
+    var buttonData = { name: 'submitButton', value: 1 };
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-close') !== 'undefined') {
         close();
@@ -322,7 +314,7 @@ VuFind.register('lightbox', function Lightbox() {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
       }
-      buttonData.name = submit.attr('name') || 'submit';
+      buttonData.name = submit.attr('name') || 'submitButton';
       buttonData.value = submit.attr('value') || 1;
     }
     data.push(buttonData);
@@ -338,10 +330,9 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
-      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(e) {
-        this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
-        VuFind.evalCallback($(form).data('lightboxOnclose'), e, form);
-      }, false);
+      VuFind.listen('lightbox.closed', function lightboxClosed() {
+        VuFind.evalCallback($(form).data('lightboxOnclose'), null, form);
+      }, { once: true });
     }
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
@@ -510,6 +501,11 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modalParams = {};
   }
+
+  function updateContainer(params) {
+    bind(params.container);
+  }
+
   function init() {
     _modal = $('#modal');
     _modalBody = _modal.find('.modal-body');
@@ -523,15 +519,27 @@ VuFind.register('lightbox', function Lightbox() {
         }
         unbindFocus();
         this.setAttribute('aria-hidden', true);
-        _emit('VuFind.lightbox.closing');
+        VuFind.emit('lightbox.closing');
       }
     });
     _modal.on('hidden.bs.modal', function lightboxHidden() {
       VuFind.lightbox.reset();
-      _emit('VuFind.lightbox.closed');
+      VuFind.emit('lightbox.closed');
     });
     _modal.on("shown.bs.modal", function lightboxShown() {
       bindFocus();
+
+      // Disable bootstrap-accessibility.js "enforceFocus" events.
+      // retainFocus() above handles it better.
+      // This is moot once that library (and bootstrap3) are retired.
+      try {
+        var focEls = _modal.find(":tabbable");
+        var firstEl = $(focEls[0]);
+        var lastEl = $(focEls[focEls.length - 1]);
+        $(firstEl).add(lastEl).off('keydown.bs.modal');
+      } catch (ex) {
+        // :tabbable won't work if bootstrap-accessibility.js isn't loaded, in which case we're already good
+      }
     });
 
     VuFind.modal = function modalShortcut(cmd) {
@@ -544,6 +552,7 @@ VuFind.register('lightbox', function Lightbox() {
         _modal.modal(cmd);
       }
     };
+    VuFind.listen('results-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

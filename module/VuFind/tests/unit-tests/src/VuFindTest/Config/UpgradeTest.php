@@ -266,6 +266,22 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test spellchecker changes.
+     *
+     * @return void
+     */
+    public function testSpelling()
+    {
+        $upgrader = $this->getUpgrader('spelling');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure spellcheck 'simple' is replaced by 'dictionaries'
+        $this->assertFalse(isset($results['config.ini']['Spelling']['simple']));
+        $this->assertTrue(isset($results['config.ini']['Spelling']['dictionaries']));
+    }
+
+    /**
      * Test Syndetics upgrade.
      *
      * @return void
@@ -623,5 +639,37 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('private', $captcha['recaptcha_secretKey']);
         $this->assertEquals('theme', $captcha['recaptcha_theme']);
         $this->assertEquals(['recaptcha'], $captcha['types']);
+    }
+
+    /**
+     * Data provider for testMailRequireLoginMigration().
+     *
+     * @return array[]
+     */
+    public static function mailRequireLoginProvider(): array
+    {
+        return [
+            'false' => ['email-require-login-false', 'enabled'],
+            'true' => ['email-require-login-true', 'require_login'],
+        ];
+    }
+
+    /**
+     * Test migration of [Mail] require_login setting.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated setting
+     *
+     * @return void
+     *
+     * @dataProvider mailRequireLoginProvider
+     */
+    public function testMailRequireLoginMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->getUpgrader($fixture);
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['Mail']['require_login']));
+        $this->assertEquals($expected, $results['config.ini']['Mail']['email_action']);
     }
 }

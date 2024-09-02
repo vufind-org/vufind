@@ -74,7 +74,8 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer'),
-            $container->get(\VuFind\ILS\Logic\Holds::class)
+            $container->get(\VuFind\ILS\Logic\Holds::class),
+            $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class)
         );
         $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $handler;

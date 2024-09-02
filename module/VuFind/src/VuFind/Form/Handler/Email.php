@@ -35,6 +35,7 @@ use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mail\Address;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
@@ -75,7 +76,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
     protected $mailer;
 
     /**
-     * Contructor
+     * Constructor
      *
      * @param RendererInterface $viewRenderer View renderer
      * @param Config            $config       Main config
@@ -96,17 +97,18 @@ class Email implements HandlerInterface, LoggerAwareInterface
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
+     * @param ?UserEntityInterface                  $user   Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
-        ?\VuFind\Db\Row\User $user = null
+        ?UserEntityInterface $user = null
     ): bool {
-        $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
-        $emailMessage = $this->viewRenderer->partial(
+        $postParams = $params->fromPost();
+        $fields = $form->mapRequestParamsToFieldValues($postParams);
+        $emailMessage = $this->viewRenderer->render(
             'Email/form.phtml',
             compact('fields')
         );
@@ -115,27 +117,29 @@ class Email implements HandlerInterface, LoggerAwareInterface
 
         $replyToName = $params->fromPost(
             'name',
-            $user ? trim($user->firstname . ' ' . $user->lastname) : null
+            $user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : null
         );
-        $replyToEmail = $params->fromPost(
-            'email',
-            $user ? $user->email : null
-        );
-        $recipients = $form->getRecipient($params->fromPost());
-        $emailSubject = $form->getEmailSubject($params->fromPost());
+        $replyToEmail = $params->fromPost('email', $user?->getEmail());
+        $recipients = $form->getRecipient($postParams);
+        $emailSubject = $form->getEmailSubject($postParams);
 
         $result = true;
         foreach ($recipients as $recipient) {
-            $success = $this->sendEmail(
-                $recipient['name'],
-                $recipient['email'],
-                $senderName,
-                $senderEmail,
-                $replyToName,
-                $replyToEmail,
-                $emailSubject,
-                $emailMessage
-            );
+            if ($recipient['email']) {
+                $success = $this->sendEmail(
+                    $recipient['name'],
+                    $recipient['email'],
+                    $senderName,
+                    $senderEmail,
+                    $replyToName,
+                    $replyToEmail,
+                    $emailSubject,
+                    $emailMessage
+                );
+            } else {
+                $this->logError('Form recipient email missing; check recipient_email in config.ini.');
+                $success = false;
+            }
 
             $result = $result && $success;
         }

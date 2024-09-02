@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Row;
 
+use VuFind\Auth\UserSessionPersistenceInterface;
+
 use function array_key_exists;
 
 /**
@@ -43,33 +45,16 @@ use function array_key_exists;
 class PrivateUser extends User
 {
     /**
-     * Session container for account information.
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session = null;
-
-    /**
      * __get
      *
      * @param string $name Field to retrieve.
      *
-     * @throws Exception\InvalidArgumentException
+     * @throws \Laminas\Db\RowGateway\Exception\InvalidArgumentException
      * @return mixed
      */
     public function __get($name)
     {
         return array_key_exists($name, $this->data) ? parent::__get($name) : null;
-    }
-
-    /**
-     * Whether library cards are enabled
-     *
-     * @return bool
-     */
-    public function libraryCardsEnabled()
-    {
-        return false; // not supported in this context
     }
 
     /**
@@ -81,10 +66,7 @@ class PrivateUser extends User
     {
         $this->initialize();
         $this->id = -1; // fake ID
-        if (null === $this->session) {
-            throw new \Exception('Expected session container missing.');
-        }
-        $this->session->userDetails = $this->toArray();
+        $this->getDbService(UserSessionPersistenceInterface::class)->addUserDataToSession($this);
         return 1;
     }
 
@@ -94,9 +76,10 @@ class PrivateUser extends User
      * @param \Laminas\Session\Container $session Session container
      *
      * @return void
+     *
+     * @deprecated No longer used or needed
      */
     public function setSession(\Laminas\Session\Container $session)
     {
-        $this->session = $session;
     }
 }

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2023.
+ * Copyright (C) The National Library of Finland 2016-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -283,17 +283,16 @@ class SierraRest extends AbstractBase implements
      *
      * @var int
      */
-    protected $apiVersion = 5;
+    protected $apiVersion = 6;
 
     /**
      * API base path
      *
-     * This is the default API level used even if apiVersion is higher so that any
-     * changes in existing methods don't cause trouble.
+     * This should correspond to $apiVersion above
      *
      * @var string
      */
-    protected $apiBase = 'v5';
+    protected $apiBase = 'v6';
 
     /**
      * Statistic group to use e.g. when renewing loans or placing holds
@@ -376,7 +375,7 @@ class SierraRest extends AbstractBase implements
      *
      * @var array
      */
-    protected $defaultBibFields = ['title', 'publishYear', 'bibLevel'];
+    protected $defaultBibFields = ['default'];
 
     /**
      * Default list of item fields to request from Sierra. This list must include at
@@ -385,14 +384,9 @@ class SierraRest extends AbstractBase implements
      * @var array
      */
     protected $defaultItemFields = [
-        'location',
-        'status',
-        'barcode',
-        'callNumber',
+        'default',
         'fixedFields',
         'varFields',
-        'itemType',
-        'bibIds',
     ];
 
     /**
@@ -491,10 +485,7 @@ class SierraRest extends AbstractBase implements
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
-            // Default to API v5 unless a lower compatibility level is needed.
-            if ($this->apiVersion < 5) {
-                $this->apiBase = 'v' . floor($this->apiVersion);
-            }
+            $this->apiBase = 'v' . floor($this->apiVersion);
         }
         if ($statGroup = $this->config['Catalog']['statgroup'] ?? null) {
             if ($this->apiVersion >= 6) {
@@ -746,7 +737,7 @@ class SierraRest extends AbstractBase implements
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id']],
             [
-                'fields' => 'names,emails,phones,addresses,birthDate,expirationDate',
+                'fields' => 'default,names,emails,phones,addresses',
             ],
             'GET',
             $patron
@@ -779,7 +770,7 @@ class SierraRest extends AbstractBase implements
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : '';
+                ) : null;
         return [
             'firstname' => $firstname,
             'lastname' => $lastname,
@@ -817,8 +808,7 @@ class SierraRest extends AbstractBase implements
             [
                 'limit' => $pageSize,
                 'offset' => $offset,
-                'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber,barcode',
+                'fields' => 'default,numberOfRenewals,callNumber,barcode',
             ],
             'GET',
             $patron
@@ -978,7 +968,6 @@ class SierraRest extends AbstractBase implements
                 'offset' => $offset,
                 'sortField' => 'outDate',
                 'sortOrder' => $sortOrder,
-                'fields' => 'bib,item,outDate',
             ],
             'GET',
             $patron
@@ -1097,8 +1086,7 @@ class SierraRest extends AbstractBase implements
      */
     public function getMyHolds($patron)
     {
-        $fields = 'id,record,frozen,placed,location,pickupLocation,status'
-            . ',recordType,priority,priorityQueueLength';
+        $fields = 'default,location,priorityQueueLength';
         if ($this->apiVersion >= 5) {
             $fields .= ',pickupByDate';
         }
@@ -1264,7 +1252,7 @@ class SierraRest extends AbstractBase implements
 
         foreach ($details as $holdId) {
             $result = $this->makeRequest(
-                ['v5', 'patrons', 'holds', $holdId],
+                [$this->apiBase, 'patrons', 'holds', $holdId],
                 '',
                 'DELETE',
                 $patron
@@ -1311,8 +1299,7 @@ class SierraRest extends AbstractBase implements
         $results = [];
         foreach ($holdsDetails as $requestId) {
             // Fetch existing hold status:
-            $reqFields = 'status,pickupLocation,frozen'
-                . (isset($fields['frozen']) ? ',canFreeze' : '');
+            $reqFields = 'default' . (isset($fields['frozen']) ? ',canFreeze' : '');
             $hold = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'holds', $requestId],
                 [
@@ -1418,11 +1405,10 @@ class SierraRest extends AbstractBase implements
         }
 
         $result = $this->makeRequest(
-            ['v4', 'branches', 'pickupLocations'],
+            [$this->apiBase, 'branches', 'pickupLocations'],
             [
                 'limit' => 10000,
                 'offset' => 0,
-                'fields' => 'code,name',
                 'language' => $this->getTranslatorLocale(),
             ],
             'GET',
@@ -1589,8 +1575,7 @@ class SierraRest extends AbstractBase implements
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
-                'fields' => 'item,assessedDate,description,chargeType,itemCharge'
-                    . ',processingFee,billingFee,paidAmount',
+                'limit' => 10000,
             ],
             'GET',
             $patron
@@ -1799,7 +1784,9 @@ class SierraRest extends AbstractBase implements
     {
         foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
-                return trim($varField['content']);
+                // Depending on Sierra version/configuration, the content may be in a couple
+                // of different places. This logic checks both possibilities.
+                return trim($varField['subfields'][0]['content'] ?? $varField['content'] ?? '');
             }
         }
         return '';
@@ -1847,7 +1834,7 @@ class SierraRest extends AbstractBase implements
                 ? (' failed (' . $exception->getMessage() . ')')
                 : ' succeeded';
             $msg = "$method request for '$apiUrl' with params "
-                . var_export($params, true)
+                . $this->varDump($params)
                 . "$status on attempt $attempt";
             $this->logWarning($msg);
         };
@@ -2347,7 +2334,7 @@ class SierraRest extends AbstractBase implements
         $holdingsData = [];
         if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
-                ['v5', 'holdings'],
+                [$this->apiBase, 'holdings'],
                 [
                     'bibIds' => $this->extractBibId($id),
                     'deleted' => 'false',
@@ -2448,6 +2435,7 @@ class SierraRest extends AbstractBase implements
                 'id' => $id,
                 'item_id' => 'HLD_' . $holdings[0]['id'],
                 'location' => $location,
+                'callnumber' => '',
                 'requests_placed' => 0,
                 'number' => '',
                 'status' => '',
@@ -2654,10 +2642,9 @@ class SierraRest extends AbstractBase implements
         if (null === $locations) {
             $locations = [];
             $result = $this->makeRequest(
-                ['v4', 'branches'],
+                [$this->apiBase, 'branches'],
                 [
                     'limit' => 10000,
-                    'fields' => 'locations',
                 ],
                 'GET'
             );
@@ -2874,7 +2861,7 @@ class SierraRest extends AbstractBase implements
         if (null === $blockReason) {
             $result = $this->makeRequest(
                 [$this->apiBase, 'patrons', $patronId],
-                ['fields' => 'blockInfo'],
+                [],
                 'GET',
                 $patron
             );
@@ -3091,7 +3078,7 @@ class SierraRest extends AbstractBase implements
             'GET',
             $patron
         );
-        foreach ($records['entries'] as $record) {
+        foreach ($records['entries'] ?? [] as $record) {
             $id = $this->extractId($record['id']);
             $this->putCachedRecordData("$type|$id", $requiredFields, $record, $ttl);
             $result[$id] = $record;
@@ -3381,6 +3368,7 @@ class SierraRest extends AbstractBase implements
                 'caseSensitivity' => false,
             ];
             try {
+                // Note: hard-coded to use v5 API:
                 $result = $this->makeRequest(
                     ['v5', 'patrons', 'validate'],
                     json_encode($request),
@@ -3573,7 +3561,7 @@ class SierraRest extends AbstractBase implements
         $titleInfo = [];
         if ($db) {
             try {
-                $query = 'SELECT 
+                $query = 'SELECT
                         bib_record_property.best_title as title,
                         bib_record_property.best_author as author,
                         --hold.status, -- this shows sierra hold status not inn-reach status
@@ -3621,15 +3609,15 @@ class SierraRest extends AbstractBase implements
         $titleInfo = [];
         if ($db) {
             try {
-                $query = 'SELECT 
+                $query = 'SELECT
   bib_record_property.best_title as title,
   bib_record_property.best_author as author,
   bib_record_property.best_title_norm as sort_title
-FROM 
+FROM
   sierra_view.checkout,
   sierra_view.bib_record_item_record_link,
   sierra_view.bib_record_property
-WHERE 
+WHERE
   checkout.id = $1
   AND checkout.item_record_id = bib_record_item_record_link.item_record_id
   AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';

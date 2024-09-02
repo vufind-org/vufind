@@ -164,6 +164,12 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
                         'Baz' => ['Bar', 'Bar', 'ChildBaz'],
                         'Child' => ['Foo', 'Baz'],
                     ],
+                    'Replaced' => [
+                        'ParentOnly' => 'Will exist',
+                        'Original' => 'Replaces parent',
+                        'Boolean' => false,
+                        'ChildOnly' => 'From child',
+                    ],
                     'NonMerged' => [
                         'Original' => 'Not so original either',
                     ],

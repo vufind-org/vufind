@@ -29,12 +29,13 @@
 
 namespace VuFindConsole\Command\Util;
 
+use DateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Table\Gateway;
+use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 
 use function floatval;
 
@@ -81,24 +82,19 @@ class AbstractExpireCommand extends Command
     /**
      * Table on which to expire rows
      *
-     * @var Gateway
+     * @var DeleteExpiredInterface
      */
     protected $table;
 
     /**
      * Constructor
      *
-     * @param Gateway     $table Table on which to expire rows
-     * @param string|null $name  The name of the command; passing null means it
+     * @param DeleteExpiredInterface $service Service on which to expire rows
+     * @param ?string                $name    The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Gateway $table, $name = null)
+    public function __construct(protected DeleteExpiredInterface $service, ?string $name = null)
     {
-        if (!method_exists($table, 'deleteExpired')) {
-            $tableName = $table::class;
-            throw new \Exception("$tableName does not support deleteExpired()");
-        }
-        $this->table = $table;
         parent::__construct($name);
     }
 
@@ -173,8 +169,7 @@ class AbstractExpireCommand extends Command
             return 1;
         }
 
-        // Calculate date threshold once to avoid creeping a few seconds in each loop
-        // iteration:
+        // Calculate date threshold once to avoid creeping a few seconds in each loop iteration.
         $dateLimit = $this->getDateThreshold($daysOld);
 
         // Delete the expired rows--this cleans up any junk left in the database
@@ -183,7 +178,7 @@ class AbstractExpireCommand extends Command
         // delete are found.
         $total = 0;
         do {
-            $count = $this->table->deleteExpired($dateLimit, $batchSize);
+            $count = $this->service->deleteExpired($dateLimit, $batchSize);
             if ($count > 0) {
                 $output->writeln(
                     $this->getTimestampedMessage("$count {$this->rowLabel} deleted.")
@@ -205,10 +200,10 @@ class AbstractExpireCommand extends Command
      *
      * @param float $daysOld Days before now
      *
-     * @return string
+     * @return DateTime
      */
-    protected function getDateThreshold(float $daysOld): string
+    protected function getDateThreshold(float $daysOld): DateTime
     {
-        return date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
+        return new DateTime("now - $daysOld days");
     }
 }

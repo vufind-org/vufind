@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Table;
 
+use Exception;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\TableGateway\AbstractTableGateway;
 use Laminas\Db\TableGateway\Feature;
@@ -153,5 +154,38 @@ class Gateway extends AbstractTableGateway
     public function getDbTable($table)
     {
         return $this->tableManager->get($table);
+    }
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->getAdapter()->getDriver()->getConnection()->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->getAdapter()->getDriver()->getConnection()->commit();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->getAdapter()->getDriver()->getConnection()->rollback();
     }
 }

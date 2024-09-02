@@ -33,6 +33,9 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 
 /**
  * Table Definition for external_session
@@ -44,8 +47,9 @@ use VuFind\Db\Row\RowGateway;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ExternalSession extends Gateway
+class ExternalSession extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
     use ExpirationTrait;
 
     /**
@@ -74,15 +78,13 @@ class ExternalSession extends Gateway
      * @param string $externalSessionId External session id
      *
      * @return void
+     *
+     * @deprecated Use ExternalSessionServiceInterface::addSessionMapping()
      */
     public function addSessionMapping($localSessionId, $externalSessionId)
     {
-        $this->destroySession($localSessionId);
-        $row = $this->createRow();
-        $row->session_id = $localSessionId;
-        $row->external_session_id = $externalSessionId;
-        $row->created = date('Y-m-d H:i:s');
-        $row->save();
+        $this->getDbService(ExternalSessionServiceInterface::class)
+            ->addSessionMapping($localSessionId, $externalSessionId);
     }
 
     /**
@@ -90,11 +92,14 @@ class ExternalSession extends Gateway
      *
      * @param string $sid External session ID to retrieve
      *
-     * @return \VuFind\Db\Row\ExternalSession
+     * @return ?\VuFind\Db\Row\ExternalSession
+     *
+     * @deprecated Use ExternalSessionServiceInterface::getAllByExternalSessionId()
      */
     public function getByExternalSessionId($sid)
     {
-        return $this->select(['external_session_id' => $sid])->current();
+        $sessions = $this->getDbService(ExternalSessionServiceInterface::class)->getAllByExternalSessionId($sid);
+        return $sessions[0] ?? null;
     }
 
     /**
@@ -103,10 +108,12 @@ class ExternalSession extends Gateway
      * @param string $sid Session ID to erase
      *
      * @return void
+     *
+     * @deprecated Use ExternalSessionServiceInterface::destroySession()
      */
     public function destroySession($sid)
     {
-        $this->delete(['session_id' => $sid]);
+        $this->getDbService(ExternalSessionServiceInterface::class)->destroySession($sid);
     }
 
     /**

@@ -29,12 +29,12 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 
 use function array_slice;
 use function count;
-use function is_object;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -67,8 +67,10 @@ class SearchController extends AbstractSolrSearch
     {
         // Get the user's referer, with the home page as a fallback; we'll
         // redirect here after the work is done.
-        $from = $this->getRequest()->getServer()->get('HTTP_REFERER')
-            ?? $this->url()->fromRoute('home');
+        $from = $this->getRequest()->getServer()->get('HTTP_REFERER') ?? null;
+        if (empty($from) || !$this->isLocalUrl($from)) {
+            $from = $this->url()->fromRoute('home');
+        }
 
         // Get parameters:
         $searchClassId = $this->params()
@@ -80,7 +82,7 @@ class SearchController extends AbstractSolrSearch
         // Retrieve and manipulate the parameters:
         $searchHelper = $this->getViewRenderer()->plugin('searchMemory');
         $params = $searchHelper->getLastSearchParams($searchClassId);
-        $factory = $this->serviceLocator->get(UrlQueryHelperFactory::class);
+        $factory = $this->getService(UrlQueryHelperFactory::class);
         $initialParams = $factory->fromParams($params);
 
         if ($removeAllFilters) {
@@ -122,23 +124,25 @@ class SearchController extends AbstractSolrSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
+        $mailer = $this->getService(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
-        $view->url = $this->params()->fromPost(
-            'url',
-            $this->params()->fromQuery(
-                'url',
-                $this->getRequest()->getServer()->get('HTTP_REFERER')
-            )
-        );
+        $view->url = $this->params()->fromPost('url')
+            ?? $this->params()->fromQuery('url')
+            ?? $this->getRequest()->getServer()->get('HTTP_REFERER');
+        if (!$this->isLocalUrl($view->url)) {
+            throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
+        }
 
+        $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
+        if ($emailActionSettings === 'disabled') {
+            throw new ForbiddenException('Email action disabled');
+        }
         // Force login if necessary:
-        $config = $this->getConfig();
         if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
+            $emailActionSettings !== 'enabled'
             && !$this->getUser()
         ) {
             return $this->forceLogin(null, ['emailurl' => $view->url]);
@@ -157,7 +161,7 @@ class SearchController extends AbstractSolrSearch
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
@@ -197,10 +201,9 @@ class SearchController extends AbstractSolrSearch
                 ? $this->redirect()->toRoute('search-history')
                 : $this->forceLogin();
         }
-        $userId = is_object($user) ? $user->id : null;
+        $userId = $user?->getId();
 
-        $searchHistoryHelper = $this->serviceLocator
-            ->get(\VuFind\Search\History::class);
+        $searchHistoryHelper = $this->getService(\VuFind\Search\History::class);
 
         if ($this->params()->fromQuery('purge')) {
             $searchHistoryHelper->purgeSearchHistory($userId);
@@ -211,14 +214,13 @@ class SearchController extends AbstractSolrSearch
         $viewData = $searchHistoryHelper->getSearchHistory($userId);
         // Eliminate schedule settings if scheduled searches are disabled; add
         // user email data if scheduled searches are enabled.
-        $scheduleOptions = $this->serviceLocator
-            ->get(\VuFind\Search\History::class)
+        $scheduleOptions = $this->getService(\VuFind\Search\History::class)
             ->getScheduleOptions();
         if (empty($scheduleOptions)) {
             unset($viewData['schedule']);
         } else {
             $viewData['scheduleOptions'] = $scheduleOptions;
-            $viewData['alertemail'] = is_object($user) ? $user->email : null;
+            $viewData['alertemail'] = $user?->getEmail();
         }
         return $this->createViewModel($viewData);
     }
@@ -243,8 +245,7 @@ class SearchController extends AbstractSolrSearch
             ]
         );
         if ($this->newItems()->includeFacets()) {
-            $view->options = $this->serviceLocator
-                ->get(\VuFind\Search\Options\PluginManager::class)
+            $view->options = $this->getService(\VuFind\Search\Options\PluginManager::class)
                 ->get($this->searchClassId);
             $this->addFacetDetailsToView($view, 'NewItems');
         }
@@ -376,7 +377,7 @@ class SearchController extends AbstractSolrSearch
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+        $runner = $this->getService(\VuFind\Search\SearchRunner::class);
         $view->results = $runner->run(
             $request,
             'SolrReserves',
@@ -515,8 +516,7 @@ class SearchController extends AbstractSolrSearch
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $suggester = $this->serviceLocator
-            ->get(\VuFind\Autocomplete\Suggester::class);
+        $suggester = $this->getService(\VuFind\Autocomplete\Suggester::class);
         $suggestions = $suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
@@ -536,8 +536,7 @@ class SearchController extends AbstractSolrSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
         return $config->Record->next_prev_navigation ?? false;
     }
 }

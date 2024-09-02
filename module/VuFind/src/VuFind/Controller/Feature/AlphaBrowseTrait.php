@@ -59,7 +59,7 @@ trait AlphaBrowseTrait
      */
     protected function alphabeticBrowse()
     {
-        $service = $this->serviceLocator->get(\VuFindSearch\Service::class);
+        $service = $this->getService(\VuFindSearch\Service::class);
         $command = new AlphabeticBrowseCommand(
             $this->alphabrowseBackend,
             ...func_get_args()

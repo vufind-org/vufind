@@ -22,11 +22,11 @@
       </div>
       <?=$this->captcha()->html($this->useCaptcha) ?>
       <div class="form-group">
-        <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEscAttr('Submit')?>">
+        <input class="btn btn-primary" name="submitButton" type="submit" value="<?=$this->transEscAttr('Submit')?>">
       </div>
     </form>
   <?php endif; ?>
 </div>
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'newpassword'])?>
+  <?=$this->accountMenu()->render('newpassword')?>
 </div>

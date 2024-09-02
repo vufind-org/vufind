@@ -1,0 +1,92 @@
+<?php
+  // Set up page title:
+  $lookfor = $this->params->getDisplayQuery();
+  $headTitle = $this->slot('head-title')
+        ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+  $this->headTitle($headTitle);
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/searchbox.phtml',
+      [
+        'lookfor' => $lookfor,
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchType' => $this->params->getSearchType(),
+        'searchId' => $this->results->getSearchId(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'filterList' => $this->params->getFilterList(true),
+        'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+        'selectedShards' => $this->params->getSelectedShards(),
+      ]
+  );
+
+  // Create shortcut to combined results (since $this->results may get overwritten in processing below):
+  $combinedResults = $this->results;
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
+
+  // Check if any results have version support enabled:
+  $displayVersions = false;
+  foreach (array_keys($this->combinedResults) as $configSection) {
+    [$searchClassId] = explode(':', $configSection);
+    if ($this->searchOptions($searchClassId)->getVersionsAction()) {
+      $displayVersions = true;
+      break;
+    }
+  }
+
+  // Load Javascript dependencies into header:
+  $this->render('search/results-scripts.phtml', compact('displayVersions'));
+  $this->headScript()->appendFile('combined-search.js');
+  // Style
+  $this->headLink()->appendStylesheet('combined-search.css');
+?>
+<?=$this->flashmessages()?>
+<h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
+<?php $recs = $combinedResults->getRecommendations('top'); ?>
+<?php if (!empty($recs)): ?>
+  <div>
+    <?php foreach ($recs as $current): ?>
+      <?=$this->recommend($current)?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+<?php if ($config['Layout']['jump_links'] ?? false): ?>
+  <?=$this->render('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
+<?php endif; ?>
+<form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+  <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
+</form>
+<?php
+  $viewParams = [
+    'searchClassId' => $searchClassId,
+    'combinedResults' => $this->combinedResults,
+  ];
+?>
+
+<?php if (!empty($columnSideRecommendations)): ?>
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+    <?php foreach ($columnSideRecommendations as $columnSideRecommendation): ?>
+      <div class="recommendation_container__<?=$columnSideRecommendation?>">
+        <?php // Content is added via JS in results-list.phtml. ?>
+      </div>
+    <?php endforeach; ?>
+  </div>
+<?php else: ?>
+  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+<?php endif; ?>
+
+<?php $recs = $combinedResults->getRecommendations('bottom'); ?>
+<?php if (!empty($recs)): ?>
+  <div>
+    <?php foreach ($recs as $current): ?>
+      <?=$this->recommend($current)?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>

@@ -346,7 +346,7 @@ class Holds
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
                     // Are any copies available?
-                    if ($copy['availability'] == true) {
+                    if ($copy['availability']->isAvailable()) {
                         $any_available = true;
                     }
                 }
@@ -368,13 +368,13 @@ class Holds
                                 $addlink = true; // always provide link
                                 break;
                             case 'holds':
-                                $addlink = $copy['availability'];
+                                $addlink = $copy['availability']->isAvailable();
                                 break;
                             case 'recalls':
-                                $addlink = !$copy['availability'];
+                                $addlink = !$copy['availability']->isAvailable();
                                 break;
                             case 'availability':
-                                $addlink = !$copy['availability']
+                                $addlink = !$copy['availability']->isAvailable()
                                     && ($any_available == false);
                                 break;
                             default:
