@@ -10,16 +10,18 @@
   $checkboxSelectAllType = $socialConfig['checkbox_select_all_favorites_type'] ?? 'both';
   ?>
   <ul class="action-toolbar">
-    <?=
-      $this->bulkAction()->button(
-          'email',
-          'send-email',
-          'Email',
-          [
-            'title' => $this->translate('bulk_email_myresearch'),
-          ]
-      )
-    ?>
+    <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+      <?=
+        $this->bulkAction()->button(
+            'email',
+            'send-email',
+            'Email',
+            [
+              'title' => $this->translate('bulk_email_myresearch'),
+            ]
+        )
+      ?>
+    <?php endif; ?>
     <?php if ((null !== $this->list && $this->userlist()->userCanEditList($user, $list)) || null === $this->list && $user): ?>
       <?=
         $this->bulkAction()->button(
