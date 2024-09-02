@@ -76,36 +76,48 @@ class SecureCookie implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
-        $sessionUUID = $this->session->uuid;
-        $cookie = $this->cookieManager->get('uuid');
-        if (!(isset($cookie))) {
-            $this->debug('getPermissions: result = false');
-            return [];
-        } elseif ($cookie != $sessionUUID) {
-            $this->debug('getPermissions: result = false');
-            return [];
+        foreach ((array)$options as $cookieName) {
+            $this->debug("getPermissions: option cookieName '{$cookieName}'");
+            $cookie = $this->cookieManager->get($cookieName);
+            $sessionValue = $this->session->$cookieName;
+            if (!isset($cookie)) {
+                $this->debug('getPermissions: result = false');
+                return [];
+            } elseif (!isset($sessionValue)) {
+                $this->debug('getPermissions: result = false');
+                return [];
+            } elseif ($cookie != $sessionValue) {
+                $this->debug('getPermissions: result = false');
+                return [];
+            }
+            $this->debug('getPermissions: result = true');
         }
-        $this->debug('getPermissions: result = true');
         return ['guest', 'loggedin'];
     }
 
     /**
-     * Create a UUID. Store it in the Session container and in the cookie.
+     * Create a secret (uuid) - if not passed in $secret parameter.
+     * Store the secret in the Session container and in the cookie.
+     *
+     * @param $cookieName - Name of cookie and session container variable to store the secret in.
+     * @param $secret     - Set a specific secret value if desired.
      *
      * @return string
      */
-    public function setSecret()
+    public function setSecret($cookieName, $secret)
     {
-        // Create a secret
-        $secret = uniqid();
+        // Create a secret - if not defined in $secret parameter
+        if (!isset($secret)) {
+            $secret = null;
+            $secret = uniqid();
+        }
 
-        // Clear then store secret in cookie
-        $this->cookieManager->clear('uuid');
-        $this->cookieManager->set('uuid', $secret);
+        // Store secret in cookie
+        $this->cookieManager->set($cookieName, $secret);
 
-        // Store secret in session
-        $this->session->uuid = $secret;
+        // Store secret in session container
+        $this->session->$cookieName = $secret;
 
-        return $this->session->uuid;
+        return $this->session->$cookieName;
     }
 }
