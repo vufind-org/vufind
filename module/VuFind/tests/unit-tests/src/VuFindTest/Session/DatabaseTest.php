@@ -85,8 +85,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('garbageCollect')
-            ->with($this->equalTo(3600));
-        $this->assertTrue($handler->gc(3600));
+            ->with($this->equalTo(3600))
+            ->willReturn(150);
+        $this->assertEquals(150, $handler->gc(3600));
     }
 
     /**
