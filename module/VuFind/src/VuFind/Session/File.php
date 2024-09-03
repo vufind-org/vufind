@@ -131,7 +131,7 @@ class File extends AbstractBase
      *
      * @param int $maxlifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      */
     public function gc($maxlifetime): int|false
     {

@@ -87,7 +87,7 @@ class Database extends AbstractBase
      *
      * @param int $sessMaxLifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      */
     public function gc($sessMaxLifetime): int|false
     {

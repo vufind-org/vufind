@@ -52,7 +52,7 @@ class AccessTokenEntity implements AccessTokenEntityInterface, \JsonSerializable
     /**
      * Serialize to a JSON string
      *
-     * @return string
+     * @return mixed
      */
     public function jsonSerialize(): mixed
     {

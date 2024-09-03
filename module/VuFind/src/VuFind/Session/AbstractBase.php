@@ -156,7 +156,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @param int $sessMaxLifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

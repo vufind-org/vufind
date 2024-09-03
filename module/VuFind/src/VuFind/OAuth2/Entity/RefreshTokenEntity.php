@@ -50,7 +50,7 @@ class RefreshTokenEntity implements RefreshTokenEntityInterface, \JsonSerializab
     /**
      * Serialize to a JSON string
      *
-     * @return string
+     * @return mixed
      */
     public function jsonSerialize(): mixed
     {

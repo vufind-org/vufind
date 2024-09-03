@@ -52,7 +52,7 @@ class AuthCodeEntity implements AuthCodeEntityInterface, \JsonSerializable
     /**
      * Serialize to a JSON string
      *
-     * @return string
+     * @return mixed
      */
     public function jsonSerialize(): mixed
     {
