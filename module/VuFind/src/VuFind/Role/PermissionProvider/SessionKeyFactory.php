@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating SecureCookie permission provider.
+ * Factory for instantiating SessionKey permission provider.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for instantiating SecureCookie permission provider.
+ * Factory for instantiating SessionKey permission provider.
  *
  * @category VuFind
  * @package  Authorization
@@ -43,7 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SecureCookieFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class SessionKeyFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -71,7 +71,7 @@ class SecureCookieFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         }
         return new $requestedName(
             new \Laminas\Session\Container(
-                'SecureCookie',
+                'SessionKey',
                 $container->get(\Laminas\Session\SessionManager::class)
             )
         );

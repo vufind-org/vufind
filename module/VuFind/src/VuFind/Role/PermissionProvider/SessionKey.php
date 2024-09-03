@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Secure cookie permission provider.
+ * Session key permission provider.
  *
  * PHP version 8
  *
@@ -30,10 +30,9 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Session\Container;
-use VuFind\Cookie\CookieManager;
 
 /**
- * Secure cookie permission provider.
+ * Session key permission provider.
  *
  * @category VuFind
  * @package  Authorization
@@ -42,7 +41,7 @@ use VuFind\Cookie\CookieManager;
  * @link     https://vufind.org Main Page
  */
 
-class SecureCookie implements PermissionProviderInterface
+class SessionKey implements PermissionProviderInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -56,11 +55,9 @@ class SecureCookie implements PermissionProviderInterface
     /**
      * Constructor
      *
-     * @param CookieManager $cookieManager Cookie manager
-     * @param $session       Session container
+     * @param $session Session container
      */
     public function __construct(
-        protected CookieManager $cookieManager,
         Container $session
     ) {
         $this->session = $session;
@@ -70,23 +67,19 @@ class SecureCookie implements PermissionProviderInterface
      * Return an array of roles which may be granted the permission based on
      * the options.
      *
-     * @param mixed $options Options (cookieNames) provided from configuration.
+     * @param mixed $options Options (sessionKeys) provided from configuration.
      *
      * @return array
      */
     public function getPermissions($options)
     {
-        foreach ((array)$options as $cookieName) {
-            $this->debug("getPermissions: option cookieName '{$cookieName}'");
-            $cookie = $this->cookieManager->get($cookieName);
-            $sessionValue = $this->session->$cookieName;
-            if (!isset($cookie)) {
+        foreach ((array)$options as $sessionKey) {
+            $this->debug("getPermissions: option sessionKey '{$sessionKey}'");
+            $sessionValue = $this->session->$sessionKey;
+            if (!isset($sessionValue)) {
                 $this->debug('getPermissions: result = false');
                 return [];
-            } elseif (!isset($sessionValue)) {
-                $this->debug('getPermissions: result = false');
-                return [];
-            } elseif ($cookie != $sessionValue) {
+            } elseif ($sessionValue === false) {
                 $this->debug('getPermissions: result = false');
                 return [];
             }
@@ -96,28 +89,23 @@ class SecureCookie implements PermissionProviderInterface
     }
 
     /**
-     * Create a secret (uuid) - if not passed in $secret parameter.
-     * Store the secret in the Session container and in the cookie.
+     * Set a boolean true value for a key in the Session container.
      *
-     * @param $cookieName - Name of cookie and session container variable to store the secret in.
-     * @param $secret     - Set a specific secret value if desired.
+     * @param $sessionKey - Set a boolean true value for this session key.
      *
      * @return string
      */
-    public function setSecret($cookieName, $secret)
+    public function setSessionValue($sessionKey)
     {
-        // Create a secret - if not defined in $secret parameter
-        if (!isset($secret)) {
-            $secret = null;
-            $secret = uniqid();
+        // Set a sessionKey - if not defined in $sessionKey parameter
+        if (!isset($sessionKey)) {
+            $sessionKey = null;
+            $sessionKey = '';
         }
 
-        // Store secret in cookie
-        $this->cookieManager->set($cookieName, $secret);
+        // Store boolean true value for the sessionKey
+        $this->session->$sessionKey = true;
 
-        // Store secret in session container
-        $this->session->$cookieName = $secret;
-
-        return $this->session->$cookieName;
+        return $this->session->$sessionKey;
     }
 }
