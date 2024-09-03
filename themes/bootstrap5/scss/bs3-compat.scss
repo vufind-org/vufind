@@ -228,7 +228,8 @@ button.list-group-item {
   align-items: center;
   gap: 0.25em;
 }
-.dropdown-toggle::after {
+.dropdown-toggle::after,
+.search-filter-dropdown .btn::after {
   content: "";
   width: 0.3em;
   height: 0.3em;
