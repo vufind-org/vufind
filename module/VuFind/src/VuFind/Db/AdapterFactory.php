@@ -262,7 +262,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function getAdapterFromConfig($overrideUser = null, $overridePass = null)
     {
         if (!isset($this->config->Database)) {
-            throw new \Exception('"database" settings missing');
+            throw new \Exception('[Database] Configuration section missing');
         }
         $config = $this->config->Database;
         return $this->getAdapterFromArray([
