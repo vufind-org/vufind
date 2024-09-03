@@ -107,15 +107,15 @@ class SessionService extends AbstractDbService implements
     }
 
     /**
-     * Garbage collect expired sessions.
+     * Garbage collect expired sessions. Returns number of deleted rows.
      *
      * @param int $maxLifetime Maximum session lifetime.
      *
-     * @return void
+     * @return int
      */
-    public function garbageCollect(int $maxLifetime): void
+    public function garbageCollect(int $maxLifetime): int
     {
-        $this->getDbTable('Session')->garbageCollect($maxLifetime);
+        return $this->getDbTable('Session')->garbageCollect($maxLifetime);
     }
 
     /**
