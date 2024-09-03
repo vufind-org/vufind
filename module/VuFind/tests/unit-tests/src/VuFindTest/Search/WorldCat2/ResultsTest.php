@@ -34,7 +34,11 @@ use VuFind\Record\Loader;
 use VuFind\Search\WorldCat2\Options;
 use VuFind\Search\WorldCat2\Params;
 use VuFind\Search\WorldCat2\Results;
+use VuFindSearch\Backend\WorldCat2\Response\RecordCollection;
+use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+use VuFindSearch\Service;
 
 /**
  * WorldCat2 Search Object Results Test
@@ -60,9 +64,61 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getParams();
         $params->setQuery($query);
         $results = $this->getResults($params);
+        // Test getting facets first, see testOverlongSearch for a different approach
         $this->assertEquals([], $results->getFacetList());
         $this->assertEquals([], $results->getResults());
         $this->assertEquals(['empty_search_disallowed'], $results->getErrors());
+    }
+
+    /**
+     * Test that overlong searches are blocked.
+     *
+     * @return void
+     */
+    public function testOverlongSearch(): void
+    {
+        $query = new Query(implode(' ', range(1, 100)));
+        $params = $this->getParams();
+        $params->setQuery($query);
+        $results = $this->getResults($params);
+        // Test getting results first, as a variation of testEmptySearch()
+        $this->assertEquals([], $results->getResults());
+        $this->assertEquals([], $results->getFacetList());
+        $this->assertEquals(
+            [
+                [
+                    'msg' => 'too_many_query_terms',
+                    'tokens' => ['%%terms%%' => 100, '%%maxTerms%%' => 30],
+                ],
+            ],
+            $results->getErrors()
+        );
+    }
+
+    /**
+     * Test a successful search.
+     *
+     * @return void
+     */
+    public function testSuccessfulSearch(): void
+    {
+        $query = new Query('foo');
+        $params = $this->getParams();
+        $params->setQuery($query);
+        $searchService = $this->createMock(Service::class);
+        $expectedParams = new ParamBag(['orderBy' => 'bestMatch', 'facets' => []]);
+        $expectedCommand = new SearchCommand('WorldCat2', $query, 1, 20, $expectedParams);
+        $records = new RecordCollection(
+            [
+                'offset' => 0,
+                'total' => 5,
+            ]
+        );
+        $mockCommand = $this->createMock(SearchCommand::class);
+        $mockCommand->method('getResult')->willReturn($records);
+        $searchService->expects($this->once())->method('invoke')->with($expectedCommand)->willReturn($mockCommand);
+        $results = $this->getResults($params, $searchService);
+        $this->assertEquals(5, $results->getResultTotal());
     }
 
     /**
