@@ -50,10 +50,9 @@ class RefreshTokenEntity implements RefreshTokenEntityInterface, \JsonSerializab
     /**
      * Serialize to a JSON string
      *
-     * @return string
+     * @return mixed
      */
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $properties = [
             'identifier',

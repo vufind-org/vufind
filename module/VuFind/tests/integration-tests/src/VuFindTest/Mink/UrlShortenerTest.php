@@ -54,7 +54,7 @@ class UrlShortenerTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Mail' => [
-                        'require_login' => false,
+                        'email_action' => 'enabled',
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
                         'url_shortener' => 'database',

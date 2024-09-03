@@ -165,20 +165,33 @@ class SessionService extends AbstractDbService implements
     }
 
     /**
-     * Garbage collect expired sessions.
+     * Garbage collect expired sessions. Returns number of deleted rows.
      *
      * @param int $maxLifetime Maximum session lifetime.
      *
-     * @return void
+     * @return int
      */
-    public function garbageCollect(int $maxLifetime): void
+    public function garbageCollect(int $maxLifetime): int
     {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
-            ->where('s.lastUsed < :used')
-            ->setParameter('used', time() - intval($maxLifetime));
-        $query = $queryBuilder->getQuery();
-        $query->execute();
+        $expiration = time() - intval($maxLifetime);
+
+        $entityClass = $this->getEntityClass(SessionEntityInterface::class);
+
+        $dql = 'SELECT COUNT(s) FROM ' . $entityClass . ' s WHERE s.lastUsed < :used';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('used', $expiration);
+        $count = (int)$query->getSingleScalarResult();
+
+        if ($count > 0) {
+            $deleteQueryBuilder = $this->entityManager->createQueryBuilder();
+            $deleteQueryBuilder->delete($entityClass, 's')
+                ->where('s.lastUsed < :used')
+                ->setParameter('used', $expiration);
+            $deleteQuery = $deleteQueryBuilder->getQuery();
+            $deleteQuery->execute();
+        }
+
+        return $count;
     }
 
     /**

@@ -1,5 +1,12 @@
-<?php $alt = $this->link ? trim($this->driver->tryMethod('getTitle') ?? '') : ''; ?>
-<?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>" class="record-cover-link"><?php endif; ?>
+<?php
+  // Determine link attributes; use legacy $this->link property as a fallback for backward compatibility.
+  $linkAttributes = $this->linkAttributes ?? ($this->link ? ['href' => $this->link] : []);
+  if ($linkAttributes && !isset($linkAttributes['class'])) {
+    $linkAttributes['class'] = 'record-cover-link';
+  }
+  $alt = $linkAttributes ? trim($this->driver->tryMethod('getTitle') ?? '') : '';
+?>
+<?php if ($linkAttributes && !empty($alt)): ?><a<?=$this->htmlAttributes($linkAttributes)?>><?php endif; ?>
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->escapeHtmlAttr($alt); ?>">
@@ -13,4 +20,4 @@
     </div>
   </div>
 <?php endif; ?>
-<?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
+<?php if ($linkAttributes && !empty($alt)): ?></a><?php endif; ?>

@@ -132,9 +132,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager,
         $session = null,
     ) {
-        $serviceMock = $this->getMockBuilder(
-            \VuFind\Db\Service\SessionService::class
-        )
+        $serviceMock = $this->getMockBuilder(SessionService::class)
             ->onlyMethods(['createEntity'])
             ->setConstructorArgs([$entityManager, $pluginManager])
             ->getMock();
@@ -323,9 +321,13 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     {
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager(true);
-        $queryBuilder = $this->getMockBuilder(\Doctrine\ORM\QueryBuilder::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $countQuery = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
+        $countQuery->method('getSingleScalarResult')->willReturn(5);
+        $countQuery->expects($this->once())->method('setParameter')
+            ->with('used', $this->equalToWithDelta(time() - 10000, 1));
+        $countDql = "SELECT COUNT(s) FROM VuFind\Db\Entity\Session s WHERE s.lastUsed < :used";
+        $entityManager->expects($this->once())->method('createQuery')->with($countDql)->willReturn($countQuery);
+        $queryBuilder = $this->createMock(\Doctrine\ORM\QueryBuilder::class);
         $queryBuilder->expects($this->once())->method('delete')
             ->with(Session::class, 's')
             ->willReturn($queryBuilder);
@@ -335,17 +337,14 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $queryBuilder->expects($this->once())->method('setParameter')
             ->with('used', $this->equalToWithDelta(time() - 10000, 1))
             ->willReturn($queryBuilder);
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['execute'])
-            ->getMockForAbstractClass();
-        $query->expects($this->once())->method('execute')
+        $deleteQuery = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
+        $deleteQuery->expects($this->once())->method('execute')
             ->willReturn($this->anything());
         $queryBuilder->expects($this->once())->method('getQuery')
-            ->willReturn($query);
+            ->willReturn($deleteQuery);
         $entityManager->expects($this->once())->method('createQueryBuilder')
             ->willReturn($queryBuilder);
         $service = $this->getService($entityManager, $pluginManager);
-        $service->garbageCollect(10000);
+        $this->assertEquals(5, $service->garbageCollect(10000));
     }
 }

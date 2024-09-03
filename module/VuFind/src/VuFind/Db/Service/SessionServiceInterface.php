@@ -84,13 +84,13 @@ interface SessionServiceInterface extends DbServiceInterface
     public function destroySession(string $sid): void;
 
     /**
-     * Garbage collect expired sessions.
+     * Garbage collect expired sessions. Returns number of deleted rows.
      *
      * @param int $maxLifetime Maximum session lifetime.
      *
-     * @return void
+     * @return int
      */
-    public function garbageCollect(int $maxLifetime): void;
+    public function garbageCollect(int $maxLifetime): int;
 
     /**
      * Create a session entity object.
