@@ -76,10 +76,7 @@ class SessionKey implements PermissionProviderInterface
         foreach ((array)$options as $sessionKey) {
             $this->debug("getPermissions: option sessionKey '{$sessionKey}'");
             $sessionValue = $this->session->$sessionKey;
-            if (!isset($sessionValue)) {
-                $this->debug('getPermissions: result = false');
-                return [];
-            } elseif ($sessionValue === false) {
+            if (!($this->session->$sessionKey ?? false)) {
                 $this->debug('getPermissions: result = false');
                 return [];
             }
@@ -91,21 +88,13 @@ class SessionKey implements PermissionProviderInterface
     /**
      * Set a boolean true value for a key in the Session container.
      *
-     * @param $sessionKey - Set a boolean true value for this session key.
+     * @param string $sessionKey - Set a boolean true value for this session key.
      *
-     * @return string
+     * @return void
      */
-    public function setSessionValue($sessionKey)
+    public function setSessionValue(string $sessionKey): void
     {
-        // Set a sessionKey - if not defined in $sessionKey parameter
-        if (!isset($sessionKey)) {
-            $sessionKey = null;
-            $sessionKey = '';
-        }
-
         // Store boolean true value for the sessionKey
         $this->session->$sessionKey = true;
-
-        return $this->session->$sessionKey;
     }
 }
