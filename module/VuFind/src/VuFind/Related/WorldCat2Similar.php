@@ -116,7 +116,7 @@ class WorldCat2Similar extends Similar
         $idsToExclude = (array)($driver->tryMethod('getOCLC', default: []));
 
         // Group together related editions to ensure that suggestions are more diverse:
-        $extraParams = new ParamBag(['groupRelatedEditions' => 'true', 'groupVariantRecords' => 'true']);
+        $extraParams = new ParamBag(['groupRelatedEditions' => 'true']);
 
         // Perform the search and save filtered results:
         $command = new SearchCommand('WorldCat2', $queryObj, 1, $this->maxRecommendations + 1, $extraParams);

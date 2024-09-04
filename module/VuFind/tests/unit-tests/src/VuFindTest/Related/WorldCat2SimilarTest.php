@@ -32,6 +32,7 @@ namespace VuFindTest\Related;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\RecordDriver\WorldCat2;
 use VuFind\Related\WorldCat2Similar;
+use VuFindSearch\ParamBag;
 
 /**
  * WorldCat v2 Similar Related Items Test Class
@@ -125,6 +126,8 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
             $args = $command->getArguments();
             $this->assertEquals(1, $args[1]);
             $this->assertEquals(6, $args[2]);
+            $expectedParams = new ParamBag(['groupRelatedEditions' => 'true']);
+            $this->assertEquals($expectedParams, $args[3]);
             return true;
         };
         $service->expects($this->once())->method('invoke')
