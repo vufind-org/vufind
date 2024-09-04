@@ -131,17 +131,18 @@ class File extends AbstractBase
      *
      * @param int $maxlifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      */
-    #[\ReturnTypeWillChange]
-    public function gc($maxlifetime)
+    public function gc($maxlifetime): int|false
     {
+        $count = 0;
         foreach (glob($this->path . '/sess_*') as $filename) {
             if (filemtime($filename) + $maxlifetime < time()) {
                 unlink($filename);
+                $count++;
             }
         }
-        return true;
+        return $count;
     }
 
     /**
