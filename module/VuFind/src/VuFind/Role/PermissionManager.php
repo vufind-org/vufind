@@ -101,7 +101,7 @@ class PermissionManager
         foreach ($this->config as $value) {
             $permissions = array_merge($permissions, (array)($value['permission'] ?? []));
         }
-        return array_unique($permissions);
+        return array_values(array_unique($permissions));
     }
 
     /**
