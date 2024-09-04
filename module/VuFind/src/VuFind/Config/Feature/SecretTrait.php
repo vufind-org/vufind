@@ -64,10 +64,15 @@ trait SecretTrait
             if (is_readable($config[$key . '_file'])) {
                 $value = file_get_contents($config[$key . '_file']);
                 return trim($value);
-            } elseif(method_exists($this, 'logWarning')) {
+            } elseif (method_exists($this, 'logWarning')) {
                 $this->logWarning(
                     'The secret file (' . $config[$key . '_file'] . ')' .
                     ' for secret ' . $key . ' doesn\'t exist or is not readable.'
+                );
+            } else {
+                error_log(
+                    'The secret file (' . $config[$key . '_file'] . ')' .
+                    ' for secret ' . $key . ' doesn\'t exist or is not readable'
                 );
             }
         }

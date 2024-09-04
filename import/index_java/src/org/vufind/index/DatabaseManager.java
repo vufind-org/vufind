@@ -21,6 +21,10 @@ package org.vufind.index;
 import org.apache.log4j.Logger;
 import org.solrmarc.tools.SolrMarcIndexerException;
 import java.sql.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 /**
  * Database manager.
@@ -70,7 +74,19 @@ public class DatabaseManager
         if (vufindDatabase != null) {
             return;
         }
+        connectToDatabaseUsingSplitConfig();
+        // If the split config allowed to setup the DB, do nothing further
+        if (vufindDatabase != null) {
+            return;
+        }
+        connectToDatabaseUsingStringConfig();
+    }
 
+    /**
+     * Connect to the VuFind database if we do not already have a connection.
+     */
+    private void connectToDatabaseUsingStringConfig()
+    {
         String dsn = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database");
 
         try {
@@ -107,11 +123,62 @@ public class DatabaseManager
                     }
                 }
             }
-
             // Connect to the database:
             vufindDatabase = DriverManager.getConnection("jdbc:" + dsn + extraParams, username, password);
         } catch (Throwable e) {
             dieWithError("Unable to connect to VuFind database; " + e.getMessage());
+        }
+
+        Runtime.getRuntime().addShutdownHook(new DatabaseManagerShutdownThread(this));
+    }
+
+    /**
+     * Connect to the VuFind database if we do not already have a connection.
+     */
+    private void connectToDatabaseUsingSplitConfig()
+    {
+        try {
+            String username = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_username");
+            String password = "";
+            String passwordFile = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_password_file");
+            if (passwordFile != null && !passwordFile.isEmpty()) {
+                Path passwordFilePath = Paths.get(passwordFile);
+                password = Files.readString(passwordFilePath, Charset.defaultCharset());
+            }
+            if (password.isEmpty()) {
+                password = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_password");
+            }
+            String host = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_host");
+            String port = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_port");
+            String name = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_name");
+            String classname = "invalid";
+            String prefix = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_driver");
+            String extraParams = "";
+            if (prefix.equals("mysql")) {
+                classname = "com.mysql.jdbc.Driver";
+                prefix = "mysql";
+                String useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false) ? "true" : "false";
+                extraParams = "?useSSL=" + useSsl;
+                if (useSsl != "false") {
+                    String verifyCert = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "verify_server_certificate", false) ? "true" : "false";
+                    extraParams += "&verifyServerCertificate=" + verifyCert;
+                }
+            } else if (prefix.equals("pgsql") || prefix.equals("postgresql")) {
+                classname = "org.postgresql.Driver";
+                prefix = "postgresql";
+            }
+
+            Class.forName(classname).getDeclaredConstructor().newInstance();
+            String dsn = prefix + "://" + host;
+            if (!host.isEmpty()) {
+                dsn = dsn + ":" + port;
+            }
+            dsn = dsn + "/" + name;
+
+            // Connect to the database:
+            vufindDatabase = DriverManager.getConnection("jdbc:" + dsn + extraParams, username, password);
+        } catch (Throwable e) {
+            logger.warn("Unable to connect to database using split config (" + e.getMessage() + ")");
         }
 
         Runtime.getRuntime().addShutdownHook(new DatabaseManagerShutdownThread(this));
