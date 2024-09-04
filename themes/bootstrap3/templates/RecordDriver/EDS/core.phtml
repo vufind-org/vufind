@@ -87,8 +87,9 @@
                 $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3;
               ?>
               <?php if ($authorCount > 1): ?>
+                <td class="record__biblio-value">
                 <?php foreach ($authors as $i => $author): ?>
-                  <td class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></td><?php
+                  <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
                   if ($authorCount == ($i + 1)) {
                     break;
                   } elseif (($i + 1) >= $authorNameLimit) {
@@ -96,15 +97,17 @@
                     break;
                   }
                 ?><?php endforeach; ?>
+                </td>
               <?php else: ?>
                 <?=$this->driver->linkUrls($item['Data'])?>
               <?php endif; ?>
 	    </tr>
+          <?php else: ?>
+            <tr>
+              <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
+              <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
+            </tr>
           <?php endif; ?>
-          <tr>
-            <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
-            <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
-          </tr>
         <?php endif; ?>
       <?php endforeach; ?>
 

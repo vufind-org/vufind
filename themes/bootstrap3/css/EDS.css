@@ -96,3 +96,7 @@
 #combined_EDS .record-list .author:not(:last-of-type):after {
     content: '; ';
 }
+/* On EDS item detail page */
+.record__biblio-value .author:not(:last-of-type):after {
+    content: '; ';
+}
