@@ -12,9 +12,9 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?php if ($user && !empty($user->email)): ?>
+  <?php if ($user && !empty($user->getEmail())): ?>
     <div class="alert alert-info alert-email-notification">
-      <?=$this->transEsc('alert_email_address') . ': ' . $this->escapeHtml($user->email) ?>
+      <?=$this->transEsc('alert_email_address') . ': ' . $this->escapeHtml($user->getEmail()) ?>
       <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
         (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc('edit');?></a>)
       <?php endif; ?>
