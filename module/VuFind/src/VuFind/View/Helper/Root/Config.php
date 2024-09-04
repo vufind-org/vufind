@@ -50,6 +50,20 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     protected $configLoader;
 
     /**
+     * Display date format
+     *
+     * @var ?string
+     */
+    protected $displayDateFormat = null;
+
+    /**
+     * Display time format
+     *
+     * @var ?string
+     */
+    protected $displayTimeFormat = null;
+
+    /**
      * Config constructor.
      *
      * @param PluginManager $configLoader Configuration loader
@@ -139,5 +153,45 @@ class Config extends \Laminas\View\Helper\AbstractHelper
         return ($config->Site->sidebarOnLeft ?? false)
             ? 'left'
             : 'right';
+    }
+
+    /**
+     * Get date display format
+     *
+     * @return string
+     */
+    public function dateFormat(): string
+    {
+        if (null === $this->displayDateFormat) {
+            $config = $this->get('config');
+            $this->displayDateFormat = $config->Site->displayDateFormat ?? 'm-d-Y';
+        }
+        return $this->displayDateFormat;
+    }
+
+    /**
+     * Get time display format
+     *
+     * @return string
+     */
+    public function timeFormat(): string
+    {
+        if (null === $this->displayTimeFormat) {
+            $config = $this->get('config');
+            $this->displayTimeFormat = $config->Site->displayTimeFormat ?? 'H:i';
+        }
+        return $this->displayTimeFormat;
+    }
+
+    /**
+     * Get date+time display format
+     *
+     * @param string $separator String between date and time
+     *
+     * @return string
+     */
+    public function dateTimeFormat($separator = ' '): string
+    {
+        return $this->dateFormat() . $separator . $this->timeFormat();
     }
 }

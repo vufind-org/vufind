@@ -99,7 +99,7 @@ class History
                 $unsaved[] = $search;
             }
             if ($search->getOptions()->supportsScheduledSearch()) {
-                $schedule[$search->getSearchId()] = $current->getNotificationFrequency();
+                $schedule[$current->getId()] = $current->getNotificationFrequency();
             }
         }
 
