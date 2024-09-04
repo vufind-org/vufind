@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Similar Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010, 2022.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,10 +29,11 @@
 
 namespace VuFindTest\Related;
 
-use VuFind\Related\Similar;
+use VuFind\Related\MoreByAuthorSolr;
+use VuFindSearch\Query\Query;
 
 /**
- * Similar Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -40,7 +41,7 @@ use VuFind\Related\Similar;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SimilarTest extends \PHPUnit\Framework\TestCase
+class MoreByAuthorSolrTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test results.
@@ -52,27 +53,34 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
         // Similar is really just a thin wrapper around the search service; make
         // sure it does its job properly with the help of some mocks.
         $driver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->onlyMethods(['getUniqueId'])
+            ->onlyMethods(['getPrimaryAuthor', 'getUniqueId'])
             ->getMock();
-        $driver->expects($this->once())->method('getUniqueId')->willReturn('fakeid');
+        $driver->method('getUniqueId')->willReturn('fakeid');
+        $driver->method('getPrimaryAuthor')->willReturn('Smith, John');
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
+        $driver2 = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
+            ->onlyMethods(['getPrimaryAuthor', 'getUniqueId'])
             ->getMock();
-        $commandObj->expects($this->once())->method('getResult')
-            ->willReturn(['fakeresponse']);
+        $driver2->method('getUniqueId')->willReturn('fakeid2');
+        $driver2->method('getPrimaryAuthor')->willReturn('Smith, John');
+
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $commandObj->expects($this->once())->method('getResult')->willReturn([$driver, $driver2]);
         $checkCommand = function ($command) {
-            $this->assertEquals(\VuFindSearch\Command\SimilarCommand::class, $command::class);
+            $this->assertEquals(\VuFindSearch\Command\SearchCommand::class, $command::class);
             $this->assertEquals('Solr', $command->getTargetIdentifier());
-            $this->assertEquals('fakeid', $command->getArguments()[0]);
+            $expectedQuery = new Query('"Smith, John"', 'Author');
+            $this->assertEquals($expectedQuery, $command->getArguments()[0]);
             return true;
         };
-        $service = $this->createMock(\VuFindSearch\Service::class);
+        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->getMock();
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
             ->willReturn($commandObj);
-        $similar = new Similar($service);
-        $similar->init('', $driver);
-        $this->assertEquals(['fakeresponse'], $similar->getResults());
+        $related = new MoreByAuthorSolr($service);
+        $related->init('', $driver);
+        $this->assertEquals('Smith, John', $related->getName());
+        $this->assertEquals([$driver2], $related->getResults());
     }
 }
