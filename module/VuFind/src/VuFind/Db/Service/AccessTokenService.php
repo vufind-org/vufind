@@ -30,11 +30,10 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\AccessToken;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Entity\User;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -54,18 +53,14 @@ class AccessTokenService extends AbstractDbService implements
     use LoggerAwareTrait;
 
     /**
-     * Constructor.
+     * Create an access_token entity object.
      *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     * @param AccessToken         $accessTokenTable    Access token table
+     * @return AccessTokenEntityInterface
      */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        protected AccessToken $accessTokenTable
-    ) {
-        parent::__construct($entityManager, $entityPluginManager);
+    public function createEntity(): AccessTokenEntityInterface
+    {
+        $class = $this->getEntityClass(AccessToken::class);
+        return new $class();
     }
 
     /**
@@ -83,7 +78,22 @@ class AccessTokenService extends AbstractDbService implements
         string $type,
         bool $create = true
     ): ?AccessTokenEntityInterface {
-        return $this->accessTokenTable->getByIdAndType($id, $type, $create);
+        $dql = 'SELECT at '
+            . 'FROM ' . $this->getEntityClass(AccessToken::class) . ' at '
+            . 'WHERE at.id = :id '
+            . 'AND at.type = :type';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('id', 'type'));
+        $result = $query->getOneOrNullResult();
+        if ($result === null && $create) {
+            $result = $this->createEntity()
+                ->setId($id)
+                ->setType($type)
+                ->setCreated(new DateTime());
+            $this->persistEntity($result);
+        }
+
+        return $result;
     }
 
     /**
@@ -96,7 +106,11 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function storeNonce(int $userId, ?string $nonce): void
     {
-        $this->accessTokenTable->storeNonce($userId, $nonce);
+        $type = 'openid_nonce';
+        $token = $this->getByIdAndType((string)$userId, $type);
+        $token->setUser($this->entityManager->getReference(User::class, $userId));
+        $token->setData($nonce);
+        $this->persistEntity($token);
     }
 
     /**
@@ -108,7 +122,9 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function getNonce(int $userId): ?string
     {
-        return $this->accessTokenTable->getNonce($userId);
+        $type = 'openid_nonce';
+        $token = $this->getByIdAndType((string)$userId, $type, false);
+        return $token?->getData();
     }
 
     /**
@@ -121,6 +137,18 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        return $this->accessTokenTable->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('CONCAT(a.id, a.type)')
+            ->from($this->getEntityClass(AccessTokenEntityInterface::class), 'a')
+            ->where('a.created < :latestCreated')
+            ->setParameter('latestCreated', $dateLimit->format('Y-m-d H:i:s'));
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete($this->getEntityClass(AccessTokenEntityInterface::class), 'a')
+            ->where('concat(a.id, a.type) IN (:ids)')
+            ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
+        return $queryBuilder->getQuery()->execute();
     }
 }

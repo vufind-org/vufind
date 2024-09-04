@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -76,9 +77,9 @@ class AccessToken implements AccessTokenEntityInterface
     protected $type;
 
     /**
-     * User ID.
+     * User.
      *
-     * @var User
+     * @var UserEntityInterface
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({
@@ -120,7 +121,53 @@ class AccessToken implements AccessTokenEntityInterface
     protected $revoked = '0';
 
     /**
-     * Set user ID.
+     * Set access token identifier.
+     *
+     * @param string $id Access Token Identifier
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setId(string $id): AccessTokenEntityInterface
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?string
+     */
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get type of access token.
+     *
+     * @return ?string
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set type of access token.
+     *
+     * @param ?string $type Access Token Type
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setType(?string $type): AccessTokenEntityInterface
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Set user.
      *
      * @param ?UserEntityInterface $user User owning token
      *
@@ -133,13 +180,56 @@ class AccessToken implements AccessTokenEntityInterface
     }
 
     /**
-     * Set data.
+     * Get user ID.
      *
-     * @param string $data Data
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface
+    {
+        return $this->user;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
      *
      * @return AccessTokenEntityInterface
      */
-    public function setData(string $data): AccessTokenEntityInterface
+    public function setCreated(DateTime $dateTime): AccessTokenEntityInterface
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set data.
+     *
+     * @param ?string $data Data
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setData(?string $data): AccessTokenEntityInterface
     {
         $this->data = $data;
         return $this;

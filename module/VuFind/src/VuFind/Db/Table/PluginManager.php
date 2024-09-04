@@ -46,7 +46,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'accesstoken' => AccessToken::class,
         'authhash' => AuthHash::class,
         'externalsession' => ExternalSession::class,
         'logintoken' => LoginToken::class,
@@ -63,7 +62,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AccessToken::class => GatewayFactory::class,
         AuthHash::class => GatewayFactory::class,
         ExternalSession::class => GatewayFactory::class,
         LoginToken::class => GatewayFactory::class,

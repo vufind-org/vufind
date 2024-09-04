@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for access tokens.
  *
@@ -41,7 +43,39 @@ namespace VuFind\Db\Entity;
 interface AccessTokenEntityInterface extends EntityInterface
 {
     /**
-     * Set user ID.
+     * Set access token identifier.
+     *
+     * @param string $id Access Token Identifier
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setId(string $id): AccessTokenEntityInterface;
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?string
+     */
+    public function getId(): ?string;
+
+    /**
+     * Get type of access token.
+     *
+     * @return ?string
+     */
+    public function getType(): ?string;
+
+    /**
+     * Set type of access token.
+     *
+     * @param ?string $type Access Token Type
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setType(?string $type): AccessTokenEntityInterface;
+
+    /**
+     * Set user.
      *
      * @param ?UserEntityInterface $user User owning token
      *
@@ -50,13 +84,43 @@ interface AccessTokenEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface;
 
     /**
-     * Set data.
+     * Get user ID.
      *
-     * @param string $data Data
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
      *
      * @return AccessTokenEntityInterface
      */
-    public function setData(string $data): AccessTokenEntityInterface;
+    public function setCreated(DateTime $dateTime): AccessTokenEntityInterface;
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string;
+
+    /**
+     * Set data.
+     *
+     * @param ?string $data Data
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setData(?string $data): AccessTokenEntityInterface;
 
     /**
      * Is the access token revoked?
