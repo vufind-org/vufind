@@ -46,21 +46,13 @@ class SessionKey implements PermissionProviderInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Session container
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
      * Constructor
      *
      * @param $session Session container
      */
     public function __construct(
-        Container $session
+        protected Container $session
     ) {
-        $this->session = $session;
     }
 
     /**
