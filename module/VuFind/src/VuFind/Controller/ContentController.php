@@ -81,7 +81,7 @@ class ContentController extends AbstractBase
             }
             $page = substr($page, $p + 1);
         }
-        $pageLocator = $this->serviceLocator->get(\VuFind\Content\PageLocator::class);
+        $pageLocator = $this->getService(\VuFind\Content\PageLocator::class);
         $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
 
         $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;

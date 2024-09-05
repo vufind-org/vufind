@@ -33,7 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardService;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -134,7 +134,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessfulStoredLoginAttempt(): void
     {
-        $user = $this->getMockUser(['getCatUsername', 'getRawCatPassword']);
+        $user = $this->getMockUser();
         $user->expects($this->any())->method('getCatUsername')->willReturn('user');
         $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
@@ -158,9 +158,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsuccessfulStoredLoginAttempt(): void
     {
-        $user = $this->getMockUser(
-            ['setCatUsername', 'setRawCatPassword', 'setCatPassEnc', 'getCatUsername', 'getRawCatPassword']
-        );
+        $user = $this->getMockUser();
         $user->expects($this->any())->method('getCatUsername')->willReturn('user');
         $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $user->expects($this->once())->method('setCatUsername')->with(null)->willReturn($user);
@@ -185,7 +183,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('kaboom');
 
-        $user = $this->getMockUser(['getCatUsername', 'getRawCatPassword']);
+        $user = $this->getMockUser();
         $user->expects($this->any())->method('getCatUsername')->willReturn('user');
         $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
@@ -275,16 +273,11 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock user object
      *
-     * @param array $methods Methods to mock
-     *
-     * @return MockObject&User
+     * @return MockObject&UserEntityInterface
      */
-    protected function getMockUser(array $methods = []): MockObject&User
+    protected function getMockUser(): MockObject&UserEntityInterface
     {
-        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods($methods)
-            ->getMock();
+        return $this->createMock(UserEntityInterface::class);
     }
 
     /**

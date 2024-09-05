@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 use function strlen;
 
@@ -53,13 +53,13 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Loader               $loader    Record loader
-     * @param Tags                 $tagHelper Tag helper
-     * @param ?UserEntityInterface $user      Logged in user (or null)
+     * @param Loader               $loader      Record loader
+     * @param TagsService          $tagsService Tags service
+     * @param ?UserEntityInterface $user        Logged in user (or null)
      */
     public function __construct(
         protected Loader $loader,
-        protected Tags $tagHelper,
+        protected TagsService $tagsService,
         protected ?UserEntityInterface $user
     ) {
     }
@@ -87,12 +87,12 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         if (strlen($tag) > 0) { // don't add empty tags
             $driver = $this->loader->load($id, $source);
             $serviceMethod = ('false' === $params->fromPost('remove', 'false'))
-                ? 'addTagsToRecord'
-                : 'deleteTagsFromRecord';
-            $this->tagHelper->$serviceMethod(
+                ? 'linkTagsToRecord'
+                : 'unlinkTagsFromRecord';
+            $this->tagsService->$serviceMethod(
                 $driver,
                 $this->user,
-                $this->tagHelper->parse($tag)
+                $this->tagsService->parse($tag)
             );
         }
 

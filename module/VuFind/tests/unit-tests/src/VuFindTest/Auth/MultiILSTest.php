@@ -36,7 +36,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Driver\MultiBackend;
 use VuFindTest\Container\MockDbServicePluginManager;
-use VuFindTest\Container\MockDbTablePluginManager;
 
 /**
  * MultiILS authentication test class.
@@ -313,24 +312,19 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockUser ??= $this->getMockUser();
         $mockUserService = $this->createMock(UserServiceInterface::class);
         $mockUserService->expects($this->any())
+            ->method('getUserByUsername')
+            ->willReturn($mockUser);
+        $mockUserService->expects($this->any())
             ->method('updateUserEmail')
             ->willReturnCallback(
                 function ($mockUser, $email) {
                     $mockUser->setEmail($email);
                 }
             );
-        $mockUserTable = $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockUserTable->expects($this->any())
-            ->method('getByUsername')
-            ->willReturn($mockUser);
         $mockDbServiceManager = new MockDbServicePluginManager($this);
         $mockDbServiceManager->set(UserServiceInterface::class, $mockUserService);
-        $mockTableManager = new MockDbTablePluginManager($this);
-        $mockTableManager->set('User', $mockUserTable);
         $this->container
-            ->set(\VuFind\Db\Table\PluginManager::class, $mockTableManager);
+            ->set(\VuFind\Db\Service\PluginManager::class, $mockDbServiceManager);
         $driverManager = new \VuFind\ILS\Driver\PluginManager($this->container);
         $parts = explode('\\', $driver::class);
         $driverClass = end($parts);
@@ -355,7 +349,6 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
 
         $auth = new \VuFind\Auth\MultiILS($connection, $mockAuthenticator);
         $auth->setDbServiceManager($mockDbServiceManager);
-        $auth->setDbTableManager($mockTableManager);
         return $auth;
     }
 }

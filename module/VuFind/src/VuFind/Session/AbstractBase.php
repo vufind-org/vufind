@@ -33,6 +33,8 @@ namespace VuFind\Session;
 
 use Laminas\Config\Config;
 use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
  * Base class for session handling
@@ -143,10 +145,8 @@ abstract class AbstractBase implements HandlerInterface
      */
     public function destroy($sessId): bool
     {
-        $searchTable = $this->getTable('Search');
-        $searchTable->destroySession($sessId);
-        $sessionTable = $this->getTable('ExternalSession');
-        $sessionTable->destroySession($sessId);
+        $this->getDbService(SearchServiceInterface::class)->destroySession($sessId);
+        $this->getDbService(ExternalSessionServiceInterface::class)->destroySession($sessId);
         return true;
     }
 
@@ -156,12 +156,11 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @param int $sessMaxLifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    #[\ReturnTypeWillChange]
-    public function gc($sessMaxLifetime)
+    public function gc($sessMaxLifetime): int|false
     {
         // how often does this get called (if at all)?
 
@@ -174,7 +173,7 @@ abstract class AbstractBase implements HandlerInterface
         // Anecdotal testing Today and Yesterday seems to indicate destroy()
         //   is called by the garbage collector and everything is good.
         // Something to keep in mind though.
-        return true;
+        return 0;
     }
 
     /**

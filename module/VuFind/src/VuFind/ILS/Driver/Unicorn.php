@@ -1287,18 +1287,6 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Convert the given ISO-8859-1 string to UTF-8 if it is not already UTF-8.
-     *
-     * @param string $s The string to convert.
-     *
-     * @return string   The input string converted to UTF-8
-     */
-    protected function toUTF8($s)
-    {
-        return (mb_detect_encoding($s, 'UTF-8') == 'UTF-8') ? $s : utf8_encode($s);
-    }
-
-    /**
      * Given a location field, return the values relevant to VuFind.
      *
      * This method is meant to be overridden in inheriting classes to

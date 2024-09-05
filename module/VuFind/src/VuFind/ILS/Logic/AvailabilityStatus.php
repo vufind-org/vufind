@@ -52,11 +52,15 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     /**
      * Constructor
      *
-     * @param int|bool $availability Availability
-     * @param string   $status       Status Description
+     * @param int|bool $availability           Availability
+     * @param string   $status                 Status Description
+     * @param array    $extraStatusInformation Extra Status Information
      */
-    public function __construct(int|bool $availability, protected string $status = '')
-    {
+    public function __construct(
+        int|bool $availability,
+        protected string $status = '',
+        protected array $extraStatusInformation = []
+    ) {
         $this->availability = (int)$availability;
     }
 
@@ -116,6 +120,30 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     }
 
     /**
+     * Get extra status information.
+     *
+     * @return array
+     */
+    public function getExtraStatusInformation(): array
+    {
+        return $this->extraStatusInformation;
+    }
+
+    /**
+     * Get status description tokens. Used when status description is being translated.
+     *
+     * @return array
+     */
+    public function getStatusDescriptionTokens(): array
+    {
+        $tokens = [];
+        foreach ($this->getExtraStatusInformation() as $key => $value) {
+            $tokens['%%' . $key . '%%'] = $value;
+        }
+        return $tokens;
+    }
+
+    /**
      * Get schema.org availability URI.
      *
      * @return ?string
@@ -158,7 +186,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @param AvailabilityStatusInterface $other Other Availability Status
      *
-     * @return int
+     * @return int -1 if $other has lower priority, 0 if same, 1 if higher
      */
     public function compareTo(AvailabilityStatusInterface $other): int
     {
@@ -170,7 +198,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @return int
      */
-    protected function getPriority(): int
+    public function getPriority(): int
     {
         switch ($this->availability) {
             case AvailabilityStatusInterface::STATUS_UNKNOWN:

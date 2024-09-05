@@ -54,46 +54,46 @@ interface CommentsServiceInterface extends DbServiceInterface
     /**
      * Add a comment to the current resource. Returns comment ID on success, null on failure.
      *
-     * @param string                      $comment  The comment to save.
-     * @param int|UserEntityInterface     $user     User object or identifier
-     * @param int|ResourceEntityInterface $resource Resource object or identifier
+     * @param string                      $comment      The comment to save.
+     * @param UserEntityInterface|int     $userOrId     User object or identifier
+     * @param ResourceEntityInterface|int $resourceOrId Resource object or identifier
      *
      * @return ?int
      */
     public function addComment(
         string $comment,
-        int|UserEntityInterface $user,
-        int|ResourceEntityInterface $resource
+        UserEntityInterface|int $userOrId,
+        ResourceEntityInterface|int $resourceOrId
     ): ?int;
 
     /**
-     * Get comments associated with the specified resource.
+     * Get comments associated with the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
      * @return CommentsEntityInterface[]
      */
-    public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array;
+    public function getRecordComments(string $id, string $source = DEFAULT_SEARCH_BACKEND): array;
 
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
      *
-     * @param int                     $id   ID of row to delete
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param int                     $id       ID of row to delete
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return bool
      */
-    public function deleteIfOwnedByUser(int $id, int|UserEntityInterface $user): bool;
+    public function deleteIfOwnedByUser(int $id, UserEntityInterface|int $userOrId): bool;
 
     /**
      * Deletes all comments by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void;
+    public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
      * Get statistics on use of comments.
@@ -110,4 +110,14 @@ interface CommentsServiceInterface extends DbServiceInterface
      * @return ?CommentsEntityInterface
      */
     public function getCommentById(int $id): ?CommentsEntityInterface;
+
+    /**
+     * Change all matching comments to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void;
 }

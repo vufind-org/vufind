@@ -45,6 +45,19 @@ $config = [
                     'spec' => '/Content/%page%',
                 ],
             ],
+            'help' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Help/[:topic]',
+                    'constraints' => [
+                        'topic'     => '[a-zA-Z0-9_-]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Help',
+                        'action'     => 'Home',
+                    ],
+                ],
+            ],
             'shortlink' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -383,6 +396,7 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
@@ -401,7 +415,7 @@ $config = [
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
-            'VuFind\Connection\ExternalVuFind' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Connection\ExternalVuFind' => 'VuFind\Connection\ExternalVuFindFactory',
             'VuFind\Connection\LibGuides' => 'VuFind\Connection\LibGuidesFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
@@ -422,6 +436,7 @@ $config = [
             'VuFind\Cover\Loader' => 'VuFind\Cover\LoaderFactory',
             'VuFind\Cover\Router' => 'VuFind\Cover\RouterFactory',
             'VuFind\Crypt\HMAC' => 'VuFind\Crypt\HMACFactory',
+            'VuFind\Crypt\SecretCalculator' => 'VuFind\Crypt\SecretCalculatorFactory',
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -471,6 +486,7 @@ $config = [
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
             'VuFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
+            'VuFind\Record\RecordIdUpdater' => 'VuFind\Record\RecordIdUpdaterFactory',
             'VuFind\Record\ResourcePopulator' => 'VuFind\Record\ResourcePopulatorFactory',
             'VuFind\Record\Router' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -502,7 +518,7 @@ $config = [
             'VuFind\Sitemap\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\SMS\SMSInterface' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
-            'VuFind\Tags' => 'VuFind\TagsFactory',
+            'VuFind\Tags\TagsService' => 'VuFind\Tags\TagsServiceFactory',
             'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
             'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
@@ -581,6 +597,7 @@ $config = [
             'VuFind\SessionManager' => 'Laminas\Session\SessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Session\PluginManager',
             'VuFind\SMS' => 'VuFind\SMS\SMSInterface',
+            'VuFind\Tags' => 'VuFind\Tags\TagsService',
             'VuFind\Translator' => 'Laminas\Mvc\I18n\Translator',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
@@ -589,6 +606,7 @@ $config = [
         ],
         'shared' => [
             'VuFind\Form\Form' => false,
+            'VuFind\Http\CachingDownloader' => false,
         ],
     ],
     'translator' => [],

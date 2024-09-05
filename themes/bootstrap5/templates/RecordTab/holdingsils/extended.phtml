@@ -28,10 +28,11 @@
           <?php
             $statusClass = $this->availabilityStatus()->getClass($availabilityStatus);
             $statusDescription = $availabilityStatus->getStatusDescription();
+            $statusDescriptionTokens = $availabilityStatus->getStatusDescriptionTokens();
             $schemaAvailabilityUri = $availabilityStatus->getSchemaAvailabilityUri();
           ?>
           <span class="<?=$this->escapeHtmlAttr($statusClass)?>">
-            <?=$this->transEsc($statusDescription)?>
+            <?=$this->transEsc($statusDescription, $statusDescriptionTokens)?>
             <?php if ($schemaAvailabilityUri): ?>
               <?=$this->schemaOrg()->getLink($schemaAvailabilityUri, 'availability')?>
             <?php endif; ?>

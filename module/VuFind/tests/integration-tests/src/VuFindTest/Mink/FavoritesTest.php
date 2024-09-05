@@ -437,6 +437,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can sort lists.
      *
      * @return void
+     *
+     * @depends testAddSearchItemToFavoritesLoggedIn
      */
     public function testListSorting(): void
     {
@@ -458,6 +460,60 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             ['Dewey browse test', 'Fake Record 1 with multiple relators/']
         );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Fake Record 1 with multiple relators/', 'Dewey browse test']
+        );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved DESC', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Dewey browse test', 'Fake Record 1 with multiple relators/']
+        );
+    }
+
+    /**
+     * Test that we can facet filters by tag.
+     *
+     * @return void
+     *
+     * @depends testAddSearchItemToFavoritesLoggedIn
+     */
+    public function testFavoriteFaceting(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Make sure we have a facet list:
+        $facetLinks = $page->findAll('css', 'nav[aria-labelledby="acc-menu-favs-header"] a');
+        $linkToClick = null;
+        $allText = [];
+        foreach ($facetLinks as $link) {
+            $allText[] = $link->getText();
+            if ($link->getText() === '1 test 3') {
+                $linkToClick = $link;
+            }
+        }
+        // Facet order may vary by database engine, but let's make sure all the values are there:
+        $this->assertCount(3, $allText);
+        $expectedLinks = [
+            '1 test 3',
+            '1 test1',
+            '1 test2',
+        ];
+        $this->assertEmpty(array_diff($expectedLinks, $allText));
+
+        // Now click on one and confirm that it filters the list down to just one item:
+        $this->assertEquals('1 test 3', $linkToClick?->getText());
+        $linkToClick->click();
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder($page, ['Fake Record 1 with multiple relators/']);
     }
 
     /**

@@ -108,7 +108,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     /**
      * Checks whether the user is logged in.
      *
-     * @return \VuFind\Db\Row\User|bool Object if user is logged in, false
+     * @return UserEntityInterface|bool Object if user is logged in, false
      * otherwise.
      *
      * @deprecated Use getIdentity() or getUserObject() instead.

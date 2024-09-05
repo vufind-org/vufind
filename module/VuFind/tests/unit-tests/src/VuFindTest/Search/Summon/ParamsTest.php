@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Summon;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Summon\Options;
 use VuFind\Search\Summon\Params;

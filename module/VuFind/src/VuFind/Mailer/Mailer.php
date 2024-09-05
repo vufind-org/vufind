@@ -91,9 +91,10 @@ class Mailer implements
     /**
      * Constructor
      *
-     * @param TransportInterface $transport Mail transport
+     * @param TransportInterface $transport  Mail transport
+     * @param ?string            $messageLog File to log messages into (null for no logging)
      */
-    public function __construct(TransportInterface $transport)
+    public function __construct(TransportInterface $transport, protected ?string $messageLog = null)
     {
         $this->setTransport($transport);
     }
@@ -333,6 +334,9 @@ class Mailer implements
                 $message->addReplyTo($replyTo);
             }
             $this->getTransport()->send($message);
+            if ($this->messageLog) {
+                file_put_contents($this->messageLog, $message->toString() . "\n", FILE_APPEND);
+            }
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN);

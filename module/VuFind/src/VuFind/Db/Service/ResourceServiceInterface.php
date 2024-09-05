@@ -30,7 +30,10 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 
 /**
  * Database service interface for resource.
@@ -90,4 +93,59 @@ interface ResourceServiceInterface extends DbServiceInterface
      * @return ResourceEntityInterface[]
      */
     public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array;
+
+    /**
+     * Get a set of resources from the requested favorite list.
+     *
+     * @param UserEntityInterface|int          $userOrId          ID of user owning favorite list
+     * @param UserListEntityInterface|int|null $listOrId          ID of list to retrieve (null for all favorites)
+     * @param string[]                         $tags              Tags to use for limiting results
+     * @param ?string                          $sort              Resource table field to use for sorting (null for no
+     * particular sort).
+     * @param int                              $offset            Offset for results
+     * @param ?int                             $limit             Limit for results (null for none)
+     * @param bool                             $caseSensitiveTags Treat tags as case-sensitive?
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function getFavorites(
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        array $tags = [],
+        ?string $sort = null,
+        int $offset = 0,
+        ?int $limit = null,
+        bool $caseSensitiveTags = false
+    ): array;
+
+    /**
+     * Delete a resource by record id and source. Return true if found and deleted, false if not found.
+     * Throws exception if something goes wrong.
+     *
+     * @param string $id     Resource ID
+     * @param string $source Resource source
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteResourceByRecordId(string $id, string $source): bool;
+
+    /**
+     * Globally change the name of a source value in the database; return the number of rows affected.
+     *
+     * @param string $old Old source value
+     * @param string $new New source value
+     *
+     * @return int
+     */
+    public function renameSource(string $old, string $new): int;
+
+    /**
+     * Delete a resource entity.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Resource entity or ID value.
+     *
+     * @return void
+     */
+    public function deleteResource(ResourceEntityInterface|int $resourceOrId): void;
 }

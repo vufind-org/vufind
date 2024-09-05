@@ -81,6 +81,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @dataProvider serverProvider
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testDisabledByDefault(string $path): void
     {
         $session = $this->getMinkSession();

@@ -132,7 +132,7 @@ class Resource extends Gateway implements DbServiceAwareInterface
      *
      * @return ResourceEntityInterface[]
      *
-     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::getResourcesByRecordIds()
+     * @deprecated Use ResourceServiceInterface::getResourcesByRecordIds()
      */
     public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
@@ -142,13 +142,13 @@ class Resource extends Gateway implements DbServiceAwareInterface
     /**
      * Get a set of records from the requested favorite list.
      *
-     * @param string $user   ID of user owning favorite list
-     * @param string $list   ID of list to retrieve (null for all favorites)
-     * @param array  $tags   Tags to use for limiting results
-     * @param string $sort   Resource table field to use for sorting (null for
-     * no particular sort).
-     * @param int    $offset Offset for results
-     * @param int    $limit  Limit for results (null for none)
+     * @param string $user              ID of user owning favorite list
+     * @param string $list              ID of list to retrieve (null for all favorites)
+     * @param array  $tags              Tags to use for limiting results
+     * @param string $sort              Resource table field to use for sorting (null for no particular sort).
+     * @param int    $offset            Offset for results
+     * @param int    $limit             Limit for results (null for none)
+     * @param ?bool  $caseSensitiveTags Should tags be searched case sensitively (null for configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
@@ -158,31 +158,35 @@ class Resource extends Gateway implements DbServiceAwareInterface
         $tags = [],
         $sort = null,
         $offset = 0,
-        $limit = null
+        $limit = null,
+        $caseSensitiveTags = null
     ) {
         // Set up base query:
         return $this->select(
-            function ($s) use ($user, $list, $tags, $sort, $offset, $limit) {
-                $columns = [
-                    new Expression(
-                        'DISTINCT(?)',
-                        ['resource.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR,
-                ];
+            function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $caseSensitiveTags) {
+                $columns = [Select::SQL_STAR];
                 $s->columns($columns);
                 $s->join(
-                    ['ur' => 'user_resource'],
-                    'resource.id = ur.resource_id',
-                    []
+                    'user_resource',
+                    'resource.id = user_resource.resource_id',
+                    ['last_saved' => new Expression('MAX(saved)')]
                 );
-                $s->where->equalTo('ur.user_id', $user);
-
+                $s->where->equalTo('user_resource.user_id', $user);
                 // Adjust for list if necessary:
                 if (null !== $list) {
-                    $s->where->equalTo('ur.list_id', $list);
+                    $s->where->equalTo('user_resource.list_id', $list);
                 }
-
+                // Adjust for tags if necessary:
+                if (!empty($tags)) {
+                    $linkingTable = $this->getDbTable('ResourceTags');
+                    foreach ($tags as $tag) {
+                        $matches = $linkingTable->getResourcesForTag($tag, $user, $list, $caseSensitiveTags)->toArray();
+                        $getId = function ($i) {
+                            return $i['resource_id'];
+                        };
+                        $s->where->in('resource_id', array_map($getId, $matches));
+                    }
+                }
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
@@ -190,21 +194,12 @@ class Resource extends Gateway implements DbServiceAwareInterface
                     $s->limit($limit);
                 }
 
-                // Adjust for tags if necessary:
-                if (!empty($tags)) {
-                    $linkingTable = $this->getDbTable('ResourceTags');
-                    foreach ($tags as $tag) {
-                        $matches = $linkingTable
-                            ->getResourcesForTag($tag, $user, $list)->toArray();
-                        $getId = function ($i) {
-                            return $i['resource_id'];
-                        };
-                        $s->where->in('resource.id', array_map($getId, $matches));
-                    }
-                }
+                $s->group(['resource.id']);
 
                 // Apply sorting, if necessary:
-                if (!empty($sort)) {
+                if ($sort == 'last_saved' || $sort == 'last_saved DESC') {
+                    $s->order($sort);
+                } elseif (!empty($sort)) {
                     Resource::applySort($s, $sort, 'resource', $columns);
                 }
             }
@@ -217,7 +212,7 @@ class Resource extends Gateway implements DbServiceAwareInterface
      *
      * @return ResourceEntityInterface[]
      *
-     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::findMissingMetadata()
+     * @deprecated Use ResourceServiceInterface::findMissingMetadata()
      */
     public function findMissingMetadata()
     {
@@ -232,6 +227,8 @@ class Resource extends Gateway implements DbServiceAwareInterface
      * @param string $source Record source
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Record\RecordIdUpdater::updateRecordId()
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {

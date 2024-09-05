@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\SearchEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+
 /**
  * Database service interface for search.
  *
@@ -40,4 +43,104 @@ namespace VuFind\Db\Service;
  */
 interface SearchServiceInterface extends DbServiceInterface
 {
+    /**
+     * Create a search entity.
+     *
+     * @return SearchEntityInterface
+     */
+    public function createEntity(): SearchEntityInterface;
+
+    /**
+     * Create a search entity containing the specified checksum, persist it to the database,
+     * and return a fully populated object. Throw an exception if something goes wrong during
+     * the process.
+     *
+     * @param int $checksum Checksum
+     *
+     * @return SearchEntityInterface
+     * @throws Exception
+     */
+    public function createAndPersistEntityWithChecksum(int $checksum): SearchEntityInterface;
+
+    /**
+     * Destroy unsaved searches belonging to the specified session/user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return void
+     */
+    public function destroySession(string $sessionId, UserEntityInterface|int|null $userOrId = null): void;
+
+    /**
+     * Get a SearchEntityInterface object by ID.
+     *
+     * @param int $id Search identifier
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchById(int $id): ?SearchEntityInterface;
+
+    /**
+     * Get a SearchEntityInterface object by ID and owner.
+     *
+     * @param int                          $id        Search identifier
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchByIdAndOwner(
+        int $id,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId
+    ): ?SearchEntityInterface;
+
+    /**
+     * Get an array of rows for the specified user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSearches(string $sessionId, UserEntityInterface|int|null $userOrId = null): array;
+
+    /**
+     * Get scheduled searches.
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getScheduledSearches(): array;
+
+    /**
+     * Retrieve all searches matching the specified checksum and belonging to the user specified by session or user
+     * entity/ID.
+     *
+     * @param int                          $checksum  Checksum to match
+     * @param string                       $sessionId Current session ID
+     * @param UserEntityInterface|int|null $userOrId  Entity or ID representing current user (optional).
+     *
+     * @return SearchEntityInterface[]
+     * @throws Exception
+     */
+    public function getSearchesByChecksumAndOwner(
+        int $checksum,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId = null
+    ): array;
+
+    /**
+     * Set invalid user_id values in the table to null; return count of affected rows.
+     *
+     * @return int
+     */
+    public function cleanUpInvalidUserIds(): int;
+
+    /**
+     * Get saved searches with missing checksums (used for cleaning up legacy data).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSavedSearchesWithMissingChecksums(): array;
 }

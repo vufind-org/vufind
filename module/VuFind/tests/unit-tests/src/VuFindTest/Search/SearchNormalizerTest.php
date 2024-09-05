@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Search;
 
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\SearchNormalizer;
 
 /**
@@ -64,7 +65,7 @@ class SearchNormalizerTest extends \PHPUnit\Framework\TestCase
             ->method('get')->with($this->equalTo('Solr'))
             ->will($this->returnValue($results));
         $minified = new \minSO($results);
-        $normalizer = new SearchNormalizer($manager);
+        $normalizer = new SearchNormalizer($manager, $this->createMock(SearchServiceInterface::class));
         $normalized = $normalizer->normalizeMinifiedSearch($minified);
         $this->assertEquals($results, $normalized->getRawResults());
     }

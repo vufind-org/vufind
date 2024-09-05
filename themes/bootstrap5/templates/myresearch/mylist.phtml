@@ -54,7 +54,7 @@
     </div>
     <div class="search-controls">
       <?php if (isset($list)): ?>
-        <?php if ($list->editAllowed($account->getUserObject())): ?>
+        <?php if ($this->userlist()->userCanEditList($account->getUserObject(), $list)): ?>
           <a href="<?=$this->url('editList', ['id' => $list->getId()]) ?>" class="btn btn-link icon-link">
             <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>
@@ -67,6 +67,7 @@
                     'buttonIcon' => 'user-list-delete',
                     'buttonLabel' => 'delete_list',
                     'confirmLink' => $this->url('myresearch-deletelist', [], ['query' => ['listID' => $list->getId(), 'confirm' => 1]]),
+                    'header' => 'confirm_delete_list_text',
                 ]
             )
           ?>

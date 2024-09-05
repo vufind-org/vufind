@@ -31,16 +31,18 @@
             )
           ?>
         <?php endif; ?>
-        <?=
-          $this->bulkAction()->button(
-              'email',
-              'send-email',
-              'Email',
-              [
-                'title' => $this->translate('bulk_email_cart'),
-              ]
-          )
-        ?>
+        <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+          <?=
+            $this->bulkAction()->button(
+                'email',
+                'send-email',
+                'Email',
+                [
+                  'title' => $this->translate('bulk_email_cart'),
+                ]
+            )
+          ?>
+        <?php endif; ?>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
         <?php if (count($exportOptions) > 0): ?>
           <?=
@@ -75,7 +77,8 @@
                     'buttonIcon' => 'cart-remove',
                     'buttonLabel' => 'Delete',
                     'confirmId' => 'cart-confirm-delete',
-                    'confirmTitle' => 'confirm_delete',
+                    'confirmTitle' => 'bookbag_confirm_delete',
+                    'header' => 'bookbag_confirm_delete',
                 ]
             )
           ?>
@@ -93,6 +96,7 @@
                     'confirmId' => 'cart-confirm-empty',
                     'confirmTitle' => 'bookbag_confirm_empty',
                     'cancelId' => 'cart-refuse-empty',
+                    'header' => 'bookbag_confirm_empty',
                 ]
             )
           ?>

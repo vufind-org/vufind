@@ -65,9 +65,9 @@ class ExpireSearchesCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $tableManager->get(\VuFind\Db\Table\Search::class),
+            $serviceManager->get(\VuFind\Db\Service\SearchServiceInterface::class),
             ...($options ?? [])
         );
     }
