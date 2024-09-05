@@ -47,9 +47,10 @@
           }
         ?>
         <li class="nav-item dropdown">
-          <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-            <?=$this->transEsc($section)?> <b class="caret"></b>
-          </a>
+          <a href="#" class="dropdown-toggle icon-link" data-bs-toggle="dropdown">
+          <span class="icon-link__label"><?=$this->transEsc($section)?></span>
+            <?=$this->icon('caret-down', 'icon-link__icon')?>
+            </a>
           <ul class="dropdown-menu">
             <?php foreach ($currentItems as $url => $label): ?>
               <li>
