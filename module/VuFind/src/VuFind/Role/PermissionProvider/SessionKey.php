@@ -67,7 +67,6 @@ class SessionKey implements PermissionProviderInterface
     {
         foreach ((array)$options as $sessionKey) {
             $this->debug("getPermissions: option sessionKey '{$sessionKey}'");
-            $sessionValue = $this->session->$sessionKey;
             if (!($this->session->$sessionKey ?? false)) {
                 $this->debug('getPermissions: result = false');
                 return [];
