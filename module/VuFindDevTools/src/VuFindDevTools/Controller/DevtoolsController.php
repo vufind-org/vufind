@@ -32,6 +32,7 @@ namespace VuFindDevTools\Controller;
 
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
+use VuFind\Role\PermissionManager;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
 
@@ -139,5 +140,21 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
             $this->params()->fromQuery('main', 'en'),
             (bool)$this->params()->fromQuery('includeOptional', 1)
         );
+    }
+
+    /**
+     * Permissions action
+     *
+     * @return array
+     */
+    public function permissionsAction()
+    {
+        $manager = $this->getService(PermissionManager::class);
+        $permissions = [];
+        foreach ($manager->getAllConfiguredPermissions() as $permission) {
+            $permissions[$permission] = $manager->isAuthorized($permission);
+        }
+        ksort($permissions);
+        return compact('permissions');
     }
 }
