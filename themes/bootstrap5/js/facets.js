@@ -177,11 +177,14 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     // If at least one parameter is not null we continue the routine for the final URL
     if (allEmptyDateParams === false) {
       globalAddedParams = globalAddedParams.concat(dateParams);
-      let fieldName = form.querySelector('input[name="daterange[]"]').value;
-      let dateRangeParam = encodeURI('daterange[]=' + fieldName);
-      if (!window.location.search.match(dateRangeParam)) {
-        globalAddedParams.push(dateRangeParam);
-      }
+      form.querySelectorAll('input').forEach((elem) => {
+        if (dateSelectorId.startsWith(elem.value)) {
+          let dateRangeParam = encodeURI(elem.name + '=' + elem.value);
+          if (!window.location.search.match(dateRangeParam)) {
+            globalAddedParams.push(dateRangeParam);
+          }
+        }
+      });
     }
   }
 
