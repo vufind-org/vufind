@@ -78,7 +78,7 @@ class SessionKey implements PermissionProviderInterface
     }
 
     /**
-     * Set a boolean true value for a key in the Session container.
+     * Activate a key in the Session container.
      *
      * @param string $sessionKey - Set a boolean true value for this session key.
      *
@@ -88,5 +88,18 @@ class SessionKey implements PermissionProviderInterface
     {
         // Store boolean true value for the sessionKey
         $this->session->$sessionKey = true;
+    }
+
+    /**
+     * Deactivate a key in the Session container.
+     *
+     * @param string $sessionKey - Set a boolean true value for this session key.
+     *
+     * @return void
+     */
+    public function unsetSessionValue(string $sessionKey): void
+    {
+        // Store null value for the sessionKey
+        $this->session->$sessionKey = null;
     }
 }
