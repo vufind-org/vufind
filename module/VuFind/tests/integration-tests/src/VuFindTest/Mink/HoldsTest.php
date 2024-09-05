@@ -107,7 +107,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             . urlencode("id:($id)")
         );
         $page = $session->getPage();
-        $this->clickCss($page, '#result0 a.record-cover-link');
+        $this->clickCss($page, '#result0 a.getFull');
         $this->waitForPageLoad($page);
         return $page;
     }

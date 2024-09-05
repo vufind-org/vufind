@@ -104,7 +104,7 @@
           <?php foreach ($tokens as $i => $token): ?>
             <tr>
               <td data-label="<?=$this->transEsc('saved_login_platform_and_browser')?>" id="login_platform_<?=$i?>"><?=$this->transEsc($token->getPlatform())?> / <?=$this->transEsc($token->getBrowser())?></td>
-              <td data-label="<?=$this->transEsc('Last Login')?>" id="login_date_<?=$i?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $token->getLastLogin()->getTimestamp())?></td>
+              <td data-label="<?=$this->transEsc('Last Login')?>" id="login_date_<?=$i?>"><?=$token->getLastLogin()->format($this->config()->dateTimeFormat())?></td>
               <td data-label="<?=$this->transEsc('saved_login_actions')?>">
                 <form id="delete-login-token" method="post" action="<?=$this->url('myresearch-deletelogintoken')?>">
                   <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">

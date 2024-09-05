@@ -1,9 +1,13 @@
 <?php
-  $this->headTitle($this->translate('Icons'));
+  $title = $this->translate('Icons');
+  $titleEsc = $this->escapeHtml($title);
+  $this->headTitle($title);
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+  . '<li class="active">' . $titleEsc . '</li>';
 ?>
-
-<table>
+<h1><?=$titleEsc?></h1>
+<div>
   <?php foreach ($aliases as $icon): ?>
     <?=$this->icon($icon)?>: <?=$this->escapeHtml($icon)?><br>
   <?php endforeach; ?>
-</table>
+</div>
