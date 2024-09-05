@@ -1,0 +1,15 @@
+<?php
+  $title = $this->translate('Permissions');
+  $titleEsc = $this->escapeHtml($title);
+  $this->headTitle($title);
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+  . '<li class="active">' . $titleEsc . '</li>';
+?>
+<h1><?=$titleEsc?></h1>
+
+<table class="table table-striped">
+  <tr><th scope="col">Permission</th><th scope="col">Granted?</th></tr>
+  <?php foreach ($permissions as $permission => $status): ?>
+    <tr><td><?=$this->escapeHtml($permission)?></td><td><?=$status ? 'yes' : 'no'?></td></tr>
+  <?php endforeach; ?>
+</table>
