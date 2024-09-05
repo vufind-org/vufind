@@ -39,5 +39,11 @@ header .form-control:focus,
 div.main .form-control {
   background-color: white;
 }
+button.btn-primary {
+  color: white;
+}
+button.btn-primary:hover {
+  background-color: white;
+}
 /* You can also organize these styles in separate files and @import them */
 @import "home-page";
