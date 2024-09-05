@@ -811,6 +811,7 @@ class Folio extends AbstractAPI implements
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $showHoldingsNoItems = $this->config['Holdings']['show_holdings_no_items'] ?? true;
         $dueDateItemCount = 0;
 
         $instance = $this->getInstanceByBibId($bibId);
@@ -877,7 +878,7 @@ class Folio extends AbstractAPI implements
             // If there are no item records on this holding, we're going to create a fake one,
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
-            if ($number == 0) {
+            if ($number == 0 && $showHoldingsNoItems) {
                 $locAndHoldings = $this->getItemFieldsFromLocAndHolding($holding->effectiveLocationId, $holdingDetails);
                 $invisibleAvailabilityStatus = new AvailabilityStatus(
                     true,
