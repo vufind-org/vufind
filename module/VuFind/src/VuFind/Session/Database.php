@@ -87,13 +87,11 @@ class Database extends AbstractBase
      *
      * @param int $sessMaxLifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      */
-    #[\ReturnTypeWillChange]
-    public function gc($sessMaxLifetime)
+    public function gc($sessMaxLifetime): int|false
     {
-        $this->getSessionService()->garbageCollect($sessMaxLifetime);
-        return true;
+        return $this->getSessionService()->garbageCollect($sessMaxLifetime);
     }
 
     /**

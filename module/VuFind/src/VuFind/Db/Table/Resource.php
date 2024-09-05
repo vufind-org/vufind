@@ -164,16 +164,17 @@ class Resource extends Gateway implements DbServiceAwareInterface
         // Set up base query:
         return $this->select(
             function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $caseSensitiveTags) {
-                $subQuery = $this->getDbTable('UserResource')
-                    ->getSql()
-                    ->select()
-                    ->quantifier(Select::QUANTIFIER_DISTINCT)
-                    ->columns(['resource_id']);
-                $subQuery->where->equalTo('user_id', $user);
-
+                $columns = [Select::SQL_STAR];
+                $s->columns($columns);
+                $s->join(
+                    'user_resource',
+                    'resource.id = user_resource.resource_id',
+                    ['last_saved' => new Expression('MAX(saved)')]
+                );
+                $s->where->equalTo('user_resource.user_id', $user);
                 // Adjust for list if necessary:
                 if (null !== $list) {
-                    $subQuery->where->equalTo('list_id', $list);
+                    $s->where->equalTo('user_resource.list_id', $list);
                 }
                 // Adjust for tags if necessary:
                 if (!empty($tags)) {
@@ -183,13 +184,9 @@ class Resource extends Gateway implements DbServiceAwareInterface
                         $getId = function ($i) {
                             return $i['resource_id'];
                         };
-                        $subQuery->where->in('resource_id', array_map($getId, $matches));
+                        $s->where->in('resource_id', array_map($getId, $matches));
                     }
                 }
-
-                $columns = [Select::SQL_STAR];
-                $s->columns($columns);
-                $s->where->in('id', $subQuery);
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
@@ -197,8 +194,12 @@ class Resource extends Gateway implements DbServiceAwareInterface
                     $s->limit($limit);
                 }
 
+                $s->group(['resource.id']);
+
                 // Apply sorting, if necessary:
-                if (!empty($sort)) {
+                if ($sort == 'last_saved' || $sort == 'last_saved DESC') {
+                    $s->order($sort);
+                } elseif (!empty($sort)) {
                     Resource::applySort($s, $sort, 'resource', $columns);
                 }
             }

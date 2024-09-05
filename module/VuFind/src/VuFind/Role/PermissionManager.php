@@ -91,6 +91,20 @@ class PermissionManager
     }
 
     /**
+     * Get a list of all configured permissions.
+     *
+     * @return string[]
+     */
+    public function getAllConfiguredPermissions(): array
+    {
+        $permissions = [];
+        foreach ($this->config as $value) {
+            $permissions = array_merge($permissions, (array)($value['permission'] ?? []));
+        }
+        return array_values(array_unique($permissions));
+    }
+
+    /**
      * Check if a permission rule exists
      *
      * @param string $permission Permission

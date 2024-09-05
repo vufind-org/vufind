@@ -42,7 +42,9 @@ use VuFind\Tags\TagsService;
 
 use function get_class;
 use function in_array;
+use function is_array;
 use function is_callable;
+use function is_string;
 
 /**
  * Record driver view helper
@@ -573,15 +575,20 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     /**
      * Get the rendered cover plus some useful parameters.
      *
-     * @param string $context Context of code being generated
-     * @param string $default The default size of the cover
-     * @param string $link    The link for the anchor
+     * @param string             $context Context of code being generated
+     * @param string             $default The default size of the cover
+     * @param string|array|false $link    The href link for the anchor (false
+     * for no link, or a string to use as an href, or an array of attributes
+     * to include in the anchor tag)
      *
      * @return array
      */
     public function getCoverDetails($context, $default, $link = false)
     {
-        $details = compact('link', 'context') + [
+        $linkAttributes = is_string($link)
+            ? ['href' => $link]
+            : (is_array($link) ? $link : []);
+        $details = compact('linkAttributes', 'context') + [
             'driver' => $this->driver, 'cover' => false, 'size' => false,
             'linkPreview' => $this->getPreviewCoverLinkSetting($context),
         ];

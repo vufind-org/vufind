@@ -241,11 +241,11 @@
     $escId = $this->escapeJs($id);
     $escSource = $this->escapeJs($source);
     $script = <<<JS
-        $('#confirm_delete_item_${escId}').click(function(e) {
+        $('#confirm_delete_item_{$escId}').click(function(e) {
             e.preventDefault();
-            $.post('${deleteUrl}', {
-                        'delete':'${escId}',
-                        'source':'${escSource}',
+            $.post('{$deleteUrl}', {
+                        'delete':'{$escId}',
+                        'source':'{$escSource}',
                         'confirm':true
                     },
                     function() {
