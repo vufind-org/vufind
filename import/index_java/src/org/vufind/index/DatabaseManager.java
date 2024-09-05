@@ -170,7 +170,7 @@ public class DatabaseManager
 
             Class.forName(classname).getDeclaredConstructor().newInstance();
             String dsn = prefix + "://" + host;
-            if (!host.isEmpty()) {
+            if (!port.isEmpty()) {
                 dsn = dsn + ":" + port;
             }
             dsn = dsn + "/" + name;
