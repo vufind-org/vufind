@@ -229,7 +229,8 @@ button.list-group-item {
   gap: 0.25em;
 }
 .dropdown-toggle::after,
-.search-filter-dropdown .btn::after {
+/* Use double selector to force greater specificity in overriding unwanted ::after */
+.search-filter-dropdown.search-filter-dropdown .btn::after {
   content: "";
   width: 0.3em;
   height: 0.3em;
