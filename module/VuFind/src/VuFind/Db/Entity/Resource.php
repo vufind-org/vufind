@@ -139,9 +139,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param string $recordId recordId
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setRecordId(string $recordId): ResourceEntityInterface
+    public function setRecordId(string $recordId): static
     {
         $this->recordId = $recordId;
         return $this;
@@ -162,9 +162,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param string $title Title of the record.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setTitle(string $title): ResourceEntityInterface
+    public function setTitle(string $title): static
     {
         $this->title = $title;
         return $this;
@@ -185,9 +185,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param ?string $author Author of the title.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setAuthor(?string $author): ResourceEntityInterface
+    public function setAuthor(?string $author): static
     {
         $this->author = $author;
         return $this;
@@ -198,9 +198,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param ?int $year Year title is published.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setYear(?int $year): ResourceEntityInterface
+    public function setYear(?int $year): static
     {
         $this->year = $year;
         return $this;
@@ -211,9 +211,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param string $source Source (a search backend ID).
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setSource(string $source): ResourceEntityInterface
+    public function setSource(string $source): static
     {
         $this->source = $source;
         return $this;
@@ -234,9 +234,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param ?string $extraMetadata ExtraMetadata.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setExtraMetadata(?string $extraMetadata): ResourceEntityInterface
+    public function setExtraMetadata(?string $extraMetadata): static
     {
         $this->extraMetadata = $extraMetadata;
         return $this;

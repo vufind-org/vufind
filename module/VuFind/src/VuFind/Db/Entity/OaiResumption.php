@@ -97,9 +97,9 @@ class OaiResumption implements OaiResumptionEntityInterface
      *
      * @param ?string $params Resumption parameters.
      *
-     * @return OaiResumption
+     * @return static
      */
-    public function setResumptionParameters(?string $params): OaiResumption
+    public function setResumptionParameters(?string $params): static
     {
         $this->params = $params;
         return $this;
@@ -120,9 +120,9 @@ class OaiResumption implements OaiResumptionEntityInterface
      *
      * @param DateTime $dateTime Expiration date
      *
-     * @return OaiResumption
+     * @return static
      */
-    public function setExpiry(DateTime $dateTime): OaiResumption
+    public function setExpiry(DateTime $dateTime): static
     {
         $this->expires = $dateTime;
         return $this;

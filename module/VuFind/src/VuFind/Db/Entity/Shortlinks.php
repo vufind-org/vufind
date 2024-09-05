@@ -129,9 +129,9 @@ class Shortlinks implements ShortlinksEntityInterface
      *
      * @param string $path Path
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setPath(string $path): ShortlinksEntityInterface
+    public function setPath(string $path): static
     {
         $this->path = $path;
         return $this;
@@ -152,9 +152,9 @@ class Shortlinks implements ShortlinksEntityInterface
      *
      * @param ?string $hash Shortlinks hash
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setHash(?string $hash): ShortlinksEntityInterface
+    public function setHash(?string $hash): static
     {
         $this->hash = $hash;
         return $this;
@@ -175,9 +175,9 @@ class Shortlinks implements ShortlinksEntityInterface
      *
      * @param DateTime $dateTime Creation timestamp
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): ShortlinksEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;

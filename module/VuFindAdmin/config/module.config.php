@@ -33,6 +33,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Admin',
                         'action'     => 'Home',
+                        'admin_route' => true,
                     ],
                 ],
                 'may_terminate' => true,

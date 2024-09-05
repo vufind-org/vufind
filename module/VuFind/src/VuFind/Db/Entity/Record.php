@@ -136,9 +136,9 @@ class Record implements RecordEntityInterface
      *
      * @param ?string $recordId Record id
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setRecordId(?string $recordId): RecordEntityInterface
+    public function setRecordId(?string $recordId): static
     {
         $this->recordId = $recordId;
         return $this;
@@ -159,9 +159,9 @@ class Record implements RecordEntityInterface
      *
      * @param ?string $source Record source
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setSource(?string $source): RecordEntityInterface
+    public function setSource(?string $source): static
     {
         $this->source = $source;
         return $this;
@@ -182,9 +182,9 @@ class Record implements RecordEntityInterface
      *
      * @param string $recordVersion Record version
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setVersion(string $recordVersion): RecordEntityInterface
+    public function setVersion(string $recordVersion): static
     {
         $this->version = $recordVersion;
         return $this;
@@ -205,9 +205,9 @@ class Record implements RecordEntityInterface
      *
      * @param ?string $recordData Record data
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setData(?string $recordData): RecordEntityInterface
+    public function setData(?string $recordData): static
     {
         $this->data = $recordData;
         return $this;
@@ -228,9 +228,9 @@ class Record implements RecordEntityInterface
      *
      * @param DateTime $dateTime Updated date
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setUpdated(DateTime $dateTime): RecordEntityInterface
+    public function setUpdated(DateTime $dateTime): static
     {
         $this->updated = $dateTime;
         return $this;

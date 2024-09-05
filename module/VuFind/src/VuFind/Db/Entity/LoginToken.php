@@ -184,9 +184,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param UserEntityInterface $user User to set
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): LoginTokenEntityInterface
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -207,9 +207,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param string $token Token
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setToken(string $token): LoginTokenEntityInterface
+    public function setToken(string $token): static
     {
         $this->token = $token;
         return $this;
@@ -230,9 +230,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param string $series Series
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setSeries(string $series): LoginTokenEntityInterface
+    public function setSeries(string $series): static
     {
         $this->series = $series;
         return $this;
@@ -253,9 +253,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param DateTime $dateTime Last login date/time
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setLastLogin(DateTime $dateTime): LoginTokenEntityInterface
+    public function setLastLogin(DateTime $dateTime): static
     {
         $this->lastLogin = $dateTime;
         return $this;
@@ -276,9 +276,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param ?string $browser Browser details (or null for none)
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setBrowser(?string $browser): LoginTokenEntityInterface
+    public function setBrowser(?string $browser): static
     {
         $this->browser = $browser;
         return $this;
@@ -299,9 +299,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param ?string $platform Platform details (or null for none)
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setPlatform(?string $platform): LoginTokenEntityInterface
+    public function setPlatform(?string $platform): static
     {
         $this->platform = $platform;
         return $this;
@@ -322,9 +322,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param int $expires Expiration timestamp
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setExpires(int $expires): LoginTokenEntityInterface
+    public function setExpires(int $expires): static
     {
         $this->expires = $expires;
         return $this;
@@ -345,9 +345,9 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @param ?string $sid Last session ID (or null for none)
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setLastSessionId(?string $sid): LoginTokenEntityInterface
+    public function setLastSessionId(?string $sid): static
     {
         $this->lastSessionId = $sid;
         return $this;

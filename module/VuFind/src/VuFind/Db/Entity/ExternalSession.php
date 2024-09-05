@@ -125,9 +125,9 @@ class ExternalSession implements ExternalSessionEntityInterface
      *
      * @param string $sessionId PHP session id string
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setSessionId(string $sessionId): ExternalSessionEntityInterface
+    public function setSessionId(string $sessionId): static
     {
         $this->sessionId = $sessionId;
         return $this;
@@ -148,9 +148,9 @@ class ExternalSession implements ExternalSessionEntityInterface
      *
      * @param string $externalSessionId External session id string
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setExternalSessionId(string $externalSessionId): ExternalSessionEntityInterface
+    public function setExternalSessionId(string $externalSessionId): static
     {
         $this->externalSessionId = $externalSessionId;
         return $this;
@@ -171,9 +171,9 @@ class ExternalSession implements ExternalSessionEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): ExternalSessionEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;

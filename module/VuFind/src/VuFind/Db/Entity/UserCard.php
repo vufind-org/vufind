@@ -171,9 +171,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param string $cardName User card name.
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCardName(string $cardName): UserCardEntityInterface
+    public function setCardName(string $cardName): static
     {
         $this->cardName = $cardName;
         return $this;
@@ -194,9 +194,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param string $catUsername Catalog username
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCatUsername(string $catUsername): UserCardEntityInterface
+    public function setCatUsername(string $catUsername): static
     {
         $this->catUsername = $catUsername;
         return $this;
@@ -217,9 +217,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param ?string $catPassword Cat password
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setRawCatPassword(?string $catPassword): UserCardEntityInterface
+    public function setRawCatPassword(?string $catPassword): static
     {
         $this->catPassword = $catPassword;
         return $this;
@@ -240,9 +240,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCatPassEnc(?string $passEnc): UserCardEntityInterface
+    public function setCatPassEnc(?string $passEnc): static
     {
         $this->catPassEnc = $passEnc;
         return $this;
@@ -263,9 +263,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param ?string $homeLibrary Home library
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setHomeLibrary(?string $homeLibrary): UserCardEntityInterface
+    public function setHomeLibrary(?string $homeLibrary): static
     {
         $this->homeLibrary = $homeLibrary;
         return $this;
@@ -286,9 +286,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): UserCardEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -309,9 +309,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param DateTime $dateTime Saved date and time
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setSaved(DateTime $dateTime): UserCardEntityInterface
+    public function setSaved(DateTime $dateTime): static
     {
         $this->saved = $dateTime;
         return $this;
@@ -332,9 +332,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param UserEntityInterface $user User that owns card
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): UserCardEntityInterface
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;

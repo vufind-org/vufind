@@ -123,9 +123,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param string $comment Comment
      *
-     * @return CommentsEntityInterface
+     * @return static
      */
-    public function setComment(string $comment): CommentsEntityInterface
+    public function setComment(string $comment): static
     {
         $this->comment = $comment;
         return $this;
@@ -146,9 +146,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return CommentsEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): CommentsEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -169,9 +169,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param ?UserEntityInterface $user User that created comment
      *
-     * @return CommentsEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): CommentsEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -192,9 +192,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param ResourceEntityInterface $resource Resource id.
      *
-     * @return CommentsEntityInterface
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): CommentsEntityInterface
+    public function setResource(ResourceEntityInterface $resource): static
     {
         $this->resource = $resource;
         return $this;

@@ -284,9 +284,9 @@ class User implements UserEntityInterface
      *
      * @param string $username Username
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setUsername(string $username): UserEntityInterface
+    public function setUsername(string $username): static
     {
         $this->username = $username;
         return $this;
@@ -307,9 +307,9 @@ class User implements UserEntityInterface
      *
      * @param string $password Password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setRawPassword(string $password): UserEntityInterface
+    public function setRawPassword(string $password): static
     {
         $this->password = $password;
         return $this;
@@ -330,9 +330,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $hash Password hash
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setPasswordHash(?string $hash): UserEntityInterface
+    public function setPasswordHash(?string $hash): static
     {
         $this->passHash = $hash;
         return $this;
@@ -353,9 +353,9 @@ class User implements UserEntityInterface
      *
      * @param string $firstName New first name
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setFirstname(string $firstName): UserEntityInterface
+    public function setFirstname(string $firstName): static
     {
         $this->firstname = $firstName;
         return $this;
@@ -376,9 +376,9 @@ class User implements UserEntityInterface
      *
      * @param string $lastName New last name
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastname(string $lastName): UserEntityInterface
+    public function setLastname(string $lastName): static
     {
         $this->lastname = $lastName;
         return $this;
@@ -399,9 +399,9 @@ class User implements UserEntityInterface
      *
      * @param string $email Email address
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setEmail(string $email): UserEntityInterface
+    public function setEmail(string $email): static
     {
         $this->email = $email;
         return $this;
@@ -422,9 +422,9 @@ class User implements UserEntityInterface
      *
      * @param string $email New pending email
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setPendingEmail(string $email): UserEntityInterface
+    public function setPendingEmail(string $email): static
     {
         $this->pendingEmail = $email;
         return $this;
@@ -445,9 +445,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $catId Catalog id
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatId(?string $catId): UserEntityInterface
+    public function setCatId(?string $catId): static
     {
         $this->catId = $catId;
         return $this;
@@ -468,9 +468,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $catUsername Catalog username
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatUsername(?string $catUsername): UserEntityInterface
+    public function setCatUsername(?string $catUsername): static
     {
         $this->catUsername = $catUsername;
         return $this;
@@ -491,9 +491,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $homeLibrary Home library
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface
+    public function setHomeLibrary(?string $homeLibrary): static
     {
         $this->homeLibrary = $homeLibrary;
         return $this;
@@ -514,9 +514,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $catPassword Cat password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setRawCatPassword(?string $catPassword): UserEntityInterface
+    public function setRawCatPassword(?string $catPassword): static
     {
         $this->catPassword = $catPassword;
         return $this;
@@ -537,9 +537,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatPassEnc(?string $passEnc): UserEntityInterface
+    public function setCatPassEnc(?string $passEnc): static
     {
         $this->catPassEnc = $passEnc;
         return $this;
@@ -560,9 +560,9 @@ class User implements UserEntityInterface
      *
      * @param string $college College
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCollege(string $college): UserEntityInterface
+    public function setCollege(string $college): static
     {
         $this->college = $college;
         return $this;
@@ -583,9 +583,9 @@ class User implements UserEntityInterface
      *
      * @param string $major Major
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setMajor(string $major): UserEntityInterface
+    public function setMajor(string $major): static
     {
         $this->major = $major;
         return $this;
@@ -606,9 +606,9 @@ class User implements UserEntityInterface
      *
      * @param string $hash Hash value to save
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setVerifyHash(string $hash): UserEntityInterface
+    public function setVerifyHash(string $hash): static
     {
         $this->verifyHash = $hash;
         return $this;
@@ -629,9 +629,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $authMethod New value (null for none)
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    public function setAuthMethod(?string $authMethod): static
     {
         $this->authMethod = $authMethod;
         return $this;
@@ -652,9 +652,9 @@ class User implements UserEntityInterface
      *
      * @param string $lang Last language
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastLanguage(string $lang): UserEntityInterface
+    public function setLastLanguage(string $lang): static
     {
         $this->lastLanguage = $lang;
         return $this;
@@ -685,9 +685,9 @@ class User implements UserEntityInterface
      *
      * @param bool $userProvided New value
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    public function setHasUserProvidedEmail(bool $userProvided): static
     {
         $this->userProvidedEmail = $userProvided ? '1' : '0';
         return $this;
@@ -698,9 +698,9 @@ class User implements UserEntityInterface
      *
      * @param DateTime $dateTime Last login date
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    public function setLastLogin(DateTime $dateTime): static
     {
         $this->lastLogin = $dateTime;
         return $this;
@@ -721,9 +721,9 @@ class User implements UserEntityInterface
      *
      * @param DateTime $dateTime Last login date
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): UserEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -732,7 +732,7 @@ class User implements UserEntityInterface
     /**
      * Created getter
      *
-     * @return UserEntityInterface
+     * @return DateTime
      */
     public function getCreated(): DateTime
     {
@@ -744,9 +744,9 @@ class User implements UserEntityInterface
      *
      * @param ?DateTime $dateTime Verification date (or null)
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface
+    public function setEmailVerified(?DateTime $dateTime): static
     {
         $this->emailVerified = $dateTime;
         return $this;

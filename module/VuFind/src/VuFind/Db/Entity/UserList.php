@@ -130,9 +130,9 @@ class UserList implements UserListEntityInterface
      *
      * @param string $title Title
      *
-     * @return UserListEntityInterface
+     * @return static
      */
-    public function setTitle(string $title): UserListEntityInterface
+    public function setTitle(string $title): static
     {
         $this->title = $title;
         return $this;
@@ -153,9 +153,9 @@ class UserList implements UserListEntityInterface
      *
      * @param ?string $description Description
      *
-     * @return UserListEntityInterface
+     * @return static
      */
-    public function setDescription(?string $description): UserListEntityInterface
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
         return $this;
@@ -176,9 +176,9 @@ class UserList implements UserListEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return UserListEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): UserListEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -199,9 +199,9 @@ class UserList implements UserListEntityInterface
      *
      * @param bool $public Is the list public?
      *
-     * @return UserListEntityInterface
+     * @return static
      */
-    public function setPublic(bool $public): UserListEntityInterface
+    public function setPublic(bool $public): static
     {
         $this->public = $public;
         return $this;
@@ -222,9 +222,9 @@ class UserList implements UserListEntityInterface
      *
      * @param ?UserEntityInterface $user User object
      *
-     * @return UserListEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): UserListEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;

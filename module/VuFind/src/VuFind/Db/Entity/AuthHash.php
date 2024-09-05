@@ -140,9 +140,9 @@ class AuthHash implements AuthHashEntityInterface
      *
      * @param ?string $sessionId PHP Session id string
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setSessionId(?string $sessionId): AuthHashEntityInterface
+    public function setSessionId(?string $sessionId): static
     {
         $this->sessionId = $sessionId;
         return $this;
@@ -163,9 +163,9 @@ class AuthHash implements AuthHashEntityInterface
      *
      * @param string $hash Hash Value
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setHash(string $hash): AuthHashEntityInterface
+    public function setHash(string $hash): static
     {
         $this->hash = $hash;
         return $this;
@@ -186,9 +186,9 @@ class AuthHash implements AuthHashEntityInterface
      *
      * @param ?string $type Hash Type
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setHashType(?string $type): AuthHashEntityInterface
+    public function setHashType(?string $type): static
     {
         $this->type = $type;
         return $this;
@@ -209,9 +209,9 @@ class AuthHash implements AuthHashEntityInterface
      *
      * @param ?string $data Data
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setData(?string $data): AuthHashEntityInterface
+    public function setData(?string $data): static
     {
         $this->data = $data;
         return $this;
@@ -232,9 +232,9 @@ class AuthHash implements AuthHashEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): AuthHashEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;

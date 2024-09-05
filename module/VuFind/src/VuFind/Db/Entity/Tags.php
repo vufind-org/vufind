@@ -83,9 +83,9 @@ class Tags implements TagsEntityInterface
      *
      * @param string $tag Tag
      *
-     * @return Tags
+     * @return static
      */
-    public function setTag(string $tag): Tags
+    public function setTag(string $tag): static
     {
         $this->tag = $tag;
         return $this;

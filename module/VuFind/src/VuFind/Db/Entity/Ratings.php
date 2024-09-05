@@ -133,9 +133,9 @@ class Ratings implements RatingsEntityInterface
      *
      * @param ?UserEntityInterface $user User
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): RatingsEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -156,9 +156,9 @@ class Ratings implements RatingsEntityInterface
      *
      * @param ResourceEntityInterface $resource Resource
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): RatingsEntityInterface
+    public function setResource(ResourceEntityInterface $resource): static
     {
         $this->resource = $resource;
         return $this;
@@ -179,9 +179,9 @@ class Ratings implements RatingsEntityInterface
      *
      * @param int $rating Rating
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setRating(int $rating): RatingsEntityInterface
+    public function setRating(int $rating): static
     {
         $this->rating = $rating;
         return $this;
@@ -202,9 +202,9 @@ class Ratings implements RatingsEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): RatingsEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;

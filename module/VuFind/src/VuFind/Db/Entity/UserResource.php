@@ -158,9 +158,9 @@ class UserResource implements UserResourceEntityInterface
      *
      * @param UserEntityInterface $user User
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): UserResourceEntityInterface
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -181,9 +181,9 @@ class UserResource implements UserResourceEntityInterface
      *
      * @param ResourceEntityInterface $resource Resource
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): UserResourceEntityInterface
+    public function setResource(ResourceEntityInterface $resource): static
     {
         $this->resource = $resource;
         return $this;
@@ -204,9 +204,9 @@ class UserResource implements UserResourceEntityInterface
      *
      * @param ?UserListEntityInterface $list User List
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setUserList(?UserListEntityInterface $list): UserResourceEntityInterface
+    public function setUserList(?UserListEntityInterface $list): static
     {
         $this->list = $list;
         return $this;
@@ -227,9 +227,9 @@ class UserResource implements UserResourceEntityInterface
      *
      * @param ?string $notes Notes associated with the resource
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setNotes(?string $notes): UserResourceEntityInterface
+    public function setNotes(?string $notes): static
     {
         $this->notes = $notes;
         return $this;
@@ -250,9 +250,9 @@ class UserResource implements UserResourceEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setSaved(DateTime $dateTime): UserResourceEntityInterface
+    public function setSaved(DateTime $dateTime): static
     {
         $this->saved = $dateTime;
         return $this;

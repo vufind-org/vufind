@@ -47,9 +47,9 @@ interface AccessTokenEntityInterface extends EntityInterface
      *
      * @param string $id Access Token Identifier
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setId(string $id): AccessTokenEntityInterface;
+    public function setId(string $id): static;
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -70,18 +70,18 @@ interface AccessTokenEntityInterface extends EntityInterface
      *
      * @param ?string $type Access Token Type
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setType(?string $type): AccessTokenEntityInterface;
+    public function setType(?string $type): static;
 
     /**
      * Set user.
      *
      * @param ?UserEntityInterface $user User owning token
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface;
+    public function setUser(?UserEntityInterface $user): static;
 
     /**
      * Get user ID.
@@ -102,9 +102,9 @@ interface AccessTokenEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): AccessTokenEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Get data.
@@ -118,9 +118,9 @@ interface AccessTokenEntityInterface extends EntityInterface
      *
      * @param ?string $data Data
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setData(?string $data): AccessTokenEntityInterface;
+    public function setData(?string $data): static;
 
     /**
      * Is the access token revoked?
@@ -134,7 +134,7 @@ interface AccessTokenEntityInterface extends EntityInterface
      *
      * @param bool $revoked Revoked
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setRevoked(bool $revoked): AccessTokenEntityInterface;
+    public function setRevoked(bool $revoked): static;
 }

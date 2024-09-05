@@ -159,9 +159,9 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @param ?ResourceEntityInterface $resource Resource
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setResource(?ResourceEntityInterface $resource): ResourceTagsEntityInterface
+    public function setResource(?ResourceEntityInterface $resource): static
     {
         $this->resource = $resource;
         return $this;
@@ -182,9 +182,9 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @param TagsEntityInterface $tag Tag
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setTag(TagsEntityInterface $tag): ResourceTagsEntityInterface
+    public function setTag(TagsEntityInterface $tag): static
     {
         $this->tag = $tag;
         return $this;
@@ -205,9 +205,9 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @param ?UserListEntityInterface $list User list
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setUserList(?UserListEntityInterface $list): ResourceTagsEntityInterface
+    public function setUserList(?UserListEntityInterface $list): static
     {
         $this->list = $list;
         return $this;
@@ -228,9 +228,9 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @param ?UserEntityInterface $user User object
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): ResourceTagsEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -251,9 +251,9 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setPosted(DateTime $dateTime): ResourceTagsEntityInterface
+    public function setPosted(DateTime $dateTime): static
     {
         $this->posted = $dateTime;
         return $this;

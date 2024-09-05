@@ -125,9 +125,9 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @param string $id Access Token Identifier
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setId(string $id): AccessTokenEntityInterface
+    public function setId(string $id): static
     {
         $this->id = $id;
         return $this;
@@ -158,9 +158,9 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @param ?string $type Access Token Type
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setType(?string $type): AccessTokenEntityInterface
+    public function setType(?string $type): static
     {
         $this->type = $type;
         return $this;
@@ -171,9 +171,9 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @param ?UserEntityInterface $user User owning token
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -204,9 +204,9 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): AccessTokenEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -227,9 +227,9 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @param ?string $data Data
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setData(?string $data): AccessTokenEntityInterface
+    public function setData(?string $data): static
     {
         $this->data = $data;
         return $this;
@@ -250,9 +250,9 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @param bool $revoked Revoked
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setRevoked(bool $revoked): AccessTokenEntityInterface
+    public function setRevoked(bool $revoked): static
     {
         $this->revoked = $revoked ? '1' : '0';
         return $this;

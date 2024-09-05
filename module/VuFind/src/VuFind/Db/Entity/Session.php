@@ -119,9 +119,9 @@ class Session implements SessionEntityInterface
      *
      * @param ?string $sid Session Id.
      *
-     * @return Session
+     * @return static
      */
-    public function setSessionId(?string $sid): Session
+    public function setSessionId(?string $sid): static
     {
         $this->sessionId = $sid;
         return $this;
@@ -132,9 +132,9 @@ class Session implements SessionEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return Session
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): Session
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -145,9 +145,9 @@ class Session implements SessionEntityInterface
      *
      * @param int $lastused Time last used
      *
-     * @return Session
+     * @return static
      */
-    public function setLastUsed(int $lastused): Session
+    public function setLastUsed(int $lastused): static
     {
         $this->lastUsed = $lastused;
         return $this;
@@ -168,9 +168,9 @@ class Session implements SessionEntityInterface
      *
      * @param ?string $data Session data.
      *
-     * @return Session
+     * @return static
      */
-    public function setData(?string $data): Session
+    public function setData(?string $data): static
     {
         $this->data = $data;
         return $this;

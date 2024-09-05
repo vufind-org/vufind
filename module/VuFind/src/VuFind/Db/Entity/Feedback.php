@@ -198,9 +198,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $message Message
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setMessage(string $message): FeedbackEntityInterface
+    public function setMessage(string $message): static
     {
         $this->message = $message;
         return $this;
@@ -221,9 +221,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param mixed $data Form data
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setFormData($data): FeedbackEntityInterface
+    public function setFormData(array $data): static
     {
         $this->formData = $data;
         return $this;
@@ -244,9 +244,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $name Form name
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setFormName(string $name): FeedbackEntityInterface
+    public function setFormName(string $name): static
     {
         $this->formName = $name;
         return $this;
@@ -267,9 +267,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): FeedbackEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -290,9 +290,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param DateTime $dateTime Last update date
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setUpdated(DateTime $dateTime): FeedbackEntityInterface
+    public function setUpdated(DateTime $dateTime): static
     {
         $this->updated = $dateTime;
         return $this;
@@ -313,9 +313,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $status Status
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setStatus(string $status): FeedbackEntityInterface
+    public function setStatus(string $status): static
     {
         $this->status = $status;
         return $this;
@@ -336,9 +336,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $url Site URL
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setSiteUrl(string $url): FeedbackEntityInterface
+    public function setSiteUrl(string $url): static
     {
         $this->siteUrl = $url;
         return $this;
@@ -359,9 +359,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param ?UserEntityInterface $user User that created request
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): FeedbackEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -382,9 +382,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param ?UserEntityInterface $user User that updated request
      *
-     * @return FeedbackEntityInterface
+     * @return static
      */
-    public function setUpdatedBy(?UserEntityInterface $user): FeedbackEntityInterface
+    public function setUpdatedBy(?UserEntityInterface $user): static
     {
         $this->updatedBy = $user;
         return $this;

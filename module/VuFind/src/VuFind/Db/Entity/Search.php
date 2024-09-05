@@ -195,9 +195,9 @@ class Search implements SearchEntityInterface
      *
      * @param ?UserEntityInterface $user User
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): SearchEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -218,9 +218,9 @@ class Search implements SearchEntityInterface
      *
      * @param ?string $sessionId Session id
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSessionId(?string $sessionId): SearchEntityInterface
+    public function setSessionId(?string $sessionId): static
     {
         $this->sessionId = $sessionId;
         return $this;
@@ -241,9 +241,9 @@ class Search implements SearchEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): SearchEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime;
         return $this;
@@ -264,9 +264,9 @@ class Search implements SearchEntityInterface
      *
      * @param ?string $title Title
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setTitle(?string $title): SearchEntityInterface
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
         return $this;
@@ -287,9 +287,9 @@ class Search implements SearchEntityInterface
      *
      * @param bool $saved Saved
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSaved(bool $saved): SearchEntityInterface
+    public function setSaved(bool $saved): static
     {
         $this->saved = $saved ? '1' : '0';
         return $this;
@@ -310,9 +310,9 @@ class Search implements SearchEntityInterface
      *
      * @param ?\VuFind\Search\Minified $searchObject Search object
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSearchObject(?\VuFind\Search\Minified $searchObject): SearchEntityInterface
+    public function setSearchObject(?\VuFind\Search\Minified $searchObject): static
     {
         $this->searchObject = $searchObject ? serialize($searchObject) : null;
         return $this;
@@ -333,9 +333,9 @@ class Search implements SearchEntityInterface
      *
      * @param ?int $checksum Checksum
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setChecksum(?int $checksum): SearchEntityInterface
+    public function setChecksum(?int $checksum): static
     {
         $this->checksum = $checksum;
         return $this;
@@ -356,9 +356,9 @@ class Search implements SearchEntityInterface
      *
      * @param int $notificationFrequency Notification frequency
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setNotificationFrequency(int $notificationFrequency): SearchEntityInterface
+    public function setNotificationFrequency(int $notificationFrequency): static
     {
         $this->notificationFrequency = $notificationFrequency;
         return $this;
@@ -379,9 +379,9 @@ class Search implements SearchEntityInterface
      *
      * @param DateTime $lastNotificationSent Time when last notification was sent
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setLastNotificationSent(Datetime $lastNotificationSent): SearchEntityInterface
+    public function setLastNotificationSent(Datetime $lastNotificationSent): static
     {
         $this->lastNotificationSent = $lastNotificationSent;
         return $this;
@@ -402,9 +402,9 @@ class Search implements SearchEntityInterface
      *
      * @param string $notificationBaseUrl Notification base URL
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setNotificationBaseUrl(string $notificationBaseUrl): SearchEntityInterface
+    public function setNotificationBaseUrl(string $notificationBaseUrl): static
     {
         $this->notificationBaseUrl = $notificationBaseUrl;
         return $this;
