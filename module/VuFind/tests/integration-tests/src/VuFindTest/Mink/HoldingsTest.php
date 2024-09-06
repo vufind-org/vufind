@@ -184,7 +184,10 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
                     );
                     $this->assertEquals(
                         'Main Library',
-                        $this->findCssAndGetText($page, '.result-body .callnumAndLocation .groupLocation .text-success')
+                        $this->findCssAndGetText(
+                            $page,
+                            '.result-body .callnumAndLocation .groupLocation .text-' . $expectedType
+                        )
                     );
                 }
             } else {
@@ -196,8 +199,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         } else {
             // No extra items to care for:
             if ('group' === $multipleLocations) {
-                // Unknown status displays as warning:
-                $type = null === $availability ? 'warning' : 'danger';
+                // Unknown status displays as muted:
+                $type = null === $availability ? 'muted' : 'danger';
                 $selector = ".result-body .callnumAndLocation .groupLocation .text-$type";
             } else {
                 $selector = '.result-body .callnumAndLocation .location';
