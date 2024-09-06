@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e7abd08b1a5e5e95e22fe8d9599b332",
+    "content-hash": "c8f3a49d7ea43b5e0144f030071b69fd",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -11820,16 +11820,16 @@
         },
         {
             "name": "pietercolpaert/hardf",
-            "version": "0.4.0",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pietercolpaert/hardf.git",
-                "reference": "142f38d746793829f61c43cdd9721a5b0bff371d"
+                "reference": "8dbfb3104ab70e7d43f36016b8ed35e3666ff18c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pietercolpaert/hardf/zipball/142f38d746793829f61c43cdd9721a5b0bff371d",
-                "reference": "142f38d746793829f61c43cdd9721a5b0bff371d",
+                "url": "https://api.github.com/repos/pietercolpaert/hardf/zipball/8dbfb3104ab70e7d43f36016b8ed35e3666ff18c",
+                "reference": "8dbfb3104ab70e7d43f36016b8ed35e3666ff18c",
                 "shasum": ""
             },
             "require": {
@@ -11884,7 +11884,7 @@
                 "issues": "https://github.com/pietercolpaert/hardf/issues",
                 "source": "https://github.com/pietercolpaert/hardf"
             },
-            "time": "2024-02-27T14:47:16+00:00"
+            "time": "2024-02-28T12:25:10+00:00"
         },
         {
             "name": "react/cache",
