@@ -1,2 +1,14 @@
+<?php
+    $attribs = ['class' => 'doiLink', 'data-instance' => $instance ?? 0];
+    if (!empty($doi)) {
+        $attribs['data-doi'] = $doi;
+    }
+    if (!empty($isbn)) {
+        $attribs['data-isbn'] = $isbn;
+    }
+    if (!empty($issn)) {
+        $attribs['data-issn'] = $issn;
+    }
+?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'doi.js', 'SET');?>
-<span class="doiLink" data-doi="<?=$this->escapeHtml($doi)?>"></span>
+<span <?=$this->htmlAttributes($attribs)?>></span>

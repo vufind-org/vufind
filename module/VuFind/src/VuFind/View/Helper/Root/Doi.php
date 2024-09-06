@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Config\Config;
+
 /**
  * DOI view helper
  *
@@ -40,20 +42,6 @@ namespace VuFind\View\Helper\Root;
  */
 class Doi extends \Laminas\View\Helper\AbstractHelper
 {
-    /**
-     * Context helper
-     *
-     * @var \VuFind\View\Helper\Root\Context
-     */
-    protected $context;
-
-    /**
-     * VuFind OpenURL configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
     /**
      * Current RecordDriver
      *
@@ -69,15 +57,20 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     protected $area;
 
     /**
+     * Instance counter (used for keeping track of records)
+     *
+     * @var int
+     */
+    protected $counter = 0;
+
+    /**
      * Constructor
      *
-     * @param Context                $context Context helper
-     * @param \Laminas\Config\Config $config  VuFind OpenURL config
+     * @param Context $context Context helper
+     * @param ?Config $config  VuFind OpenURL config
      */
-    public function __construct(Context $context, $config = null)
+    public function __construct(protected Context $context, protected ?Config $config = null)
     {
-        $this->context = $context;
-        $this->config = $config;
     }
 
     /**
@@ -108,7 +101,10 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     {
         // Build parameters needed to display the control:
         $doi = $this->recordDriver->tryMethod('getCleanDOI');
-        $params = compact('doi');
+        $isbn = $this->recordDriver->tryMethod('getCleanISBN');
+        $issn = $this->recordDriver->tryMethod('getCleanISBN');
+        $instance = $this->counter++;
+        $params = compact('doi', 'isbn', 'issn', 'instance');
 
         // Render the subtemplate:
         return ($this->context)($this->getView())
