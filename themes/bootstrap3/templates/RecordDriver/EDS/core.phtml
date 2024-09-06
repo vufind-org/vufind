@@ -8,6 +8,7 @@
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
     $cover = $coverDetails['html'];
     $edsConfig = $this->config()->get('EDS');
+    $authorDisplay = strtolower($edsConfig->AuthorDisplay->DetailPageFormat ?? 'Long');
 ?>
 <div class="media"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'resource' => '#record', 'typeof' => $this->schemaOrg()->getRecordTypes($this->driver)])?>>
   <div class="media-left medium img-col">
@@ -78,7 +79,7 @@
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
       <?php foreach ($items as $key => $item): ?>
         <?php if (!empty($item['Data'])): ?>
-          <?php if ('Au' == $item['Group'] && strtolower($edsConfig->AuthorDisplay->DetailPageFormat ?? 'Long') == 'short'): ?>
+          <?php if ('Au' == $item['Group'] && $authorDisplay == 'short'): ?>
             <tr>
               <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
               <?php
@@ -102,6 +103,8 @@
                 <?=$this->driver->linkUrls($item['Data'])?>
               <?php endif; ?>
             </tr>
+          <?php elseif ('AuInfo' == $item['Group'] && $authorDisplay == 'short'): ?>
+            <?php /* Do nothing: skip AuInfo data in short author mode... */ ?>
           <?php else: ?>
             <tr>
               <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
