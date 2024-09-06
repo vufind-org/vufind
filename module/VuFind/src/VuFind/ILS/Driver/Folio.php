@@ -811,7 +811,7 @@ class Folio extends AbstractAPI implements
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
-        $showHoldingsNoItems = $this->config['Holdings']['show_holdings_no_items'] ?? true;
+        $showHoldingsNoItems = $this->config['Holdings']['show_holdings_no_items'] ?? false;
         $dueDateItemCount = 0;
 
         $instance = $this->getInstanceByBibId($bibId);
