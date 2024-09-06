@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8f3a49d7ea43b5e0144f030071b69fd",
+    "content-hash": "7fd3f444e1a62a0d27b347458dac186b",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -11172,16 +11172,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.11.4",
+            "version": "1.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "9100a76ce8015b9aa7125b9171ae3a76887b6c82"
+                "reference": "0ca1c7bb55fca8fe6448f16fff0f311ccec960a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9100a76ce8015b9aa7125b9171ae3a76887b6c82",
-                "reference": "9100a76ce8015b9aa7125b9171ae3a76887b6c82",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0ca1c7bb55fca8fe6448f16fff0f311ccec960a1",
+                "reference": "0ca1c7bb55fca8fe6448f16fff0f311ccec960a1",
                 "shasum": ""
             },
             "require": {
@@ -11226,7 +11226,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-06-06T12:19:22+00:00"
+            "time": "2024-09-05T16:09:28+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
