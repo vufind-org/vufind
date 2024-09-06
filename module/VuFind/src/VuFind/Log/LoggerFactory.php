@@ -112,7 +112,7 @@ class LoggerFactory implements FactoryInterface
         // use smtp
         $mailer = $container->get(\VuFind\Mailer\Mailer::class);
         $msg = $mailer->getNewMessage()
-            ->addFrom($config->Site->email)
+            ->addFrom($config->Mail->default_from ?? $config->Site->email)
             ->addTo($email)
             ->setSubject('VuFind Log Message');
 

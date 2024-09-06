@@ -14,9 +14,6 @@
     <?=$this->transEsc('Please check back soon')?>.
   </p>
   <p>
-    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
-    <br>
-    <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
+    <?=$this->render('error/contact.phtml')?>
   </p>
 </div>

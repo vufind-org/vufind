@@ -1,0 +1,5 @@
+<?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
+<?php if ($supportEmail = $this->systemEmail()): ?>
+    <br>
+    <a href="mailto:<?=$this->escapeHtmlAttr($supportEmail)?>"><?=$this->escapeHtml($supportEmail)?></a>
+<?php endif; ?>

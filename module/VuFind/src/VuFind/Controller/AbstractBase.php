@@ -266,7 +266,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // Fail if we're missing a from and the form element is disabled:
         if ($view->disableFrom) {
             if (empty($view->from)) {
-                $view->from = $config->Site->email;
+                $view->from = $config->Mail->default_from ?? $config->Site->email;
             }
             if (empty($view->from)) {
                 throw new \Exception('Unable to determine email from address');
