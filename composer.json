@@ -109,7 +109,7 @@
         "friendsofphp/php-cs-fixer": "3.64.0",
         "phpmd/phpmd": "2.15.0",
         "phpstan/phpstan": "1.12.2",
-        "phpunit/php-code-coverage": "10.1.14",
+        "phpunit/php-code-coverage": "10.1.16",
         "phpunit/phpcov": "^9.0",
         "phpunit/phpunit": "10.5.20",
         "pietercolpaert/hardf": "0.5.0",
