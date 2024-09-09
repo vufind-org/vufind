@@ -75,7 +75,7 @@
         "laminas/laminas-view": "2.27.0",
         "league/commonmark": "2.5.3",
         "league/oauth2-server": "8.5.4",
-        "lm-commons/lmc-rbac-mvc": "3.3.2",
+        "lm-commons/lmc-rbac-mvc": "3.4.0",
         "matthiasmullie/minify": "1.3.73",
         "pear/archive_tar": "^1.4",
         "pear/http_request2": "2.6.0",
