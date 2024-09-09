@@ -36,7 +36,7 @@
         "endroid/qr-code": "5.0.9",
         "guzzlehttp/guzzle": "7.8.1",
         "jaybizzle/crawler-detect": "^1.2",
-        "laminas/laminas-cache": "3.12.1",
+        "laminas/laminas-cache": "3.12.2",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",
         "laminas/laminas-cache-storage-adapter-filesystem": "^2.0",
         "laminas/laminas-cache-storage-adapter-memcached": "^2.0",
