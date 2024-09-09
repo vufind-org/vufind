@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "02f502e241b6175fc3411d6f6751dc0b",
+    "content-hash": "96e284d0fcfe75b90207ad762b019dd6",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -4426,16 +4426,16 @@
         },
         {
             "name": "laminas/laminas-session",
-            "version": "2.20.0",
+            "version": "2.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-session.git",
-                "reference": "16876aa20a6688d06291a972f7e1eb0b74b05d51"
+                "reference": "b8cd890f7682a255b335c2ca45df9a7cbc58873d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/16876aa20a6688d06291a972f7e1eb0b74b05d51",
-                "reference": "16876aa20a6688d06291a972f7e1eb0b74b05d51",
+                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/b8cd890f7682a255b335c2ca45df9a7cbc58873d",
+                "reference": "b8cd890f7682a255b335c2ca45df9a7cbc58873d",
                 "shasum": ""
             },
             "require": {
@@ -4449,16 +4449,16 @@
             },
             "require-dev": {
                 "ext-xdebug": "*",
-                "laminas/laminas-cache": "^3.12.1",
+                "laminas/laminas-cache": "^3.12.2",
                 "laminas/laminas-cache-storage-adapter-memory": "^2.3",
                 "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-db": "^2.19.0",
+                "laminas/laminas-db": "^2.20.0",
                 "laminas/laminas-http": "^2.19",
-                "laminas/laminas-validator": "^2.49.0",
-                "mongodb/mongodb": "~1.17.0",
-                "phpunit/phpunit": "^9.6.17",
-                "psalm/plugin-phpunit": "^0.18.4",
-                "vimeo/psalm": "^5.22.2"
+                "laminas/laminas-validator": "^2.57.0",
+                "mongodb/mongodb": "~1.17.1",
+                "phpunit/phpunit": "^9.6.19",
+                "psalm/plugin-phpunit": "^0.19.0",
+                "vimeo/psalm": "^5.24.0"
             },
             "suggest": {
                 "laminas/laminas-cache": "Laminas\\Cache component",
@@ -4504,7 +4504,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-03-08T11:02:36+00:00"
+            "time": "2024-06-19T14:36:45+00:00"
         },
         {
             "name": "laminas/laminas-stdlib",
