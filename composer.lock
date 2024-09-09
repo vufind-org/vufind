@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c80320962b3a497927f5b78391962020",
+    "content-hash": "9986426c62c51a1d0e4b769f03f9b25a",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -9539,16 +9539,16 @@
         },
         {
             "name": "vstelmakh/url-highlight",
-            "version": "v3.0.3",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vstelmakh/url-highlight.git",
-                "reference": "986c32c7f5b254c800472197fb31dd378c528a47"
+                "reference": "354d04fe0239143cd3b64aa9131fc985f17460d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vstelmakh/url-highlight/zipball/986c32c7f5b254c800472197fb31dd378c528a47",
-                "reference": "986c32c7f5b254c800472197fb31dd378c528a47",
+                "url": "https://api.github.com/repos/vstelmakh/url-highlight/zipball/354d04fe0239143cd3b64aa9131fc985f17460d6",
+                "reference": "354d04fe0239143cd3b64aa9131fc985f17460d6",
                 "shasum": ""
             },
             "require": {
@@ -9592,9 +9592,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vstelmakh/url-highlight/issues",
-                "source": "https://github.com/vstelmakh/url-highlight/tree/v3.0.3"
+                "source": "https://github.com/vstelmakh/url-highlight/tree/v3.1.0"
             },
-            "time": "2023-11-04T19:15:03+00:00"
+            "time": "2024-07-28T18:31:02+00:00"
         },
         {
             "name": "vufind-org/vufind-marc",
