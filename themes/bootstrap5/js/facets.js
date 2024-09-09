@@ -155,13 +155,13 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function handleDateSelector() {
-    let dateParams, allEmptyDateParams, form, inputs;
+    let dateParams, allEmptyDateParams, form, inputs, dfinputs;
     for (let dateSelectorId of dateSelectorIds) {
       dateParams = [];
       allEmptyDateParams = true;
       form = document.querySelector('form#' + dateSelectorId);
-      inputs = form.querySelectorAll('.date-fields input');
-      for (let input of inputs) {
+      dfinputs = form.querySelectorAll('.date-fields input');
+      for (let input of dfinputs) {
         if (window.location.search.match(input.name)) {
           // If the parameter is already present we update it
           updateInitialParams(input.name, input.value);
