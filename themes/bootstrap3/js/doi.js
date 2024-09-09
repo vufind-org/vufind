@@ -23,10 +23,10 @@ VuFind.register('doi', function Doi() {
     queryParams.set("method", "doiLookup");
     var url = VuFind.path + '/AJAX/JSON?' + queryParams.toString();
     fetch(url, { method: "GET" })
-      .then(function embedDoiLinksDone(response) {
+      .then(function embedDoiLinksDone(rawResponse) {
         elements.forEach(function populateDoiLinks(doiEl) {
           var currentDoi = doiEl.dataset.doi;
-          response.json().then(response => {
+          rawResponse.json().then(response => {
             if ("undefined" !== typeof response.data[currentDoi]) {
               doiEl.innerHTML = "";
               for (var i = 0; i < response.data[currentDoi].length; i++) {
