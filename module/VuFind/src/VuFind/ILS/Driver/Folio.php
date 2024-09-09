@@ -664,8 +664,6 @@ class Folio extends AbstractAPI implements
     ): array {
         $locationData = $this->getLocationData($locationId);
         $locationName = $locationData['name'];
-        $locationCode = $locationData['code'];
-        $locationIsActive = $locationData['isActive'];
         return [
             'is_holdable' => $this->isHoldable($locationName),
             'holdings_notes' => $holdingDetails['hasHoldingNotes']
@@ -674,8 +672,8 @@ class Folio extends AbstractAPI implements
             'supplements' => $holdingDetails['holdingsSupplements'],
             'indexes' => $holdingDetails['holdingsIndexes'],
             'location' => $locationName,
-            'location_code' => $locationCode,
-            'folio_location_is_active' => $locationIsActive,
+            'location_code' => $locationData['code'],
+            'folio_location_is_active' => $locationData['isActive'],
         ];
     }
 
