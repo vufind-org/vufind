@@ -34,6 +34,8 @@ use RuntimeException;
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 
+use function sprintf;
+
 /**
  * SOLR backend handler map.
  *

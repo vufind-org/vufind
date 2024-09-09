@@ -35,6 +35,8 @@ namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
 
+use function sprintf;
+
 /**
  * SOLR SimilarBuilder.
  *

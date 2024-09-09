@@ -43,6 +43,7 @@ use function dirname;
 use function function_exists;
 use function in_array;
 use function is_callable;
+use function sprintf;
 use function strlen;
 
 /**

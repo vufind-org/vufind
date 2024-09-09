@@ -44,6 +44,7 @@ use function is_callable;
 use function is_int;
 use function is_object;
 use function is_string;
+use function sprintf;
 
 /**
  * FOLIO REST API driver

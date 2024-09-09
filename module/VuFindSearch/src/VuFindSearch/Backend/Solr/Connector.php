@@ -46,6 +46,7 @@ use VuFindSearch\ParamBag;
 use function call_user_func_array;
 use function count;
 use function is_callable;
+use function sprintf;
 use function strlen;
 
 /**
