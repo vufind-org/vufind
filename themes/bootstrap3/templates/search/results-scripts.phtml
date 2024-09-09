@@ -14,22 +14,3 @@ if (($this->listViewOption ?? 'full') !== 'full') {
 if ($this->jsResults ?? false) {
     $this->headScript()->appendFile('search.js');
 }
-
-$statuses = [
-    \VuFind\ILS\Logic\AvailabilityStatus::STATUS_AVAILABLE,
-    \VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNAVAILABLE,
-    \VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNKNOWN,
-    \VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNCERTAIN,
-];
-
-$availabilityStatuses = [];
-foreach ($statuses as $status) {
-    $status = new \VuFind\ILS\Logic\AvailabilityStatus($status);
-    $availabilityClasses[$status->availabilityAsString()] =
-        $this->availabilityStatus()->getClass($status);
-}
-
-$availabilityClassesJson = json_encode($availabilityClasses);
-$this->headScript()->appendScript(<<<JS
-        var availabilityClasses = $availabilityClassesJson;
-    JS);

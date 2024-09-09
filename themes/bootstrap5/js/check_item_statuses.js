@@ -61,15 +61,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location').forEach((e) => e.classList.add('hidden'));
       var locationListHTML = "";
       for (var x = 0; x < result.locationList.length; x++) {
-        var availability = result.locationList[x].availability;
-        var statusIcon =
-          availability === 'true' ? 'available'
-            : availability === 'false' ? 'unavailable'
-              : availability;
-
         locationListHTML += '<div class="groupLocation">';
-        locationListHTML += '<span class="' + availabilityClasses[availability] + '">'
-          + VuFind.icon('status-' + statusIcon)
+        locationListHTML += '<span class="' + result.locationList[x].class + '">'
+          + VuFind.icon(result.locationList[x].icon)
           + result.locationList[x].location
           + '</span> ';
         locationListHTML += '</div>';

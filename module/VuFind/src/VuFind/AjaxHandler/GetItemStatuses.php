@@ -368,6 +368,8 @@ class GetItemStatuses extends AbstractBase implements
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
                 'callnumber_handler' => $callnumberHandler,
+                'icon' => $this->renderer->availabilityStatus()->getIcon($locationAvailability),
+                'class' => $this->renderer->availabilityStatus()->getClass($locationAvailability),
             ];
             $locationList[] = $locationInfo;
         }

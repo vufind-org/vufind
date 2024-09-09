@@ -71,6 +71,34 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
     protected string $classUnknown = 'text-muted';
 
     /**
+     * Icon for available items.
+     *
+     * @var string
+     */
+    protected string $iconAvailable = 'status-available';
+
+    /**
+     * Icon for unavailable items.
+     *
+     * @var string
+     */
+    protected string $iconUnavailable = 'status-unavailable';
+
+    /**
+     * Icon for items where status is uncertain.
+     *
+     * @var string
+     */
+    protected string $iconUncertain = 'status-uncertain';
+
+    /**
+     * Icon for items where status is unknown.
+     *
+     * @var string
+     */
+    protected string $iconUnknown = 'status-unknown';
+
+    /**
      * Message cache
      *
      * @var array
@@ -96,6 +124,27 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
             return $this->classUnknown;
         }
         return $this->classUncertain;
+    }
+
+    /**
+     * Get icon name for availability status.
+     *
+     * @param AvailabilityStatusInterface $availabilityStatus Availability Status
+     *
+     * @return string
+     */
+    public function getIcon(AvailabilityStatusInterface $availabilityStatus): string
+    {
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
+            return $this->iconUnavailable;
+        }
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE)) {
+            return $this->iconAvailable;
+        }
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN)) {
+            return $this->iconUnknown;
+        }
+        return $this->iconUncertain;
     }
 
     /**
