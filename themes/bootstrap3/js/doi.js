@@ -25,23 +25,23 @@ VuFind.register('doi', function Doi() {
     fetch(url, { method: "GET" })
       .then(function embedDoiLinksDone(rawResponse) {
         elements.forEach(function populateDoiLinks(doiEl) {
-          var currentDoi = doiEl.dataset.doi;
+          var currentInstance = doiEl.dataset.instance;
           rawResponse.json().then(response => {
-            if ("undefined" !== typeof response.data[currentDoi]) {
+            if ("undefined" !== typeof response.data[currentInstance]) {
               doiEl.innerHTML = "";
-              for (var i = 0; i < response.data[currentDoi].length; i++) {
+              for (var i = 0; i < response.data[currentInstance].length; i++) {
                 var newLink = document.createElement('a');
                 newLink.classList.add('icon-link');
-                newLink.setAttribute('href', response.data[currentDoi][i].link);
-                if (typeof response.data[currentDoi][i].icon !== 'undefined') {
+                newLink.setAttribute('href', response.data[currentInstance][i].link);
+                if (typeof response.data[currentInstance][i].icon !== 'undefined') {
                   var icon = document.createElement('img');
-                  icon.setAttribute('src', response.data[currentDoi][i].icon);
+                  icon.setAttribute('src', response.data[currentInstance][i].icon);
                   icon.classList.add("doi-icon");
                   icon.classList.add("icon-link__icon");
                   newLink.appendChild(icon);
-                } else if (typeof response.data[currentDoi][i].localIcon !== 'undefined') {
+                } else if (typeof response.data[currentInstance][i].localIcon !== 'undefined') {
                   var localIconWrapper = document.createElement('span');
-                  localIconWrapper.innerHTML = response.data[currentDoi][i].localIcon;
+                  localIconWrapper.innerHTML = response.data[currentInstance][i].localIcon;
                   var localIcon = localIconWrapper.firstChild;
                   if (localIcon) {
                     localIcon.classList.add('icon-link__icon');
@@ -50,11 +50,11 @@ VuFind.register('doi', function Doi() {
                 }
                 var newSpan = document.createElement('span');
                 newSpan.setAttribute("rel", "noreferrer");
-                if (response.data[currentDoi][i].newWindow) {
+                if (response.data[currentInstance][i].newWindow) {
                   newSpan.setAttribute("target", '_blank');
                 }
                 newSpan.classList.add('icon-link__label');
-                newSpan.appendChild(document.createTextNode(response.data[currentDoi][i].label))
+                newSpan.appendChild(document.createTextNode(response.data[currentInstance][i].label))
                 newLink.appendChild(newSpan);
                 doiEl.appendChild(newLink);
                 doiEl.appendChild(document.createElement('br'));
