@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f79ab8767333a1f8da0e7567e8aeeb08",
+    "content-hash": "26d9377faa49d5ca79174118ca125a2e",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -360,16 +360,16 @@
         },
         {
             "name": "colinmollenhour/credis",
-            "version": "v1.16.0",
+            "version": "v1.16.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/colinmollenhour/credis.git",
-                "reference": "5641140e14a9679f5a6f66c97268727f9558b881"
+                "reference": "f11a89fd068d3e5db0c2b5a9ba8663bc36162e95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/5641140e14a9679f5a6f66c97268727f9558b881",
-                "reference": "5641140e14a9679f5a6f66c97268727f9558b881",
+                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/f11a89fd068d3e5db0c2b5a9ba8663bc36162e95",
+                "reference": "f11a89fd068d3e5db0c2b5a9ba8663bc36162e95",
                 "shasum": ""
             },
             "require": {
@@ -401,9 +401,9 @@
             "homepage": "https://github.com/colinmollenhour/credis",
             "support": {
                 "issues": "https://github.com/colinmollenhour/credis/issues",
-                "source": "https://github.com/colinmollenhour/credis/tree/v1.16.0"
+                "source": "https://github.com/colinmollenhour/credis/tree/v1.16.1"
             },
-            "time": "2023-10-26T17:02:51+00:00"
+            "time": "2024-07-04T15:08:03+00:00"
         },
         {
             "name": "composer/package-versions-deprecated",
