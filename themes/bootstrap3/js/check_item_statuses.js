@@ -1,4 +1,4 @@
-/*global AjaxRequestQueue, VuFind, availabilityClasses */
+/*global AjaxRequestQueue, VuFind */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   var _checkItemHandlers = {};
