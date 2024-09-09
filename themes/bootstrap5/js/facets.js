@@ -124,7 +124,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let initialFilteredParams = initialRawParams.filter(function isFilter(obj) {
     return obj.startsWith(encodeURI('filter[]='));
   });
-  let dateSelectorId;
+  let dateSelectorIds = [];
   let isMultiFacetsSelectionActivated = false;
   let callbackOnApply;
   let callbackWhenDeactivated;
@@ -145,46 +145,44 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function handleDateSelector() {
-    if (dateSelectorId === undefined) {
-      return;
-    }
-
-    let dateParams = [];
-    let allEmptyDateParams = true;
-    let form = document.querySelector('form#' + dateSelectorId);
-    let inputs = form.querySelectorAll('.date-fields input');
-    inputs.forEach(function checkDateParams(input) {
-      if (window.location.search.match(input.name)) {
-        // If the parameter is already present we update it
-        let count = initialRawParams.length;
-        for (let i = 0; i < count; i++) {
-          if (initialRawParams[i].startsWith(input.name + '=')) {
-            initialRawParams[i] = encodeURI(input.name + '=' + input.value); // Update
-            // If not empty we add it to date params
-            if (this.value !== '') {
-              allEmptyDateParams = false;
+    let count = dateSelectorIds.length;
+    for (let i = 0; i < count; i++) {
+      let dateParams = [];
+      let allEmptyDateParams = true;
+      let form = document.querySelector('form#' + dateSelectorIds[i]);
+      form.querySelectorAll('.date-fields input').forEach((input) => {
+        if (window.location.search.match(input.name)) {
+          // If the parameter is already present we update it
+          let count = initialRawParams.length;
+          for (let i = 0; i < count; i++) {
+            if (initialRawParams[i].startsWith(input.name + '=')) {
+              initialRawParams[i] = encodeURI(input.name + '=' + input.value); // Update
+              // If not empty we add it to date params
+              if (input.value !== '') {
+                allEmptyDateParams = false;
+              }
+              break;
             }
-            break;
           }
-        }
-      } else {
-        dateParams.push(encodeURI(input.name + '=' + input.value));
-        if (this.value !== '') {
-          allEmptyDateParams = false;
-        }
-      }
-    });
-    // If at least one parameter is not null we continue the routine for the final URL
-    if (allEmptyDateParams === false) {
-      globalAddedParams = globalAddedParams.concat(dateParams);
-      form.querySelectorAll('input').forEach((elem) => {
-        if (dateSelectorId.startsWith(elem.value)) {
-          let dateRangeParam = encodeURI(elem.name + '=' + elem.value);
-          if (!window.location.search.match(dateRangeParam)) {
-            globalAddedParams.push(dateRangeParam);
+        } else {
+          dateParams.push(encodeURI(input.name + '=' + input.value));
+          if (input.value !== '') {
+            allEmptyDateParams = false;
           }
         }
       });
+      // If at least one parameter is not null we continue the routine for the final URL
+      if (allEmptyDateParams === false) {
+        globalAddedParams = globalAddedParams.concat(dateParams);
+        form.querySelectorAll('input').forEach((elem) => {
+          if (dateSelectorIds[i].startsWith(elem.value)) {
+            let dateRangeParam = encodeURI(elem.name + '=' + elem.value);
+            if (!window.location.search.match(dateRangeParam)) {
+              globalAddedParams.push(dateRangeParam);
+            }
+          }
+        });
+      }
     }
   }
 
@@ -209,15 +207,14 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function dateSelectorInit() {
-    let elem = document.querySelector('div.facet form .date-fields');
-    if (elem !== null) {
-      dateSelectorId = elem.parentElement.id;
+    document.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
+      dateSelectorIds.push(elem.parentElement.id);
       elem.parentElement.addEventListener('submit', function switchAction(e) {
         if (isMultiFacetsSelectionActivated) {
           e.preventDefault();
         }
       });
-    }
+    });
   }
 
   function facetSelectionStyling(elem) {
@@ -301,9 +298,12 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function multiFacetsSelectionToggle() {
     isMultiFacetsSelectionActivated = this.checked;
-    let form = document.querySelector('form#' + dateSelectorId);
-    if (form !== null) {
-      form.querySelector('input[type="submit"]').classList.toggle('hidden');
+    let count = dateSelectorIds.length;
+    for (let i = 0; i < count; i++) {
+      let form = document.querySelector('form#' + dateSelectorIds[i]);
+      if (form !== null) {
+        form.querySelector('input[type="submit"]').classList.toggle('hidden');
+      }
     }
     let buttons = document.getElementsByClassName('apply-filters');
     for (let i = 0; i < buttons.length; i++) {
