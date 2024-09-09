@@ -37,6 +37,8 @@ use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\CommandInterface;
 
+use function sprintf;
+
 /**
  * Search service.
  *

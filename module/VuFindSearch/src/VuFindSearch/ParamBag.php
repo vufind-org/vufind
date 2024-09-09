@@ -32,6 +32,7 @@ namespace VuFindSearch;
 use function count;
 use function in_array;
 use function is_array;
+use function sprintf;
 
 /**
  * Lightweight wrapper for request parameters.

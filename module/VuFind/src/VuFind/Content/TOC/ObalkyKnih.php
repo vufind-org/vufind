@@ -33,6 +33,8 @@ namespace VuFind\Content\TOC;
 
 use VuFind\Content\ObalkyKnihService;
 
+use function sprintf;
+
 /**
  * Class ObalkyKnih
  *
