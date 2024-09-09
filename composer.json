@@ -34,7 +34,7 @@
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.0",
         "endroid/qr-code": "5.0.9",
-        "guzzlehttp/guzzle": "7.8.1",
+        "guzzlehttp/guzzle": "7.9.2",
         "jaybizzle/crawler-detect": "^1.2",
         "laminas/laminas-cache": "3.12.2",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",
