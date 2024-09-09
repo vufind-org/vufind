@@ -393,33 +393,33 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
                             0.078125 = fieldNorm(doc=115379)
                     0.00135112 = (MATCH) max plus 0.1 times others of:
             EXPLANATION
-            . '          0.00135112 = (MATCH) weight(series_statement:evolution^0.01 in 115379) [DefaultSimilarity], '
-            . 'result of:'
-            . <<<EXPLANATION
-                            0.00135112 = score(doc=115379,freq=1.0), product of:
-                              4.3100747E-4 = queryWeight, product of:
-                                0.01 = boost
-                                10.031343 = idf(docFreq=2436, maxDocs=20375968)
-                                0.004296608 = queryNorm
-                              3.1347947 = fieldWeight in 115379, product of:
-                                1.0 = tf(freq=1.0), with freq of:
-                                  1.0 = termFreq=1.0
-                                10.031343 = idf(docFreq=2436, maxDocs=20375968)
-                                0.3125 = fieldNorm(doc=115379)
-                        2.4372259E-4 = (MATCH) max plus 0.1 times others of:
-                          2.4372259E-4 = (MATCH) weight(misc:species^0.01 in 115379) [DefaultSimilarity], result of:
-                            2.4372259E-4 = score(doc=115379,freq=2.0), product of:
-                              3.0786352E-4 = queryWeight, product of:
-                                0.01 = boost
-                                7.16527 = idf(docFreq=42812, maxDocs=20375968)
-                                0.004296608 = queryNorm
-                              0.7916579 = fieldWeight in 115379, product of:
-                                1.4142135 = tf(freq=2.0), with freq of:
-                                  2.0 = termFreq=2.0
-                                7.16527 = idf(docFreq=42812, maxDocs=20375968)
-                                0.078125 = fieldNorm(doc=115379)
-                      0.8 = coord(4/5)
-                EXPLANATION
+        . '          0.00135112 = (MATCH) weight(series_statement:evolution^0.01 in 115379) [DefaultSimilarity], '
+        . 'result of:'
+        . <<<EXPLANATION
+                        0.00135112 = score(doc=115379,freq=1.0), product of:
+                          4.3100747E-4 = queryWeight, product of:
+                            0.01 = boost
+                            10.031343 = idf(docFreq=2436, maxDocs=20375968)
+                            0.004296608 = queryNorm
+                          3.1347947 = fieldWeight in 115379, product of:
+                            1.0 = tf(freq=1.0), with freq of:
+                              1.0 = termFreq=1.0
+                            10.031343 = idf(docFreq=2436, maxDocs=20375968)
+                            0.3125 = fieldNorm(doc=115379)
+                    2.4372259E-4 = (MATCH) max plus 0.1 times others of:
+                      2.4372259E-4 = (MATCH) weight(misc:species^0.01 in 115379) [DefaultSimilarity], result of:
+                        2.4372259E-4 = score(doc=115379,freq=2.0), product of:
+                          3.0786352E-4 = queryWeight, product of:
+                            0.01 = boost
+                            7.16527 = idf(docFreq=42812, maxDocs=20375968)
+                            0.004296608 = queryNorm
+                          0.7916579 = fieldWeight in 115379, product of:
+                            1.4142135 = tf(freq=2.0), with freq of:
+                              2.0 = termFreq=2.0
+                            7.16527 = idf(docFreq=42812, maxDocs=20375968)
+                            0.078125 = fieldNorm(doc=115379)
+                  0.8 = coord(4/5)
+            EXPLANATION
         . '  1.0 = product(if(exists(query(id:HEBr*,def=0.0)=0.0),const(0.4),const(1)),sum(product(max(const(0),'
         . 'sum(product(abs(ms(const(1672531200000),date(pub_date_max)=1862-01-01T00:00:00Z)),const(-5.285E-13)),'
         . 'const(1))),const(6.5)),const(1)))';

@@ -35,6 +35,7 @@ use VuFindSearch\ParamBag;
 use function count;
 use function in_array;
 use function is_array;
+use function sprintf;
 
 /**
  * Solr Search Parameters
