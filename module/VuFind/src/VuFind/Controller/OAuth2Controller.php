@@ -366,6 +366,9 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         if ($url = $this->oauth2Config['Server']['documentationUrl'] ?? null) {
             $configuration['service_documentation'] = $url;
         }
+        if ($scopes = $this->oauth2Config['Scopes'] ?? []) {
+            $configuration['scopes_supported'] = array_keys($scopes);
+        }
 
         return $this->getJsonResponse($configuration);
     }

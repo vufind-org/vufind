@@ -34,6 +34,8 @@ use Laminas\Mail\Header\HeaderValue;
 use Laminas\Mail\Header\HeaderWrap;
 use Laminas\Mail\Headers;
 
+use function sprintf;
+
 /**
  * Trait that provides an improved version of the getFieldValue method.
  *

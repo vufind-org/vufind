@@ -38,6 +38,7 @@ use function array_slice;
 use function count;
 use function floatval;
 use function in_array;
+use function sprintf;
 use function strlen;
 
 /**

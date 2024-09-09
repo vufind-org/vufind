@@ -738,12 +738,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element  $page     Page element
-     * @param string   $selector CSS selector
-     * @param callable $method   Method to call
-     * @param int      $timeout  Wait timeout for CSS selection (in ms)
-     * @param int      $index    Index of the element (0-based)
-     * @param int      $retries  Retry count for set loop
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $method   Method to call
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
      *
      * @return string
      */
@@ -771,7 +771,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->snooze();
         }
 
-        throw new \Exception('Failed to get text after ' . $retries . ' attempts.');
+        throw new \Exception("Failed to call $method on '$selector' after $retries attempts.");
     }
 
     /**

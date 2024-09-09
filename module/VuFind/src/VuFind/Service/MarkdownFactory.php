@@ -41,6 +41,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 use function count;
+use function sprintf;
 
 /**
  * VuFind Markdown Service factory.

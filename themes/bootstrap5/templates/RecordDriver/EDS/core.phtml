@@ -7,6 +7,8 @@
     $restrictedView = empty($accessLevel) ? false : true;
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
     $cover = $coverDetails['html'];
+    $edsConfig = $this->config()->get('EDS');
+    $authorDisplay = strtolower($edsConfig->AuthorDisplay->DetailPageFormat ?? 'Long');
 ?>
 <div class="media"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'resource' => '#record', 'typeof' => $this->schemaOrg()->getRecordTypes($this->driver)])?>>
   <div class="media-left medium img-col">
@@ -77,10 +79,38 @@
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
       <?php foreach ($items as $key => $item): ?>
         <?php if (!empty($item['Data'])): ?>
-        <tr>
-          <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
-          <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
-        </tr>
+          <?php if ('Au' == $item['Group'] && $authorDisplay == 'short'): ?>
+            <tr>
+              <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
+              <?php
+                $authors = $driver->getPrimaryAuthorsWithHighlighting();
+                $authorCount = count($authors);
+                $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3;
+              ?>
+              <?php if ($authorCount > 1): ?>
+                <td class="record__biblio-value">
+                <?php foreach ($authors as $i => $author): ?>
+                  <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
+                    if ($authorCount == ($i + 1)) {
+                      break;
+                    } elseif (($i + 1) >= $authorNameLimit) {
+                      echo ' ' . $this->transEsc('more_authors_abbrev');
+                      break;
+                    }
+                  ?><?php endforeach; ?>
+                </td>
+              <?php else: ?>
+                <?=$this->driver->linkUrls($item['Data'])?>
+              <?php endif; ?>
+            </tr>
+          <?php elseif ('AuInfo' == $item['Group'] && $authorDisplay == 'short'): ?>
+            <?php /* Do nothing: skip AuInfo data in short author mode... */ ?>
+          <?php else: ?>
+            <tr>
+              <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
+              <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
+            </tr>
+          <?php endif; ?>
         <?php endif; ?>
       <?php endforeach; ?>
 
