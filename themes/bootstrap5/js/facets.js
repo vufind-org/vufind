@@ -155,11 +155,12 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function handleDateSelector() {
+    let dateParams, allEmptyDateParams, form, inputs;
     for (let dateSelectorId of dateSelectorIds) {
-      let dateParams = [];
-      let allEmptyDateParams = true;
-      let form = document.querySelector('form#' + dateSelectorId);
-      let inputs = form.querySelectorAll('.date-fields input');
+      dateParams = [];
+      allEmptyDateParams = true;
+      form = document.querySelector('form#' + dateSelectorId);
+      inputs = form.querySelectorAll('.date-fields input');
       for (let input of inputs) {
         if (window.location.search.match(input.name)) {
           // If the parameter is already present we update it
@@ -171,10 +172,11 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
           allEmptyDateParams = false;
         }
       }
+
       // If at least one parameter is not null we continue the routine for the final URL
       if (allEmptyDateParams === false) {
         globalAddedParams = globalAddedParams.concat(dateParams);
-        let inputs = form.querySelectorAll('input');
+        inputs = form.querySelectorAll('input');
         for (let input of inputs) {
           if (dateSelectorId.startsWith(input.value)) {
             let dateRangeParam = encodeURI(input.name + '=' + input.value);
