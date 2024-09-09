@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "618b0dda1f07c8316fc81719a7b07aef",
+    "content-hash": "e2557d21f1f399f38329577d567d5302",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2820,16 +2820,16 @@
         },
         {
             "name": "laminas/laminas-form",
-            "version": "3.19.2",
+            "version": "3.20.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-form.git",
-                "reference": "f2ae01f6574ff9ca5139232c168e80b557b2b2aa"
+                "reference": "91ac71bd4862abf9c5e2ccc8f063f83b4999660b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/f2ae01f6574ff9ca5139232c168e80b557b2b2aa",
-                "reference": "f2ae01f6574ff9ca5139232c168e80b557b2b2aa",
+                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/91ac71bd4862abf9c5e2ccc8f063f83b4999660b",
+                "reference": "91ac71bd4862abf9c5e2ccc8f063f83b4999660b",
                 "shasum": ""
             },
             "require": {
@@ -2865,7 +2865,7 @@
                 "laminas/laminas-validator": "^2.43",
                 "laminas/laminas-view": "^2.32",
                 "phpunit/phpunit": "^10.4.2",
-                "psalm/plugin-phpunit": "^0.18.4",
+                "psalm/plugin-phpunit": "^0.19.0",
                 "vimeo/psalm": "^5.16"
             },
             "suggest": {
@@ -2913,7 +2913,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-02-19T07:08:43+00:00"
+            "time": "2024-08-22T08:29:18+00:00"
         },
         {
             "name": "laminas/laminas-http",
