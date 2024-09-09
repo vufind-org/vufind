@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5363308fe48cd8ea26d2aae3c589451f",
+    "content-hash": "7fcd2b09e0078c3f2ac4ec087d5c6f89",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2741,16 +2741,16 @@
         },
         {
             "name": "laminas/laminas-filter",
-            "version": "2.35.2",
+            "version": "2.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-filter.git",
-                "reference": "3e821b33a787253d56046f9258174a22de1bd267"
+                "reference": "27dda1e60547bc000b876e24808f47932df2f4ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-filter/zipball/3e821b33a787253d56046f9258174a22de1bd267",
-                "reference": "3e821b33a787253d56046f9258174a22de1bd267",
+                "url": "https://api.github.com/repos/laminas/laminas-filter/zipball/27dda1e60547bc000b876e24808f47932df2f4ac",
+                "reference": "27dda1e60547bc000b876e24808f47932df2f4ac",
                 "shasum": ""
             },
             "require": {
@@ -2768,11 +2768,11 @@
                 "laminas/laminas-crypt": "^3.11",
                 "laminas/laminas-i18n": "^2.26.0",
                 "laminas/laminas-uri": "^2.11",
-                "pear/archive_tar": "^1.4.14",
-                "phpunit/phpunit": "^10.5.11",
+                "pear/archive_tar": "^1.5.0",
+                "phpunit/phpunit": "^10.5.20",
                 "psalm/plugin-phpunit": "^0.19.0",
-                "psr/http-factory": "^1.0.2",
-                "vimeo/psalm": "^5.22.2"
+                "psr/http-factory": "^1.1.0",
+                "vimeo/psalm": "^5.24.0"
             },
             "suggest": {
                 "laminas/laminas-crypt": "Laminas\\Crypt component, for encryption filters",
@@ -2816,7 +2816,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-04-11T08:13:56+00:00"
+            "time": "2024-08-12T09:23:23+00:00"
         },
         {
             "name": "laminas/laminas-form",
