@@ -54,7 +54,7 @@ VuFind.register('doi', function Doi() {
                   newSpan.setAttribute("target", '_blank');
                 }
                 newSpan.classList.add('icon-link__label');
-                newSpan.appendChild(document.createTextNode(response.data[currentInstance][i].label))
+                newSpan.appendChild(document.createTextNode(response.data[currentInstance][i].label));
                 newLink.appendChild(newSpan);
                 doiEl.appendChild(newLink);
                 doiEl.appendChild(document.createElement('br'));
