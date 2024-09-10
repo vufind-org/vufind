@@ -131,7 +131,7 @@ class WebCrawlCommand extends Command
      */
     protected function getTransformCachePath(string $url): ?string
     {
-        if (($dir = $this->config->Cache->transform_cache_dir ?? null)) {
+        if ($dir = $this->config->Cache->transform_cache_dir ?? null) {
             return $dir . '/' . md5($url);
         }
         return null;
