@@ -129,9 +129,6 @@ class Folio extends AbstractAPI implements
      */
     protected $courseCache = null;
 
-    protected $fulfillmentTypeHoldShelf = 'Hold Shelf';
-    protected $fulfillmentTypeDelivery = 'Delivery';
-
     /**
      * Constructor
      *
@@ -1183,7 +1180,7 @@ class Folio extends AbstractAPI implements
             'firstname' => $profile->personal->firstName ?? null,
             'lastname' => $profile->personal->lastName ?? null,
             'email' => $profile->personal->email ?? null,
-            'addressTypeIds' => array_map(fn($address) => $address->addressTypeId, $profile->personal->addresses),
+            'addressTypeIds' => array_map(fn ($address) => $address->addressTypeId, $profile->personal->addresses),
         ];
     }
 
@@ -1415,11 +1412,11 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
-        if ($this->fulfillmentTypeDelivery == ($holdInfo['requestGroupId'] ?? null)) {
+        if ('Delivery' == ($holdInfo['requestGroupId'] ?? null)) {
             $addressTypes = $this->getAddressTypes();
             $limitDeliveryAddressTypes = $this->config['Holds']['limitDeliveryAddressTypes'] ?? [];
             $deliveryPickupLocations = [];
-            foreach($patron['addressTypeIds'] as $addressTypeId) {
+            foreach ($patron['addressTypeIds'] as $addressTypeId) {
                 $addressType = $addressTypes[$addressTypeId];
                 if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
                     $deliveryPickupLocations[] = [
@@ -1483,7 +1480,7 @@ class Folio extends AbstractAPI implements
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
-        if ($this->fulfillmentTypeDelivery == ($holdInfo['requestGroupId'] ?? null)) {
+        if ('Delivery' == ($holdDetails['requestGroupId'] ?? null)) {
             $deliveryPickupLocations = $this->getPickupLocations($patron, $holdDetails);
             if (count($deliveryPickupLocations) == 1) {
                 return $deliveryPickupLocations[0]['locationDisplay'];
@@ -1491,7 +1488,6 @@ class Folio extends AbstractAPI implements
         }
         return false;
     }
-
 
     /**
      * Get request groups
@@ -1526,11 +1522,11 @@ class Folio extends AbstractAPI implements
         if ($allowHoldShelf && $allowDelivery) {
             return [
                 [
-                    'id' => $this->fulfillmentTypeHoldShelf,
+                    'id' => 'Hold Shelf',
                     'name' => 'Hold Shelf',
                 ],
                 [
-                    'id' => $this->fulfillmentTypeDelivery,
+                    'id' => 'Delivery',
                     'name' => 'Delivery',
                 ],
             ];
@@ -1538,6 +1534,11 @@ class Folio extends AbstractAPI implements
         return false;
     }
 
+    /**
+     * Get list of address types from FOLIO.  Cache as needed.
+     *
+     * @return array An array mapping an address type id to its name.
+     */
     protected function getAddressTypes()
     {
         $cacheKey = 'addressTypes';
@@ -1554,7 +1555,6 @@ class Folio extends AbstractAPI implements
                 $addressTypes[$addressType->id] = $addressType->addressType;
             }
             $this->putCachedData($cacheKey, $addressTypes);
-
         }
         return $addressTypes;
     }
@@ -1807,17 +1807,16 @@ class Folio extends AbstractAPI implements
         // Account for an API spelling change introduced in mod-circulation v24:
         $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
             ? 'fulfillmentPreference' : 'fulfilmentPreference';
-        $fulfillmentValue = $holdDetails['requestGroupId'] ?? $this->fulfillmentTypeHoldShelf;
+        $fulfillmentValue = $holdDetails['requestGroupId'] ?? 'Hold Shelf';
         $requestBody = $baseParams + [
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
             $fulfillmentKey => $fulfillmentValue,
             'requestExpirationDate' => $requiredBy,
         ];
-        if ($this->fulfillmentTypeHoldShelf == $fulfillmentValue) {
+        if ('Hold Shelf' == $fulfillmentValue) {
             $requestBody['pickupServicePointId'] = $holdDetails['pickUpLocation'];
-        }
-        elseif ($this->fulfillmentTypeDelivery == $fulfillmentValue) {
+        } elseif ('Delivery' == $fulfillmentValue) {
             $requestBody['deliveryAddressTypeId'] = $holdDetails['pickUpLocation'];
         }
         if (!empty($holdDetails['proxiedUser'])) {
