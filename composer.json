@@ -104,7 +104,7 @@
     "require-dev": {
         "behat/mink": "1.11.0",
         "behat/mink-selenium2-driver": "1.7.0",
-        "dmore/chrome-mink-driver": "2.9.2",
+        "dmore/chrome-mink-driver": "2.9.3",
         "firebase/php-jwt": "6.10.1",
         "friendsofphp/php-cs-fixer": "3.51.0",
         "phpmd/phpmd": "2.15.0",
