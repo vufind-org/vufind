@@ -14,7 +14,7 @@ $this->jsConfigs()->add(
 );
 $this->jsConfigs()->add(
     'sticky-children-classes',
-    $themeConfig['stickyChildrenClasses'] ?? []
+    $themeConfig['stickyChildrenClasses'] ?? $themeConfig['hiddenStickyElements'] ?? []
 );
 $this->jsConfigs()->add(
     'item-status:load-batch-wise',
