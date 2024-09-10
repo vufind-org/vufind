@@ -59,10 +59,11 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
   function _updateKeyboardLayout(layoutName) {
     $('.keyboard-selection-item').each(function deactivateItems() {
-      $(this).parent().removeClass("active");
+      $(this).removeClass("active");
+      $(this).addClass("dropdown-item");
     });
-    $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
-    window.Cookies.set("keyboard", layoutName);
+    $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
+    window.Cookies.set("keyboard", layoutName, {sameSite: 'Lax'});
     if (layoutName === "none") {
       $("#keyboard-selection-button").removeClass("activated");
       _enabled = false;
