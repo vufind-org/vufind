@@ -498,8 +498,8 @@ class Folio extends AbstractAPI implements
      * Check whether an item is holdable based on its location and any
      * current loan
      *
-     * @param string         $locationName locationName from getHolding
-     * @param \stdClass|void $currentLoan  The current loan, or null if none
+     * @param string     $locationName locationName from getHolding
+     * @param ?\stdClass $currentLoan  The current loan, or null if none
      *
      * @return bool
      */
@@ -707,15 +707,15 @@ class Folio extends AbstractAPI implements
      * Support method for getHolding() -- given a few key details, format an item
      * for inclusion in the return value.
      *
-     * @param string         $bibId            Current bibliographic ID
-     * @param array          $holdingDetails   Holding details produced by
-     *                                         getHoldingDetailsForItem()
-     * @param object         $item             FOLIO item record (decoded from JSON)
-     * @param int            $number           The current item number (position within
-     *                                         current holdings record)
-     * @param string         $dueDateValue     The due date to display to the user
-     * @param array          $boundWithRecords Any bib records this holding is bound with
-     * @param \stdClass|void $currentLoan      Any current loan on this item
+     * @param string     $bibId            Current bibliographic ID
+     * @param array      $holdingDetails   Holding details produced by
+     *                                     getHoldingDetailsForItem()
+     * @param object     $item             FOLIO item record (decoded from JSON)
+     * @param int        $number           The current item number (position within
+     *                                     current holdings record)
+     * @param string     $dueDateValue     The due date to display to the user
+     * @param array      $boundWithRecords Any bib records this holding is bound with
+     * @param ?\stdClass $currentLoan      Any current loan on this item
      *
      * @return array
      */
