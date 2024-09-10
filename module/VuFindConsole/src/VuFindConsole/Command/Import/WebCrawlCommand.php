@@ -37,6 +37,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
+use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 
 /**
  * Console command: web crawler
@@ -54,27 +55,6 @@ use VuFind\XSLT\Importer;
 class WebCrawlCommand extends Command
 {
     /**
-     * XSLT importer
-     *
-     * @var Importer
-     */
-    protected $importer;
-
-    /**
-     * Solr writer
-     *
-     * @var Writer
-     */
-    protected $solr;
-
-    /**
-     * Configuration from webcrawl.ini
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
      * @param Importer    $importer XSLT importer
@@ -84,14 +64,11 @@ class WebCrawlCommand extends Command
      * must be set in configure()
      */
     public function __construct(
-        Importer $importer,
-        Writer $solr,
-        Config $config,
+        protected Importer $importer,
+        protected Writer $solr,
+        protected Config $config,
         $name = null
     ) {
-        $this->importer = $importer;
-        $this->solr = $solr;
-        $this->config = $config;
         parent::__construct($name);
     }
 
@@ -145,6 +122,85 @@ class WebCrawlCommand extends Command
     }
 
     /**
+     * Given a URL, get the transform cache path (or null if the cache
+     * is disabled).
+     *
+     * @param string $url URL to cache
+     *
+     * @return ?string
+     */
+    protected function getTransformCachePath(string $url): ?string
+    {
+        if (($dir = $this->config->Cache->transform_cache_dir ?? null)) {
+            return $dir . '/' . md5($url);
+        }
+        return null;
+    }
+
+    /**
+     * Update the last_indexed dates in a cached XML document to the current
+     * time so reindexing cached documents works correctly.
+     *
+     * @param string $xml XML to update
+     *
+     * @return string
+     */
+    protected function updateLastIndexed(string $xml): string
+    {
+        $newDate = date('Y-m-d\TH:i:s\Z');
+        return preg_replace(
+            '|<field name="last_indexed">([^<]+)</field>|',
+            '<field name="last_indexed">' . $newDate . '</field>',
+            $xml
+        );
+    }
+
+    /**
+     * Check the cache and configuration to see if the provided URL can
+     * be loaded from cache, and load it to Solr if possible.
+     *
+     * @param OutputInterface $output   Output object
+     * @param string          $url      URL of sitemap to read.
+     * @param string          $lastMod  Last modification date of URL.
+     * @param bool            $verbose  Are we in verbose mode?
+     * @param string          $index    Solr index to update
+     * @param bool            $testMode Are we in test mode?
+     *
+     * @return bool           True if loaded from cache, false if not.
+     */
+    protected function retrieveFromTransformCache(
+        OutputInterface $output,
+        string $url,
+        string $lastMod,
+        bool $verbose = false,
+        string $index = 'SolrWeb',
+        bool $testMode = false
+    ): bool {
+        // If cache is write-only, don't retrieve data!
+        if ($this->config->Cache->transform_cache_write_only ?? true) {
+            return false;
+        }
+        // If we can't find the data in the cache, we can't proceed.
+        if (!($path = $this->getTransformCachePath($url)) || !file_exists($path)) {
+            return false;
+        }
+        if ($verbose) {
+            $output->writeln("Found $url in cache: $path");
+        }
+        if (strtotime($lastMod) > filemtime($path)) {
+            $output->writeln('Cache has expired');
+            return false;
+        }
+        $xml = $this->updateLastIndexed(file_get_contents($path));
+        if ($testMode) {
+            $output->writeln($xml);
+        } else {
+            $this->solr->save($index, new RawXMLDocument($xml));
+        }
+        return true;
+    }
+
+    /**
      * Process a sitemap URL, either harvesting its contents directly or recursively
      * reading in child sitemaps.
      *
@@ -176,15 +232,29 @@ class WebCrawlCommand extends Command
             $results = $xml->sitemap ?? [];
             foreach ($results as $current) {
                 if (isset($current->loc)) {
-                    $success = $this->harvestSitemap(
-                        $output,
-                        (string)$current->loc,
-                        $verbose,
-                        $index,
-                        $testMode
-                    );
-                    if (!$success) {
-                        $retVal = false;
+                    // If there's a last modification date and we can retrieve
+                    // data from the cache, we can bypass the harvest.
+                    if (
+                        !isset($current->lastmod)
+                        || !$this->retrieveFromTransformCache(
+                            $output,
+                            (string)$current->loc,
+                            (string)$current->lastmod,
+                            $verbose,
+                            $index,
+                            $testMode
+                        )
+                    ) {
+                        $success = $this->harvestSitemap(
+                            $output,
+                            (string)$current->loc,
+                            $verbose,
+                            $index,
+                            $testMode
+                        );
+                        if (!$success) {
+                            $retVal = false;
+                        }
                     }
                 }
             }
@@ -197,6 +267,12 @@ class WebCrawlCommand extends Command
                         $index,
                         $testMode
                     );
+                    if ($transformCachePath = $this->getTransformCachePath($url)) {
+                        if ($verbose) {
+                            $output->writeln("Caching results to $transformCachePath");
+                        }
+                        file_put_contents($transformCachePath, $result);
+                    }
                     if ($testMode) {
                         $output->writeln($result);
                     }
