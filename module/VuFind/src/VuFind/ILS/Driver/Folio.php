@@ -946,13 +946,16 @@ class Folio extends AbstractAPI implements
      * current loan, adjusting the timezone and formatting in universal
      * time with or without due time
      *
-     * @param string $loan     The current loan
-     * @param bool   $showTime Determines if date or date & time is returned
+     * @param \stdClass|string $loan     The current loan, or its itemId for backwards compatibility
+     * @param bool             $showTime Determines if date or date & time is returned
      *
      * @return string
      */
     protected function getDueDate($loan, $showTime)
     {
+        if (is_string($loan)) {
+            $loan = $this->getCurrentLoan($loan);
+        }
         $dueDate = $this->getDateTimeFromString($loan->dueDate);
         $method = $showTime
             ? 'convertToDisplayDateAndTime' : 'convertToDisplayDate';
