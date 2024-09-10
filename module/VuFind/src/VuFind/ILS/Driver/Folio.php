@@ -129,6 +129,9 @@ class Folio extends AbstractAPI implements
      */
     protected $courseCache = null;
 
+    protected $fulfillmentTypeHoldShelf = 'Hold Shelf';
+    protected $fulfillmentTypeDelivery = 'Delivery';
+
     /**
      * Constructor
      *
@@ -1180,6 +1183,7 @@ class Folio extends AbstractAPI implements
             'firstname' => $profile->personal->firstName ?? null,
             'lastname' => $profile->personal->lastName ?? null,
             'email' => $profile->personal->email ?? null,
+            'addressTypeIds' => array_map(fn($address) => $address->addressTypeId, $profile->personal->addresses),
         ];
     }
 
@@ -1411,6 +1415,22 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
+        if ($this->fulfillmentTypeDelivery == ($holdInfo['requestGroupId'] ?? null)) {
+            $addressTypes = $this->getAddressTypes();
+            $limitDeliveryAddressTypes = $this->config['Holds']['limitDeliveryAddressTypes'] ?? [];
+            $deliveryPickupLocations = [];
+            foreach($patron['addressTypeIds'] as $addressTypeId) {
+                $addressType = $addressTypes[$addressTypeId];
+                if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
+                    $deliveryPickupLocations[] = [
+                        'locationID' => $addressTypeId,
+                        'locationDisplay' => $addressType,
+                    ];
+                }
+            }
+            return $deliveryPickupLocations;
+        }
+
         $limitedServicePoints = null;
         if (
             str_contains($this->config['Holds']['limitPickupLocations'] ?? '', 'itemEffectiveLocation')
@@ -1442,6 +1462,101 @@ class Folio extends AbstractAPI implements
             ];
         }
         return $locations;
+    }
+
+    /**
+     * Get Default Pick Up Location
+     *
+     * Returns the default pick up location set in HorizonXMLAPI.ini
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the pickup options
+     * or may be ignored.
+     *
+     * @return false|string      The default pickup location for the patron or false
+     * if the user has to choose.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    {
+        if ($this->fulfillmentTypeDelivery == ($holdInfo['requestGroupId'] ?? null)) {
+            $deliveryPickupLocations = $this->getPickupLocations($patron, $holdDetails);
+            if (count($deliveryPickupLocations) == 1) {
+                return $deliveryPickupLocations[0]['locationDisplay'];
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Get request groups
+     *
+     * @param int   $bibId       BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return array  False if request groups not in use or an array of
+     * associative arrays with id and name keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRequestGroups(
+        $bibId = null,
+        $patron = null,
+        $holdDetails = null
+    ) {
+        // circulation-storage.request-preferences.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
+        );
+        $requestPreferencesResponse = json_decode($response->getBody());
+        $requestPreferences = $requestPreferencesResponse->requestPreferences[0];
+        $allowHoldShelf = $requestPreferences->holdShelf;
+        $allowDelivery = $requestPreferences->delivery && ($this->config['Holds']['allowDelivery'] ?? true);
+        if ($allowHoldShelf && $allowDelivery) {
+            return [
+                [
+                    'id' => $this->fulfillmentTypeHoldShelf,
+                    'name' => 'Hold Shelf',
+                ],
+                [
+                    'id' => $this->fulfillmentTypeDelivery,
+                    'name' => 'Delivery',
+                ],
+            ];
+        }
+        return false;
+    }
+
+    protected function getAddressTypes()
+    {
+        $cacheKey = 'addressTypes';
+        $addressTypes = $this->getCachedData($cacheKey);
+        if (null == $addressTypes) {
+            $addressTypes = [];
+            // addresstypes.collection.get
+            foreach (
+                $this->getPagedResults(
+                    'addressTypes',
+                    '/addresstypes'
+                ) as $addressType
+            ) {
+                $addressTypes[$addressType->id] = $addressType->addressType;
+            }
+            $this->putCachedData($cacheKey, $addressTypes);
+
+        }
+        return $addressTypes;
     }
 
     /**
@@ -1692,13 +1807,19 @@ class Folio extends AbstractAPI implements
         // Account for an API spelling change introduced in mod-circulation v24:
         $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
             ? 'fulfillmentPreference' : 'fulfilmentPreference';
+        $fulfillmentValue = $holdDetails['requestGroupId'] ?? $this->fulfillmentTypeHoldShelf;
         $requestBody = $baseParams + [
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
-            $fulfillmentKey => 'Hold Shelf',
+            $fulfillmentKey => $fulfillmentValue,
             'requestExpirationDate' => $requiredBy,
-            'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
+        if ($this->fulfillmentTypeHoldShelf == $fulfillmentValue) {
+            $requestBody['pickupServicePointId'] = $holdDetails['pickUpLocation'];
+        }
+        elseif ($this->fulfillmentTypeDelivery == $fulfillmentValue) {
+            $requestBody['deliveryAddressTypeId'] = $holdDetails['pickUpLocation'];
+        }
         if (!empty($holdDetails['proxiedUser'])) {
             $requestBody['requesterId'] = $holdDetails['proxiedUser'];
             $requestBody['proxyUserId'] = $holdDetails['patron']['id'];
