@@ -39,6 +39,8 @@ use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 
+use function is_string;
+
 /**
  * Console command: web crawler
  *
@@ -156,6 +158,48 @@ class WebCrawlCommand extends Command
     }
 
     /**
+     * Fetch transform cache data for the specified URL; return null if the cache is disabled,
+     * the data is expired, or something goes wrong.
+     *
+     * @param OutputInterface $output  Output object
+     * @param string          $url     URL of sitemap to read.
+     * @param string          $lastMod Last modification date of URL.
+     * @param bool            $verbose Are we in verbose mode?
+     *
+     * @return ?string
+     */
+    protected function readFromTransformCache(
+        OutputInterface $output,
+        string $url,
+        string $lastMod,
+        bool $verbose
+    ): ?string {
+        // If cache is write-only, don't retrieve data!
+        if ($this->config->Cache->transform_cache_write_only ?? true) {
+            return null;
+        }
+        // If we can't find the data in the cache, we can't proceed.
+        if (!($path = $this->getTransformCachePath($url)) || !file_exists($path)) {
+            return null;
+        }
+        if (strtotime($lastMod) > filemtime($path)) {
+            if ($verbose) {
+                $output->writeln("Cached data for $url ($path) has expired.");
+            }
+            return null;
+        }
+        $rawXml = file_get_contents($path);
+        if (!is_string($rawXml)) {
+            $output->writeln("WARNING: Problem reading cached data for $url ($path)");
+            return null;
+        }
+        if ($verbose) {
+            $output->writeln("Found $url in cache: $path");
+        }
+        return $rawXml;
+    }
+
+    /**
      * Check the cache and configuration to see if the provided URL can
      * be loaded from cache, and load it to Solr if possible.
      *
@@ -168,7 +212,7 @@ class WebCrawlCommand extends Command
      *
      * @return bool           True if loaded from cache, false if not.
      */
-    protected function retrieveFromTransformCache(
+    protected function indexFromTransformCache(
         OutputInterface $output,
         string $url,
         string $lastMod,
@@ -176,28 +220,34 @@ class WebCrawlCommand extends Command
         string $index = 'SolrWeb',
         bool $testMode = false
     ): bool {
-        // If cache is write-only, don't retrieve data!
-        if ($this->config->Cache->transform_cache_write_only ?? true) {
+        $rawXml = $this->readFromTransformCache($output, $url, $lastMod, $verbose);
+        if ($rawXml === null) {
             return false;
         }
-        // If we can't find the data in the cache, we can't proceed.
-        if (!($path = $this->getTransformCachePath($url)) || !file_exists($path)) {
-            return false;
-        }
-        if ($verbose) {
-            $output->writeln("Found $url in cache: $path");
-        }
-        if (strtotime($lastMod) > filemtime($path)) {
-            $output->writeln('Cache has expired');
-            return false;
-        }
-        $xml = $this->updateLastIndexed(file_get_contents($path));
+        $xml = $this->updateLastIndexed($rawXml);
         if ($testMode) {
             $output->writeln($xml);
         } else {
             $this->solr->save($index, new RawXMLDocument($xml));
         }
         return true;
+    }
+
+    /**
+     * Update the transform cache (if activated). Returns true if the cache was updated,
+     * false otherwise.
+     *
+     * @param string $url    URL to use for cache key
+     * @param string $result Result of transforming the URL
+     *
+     * @return bool
+     */
+    protected function updateTransformCache(string $url, string $result): bool
+    {
+        if ($transformCachePath = $this->getTransformCachePath($url)) {
+            return false !== file_put_contents($transformCachePath, $result);
+        }
+        return false;
     }
 
     /**
@@ -236,7 +286,7 @@ class WebCrawlCommand extends Command
                     // data from the cache, we can bypass the harvest.
                     if (
                         !isset($current->lastmod)
-                        || !$this->retrieveFromTransformCache(
+                        || !$this->indexFromTransformCache(
                             $output,
                             (string)$current->loc,
                             (string)$current->lastmod,
@@ -267,11 +317,8 @@ class WebCrawlCommand extends Command
                         $index,
                         $testMode
                     );
-                    if ($transformCachePath = $this->getTransformCachePath($url)) {
-                        if ($verbose) {
-                            $output->writeln("Caching results to $transformCachePath");
-                        }
-                        file_put_contents($transformCachePath, $result);
+                    if ($this->updateTransformCache($url, $result) && $verbose) {
+                        $output->writeln('Wrote results to transform cache.');
                     }
                     if ($testMode) {
                         $output->writeln($result);
