@@ -188,7 +188,7 @@ class WebCrawlCommand extends Command
         bool $verbose
     ): ?string {
         // If cache is write-only, don't retrieve data!
-        if ($this->config->Cache->transform_cache_write_only ?? true) {
+        if ($this->config->Cache->transform_cache_write_only ?? false) {
             return null;
         }
         // If we can't find the data in the cache, we can't proceed.
