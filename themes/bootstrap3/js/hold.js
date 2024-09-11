@@ -36,12 +36,12 @@ function setUpHoldRequestForm(recordId) {
             // Make sure to compare locationID and defaultValue as Strings since locationID may be an integer
             if (String(this.locationID) === String(defaultValue) ||
               (defaultValue === '' && this.isDefault && $emptyOption.length === 0) ||
-              (response.data.locations.length == 1)) {
+              (response.data.locations.length === 1)) {
               option.attr('selected', 'selected');
             }
             $select.append(option);
           });
-          if (response.data.locations.length == 1) {
+          if (response.data.locations.length === 1) {
             $emptyOption.attr('hidden', 'hidden');
             $emptyOption.removeAttr('selected');
           }
