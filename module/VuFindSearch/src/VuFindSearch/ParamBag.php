@@ -163,11 +163,17 @@ class ParamBag implements \Countable
             $this->params[$name] = [];
         }
         if (is_array($value)) {
-            $this->params[$name] = array_merge($this->params[$name], $value);
+            $this->params[$name] = array_merge_recursive($this->params[$name], $value);
         } else {
             $this->params[$name][] = $value;
         }
         if ($deduplicate) {
+            // Avoid deduplicating associative array params (like Primo filterList):
+            foreach ($this->params[$name] as $key => $current) {
+                if (!is_numeric($key) || is_array($current)) {
+                    return;
+                }
+            }
             $this->params[$name] = array_values(array_unique($this->params[$name]));
         }
     }
