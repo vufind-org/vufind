@@ -30,6 +30,7 @@
 namespace VuFindTest\Command\Import;
 
 use Laminas\Config\Config;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
@@ -54,7 +55,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $fixture1 = $this->getFixtureDir('VuFindConsole') . 'sitemap/index.xml';
         $fixture2 = $this->getFixtureDir('VuFindConsole') . 'sitemap/map.xml';
@@ -103,14 +104,14 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      * @param Config   $config   Configuration
      * @param array    $methods  Methods to mock
      *
-     * @return WebCrawlCommand
+     * @return MockObject&WebCrawlCommand
      */
     protected function getMockCommand(
         Importer $importer = null,
         Writer $solr = null,
         Config $config = null,
         array $methods = ['downloadFile', 'removeTempFile']
-    ) {
+    ): MockObject&WebCrawlCommand {
         return $this->getMockBuilder(WebCrawlCommand::class)
             ->setConstructorArgs(
                 [
@@ -127,9 +128,9 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $methods Methods to mock
      *
-     * @return Importer
+     * @return MockObject&Importer
      */
-    protected function getMockImporter($methods = [])
+    protected function getMockImporter($methods = []): MockObject&Importer
     {
         $builder = $this->getMockBuilder(Importer::class)
             ->disableOriginalConstructor();
@@ -144,9 +145,9 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $methods Methods to mock
      *
-     * @return Writer
+     * @return MockObject&Writer
      */
-    protected function getMockSolrWriter($methods = [])
+    protected function getMockSolrWriter($methods = []): MockObject&Writer
     {
         $builder = $this->getMockBuilder(Writer::class)
             ->disableOriginalConstructor();
