@@ -57,6 +57,13 @@ use function is_string;
 class WebCrawlCommand extends Command
 {
     /**
+     * Should we bypass cache expiration?
+     *
+     * @var bool
+     */
+    protected bool $bypassCacheExpiration = false;
+
+    /**
      * Constructor
      *
      * @param Importer    $importer XSLT importer
@@ -88,6 +95,12 @@ class WebCrawlCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'activates test mode, which displays output without updating Solr'
+            )->addOption(
+                'use-expired-cache',
+                null,
+                InputOption::VALUE_NONE,
+                'use cached data, even if expired; useful when the index needs to be quickly rebuilt, '
+                . 'e.g. after a Solr upgrade'
             )->addOption(
                 'index',
                 null,
@@ -182,7 +195,7 @@ class WebCrawlCommand extends Command
         if (!($path = $this->getTransformCachePath($url)) || !file_exists($path)) {
             return null;
         }
-        if (strtotime($lastMod) > filemtime($path)) {
+        if (strtotime($lastMod) > filemtime($path) && !$this->bypassCacheExpiration) {
             if ($verbose) {
                 $output->writeln("Cached data for $url ($path) has expired.");
             }
@@ -269,6 +282,21 @@ class WebCrawlCommand extends Command
         $index = 'SolrWeb',
         $testMode = false
     ) {
+        // Date to use as a default "last modification" date in scenarios where we
+        // don't care about cache invalidation.
+        $pastDate = '1980-01-01';
+
+        // If we're not concerned about cache expiration, we can potentially
+        // short-circuit the process with the cache up front. Otherwise, we'll
+        // need to wait until we can get last modification dates to know whether
+        // it's safe to rely on cached data.
+        if (
+            $this->bypassCacheExpiration
+            && $this->indexFromTransformCache($output, $url, $pastDate, $verbose, $index, $testMode)
+        ) {
+            return true;
+        }
+
         if ($verbose) {
             $output->writeln("Harvesting $url...");
         }
@@ -282,14 +310,15 @@ class WebCrawlCommand extends Command
             $results = $xml->sitemap ?? [];
             foreach ($results as $current) {
                 if (isset($current->loc)) {
-                    // If there's a last modification date and we can retrieve
-                    // data from the cache, we can bypass the harvest.
+                    // If there's a last modification date (or we're forcing a
+                    // reindex from the cache) and we can retrieve data from the
+                    // cache, we can bypass the harvest.
                     if (
-                        !isset($current->lastmod)
+                        (!isset($current->lastmod) && !$this->bypassCacheExpiration)
                         || !$this->indexFromTransformCache(
                             $output,
                             (string)$current->loc,
-                            (string)$current->lastmod,
+                            (string)($current->lastmod ?? $pastDate),
                             $verbose,
                             $index,
                             $testMode
@@ -347,6 +376,7 @@ class WebCrawlCommand extends Command
     {
         // Get command line parameters:
         $testMode = $input->getOption('test-only') ? true : false;
+        $this->bypassCacheExpiration = $input->getOption('use-expired-cache') ? true : false;
         $index = $input->getOption('index');
 
         // Get the time we started indexing -- we'll delete records older than this
