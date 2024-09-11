@@ -346,7 +346,7 @@ class WebCrawlCommand extends Command
                         $index,
                         $testMode
                     );
-                    if ($this->updateTransformCache($url, $result) && $verbose) {
+                    if ($result && $this->updateTransformCache($url, $result) && $verbose) {
                         $output->writeln('Wrote results to transform cache.');
                     }
                     if ($testMode) {
