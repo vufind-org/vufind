@@ -51,11 +51,33 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
+     * Data provider for testSuccessWithMinimalParameters()
+     *
+     * @return array[]
+     */
+    public static function successWithMinimalParametersProvider(): array
+    {
+        return [
+            'not verbose' => [false, ''],
+            'verbose' => [
+                true,
+                'Harvesting http://foo... Harvesting http://bar... '
+                . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
+            ],
+        ];
+    }
+
+    /**
      * Test the simplest possible success case.
      *
+     * @param bool   $verbose        Run in verbose mode?
+     * @param string $expectedOutput Expected normalized output string
+     *
      * @return void
+     *
+     * @dataProvider successWithMinimalParametersProvider
      */
-    public function testSuccessWithMinimalParameters(): void
+    public function testSuccessWithMinimalParameters(bool $verbose, string $expectedOutput): void
     {
         $fixture1 = $this->getFixtureDir('VuFindConsole') . 'sitemap/index.xml';
         $fixture2 = $this->getFixtureDir('VuFindConsole') . 'sitemap/map.xml';
@@ -76,6 +98,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('SolrWeb'));
         $config = new Config(
             [
+                'General' => compact('verbose'),
                 'Sitemaps' => ['url' => ['http://foo']],
             ]
         );
@@ -89,10 +112,14 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $this->expectConsecutiveCalls($command, 'removeTempFile', [[$fixture2], [$fixture1]]);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
-            '',
-            $commandTester->getDisplay()
+        $normalizedOutput = trim(
+            preg_replace(
+                '/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/',
+                'DATE',
+                str_replace("\n", ' ', $commandTester->getDisplay())
+            )
         );
+        $this->assertEquals($expectedOutput, $normalizedOutput);
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
