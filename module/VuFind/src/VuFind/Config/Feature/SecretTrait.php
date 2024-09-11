@@ -60,18 +60,17 @@ trait SecretTrait
         if ($config instanceof Config) {
             $config = $config->toArray();
         }
-        if (isset($config[$key . '_file'])) {
-            if (is_readable($config[$key . '_file'])) {
-                $value = file_get_contents($config[$key . '_file']);
-                return trim($value);
+        if ($secretFile = $config[$key . '_file'] ?? null) {
+            if (is_readable($secretFile)) {
+                return file_get_contents($secretFile);
             } elseif (method_exists($this, 'logWarning')) {
                 $this->logWarning(
-                    'The secret file (' . $config[$key . '_file'] . ')' .
+                    'The secret file (' . $secretFile . ')' .
                     ' for secret ' . $key . ' doesn\'t exist or is not readable.'
                 );
             } else {
                 error_log(
-                    'The secret file (' . $config[$key . '_file'] . ')' .
+                    'The secret file (' . $secretFile . ')' .
                     ' for secret ' . $key . ' doesn\'t exist or is not readable'
                 );
             }
