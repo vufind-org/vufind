@@ -721,6 +721,13 @@ class Upgrade
         }
         unset($newConfig['Spelling']['simple']);
 
+        // Update mail config
+        if (isset($newConfig['Mail']['require_login'])) {
+            $require_login = $newConfig['Mail']['require_login'];
+            unset($newConfig['Mail']['require_login']);
+            $newConfig['Mail']['email_action'] = $require_login ? 'require_login' : 'enabled';
+        }
+
         // Translate obsolete permission settings:
         $this->upgradeAdminPermissions();
 

@@ -34,6 +34,8 @@ use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\ParamBag;
 
+use function sprintf;
+
 /**
  * Central class for connecting to resources used by VuFind.
  *

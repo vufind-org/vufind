@@ -1,0 +1,36 @@
+<?php
+  $title = $this->translate('Permissions');
+  $titleEsc = $this->escapeHtml($title);
+  $this->headTitle($title);
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+  . '<li class="active">' . $titleEsc . '</li>';
+?>
+<h1><?=$titleEsc?></h1>
+
+<h2>Configured Permissions</h2>
+<p>This section shows all permissions currently configured in permissions.ini and whether they are granted to the current
+active user (or logged-out guest).</p>
+<table class="table table-striped">
+  <tr><th scope="col">Permission</th><th scope="col">Granted?</th></tr>
+  <?php foreach ($permissions as $permission => $status): ?>
+    <tr><td><?=$this->escapeHtml($permission)?></td><td><?=$status ? 'yes' : 'no'?></td></tr>
+  <?php endforeach; ?>
+</table>
+
+<h2>Session Key Testing</h2>
+<p>If you want to activate or deactivate user permissions in a custom controller action (e.g. to apply permissions based
+on custom logic), you can use the "session key" permission provider. You can test out the mechanism by adding something like this
+to your permissions.ini file:</p>
+
+<pre>
+[SessionBasedPermission]
+permission = session.based.permission
+sessionKey = demo_key
+</pre>
+
+<p>You can use the following links to <a href="?setSessionKey=1">set</a> or <a href="?unsetSessionKey=1">unset</a> the "demo_key" session key.</p>
+
+<p>See \VuFindDevTools\Controller\DevtoolsController::permissionsAction() for example code showing how to set and unset keys.</p>
+
+<p>Note: this demo is only capabile of setting the "demo_key" session key. General-purpose key setting has not been implemented
+for security reasons.</p>

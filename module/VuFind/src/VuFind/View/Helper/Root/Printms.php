@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function sprintf;
+
 /**
  * Prints a human readable format from a number of milliseconds
  *

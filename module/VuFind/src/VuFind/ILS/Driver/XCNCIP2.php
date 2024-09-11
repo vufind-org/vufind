@@ -2133,7 +2133,7 @@ class XCNCIP2 extends AbstractBase implements
             },
             $blocks
         );
-        return empty($blocks) ? false : array_unique($blocks);
+        return empty($blocks) ? false : array_values(array_unique($blocks));
     }
 
     /**

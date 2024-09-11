@@ -24,12 +24,14 @@
       </li>
     <?php endif; ?>
 
-    <li role="none">
-      <a class="mail-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email'))?>" rel="nofollow">
-        <?=$this->icon('send-email') ?>
-        <?=$this->transEsc('Email this')?>
-      </a>
-    </li>
+    <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+      <li role="none">
+        <a class="mail-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email'))?>" rel="nofollow">
+          <?=$this->icon('send-email') ?>
+          <?=$this->transEsc('Email this')?>
+        </a>
+      </li>
+    <?php endif; ?>
 
     <li>
       <a class="print-record toolbar-btn" href="<?=$this->url()->addQueryParameters(['print' => true])?>" rel="nofollow">

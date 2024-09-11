@@ -35,6 +35,7 @@ use Exception;
 use Laminas\Http\Response;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
@@ -44,6 +45,7 @@ use function is_callable;
 use function is_int;
 use function is_object;
 use function is_string;
+use function sprintf;
 
 /**
  * FOLIO REST API driver
@@ -353,11 +355,7 @@ class Folio extends AbstractAPI implements
                 if ($itemId == null) {
                     throw new \Exception('No IDs provided to getInstanceObject.');
                 }
-                $response = $this->makeRequest(
-                    'GET',
-                    '/item-storage/items/' . $itemId
-                );
-                $item = json_decode($response->getBody());
+                $item = $this->getItemById($itemId);
                 $holdingId = $item->holdingsRecordId;
             }
             $response = $this->makeRequest(
@@ -372,6 +370,23 @@ class Folio extends AbstractAPI implements
             '/inventory/instances/' . $instanceId
         );
         return json_decode($response->getBody());
+    }
+
+    /**
+     * Get an item record by its UUID.
+     *
+     * @param string $itemId UUID
+     *
+     * @return \stdClass The item
+     */
+    protected function getItemById($itemId)
+    {
+        $response = $this->makeRequest(
+            'GET',
+            '/item-storage/items/' . $itemId
+        );
+        $item = json_decode($response->getBody());
+        return $item;
     }
 
     /**
@@ -581,7 +596,8 @@ class Folio extends AbstractAPI implements
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $isActive = $location->isActive ?? true;
-                $locationMap[$location->id] = compact('name', 'code', 'isActive');
+                $servicePointIds = $location->servicePointIds;
+                $locationMap[$location->id] = compact('name', 'code', 'isActive', 'servicePointIds');
             }
             $this->putCachedData($cacheKey, $locationMap);
         }
@@ -601,6 +617,7 @@ class Folio extends AbstractAPI implements
         $name = '';
         $code = '';
         $isActive = true;
+        $servicePointIds = [];
         if (array_key_exists($locationId, $locationMap)) {
             return $locationMap[$locationId];
         } else {
@@ -615,10 +632,11 @@ class Folio extends AbstractAPI implements
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $isActive = $location->isActive ?? $isActive;
+                $servicePointIds = $location->servicePointIds;
             }
         }
 
-        return compact('name', 'code', 'isActive');
+        return compact('name', 'code', 'isActive', 'servicePointIds');
     }
 
     /**
@@ -704,6 +722,38 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for getHolding() -- return an array of item-level details from
+     * both FOLIO holdings and item records.
+     *
+     * Depending on where this method is called, $locationId will be the holdings record
+     * location (in the case where no items are attached to a holding) or the item record
+     * location (in cases where there are attached items).
+     *
+     * @param string $locationId     Location identifier from FOLIO
+     * @param array  $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     *
+     * @return array
+     */
+    protected function getItemFieldsFromLocAndHolding(
+        string $locationId,
+        array $holdingDetails,
+    ): array {
+        $locationData = $this->getLocationData($locationId);
+        $locationName = $locationData['name'];
+        return [
+            'is_holdable' => $this->isHoldable($locationName),
+            'holdings_notes' => $holdingDetails['hasHoldingNotes']
+                ? $holdingDetails['holdingNotes'] : null,
+            'summary' => array_unique($holdingDetails['holdingsStatements']),
+            'supplements' => $holdingDetails['holdingsSupplements'],
+            'indexes' => $holdingDetails['holdingsIndexes'],
+            'location' => $locationName,
+            'location_code' => $locationData['code'],
+            'folio_location_is_active' => $locationData['isActive'],
+        ];
+    }
+
+    /**
      * Support method for getHolding() -- given a few key details, format an item
      * for inclusion in the return value.
      *
@@ -732,10 +782,7 @@ class Folio extends AbstractAPI implements
             array_map([$this, 'formatNote'], $item->notes ?? [])
         );
         $locationId = $item->effectiveLocation->id;
-        $locationData = $this->getLocationData($locationId);
-        $locationName = $locationData['name'];
-        $locationCode = $locationData['code'];
-        $locationIsActive = $locationData['isActive'];
+
         // concatenate enumeration fields if present
         $enum = implode(
             ' ',
@@ -755,8 +802,9 @@ class Folio extends AbstractAPI implements
             $item->effectiveCallNumberComponents->callNumber
                 ?? $item->itemLevelCallNumber ?? ''
         );
+        $locAndHoldings = $this->getItemFieldsFromLocAndHolding($locationId, $holdingDetails);
 
-        return $callNumberData + [
+        return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
             'item_id' => $item->id,
             'holdings_id' => $holdingDetails['id'],
@@ -766,16 +814,7 @@ class Folio extends AbstractAPI implements
             'status' => $item->status->name,
             'duedate' => $dueDateValue,
             'availability' => $item->status->name == 'Available',
-            'is_holdable' => $this->isHoldable($locationName, $currentLoan),
-            'holdings_notes' => $holdingDetails['hasHoldingNotes']
-                ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-            'summary' => array_unique($holdingDetails['holdingsStatements']),
-            'supplements' => $holdingDetails['holdingsSupplements'],
-            'indexes' => $holdingDetails['holdingsIndexes'],
-            'location' => $locationName,
-            'location_code' => $locationCode,
-            'folio_location_is_active' => $locationIsActive,
             'reserve' => 'TODO',
             'addLink' => true,
             'bound_with_records' => $boundWithRecords,
@@ -848,6 +887,7 @@ class Folio extends AbstractAPI implements
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $showHoldingsNoItems = $this->config['Holdings']['show_holdings_no_items'] ?? false;
         $dueDateItemCount = 0;
 
         $instance = $this->getInstanceByBibId($bibId);
@@ -913,6 +953,25 @@ class Folio extends AbstractAPI implements
                 }
                 $nextBatch[] = $nextItem;
             }
+
+            // If there are no item records on this holding, we're going to create a fake one,
+            // fill it with data from the FOLIO holdings record, and make it not appear in
+            // the full record display using a non-visible AvailabilityStatus.
+            if ($number == 0 && $showHoldingsNoItems) {
+                $locAndHoldings = $this->getItemFieldsFromLocAndHolding($holding->effectiveLocationId, $holdingDetails);
+                $invisibleAvailabilityStatus = new AvailabilityStatus(
+                    true,
+                    'HoldingStatus::holding_no_items_availability_message'
+                );
+                $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
+                $nextBatch[] = $locAndHoldings + [
+                    'id' => $bibId,
+                    'callnumber' => $holdingDetails['holdingCallNumber'],
+                    'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
+                    'reserve' => 'N',
+                    'availability' => $invisibleAvailabilityStatus,
+                ];
+            }
             $items = array_merge(
                 $items,
                 $sortNeeded
@@ -972,7 +1031,7 @@ class Folio extends AbstractAPI implements
      */
     protected function getCurrentLoan($itemId)
     {
-        $query = 'itemId==' . $itemId;
+        $query = 'itemId==' . $itemId . ' AND status.name==Open';
         foreach (
             $this->getPagedResults(
                 'loans',
@@ -1444,6 +1503,18 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
+        $limitedServicePoints = null;
+        if (
+            str_contains($this->config['Holds']['limitPickupLocations'] ?? '', 'itemEffectiveLocation')
+            // If there's no item ID, it must be a title-level hold,
+            // so limiting by itemEffectiveLocation does not apply
+            && $holdInfo['item_id'] ?? false
+        ) {
+            $item = $this->getItemById($holdInfo['item_id']);
+            $itemLocationId = $item->effectiveLocationId;
+            $limitedServicePoints = $this->getLocationData($itemLocationId)['servicePointIds'];
+        }
+
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
         foreach (
@@ -1451,11 +1522,15 @@ class Folio extends AbstractAPI implements
                 'servicepoints',
                 '/service-points',
                 $query
-            ) as $servicepoint
+            ) as $servicePoint
         ) {
+            if ($limitedServicePoints && !in_array($servicePoint->id, $limitedServicePoints)) {
+                continue;
+            }
+
             $locations[] = [
-                'locationID' => $servicepoint->id,
-                'locationDisplay' => $servicepoint->discoveryDisplayName,
+                'locationID' => $servicePoint->id,
+                'locationDisplay' => $servicePoint->discoveryDisplayName,
             ];
         }
         return $locations;
