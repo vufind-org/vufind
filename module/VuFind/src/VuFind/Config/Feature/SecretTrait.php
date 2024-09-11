@@ -62,7 +62,8 @@ trait SecretTrait
         }
         if ($secretFile = $config[$key . '_file'] ?? null) {
             if (is_readable($secretFile)) {
-                return file_get_contents($secretFile);
+                $value = file_get_contents($secretFile);
+                return trim($value);
             } elseif (method_exists($this, 'logWarning')) {
                 $this->logWarning(
                     'The secret file (' . $secretFile . ')' .
@@ -76,7 +77,7 @@ trait SecretTrait
             }
         }
         if (isset($config[$key])) {
-            return trim($config[$key]);
+            return $config[$key];
         }
         return null;
     }
