@@ -34,8 +34,8 @@ function setUpHoldRequestForm(recordId) {
           $.each(response.data.locations, function holdPickupLocationEach() {
             var option = $('<option/>').attr('value', this.locationID).text(this.locationDisplay);
             // Make sure to compare locationID and defaultValue as Strings since locationID may be an integer
-            if (String(this.locationID) === String(defaultValue) || 
-              (defaultValue === '' && this.isDefault && $emptyOption.length === 0) || 
+            if (String(this.locationID) === String(defaultValue) ||
+              (defaultValue === '' && this.isDefault && $emptyOption.length === 0) ||
               (response.data.locations.length == 1)) {
               option.attr('selected', 'selected');
             }
