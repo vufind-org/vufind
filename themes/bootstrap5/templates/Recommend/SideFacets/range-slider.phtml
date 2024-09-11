@@ -1,12 +1,11 @@
 <?php
   // Sanitize inputs:
-  $sanitize = 'fulldate' === $this->facet['type']
-    ? function ($val) {
-      return substr($val, 0, 10);
-    }
-    : function ($val) {
-      return preg_replace('/[^\d]*/', '', $val);
-    };
+  $sanitize = match($this->facet['type']) {
+    'date' => fn ($val) => preg_replace('/[^\d]*/', '', $val), // digits only for year-only dates
+    'fulldate' => fn ($val) => substr($val, 0, 10),
+    'numeric' => fn ($val) => preg_replace('/[^\d.]*/', '', $val), // digits/decimal points only for numeric
+    default => fn ($val) => $val, // no sanitization for "generic" ranges
+  };
   $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);
   $safeBaseId = $this->escapeHtmlAttr($this->title);
 ?>
