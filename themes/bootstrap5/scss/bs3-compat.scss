@@ -223,7 +223,19 @@ button.list-group-item {
   background-color: $danger;
 }
 
-.dropdown-toggle::after {
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+}
+.dropdown-toggle::after,
+/* Use double selector to force greater specificity in overriding unwanted ::after */
+.search-filter-dropdown.search-filter-dropdown .btn::after {
+  content: "";
+  width: 0.3em;
+  height: 0.3em;
+}
+.dropdown-toggle .icon:last-child {
   display: none;
 }
 
