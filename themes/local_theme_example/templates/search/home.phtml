@@ -4,7 +4,7 @@
   Why does this look less than beautiful? Because we expect you to change it! See the <a href="https://vufind.org/wiki/development:architecture:user_interface">User Interface Customization</a> page in the wiki for details.
 </p>
 
-<nav aria-label="Theme Config view helper demo" class="navbar navbar-default bg-dark clearfix">
+<nav aria-label="Theme Config view helper demo" class="navbar navbar-dark bg-dark mb-4">
   <div class="container-fluid">
     <span class="navbar-text">
       Some helpful links:
@@ -47,7 +47,7 @@
           }
         ?>
         <li class="nav-item dropdown">
-          <a href="#" class="dropdown-toggle icon-link" data-bs-toggle="dropdown">
+          <a href="#" class="dropdown-toggle icon-link nav-link" data-bs-toggle="dropdown">
             <span class="icon-link__label"><?=$this->transEsc($section)?></span>
             <?=$this->icon('caret-down', 'icon-link__icon')?>
           </a>
