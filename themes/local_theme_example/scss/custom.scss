@@ -3,9 +3,6 @@ $image-path: "../../local_theme_example/images";
 $dark-green: #137752;
 /* Bootstrap variables as well */
 $primary: #0045a1;
-$body-bg: #5ab48a;
-$input-bg: white;
-$btn-primary-color: white;
 $navbar-dark-color: white;
 $grid-gutter-width: 20px;
 
@@ -15,6 +12,7 @@ $grid-gutter-width: 20px;
 body {
   font-size: 14px;
   color: #333;
+  background-color: #5ab48a;
 }
 header {
   font-size: 16px;
@@ -30,23 +28,5 @@ header {
 }
 footer .container { border-bottom: 2px solid #137752; }
 .alert { padding: 8px; }
-/*.bg-dark .navbar-text, .bg-dark .nav-link, .bg-dark .dropdown-toggle {
-  color: #fff;
-}
-nav.bg-dark {
-  margin-bottom: 1em;
-}
-.dropdown-menu,
-header .form-control,
-header .form-control:focus,
-div.main .form-control {
-  background-color: white;
-}
-button.btn-primary {
-  color: white;
-}
-button.btn-primary:hover {
-  background-color: white;
-}*/
 /* You can also organize these styles in separate files and @import them */
 @import "home-page";
