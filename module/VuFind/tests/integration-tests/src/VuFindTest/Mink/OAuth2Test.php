@@ -451,6 +451,10 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'issuer' => $issuer,
             'authorization_endpoint' => "$baseUrl/OAuth2/Authorize",
             'token_endpoint' => "$baseUrl/OAuth2/Token",
+            'token_endpoint_auth_methods_supported' => [
+                'client_secret_post',
+                'client_secret_basic',
+            ],
             'userinfo_endpoint' => "$baseUrl/OAuth2/UserInfo",
             'jwks_uri' => "$baseUrl/OAuth2/jwks",
             'response_types_supported' => ['code'],
