@@ -57,7 +57,7 @@
   .exclude {
     flex-shrink: 0;
     text-align: center;
-    padding-left: 0.5rem;
+    margin-left: 0.5rem;
 
     body.rtl & {
       padding-left: 0;
@@ -107,7 +107,7 @@
 .multiFacetSelection {
   .facet {
     a.exclude {
-      outline: none;
+      outline: 2px dotted $list-group-active-bg;
     }
     .exclude.selected {
       .icon {
@@ -116,7 +116,6 @@
     }
     .exclude {
       .icon {
-        outline: 2px hidden $list-group-active-bg;
         width: 1.5em;
         height: 1.5em;
       }

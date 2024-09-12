@@ -130,20 +130,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let callbackWhenDeactivated;
   let defaultContext;
 
-  function stickApplyFiltersButtonAtTopWhenScrolling() {
-    let applyFilters = defaultContext.getElementsByClassName('apply-filters')[0];
-    let checkbox = defaultContext.getElementsByClassName('apply-filters-selection')[0];
-    window.onscroll = function fixButton() {
-      // To handle delayed loading elements changing the elements offset in the page
-      // We update the offset, depending on if we past the button or not
-      if (checkbox.getBoundingClientRect().bottom < 0) {
-        applyFilters.classList.add('fixed');
-      } else {
-        applyFilters.classList.remove('fixed');
-      }
-    };
-  }
-
   function updateInitialParams(field, value) {
     let count = initialRawParams.length;
     for (let i = 0; i < count; i++) {
@@ -367,7 +353,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     defaultContext.getElementsByClassName('applyMultiFacetsSelection')[0]
       .addEventListener('click', applyMultiFacetsSelection);
     dateSelectorInit();
-    stickApplyFiltersButtonAtTopWhenScrolling();
     applyClickHandling();
   }
 
