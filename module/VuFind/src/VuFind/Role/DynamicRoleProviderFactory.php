@@ -49,60 +49,40 @@ class DynamicRoleProviderFactory implements FactoryInterface
     /**
      * Create service
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container Service container
+     * @param string             $name      Requested service name (unused)
+     * @param array              $options   Extra options (unused)
      *
      * @return object
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $container, $name, array $options = null)
     {
-        $config = $sm->get('config');
-        $rbacConfig = $config['lmc_rbac'];
+        $config = $container->get('config');
         return new $name(
-            $this->getPermissionProviderPluginManager($sm, $rbacConfig),
-            $this->getPermissionConfiguration($sm, $rbacConfig)
+            $container->get(PermissionProvider\PluginManager::class),
+            $this->getPermissionConfiguration($container, $config['lmc_rbac'])
         );
-    }
-
-    /**
-     * Create the supporting plugin manager.
-     *
-     * @param ContainerInterface $serviceLocator Service locator
-     * @param array              $rbacConfig     LmcRbacMvc configuration
-     *
-     * @return PermissionProviderPluginManager
-     */
-    protected function getPermissionProviderPluginManager(
-        ContainerInterface $serviceLocator,
-        array $rbacConfig
-    ) {
-        $pm = new PermissionProvider\PluginManager(
-            $serviceLocator,
-            $rbacConfig['vufind_permission_provider_manager']
-        );
-        return $pm;
     }
 
     /**
      * Get a configuration array.
      *
-     * @param ContainerInterface $serviceLocator Service locator
-     * @param array              $rbacConfig     LmcRbacMvc configuration
+     * @param ContainerInterface $container  Service container
+     * @param array              $rbacConfig LmcRbacMvc configuration
      *
      * @return array
      */
     protected function getPermissionConfiguration(
-        ContainerInterface $serviceLocator,
+        ContainerInterface $container,
         array $rbacConfig
     ) {
         // Get role provider settings from the LmcRbacMvc configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:
-        $configLoader = $serviceLocator->get(\VuFind\Config\PluginManager::class);
+        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
         $permissions = $configLoader->get('permissions')->toArray();
 
         // If we're configured to map legacy settings, do so now:

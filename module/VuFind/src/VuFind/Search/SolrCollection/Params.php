@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\SolrCollection;
 
+use function sprintf;
+
 /**
  * Solr Collection Search Options
  *

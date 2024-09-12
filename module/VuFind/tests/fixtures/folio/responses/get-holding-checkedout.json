@@ -188,7 +188,7 @@
         "expectedMethod": "GET",
         "expectedPath": "\/circulation\/loans",
         "expectedParams": {
-            "query": "itemId==itemid",
+            "query": "itemId==itemid AND status.name==Open",
             "offset": 0,
             "limit": 1000
         },
