@@ -825,6 +825,7 @@ class Folio extends AbstractAPI implements
                 }
                 $number++;
                 $dueDateValue = '';
+                $boundWithRecords = null;
                 if (
                     $item->status->name == 'Checked out'
                     && $showDueDate
