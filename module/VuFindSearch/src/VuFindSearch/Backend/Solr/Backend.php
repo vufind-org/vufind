@@ -48,6 +48,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
 
 use function count;
 use function is_int;
+use function sprintf;
 
 /**
  * SOLR backend.

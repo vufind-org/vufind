@@ -55,6 +55,7 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use function count;
 use function is_object;
+use function sprintf;
 
 /**
  * Abstract factory for SOLR backends.

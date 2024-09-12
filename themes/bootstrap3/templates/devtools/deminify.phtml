@@ -1,8 +1,10 @@
 <?php
     $this->headTitle('Deminifier');
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+      . '<li class="active">Deminifier</li>';
 ?>
 
-<h2>Deminifier</h2>
+<h1>Deminifier</h1>
 
 <?php if (empty($min)): ?>
   <form method='POST'>

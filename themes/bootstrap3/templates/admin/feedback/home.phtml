@@ -110,11 +110,11 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
                           <strong><?=$this->escapeHtml($key)?></strong>: <?=$this->escapeHtml($value)?><br>
                         <?php endforeach; ?>
                         <strong><?=$this->transEsc('Created')?></strong>:
-                        <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackEntity->getCreated()->format('Y-m-d H:i:s')))?>
+                        <?=$this->escapeHtml($feedbackEntity->getCreated()->format($this->config()->dateTimeFormat()))?>
                         <?=$feedbackItem['user_name'] ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem['user_name']) . ' (' . $feedbackEntity->getUser()->getId() . ')') : ''?>
                         <br>
                         <strong><?=$this->transEsc('Updated')?></strong>:
-                        <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackEntity->getUpdated()->format('Y-m-d H:i:s')))?>
+                        <?=$this->escapeHtml($feedbackEntity->getUpdated()->format($this->config()->dateTimeFormat()))?>
                         <?=$feedbackItem['manager_name'] ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem['manager_name']) . ' (' . $feedbackEntity->getUpdatedBy() . ')') : ''?>
                       </div>
                     </div>

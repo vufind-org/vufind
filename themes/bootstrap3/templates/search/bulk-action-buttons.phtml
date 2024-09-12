@@ -5,20 +5,22 @@
   <nav class="bulkActionButtons">
     <ul class="action-toolbar">
       <?php if ($searchSettings->bulkOptionsEnabled()): ?>
-        <?=
-          $this->bulkAction()->button(
-              'email',
-              'send-email',
-              'Email',
-              array_merge(
-                  [
-                    'id' => $this->idPrefix . 'ribbon-email',
-                    'title' => $this->translate('bulk_email_search'),
-                  ],
-                  $this->formAttr ? ['form' => $this->formAttr] : []
-              )
-          )
-        ?>
+        <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+          <?=
+            $this->bulkAction()->button(
+                'email',
+                'send-email',
+                'Email',
+                array_merge(
+                    [
+                      'id' => $this->idPrefix . 'ribbon-email',
+                      'title' => $this->translate('bulk_email_search'),
+                    ],
+                    $this->formAttr ? ['form' => $this->formAttr] : []
+                )
+            )
+          ?>
+        <?php endif; ?>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
         <?php if (count($exportOptions) > 0): ?>
           <?=
@@ -55,7 +57,7 @@
             $this->bulkAction()->button(
                 'saveCart',
                 'user-list-add',
-                'Save',
+                'bulk_save_button',
                 array_merge(
                     [
                       'id' => $this->idPrefix . 'ribbon-save',
