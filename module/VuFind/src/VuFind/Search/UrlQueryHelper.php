@@ -572,11 +572,11 @@ class UrlQueryHelper
      * Return HTTP parameters to render the current page with a different jumpto
      * parameter.
      *
-     * @param bool $jumpto If results page is skipped when a search has only one hit
+     * @param null|false|int $jumpto If results page is skipped when a search has only one hit
      *
      * @return UrlQueryHelper
      */
-    public function setJumpto($jumpto)
+    public function setJumpto(null|false|int $jumpto): UrlQueryHelper
     {
         return $this->updateQueryString(
             'jumpto',
