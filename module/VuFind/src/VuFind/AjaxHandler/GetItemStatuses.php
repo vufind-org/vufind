@@ -255,7 +255,7 @@ class GetItemStatuses extends AbstractBase implements
 
             $parts = explode('::::', $number);
             if (count($parts) > 1) {
-                $displayCallNumber = $parts[0] . ' '  . $parts[1];
+                $displayCallNumber = $parts[0] . ' ' . $parts[1];
                 $actualCallNumber = $parts[1];
             }
 
