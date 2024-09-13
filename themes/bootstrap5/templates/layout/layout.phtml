@@ -71,15 +71,6 @@
         if ($cart->isActive()) {
           $this->headScript()->appendFile('vendor/js.cookie.js');
           $this->headScript()->appendFile('cart.js');
-          if ($domain = $cart->getCookieDomain()) {
-            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
-          }
-          if ($cookiePath = $cart->getCookiePath()) {
-            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
-          }
-          if ($cookieSameSite = $cart->getCookieSameSite()) {
-            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
-          }
         }
         $this->headScript()->prependScript(
             'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
@@ -117,6 +108,16 @@
           VuFind.setCspNonce('{$cspNonce}');
           VuFind.setCurrentSearchId($searchId);
           JS;
+
+      if ($domain = $this->cookieManager()->getCookieDomain()) {
+        $appendScripts[] = 'VuFind.cookie.setDomain("' . $domain . '");';
+      }
+      if ($cookiePath = $this->cookieManager()->getCookiePath()) {
+        $appendScripts[] = 'VuFind.cookie.setCookiePath("' . $cookiePath . '");';
+      }
+      if ($cookieSameSite = $this->cookieManager()->getCookieSameSite()) {
+        $appendScripts[] = 'VuFind.cookie.setCookieSameSite("' . $cookieSameSite . '");';
+      }
 
       if (!empty($lightboxParent)) {
         $lightboxParent = json_encode((string)$lightboxParent);
