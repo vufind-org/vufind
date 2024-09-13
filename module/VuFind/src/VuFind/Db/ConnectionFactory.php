@@ -37,6 +37,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\SecretTrait;
 
 /**
  * Factory for Doctrine connection. May be used as a service or as a standard
@@ -50,19 +51,14 @@ use Psr\Container\ContainerInterface;
  */
 class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    use SecretTrait;
+
     /**
      * VuFind configuration
      *
      * @var Config
      */
     protected $config;
-
-    /**
-     * VuFind service container
-     *
-     * @var ContainerInterface
-     */
-    protected $container;
 
     /**
      * Configuration file name when used as a factory.
@@ -81,17 +77,16 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     /**
      * Constructor
      *
-     * @param Config             $config    VuFind configuration (provided when used
+     * @param Config              $config    VuFind configuration (provided when used
      * as service; omitted when used as factory)
-     * @param ContainerInterface $container Service container (provided when used
+     * @param ?ContainerInterface $container Service container (provided when used
      * as service; omitted when used as factory)
      */
     public function __construct(
         Config $config = null,
-        ContainerInterface $container = null
+        protected ?ContainerInterface $container = null
     ) {
         $this->config = $config ?: new Config([]);
-        $this->container = $container;
     }
 
     /**
@@ -134,18 +129,42 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      */
     public function getConnection($overrideUser = null, $overridePass = null)
     {
-        // Parse details from connection string:
-        if (!isset($this->config->Database->database)) {
-            throw new \Exception('"database" setting missing');
-        }
         // Make sure object cache is initialized; Doctrine needs it:
         $this->container->get(\VuFind\Cache\Manager::class)->getCache('object');
-        // Now we can safely build the connection:
-        return $this->getConnectionFromConnectionString(
-            $this->config->Database->database,
-            $overrideUser,
-            $overridePass
-        );
+
+        // Parse details from connection string if available, otherwise use
+        // more granular config settings.
+        if (isset($this->config->Database->database)) {
+            $options = $this->getOptionsFromConnectionString(
+                $this->config->Database->database,
+                $overrideUser,
+                $overridePass
+            );
+        } else {
+            $dbConfig = $this->config->Database ?? new Config([]);
+            $options = [
+                'driver' => $this->getDriverName($dbConfig->database_driver ?? ''),
+                'host' => $dbConfig->database_host ?? null,
+                'user' => $overrideUser ?? $dbConfig->database_username ?? null,
+                'password' => $overridePass ?? $this->getSecretFromConfig($dbConfig, 'database_password'),
+                'dbname' => $dbConfig->database_name ?? null,
+            ];
+            if (!empty($dbConfig->database_port)) {
+                $options['port'] = $dbConfig->database_port;
+            }
+        }
+
+        /* TODO: still needed?
+        $options['use_ssl'] = $this->config->Database->use_ssl ?? false;
+        $options['driver_options'] = $this->getDriverOptions($driverName);
+         */
+
+        // Get extra custom options from config:
+        $extraOptions = $this->config?->Database?->extra_options?->toArray() ?? [];
+
+        // Note: $options takes precedence over $extraOptions -- we don't want users
+        // using extended settings to override values from core settings.
+        return $this->getConnectionFromOptions($options + $extraOptions);
     }
 
     /**
@@ -237,22 +256,22 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Obtain a Laminas\DB connection using a connection string.
+     * Parse Laminas\DB connection options from a connection string.
      *
-     * @param string $connectionString Connection string of the form
+     * @param string  $connectionString Connection string of the form
      * [db_type]://[username]:[password]@[host]/[db_name]
-     * @param string $overrideUser     Username override (leave null to use username
+     * @param ?string $overrideUser     Username override (leave null to use username
      * from connection string)
-     * @param string $overridePass     Password override (leave null to use password
+     * @param ?string $overridePass     Password override (leave null to use password
      * from connection string)
      *
-     * @return Adapter
+     * @return array
      */
-    public function getConnectionFromConnectionString(
-        $connectionString,
-        $overrideUser = null,
-        $overridePass = null
-    ) {
+    public function getOptionsFromConnectionString(
+        string $connectionString,
+        ?string $overrideUser = null,
+        ?string $overridePass = null
+    ): array {
         [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = $matches[1] ?? null;
@@ -275,9 +294,6 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $password = $overridePass ?? $password;
 
         $driverName = $this->getDriverName($type);
-        /* TODO: still needed?
-        $driverOptions = $this->getDriverOptions($driverName);
-         */
 
         // Set up default options:
         $options = [
@@ -286,17 +302,10 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
             'user' => $username,
             'password' => $password,
             'dbname' => $dbName,
-            //'use_ssl' => $this->config->Database->use_ssl ?? false,
-            //'driver_options' => $driverOptions,
         ];
         if (!empty($port)) {
             $options['port'] = $port;
         }
-        // Get extra custom options from config:
-        $extraOptions = $this?->config?->Database?->extra_options?->toArray() ?? [];
-
-        // Note: $options takes precedence over $extraOptions -- we don't want users
-        // using extended settings to override values from core settings.
-        return $this->getConnectionFromOptions($options + $extraOptions);
+        return $options;
     }
 }
