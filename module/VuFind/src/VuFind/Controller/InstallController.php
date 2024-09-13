@@ -408,14 +408,17 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.', 'error');
             } else {
                 // Connect to database:
-                $connection = $view->driver . '://' . $view->dbrootuser . ':'
-                    . $this->params()->fromPost('dbrootpass') . '@'
-                    . $view->dbhost;
                 try {
-                    $dbName = ($view->driver == 'pgsql')
-                        ? 'template1' : $view->driver;
-                    $db = $this->getService(\VuFind\Db\AdapterFactory::class)
-                        ->getAdapterFromConnectionString("{$connection}/{$dbName}");
+                    $dbName = ($view->driver == 'pgsql') ? 'template1' : $view->driver;
+                    $connectionParams = [
+                        'driver' => $view->driver,
+                        'hostname' => $view->dbhost,
+                        'username' => $view->dbrootuser,
+                        'password' => $this->params()->fromPost('dbrootpass'),
+                    ];
+                    $db = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                        $connectionParams + ['database' => $dbName]
+                    );
                 } catch (\Exception $e) {
                     $this->flashMessenger()
                         ->addMessage(
@@ -451,9 +454,8 @@ class InstallController extends AbstractBase
                         foreach ($preCommands as $query) {
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
-                        $dbFactory = $this->getService(\VuFind\Db\AdapterFactory::class);
-                        $db = $dbFactory->getAdapterFromConnectionString(
-                            $connection . '/' . $view->dbname
+                        $db = $this->getService(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                            $connectionParams + ['database' => $view->dbname]
                         );
                         $statements = explode(';', $sql);
                         foreach ($statements as $current) {
