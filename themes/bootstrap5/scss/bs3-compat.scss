@@ -163,12 +163,12 @@ legend {
 }
 .btn-primary {
   @include button-variant(
-    $primary,
-    $text-color,
-    $color: $body-bg,
-    $hover-background: $body-bg,
-    $hover-border: $text-color,
-    $hover-color: $primary
+    $btn-primary-bg,
+    $btn-primary-border,
+    $color: $btn-primary-color,
+    $hover-background: $btn-primary-color,
+    $hover-border: $btn-primary-border,
+    $hover-color: $btn-primary-bg
   );
 }
 .btn-group {
@@ -223,7 +223,19 @@ button.list-group-item {
   background-color: $danger;
 }
 
-.dropdown-toggle::after {
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+}
+.dropdown-toggle::after,
+/* Use double selector to force greater specificity in overriding unwanted ::after */
+.search-filter-dropdown.search-filter-dropdown .btn::after {
+  content: "";
+  width: 0.3em;
+  height: 0.3em;
+}
+.dropdown-toggle .icon:last-child {
   display: none;
 }
 
