@@ -35,6 +35,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
 use VuFindConsole\Command\Import\WebCrawlCommand;
+use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 
 /**
  * Import/WebCrawl command test.
@@ -65,6 +66,24 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
                 . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
             ],
         ];
+    }
+
+    /**
+     * Normalize output for easier assertion-making.
+     *
+     * @param string $output Raw output
+     *
+     * @return string
+     */
+    protected function normalizeOutput(string $output): string
+    {
+        return trim(
+            preg_replace(
+                '/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/',
+                'DATE',
+                str_replace("\n", ' ', $output)
+            )
+        );
     }
 
     /**
@@ -112,14 +131,45 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $this->expectConsecutiveCalls($command, 'removeTempFile', [[$fixture2], [$fixture1]]);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $normalizedOutput = trim(
-            preg_replace(
-                '/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/',
-                'DATE',
-                str_replace("\n", ' ', $commandTester->getDisplay())
-            )
-        );
+        $normalizedOutput = $this->normalizeOutput($commandTester->getDisplay());
         $this->assertEquals($expectedOutput, $normalizedOutput);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test re-indexing from a cached result.
+     *
+     * @return void
+     */
+    public function testForcedReadFromCache(): void
+    {
+        $cacheDir = realpath($this->getFixtureDir('VuFindConsole') . 'webcrawl/cache');
+        $importer = $this->getMockImporter();
+        $solr = $this->getMockSolrWriter();
+        $solr->expects($this->once())->method('save')->with('SolrWeb', new RawXMLDocument('<sample />'));
+        $solr->expects($this->once())->method('deleteByQuery')
+            ->with($this->equalTo('SolrWeb'));
+        $solr->expects($this->once())->method('commit')
+            ->with($this->equalTo('SolrWeb'));
+        $solr->expects($this->once())->method('optimize')
+            ->with($this->equalTo('SolrWeb'));
+        $config = new Config(
+            [
+                'Cache' => ['transform_cache_dir' => $cacheDir],
+                'General' => ['verbose' => true],
+                'Sitemaps' => ['url' => ['http://foo']],
+            ]
+        );
+        $command = $this->getMockCommand($importer, $solr, $config);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['--use-expired-cache' => true]);
+        $normalizedOutput = $this->normalizeOutput($commandTester->getDisplay());
+        $this->assertEquals(
+            'Found http://foo in cache: '
+            . $cacheDir . '/0e1383718a2889c12af18febb1a2e3de '
+            . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
+            $normalizedOutput
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
