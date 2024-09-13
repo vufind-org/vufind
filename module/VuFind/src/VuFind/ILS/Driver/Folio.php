@@ -35,6 +35,7 @@ use Exception;
 use Laminas\Http\Response;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
@@ -44,6 +45,7 @@ use function is_callable;
 use function is_int;
 use function is_object;
 use function is_string;
+use function sprintf;
 
 /**
  * FOLIO REST API driver
@@ -691,6 +693,38 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for getHolding() -- return an array of item-level details from
+     * both FOLIO holdings and item records.
+     *
+     * Depending on where this method is called, $locationId will be the holdings record
+     * location (in the case where no items are attached to a holding) or the item record
+     * location (in cases where there are attached items).
+     *
+     * @param string $locationId     Location identifier from FOLIO
+     * @param array  $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     *
+     * @return array
+     */
+    protected function getItemFieldsFromLocAndHolding(
+        string $locationId,
+        array $holdingDetails,
+    ): array {
+        $locationData = $this->getLocationData($locationId);
+        $locationName = $locationData['name'];
+        return [
+            'is_holdable' => $this->isHoldable($locationName),
+            'holdings_notes' => $holdingDetails['hasHoldingNotes']
+                ? $holdingDetails['holdingNotes'] : null,
+            'summary' => array_unique($holdingDetails['holdingsStatements']),
+            'supplements' => $holdingDetails['holdingsSupplements'],
+            'indexes' => $holdingDetails['holdingsIndexes'],
+            'location' => $locationName,
+            'location_code' => $locationData['code'],
+            'folio_location_is_active' => $locationData['isActive'],
+        ];
+    }
+
+    /**
      * Support method for getHolding() -- given a few key details, format an item
      * for inclusion in the return value.
      *
@@ -717,10 +751,7 @@ class Folio extends AbstractAPI implements
             array_map([$this, 'formatNote'], $item->notes ?? [])
         );
         $locationId = $item->effectiveLocation->id;
-        $locationData = $this->getLocationData($locationId);
-        $locationName = $locationData['name'];
-        $locationCode = $locationData['code'];
-        $locationIsActive = $locationData['isActive'];
+
         // concatenate enumeration fields if present
         $enum = implode(
             ' ',
@@ -740,8 +771,9 @@ class Folio extends AbstractAPI implements
             $item->effectiveCallNumberComponents->callNumber
                 ?? $item->itemLevelCallNumber ?? ''
         );
+        $locAndHoldings = $this->getItemFieldsFromLocAndHolding($locationId, $holdingDetails);
 
-        return $callNumberData + [
+        return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
             'item_id' => $item->id,
             'holdings_id' => $holdingDetails['id'],
@@ -751,16 +783,7 @@ class Folio extends AbstractAPI implements
             'status' => $item->status->name,
             'duedate' => $dueDateValue,
             'availability' => $item->status->name == 'Available',
-            'is_holdable' => $this->isHoldable($locationName),
-            'holdings_notes' => $holdingDetails['hasHoldingNotes']
-                ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-            'summary' => array_unique($holdingDetails['holdingsStatements']),
-            'supplements' => $holdingDetails['holdingsSupplements'],
-            'indexes' => $holdingDetails['holdingsIndexes'],
-            'location' => $locationName,
-            'location_code' => $locationCode,
-            'folio_location_is_active' => $locationIsActive,
             'reserve' => 'TODO',
             'addLink' => true,
             'bound_with_records' => $boundWithRecords,
@@ -833,6 +856,7 @@ class Folio extends AbstractAPI implements
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $showHoldingsNoItems = $this->config['Holdings']['show_holdings_no_items'] ?? false;
         $dueDateItemCount = 0;
 
         $instance = $this->getInstanceByBibId($bibId);
@@ -871,6 +895,7 @@ class Folio extends AbstractAPI implements
                 }
                 $number++;
                 $dueDateValue = '';
+                $boundWithRecords = null;
                 if (
                     $item->status->name == 'Checked out'
                     && $showDueDate
@@ -894,6 +919,25 @@ class Folio extends AbstractAPI implements
                     $sortNeeded = true;
                 }
                 $nextBatch[] = $nextItem;
+            }
+
+            // If there are no item records on this holding, we're going to create a fake one,
+            // fill it with data from the FOLIO holdings record, and make it not appear in
+            // the full record display using a non-visible AvailabilityStatus.
+            if ($number == 0 && $showHoldingsNoItems) {
+                $locAndHoldings = $this->getItemFieldsFromLocAndHolding($holding->effectiveLocationId, $holdingDetails);
+                $invisibleAvailabilityStatus = new AvailabilityStatus(
+                    true,
+                    'HoldingStatus::holding_no_items_availability_message'
+                );
+                $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
+                $nextBatch[] = $locAndHoldings + [
+                    'id' => $bibId,
+                    'callnumber' => $holdingDetails['holdingCallNumber'],
+                    'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
+                    'reserve' => 'N',
+                    'availability' => $invisibleAvailabilityStatus,
+                ];
             }
             $items = array_merge(
                 $items,

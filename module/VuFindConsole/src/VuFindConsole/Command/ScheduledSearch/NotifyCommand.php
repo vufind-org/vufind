@@ -48,6 +48,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
 use function in_array;
+use function sprintf;
 
 /**
  * Console command: notify users of scheduled searches.
