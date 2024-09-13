@@ -59,10 +59,18 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     public static function successWithMinimalParametersProvider(): array
     {
         return [
-            'not verbose' => [false, ''],
-            'verbose' => [
+            'not verbose, no cache' => [false, false, ''],
+            'verbose, no cache' => [
+                true,
+                false,
+                'Harvesting http://foo... Harvesting http://bar... '
+                . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
+            ],
+            'verbose, cache' => [
+                true,
                 true,
                 'Harvesting http://foo... Harvesting http://bar... '
+                . 'Wrote results to transform cache. '
                 . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
             ],
         ];
@@ -90,14 +98,16 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      * Test the simplest possible success case.
      *
      * @param bool   $verbose        Run in verbose mode?
+     * @param bool   $cache          Enable cache?
      * @param string $expectedOutput Expected normalized output string
      *
      * @return void
      *
      * @dataProvider successWithMinimalParametersProvider
      */
-    public function testSuccessWithMinimalParameters(bool $verbose, string $expectedOutput): void
+    public function testSuccessWithMinimalParameters(bool $verbose, bool $cache, string $expectedOutput): void
     {
+        $cacheDir = realpath($this->getFixtureDir('VuFindConsole') . 'webcrawl/cache');
         $fixture1 = $this->getFixtureDir('VuFindConsole') . 'sitemap/index.xml';
         $fixture2 = $this->getFixtureDir('VuFindConsole') . 'sitemap/map.xml';
         $importer = $this->getMockImporter();
@@ -107,7 +117,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('sitemap.properties'),
                 $this->equalTo('SolrWeb'),
                 $this->equalTo(false)
-            );
+            )->willReturn('<result />');
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('deleteByQuery')
             ->with($this->equalTo('SolrWeb'));
@@ -117,6 +127,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('SolrWeb'));
         $config = new Config(
             [
+                'Cache' => ['transform_cache_dir' => $cache ? $cacheDir : null],
                 'General' => compact('verbose'),
                 'Sitemaps' => ['url' => ['http://foo']],
             ]
@@ -129,6 +140,10 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             [$fixture1, $fixture2]
         );
         $this->expectConsecutiveCalls($command, 'removeTempFile', [[$fixture2], [$fixture1]]);
+        if ($cache) {
+            $command->expects($this->once())->method('updateTransformCache')
+                ->with('http://bar', '<result />')->willReturn(true);
+        }
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $normalizedOutput = $this->normalizeOutput($commandTester->getDisplay());
@@ -187,7 +202,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         Importer $importer = null,
         Writer $solr = null,
         Config $config = null,
-        array $methods = ['downloadFile', 'removeTempFile']
+        array $methods = ['downloadFile', 'removeTempFile', 'updateTransformCache']
     ): MockObject&WebCrawlCommand {
         return $this->getMockBuilder(WebCrawlCommand::class)
             ->setConstructorArgs(
