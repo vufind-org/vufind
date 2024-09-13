@@ -94,6 +94,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $solrOptions = $solrParams->getOptions();
         $solrOptions->expects($this->once())->method('getSearchAction')->willReturn($this->searchRoute);
         $mockQueryHelper = $this->createMock(UrlQueryHelper::class);
+        $mockQueryHelper->expects($this->any())->method('setJumpto')->willReturn($mockQueryHelper);
         $results = $this->createMock(Results::class);
         $results->expects($this->any())->method('getOptions')->willReturn($solrOptions);
         $results->expects($this->any())->method('getParams')->willReturn($solrParams);
