@@ -1,5 +1,5 @@
 <?php $availabilityStatus = $this->availabilityStatus(); ?>
-<?php foreach($this->locationList as $location): ?>
+<?php foreach ($this->locationList as $location): ?>
   <div class="groupLocation">
     <span class="<?= $availabilityStatus->getClass($location['availability'])?>">
       <?= $this->icon($availabilityStatus->getIcon($location['availability']))?>

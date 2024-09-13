@@ -236,19 +236,19 @@ class GetItemStatuses extends AbstractBase implements
      * Render the callnumber HTML.
      *
      * @param string       $callnumberSetting The callnumber mode setting
-     * @param string|array $callnumbers Callnumbers to render
+     * @param string|array $callnumbers       Callnumbers to render
      *
      * @return string
      */
-    protected function renderCallnumbers(string $callnumberSetting, string|array $callnumbers) : string
+    protected function renderCallnumbers(string $callnumberSetting, string|array $callnumbers): string
     {
         $html = [];
-        if(is_string($callnumbers)) {
+        if (is_string($callnumbers)) {
             $callnumbers = explode(",\t", $callnumbers);
         }
 
         $callnumberHandler = $this->getCallnumberHandler($callnumbers, $callnumberSetting);
-        foreach($callnumbers as $number) {
+        foreach ($callnumbers as $number) {
             // @TODO: evaluate usage of pickValue() and formatCallNo()
             //        > are these explodes needed here or is refactoring possible?
             $displayCallNumber = $actualCallNumber = $number;
