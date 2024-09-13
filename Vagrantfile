@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
   # Network configuration to forward ports.
   config.vm.network :forwarded_port, guest: 80, host: 4567
   config.vm.network :forwarded_port, guest: 8983, host: 4568
-  config.vm.synced_folder ".", "/vagrant", :owner => 'vagrant'
+#   config.vm.synced_folder ".", "/vagrant", :owner => 'vagrant'
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
     # Check out and set up VuFind.
     mkdir -p /vufindlocal/cache/cli /vufindlocal/config/vufind
     chown -R vagrant:vagrant /vufindlocal
-    su - vagrant -c 'cd /vagrant && composer install && php install.php --non-interactive --overridedir=/vufindlocal'
+    su - vagrant -c 'cd /usr/local/vufind/vufind_fork && composer install && php install.php --non-interactive --overridedir=/vufindlocal'
     ln -s /vufindlocal/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf
     a2enmod rewrite
     systemctl restart apache2
@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
     chmod 777 /vufindlocal/cache/cli
 
     # Set up profile for command line.
-    echo export VUFIND_HOME=/vagrant > /etc/profile.d/vufind.sh
-    echo export VUFIND_LOCAL_DIR=/vufindlocal >> /etc/profile.d/vufind.sh
+    sudo echo export VUFIND_HOME=/usr/local/vufind/vufind_fork > /etc/profile.d/vufind.sh
+    sudo echo export VUFIND_LOCAL_DIR=/vufindlocal >> /etc/profile.d/vufind.sh
   SHELL
 end

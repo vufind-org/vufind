@@ -47,6 +47,7 @@ use VuFind\Session\Settings as SessionSettings;
 use function count;
 use function in_array;
 use function is_array;
+use function is_string;
 
 /**
  * "Get Item Status" AJAX handler
