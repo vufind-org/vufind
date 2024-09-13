@@ -233,6 +233,43 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
+     * Render the callnumber HTML.
+     *
+     * @param string       $callnumberSetting The callnumber mode setting
+     * @param string|array $callnumbers Callnumbers to render
+     *
+     * @return string
+     */
+    protected function renderCallnumbers(string $callnumberSetting, string|array $callnumbers) : string
+    {
+        $html = [];
+        if(is_string($callnumbers)) {
+            $callnumbers = explode(",\t", $callnumbers);
+        }
+
+        $callnumberHandler = $this->getCallnumberHandler($callnumbers, $callnumberSetting);
+        foreach($callnumbers as $number) {
+            // @TODO: evaluate usage of pickValue() and formatCallNo()
+            //        > are these explodes needed here or is refactoring possible?
+            $displayCallNumber = $actualCallNumber = $number;
+
+            $parts = explode('::::', $number);
+            if (count($parts) > 1) {
+                $displayCallNumber = $parts[0] . ' '  . $parts[1];
+                $actualCallNumber = $parts[1];
+            }
+
+            $html[] = $this->renderer->render('ajax/itemCallnumber', [
+                'actualCallNumber' => $actualCallNumber,
+                'displayCallNumber' => $displayCallNumber,
+                'callnumberHandler' => $callnumberHandler,
+            ]);
+        }
+
+        return implode(",\t", $html);
+    }
+
+    /**
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
@@ -266,11 +303,6 @@ class GetItemStatuses extends AbstractBase implements
                 $services = array_merge($services, $info['services']);
             }
         }
-
-        $callnumberHandler = $this->getCallnumberHandler(
-            $callNumbers,
-            $callnumberSetting
-        );
 
         // Determine call number string based on findings:
         $callNumber = $this->pickValue(
@@ -309,8 +341,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
-            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
-            'callnumber_handler' => $callnumberHandler,
+            'callnumber' => $this->renderCallnumbers($callnumberSetting, $callNumber),
         ];
     }
 
@@ -343,10 +374,6 @@ class GetItemStatuses extends AbstractBase implements
         foreach ($locations as $location => $details) {
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
-            $callnumberHandler = $this->getCallnumberHandler(
-                $locationCallnumbers,
-                $callnumberSetting
-            );
             $locationCallnumbers = $this->pickValue(
                 $locationCallnumbers,
                 $callnumberSetting,
@@ -355,21 +382,16 @@ class GetItemStatuses extends AbstractBase implements
 
             // Get combined availability for location
             $locationStatus = $this->availabilityStatusManager->combine($details['items']);
-            $locationAvailability = $locationStatus['availability'];
 
             $locationInfo = [
-                'availability' =>
-                    $locationAvailability->availabilityAsString(),
+                'availability' => $locationStatus['availability'],
                 'location' => htmlentities(
                     $this->translateWithPrefix('location_', $location),
                     ENT_COMPAT,
                     'UTF-8'
                 ),
-                'callnumbers' =>
-                    htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
-                'callnumber_handler' => $callnumberHandler,
-                'icon' => $this->renderer->availabilityStatus()->getIcon($locationAvailability),
-                'class' => $this->renderer->availabilityStatus()->getClass($locationAvailability),
+                'callnumber' =>
+                    $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
             ];
             $locationList[] = $locationInfo;
         }
@@ -386,7 +408,7 @@ class GetItemStatuses extends AbstractBase implements
             'availability' => $combinedAvailability->availabilityAsString(),
             'availability_message' => $this->getAvailabilityMessage($combinedAvailability),
             'location' => false,
-            'locationList' => $locationList,
+            'locationList' => $this->renderer->render('ajax/itemLocationList', ['locationList' => $locationList]),
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
