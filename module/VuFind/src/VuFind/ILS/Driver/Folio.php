@@ -729,19 +729,21 @@ class Folio extends AbstractAPI implements
      * location (in the case where no items are attached to a holding) or the item record
      * location (in cases where there are attached items).
      *
-     * @param string $locationId     Location identifier from FOLIO
-     * @param array  $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     * @param string     $locationId     Location identifier from FOLIO
+     * @param array      $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     * @param ?\stdClass $currentLoan    Any current loan on this item
      *
      * @return array
      */
     protected function getItemFieldsFromLocAndHolding(
         string $locationId,
         array $holdingDetails,
+        ?\stdClass $currentLoan = null,
     ): array {
         $locationData = $this->getLocationData($locationId);
         $locationName = $locationData['name'];
         return [
-            'is_holdable' => $this->isHoldable($locationName),
+            'is_holdable' => $this->isHoldable($locationName, $currentLoan),
             'holdings_notes' => $holdingDetails['hasHoldingNotes']
                 ? $holdingDetails['holdingNotes'] : null,
             'summary' => array_unique($holdingDetails['holdingsStatements']),
@@ -802,7 +804,7 @@ class Folio extends AbstractAPI implements
             $item->effectiveCallNumberComponents->callNumber
                 ?? $item->itemLevelCallNumber ?? ''
         );
-        $locAndHoldings = $this->getItemFieldsFromLocAndHolding($locationId, $holdingDetails);
+        $locAndHoldings = $this->getItemFieldsFromLocAndHolding($locationId, $holdingDetails, $currentLoan);
 
         return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
