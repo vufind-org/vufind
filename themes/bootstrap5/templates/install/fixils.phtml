@@ -8,7 +8,7 @@
 <h2><?=$this->transEsc('auto_configure_title')?></h2>
 
 <?php if (isset($this->demo)): ?>
-  <p>You are using one of VuFind's simulated Integrated Library System (ILS) drivers, which display fake information
+  <p>You are using one of VuFind®'s simulated Integrated Library System (ILS) drivers, which display fake information
   in order to demonstrate the capabilities of the system.  If you want real patron and status information to display,
   you should change your configuration to communicate with a real ILS.</p>
 
@@ -29,7 +29,7 @@
   <p>If your ILS is not available in this list, you may be able to write your own driver.  See the
   <a href="https://vufind.org/wiki/development" target="_new">Developer Manual</a>.</p>
 <?php else: ?>
-  <p>VuFind is having trouble communicating with your Integrated Library System (ILS).  Check your configuration.
+  <p>VuFind® is having trouble communicating with your Integrated Library System (ILS).  Check your configuration.
   You may need to edit the file at <strong><?=$this->escapeHtml($this->configPath)?></strong> and fill in some
   connection details.</p>
 <?php endif; ?>
