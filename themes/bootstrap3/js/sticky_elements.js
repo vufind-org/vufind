@@ -2,37 +2,63 @@
 
 VuFind.register("sticky_elements", function StickyElements() {
   var _stickyElements;
-  var _hiddenStickyElementsConfig;
+  var _stickyChildrenClassesConfig;
   var _resizeObserver;
 
-  function setChildElementsHidden(element, hidden = true) {
-    _hiddenStickyElementsConfig.forEach(
+  function setChildElementClasses(element, action = null, saveState = false) {
+    _stickyChildrenClassesConfig.forEach(
       (config) => {
         let isInScope =
           (config["min-width"] === undefined || window.innerWidth >= config["min-width"])
           && (config["max-width"] === undefined || window.innerWidth <= config["max-width"]);
+        let stickyClass = config.class === undefined ? "hidden" : config.class;
+        let active = false;
         element.querySelectorAll(config.selector)
           .forEach((e) => {
-            if (isInScope && hidden) {
-              e.classList.add("sticky-hidden");
-            } else {
-              e.classList.remove("sticky-hidden");
+            if (!isInScope) {
+              e.classList.remove(stickyClass);
+              return;
+            }
+            if (saveState) {
+              e.dataset.stickyState = e.classList.contains(stickyClass).toString();
+            }
+            if (action === "load") {
+              if (e.dataset.stickyState === "true") {
+                e.classList.add(stickyClass);
+                active = true;
+              } else {
+                e.classList.remove(stickyClass);
+              }
+              e.dataset.stickyState = null;
+            }
+            if (action === "add") {
+              e.classList.add(stickyClass);
+              active = true;
+            }
+            if (action === "remove") {
+              e.classList.remove(stickyClass);
             }
           });
+        element.dataset.stickyClassesActive = active.toString();
       }
     );
   }
 
   function setPlaceholderStyle (stickyElement) {
-    setChildElementsHidden(stickyElement, false);
+    setChildElementClasses(stickyElement, "remove", true);
     let style = window.getComputedStyle(stickyElement, null);
     let boundingRect = stickyElement.getBoundingClientRect();
     let placeholder = stickyElement.parentNode.previousSibling;
-    placeholder.style.height = style.height;
+    placeholder.style.height = boundingRect.height + "px";
+    placeholder.style.width = boundingRect.width + "px";
     placeholder.style.padding = style.padding;
     placeholder.style.border = style.border;
     placeholder.style.margin = style.margin;
-    placeholder.style.width = boundingRect.width + "px";
+    let baseHeight = boundingRect.height;
+    setChildElementClasses(stickyElement, "add");
+    boundingRect = stickyElement.getBoundingClientRect();
+    stickyElement.dataset.stickyHeighOffset = (baseHeight - boundingRect.height).toString();
+    setChildElementClasses(stickyElement, "load");
   }
 
   function getDefaultBackground() {
@@ -61,10 +87,12 @@ VuFind.register("sticky_elements", function StickyElements() {
         let placeholder = stickyContainer.previousSibling;
         let isSticky = stickyContainer.classList.contains("sticky");
 
-        // only hide elements if placeholder already passed the sticky element even if shrunk
-        setChildElementsHidden(stickyElement);
-        if (placeholder.getBoundingClientRect().bottom > stickyContainer.getBoundingClientRect().bottom) {
-          setChildElementsHidden(stickyElement, false);
+        // only change classes of elements if placeholder already passed the sticky element even if changed
+        let classesApplied = stickyElement.dataset.stickyClassesActive === "true";
+        if (isSticky && !classesApplied && placeholder.getBoundingClientRect().bottom < stickyContainer.getBoundingClientRect().bottom - parseInt(stickyElement.dataset.stickyHeighOffset) - 5) {
+          setChildElementClasses(stickyElement, "add");
+        } else if (classesApplied && (!isSticky || placeholder.getBoundingClientRect().bottom > stickyContainer.getBoundingClientRect().bottom + 5)) {
+          setChildElementClasses(stickyElement, "remove");
         }
 
         let stickyElementStyle = window.getComputedStyle(stickyElement, null);
@@ -166,7 +194,7 @@ VuFind.register("sticky_elements", function StickyElements() {
 
   function init() {
     _resizeObserver = new ResizeObserver(calculateStyles);
-    _hiddenStickyElementsConfig = VuFind.config.get('hidden-sticky-elements', []);
+    _stickyChildrenClassesConfig = VuFind.config.get('sticky-children-classes', []);
     updateContainer();
     VuFind.listen('results-init', updateContainer);
     window.addEventListener("resize", calculateStyles);
