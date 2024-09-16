@@ -568,7 +568,7 @@ class Folio extends AbstractAPI implements
      */
     protected function isHoldableByCurrentLoan(\stdClass $currentLoan)
     {
-        $currentLoanPatronGroup = $currentLoan->patronGroupAtCheckout->name;
+        $currentLoanPatronGroup = $currentLoan->patronGroupAtCheckout->name ?? '';
         $excludePatronGroups = $this->config['Holds']['excludeHoldCurrentLoanPatronGroups'] ?? [];
         return !in_array($currentLoanPatronGroup, $excludePatronGroups);
     }
