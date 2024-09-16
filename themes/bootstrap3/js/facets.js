@@ -124,11 +124,15 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let initialFilteredParams = initialRawParams.filter(function isFilter(obj) {
     return obj.startsWith(encodeURI('filter[]='));
   });
-  let dateSelectorIds = [];
+  let rangeSelectorIds = [];
   let isMultiFacetsSelectionActivated = false;
   let callbackOnApply;
   let callbackWhenDeactivated;
   let defaultContext;
+  let checkboxClasses = {
+    checked: undefined,
+    unchecked: undefined,
+  };
 
   function updateInitialParams(field, value) {
     let count = initialRawParams.length;
@@ -142,13 +146,13 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function handleDateSelector() {
     let dateParams, allEmptyDateParams, form, inputs, dfinputs;
-    for (let dateSelectorId of dateSelectorIds) {
+    for (let dateSelectorId of rangeSelectorIds) {
       dateParams = [];
       allEmptyDateParams = true;
       form = document.querySelector('form#' + dateSelectorId);
       dfinputs = form.querySelectorAll('.date-fields input');
       for (let input of dfinputs) {
-        if (window.location.search.match(input.name)) {
+        if (window.location.search.match(new RegExp("[&?]" + input.name + "="))) {
           // If the parameter is already present we update it
           updateInitialParams(input.name, input.value);
         } else {
@@ -191,19 +195,48 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   function applyMultiFacetsSelection() {
     defaultContext.getElementsByClassName('applyMultiFacetsSelection')[0]
       .removeEventListener('click', applyMultiFacetsSelection);
-    callbackOnApply();
+    if (callbackOnApply instanceof Function) {
+      callbackOnApply();
+    }
     window.location.assign(getHrefWithNewParams());
   }
 
   function dateSelectorInit() {
     document.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
-      dateSelectorIds.push(elem.parentElement.id);
+      rangeSelectorIds.push(elem.parentElement.id);
       elem.parentElement.addEventListener('submit', function switchAction(e) {
         if (isMultiFacetsSelectionActivated) {
           e.preventDefault();
         }
       });
     });
+  }
+
+  function areCheckboxClassesDefined() {
+    return checkboxClasses.checked !== undefined && checkboxClasses.unchecked !== undefined;
+  }
+
+  function loadCheckboxClasses() {
+    let checkedRaw = document.createElement('span');
+    let uncheckedRaw = document.createElement('span');
+    checkedRaw.innerHTML = VuFind.icon('facet-checked');
+    uncheckedRaw.innerHTML = VuFind.icon('facet-unchecked');
+    checkedRaw = checkedRaw.firstChild.classList;
+    uncheckedRaw = uncheckedRaw.firstChild.classList;
+    for (let checkedRawElement of checkedRaw) {
+      if (uncheckedRaw.contains(checkedRawElement)) {
+        uncheckedRaw.remove(checkedRawElement);
+      } else {
+        checkboxClasses.checked = checkedRawElement;
+        break;
+      }
+    }
+    if (uncheckedRaw.length > 0) {
+      checkboxClasses.unchecked = uncheckedRaw[0];
+    }
+    if (!areCheckboxClassesDefined()) {
+      console.warn('Checkbox classes not defined');
+    }
   }
 
   function facetSelectionStyling(elem) {
@@ -217,12 +250,12 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       }
 
       let icon = elem.querySelector('.icon');
-      if (icon !== null && icon.classList.contains('fa-check-square-o')) {
-        icon.classList.remove('fa-check-square-o');
-        icon.classList.add('fa-square-o');
-      } else if (icon !== null && icon.classList.contains('fa-square-o')) {
-        icon.classList.remove('fa-square-o');
-        icon.classList.add('fa-check-square-o');
+      if (icon !== null) {
+        if (!areCheckboxClassesDefined()) {
+          loadCheckboxClasses();
+        }
+        icon.classList.toggle(checkboxClasses.checked);
+        icon.classList.toggle(checkboxClasses.unchecked);
       }
     }
   }
@@ -287,9 +320,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function multiFacetsSelectionToggle() {
     isMultiFacetsSelectionActivated = this.checked;
-    let count = dateSelectorIds.length;
+    let count = rangeSelectorIds.length;
     for (let i = 0; i < count; i++) {
-      let form = document.querySelector('form#' + dateSelectorIds[i]);
+      let form = document.querySelector('form#' + rangeSelectorIds[i]);
       if (form !== null) {
         form.querySelector('input[type="submit"]').classList.toggle('hidden');
       }
@@ -319,7 +352,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       link.addEventListener('click', function handling(e) {
         if (isMultiFacetsSelectionActivated === true) {
           handleClickedFacet(e);
-        } else {
+        } else if (callbackOnApply instanceof Function) {
           callbackWhenDeactivated();
         }
       });
