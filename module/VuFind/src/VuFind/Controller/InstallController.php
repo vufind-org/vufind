@@ -117,7 +117,8 @@ class InstallController extends AbstractBase
     {
         $config = $this->getForcedLocalConfigPath('config.ini');
         if (!file_exists($config)) {
-            return copy($this->getBaseConfigFilePath('config.ini'), $config);
+            // Suppress errors so we don't cause a fatal error if copy is disallowed.
+            return @copy($this->getBaseConfigFilePath('config.ini'), $config);
         }
         return true;        // report success if file already exists
     }
@@ -184,6 +185,9 @@ class InstallController extends AbstractBase
                 throw new \Exception('Cannot copy file into position.');
             }
             $writer = new ConfigWriter($config);
+            // Choose secure defaults when creating initial config.ini:
+            $this->fixSecurityConfiguration($config, $writer);
+            // Set appropriate URLs:
             $serverUrl = $this->getViewRenderer()->plugin('serverurl');
             $path = $this->url()->fromRoute('home');
             $writer->set('Site', 'url', rtrim($serverUrl($path), '/'));
@@ -720,9 +724,14 @@ class InstallController extends AbstractBase
      */
     protected function checkSecurity()
     {
+        try {
+            $secureDb = $this->hasSecureDatabase();
+        } catch (\Throwable $e) {
+            $secureDb = false;
+        }
         return [
             'title' => 'Security',
-            'status' => $this->hasSecureDatabase(),
+            'status' => $secureDb,
             'fix' => 'fixsecurity',
         ];
     }
@@ -775,8 +784,16 @@ class InstallController extends AbstractBase
         }
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
-        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
-        $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
+        try {
+            $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+            $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
+        } catch (\Throwable $e) {
+            $this->flashMessenger()->addMessage(
+                'Cannot connect to database; please configure database before fixing security.',
+                'error'
+            );
+            return $this->redirect()->toRoute('install-home');
+        }
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
