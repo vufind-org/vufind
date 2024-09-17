@@ -453,11 +453,8 @@ class GetItemStatuses extends AbstractBase implements
             // If we are showing additional holdings text fields, the set of fields shown is
             // either config.ini's displayed_holdings_text_fields[] (if set), or the set of
             // all fields reported by the ILS driver otherwise.
-            if ($this->config->Item_Status->displayed_holdings_text_fields ?? null) {
-                $holdingsTextFieldsToShow = $this->config->Item_Status->displayed_holdings_text_fields;
-            } else {
-                $holdingsTextFieldsToShow = $this->ils->getHoldingsTextFieldNames();
-            }
+            $holdingsTextFieldsToShow = $this->config?->Item_Status?->displayed_holdings_text_fields?->toArray()
+                ?? $this->ils->getHoldingsTextFieldNames();
         }
 
         $values = array_merge(
