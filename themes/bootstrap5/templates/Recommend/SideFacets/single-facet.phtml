@@ -27,11 +27,11 @@
   $checked = '';
   if ($hasCheckbox) {
     $displayText = $this->icon(
-      $this->facet['isApplied'] ? 'facet-checked' : 'facet-unchecked',
-      [
-        'class' => 'icon-link__icon',
-        'data-checked' => $this->facet['isApplied'] ? 'true' : 'false',
-      ]
+        $this->facet['isApplied'] ? 'facet-checked' : 'facet-unchecked',
+        [
+          'class' => 'icon-link__icon',
+          'data-checked' => $this->facet['isApplied'] ? 'true' : 'false',
+        ]
     ) . $displayText;
   }
 ?>
