@@ -129,10 +129,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let callbackOnApply;
   let callbackWhenDeactivated;
   let defaultContext;
-  let checkboxClasses = {
-    checked: undefined,
-    unchecked: undefined,
-  };
 
   function updateInitialParams(field, value) {
     let count = initialRawParams.length;
@@ -212,33 +208,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     });
   }
 
-  function areCheckboxClassesDefined() {
-    return checkboxClasses.checked !== undefined && checkboxClasses.unchecked !== undefined;
-  }
-
-  function loadCheckboxClasses() {
-    let checkedRaw = document.createElement('span');
-    let uncheckedRaw = document.createElement('span');
-    checkedRaw.innerHTML = VuFind.icon('facet-checked');
-    uncheckedRaw.innerHTML = VuFind.icon('facet-unchecked');
-    checkedRaw = checkedRaw.firstChild.classList;
-    uncheckedRaw = uncheckedRaw.firstChild.classList;
-    for (let checkedRawElement of checkedRaw) {
-      if (uncheckedRaw.contains(checkedRawElement)) {
-        uncheckedRaw.remove(checkedRawElement);
-      } else {
-        checkboxClasses.checked = checkedRawElement;
-        break;
-      }
-    }
-    if (uncheckedRaw.length > 0) {
-      checkboxClasses.unchecked = uncheckedRaw[0];
-    }
-    if (!areCheckboxClassesDefined()) {
-      console.warn('Checkbox classes not defined');
-    }
-  }
-
   function facetSelectionStyling(elem) {
     if (elem.classList.contains('exclude')) {
       elem.classList.toggle('selected');
@@ -251,11 +220,11 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
       let icon = elem.querySelector('.icon');
       if (icon !== null) {
-        if (!areCheckboxClassesDefined()) {
-          loadCheckboxClasses();
-        }
-        icon.classList.toggle(checkboxClasses.checked);
-        icon.classList.toggle(checkboxClasses.unchecked);
+        let checked = icon.attributes['data-checked'].value === 'true';
+        let attrs = [];
+        attrs['class'] = 'icon-link__icon';
+        attrs['data-checked'] = (checked ? 'false' : 'true');
+        icon.outerHTML = VuFind.icon( checked? 'facet-unchecked' : 'facet-checked', attrs);
       }
     }
   }
