@@ -144,31 +144,31 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
-  function handleDateSelector() {
-    let dateParams, allEmptyDateParams, form, inputs, dfinputs;
-    for (let dateSelectorId of rangeSelectorIds) {
-      dateParams = [];
-      allEmptyDateParams = true;
-      form = document.querySelector('form#' + dateSelectorId);
+  function handleRangeSelector() {
+    let addedRangeParams, allEmptyRangeParams, form, inputs, dfinputs;
+    for (let rangeSelectorId of rangeSelectorIds) {
+      addedRangeParams = [];
+      allEmptyRangeParams = true;
+      form = document.querySelector('form#' + rangeSelectorId);
       dfinputs = form.querySelectorAll('.date-fields input');
       for (let input of dfinputs) {
         if (window.location.search.match(new RegExp("[&?]" + input.name + "="))) {
           // If the parameter is already present we update it
           updateInitialParams(input.name, input.value);
         } else {
-          dateParams.push(encodeURI(input.name + '=' + input.value));
+          addedRangeParams.push(encodeURI(input.name + '=' + input.value));
         }
         if (input.value !== '') {
-          allEmptyDateParams = false;
+          allEmptyRangeParams = false;
         }
       }
 
       // If at least one parameter is not null we continue the routine for the final URL
-      if (allEmptyDateParams === false) {
-        globalAddedParams = globalAddedParams.concat(dateParams);
+      if (allEmptyRangeParams === false) {
+        globalAddedParams = globalAddedParams.concat(addedRangeParams);
         inputs = form.querySelectorAll('input');
         for (let input of inputs) {
-          if (dateSelectorId.startsWith(input.value)) {
+          if (rangeSelectorId.startsWith(input.value)) {
             let dateRangeParam = encodeURI(input.name + '=' + input.value);
             if (!window.location.search.match(dateRangeParam)) {
               globalAddedParams.push(dateRangeParam);
@@ -180,7 +180,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function getHrefWithNewParams() {
-    handleDateSelector();
+    handleRangeSelector();
     // Unique parameters
     initialRawParams = initialRawParams.filter(function onlyUnique(value, index, array) {
       return array.indexOf(value) === index;
@@ -201,7 +201,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     window.location.assign(getHrefWithNewParams());
   }
 
-  function dateSelectorInit() {
+  function rangeSelectorInit() {
     document.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
       rangeSelectorIds.push(elem.parentElement.id);
       elem.parentElement.addEventListener('submit', function switchAction(e) {
@@ -352,7 +352,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       link.addEventListener('click', function handling(e) {
         if (isMultiFacetsSelectionActivated === true) {
           handleClickedFacet(e);
-        } else if (callbackOnApply instanceof Function) {
+        } else if (callbackWhenDeactivated instanceof Function) {
           callbackWhenDeactivated();
         }
       });
@@ -385,7 +385,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     // Listener on apply filters button
     defaultContext.getElementsByClassName('applyMultiFacetsSelection')[0]
       .addEventListener('click', applyMultiFacetsSelection);
-    dateSelectorInit();
+    rangeSelectorInit();
     applyClickHandling();
   }
 
