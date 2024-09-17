@@ -21,7 +21,7 @@
         }
       }
     ?>
-    <tr <?php if ($itemHasAdditionalHoldingsFields): ?> class="itemWithAdditionalHoldingFields" <?php endif; ?>>
+    <tr<?=$itemHasAdditionalHoldingsFields ? $this->htmlAttributes(['class' => 'itemWithAdditionalHoldingFields']) : ''?>>
       <td class="fullLocation">
         <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
