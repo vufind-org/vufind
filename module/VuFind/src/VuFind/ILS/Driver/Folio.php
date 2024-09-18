@@ -723,7 +723,7 @@ class Folio extends AbstractAPI implements
 
     /**
      * Support method for getHolding() -- return an array of item-level details from
-     * both FOLIO holdings and item records.
+     * other data: the location, the holdings record, any any current loan on the item.
      *
      * Depending on where this method is called, $locationId will be the holdings record
      * location (in the case where no items are attached to a holding) or the item record
@@ -735,7 +735,7 @@ class Folio extends AbstractAPI implements
      *
      * @return array
      */
-    protected function getItemFieldsFromLocAndHolding(
+    protected function getItemFieldsFromNonItemData(
         string $locationId,
         array $holdingDetails,
         ?\stdClass $currentLoan = null,
@@ -804,7 +804,7 @@ class Folio extends AbstractAPI implements
             $item->effectiveCallNumberComponents->callNumber
                 ?? $item->itemLevelCallNumber ?? ''
         );
-        $locAndHoldings = $this->getItemFieldsFromLocAndHolding($locationId, $holdingDetails, $currentLoan);
+        $locAndHoldings = $this->getItemFieldsFromNonItemData($locationId, $holdingDetails, $currentLoan);
 
         return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
@@ -960,7 +960,7 @@ class Folio extends AbstractAPI implements
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0 && $showHoldingsNoItems) {
-                $locAndHoldings = $this->getItemFieldsFromLocAndHolding($holding->effectiveLocationId, $holdingDetails);
+                $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
                 $invisibleAvailabilityStatus = new AvailabilityStatus(
                     true,
                     'HoldingStatus::holding_no_items_availability_message'
