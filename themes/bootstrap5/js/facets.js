@@ -220,11 +220,11 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
       let icon = elem.querySelector('.icon');
       if (icon !== null) {
-        let checked = icon.attributes['data-checked'].value === 'true';
-        let attrs = [];
-        attrs['class'] = 'icon-link__icon';
+        let checked = icon.dataset.checked === 'true';
+        let attrs = {};
+        attrs.class = 'icon-link__icon';
         attrs['data-checked'] = (checked ? 'false' : 'true');
-        icon.outerHTML = VuFind.icon( checked? 'facet-unchecked' : 'facet-checked', attrs);
+        icon.outerHTML = VuFind.icon(checked ? 'facet-unchecked' : 'facet-checked', attrs);
       }
     }
   }
