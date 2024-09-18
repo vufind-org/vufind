@@ -1,11 +1,15 @@
-<!-- 
-    The contents of this file are subject to the license and copyright
-    detailed in the LICENSE and NOTICE files at the root of the source
-    tree and available online at
-    http://www.dspace.org/license/
-	Developed by DSpace @ Lyncode <dspace@lyncode.com>
- --><xsl:stylesheet xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:php="http://php.net/xsl" xsi:schemaLocation="http://www.w3.org/2005/Atom http://www.kbcafe.com/rss/atom.xsd.xml">
+<!-- available fields are defined in solr/biblio/conf/schema.xml -->
+<!-- This document was written for Catalyst IT
+     by Alex Buckley (alexbuckley@catalyst.net.nz).
+     It takes metadata directly from xoai to index in Solr. It is based on dspace.xsl.
+
+     The choices of fields were made based on which metadata is most interesting
+     for the user of the library and which Solr fields in schema.xml are close to
+     the metadata of choice.
+-->
+<xsl:stylesheet xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:php="http://php.net/xsl" xsi:schemaLocation="http://www.w3.org/2005/Atom http://www.kbcafe.com/rss/atom.xsd.xml">
    <xsl:output method="xml" indent="yes" encoding="utf-8"/>
+   <xsl:param name="institution">My University</xsl:param>
    <xsl:param name="collection">DSpace</xsl:param>
    <xsl:param name="urlPrefix">http</xsl:param>
    <xsl:param name="geographic">false</xsl:param>
@@ -26,10 +30,8 @@
 	    <field name="record_format">dspace</field>
             <!-- INSTITUTION -->
 	    <field name="institution">
-		<xsl:if test="//*[@name='publisher']">
-	            <xsl:value-of select="//*[@name='publisher']/*/*[@name='value']"/>
-	        </xsl:if>
-            </field>
+	        <xsl:value-of select="$institution" />
+	    </field>
             <!-- COLLECTION -->
             <field name="collection">
                <xsl:value-of select="$collection"/>
@@ -66,7 +68,6 @@
             <!-- CO AUTHOR -->
 	    <xsl:for-each select="//*[@name='contributor']/*[@name='advisor']/*[@name='none']/*[@name='value']">
                <field name="author2">
-
                   <xsl:value-of select="normalize-space(.)"/>
                </field>
             </xsl:for-each>
@@ -118,17 +119,16 @@
 		   <xsl:value-of select="//*[@name='type']"/>
                </field>
             </xsl:if>
-	    <!-- Rights - stored in the rights solr field for want of a better place -->
-	    <xsl:for-each select="//*[@name='dc']/*[@name='rights']">
+	    <!-- Rights - stored in the rights_str dynamic solr field -->
+	    <xsl:for-each select="//*[@name='dc']/*[@name='rights_str']">
 	       <field name="edition">
-		   <xsl:value-of select="//*[@name='dc']/*[@name='rights']"/>
+		   <xsl:value-of select="//*[@name='dc']/*[@name='rights_str']"/>
 	       </field>
             </xsl:for-each>
             <!-- Original URL -->
 	    <xsl:for-each select="//*[text()='ORIGINAL']/following-sibling::*[@name='bitstreams']/*[@name='bitstream']">
                <field name="url">
 		   <xsl:value-of select="./*[@name='url']"/> # <xsl:value-of select="./*[@name='name']" />
-
 	       </field>
             </xsl:for-each>
             <!-- Thumbnail -->
