@@ -577,7 +577,7 @@ abstract class AbstractBase implements
     /**
      * Save user and any ILS credentials.
      *
-     * Also updates user card data library cards are if enabled.
+     * Also updates user card data if library cards are enabled.
      *
      * @param UserEntityInterface $user             User
      * @param ?string             $catPassword      ILS catalog password
