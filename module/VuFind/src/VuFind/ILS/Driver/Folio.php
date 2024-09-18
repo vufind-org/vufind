@@ -723,7 +723,7 @@ class Folio extends AbstractAPI implements
 
     /**
      * Support method for getHolding() -- return an array of item-level details from
-     * other data: the location, the holdings record, any any current loan on the item.
+     * other data: the location, the holdings record, and any current loan on the item.
      *
      * Depending on where this method is called, $locationId will be the holdings record
      * location (in the case where no items are attached to a holding) or the item record
