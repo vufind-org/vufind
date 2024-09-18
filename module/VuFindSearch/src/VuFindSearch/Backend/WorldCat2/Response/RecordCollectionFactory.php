@@ -37,6 +37,7 @@ use function call_user_func;
 use function gettype;
 use function is_array;
 use function is_callable;
+use function sprintf;
 
 /**
  * Simple factory for WorldCat v2 record collection.
