@@ -37,6 +37,8 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Resolver\ResolverInterface;
 
+use function sprintf;
+
 /**
  * Trait for view helpers that render a template based on a class name.
  *

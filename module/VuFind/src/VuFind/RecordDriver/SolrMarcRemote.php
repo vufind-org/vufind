@@ -35,6 +35,8 @@ namespace VuFind\RecordDriver;
 use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
+use function sprintf;
+
 /**
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being
  * retrieved from an external source.

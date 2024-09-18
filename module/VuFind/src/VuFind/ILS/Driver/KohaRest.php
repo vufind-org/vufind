@@ -902,6 +902,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $entry['pickup_library_id'] ?? null
                 ),
                 'create' => $this->convertDate($entry['hold_date'] ?? null),
+                '__create' => $entry['hold_date'] ?? null,
                 'expire' => $available ? null : $expirationDate,
                 'position' => $entry['priority'],
                 'available' => $available,
@@ -921,6 +922,65 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
+        if ($this->config['Holds']['enableRecalls'] ?? false) {
+            $result = $this->makeRequest(
+                [
+                    'path' => 'v1/recalls',
+                    'query' => [
+                        'patron_id' => $patron['id'],
+                        'completed' => 'false',
+                        '_match' => 'exact',
+                        '_per_page' => -1,
+                    ],
+                ]
+            );
+
+            foreach ($result['data'] as $entry) {
+                $biblio = $this->getBiblio($entry['biblio_id']);
+                $volume = '';
+                if ($entry['item_id'] ?? null) {
+                    $item = $this->getItem($entry['item_id']);
+                    $volume = $item['serial_issue_number'];
+                }
+                $available = !empty($entry['waiting_date']);
+                $inTransit = !empty($entry['status']) && $entry['status'] == 'in_transit';
+                $requestId = $entry['recall_id'];
+                $cancelDetails = '';
+                $updateDetails = ($available || $inTransit) ? '' : $requestId;
+                // Note: Expiration date is the last interest date until the hold becomes
+                // available for pickup. Then it becomes the last pickup date.
+                $expirationDate = $this->convertDate($entry['expiration_date']);
+                $holds[] = [
+                    'id' => $entry['biblio_id'],
+                    'item_id' => $entry['recall_id'],
+                    'reqnum' => $requestId,
+                    'location' => $this->getLibraryName(
+                        $entry['pickup_library_id'] ?? null
+                    ),
+                    'create' => $this->convertDate($entry['hold_date'] ?? null),
+                    '__create' => $entry['hold_date'] ?? null,
+                    'expire' => $available ? null : $expirationDate,
+                    'position' => $entry['priority'],
+                    'available' => $available,
+                    'last_pickup_date' => $available ? $expirationDate : null,
+                    'in_transit' => $inTransit,
+                    'title' => $this->getBiblioTitle($biblio),
+                    'isbn' => $biblio['isbn'] ?? '',
+                    'issn' => $biblio['issn'] ?? '',
+                    'publication_year' => $biblio['copyright_date']
+                        ?? $biblio['publication_year'] ?? '',
+                    'volume' => $volume,
+                    'cancel_details' => $cancelDetails,
+                    'updateDetails' => $updateDetails,
+                ];
+            }
+        }
+        $callback = function ($a, $b) {
+            return $a['__create'] === $b['__create']
+                ? $a['item_id'] <=> $b['item_id']
+                : $a['__create'] <=> $b['__create'];
+        };
+        usort($holds, $callback);
         return $holds;
     }
 
@@ -1747,17 +1807,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => '+due_date',
             ];
         } elseif ('Holdings' === $function) {
-            $limitByType = $this->config['Holdings']['itemLimitByType'] ?? [];
-            $type = '';
-            if ($limitByType) {
+            $config = $this->config['Holdings'] ?? [];
+            if ($limitByType = $this->config['Holdings']['itemLimitByType'] ?? null) {
                 $biblio = $this->getBiblio($params['id']);
                 $type   = $biblio['item_type'];
+                if ($typeLimit = $limitByType[$type] ?? null) {
+                    $config['itemLimit'] = $typeLimit;
+                }
             }
-            return [
-                'itemLimit' => $limitByType[$type]
-                    ?? $this->config['Holdings']['itemLimit']
-                    ?? null,
-            ];
+            return $config;
         }
 
         return $this->config[$function] ?? false;

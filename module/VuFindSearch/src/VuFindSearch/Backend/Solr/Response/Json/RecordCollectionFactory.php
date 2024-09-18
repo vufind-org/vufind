@@ -35,6 +35,7 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use function call_user_func;
 use function gettype;
 use function is_array;
+use function sprintf;
 
 /**
  * Simple JSON-based factory for record collection.
