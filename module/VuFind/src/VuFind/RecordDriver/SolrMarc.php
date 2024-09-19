@@ -72,4 +72,135 @@ class SolrMarc extends SolrDefault
             $this->getIlsURLs()
         );
     }
+
+    /**
+     * Takes a Marc field (ex: 950) and a list of sub fields (ex: ['a','b'])
+     * and returns the values inside those fields in an array
+     * (ex: ['val 1', 'val 2'])
+     *
+     * @param string $field    Marc field to search within
+     * @param array  $subfield Sub-fields to return or empty for all
+     *
+     * @return array the values within the subfields under the field
+     */
+    public function getMarcField(string $field, ?array $subfield = null)
+    {
+        $vals = [];
+        $marc = $this->getMarcReader();
+        $marc_fields = $marc->getFields($field, $subfield);
+        foreach ($marc_fields as $marc_data) {
+            $subfields = $marc_data['subfields'];
+            foreach ($subfields as $subfield) {
+                $vals[] = $subfield['data'];
+            }
+        }
+        return $vals;
+    }
+
+    /**
+     * Takes a Marc field that notes are stored in (ex: 950) and a list of
+     * sub fields (ex: ['a','b']) optionally as well as what indicator
+     * number and value to filter for
+     * and concatonates the subfields together and returns the fields back
+     * as an array
+     * (ex: ['subA subB subC', 'field2SubA field2SubB'])
+     *
+     * @param string $field    Marc field to search within
+     * @param array  $subfield Sub-fields to return or empty for all
+     * @param string $indNum   The Marc indicator to filter for
+     * @param string $indValue The indicator value to check for
+     *
+     * @return array The values within the subfields under the field
+     */
+    public function getMarcFieldWithInd(
+        string $field,
+        ?array $subfield = null,
+        string $indNum = '',
+        string $indValue = ''
+    ) {
+        $vals = [];
+        $marc = $this->getMarcReader();
+        $marc_fields = $marc->getFields($field, $subfield);
+        foreach ($marc_fields as $marc_data) {
+            $field_vals = [];
+            if (trim(($marc_data['i' . $indNum] ?? '')) == $indValue) {
+                $subfields = $marc_data['subfields'];
+                foreach ($subfields as $subfield) {
+                    $field_vals[] = $subfield['data'];
+                }
+            }
+            if (!empty($field_vals)) {
+                $vals[] = implode(' ', $field_vals);
+            }
+        }
+        return array_unique($vals);
+    }
+
+    /**
+     * Get the abstract and summary notes
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getAbstractAndSummaryNotes()
+    {
+        return array_merge(
+            $this->getMarcFieldWithInd('520', null, '1', ''),
+            $this->getMarcFieldWithInd('520', null, '1', '0'),
+            $this->getMarcFieldWithInd('520', null, '1', '2'),
+            $this->getMarcFieldWithInd('520', null, '1', '3'),
+            $this->getMarcFieldWithInd('520', null, '1', '8'),
+        );
+    }
+
+    /**
+     * Get the location of other archival materials notes
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getLocationOfArchivalMaterialsNotes()
+    {
+        return array_merge(
+            $this->getMarcFieldWithInd('544', null, '1', ''),
+            $this->getMarcFieldWithInd('544', null, '1', '0')
+        );
+    }
+
+    /**
+     * Get the raw call numbers
+     *
+     * @return array Contents from the Solr field callnumber-raw
+     */
+    public function getCallNumbers()
+    {
+        return $this->fields['callnumber-raw'] ?? [];
+    }
+
+    /**
+     * Get the full titles of the record including section and part information in
+     * alternative scripts.
+     *
+     * @return array
+     */
+    public function getFullTitlesAltScript(): array
+    {
+        return $this->getMarcReader()
+            ->getLinkedFieldsSubfields('880', '245', ['a', 'b', 'c', 'n', 'p']);
+    }
+
+    /**
+     * Get the topics
+     *
+     * @return array Topics from the MARC record
+     */
+    public function getTopics()
+    {
+        $topics = [];
+        $subjects = $this->getAllSubjectHeadings();
+        if (is_array($subjects)) {
+            foreach ($subjects as $subj) {
+                $topics[] = implode(' -- ', $subj);
+            }
+        }
+        return $topics;
+    }
 }
