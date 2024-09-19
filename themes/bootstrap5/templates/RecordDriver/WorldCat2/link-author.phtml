@@ -1,1 +1,1 @@
-<?php echo $this->url('worldcat2-search') . '?lookfor=' . urlencode($this->lookfor) . '&amp;type=au';
+<?=$this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor') + ['type' => 'au', 'quoteQuery' => false]);
