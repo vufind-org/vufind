@@ -176,18 +176,6 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Get the full titles of the record including section and part information in
-     * alternative scripts.
-     *
-     * @return array
-     */
-    public function getFullTitlesAltScript(): array
-    {
-        return $this->getMarcReader()
-            ->getLinkedFieldsSubfields('880', '245', ['a', 'b', 'c', 'n', 'p']);
-    }
-
-    /**
      * Get the topics
      *
      * @return array Topics from the MARC record
