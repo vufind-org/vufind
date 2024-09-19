@@ -30,11 +30,9 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\AccessToken;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\User;
-use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Database service for access tokens.
@@ -47,11 +45,8 @@ use VuFind\Log\LoggerAwareTrait;
  */
 class AccessTokenService extends AbstractDbService implements
     AccessTokenServiceInterface,
-    Feature\DeleteExpiredInterface,
-    LoggerAwareInterface
+    Feature\DeleteExpiredInterface
 {
-    use LoggerAwareTrait;
-
     /**
      * Create an access_token entity object.
      *

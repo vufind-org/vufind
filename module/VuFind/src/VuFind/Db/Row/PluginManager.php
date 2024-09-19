@@ -61,7 +61,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AuthHash::class => RowGatewayFactory::class,
         ExternalSession::class => RowGatewayFactory::class,
         LoginToken::class => RowGatewayFactory::class,
         Ratings::class => RowGatewayFactory::class,
