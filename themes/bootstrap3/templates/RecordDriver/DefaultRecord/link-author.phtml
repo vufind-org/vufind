@@ -1,16 +1,9 @@
 <?php
-  $searchBackendId = $this->driver->getSearchBackendIdentifier();
-  $options = $this->searchOptions($searchBackendId);
+  $options = $this->searchOptions($this->driver->getSearchBackendIdentifier());
   $searchRoute = $options->getSearchAction();
   if ($searchRoute === 'search-results') { // override search-results with author module
-    $searchRoute = 'author-home';
     $query = ['author' => $this->lookfor];
+    echo $this->url('author-home', [], compact('query'));
   } else {
-    $query = ['lookfor' => '"' . $this->lookfor . '"', 'type' => 'Author'];
+    echo $this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor', 'searchRoute') + ['type' => 'Author']);
   }
-  if (($limit = $this->searchMemory()->getLastLimit($searchBackendId))
-    && $limit !== $options->getDefaultLimit()
-  ) {
-    $query['limit'] = $limit;
-  }
-  echo $this->url($searchRoute, [], compact('query'));
