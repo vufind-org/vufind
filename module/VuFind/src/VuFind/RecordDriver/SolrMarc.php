@@ -74,30 +74,6 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Takes a Marc field (ex: 950) and a list of sub fields (ex: ['a','b'])
-     * and returns the values inside those fields in an array
-     * (ex: ['val 1', 'val 2'])
-     *
-     * @param string $field    Marc field to search within
-     * @param array  $subfield Sub-fields to return or empty for all
-     *
-     * @return array the values within the subfields under the field
-     */
-    public function getMarcField(string $field, ?array $subfield = null)
-    {
-        $vals = [];
-        $marc = $this->getMarcReader();
-        $marc_fields = $marc->getFields($field, $subfield);
-        foreach ($marc_fields as $marc_data) {
-            $subfields = $marc_data['subfields'];
-            foreach ($subfields as $subfield) {
-                $vals[] = $subfield['data'];
-            }
-        }
-        return $vals;
-    }
-
-    /**
      * Takes a Marc field that notes are stored in (ex: 950) and a list of
      * sub fields (ex: ['a','b']) optionally as well as what indicator
      * number and value to filter for
