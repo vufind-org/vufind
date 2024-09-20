@@ -295,7 +295,8 @@ trait HoldsTrait
     {
         $renderer = $this->getViewRenderer();
         $message = $renderer->render(
-            'Email/request-placed.phtml', ['hold_details' => $holdDetails]
+            'Email/request-placed.phtml',
+            ['hold_details' => $holdDetails]
         );
 
         $config = $this->getConfig();
