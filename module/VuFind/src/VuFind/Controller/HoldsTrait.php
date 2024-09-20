@@ -293,18 +293,19 @@ trait HoldsTrait
      */
     protected function emailRequestPlaced($holdDetails)
     {
-        $renderer = $this->getViewRenderer();
-        $message = $renderer->render(
-            'Email/request-placed.phtml',
-            ['hold_details' => $holdDetails]
-        );
-
         $config = $this->getConfig();
         $to = $this->getEmailRecipient($holdDetails);
         $from = $config->Catalog->holds_email_from ?? null;
         if (!$to || !$from) {
             return;
         }
+
+        $renderer = $this->getViewRenderer();
+        $message = $renderer->render(
+            'Email/request-placed.phtml',
+            ['hold_details' => $holdDetails]
+        );
+
         $subject = $this->translate('request_email_subject', [
             '%%id%%' => $holdDetails['id'] ?? '',
             '%%barcode%%' => $holdDetails['barcode'] ?? '',
