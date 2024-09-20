@@ -195,6 +195,7 @@ trait HoldsTrait
 
                 // Success: Go to Display Holds
                 if (isset($results['success']) && $results['success'] == true) {
+                    $this->emailRequestPlaced($holdDetails);
                     $msg = [
                         'html' => true,
                         'msg' => empty($gatheredDetails['proxiedUser'])
@@ -281,5 +282,56 @@ trait HoldsTrait
         );
         $view->setTemplate('record/hold');
         return $view;
+    }
+
+    /**
+     * Email the successful request to staff as a notification.
+     *
+     * @param array $holdDetails Details about the successful hold request
+     *
+     * @return void
+     */
+    protected function emailRequestPlaced($holdDetails)
+    {
+        $renderer = $this->getViewRenderer();
+        $message = $renderer->render(
+            'Email/request-placed.phtml', ['hold_details' => $holdDetails]
+        );
+
+        $config = $this->getConfig();
+        $to = $this->getEmailRecipient($holdDetails);
+        $from = $config->Catalog->holds_email_from ?? null;
+        if (!$to || !$from) {
+            return;
+        }
+        $subject = $this->translate('request_email_subject', [
+            '%%id%%' => $holdDetails['id'] ?? '',
+            '%%barcode%%' => $holdDetails['barcode'] ?? '',
+        ]);
+        try {
+            $mailer = $this->getService(\VuFind\Mailer\Mailer::class);
+            $mailer->send(
+                $to,
+                $from,
+                $subject,
+                $message
+            );
+        } catch (\VuFind\Exception\Mail $e) {
+            return;
+        }
+    }
+
+    /**
+     * Get the appropriate staff email recipient for a hold request.  This falls back
+     * on a configured default but may be overridden to vary based on the hold details.
+     *
+     * @param array $holdDetails Details about the successful hold request
+     *
+     * @return string The email address
+     */
+    protected function getEmailRecipient($holdDetails)
+    {
+        $config = $this->getConfig();
+        return $config->Catalog->holds_email_to ?? null;
     }
 }
