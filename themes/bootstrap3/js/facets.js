@@ -131,7 +131,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let defaultContext;
 
   function updateInitialParams(field, value) {
-    let count = initialRawParams.length;
+    const count = initialRawParams.length;
     for (let i = 0; i < count; i++) {
       if (initialRawParams[i].startsWith(field + '=')) {
         initialRawParams[i] = encodeURI(field + '=' + value);
@@ -189,7 +189,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function applyMultiFacetsSelection() {
-    defaultContext.getElementsByClassName('applyMultiFacetsSelection')[0]
+    defaultContext.getElementsByClassName('js-apply-multi-facets-selection')[0]
       .removeEventListener('click', applyMultiFacetsSelection);
     if (callbackOnApply instanceof Function) {
       callbackOnApply();
@@ -208,7 +208,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     });
   }
 
-  function facetSelectionStyling(elem) {
+  function toggleSelectedFacetStyle(elem) {
     if (elem.classList.contains('exclude')) {
       elem.classList.toggle('selected');
     } else {
@@ -220,20 +220,20 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
       let icon = elem.querySelector('.icon');
       if (icon !== null) {
-        let checked = icon.dataset.checked === 'true';
+        const newCheckedState = icon.dataset.checked === 'false';
         let attrs = {};
         attrs.class = 'icon-link__icon';
-        attrs['data-checked'] = (checked ? 'false' : 'true');
-        icon.outerHTML = VuFind.icon(checked ? 'facet-unchecked' : 'facet-checked', attrs);
+        attrs['data-checked'] = (newCheckedState ? 'true' : 'false');
+        icon.outerHTML = VuFind.icon(newCheckedState ? 'facet-checked' : 'facet-unchecked', attrs);
       }
     }
   }
 
   function handleClickedFacet(e) {
     e.preventDefault();
-    let elem = e.currentTarget;
+    const elem = e.currentTarget;
 
-    facetSelectionStyling(elem);
+    toggleSelectedFacetStyle(elem);
 
     // Get href attribute value
     let href = elem.getAttribute('href');
@@ -289,7 +289,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function multiFacetsSelectionToggle() {
     isMultiFacetsSelectionActivated = this.checked;
-    let count = rangeSelectorIds.length;
+    const count = rangeSelectorIds.length;
     for (let i = 0; i < count; i++) {
       let form = document.querySelector('form#' + rangeSelectorIds[i]);
       if (form !== null) {
@@ -300,7 +300,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     for (let i = 0; i < buttons.length; i++) {
       buttons[i].classList.toggle('hidden');
     }
-    let checkboxes = document.getElementsByClassName('userSelectionMultiFilters');
+    let checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = isMultiFacetsSelectionActivated;
     }
@@ -316,7 +316,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function applyClickHandling(context) {
     let finalContext = (typeof context === "undefined") ? defaultContext : context;
-    finalContext.classList.toggle('multiFacetSelection');
+    finalContext.classList.toggle('multi-facet-selection');
     finalContext.querySelectorAll('a.facet:not(.narrow-toggle), .facet a').forEach(function addListeners(link) {
       link.addEventListener('click', function handling(e) {
         if (isMultiFacetsSelectionActivated === true) {
@@ -330,16 +330,16 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function addSwitchAndButton(context) {
     let elem = document.getElementsByClassName('multi-filters-selection')[0].cloneNode(true);
-    let suffix = Date.now();
-    elem.getElementsByClassName('userSelectionMultiFilters')[0].id += suffix;
+    const suffix = Date.now();
+    elem.getElementsByClassName('js-user-selection-multi-filters')[0].id += suffix;
     elem.getElementsByTagName('label')[0].attributes.for.value += suffix;
     context.insertAdjacentHTML("beforebegin", elem.outerHTML);
-    let checkbox = context.parentElement.getElementsByClassName('userSelectionMultiFilters')[0];
+    let checkbox = context.parentElement.getElementsByClassName('js-user-selection-multi-filters')[0];
     checkbox.checked = isMultiFacetsSelectionActivated;
     // Listener on checkbox for multiFacetsSelection feature
     checkbox.addEventListener('change', multiFacetsSelectionToggle);
     // Listener on apply filters button
-    context.parentElement.getElementsByClassName('applyMultiFacetsSelection')[0]
+    context.parentElement.getElementsByClassName('js-apply-multi-facets-selection')[0]
       .addEventListener('click', applyMultiFacetsSelection);
   }
 
@@ -349,10 +349,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
     defaultContext = document.getElementById('search-sidebar');
     // Listener on checkbox for multiFacetsSelection feature
-    defaultContext.getElementsByClassName('userSelectionMultiFilters')[0]
+    defaultContext.getElementsByClassName('js-user-selection-multi-filters')[0]
       .addEventListener('change', multiFacetsSelectionToggle);
     // Listener on apply filters button
-    defaultContext.getElementsByClassName('applyMultiFacetsSelection')[0]
+    defaultContext.getElementsByClassName('js-apply-multi-facets-selection')[0]
       .addEventListener('click', applyMultiFacetsSelection);
     rangeSelectorInit();
     applyClickHandling();
@@ -446,7 +446,7 @@ VuFind.register('sideFacets', function SideFacets() {
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(VuFind.updateCspNonce(facetData.html));
             if (multiFacetsSelectionEnabled === true) {
-              VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get());
+              VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get()[0]);
             } else {
               activateFacetBlocking($facetContainer);
             }
