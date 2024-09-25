@@ -155,6 +155,16 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   // Foe every date range selector, does a routine to deal with URL parameters
   function handleRangeSelector() {
     let addedRangeParams, rangeParams, allEmptyRangeParams, form, dfinputs, updated;
+    function filterParamsNotInArray(array) {
+      return function callback(elem) {
+        for (const arrayElement of array) {
+          if (elem.startsWith(encodeURI(arrayElement) + '=')) {
+            return false;
+          }
+        }
+        return true;
+      };
+    }
     for (let rangeSelectorId of rangeSelectorIds) {
       addedRangeParams = [];
       rangeParams = [];
@@ -192,14 +202,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         if (updated) {
           setRangeFilterToBeNotPresent(input.value);
           // We prevent the parameter to be deleted
-          globalRemovedParams = globalRemovedParams.filter((elem) => {
-            for (const rangeParam of rangeParams) {
-              if (elem.startsWith(encodeURI(rangeParam) + '=')) {
-                return false;
-              }
-            }
-            return true;
-          });
+          globalRemovedParams = globalRemovedParams.filter(filterParamsNotInArray(rangeParams));
         }
       }
     }
@@ -209,6 +212,13 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   function setModifiedFacets() {
     let elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
     let href, elemFilters, addedParams, removedParams;
+
+    function filterAddedParams(array) {
+      return function callback(obj) {
+        // We want to keep elements only if they are not in array // elems in addition to the array
+        return array.includes(obj) === false;
+      };
+    }
     for (const elem of elems) {
       // Get href attribute value
       href = elem.getAttribute('href');
@@ -218,15 +228,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         href = href.substring(window.location.pathname.length + 1);
       }
       elemFilters = href.split('&');
-      addedParams = elemFilters.filter((obj) => {
-        // We want to keep only if they are not already in current params
-        return initialRawParams.includes(obj) === false;
-      });
-      removedParams = initialRawParams.filter((obj) => {
-        // If param present in new facet but not initial
-        // If param in both new facet and initial we don't want it
-        return elemFilters.includes(obj) === false;
-      });
+      addedParams = elemFilters.filter(filterAddedParams(initialRawParams));
+      removedParams = initialRawParams.filter(filterAddedParams(elemFilters));
       globalAddedParams = globalAddedParams.concat(addedParams);
       globalRemovedParams = globalRemovedParams.concat(removedParams);
     }
@@ -314,6 +317,12 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     let checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = isMultiFacetsSelectionActivated;
+    }
+    if (!isMultiFacetsSelectionActivated) {
+      const elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
+      for (const elem of elems) {
+        toggleSelectedFacetStyle(elem);
+      }
     }
   }
 
