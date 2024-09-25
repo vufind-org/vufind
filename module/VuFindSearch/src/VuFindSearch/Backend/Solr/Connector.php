@@ -511,7 +511,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     $msgParts[] = $msg;
                 }
                 throw new RequestErrorException(
-                    implode(' ' , $msgParts),
+                    implode(' ', $msgParts),
                     400,
                     $response
                 );
