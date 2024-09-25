@@ -227,7 +227,6 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     ) {
         $response = [];
         $facetSet = $recommend->getFacetSet();
-        $facetConfig = $results->getParams()->getFacetConfig();
         foreach ($facets as $facet) {
             if (strpos($facet, ':')) {
                 $response[$facet]['checkboxCount']
@@ -235,7 +234,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             } else {
                 $context['facet'] = $facet;
                 $context['cluster'] = $facetSet[$facet] ?? [
-                    'label' => $facetConfig[$facet],
+                    'label' => $results->getParams()->getFacetLabel($facet),
                     'list' => [],
                 ];
                 $context['collapsedFacets'] = [];
