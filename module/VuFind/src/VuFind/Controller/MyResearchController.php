@@ -42,6 +42,7 @@ use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -1201,14 +1202,11 @@ class MyResearchController extends AbstractBase
                 $this->params()->fromQuery('ids', [])
             );
             if (!empty($bulkIds)) {
-                $params = [];
-                foreach ($bulkIds as $id) {
-                    $params[] = urlencode('ids[]') . '=' . urlencode($id);
+                $this->addQueryParamsToPost();
+                if (null === $this->getRequest()->getPost('list')) {
+                    $this->getRequest()->getPost()->set('list', $finalId);
                 }
-                $saveUrl = $this->url()->fromRoute('cart-save');
-                $saveUrl .= (!str_contains($saveUrl, '?')) ? '?' : '&';
-                return $this->redirect()
-                    ->toUrl($saveUrl . implode('&', $params));
+                return $this->forwardTo('Cart', 'save');
             }
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);

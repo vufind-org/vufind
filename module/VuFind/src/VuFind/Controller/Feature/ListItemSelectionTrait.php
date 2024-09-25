@@ -68,8 +68,8 @@ trait ListItemSelectionTrait
         // If we got this far, values were passed in a simpler format: a list of checked IDs (ids),
         // a list of all IDs on the current page (idsAll), and whether the whole page is
         // selected (selectAll):
-        return null === $this->params()->fromQuery('selectAll', $this->params()->fromPost('selectAll'))
-            ? $this->params()->fromQuery('ids', $this->params()->fromPost('ids', []))
-            : $this->params()->fromQuery('idsAll', $this->params()->fromPost('idsAll', []));
+        return null === $this->params()->fromPost('selectAll')
+            ? $this->params()->fromPost('ids', [])
+            : $this->params()->fromPost('idsAll', []);
     }
 }
