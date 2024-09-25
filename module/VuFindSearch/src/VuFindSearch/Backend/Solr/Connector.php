@@ -235,6 +235,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             if (str_contains($e->getMessage(), 'Could not fetch document with id')) {
                 return '{}';
             }
+            throw $e;
         }
     }
 
