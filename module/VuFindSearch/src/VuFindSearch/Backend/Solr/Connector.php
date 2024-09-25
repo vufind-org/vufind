@@ -506,8 +506,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // Return a more detailed error message for a 400 error:
             if ($response->getStatusCode() === 400) {
                 $json = json_decode($response->getBody(), true);
+                $msgParts = ['400', $response->getReasonPhrase()];
+                if ($msg = $json['error']['msg'] ?? '') {
+                    $msgParts[] = $msg;
+                }
                 throw new RequestErrorException(
-                    '400 ' . $response->getReasonPhrase() . ' ' . $json['error']['msg'],
+                    implode(' ' , $msgParts),
                     400,
                     $response
                 );
