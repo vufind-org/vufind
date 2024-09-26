@@ -7,7 +7,7 @@
     $this->headTitle($this->translate('Pages'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-pages', ['action' => 'Pages']) . '">' . $this->transEsc('Notifications Pages') . '</a></li>';
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-pages', ['action' => 'Pages']) . '">' . $this->transEsc('notifications_pages') . '</a></li>';
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
@@ -15,14 +15,14 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Pages')?></h2>
+  <h2><?=$this->transEsc('notifications_pages_short')?></h2>
   <?=$this->flashmessages()?>
 
   <table id="notifications-list" class="table table-striped">
     <thead>
       <tr>
         <th><?=$this->transEsc('Edit')?></th>
-        <th><?=$this->transEsc('Pages Nav Title')?></th>
+        <th><?=$this->transEsc('notifications_pages_nav_title')?></th>
       </tr>
     </thead>
     <tbody>

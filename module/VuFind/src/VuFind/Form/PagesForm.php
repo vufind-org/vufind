@@ -84,7 +84,7 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
             'name' => 'visibility',
             'type' => Checkbox::class,
             'options' => [
-                'label' => $this->translate('pages_visible'),
+                'label' => $this->translate('notifications_pages_visible'),
             ],
             'attributes' => [
                 //'class' => 'form-control',
@@ -95,7 +95,7 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
             'name' => 'is_external_url',
             'type' => Checkbox::class,
             'options' => [
-                'label' => $this->translate('pages_is_external_url'),
+                'label' => $this->translate('notifications_pages_is_external_url'),
             ],
             'attributes' => [
                 //'class' => 'form-control',
@@ -107,7 +107,7 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
                 'name' => 'headline_' . $language,
                 'type' => Text::class,
                 'options' => [
-                    'label' => $this->translate('pages_headline'),
+                    'label' => $this->translate('notifications_pages_headline'),
                 ],
                 'attributes' => [
                     'class' => 'form-control is_not_external_url_fields',
@@ -118,7 +118,7 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
                 'name' => 'nav_title_' . $language,
                 'type' => Text::class,
                 'options' => [
-                    'label' => $this->translate('pages_nav_title'),
+                    'label' => $this->translate('notifications_pages_nav_title'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -141,7 +141,7 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
                 'name' => 'external_url_' . $language,
                 'type' => Text::class,
                 'options' => [
-                    'label' => $this->translate('pages_external_url'),
+                    'label' => $this->translate('notifications_pages_external_url'),
                 ],
                 'attributes' => [
                     'class' => 'form-control is_external_url_fields',
