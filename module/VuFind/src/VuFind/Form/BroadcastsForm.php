@@ -149,7 +149,6 @@ class BroadcastsForm extends Form implements InputFilterProviderInterface, Trans
             'type' => Date::class,
             'options' => [
                 'label' => $this->translate('broadcasts_startdate'),
-                'format' => 'Y-m-d',
             ],
             'attributes' => [
                 'class' => 'form-control',
@@ -161,7 +160,6 @@ class BroadcastsForm extends Form implements InputFilterProviderInterface, Trans
             'type' => Date::class,
             'options' => [
                 'label' => $this->translate('broadcasts_enddate'),
-                'format' => 'Y-m-d',
             ],
             'attributes' => [
                 'class' => 'form-control',
