@@ -227,7 +227,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params, true);
+
+        try {
+            return $this->query($handler, $params, true);
+        } catch (RequestErrorException $e) {
+            // If Solr was unable to fetch the record, just act like we have no similar records:
+            if (str_contains($e->getMessage(), 'Could not fetch document with id')) {
+                return '{}';
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -494,6 +503,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         );
 
         if (!$response->isSuccess()) {
+            // Return a more detailed error message for a 400 error:
+            if ($response->getStatusCode() === 400) {
+                $json = json_decode($response->getBody(), true);
+                $msgParts = ['400', $response->getReasonPhrase()];
+                if ($msg = $json['error']['msg'] ?? '') {
+                    $msgParts[] = $msg;
+                }
+                throw new RequestErrorException(
+                    implode(' ', $msgParts),
+                    400,
+                    $response
+                );
+            }
             throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();
