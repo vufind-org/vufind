@@ -392,7 +392,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Given an instance object or identifer, or a holding or item identifier,
+     * Given an instance object or identifier, or a holding or item identifier,
      * determine an appropriate value to use as VuFind's bibliographic ID.
      *
      * @param string $instanceOrInstanceId Instance object or ID (will be looked up

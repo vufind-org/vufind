@@ -983,7 +983,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns permanant links for Ovedrive resources
+     * Returns permanent links for Overdrive resources
      *
      * @param array $overDriveIds An array of overdrive IDs we need links for
      *

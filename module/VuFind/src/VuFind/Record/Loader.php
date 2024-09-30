@@ -209,7 +209,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $list = new Checklist($ids);
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
-            // Try to load records from cache if source is cachable
+            // Try to load records from cache if source is cacheable
             $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
             // Check which records could not be loaded from the record cache
             foreach ($cachedRecords as $cachedRecord) {
@@ -273,7 +273,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
             $list->hasUnchecked() && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
-            // Try to load missing records from cache if source is cachable
+            // Try to load missing records from cache if source is cacheable
             $cachedRecords = $this->recordCache
                 ->lookupBatch($list->getUnchecked(), $source);
         }

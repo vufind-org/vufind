@@ -200,7 +200,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Run the standard suite of question mark tests, accounting for differences
-     * between stanard Lucene, basic Dismax and eDismax handlers.
+     * between standard Lucene, basic Dismax and eDismax handlers.
      *
      * @param array  $builderParams Parameters for QueryBuilder constructor
      * @param string $handler       Search handler: dismax|edismax|standard

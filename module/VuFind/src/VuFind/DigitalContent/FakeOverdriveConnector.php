@@ -313,7 +313,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Returns permanant links for Ovedrive resources
+     * Returns permanent links for Overdrive resources
      *
      * @param array $overDriveIds An array of overdrive IDs we need links for
      *
