@@ -17,7 +17,7 @@
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
 
-<form class="form-edit-list" method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>">
+<form class="form-edit-list" method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>" action="<?=$this->url('editList'); ?>">
   <input type="hidden" name="id" value="<?=empty($listId = $this->list->getId()) ? 'NEW' : $this->escapeHtmlAttr($listId) ?>">
   <?php foreach ($this->records ?? [] as $current): ?>
     <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
