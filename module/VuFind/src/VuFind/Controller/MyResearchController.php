@@ -1202,11 +1202,10 @@ class MyResearchController extends AbstractBase
                 $this->params()->fromQuery('ids', [])
             );
             if (!empty($bulkIds)) {
-                $this->addQueryParamsToPost();
-                if (null === $this->getRequest()->getPost('list')) {
-                    $this->getRequest()->getPost()->set('list', $finalId);
-                }
-                return $this->forwardTo('Cart', 'save');
+                // Add final id of the list to request post so cartcontroller saveaction
+                // can properly load the list
+                $this->getRequest()->getPost()->set('list', $finalId);
+                return $this->forwardTo('Cart', 'Save');
             }
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
@@ -1265,12 +1264,15 @@ class MyResearchController extends AbstractBase
             $listTags = $favoritesService
                 ->formatTagStringForEditing($tagsService->getListTags($list, $list->getUser()));
         }
+        $recordIds = $this->params()->fromQuery('ids', $this->params()->fromPost('ids', []));
+        $records = $this->getRecordLoader()->loadBatch($recordIds);
         // Send the list to the view:
         return $this->createViewModel(
             [
                 'list' => $list,
                 'newList' => $newList,
                 'listTags' => $listTags,
+                'records' => $records,
             ]
         );
     }

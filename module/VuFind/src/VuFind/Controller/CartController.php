@@ -533,9 +533,20 @@ class CartController extends AbstractBase
                 ['cartIds' => $ids, 'cartAction' => 'Save']
             );
         }
-
+        $viewModel = $this->createViewModel(
+            [
+                'records' => $this->getRecordLoader()->loadBatch($ids),
+                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
+            ]
+        );
+        if ($submitDisabled ?? false) {
+            return $viewModel;
+        }
+        if ($this->formWasSubmitted('newList')) {
+            return $this->forwardTo('MyResearch', 'editlist', ['id' => 'NEW']);
+        }
         // Process submission if necessary:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
+        if ($this->formWasSubmitted()) {
             $results = $this->getService(FavoritesService::class)
                 ->saveRecordsToFavorites($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
@@ -553,11 +564,6 @@ class CartController extends AbstractBase
         }
 
         // Pass record and list information to view:
-        return $this->createViewModel(
-            [
-                'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
-            ]
-        );
+        return $viewModel;
     }
 }

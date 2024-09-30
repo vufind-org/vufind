@@ -889,18 +889,4 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
         return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
     }
-
-    /**
-     * Ensures that all query params are found in request post
-     *
-     * @return void
-     */
-    protected function addQueryParamsToPost(): void
-    {
-        foreach ($this->getRequest()->getQuery()->toArray() as $key => $value) {
-            if (null === $this->getRequest()->getPost($key)) {
-                $this->getRequest()->getPost()->set($key, $value);
-            }
-        }
-    }
 }
