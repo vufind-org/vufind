@@ -69,7 +69,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Catalog ID used to distinquish between multiple Demo driver instances with the
+     * Catalog ID used to distinguish between multiple Demo driver instances with the
      * MultiBackend driver
      *
      * @var string

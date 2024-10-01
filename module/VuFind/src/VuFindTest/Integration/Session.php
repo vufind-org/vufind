@@ -55,7 +55,7 @@ class Session extends \Behat\Mink\Session
     protected $coverageDir = '';
 
     /**
-     * Set remote code coverate configuration
+     * Set remote code coverage configuration
      *
      * @param string $testName    Test name
      * @param string $coverageDir Coverage data directory
