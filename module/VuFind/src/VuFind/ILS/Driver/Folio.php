@@ -1808,17 +1808,17 @@ class Folio extends AbstractAPI implements
         $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
             ? 'fulfillmentPreference' : 'fulfilmentPreference';
         $fulfillmentValue = $holdDetails['requestGroupId'] ?? 'Hold Shelf';
+        $fulfillmentLocationKey = match ($fulfillmentValue) {
+            'Hold Shelf' => 'pickupServicePointId',
+            'Delivery' => 'deliveryAddressTypeId',
+        };
         $requestBody = $baseParams + [
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
             $fulfillmentKey => $fulfillmentValue,
             'requestExpirationDate' => $requiredBy,
+            $fulfillmentLocationKey => $holdDetails['pickUpLocation'],
         ];
-        if ('Hold Shelf' == $fulfillmentValue) {
-            $requestBody['pickupServicePointId'] = $holdDetails['pickUpLocation'];
-        } elseif ('Delivery' == $fulfillmentValue) {
-            $requestBody['deliveryAddressTypeId'] = $holdDetails['pickUpLocation'];
-        }
         if (!empty($holdDetails['proxiedUser'])) {
             $requestBody['requesterId'] = $holdDetails['proxiedUser'];
             $requestBody['proxyUserId'] = $holdDetails['patron']['id'];
