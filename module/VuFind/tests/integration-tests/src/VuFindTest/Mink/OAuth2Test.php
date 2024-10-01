@@ -400,6 +400,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     public function testOAuth2InvalidClient(): void
     {
+        // Disable logging of a known exception:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
@@ -418,6 +428,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'state' => $state,
         ];
         $session = $this->getMinkSession();
+        $session->setWhoopsDisabled(true);
         $session->visit(
             $this->getVuFindUrl() . '/OAuth2/Authorize?' . http_build_query($params)
         );
