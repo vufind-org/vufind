@@ -315,7 +315,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     /**
      * Returns permanent links for OverDrive resources
      *
-     * @param array $overDriveIds An array of overdrive IDs we need links for
+     * @param array $overDriveIds An array of OverDrive IDs we need links for
      *
      * @return array<string>
      */
