@@ -864,3 +864,13 @@ table.search-history-table {
     }
   }
 }
+
+.callnumAndLocation .statusItemsHoldingsTextFields {
+  border: none;
+  padding: 0;
+  padding-left: 15px;
+}
+
+.callnumAndLocation .itemWithAdditionalHoldingFields td {
+  border-bottom-width: 0;
+}
