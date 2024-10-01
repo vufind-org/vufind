@@ -1180,7 +1180,10 @@ class Folio extends AbstractAPI implements
             'firstname' => $profile->personal->firstName ?? null,
             'lastname' => $profile->personal->lastName ?? null,
             'email' => $profile->personal->email ?? null,
-            'addressTypeIds' => array_map(fn ($address) => $address->addressTypeId, $profile->personal->addresses ?? []),
+            'addressTypeIds' => array_map(
+                fn ($address) => $address->addressTypeId,
+                $profile->personal->addresses ?? []
+            ),
         ];
     }
 
