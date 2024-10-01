@@ -124,27 +124,28 @@ class DoiLookup extends AbstractBase
     public function handleRequest(Params $params)
     {
         $response = [];
-        $dois = (array)$params->fromQuery('doi', []);
+        $rawIds = (array)$params->fromQuery('id', []);
+        $ids = array_map(fn ($id) => json_decode($id, true), $rawIds);
         foreach ($this->resolvers as $resolver) {
             if ($this->pluginManager->has($resolver)) {
-                $next = $this->pluginManager->get($resolver)->getLinks($dois);
+                $next = $this->pluginManager->get($resolver)->getLinks($ids);
                 $next = $this->processIconLinks($next);
-                foreach ($next as $doi => $data) {
+                foreach ($next as $key => $data) {
                     foreach ($data as &$current) {
                         $current['newWindow'] = $this->openInNewWindow;
                     }
                     unset($current);
-                    if (!isset($response[$doi])) {
-                        $response[$doi] = $data;
+                    if (!isset($response[$key])) {
+                        $response[$key] = $data;
                     } elseif ($this->multiMode == 'merge') {
-                        $response[$doi] = array_merge($response[$doi], $data);
+                        $response[$key] = array_merge($response[$key], $data);
                     }
                 }
-                // If all DOIs have been found and we're not in merge mode, we
+                // If all keys have been found and we're not in merge mode, we
                 // can short circuit out of here.
                 if (
                     $this->multiMode !== 'merge'
-                    && count(array_diff($dois, array_keys($response))) == 0
+                    && count(array_diff(array_keys($ids), array_keys($response))) == 0
                 ) {
                     break;
                 }
