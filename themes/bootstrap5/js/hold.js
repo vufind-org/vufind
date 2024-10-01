@@ -40,6 +40,7 @@ function setUpHoldRequestForm(recordId) {
             $select.append(option);
           });
           $select.show();
+          $('#pickUpLocationLabel').text($self.find(':selected').data('locations-label'));
         } else {
           $select.hide();
           $noResults.show();
