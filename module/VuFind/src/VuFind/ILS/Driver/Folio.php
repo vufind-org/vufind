@@ -1526,11 +1526,11 @@ class Folio extends AbstractAPI implements
             return [
                 [
                     'id' => 'Hold Shelf',
-                    'name' => 'Hold Shelf',
+                    'name' => 'fulfillment_method_hold_shelf',
                 ],
                 [
                     'id' => 'Delivery',
-                    'name' => 'Delivery',
+                    'name' => 'fulfillment_method_delivery',
                 ],
             ];
         }
