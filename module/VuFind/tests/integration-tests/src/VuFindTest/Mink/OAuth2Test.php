@@ -428,6 +428,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'state' => $state,
         ];
         $session = $this->getMinkSession();
+        // We expect an error, so let's act like production mode for realistic testing:
         $session->setWhoopsDisabled(true);
         $session->visit(
             $this->getVuFindUrl() . '/OAuth2/Authorize?' . http_build_query($params)

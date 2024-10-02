@@ -105,6 +105,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $session = $this->getMinkSession();
+        // We expect an error, so let's act like production mode for realistic testing:
         $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/Blender/Results');
         $page = $session->getPage();
