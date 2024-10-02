@@ -276,6 +276,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         );
 
         $userInfo = json_decode($response->getBody(), true);
+        $this->assertEquals($idToken->sub, $userInfo['sub']);
         $this->assertEquals($nonce, $userInfo['nonce']);
         $this->assertEquals('Tester McTestenson', $userInfo['name']);
         $this->assertEquals('Tester', $userInfo['given_name']);
