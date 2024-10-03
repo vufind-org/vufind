@@ -109,13 +109,13 @@ class Mailer implements
     }
 
     /**
-     * Get a text email message object.
+     * Get an email message object.
      *
      * @return Email
      */
     public function getNewMessage(): Email
     {
-        return $this->getNewBlankMessage();
+        return new Email();
     }
 
     /**
@@ -133,10 +133,12 @@ class Mailer implements
      * Get a blank email message object.
      *
      * @return Email
+     *
+     * @deprecated Use getNewMessage
      */
     public function getNewBlankMessage(): Email
     {
-        return new Email();
+        return $this->getNewMessage();
     }
 
     /**
@@ -174,7 +176,7 @@ class Mailer implements
     }
 
     /**
-     * Constructs a {@see Email} body from given text and html content.
+     * Constructs an {@see Email} body from given text and html content.
      *
      * @param string|null $text Mail content used for plain text part
      * @param string|null $html Mail content used for html part
@@ -185,7 +187,7 @@ class Mailer implements
         string $text = null,
         string $html = null
     ): Email {
-        $email = $this->getNewBlankMessage();
+        $email = $this->getNewMessage();
         if (null !== $text) {
             $email->text($text);
         }
@@ -278,7 +280,7 @@ class Mailer implements
                     $email->subject($subject);
                 }
             } else {
-                $email = $this->getNewBlankMessage();
+                $email = $this->getNewMessage();
                 $email->text($body);
                 $email->subject($subject);
             }
@@ -452,6 +454,7 @@ class Mailer implements
             return [$addresses];
         }
         if (is_array($addresses)) {
+            // Address::createArray takes an array of strings or Address objects, so this handles both cases:
             return Address::createArray($addresses);
         }
         $result = [];
