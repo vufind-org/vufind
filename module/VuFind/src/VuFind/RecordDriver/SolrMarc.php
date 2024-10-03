@@ -31,8 +31,6 @@
 
 namespace VuFind\RecordDriver;
 
-use function is_array;
-
 /**
  * Model for MARC records in Solr.
  *
