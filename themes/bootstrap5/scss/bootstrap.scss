@@ -219,12 +219,6 @@ h3 { font-size: 16px; }
   left: 0;
 }
 
-.sticky {
-  .sticky-hidden {
-    display: none !important;
-  }
-}
-
 footer {
   @extend .container;
   padding: 1rem;

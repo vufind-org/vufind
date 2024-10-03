@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\SecretTrait;
 
 /**
  * Database utility class. May be used as a service or as a standard
@@ -49,6 +50,8 @@ use Psr\Container\ContainerInterface;
  */
 class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    use SecretTrait;
+
     /**
      * VuFind configuration
      *
@@ -106,15 +109,19 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      */
     public function getAdapter($overrideUser = null, $overridePass = null)
     {
-        // Parse details from connection string:
-        if (!isset($this->config->Database->database)) {
-            throw new \Exception('"database" setting missing');
+        if (isset($this->config->Database->database)) {
+            // Parse details from connection string:
+            return $this->getAdapterFromConnectionString(
+                $this->config->Database->database,
+                $overrideUser,
+                $overridePass
+            );
+        } else {
+            return $this->getAdapterFromConfig(
+                $overrideUser,
+                $overridePass
+            );
         }
-        return $this->getAdapterFromConnectionString(
-            $this->config->Database->database,
-            $overrideUser,
-            $overridePass
-        );
     }
 
     /**
@@ -233,26 +240,68 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $username = $overrideUser ?? $username;
         $password = $overridePass ?? $password;
 
-        $driverName = $this->getDriverName($type);
-        $driverOptions = $this->getDriverOptions($driverName);
-
-        // Set up default options:
-        $options = [
-            'driver' => $driverName,
+        return $this->getAdapterFromArray([
+            'driver' => $type,
             'hostname' => $host,
             'username' => $username,
             'password' => $password,
             'database' => $dbName,
             'use_ssl' => $this->config->Database->use_ssl ?? false,
-            'driver_options' => $driverOptions,
+            'port' => $port ?? null,
+        ]);
+    }
+
+    /**
+     * Obtain a Laminas\DB connection using the config.
+     *
+     * @param string $overrideUser Username override (leave null to use username from config)
+     * @param string $overridePass Password override (leave null to use password from config)
+     *
+     * @return Adapter
+     */
+    public function getAdapterFromConfig($overrideUser = null, $overridePass = null)
+    {
+        if (!isset($this->config->Database)) {
+            throw new \Exception('[Database] Configuration section missing');
+        }
+        $config = $this->config->Database;
+        return $this->getAdapterFromArray([
+            'driver' => $config->database_driver ?? null,
+            'hostname' => $config->database_host ?? null,
+            'username' => $overrideUser ?? $config->database_username ?? null,
+            'password' => $overridePass ?? $this->getSecretFromConfig($config, 'database_password'),
+            'database' => $config->database_name,
+            'port' => $config->database_port ?? null,
+        ]);
+    }
+
+    /**
+     * Obtain a Laminas\DB connection using a set of given element.
+     *
+     * @param array $config Config array to connect to the DB containing
+     * driver (ie: mysql), username, password, hostname, database (db name), port
+     *
+     * @return Adapter
+     */
+    public function getAdapterFromArray(array $config)
+    {
+        $driverName = $this->getDriverName($config['driver']);
+
+        // Set up default options:
+        $options = [
+            'driver' => $driverName,
+            'hostname' => $config['hostname'] ?? null,
+            'username' => $config['username'] ?? null,
+            'password' => $config['password'] ?? null,
+            'database' => $config['database'] ?? null,
+            'use_ssl' => $this->config->Database->use_ssl ?? false,
+            'driver_options' => $this->getDriverOptions($driverName),
         ];
-        if (!empty($port)) {
-            $options['port'] = $port;
+        if (isset($config['port'])) {
+            $options['port'] = $config['port'];
         }
         // Get extra custom options from config:
-        $extraOptions = isset($this->config->Database->extra_options)
-            ? $this->config->Database->extra_options->toArray()
-            : [];
+        $extraOptions = $this->config?->Database?->extra_options?->toArray() ?? [];
         // Note: $options takes precedence over $extraOptions -- we don't want users
         // using extended settings to override values from core settings.
         return $this->getAdapterFromOptions($options + $extraOptions);

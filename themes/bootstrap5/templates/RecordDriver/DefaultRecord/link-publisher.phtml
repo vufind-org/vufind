@@ -1,3 +1,1 @@
-<?php
-$searchRoute = $this->searchOptions($this->driver->getSearchBackendIdentifier())->getSearchAction();
-echo $this->url($searchRoute, [], ['query' => ['type' => 'Publisher', 'lookfor' => $this->lookfor]]);
+<?=$this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor') + ['type' => 'Publisher', 'quoteQuery' => false]);

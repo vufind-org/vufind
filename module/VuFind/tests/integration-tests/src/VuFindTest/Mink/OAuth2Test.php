@@ -276,6 +276,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         );
 
         $userInfo = json_decode($response->getBody(), true);
+        $this->assertEquals($idToken->sub, $userInfo['sub']);
         $this->assertEquals($nonce, $userInfo['nonce']);
         $this->assertEquals('Tester McTestenson', $userInfo['name']);
         $this->assertEquals('Tester', $userInfo['given_name']);
@@ -400,6 +401,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     public function testOAuth2InvalidClient(): void
     {
+        // Disable logging of a known exception:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
@@ -418,6 +429,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'state' => $state,
         ];
         $session = $this->getMinkSession();
+        // We expect an error, so let's act like production mode for realistic testing:
+        $session->setWhoopsDisabled(true);
         $session->visit(
             $this->getVuFindUrl() . '/OAuth2/Authorize?' . http_build_query($params)
         );
@@ -451,9 +464,29 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'issuer' => $issuer,
             'authorization_endpoint' => "$baseUrl/OAuth2/Authorize",
             'token_endpoint' => "$baseUrl/OAuth2/Token",
+            'token_endpoint_auth_methods_supported' => [
+                'client_secret_post',
+                'client_secret_basic',
+            ],
             'userinfo_endpoint' => "$baseUrl/OAuth2/UserInfo",
             'jwks_uri' => "$baseUrl/OAuth2/jwks",
             'response_types_supported' => ['code'],
+            'scopes_supported' => [
+                'openid',
+                'username',
+                'cat_id',
+                'address',
+                'email',
+                'phone',
+                'profile',
+                'id',
+                'name',
+                'age',
+                'birthdate',
+                'locale',
+                'block_status',
+                'library_user_id',
+            ],
             'grant_types_supported' => ['authorization_code'],
             'subject_types_supported' => ['public'],
             'id_token_signing_alg_values_supported' => ['RS256'],

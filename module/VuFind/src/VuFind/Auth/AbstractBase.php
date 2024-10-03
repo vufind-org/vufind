@@ -33,6 +33,7 @@ namespace VuFind\Auth;
 use Exception;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
@@ -571,5 +572,44 @@ abstract class AbstractBase implements
             throw new Exception("Unsupported field: $field");
         }
         $user->$setter($value);
+    }
+
+    /**
+     * Save user and any ILS credentials.
+     *
+     * Also updates user card data if library cards are enabled.
+     *
+     * @param UserEntityInterface $user             User
+     * @param ?string             $catPassword      ILS catalog password
+     * @param ILSAuthenticator    $ilsAuthenticator ILS authenticator
+     *
+     * @return void
+     */
+    protected function saveUserAndCredentials(
+        UserEntityInterface $user,
+        ?string $catPassword,
+        ILSAuthenticator $ilsAuthenticator
+    ): void {
+        // Save credentials if applicable. Note that we want to allow empty
+        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
+        // we also want to be careful not to replace a non-blank password with a
+        // blank one in case the auth mechanism fails to provide a password on
+        // an occasion after the user has manually stored one. (For discussion,
+        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
+        // (unlikely) scenario that a password can actually change from non-blank
+        // to blank, additional work may need to be done here.
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
+                empty($catPassword) ? $ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
+            );
+        }
+
+        // Save the user object:
+        $this->getUserService()->persistEntity($user);
+
+        // Update library card entry after saving the user so that we always have a user id:
+        $this->getDbService(UserCardServiceInterface::class)->synchronizeUserLibraryCardData($user);
     }
 }
