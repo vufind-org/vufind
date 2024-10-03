@@ -172,6 +172,20 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             return $this->handleException('Authorization request', $e);
         }
 
+        // Hide any scopes not allowed by a client-specific filter (see also ScopeRepository for the actual filtering):
+        if ($allowedScopes = $clientConfig['allowedScopes'] ?? null) {
+            $scopes = $authRequest->getScopes();
+            array_map(
+                function ($scope) use ($allowedScopes) {
+                    if (!in_array($scope->getIdentifier(), $allowedScopes)) {
+                        $scope->setHidden(true);
+                    }
+                },
+                $scopes
+            );
+            $authRequest->setScopes($scopes);
+        }
+
         if ($this->formWasSubmitted('allow') || $this->formWasSubmitted('deny')) {
             // Check CSRF and session:
             if (!$this->csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
