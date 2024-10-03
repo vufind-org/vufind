@@ -240,7 +240,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findAndAssertLink($page, 'Log Out')->click();
 
         // Use user A's delete link, but try to execute it as user B:
-        [$base, $params] = explode('?', $delete);
+        [, $params] = explode('?', $delete);
+        // We expect an error, so let's act like production mode for realistic testing:
+        $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
         $page = $session->getPage();
         $this->clickCss($page, '.createAccountLink');
@@ -252,6 +254,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->findAndAssertLink($page, 'Log Out')->click();
 
+        // Go back to stricter error handling:
+        $session->setWhoopsDisabled(false);
         // Go back in as user A -- see if the saved search still exists.
         $this->findAndAssertLink($page, 'Search History')->click();
         $this->clickCss($page, '#loginOptions a');

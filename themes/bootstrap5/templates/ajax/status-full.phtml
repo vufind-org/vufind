@@ -15,7 +15,7 @@
 
       $itemHasAdditionalHoldingsFields = false;
       foreach ($this->holdingsTextFieldNames as $holdingsTextField) {
-        if ($item[$holdingsTextField]) {
+        if (!empty($item[$holdingsTextField])) {
           $itemHasAdditionalHoldingsFields = true;
           break;
         }
@@ -53,7 +53,7 @@
     </tr>
 
     <?php foreach ($this->holdingsTextFieldNames as $holdingsTextField): ?>
-      <?php if ($item[$holdingsTextField]): ?>
+      <?php if (!empty($item[$holdingsTextField])): ?>
         <tr>
           <td colspan="3" class="statusItemsHoldingsTextFields">
             <strong><?= $this->transEsc(ucfirst($holdingsTextField)) ?>: </strong><span><?= $this->escapeHtml(implode('; ', ((array)$item[$holdingsTextField]))); ?></span>
