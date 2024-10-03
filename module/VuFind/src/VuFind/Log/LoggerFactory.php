@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\EmailSettingsTrait;
 
 use function count;
 use function is_array;
@@ -54,6 +55,8 @@ use function is_int;
  */
 class LoggerFactory implements FactoryInterface
 {
+    use EmailSettingsTrait;
+
     /**
      * Configure database writers.
      *
@@ -112,7 +115,7 @@ class LoggerFactory implements FactoryInterface
         // use smtp
         $mailer = $container->get(\VuFind\Mailer\Mailer::class);
         $msg = $mailer->getNewMessage()
-            ->addFrom($config->Mail->default_from ?? $config->Site->email)
+            ->addFrom($this->getEmailSenderAddress($config))
             ->addTo($email)
             ->setSubject('VuFind Log Message');
 

@@ -379,7 +379,7 @@ class AlmaController extends AbstractBase
             // Send the email
             $this->getService(\VuFind\Mailer\Mailer::class)->send(
                 $user->getEmail(),
-                $config->Mail->default_from ?? $config->Site->email,
+                $this->getEmailSenderAddress($config),
                 $this->translate(
                     'new_user_welcome_subject',
                     ['%%library%%' => $config->Site->title]
