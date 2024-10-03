@@ -57,6 +57,7 @@ class UrlShortenerTest extends \VuFindTest\Integration\MinkTestCase
                         'email_action' => 'enabled',
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
                         'url_shortener' => 'database',
                     ],
                 ],
@@ -76,8 +77,8 @@ class UrlShortenerTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Message Sent', $this->findCssAndGetText($page, '.modal .alert-success'));
 
         // Extract the link from the provided message:
-        $email = file_get_contents($this->getEmailLogPath());
-        preg_match('/Link: <(http.*)>/', $email, $matches);
+        $email = $this->getLoggedEmail();
+        preg_match('/Link: <(http.*)>/', $email->getBody()->getBody(), $matches);
         $shortLink = $matches[1];
         $this->assertNotEquals($searchUrl, $shortLink);
         $this->assertStringContainsString('/short', $shortLink);

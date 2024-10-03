@@ -33,8 +33,8 @@ namespace VuFind\Form\Handler;
 
 use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
-use Laminas\Mail\Address;
 use Laminas\View\Renderer\RendererInterface;
+use Symfony\Component\Mime\Address;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
@@ -127,7 +127,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
         foreach ($recipients as $recipient) {
             if ($recipient['email']) {
                 $success = $this->sendEmail(
-                    $recipient['name'],
+                    $recipient['name'] ?? '',
                     $recipient['email'],
                     $senderName,
                     $senderEmail,
@@ -167,14 +167,14 @@ class Email implements HandlerInterface, LoggerAwareInterface
     /**
      * Send form data as email.
      *
-     * @param string $recipientName  Recipient name
-     * @param string $recipientEmail Recipient email
-     * @param string $senderName     Sender name
-     * @param string $senderEmail    Sender email
-     * @param string $replyToName    Reply-to name
-     * @param string $replyToEmail   Reply-to email
-     * @param string $emailSubject   Email subject
-     * @param string $emailMessage   Email message
+     * @param ?string $recipientName  Recipient name
+     * @param string  $recipientEmail Recipient email
+     * @param string  $senderName     Sender name
+     * @param string  $senderEmail    Sender email
+     * @param string  $replyToName    Reply-to name
+     * @param string  $replyToEmail   Reply-to email
+     * @param string  $emailSubject   Email subject
+     * @param string  $emailMessage   Email message
      *
      * @return bool
      */
@@ -190,7 +190,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
     ): bool {
         try {
             $this->mailer->send(
-                new Address($recipientEmail, $recipientName),
+                new Address($recipientEmail, $recipientName ?? ''),
                 new Address($senderEmail, $senderName),
                 $emailSubject,
                 $emailMessage,

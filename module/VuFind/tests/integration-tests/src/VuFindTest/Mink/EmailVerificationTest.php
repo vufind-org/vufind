@@ -73,6 +73,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
                     'Mail' => [
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
                     ],
                 ],
             ]
@@ -94,8 +95,12 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Extract the link from the provided message:
-        $email = file_get_contents($this->getEmailLogPath());
-        preg_match('/You can verify your email address with this link: <(http.*)>/', $email, $matches);
+        $email = $this->getLoggedEmail();
+        preg_match(
+            '/You can verify your email address with this link: <(http.*)>/',
+            $email->getBody()->getBody(),
+            $matches
+        );
         $verifyLink = $matches[1];
 
         // Follow the verification link:
@@ -136,6 +141,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
                     'Mail' => [
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
                     ],
                 ],
             ]
@@ -170,15 +176,21 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Confirm that messages went to both new and old email addresses, and extract the verify link:
-        $email = file_get_contents($this->getEmailLogPath());
-        $this->assertStringContainsString('To: changed@example.com', $email);
-        $this->assertStringContainsString('To: username1@ignore.com', $email);
+        $email = $this->getLoggedEmail(0);
+        $this->assertEquals('To: changed@example.com', $email->getHeaders()->get('to')->toString());
+        preg_match(
+            '/You can verify your email address with this link: <(http.*)>/',
+            $email->getBody()->getBody(),
+            $matches
+        );
+        $verifyLink = $matches[1];
+
+        $notifyEmail = $this->getLoggedEmail(1);
+        $this->assertEquals('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
         $this->assertStringContainsString(
             'A request was just made to change your email address at Library Catalog.',
-            $email
+            $notifyEmail->getBody()->getBody()
         );
-        preg_match('/You can verify your email address with this link: <(http.*)>/', $email, $matches);
-        $verifyLink = $matches[1];
 
         // Follow the verification link:
         $session->visit($verifyLink);
