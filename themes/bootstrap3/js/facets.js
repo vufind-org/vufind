@@ -321,6 +321,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     if (!isMultiFacetsSelectionActivated) {
       const elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
       for (const elem of elems) {
+        elem.setAttribute('data-multi-filters-modified', "false");
         toggleSelectedFacetStyle(elem);
       }
     }
