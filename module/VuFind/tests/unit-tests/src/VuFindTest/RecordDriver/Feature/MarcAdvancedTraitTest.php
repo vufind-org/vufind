@@ -188,7 +188,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
             $obj->getTitlesAltScript()
         );
         $this->assertEquals(
-            ['Русская народная поэзия : лирическая поэзия / сост. и подгот. текста Ал. Горелова. 1'],
+            ['Русская народная поэзия : лирическая поэзия / 1'],
             $obj->getFullTitlesAltScript()
         );
         $this->assertEquals(
