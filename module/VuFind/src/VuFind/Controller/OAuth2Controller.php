@@ -278,8 +278,9 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     OAuthServerException::accessDenied('User does not exist anymore')
                 );
             }
-            $result = $this->claimExtractor
-                ->extract($scopes, $userEntity->getClaims());
+            $result = $this->claimExtractor->extract($scopes, $userEntity->getClaims());
+            // The sub claim must always be returned:
+            $result['sub'] = $userId;
             return $this->getJsonResponse($result);
         } catch (OAuthServerException $e) {
             return $this->handleOAuth2Exception('User info request', $e);

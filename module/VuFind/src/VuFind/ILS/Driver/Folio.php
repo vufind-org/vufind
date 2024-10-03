@@ -825,6 +825,7 @@ class Folio extends AbstractAPI implements
                 }
                 $number++;
                 $dueDateValue = '';
+                $boundWithRecords = null;
                 if (
                     $item->status->name == 'Checked out'
                     && $showDueDate
@@ -889,7 +890,7 @@ class Folio extends AbstractAPI implements
      */
     protected function getDueDate($itemId, $showTime)
     {
-        $query = 'itemId==' . $itemId;
+        $query = 'itemId==' . $itemId . ' AND status.name==Open';
         foreach (
             $this->getPagedResults(
                 'loans',

@@ -132,7 +132,7 @@ class Resource extends Gateway implements DbServiceAwareInterface
      *
      * @return ResourceEntityInterface[]
      *
-     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::getResourcesByRecordIds()
+     * @deprecated Use ResourceServiceInterface::getResourcesByRecordIds()
      */
     public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
@@ -211,7 +211,7 @@ class Resource extends Gateway implements DbServiceAwareInterface
      *
      * @return ResourceEntityInterface[]
      *
-     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::findMissingMetadata()
+     * @deprecated Use ResourceServiceInterface::findMissingMetadata()
      */
     public function findMissingMetadata()
     {

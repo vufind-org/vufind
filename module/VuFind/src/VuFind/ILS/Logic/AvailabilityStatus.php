@@ -158,7 +158,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @param AvailabilityStatusInterface $other Other Availability Status
      *
-     * @return int
+     * @return int -1 if $other has lower priority, 0 if same, 1 if higher
      */
     public function compareTo(AvailabilityStatusInterface $other): int
     {
@@ -170,7 +170,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @return int
      */
-    protected function getPriority(): int
+    public function getPriority(): int
     {
         switch ($this->availability) {
             case AvailabilityStatusInterface::STATUS_UNKNOWN:

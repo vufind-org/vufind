@@ -744,6 +744,7 @@
         <!-- avoid PHP Errors by creating each level separately -->
         <mkdir dir="${themedir}" />
         <mkdir dir="${themedir}/templates" />
+        <mkdir dir="${themedir}/templates/ajax" />
         <mkdir dir="${contentdir}" />
         <mkdir dir="${contentdir}/test" />
         <mkdir dir="${contentdir}/test/sub" />
@@ -754,6 +755,16 @@ return [
     'extends' =&gt; 'sandal',
 ];
 </echo>
+
+    <copy file="${srcdir}/themes/bootstrap3/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
+    <!-- Add a script for testing that inline scripts work -->
+    <echo file="${themedir}/templates/ajax/status-full.phtml" append="true">
+&lt;div class="js-status-test hidden"&gt;&lt;/div&gt;
+&lt;script nonce="foo"&gt;
+  document.querySelector('.js-status-test').classList.remove('hidden');
+&lt;/script&gt;
+</echo>
+
     <echo file="${contentdir}/content.phtml">&lt;?php include $this-&gt;parentTemplate('content/content.phtml');?&gt;
 
 &lt;div class="content-footer"&gt;Content page footer&lt;/div&gt;
@@ -792,19 +803,21 @@ return [
           </then>
           <else>
             <exec executable="sudo">
-              <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo">
-              <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'CREATE DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" />
+              <!-- due to deep quote nesting and Phing bugs, we need to use a variable to make this work -->
+              <env key="PG_COMMAND" value="&quot;\&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot;" />
+              <arg line="su -c &quot;psql -c $PG_COMMAND &quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>
@@ -948,10 +961,10 @@ ${git_status}
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
         <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+          <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
         </exec>
         <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+          <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
         </exec>
       </then>
       <else>
