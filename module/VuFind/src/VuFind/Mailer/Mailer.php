@@ -200,12 +200,12 @@ class Mailer implements
     /**
      * Send an email message.
      *
-     * @param string|Address|Address[]      $to      Recipient email address(es) (or delimited list)
-     * @param string|Address                $from    Sender name and email address
-     * @param string                        $subject Subject line for message
-     * @param string|Email                  $body    Message body
-     * @param string|Address|Address[]|null $cc      CC recipient(s) (null for none)
-     * @param string|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
+     * @param string|string[]|Address|Address[]      $to      Recipient email address(es) (or delimited list)
+     * @param string|Address                         $from    Sender name and email address
+     * @param string                                 $subject Subject line for message
+     * @param string|Email                           $body    Message body
+     * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
+     * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
      *
      * @throws MailException
      * @return void
@@ -311,14 +311,14 @@ class Mailer implements
     /**
      * Send an email message representing a link.
      *
-     * @param string|Address|Address[]      $to      Recipient email address(es) (or delimited list)
-     * @param string|Address                $from    Sender name and email address
-     * @param string                        $msg     User notes to include in message
-     * @param string                        $url     URL to share
-     * @param PhpRenderer                   $view    View object (used to render email templates)
-     * @param ?string                       $subject Subject for email (optional)
-     * @param string|Address|Address[]|null $cc      CC recipient(s) (null for none)
-     * @param string|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
+     * @param string|string[]|Address|Address[]      $to      Recipient email address(es) (or delimited list)
+     * @param string|Address                         $from    Sender name and email address
+     * @param string                                 $msg     User notes to include in message
+     * @param string                                 $url     URL to share
+     * @param PhpRenderer                            $view    View object (used to render email templates)
+     * @param ?string                                $subject Subject for email (optional)
+     * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
+     * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
      *
      * @throws MailException
      * @return void
