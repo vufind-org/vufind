@@ -85,8 +85,16 @@ class Factory implements FactoryInterface
         if ($port = $config['Mail']['port'] ?? null) {
             $dsn .= ":$port";
         }
+
+        $dsnParams = [];
         if ($name = $config['Mail']['name'] ?? null) {
-            $dsn .= "?local_domain=$name";
+            $dsnParams['local_domain'] = $name;
+        }
+        if (null !== ($limit = $config['Mail']['connection_time_limit'] ?? null)) {
+            $dsnParams['ping_threshold'] = $limit;
+        }
+        if ($dsnParams) {
+            $dsn .= '?' . http_build_query($dsnParams);
         }
 
         return $dsn;

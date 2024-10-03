@@ -62,9 +62,10 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             'Mail' => [
                 'host' => 'vufindtest.localhost',
                 'port' => 123,
-                'name' => 'foo',
+                'name' => 'foo?bar',
                 'username' => 'vufinduser',
                 'password' => 'vufindpass',
+                'connection_time_limit' => 60,
             ],
         ];
         $configDsn = [
@@ -78,7 +79,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $factory = new MailerFactory();
 
         $this->assertEquals(
-            'smtp://vufinduser:vufindpass@vufindtest.localhost:123?local_domain=foo',
+            'smtp://vufinduser:vufindpass@vufindtest.localhost:123?local_domain=foo%3Fbar&ping_threshold=60',
             $this->callMethod($factory, 'getDSN', [$config])
         );
 
