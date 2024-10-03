@@ -117,7 +117,7 @@ if (is_array($genres)) {
     }
 }
 
-$topics = $this->driver->tryMethod('getTopics');
+$topics = $this->driver->tryMethod('getAllSubjectHeadingsFlattened');
 if (is_array($topics)) {
     foreach ($topics as $topic) {
         echo 'KW  - ' . "$topic\r\n";
@@ -178,11 +178,6 @@ $abstract = $this->driver->tryMethod('getAbstractAndSummaryNotes');
 if (is_array($abstract)) {
     foreach ($abstract as $note) {
         echo 'AB  - ' . "$note\r\n";
-    }
-} else {
-    $abstract = $this->driver->tryMethod('getItemsAbstract');
-    if (is_string($abstract)) {
-        echo 'AB  - ' . "$abstract\r\n";
     }
 }
 

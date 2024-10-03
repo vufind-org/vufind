@@ -79,7 +79,7 @@ class SolrMarc extends SolrDefault
      * Takes a Marc field that notes are stored in (ex: 950) and a list of
      * sub fields (ex: ['a','b']) optionally as well as what indicator
      * number and value to filter for
-     * and concatonates the subfields together and returns the fields back
+     * and concatenates the subfields together and returns the fields back
      * as an array
      * (ex: ['subA subB subC', 'field2SubA field2SubB'])
      *
@@ -141,32 +141,5 @@ class SolrMarc extends SolrDefault
             $this->getMarcFieldWithInd('544', null, '1', ''),
             $this->getMarcFieldWithInd('544', null, '1', '0')
         );
-    }
-
-    /**
-     * Get the raw call numbers
-     *
-     * @return array Contents from the Solr field callnumber-raw
-     */
-    public function getCallNumbers()
-    {
-        return $this->fields['callnumber-raw'] ?? [];
-    }
-
-    /**
-     * Get the topics
-     *
-     * @return array Topics from the MARC record
-     */
-    public function getTopics()
-    {
-        $topics = [];
-        $subjects = $this->getAllSubjectHeadings();
-        if (is_array($subjects)) {
-            foreach ($subjects as $subj) {
-                $topics[] = implode(' -- ', $subj);
-            }
-        }
-        return $topics;
     }
 }

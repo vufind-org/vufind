@@ -116,6 +116,18 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the abstract and summary notes.
+     * For EDS, returns the abstract in an array or an empty array.
+     *
+     * @return array
+     */
+    public function getAbstractAndSummaryNotes()
+    {
+        $abstract = $this->getItems(null, null, 'Ab');
+        return (array)($abstract[0]['Data'] ?? []);
+    }
+
+    /**
      * Get the access level of the record.
      *
      * @return string If not empty, will contain a numerical value corresponding to these levels of access:

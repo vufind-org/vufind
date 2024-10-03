@@ -1127,7 +1127,7 @@ trait MarcAdvancedTrait
     public function getFullTitlesAltScript(): array
     {
         return $this->getMarcReader()
-            ->getLinkedFieldsSubfields('880', '245', ['a', 'b', 'c', 'n', 'p']);
+            ->getLinkedFieldsSubfields('880', '245', ['a', 'b', 'n', 'p']);
     }
 
     /**
