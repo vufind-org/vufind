@@ -1386,7 +1386,6 @@ ${git_status}
         <exclude name="cart.js" />
         <exclude name="channels.js" />
         <exclude name="lightbox.js" />
-        <exclude name="searchbox_controls.js" />
         <exclude name="vendor" />
         <exclude name="vendor/bootstrap-accessibility.min.js" />
         <exclude name="vendor/bootstrap.min.js" />
