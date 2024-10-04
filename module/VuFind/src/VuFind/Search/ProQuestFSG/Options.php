@@ -58,12 +58,12 @@ class Options extends \VuFind\Search\Base\Options
         $searchSettings = $configLoader->get($this->searchIni);
 
         // // Search handler setup:
-        // $this->defaultHandler = 'srw.kw';
-        // if (isset($searchSettings->Basic_Searches)) {
-        //     foreach ($searchSettings->Basic_Searches as $key => $value) {
-        //         $this->basicHandlers[$key] = $value;
-        //     }
-        // }
+        $this->defaultHandler = 'cql.serverChoice';
+        if (isset($searchSettings->Basic_Searches)) {
+            foreach ($searchSettings->Basic_Searches as $key => $value) {
+                $this->basicHandlers[$key] = $value;
+            }
+        }
         // if (isset($searchSettings->Advanced_Searches)) {
         //     foreach ($searchSettings->Advanced_Searches as $key => $value) {
         //         $this->advancedHandlers[$key] = $value;

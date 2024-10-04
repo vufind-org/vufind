@@ -179,15 +179,6 @@ class QueryBuilder
             return $query->getString();
         }
         $lookfor = str_replace('"', '', $query->getString());
-
-        // The index may contain multiple parts -- we want to search all listed index
-        // fields:
-        $index = explode(':', $index);
-        $clauses = [];
-        foreach ($index as $currentIndex) {
-            $clauses[] = "{$currentIndex} all \"{$lookfor}\"";
-        }
-
-        return '(' . implode(' OR ', $clauses) . ')';
+        return "({$index} all \"{$lookfor}\")";
     }
 }

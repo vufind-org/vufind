@@ -104,7 +104,6 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
-        // $backend->setQueryBuilder($this->createQueryBuilder());
         return $backend;
     }
 
@@ -125,17 +124,6 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
         );
         $connector->setLogger($this->logger);
         return $connector;
-    }
-
-    /**
-     * Create the WorldCat query builder.
-     *
-     * @return QueryBuilder
-     */
-    protected function createQueryBuilder()
-    {
-        $exclude = $this->config->WorldCat->OCLCCode ?? null;
-        return new QueryBuilder($exclude);
     }
 
     /**
