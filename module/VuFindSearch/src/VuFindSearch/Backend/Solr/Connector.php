@@ -242,7 +242,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params, true);
+        $foo = $this->query($handler, $params, true);
+        return $foo;
     }
 
     /**
