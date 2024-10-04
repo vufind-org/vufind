@@ -109,13 +109,13 @@
           VuFind.setCurrentSearchId($searchId);
           JS;
 
-      if ($domain = $this->cookieManager()->getCookieDomain()) {
+      if ($domain = $this->cookieManager()->getDomain()) {
         $appendScripts[] = 'VuFind.cookie.setDomain(' . json_encode($domain) . ');';
       }
-      if ($cookiePath = $this->cookieManager()->getCookiePath()) {
+      if ($cookiePath = $this->cookieManager()->getPath()) {
         $appendScripts[] = 'VuFind.cookie.setCookiePath(' . json_encode($cookiePath) . ');';
       }
-      if ($cookieSameSite = $this->cookieManager()->getCookieSameSite()) {
+      if ($cookieSameSite = $this->cookieManager()->getSameSite()) {
         $appendScripts[] = 'VuFind.cookie.setCookieSameSite(' . json_encode($cookieSameSite) . ');';
       }
 

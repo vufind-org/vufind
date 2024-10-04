@@ -51,32 +51,12 @@ class CookieManager extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get cookie domain context (null if unset).
+     * Get cookie manager.
      *
-     * @return string
+     * @return \VuFind\Cookie\CookieManager
      */
-    public function getCookieDomain()
+    public function __invoke(): \VuFind\Cookie\CookieManager
     {
-        return $this->cookieManager->getDomain();
-    }
-
-    /**
-     * Get cookie path ('/' if unset).
-     *
-     * @return string
-     */
-    public function getCookiePath()
-    {
-        return $this->cookieManager->getPath();
-    }
-
-    /**
-     * Get cookie SameSite attribute.
-     *
-     * @return string
-     */
-    public function getCookieSameSite()
-    {
-        return $this->cookieManager->getSameSite();
+        return $this->cookieManager;
     }
 }
