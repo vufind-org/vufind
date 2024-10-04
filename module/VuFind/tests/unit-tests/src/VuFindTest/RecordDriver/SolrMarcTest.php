@@ -118,6 +118,168 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getMarcFieldWithInd when a single indicator value is sent
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndOneValue(): void
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->willReturn($record);
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getMarcFieldWithInd');
+        $getFieldArray->setAccessible(true);
+
+        // Test getting 024 fields where the 1st indicator value is 1
+        $this->assertEquals(
+            ['upc'],
+            $getFieldArray->invokeArgs($obj, ['024', null, ['1' => ['1']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple values for the indicator are sent
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndTwoValues(): void
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->willReturn($record);
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getMarcFieldWithInd');
+        $getFieldArray->setAccessible(true);
+
+        // Test getting 024 fields where the 1st indicator value is 1 or 2
+        $this->assertEquals(
+            ['upc', 'ismn'],
+            $getFieldArray->invokeArgs($obj, ['024', null, ['1' => ['1', '2']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple indicators are requested
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndMultInds(): void
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->willReturn($record);
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getMarcFieldWithInd');
+        $getFieldArray->setAccessible(true);
+
+        // Test getting 024 fields where the 1st indicator value is 1 or 2
+        $this->assertEquals(
+            ['ger', 'spa'],
+            $getFieldArray->invokeArgs($obj, ['041', null, ['1' => ['0'], '2' => ['7']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when no indicator filters are sent
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndNoValues(): void
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->willReturn($record);
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getMarcFieldWithInd');
+        $getFieldArray->setAccessible(true);
+
+        // Test when no indicator is passed
+        $this->assertEquals(
+            [],
+            $getFieldArray->invokeArgs($obj, ['024', null, []])
+        );
+    }
+
+    /**
+     * Test calling getAbstractAndSummaryNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetAbstractAndSummaryNotes(): void
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->willReturn($record);
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getAbstractAndSummaryNotes');
+        $getFieldArray->setAccessible(true);
+
+        // Test when no indicator is passed
+        $this->assertEquals(
+            ['Summary. Expanded.'],
+            $getFieldArray->invokeArgs($obj, [])
+        );
+    }
+
+    /**
+     * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetLocationOfArchivalMaterialsNotes(): void
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->willReturn($record);
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getLocationOfArchivalMaterialsNotes');
+        $getFieldArray->setAccessible(true);
+
+        // Test when no indicator is passed
+        $this->assertEquals(
+            ['Location of archival materials'],
+            $getFieldArray->invokeArgs($obj, [])
+        );
+    }
+
+    /**
      * Test regular and extended subject heading support.
      *
      * @return void

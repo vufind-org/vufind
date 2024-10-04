@@ -31,6 +31,9 @@
 
 namespace VuFind\RecordDriver;
 
+use function array_key_exists;
+use function in_array;
+
 /**
  * Model for MARC records in Solr.
  *
@@ -76,33 +79,39 @@ class SolrMarc extends SolrDefault
     /**
      * Takes a Marc field that notes are stored in (ex: 950) and a list of
      * sub fields (ex: ['a','b']) optionally as well as what indicator
-     * number and value to filter for
-     * and concatenates the subfields together and returns the fields back
-     * as an array
+     * numbers and values to filter for and concatenates the subfields
+     * together and returns the fields back as an array
      * (ex: ['subA subB subC', 'field2SubA field2SubB'])
      *
      * @param string $field    Marc field to search within
      * @param array  $subfield Sub-fields to return or empty for all
-     * @param string $indNum   The Marc indicator to filter for
-     * @param string $indValue The indicator value to check for
+     * @param array  $indData  Array containing the indicator number as the key
+     *                         and the value as an array of strings for the
+     *                         allowed indicator values
+     *                         ex: [['1' => '1', '2', '2' => '']]
+     *                         would filter ind1 = 1 or 2 and ind2 = blank
      *
      * @return array The values within the subfields under the field
      */
     public function getMarcFieldWithInd(
         string $field,
         ?array $subfield = null,
-        string $indNum = '',
-        string $indValue = ''
+        array $indData = []
     ) {
         $vals = [];
         $marc = $this->getMarcReader();
         $marc_fields = $marc->getFields($field, $subfield);
         foreach ($marc_fields as $marc_data) {
             $field_vals = [];
-            if (trim(($marc_data['i' . $indNum] ?? '')) == $indValue) {
-                $subfields = $marc_data['subfields'];
-                foreach ($subfields as $subfield) {
-                    $field_vals[] = $subfield['data'];
+            // Check if that field has either indicator (MARC only has up to 2 indicators)
+            foreach (range(1, 2) as $indNum) {
+                if (array_key_exists($indNum, $indData)) {
+                    if (in_array(trim(($marc_data['i' . $indNum] ?? '')), $indData[$indNum])) {
+                        $subfields = $marc_data['subfields'];
+                        foreach ($subfields as $subfield) {
+                            $field_vals[] = $subfield['data'];
+                        }
+                    }
                 }
             }
             if (!empty($field_vals)) {
@@ -119,13 +128,7 @@ class SolrMarc extends SolrDefault
      */
     public function getAbstractAndSummaryNotes()
     {
-        return array_merge(
-            $this->getMarcFieldWithInd('520', null, '1', ''),
-            $this->getMarcFieldWithInd('520', null, '1', '0'),
-            $this->getMarcFieldWithInd('520', null, '1', '2'),
-            $this->getMarcFieldWithInd('520', null, '1', '3'),
-            $this->getMarcFieldWithInd('520', null, '1', '8'),
-        );
+        return $this->getMarcFieldWithInd('520', null, [1 => ['', '0', '2', '3', '8']]);
     }
 
     /**
@@ -135,9 +138,6 @@ class SolrMarc extends SolrDefault
      */
     public function getLocationOfArchivalMaterialsNotes()
     {
-        return array_merge(
-            $this->getMarcFieldWithInd('544', null, '1', ''),
-            $this->getMarcFieldWithInd('544', null, '1', '0')
-        );
+        return $this->getMarcFieldWithInd('544', null, [1 => ['', '0']]);
     }
 }
