@@ -155,7 +155,7 @@ class GetItemStatuses extends AbstractBase implements
         // If we're in "first" mode, reduce list to first list value:
         if ($mode == 'first' && count($list) > 0) {
             $list = [$list[0]];
-        } elseif ($mode == 'msg' && count($list) > 1){
+        } elseif ($mode == 'msg' && count($list) > 1) {
             // Message mode?  Return the specified message, translated to the
             // appropriate language.
             return [$this->translate($msg)];
