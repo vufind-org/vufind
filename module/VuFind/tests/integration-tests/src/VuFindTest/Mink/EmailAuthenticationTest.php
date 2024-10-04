@@ -56,11 +56,11 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test the email authentication process.
+     * Test the ILS email authentication process.
      *
      * @return void
      */
-    public function testEmailAuthentication(): void
+    public function testILSEmailAuthentication(): void
     {
         // Set up configs, session and message logging:
         $this->changeConfigs(
