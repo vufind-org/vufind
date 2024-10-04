@@ -104,6 +104,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
             'Mail' => [
                 'testOnly' => true,
                 'message_log' => $this->getEmailLogPath(),
+                'message_log_format' => $this->getEmailLogFormat(),
             ],
         ];
     }
@@ -286,8 +287,8 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Extract the link from the provided message:
-        $email = file_get_contents($this->getEmailLogPath());
-        preg_match('/Link to login: <(http.*)>/', $email, $matches);
+        $email = $this->getLoggedEmail();
+        preg_match('/Link to login: <(http.*)>/', $email->getBody()->getBody(), $matches);
         $session->visit($matches[1]);
 
         // Log out
