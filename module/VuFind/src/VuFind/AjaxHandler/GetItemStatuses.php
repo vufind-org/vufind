@@ -44,10 +44,14 @@ use VuFind\ILS\Logic\AvailabilityStatusManager;
 use VuFind\ILS\Logic\Holds;
 use VuFind\Session\Settings as SessionSettings;
 
+use function array_map;
+use function array_unique;
 use function count;
 use function in_array;
 use function is_array;
 use function is_string;
+use function serialize;
+use function unserialize;
 
 /**
  * "Get Item Status" AJAX handler
