@@ -110,13 +110,13 @@
           JS;
 
       if ($domain = $this->cookieManager()->getCookieDomain()) {
-        $appendScripts[] = 'VuFind.cookie.setDomain("' . $domain . '");';
+        $appendScripts[] = 'VuFind.cookie.setDomain(' . json_encode($domain) . ');';
       }
       if ($cookiePath = $this->cookieManager()->getCookiePath()) {
-        $appendScripts[] = 'VuFind.cookie.setCookiePath("' . $cookiePath . '");';
+        $appendScripts[] = 'VuFind.cookie.setCookiePath(' . json_encode($cookiePath) . ');';
       }
       if ($cookieSameSite = $this->cookieManager()->getCookieSameSite()) {
-        $appendScripts[] = 'VuFind.cookie.setCookieSameSite("' . $cookieSameSite . '");';
+        $appendScripts[] = 'VuFind.cookie.setCookieSameSite(' . json_encode($cookieSameSite) . ');';
       }
 
       if (!empty($lightboxParent)) {
