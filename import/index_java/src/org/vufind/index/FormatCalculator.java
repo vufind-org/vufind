@@ -280,7 +280,7 @@ public class FormatCalculator
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
                 // Make sure we have the applicable LDR/06: Language Material
-                if (recordType == 'a') {
+                if (recordType == 'a' || recordType == 'm') {
                     switch (get008Value(marc008, 21)) {
                         case 'n':
                             return "Newspaper";
