@@ -50,8 +50,6 @@ use function count;
 use function in_array;
 use function is_array;
 use function is_string;
-use function serialize;
-use function unserialize;
 
 /**
  * "Get Item Status" AJAX handler
@@ -154,7 +152,7 @@ class GetItemStatuses extends AbstractBase implements
         // Make sure array contains only unique values:
         // array unique for multidimensional arrays due to callnumber array,
         // can be slow for larger/more complex arrays
-        $list = array_map("unserialize", array_unique(array_map("serialize", $rawList)));
+        $list = array_map('unserialize', array_unique(array_map('serialize', $rawList)));
 
         // If we're in "first" mode, reduce list to first list value:
         if ($mode == 'first' && count($list) > 0) {
@@ -225,7 +223,7 @@ class GetItemStatuses extends AbstractBase implements
     {
         return [
             'prefix' => $item['callnumber_prefix'] ?? '',
-            'callnumber' => $item['callnumber']
+            'callnumber' => $item['callnumber'],
         ];
     }
 
