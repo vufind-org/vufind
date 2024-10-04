@@ -173,7 +173,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $options['maximumRecords'] = $limit;
         }
         if (null !== $sortBy) {
-            $options['sortKeys'] = $sortBy;
+            $options['query'] .= " sortBy {$sortBy}";
         }
 
         return $this->call('GET', $options, $process);

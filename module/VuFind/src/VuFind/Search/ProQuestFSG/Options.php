@@ -70,23 +70,15 @@ class Options extends \VuFind\Search\Base\Options
         //     }
         // }
 
-        // // Load sort preferences:
-        // if (isset($searchSettings->Sorting)) {
-        //     foreach ($searchSettings->Sorting as $key => $value) {
-        //         $this->sortOptions[$key] = $value;
-        //     }
-        // }
-        // if (isset($searchSettings->General->default_sort)) {
-        //     $this->defaultSort = $searchSettings->General->default_sort;
-        // }
-        // if (
-        //     isset($searchSettings->DefaultSortingByType)
-        //     && count($searchSettings->DefaultSortingByType) > 0
-        // ) {
-        //     foreach ($searchSettings->DefaultSortingByType as $key => $val) {
-        //         $this->defaultSortByHandler[$key] = $val;
-        //     }
-        // }
+        // Load sort preferences:
+        if (isset($searchSettings->Sorting)) {
+            foreach ($searchSettings->Sorting as $key => $value) {
+                $this->sortOptions[$key] = $value;
+            }
+        }
+        if (isset($searchSettings->General->default_sort)) {
+            $this->defaultSort = $searchSettings->General->default_sort;
+        }
         // // Load list view for result (controls AJAX embedding vs. linking)
         // if (isset($searchSettings->List->view)) {
         //     $this->listviewOption = $searchSettings->List->view;

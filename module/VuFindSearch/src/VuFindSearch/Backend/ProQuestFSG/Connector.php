@@ -173,7 +173,9 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $response = $this->sruSearch(
             $params->get('query')[0],
             $offset,
-            $limit, null, 'marcxml',
+            $limit, 
+            $params->get('sortKey')[0] ?? null, 
+            'marcxml',
             true
         );
 
