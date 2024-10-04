@@ -128,7 +128,7 @@ class GetItemStatuses extends AbstractBase implements
     {
         $transList = [];
         foreach ($list as $current) {
-            $transList[] = $this->translateWithPrefix($transPrefix, $current);
+            $transList[] = is_string($current) ? $this->translateWithPrefix($transPrefix, $current) : $current;
         }
         return $transList;
     }
@@ -141,36 +141,27 @@ class GetItemStatuses extends AbstractBase implements
      * @param string $mode        config.ini setting -- first, all or msg
      * @param string $msg         Message to display if $mode == "msg"
      * @param string $transPrefix Translator prefix to apply to values (false to
-     * omit translation of values)
+     *                            omit translation of values)
      *
-     * @return string
+     * @return array
      */
     protected function pickValue($rawList, $mode, $msg, $transPrefix = false)
     {
         // Make sure array contains only unique values:
-        $list = array_unique($rawList);
+        // array unique for multidimensional arrays due to callnumber array,
+        // can be slow for larger/more complex arrays
+        $list = array_map("unserialize", array_unique(array_map("serialize", $rawList)));
 
-        // If there is only one value in the list, or if we're in "first" mode,
-        // send back the first list value:
-        if ($mode == 'first' || count($list) == 1) {
-            if ($transPrefix) {
-                return $this->translateWithPrefix($transPrefix, $list[0]);
-            }
-            return $list[0];
-        } elseif (count($list) == 0) {
-            // Empty list?  Return a blank string:
-            return '';
-        } elseif ($mode == 'all') {
-            // All values mode?  Return comma-separated values:
-            return implode(
-                ",\t",
-                $transPrefix ? $this->translateList($transPrefix, $list) : $list
-            );
-        } else {
+        // If we're in "first" mode, reduce list to first list value:
+        if ($mode == 'first' && count($list) > 0) {
+            $list = [$list[0]];
+        } elseif ($mode == 'msg' && count($list) > 1){
             // Message mode?  Return the specified message, translated to the
             // appropriate language.
-            return $this->translate($msg);
+            return [$this->translate($msg)];
         }
+
+        return $transPrefix ? $this->translateList($transPrefix, $list) : $list;
     }
 
     /**
@@ -220,49 +211,43 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Create a delimited version of the call number to allow the Javascript code
-     * to handle the prefix appropriately.
+     * Create an array with the callnumber and prefix of the given item.
      *
-     * @param string $prefix     Callnumber prefix or empty string.
-     * @param string $callnumber Main call number.
+     * @param array $item Item's holding data.
      *
-     * @return string
+     * @return array      Associative array with the keys 'prefix' and 'callnumber'
      */
-    protected function formatCallNo($prefix, $callnumber)
+    protected function getCallNumberArray(array $item): array
     {
-        return !empty($prefix) ? $prefix . '::::' . $callnumber : $callnumber;
+        return [
+            'prefix' => $item['callnumber_prefix'] ?? '',
+            'callnumber' => $item['callnumber']
+        ];
     }
 
     /**
      * Render the callnumber HTML.
      *
-     * @param string       $callnumberSetting The callnumber mode setting
-     * @param string|array $callnumbers       Callnumbers to render
+     * @param string $callnumberSetting The callnumber mode setting
+     * @param array  $callnumbers       Callnumbers to render
      *
      * @return string
      */
-    protected function renderCallnumbers(string $callnumberSetting, string|array $callnumbers): string
+    protected function renderCallnumbers(string $callnumberSetting, array $callnumbers): string
     {
         $html = [];
-        if (is_string($callnumbers)) {
-            $callnumbers = explode(",\t", $callnumbers);
-        }
 
         $callnumberHandler = $this->getCallnumberHandler($callnumbers, $callnumberSetting);
         foreach ($callnumbers as $number) {
-            // @TODO: evaluate usage of pickValue() and formatCallNo()
-            //        > are these explodes needed here or is refactoring possible?
-            $displayCallNumber = $actualCallNumber = $number;
+            $displayCallnumber = $actualCallnumber = $number['callnumber'];
 
-            $parts = explode('::::', $number);
-            if (count($parts) > 1) {
-                $displayCallNumber = $parts[0] . ' ' . $parts[1];
-                $actualCallNumber = $parts[1];
+            if (!empty($number['prefix'])) {
+                $displayCallnumber = $number['prefix'] . ' ' . $displayCallnumber;
             }
 
             $html[] = $this->renderer->render('ajax/itemCallnumber', [
-                'actualCallNumber' => $actualCallNumber,
-                'displayCallNumber' => $displayCallNumber,
+                'actualCallnumber' => $actualCallnumber,
+                'displayCallnumber' => $displayCallnumber,
                 'callnumberHandler' => $callnumberHandler,
             ]);
         }
@@ -293,10 +278,7 @@ class GetItemStatuses extends AbstractBase implements
         $services = [];
         foreach ($record as $info) {
             // Store call number/location info:
-            $callNumbers[] = $this->formatCallNo(
-                $info['callnumber_prefix'] ?? '',
-                $info['callnumber']
-            );
+            $callNumbers[] = $this->getCallNumberArray($info);
 
             $locations[] = $info['location'];
             // Store all available services
@@ -337,7 +319,7 @@ class GetItemStatuses extends AbstractBase implements
             'id' => $record[0]['id'],
             'availability' => $combinedAvailability->availabilityAsString(),
             'availability_message' => $availabilityMessage,
-            'location' => htmlentities($location, ENT_COMPAT, 'UTF-8'),
+            'location' => htmlentities(implode(",\t", $location), ENT_COMPAT, 'UTF-8'),
             'locationList' => false,
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
@@ -363,20 +345,16 @@ class GetItemStatuses extends AbstractBase implements
         $locations = [];
         foreach ($record as $info) {
             // Store call number/location info:
-            $locations[$info['location']]['callnumbers'][] = $this->formatCallNo(
-                $info['callnumber_prefix'] ?? '',
-                $info['callnumber']
-            );
+            $locations[$info['location']]['callnumbers'][] = $this->getCallNumberArray($info);
             $locations[$info['location']]['items'][] = $info;
         }
 
         // Build list split out by location:
         $locationList = [];
         foreach ($locations as $location => $details) {
-            $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
             $locationCallnumbers = $this->pickValue(
-                $locationCallnumbers,
+                $details['callnumbers'],
                 $callnumberSetting,
                 'Multiple Call Numbers'
             );
