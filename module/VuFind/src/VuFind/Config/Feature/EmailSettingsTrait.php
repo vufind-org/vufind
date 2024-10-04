@@ -34,6 +34,8 @@ use Laminas\Config\Config;
 /**
  * Trait providing email settings
  *
+ * N.B. User-oriented email settings are handled by \VuFind\Config\AccountCapabilities.
+ *
  * @category VuFind
  * @package  Config
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
@@ -55,8 +57,14 @@ trait EmailSettingsTrait
         if ($config instanceof Config) {
             $config = $config->toArray();
         }
-        return (null !== $userEmail && ($config['Mail']['user_email_in_from'] ?? false))
-            ? $userEmail
-            : $config['Mail']['default_from'] ?? $config['Site']['email'];
+        if (null !== $userEmail && ($config['Mail']['user_email_in_from'] ?? false)) {
+            return $userEmail;
+        }
+        if (null === ($result = $config['Mail']['default_from'] ?? $config['Site']['email'] ?? null)) {
+            throw new \Exception(
+                'Missing configuration for email sender. Please check settings Mail/default_from and Site/email.'
+            );
+        }
+        return $result;
     }
 }
