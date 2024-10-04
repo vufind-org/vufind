@@ -44,6 +44,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -53,6 +54,88 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
     public static function setUpBeforeClass(): void
     {
         static::failIfDataExists();
+    }
+
+    /**
+     * Test the (non-ILS) email authentication process.
+     *
+     * @return void
+     */
+    public function testEmailAuthentication(): void
+    {
+        $this->setUpDatabaseEmailConfig();
+
+        $this->resetEmailLog();
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
+        // Create account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Request login:
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@ignore.com');
+        $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
+        $this->assertEquals(
+            'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
+            . " If you don't receive the link shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        // Extract the link from the provided message:
+        $email = $this->getLoggedEmail();
+        $headers = $email->getHeaders();
+        $body = $email->getBody()->getBody();
+        $this->assertEquals('From: noreply@vufind.org', $headers->get('from')->toString());
+        $this->assertEquals('To: username1@ignore.com', $headers->get('to')->toString());
+        preg_match('/Link to login: <(http.*)>/', $body, $matches);
+        $loginLink = $matches[1];
+
+        // Follow the verification link:
+        $session->visit($loginLink);
+
+        // Log out (we can't log out unless we successfully logged in):
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Clean up the email log:
+        $this->resetEmailLog();
+    }
+
+    /**
+     * Test the (non-ILS) email authentication process with invalid email address.
+     *
+     * @return void
+     *
+     * @depends testEmailAuthentication
+     */
+    public function testEmailAuthenticationBadEmail(): void
+    {
+        $this->setUpDatabaseEmailConfig();
+
+        $this->resetEmailLog();
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
+        // Request login:
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@foo.bar');
+        $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
+        $this->assertEquals(
+            'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
+            . " If you don't receive the link shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        $this->expectExceptionMessage('No serialized email message data found');
+        $this->getLoggedEmail();
     }
 
     /**
@@ -75,6 +158,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
                     'Mail' => [
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
                         'default_from' => 'noreply@vufind.org',
                     ],
                 ],
@@ -102,10 +186,12 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Extract the link from the provided message:
-        $email = file_get_contents($this->getEmailLogPath());
-        $this->assertStringContainsString('From: noreply@vufind.org', $email);
-        $this->assertStringContainsString('To: catuser@vufind.org', $email);
-        preg_match('/Link to login: <(http.*)>/', $email, $matches);
+        $email = $this->getLoggedEmail();
+        $headers = $email->getHeaders();
+        $body = $email->getBody()->getBody();
+        $this->assertEquals('From: noreply@vufind.org', $headers->get('from')->toString());
+        $this->assertEquals('To: catuser@vufind.org', $headers->get('to')->toString());
+        preg_match('/Link to login: <(http.*)>/', $body, $matches);
         $loginLink = $matches[1];
 
         // Follow the verification link:
@@ -125,6 +211,34 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['catuser@vufind.org']);
+        static::removeUsers(['username1', 'catuser@vufind.org']);
+    }
+
+    /**
+     * Set up configuration for Database+Email authentication
+     *
+     * @return void
+     */
+    protected function setUpDatabaseEmailConfig(): void
+    {
+        // Set up configs, session and message logging:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'method' => 'ChoiceAuth',
+                    ],
+                    'ChoiceAuth' => [
+                        'choice_order' => 'Database,Email',
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                        'default_from' => 'noreply@vufind.org',
+                    ],
+                ],
+            ]
+        );
     }
 }
