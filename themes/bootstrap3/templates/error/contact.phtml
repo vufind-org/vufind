@@ -1,5 +1,8 @@
-<?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
+<p>
+    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
+</p>
 <?php if ($supportEmail = $this->systemEmail()): ?>
-    <br>
-    <a href="mailto:<?=$this->escapeHtmlAttr($supportEmail)?>"><?=$this->escapeHtml($supportEmail)?></a>
+    <p>
+        <a href="mailto:<?=$this->escapeHtmlAttr($supportEmail)?>"><?=$this->escapeHtml($supportEmail)?></a>
+    </p>
 <?php endif; ?>
