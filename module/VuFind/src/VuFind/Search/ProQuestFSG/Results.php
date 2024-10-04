@@ -49,6 +49,10 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected $backendId = 'ProQuestFSG';
 
+    protected $responseFacets = null;
+
+    protected $simplifiedResponseFacets = null;
+
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
@@ -73,6 +77,8 @@ class Results extends \VuFind\Search\Base\Results
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();
+        $this->responseFacets = $collection->getFacets();
+        $this->simplifiedResponseFacets = $this->simplifyFacets($this->responseFacets);
     }
 
     /**
@@ -85,7 +91,20 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        // No facets in WorldCat:
-        return [];
+        return $this->buildFacetList($this->simplifiedResponseFacets, $filter);
     }
+
+    protected function simplifyFacets($rawFacets)
+    {
+        $simpleFacets = [];
+        foreach ($rawFacets as $label => $rawFacet) {
+            $simpleFacet = [];
+            foreach ($rawFacet as $rawFacetValue) {
+                $simpleFacet[$rawFacetValue['name']] = $rawFacetValue['count'];
+            }
+            $simpleFacets[$label] = $simpleFacet;
+        }
+        return $simpleFacets;
+    }
+
 }

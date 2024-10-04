@@ -163,39 +163,42 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     public function search(ParamBag $params, $offset, $limit)
     {
-        // $params->set('startRecord', $offset);
-        // $params->set('maximumRecords', $limit);
-        // $params->set('servicelevel', 'full');
-        // $params->set('wskey', $this->wskey);
+        $options = $params->getArrayCopy();
+        $options['startRecord'] = $offset;
+        if (null !== $limit) {
+            $options['maximumRecords'] = $limit;
+        }
+        $sortKey = $params->get('sortKey')[0] ?? null;
+        if (null !== $sortKey) {
+            $options['query'][0] .= " sortBy {$sortKey}";
+            unset($options['sortKey']);
+        }
 
-        // $response = $this->call('POST', $params->getArrayCopy(), false);
+        $response = $this->call('GET', $options, true);
 
-        $response = $this->sruSearch(
-            $params->get('query')[0],
-            $offset,
-            $limit, 
-            $params->get('sortKey')[0] ?? null, 
-            'marcxml',
-            true
-        );
-
-        // $xml = simplexml_load_string($response);
-        // $docs = $xml->records->record ?? [];
         $finalDocs = [];
-        // foreach ($docs as $doc) {
         foreach ($response->record as $doc) {
             $finalDocs[] = $doc->asXML();
         }
-        // return [
-        //     'docs' => $finalDocs,
-        //     'offset' => $offset,
-        //     'total' => (int)($xml->numberOfRecords ?? 0),
-        // ];
-        // return $response;
+
+        $databases = [];
+        foreach (($response->Facets->Databases->Database ?? []) as $database) {
+            $databases[] = [
+                'id' => strval($database->databaseId),
+                'code' => strval($database->databaseCode),
+                'name' => strval($database->databaseName),
+                'count' => intval($database->numberOfRecords),
+            ];
+        }
+        $facets = [
+            'Databases' => $databases,
+        ];
+
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
             'total' => (int)($response->RecordCount),
+            'facets' => $facets,
         ];
     }
 }

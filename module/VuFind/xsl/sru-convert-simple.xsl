@@ -8,8 +8,8 @@
   <xsl:template match="/">
     <ResultSet>
       <RecordCount><xsl:value-of select="//zs:numberOfRecords"/></RecordCount>
-      <xsl:call-template name="facet"/>
       <xsl:call-template name="doc"/>
+      <xsl:call-template name="facet"/>
     </ResultSet>
   </xsl:template> 
     
@@ -21,18 +21,13 @@
   
   <xsl:template name="facet">
     <Facets>
-      <xsl:for-each select="//lst[@name='facet_fields']/lst">
-        <Cluster>
-          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-          <xsl:for-each select="./int">
-            <xsl:variable name="elem" select="../@name"/>
-            <item>
-              <xsl:attribute name="count"><xsl:value-of select="."/></xsl:attribute>
-              <xsl:value-of select="@name"/>
-            </item>
-          </xsl:for-each>
-        </Cluster>
-      </xsl:for-each>
+      <Databases>
+        <xsl:for-each select="//zs:extraResponseData/resultCountForDatabase">
+          <Database>
+            <xsl:copy-of select="./*" />
+          </Database>
+        </xsl:for-each>
+      </Databases>
     </Facets>
   </xsl:template>
   

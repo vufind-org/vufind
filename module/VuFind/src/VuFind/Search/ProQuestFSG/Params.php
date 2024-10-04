@@ -52,10 +52,15 @@ class Params extends \VuFind\Search\Base\Params
     public function getBackendParameters()
     {
         $backendParams = new ParamBag();
+        $backendParams->set('operation', 'searchRetrieve');
+        $backendParams->set('recordSchema', 'marcxml');
 
         // Sort
         $sort = $this->getSort();
         $backendParams->set('sortKey', empty($sort) ? 'relevance' : $sort);
+
+        // Facets
+        $backendParams->set('x-navigators', 'database');
 
         return $backendParams;
     }

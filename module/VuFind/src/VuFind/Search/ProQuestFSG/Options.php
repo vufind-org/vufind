@@ -53,8 +53,8 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'ProQuestFSG';
+        parent::__construct($configLoader);
 
         // Load the configuration file:
         $searchSettings = $configLoader->get($this->searchIni);
