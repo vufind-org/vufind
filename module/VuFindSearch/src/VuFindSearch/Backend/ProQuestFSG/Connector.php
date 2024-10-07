@@ -152,7 +152,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         // ];
 
         $params->set('query', "rec.identifier = \"{$id}\"");
-        return $this->search($params, 0, 1);
+        return $this->search($params, 1, 1);
     }
 
     /**

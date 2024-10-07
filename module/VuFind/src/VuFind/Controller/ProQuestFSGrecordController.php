@@ -31,6 +31,7 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\ParamBag;
 
 /**
  * ProQuest Federated Search Gateway Record Controller
@@ -56,6 +57,30 @@ class ProQuestFSGrecordController extends AbstractRecord
 
         // Call standard record controller initialization:
         parent::__construct($sm);
+    }
+
+    /**
+     * Load the record requested by the user; note that this is not done in the
+     * init() method since we don't want to perform an expensive search twice
+     * when homeAction() forwards to another method.
+     *
+     * @param ParamBag $params Search backend parameters
+     * @param bool     $force  Set to true to force a reload of the record, even if
+     * already loaded (useful if loading a record using different parameters)
+     *
+     * @return AbstractRecordDriver
+     */
+    protected function loadRecord(ParamBag $params = null, bool $force = false)
+    {
+        if (null === $params) {
+            $params = new ParamBag();
+        }
+
+        $paramsService = $this->serviceLocator->get(\VuFind\Search\Params\PluginManager::class)
+            ->get('VuFind\Search\ProQuestFSG\Params');
+        $params->mergeWith($paramsService->getBackendParameters());
+
+        return parent::loadRecord($params, $force);
     }
 
     /**
