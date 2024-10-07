@@ -87,14 +87,12 @@ class PathResolverFactory implements FactoryInterface
         }
         $dirLocationsStack = $this->getDirLocationsStack();
         $localDirStack = array_map(
-            function ($dirLocations) {
-                return [
-                    'directory' => $dirLocations['dir'],
-                    'defaultConfigSubdir' =>
-                        $dirLocations['dirLocationConfig']['Local_Dir']['config_subdir']
+            fn ($dirLocation) => [
+                'directory' => $dirLocation['dir'],
+                'defaultConfigSubdir' =>
+                    $dirLocation['dirLocationConfig']['Local_Dir']['config_subdir']
                         ?? $this->defaultLocalConfigSubdir,
-                ];
-            },
+            ],
             $dirLocationsStack
         );
         return new $requestedName(

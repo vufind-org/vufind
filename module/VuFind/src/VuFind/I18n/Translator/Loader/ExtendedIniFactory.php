@@ -77,16 +77,11 @@ class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInter
             APPLICATION_PATH . '/languages',
         ];
         $dirLocationsStack = $this->getDirLocationsStack();
-
         $localPathStack = array_map(
-            function ($dirLocations) {
-                return $dirLocations['dir'] . '/languages';
-            },
+            fn ($dirLocation) => $dirLocation['dir'] . '/languages',
             $dirLocationsStack
         );
-
         $pathStack = array_merge($pathStack, $localPathStack);
-
         $settings = $container->get(LocaleSettings::class);
         return new $requestedName($pathStack, $settings->getFallbackLocales());
     }

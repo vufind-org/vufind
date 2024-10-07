@@ -58,7 +58,7 @@ trait DirLocationsTrait
     {
         $localDirs = [];
         $currentDir = defined('LOCAL_OVERRIDE_DIR')
-        && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
             ? LOCAL_OVERRIDE_DIR : '';
         while (!empty($currentDir)) {
             // check if the directory exists
