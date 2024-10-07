@@ -48,6 +48,7 @@ use function sprintf;
 class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * Whether to Serialize to a PHP Array or not.
@@ -230,11 +231,28 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         // Send Request
         $this->client->resetParameters();
         $this->client->setUri($url);
-        $result = $this->client->setMethod($method)->send();
-        $this->checkForHttpError($result);
+
+        // Check cache:
+        $cacheKey = null;
+        if ($this->cache) {
+            $cacheKey = $this->getCacheKey($this->client);
+            $resultBody = $this->getCachedData($cacheKey);
+        }
+
+        if (!$resultBody) {
+            $result = $this->client->setMethod($method)->send();
+            $this->checkForHttpError($result);
+            $resultBody = $result->getBody();
+            if ($cacheKey) {
+                $this->putCachedData($cacheKey, $resultBody);
+            }    
+        }
 
         // Return processed or unprocessed response, as appropriate:
-        return $process ? $this->process($result->getBody()) : $result->getBody();
+        if ($process) {
+            $resultBody = $this->process($resultBody);
+        }
+        return $resultBody;
     }
 
     /**

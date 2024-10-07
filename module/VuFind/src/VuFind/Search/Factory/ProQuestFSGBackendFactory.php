@@ -62,12 +62,12 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      */
     protected $config;
 
-    // /**
-    //  * WorldCat configuration
-    //  *
-    //  * @var \Laminas\Config\Config
-    //  */
-    // protected $wcConfig;
+    /**
+     * ProQuestFSG configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $proQuestFSGConfig;
 
     /**
      * Create service
@@ -84,7 +84,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     {
         $this->setup($sm);
         $this->config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        // $this->wcConfig = $this->getService(\VuFind\Config\PluginManager::class)->get('WorldCat');
+        $this->proQuestFSGConfig = $this->getService(\VuFind\Config\PluginManager::class)->get('ProQuestFSG');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -123,6 +123,9 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
             // $connectorOptions
         );
         $connector->setLogger($this->logger);
+        if ($cache = $this->createConnectorCache($this->proQuestFSGConfig)) {
+            $connector->setCache($cache);
+        }
         return $connector;
     }
 
