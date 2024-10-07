@@ -46,6 +46,8 @@ class Options extends \VuFind\Search\Base\Options
 {
     use \VuFind\Config\Feature\ExplodeSettingTrait;
 
+    // protected $defaultFacetDelimiter = '|';
+
     /**
      * Constructor
      *

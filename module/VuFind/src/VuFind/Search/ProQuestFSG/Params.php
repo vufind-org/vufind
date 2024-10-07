@@ -62,6 +62,47 @@ class Params extends \VuFind\Search\Base\Params
         // Facets
         $backendParams->set('x-navigators', 'database');
 
+        $filterList = $this->getFilterList();
+        if (!empty($filterList)) {
+            // Loop through all filters and add appropriate values to request:
+            foreach ($filterList as $filterArray) {
+                foreach ($filterArray as $filt) {
+                    // $fq = $filt['field']
+                    //     . ($this->filterRequiresFacetOperator($filt['field']) ?
+                    //         ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
+                    //     . ":{$filt['value']}";
+                    // $params->add('filters', $fq);
+                    $value = explode('|', $filt['value'])[0];
+                    $backendParams->add('filters', $filt['field'] . ':' . $value);
+                }
+            }
+        }
+
+
         return $backendParams;
     }
+
+    /**
+     * Get a display text for a facet field.
+     *
+     * @param string $field Facet field
+     * @param string $value Facet value
+     *
+     * @return string
+     */
+    public function getFacetValueRawDisplayText(string $field, string $value): string
+    {
+        $parts = explode('|', $value);
+        return end($parts);
+        // // Check for delimited facets -- if $field is a delimited facet field,
+        // // process $displayText accordingly:
+        // $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
+        // if (isset($delimitedFacetFields[$field])) {
+        //     $parts = explode($delimitedFacetFields[$field], $value);
+        //     return end($parts);
+        // }
+
+        // return $value;
+    }
+
 }

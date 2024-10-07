@@ -70,6 +70,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected $host;
 
+    protected $defaultPath = '';
+
     /**
      * The version to specify in the URL
      *
@@ -203,7 +205,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @return string|SimpleXMLElement The response from the XServer
      */
-    protected function call($method = 'GET', $params = null, $process = true)
+    protected function call($method = 'GET', $path = '', $params = null, $process = true)
     {
         $queryString = '';
         if ($params) {
@@ -222,7 +224,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $queryString = implode('&', $query);
         }
 
-        $url = $this->host . '?' . $queryString;
+        $url = $this->host . $path . '?' . $queryString;
         $this->debug('Connect: ' . $url);
 
         // Send Request

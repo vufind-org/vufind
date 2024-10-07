@@ -100,7 +100,8 @@ class Results extends \VuFind\Search\Base\Results
         foreach ($rawFacets as $label => $rawFacet) {
             $simpleFacet = [];
             foreach ($rawFacet as $rawFacetValue) {
-                $simpleFacet[$rawFacetValue['name']] = $rawFacetValue['count'];
+                $facetName = "{$rawFacetValue['code']}|{$rawFacetValue['name']}";
+                $simpleFacet[$facetName] = $rawFacetValue['count'];
             }
             $simpleFacets[$label] = $simpleFacet;
         }

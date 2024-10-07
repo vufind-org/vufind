@@ -64,6 +64,9 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     protected $sruVersion = '1.2';
 
+    protected $defaultPath = '/all_subscribed';
+
+
     /**
      * Constructor
      *
@@ -77,7 +80,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         array $options = []
     ) {
         parent::__construct(
-            'https://fedsearch.proquest.com/search/sru' . '/all_subscribed',
+            'https://fedsearch.proquest.com/search/sru',
             $client
         );
         // $this->wskey = $wsKey;
@@ -168,13 +171,25 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         if (null !== $limit) {
             $options['maximumRecords'] = $limit;
         }
+
+        $path = $this->defaultPath;
+        foreach (($options['filters'] ?? []) as $filter) {
+            [$filterKey, $filterValue] = explode(':', $filter, 2);
+            if ('Databases' == $filterKey) {
+                $path = '/' . $filterValue;
+            }
+            else {
+                // TODO normal filters that actually use filter strings on the query.
+            }
+        }
+
         $sortKey = $params->get('sortKey')[0] ?? null;
         if (null !== $sortKey) {
             $options['query'][0] .= " sortBy {$sortKey}";
             unset($options['sortKey']);
         }
 
-        $response = $this->call('GET', $options, true);
+        $response = $this->call('GET', $path, $options, true);
 
         $finalDocs = [];
         foreach ($response->record as $doc) {
