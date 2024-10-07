@@ -234,6 +234,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         // Check cache:
         $cacheKey = null;
+        $resultBody = null;
         if ($this->cache) {
             $cacheKey = $this->getCacheKey($this->client);
             $resultBody = $this->getCachedData($cacheKey);
