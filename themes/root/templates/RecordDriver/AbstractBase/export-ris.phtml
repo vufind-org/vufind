@@ -122,15 +122,6 @@ if (is_array($topics)) {
     foreach ($topics as $topic) {
         echo 'KW  - ' . "$topic\r\n";
     }
-} else {
-    // For EDS
-    $topics = $this->driver->tryMethod('getItemsSubjects');
-    if (is_string($topics)) {
-        $topics = strip_tags($topics);
-        foreach (explode(', ', $topics) as $topic) {
-            echo 'KW  - ' . "$topic\r\n";
-        }
-    }
 }
 
 $start_page = $this->driver->tryMethod('getContainerStartPage');
@@ -171,7 +162,7 @@ foreach ($this->record($this->driver)->getUrlList() as $url) {
 }
 
 if ($doi = $this->driver->tryMethod('getCleanDOI')) {
-    echo 'DO  - ' . strip_tags($doi) . "\r\n";
+    echo 'DO  - ' . "$doi\r\n";
 }
 
 $abstract = $this->driver->tryMethod('getAbstractAndSummaryNotes');

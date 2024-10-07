@@ -443,19 +443,18 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the subject data of the record.
+     * Get the subject headings as a flat array of strings.
      *
-     * @return string
+     * @return array Subject headings
      */
-    public function getItemsSubjects()
+    public function getAllSubjectHeadingsFlattened()
     {
-        $subjects = array_map(
+        return array_map(
             function ($data) {
                 return $data['Data'];
             },
             $this->getItems(null, null, 'Su')
         );
-        return empty($subjects) ? '' : implode(', ', $subjects);
     }
 
     /**
@@ -694,7 +693,7 @@ class EDS extends DefaultRecord
     {
         $doi = $this->getItems(null, null, null, 'DOI');
         if (isset($doi[0]['Data'])) {
-            return $doi[0]['Data'];
+            return strip_tags($doi[0]['Data']);
         }
         $dois = $this->getFilteredIdentifiers(['doi']);
         return $dois[0] ?? false;
