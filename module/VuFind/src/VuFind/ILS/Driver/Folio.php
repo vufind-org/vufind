@@ -33,8 +33,10 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Laminas\Http\Response;
+use VuFind\Config\Feature\SecretTrait;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
@@ -59,6 +61,7 @@ class Folio extends AbstractAPI implements
     HttpServiceAwareInterface,
     TranslatorAwareInterface
 {
+    use SecretTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -282,7 +285,7 @@ class Folio extends AbstractAPI implements
         $this->token = null;
         $response = $this->performOkapiUsernamePasswordAuthentication(
             $this->config['API']['username'],
-            $this->config['API']['password']
+            $this->getSecretFromConfig($this->config['API'], 'password')
         );
         $this->token = $this->extractTokenFromResponse($response);
         $this->sessionCache->folio_token = $this->token;
@@ -389,7 +392,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Given an instance object or identifer, or a holding or item identifier,
+     * Given an instance object or identifier, or a holding or item identifier,
      * determine an appropriate value to use as VuFind's bibliographic ID.
      *
      * @param string $instanceOrInstanceId Instance object or ID (will be looked up
@@ -509,6 +512,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Check whether an item is holdable based on its location and any
+     * current loan
+     *
+     * @param string     $locationName locationName from getHolding
+     * @param ?\stdClass $currentLoan  The current loan, or null if none
+     *
+     * @return bool
+     */
+    protected function isHoldable($locationName, $currentLoan = null)
+    {
+        return $this->isHoldableLocation($locationName) &&
+            (!$currentLoan || $this->isHoldableByCurrentLoan($currentLoan));
+    }
+
+    /**
      * Check item location against list of configured locations
      * where holds should be offered
      *
@@ -516,7 +534,7 @@ class Folio extends AbstractAPI implements
      *
      * @return bool
      */
-    protected function isHoldable($locationName)
+    protected function isHoldableLocation($locationName)
     {
         $mode = $this->config['Holds']['excludeHoldLocationsCompareMode'] ?? 'exact';
         $excludeLocs = (array)($this->config['Holds']['excludeHoldLocations'] ?? []);
@@ -541,6 +559,20 @@ class Folio extends AbstractAPI implements
         }
         // Otherwise exclude checking by exact match
         return !in_array($locationName, $excludeLocs);
+    }
+
+    /**
+     * Check whether an item is holdable based on any current loan
+     *
+     * @param \stdClass $currentLoan The current loan
+     *
+     * @return bool
+     */
+    protected function isHoldableByCurrentLoan(\stdClass $currentLoan)
+    {
+        $currentLoanPatronGroup = $currentLoan->patronGroupAtCheckout->name ?? '';
+        $excludePatronGroups = $this->config['Holds']['excludeHoldCurrentLoanPatronGroups'] ?? [];
+        return !in_array($currentLoanPatronGroup, $excludePatronGroups);
     }
 
     /**
@@ -692,17 +724,52 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for getHolding() -- return an array of item-level details from
+     * other data: the location, the holdings record, and any current loan on the item.
+     *
+     * Depending on where this method is called, $locationId will be the holdings record
+     * location (in the case where no items are attached to a holding) or the item record
+     * location (in cases where there are attached items).
+     *
+     * @param string     $locationId     Location identifier from FOLIO
+     * @param array      $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     * @param ?\stdClass $currentLoan    Any current loan on this item
+     *
+     * @return array
+     */
+    protected function getItemFieldsFromNonItemData(
+        string $locationId,
+        array $holdingDetails,
+        ?\stdClass $currentLoan = null,
+    ): array {
+        $locationData = $this->getLocationData($locationId);
+        $locationName = $locationData['name'];
+        return [
+            'is_holdable' => $this->isHoldable($locationName, $currentLoan),
+            'holdings_notes' => $holdingDetails['hasHoldingNotes']
+                ? $holdingDetails['holdingNotes'] : null,
+            'summary' => array_unique($holdingDetails['holdingsStatements']),
+            'supplements' => $holdingDetails['holdingsSupplements'],
+            'indexes' => $holdingDetails['holdingsIndexes'],
+            'location' => $locationName,
+            'location_code' => $locationData['code'],
+            'folio_location_is_active' => $locationData['isActive'],
+        ];
+    }
+
+    /**
      * Support method for getHolding() -- given a few key details, format an item
      * for inclusion in the return value.
      *
-     * @param string $bibId            Current bibliographic ID
-     * @param array  $holdingDetails   Holding details produced by
-     *                                 getHoldingDetailsForItem()
-     * @param object $item             FOLIO item record (decoded from JSON)
-     * @param int    $number           The current item number (position within
-     *                                 current holdings record)
-     * @param string $dueDateValue     The due date to display to the user
-     * @param array  $boundWithRecords Any bib records this holding is bound with
+     * @param string     $bibId            Current bibliographic ID
+     * @param array      $holdingDetails   Holding details produced by
+     *                                     getHoldingDetailsForItem()
+     * @param object     $item             FOLIO item record (decoded from JSON)
+     * @param int        $number           The current item number (position within
+     *                                     current holdings record)
+     * @param string     $dueDateValue     The due date to display to the user
+     * @param array      $boundWithRecords Any bib records this holding is bound with
+     * @param ?\stdClass $currentLoan      Any current loan on this item
      *
      * @return array
      */
@@ -713,15 +780,13 @@ class Folio extends AbstractAPI implements
         $number,
         string $dueDateValue,
         $boundWithRecords,
+        $currentLoan
     ): array {
         $itemNotes = array_filter(
             array_map([$this, 'formatNote'], $item->notes ?? [])
         );
         $locationId = $item->effectiveLocation->id;
-        $locationData = $this->getLocationData($locationId);
-        $locationName = $locationData['name'];
-        $locationCode = $locationData['code'];
-        $locationIsActive = $locationData['isActive'];
+
         // concatenate enumeration fields if present
         $enum = implode(
             ' ',
@@ -741,8 +806,9 @@ class Folio extends AbstractAPI implements
             $item->effectiveCallNumberComponents->callNumber
                 ?? $item->itemLevelCallNumber ?? ''
         );
+        $locAndHoldings = $this->getItemFieldsFromNonItemData($locationId, $holdingDetails, $currentLoan);
 
-        return $callNumberData + [
+        return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
             'item_id' => $item->id,
             'holdings_id' => $holdingDetails['id'],
@@ -752,16 +818,7 @@ class Folio extends AbstractAPI implements
             'status' => $item->status->name,
             'duedate' => $dueDateValue,
             'availability' => $item->status->name == 'Available',
-            'is_holdable' => $this->isHoldable($locationName),
-            'holdings_notes' => $holdingDetails['hasHoldingNotes']
-                ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-            'summary' => array_unique($holdingDetails['holdingsStatements']),
-            'supplements' => $holdingDetails['holdingsSupplements'],
-            'indexes' => $holdingDetails['holdingsIndexes'],
-            'location' => $locationName,
-            'location_code' => $locationCode,
-            'folio_location_is_active' => $locationIsActive,
             'reserve' => 'TODO',
             'addLink' => true,
             'bound_with_records' => $boundWithRecords,
@@ -834,6 +891,7 @@ class Folio extends AbstractAPI implements
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $showHoldingsNoItems = $this->config['Holdings']['show_holdings_no_items'] ?? false;
         $dueDateItemCount = 0;
 
         $instance = $this->getInstanceByBibId($bibId);
@@ -871,13 +929,16 @@ class Folio extends AbstractAPI implements
                     continue;
                 }
                 $number++;
+                $currentLoan = null;
                 $dueDateValue = '';
+                $boundWithRecords = null;
                 if (
                     $item->status->name == 'Checked out'
                     && $showDueDate
                     && $dueDateItemCount < $maxNumDueDateItems
                 ) {
-                    $dueDateValue = $this->getDueDate($item->id, $showTime);
+                    $currentLoan = $this->getCurrentLoan($item->id);
+                    $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
                     $dueDateItemCount++;
                 }
                 if ($item->isBoundWith ?? false) {
@@ -889,12 +950,32 @@ class Folio extends AbstractAPI implements
                     $item,
                     $number,
                     $dueDateValue,
-                    $boundWithRecords ?? []
+                    $boundWithRecords ?? [],
+                    $currentLoan
                 );
                 if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
                     $sortNeeded = true;
                 }
                 $nextBatch[] = $nextItem;
+            }
+
+            // If there are no item records on this holding, we're going to create a fake one,
+            // fill it with data from the FOLIO holdings record, and make it not appear in
+            // the full record display using a non-visible AvailabilityStatus.
+            if ($number == 0 && $showHoldingsNoItems) {
+                $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
+                $invisibleAvailabilityStatus = new AvailabilityStatus(
+                    true,
+                    'HoldingStatus::holding_no_items_availability_message'
+                );
+                $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
+                $nextBatch[] = $locAndHoldings + [
+                    'id' => $bibId,
+                    'callnumber' => $holdingDetails['holdingCallNumber'],
+                    'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
+                    'reserve' => 'N',
+                    'availability' => $invisibleAvailabilityStatus,
+                ];
             }
             $items = array_merge(
                 $items,
@@ -925,16 +1006,35 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHolding(): obtaining the Due Date from OKAPI
-     * by calling /circulation/loans with the item->id, adjusting the
-     * timezone and formatting in universal time with or without due time
+     * Support method for getHolding(): obtaining the Due Date from the
+     * current loan, adjusting the timezone and formatting in universal
+     * time with or without due time
      *
-     * @param string $itemId   ID for the item to query
-     * @param bool   $showTime Determines if date or date & time is returned
+     * @param \stdClass|string $loan     The current loan, or its itemId for backwards compatibility
+     * @param bool             $showTime Determines if date or date & time is returned
      *
      * @return string
      */
-    protected function getDueDate($itemId, $showTime)
+    protected function getDueDate($loan, $showTime)
+    {
+        if (is_string($loan)) {
+            $loan = $this->getCurrentLoan($loan);
+        }
+        $dueDate = $this->getDateTimeFromString($loan->dueDate);
+        $method = $showTime
+            ? 'convertToDisplayDateAndTime' : 'convertToDisplayDate';
+        return $this->dateConverter->$method('U', $dueDate->format('U'));
+    }
+
+    /**
+     * Support method for getHolding(): obtaining any current loan from OKAPI
+     * by calling /circulation/loans with the item->id
+     *
+     * @param string $itemId ID for the item to query
+     *
+     * @return \stdClass|void
+     */
+    protected function getCurrentLoan($itemId)
     {
         $query = 'itemId==' . $itemId . ' AND status.name==Open';
         foreach (
@@ -947,13 +1047,10 @@ class Folio extends AbstractAPI implements
             // many loans are returned for an item, the one we want
             // is the one without a returnDate
             if (!isset($loan->returnDate) && isset($loan->dueDate)) {
-                $dueDate = $this->getDateTimeFromString($loan->dueDate);
-                $method = $showTime
-                    ? 'convertToDisplayDateAndTime' : 'convertToDisplayDate';
-                return $this->dateConverter->$method('U', $dueDate->format('U'));
+                return $loan;
             }
         }
-        return '';
+        return null;
     }
 
     /**
@@ -1912,6 +2009,33 @@ class Folio extends AbstractAPI implements
         }
         $cancelResult['count'] = $count;
         return $cancelResult;
+    }
+
+    /**
+     * Check if request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The record id
+     * @param array  $data   An array of item data
+     * @param array  $patron An array of patron data
+     *
+     * @return array Two entries: 'valid' (boolean) plus 'status' (message to display to user)
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        // Check outstanding loans
+        $currentLoan = $this->getCurrentLoan($data['item_id']);
+        if (!$currentLoan || $this->isHoldableByCurrentLoan($currentLoan)) {
+            return [
+                'valid' => true,
+            ];
+        } else {
+            return [
+                'valid' => false,
+                'status' => 'hold_error_current_loan_patron_group',
+            ];
+        }
     }
 
     /**
