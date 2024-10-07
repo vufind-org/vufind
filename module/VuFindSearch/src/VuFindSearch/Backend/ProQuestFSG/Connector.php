@@ -179,9 +179,14 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
                 $path = '/' . $filterValue;
             }
             else {
-                // TODO normal filters that actually use filter strings on the query.
+                $filterRelationValue = $filterValue ?
+                    '=' . $filterValue :
+                    '=1';
+                $filterString = " and ({$filterKey}{$filterRelationValue})";
+                $options['query'][0] .= $filterString;
             }
         }
+        unset($options['filters']);
 
         $sortKey = $params->get('sortKey')[0] ?? null;
         if (null !== $sortKey) {
