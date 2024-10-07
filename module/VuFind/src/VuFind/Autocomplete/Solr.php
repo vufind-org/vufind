@@ -182,7 +182,7 @@ class Solr implements AutocompleteInterface
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', "'"];
         $query = str_replace($forbidden, ' ', $query);
-        if (IntlChar::isalpha(substr($query, -1))) {
+        if (IntlChar::isalnum(substr($query, -1))) {
             $query .= '*';
         }
         return $query;
