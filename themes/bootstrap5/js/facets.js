@@ -126,6 +126,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let callbackOnApply;
   let callbackWhenDeactivated;
   let defaultContext;
+  // Events to emit
+  const activation_event = 'facet-selection-begin';
+  const deactivation_event = 'facet-selection-cancel';
+  const apply_event = 'facet-selection-done';
 
   function updateInitialParams(field, value) {
     const count = initialRawParams.length;
@@ -252,7 +256,11 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     if (callbackOnApply instanceof Function) {
       callbackOnApply();
     }
-    window.location.assign(getHrefWithNewParams());
+    const params = {
+      url: getHrefWithNewParams()
+    };
+    VuFind.emit(apply_event, params);
+    window.location.assign(params.url);
   }
 
   // Save all the form ids for date range facets and add a listener on them to prevent submission
@@ -325,6 +333,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         toggleSelectedFacetStyle(elem);
       }
     }
+    const event = isMultiFacetsSelectionActivated ? activation_event : deactivation_event;
+    VuFind.emit(event);
   }
 
   function registerCallbackOnApply(callback) {
