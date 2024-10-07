@@ -529,6 +529,9 @@ $config = [
             'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
+        'invokables' => [
+            'VuFind\Config\DirLocationsResolver' => 'VuFind\Config\DirLocationsResolver',
+        ],
         'delegators' => [
             'Laminas\I18n\Translator\TranslatorInterface' => [
                 'VuFind\I18n\Translator\TranslatorFactory',

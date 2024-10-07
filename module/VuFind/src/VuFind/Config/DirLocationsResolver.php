@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Dir Locations Trait - Used to create path stacks based on DirLocations.ini
+ * Dir Locations Resolver
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2024
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Feature
+ * @package  Config
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Feature;
+namespace VuFind\Config;
 
 use Laminas\Config\Config;
 use VuFind\Config\Feature\IniReaderTrait;
@@ -37,24 +37,44 @@ use function in_array;
 use function strlen;
 
 /**
- * VuFind Dir Locations Trait - Used to create path stacks based on DirLocations.ini
+ * Dir Locations Resolver
  *
  * @category VuFind
- * @package  Feature
+ * @package  Config
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org Main Site
  */
-trait DirLocationsTrait
+class DirLocationsResolver
 {
     use IniReaderTrait;
+
+    /**
+     * Dir locations stack.
+     *
+     * @var array
+     */
+    protected array $dirLocationsStack;
 
     /**
      * Get the paths and dirLocation.ini configs of the local dirs in the stack.
      *
      * @return array
      */
-    protected function getDirLocationsStack(): array
+    public function getDirLocationsStack(): array
+    {
+        if (!isset($this->dirLocationsStack)) {
+            $this->dirLocationsStack = $this->resolveDirLocationsStack();
+        }
+        return $this->dirLocationsStack;
+    }
+
+    /**
+     * Resolve the paths and dirLocation.ini configs of the local dirs in the stack.
+     *
+     * @return array
+     */
+    protected function resolveDirLocationsStack(): array
     {
         $localDirs = [];
         $currentDir = defined('LOCAL_OVERRIDE_DIR')

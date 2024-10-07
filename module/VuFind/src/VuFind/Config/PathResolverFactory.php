@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Feature\DirLocationsTrait;
 
 /**
  * Factory for PathResolver.
@@ -47,8 +46,6 @@ use VuFind\Feature\DirLocationsTrait;
  */
 class PathResolverFactory implements FactoryInterface
 {
-    use DirLocationsTrait;
-
     /**
      * Default base config file subdirectory under the base directory
      *
@@ -85,7 +82,7 @@ class PathResolverFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $dirLocationsStack = $this->getDirLocationsStack();
+        $dirLocationsStack = $container->get(DirLocationsResolver::class)->getDirLocationsStack();
         $localDirStack = array_map(
             fn ($dirLocation) => [
                 'directory' => $dirLocation['dir'],
