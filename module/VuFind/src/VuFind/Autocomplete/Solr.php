@@ -30,6 +30,8 @@
 
 namespace VuFind\Autocomplete;
 
+use IntlChar;
+
 use function count;
 use function is_array;
 use function is_object;
@@ -180,7 +182,7 @@ class Solr implements AutocompleteInterface
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', "'"];
         $query = str_replace($forbidden, ' ', $query);
-        if (!str_ends_with($query, ' ')) {
+        if (IntlChar::isalpha(substr($query, -1))) {
             $query .= '*';
         }
         return $query;
