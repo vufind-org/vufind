@@ -449,12 +449,13 @@ class EDS extends DefaultRecord
      */
     public function getAllSubjectHeadingsFlattened()
     {
-        return array_map(
+        $subject_arrays = array_map(
             function ($data) {
-                return $data['Data'];
+                return explode(', ', $data['Data']);
             },
             $this->getItems(null, null, 'Su')
         );
+        return array_merge(...$subject_arrays);
     }
 
     /**
