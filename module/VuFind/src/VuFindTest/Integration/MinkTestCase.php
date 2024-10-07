@@ -628,6 +628,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param int     $timeout     Wait timeout for CSS selection (in ms)
      * @param int     $retries     Retry count for set loop
      * @param bool    $verifyValue Whether to verify that the value was written
+     * @param bool    $reFocus     Whether to focus the element when done setting the value
      *
      * @return mixed
      */
@@ -637,7 +638,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $value,
         $timeout = null,
         $retries = 6,
-        $verifyValue = true
+        $verifyValue = true,
+        $reFocus = false
     ) {
         $timeout ??= $this->getDefaultTimeout();
 
@@ -647,14 +649,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $field = $this->findCss($page, $selector, $timeout, 0);
                 $field->setValue($value);
-                if (!$verifyValue) {
+                // Did it work? If so, we're done and can leave....
+                if (
+                    !$verifyValue
+                    || $field->getValue() === $value
+                ) {
+                    if ($reFocus) {
+                        $field->focus();
+                    }
                     return;
                 }
 
-                // Did it work? If so, we're done and can leave....
-                if ($field->getValue() === $value) {
-                    return;
-                }
                 $this->logWarning(
                     'RETRY setValue after failure in ' . $this->getTestName()
                     . " (try $i)."
