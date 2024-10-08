@@ -121,7 +121,8 @@ class ILS extends AbstractBase
     public function supportsPasswordRecovery()
     {
         $driver = $this->getCatalog()->getDriver();
-        if (method_exists($driver, 'changePassword')
+        if (
+            method_exists($driver, 'changePassword')
             && ($this->config['Authentication']['recover_password'] ?? false)
         ) {
             return true;
