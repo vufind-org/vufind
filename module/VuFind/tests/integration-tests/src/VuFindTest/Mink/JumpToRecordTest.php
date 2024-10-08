@@ -57,6 +57,16 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
             'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
             trim($this->findCssAndGetText($page, 'h1'))
         );
+
+        // check if jump to is disabled on breadcrumb link
+        $this->clickCss($page, '.breadcrumb li:first-child');
+        $this->waitForPageLoad($page);
+
+        $expected = 'Showing 1 - 1 results of 1';
+        $this->assertStringStartsWith(
+            $expected,
+            $this->findCssAndGetText($page, '.search-stats')
+        );
     }
 
     /**

@@ -481,7 +481,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *   - Return the holdings array with true/false and a reason.
      *
      * Because of the location comparisons with the patron's
-     *   location that occur here we also take the oppurtunity
+     *   location that occur here we also take the opportunity
      *   to push their "Home" location to the top.
      *
      * @param string $patron_id ID of patron
