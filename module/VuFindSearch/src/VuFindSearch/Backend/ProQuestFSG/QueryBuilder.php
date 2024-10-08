@@ -53,13 +53,6 @@ use function count;
  */
 class QueryBuilder
 {
-    /**
-     * OCLC code to exclude from results
-     *
-     * @var string
-     */
-    protected $oclcCodeToExclude;
-
     /// Public API
 
     /**

@@ -31,7 +31,6 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\ParamBag;
 
 /**
  * ProQuest Federated Search Gateway Record Controller

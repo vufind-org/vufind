@@ -49,8 +49,18 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected $backendId = 'ProQuestFSG';
 
+    /**
+     * Facets returned in search response.
+     *
+     * @var array
+     */
     protected $responseFacets = null;
 
+    /**
+     * Simplified version of result facets.
+     *
+     * @var array
+     */
     protected $simplifiedResponseFacets = null;
 
     /**
@@ -94,6 +104,13 @@ class Results extends \VuFind\Search\Base\Results
         return $this->buildFacetList($this->simplifiedResponseFacets, $filter);
     }
 
+    /**
+     * Simply raw ProQuestFSG facets to the form that VuFind templates expect.
+     *
+     * @param array $rawFacets Raw facts returned from the record collection
+     *
+     * @return array Simple format of facets
+     */
     protected function simplifyFacets($rawFacets)
     {
         $simpleFacets = [];
@@ -107,5 +124,4 @@ class Results extends \VuFind\Search\Base\Results
         }
         return $simpleFacets;
     }
-
 }

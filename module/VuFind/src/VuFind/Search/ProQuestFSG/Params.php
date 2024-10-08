@@ -71,7 +71,6 @@ class Params extends \VuFind\Search\Base\Params
             }
         }
 
-
         return $backendParams;
     }
 
@@ -88,5 +87,4 @@ class Params extends \VuFind\Search\Base\Params
         $parts = explode('|', $value);
         return end($parts);
     }
-
 }

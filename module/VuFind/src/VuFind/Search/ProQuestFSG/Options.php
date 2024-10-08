@@ -64,7 +64,7 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->limit_options)) {
             $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
         }
-        
+
         // Search handler setup:
         $this->defaultHandler = 'cql.serverChoice';
         if (isset($searchSettings->Basic_Searches)) {

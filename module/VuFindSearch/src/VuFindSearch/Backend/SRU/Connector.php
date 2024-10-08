@@ -201,6 +201,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Submit REST Request
      *
      * @param string $method  HTTP Method to use: GET or POST
+     * @param string $path    URL path following $this->host
      * @param array  $params  An array of parameters for the request
      * @param bool   $process Should we convert the MARCXML?
      *
@@ -246,7 +247,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $resultBody = $result->getBody();
             if ($cacheKey) {
                 $this->putCachedData($cacheKey, $resultBody);
-            }    
+            }
         }
 
         // Return processed or unprocessed response, as appropriate:

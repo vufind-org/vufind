@@ -32,6 +32,9 @@ namespace VuFindSearch\Backend\ProQuestFSG;
 
 use VuFindSearch\ParamBag;
 
+use function intval;
+use function strval;
+
 /**
  * WorldCat SRU Search Interface
  *
@@ -57,13 +60,16 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     protected $sruVersion = '1.2';
 
+    /**
+     * The default path, if a particular database target is not indicated.
+     *
+     * @var string
+     */
     protected $defaultPath = '/all_subscribed';
-
 
     /**
      * Constructor
      *
-     * @param string               $wsKey   Web services key
      * @param \Laminas\Http\Client $client  An HTTP client object
      * @param array                $options Additional config settings
      */
@@ -119,8 +125,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
             [$filterKey, $filterValue] = explode(':', $filter, 2);
             if ('Databases' == $filterKey) {
                 $path = '/' . $filterValue;
-            }
-            else {
+            } else {
                 $filterRelationValue = $filterValue ?
                     '=' . $filterValue :
                     '=1';
