@@ -111,6 +111,7 @@ class SearchMemory extends AbstractHelper
             if (!empty($searchContext['page'])) {
                 $queryHelper = $queryHelper->setPage($searchContext['page']);
             }
+            $queryHelper = $queryHelper->setJumpto(false);
 
             $url .= $queryHelper->getParams(false);
 

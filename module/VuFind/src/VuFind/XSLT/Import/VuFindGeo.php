@@ -45,7 +45,7 @@ use function sprintf;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overrideable for testing purposes)
+     * Method for logging errors (overridable for testing purposes)
      *
      * @var callable
      */

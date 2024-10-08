@@ -258,7 +258,7 @@ class Memory
      *
      * @return ?\VuFind\Search\Base\Results
      */
-    protected function getSearchById(int $id): ?\VuFind\Search\Base\Results
+    public function getSearchById(int $id): ?\VuFind\Search\Base\Results
     {
         if (!array_key_exists($id, $this->searchCache)) {
             $search = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, null);
