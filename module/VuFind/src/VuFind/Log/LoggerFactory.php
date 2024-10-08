@@ -109,16 +109,14 @@ class LoggerFactory implements FactoryInterface
         $email = $parts[0];
         $error_types = $parts[1] ?? '';
 
-        // use smtp
-        $mailer = $container->get(\VuFind\Mailer\Mailer::class);
-        $msg = $mailer->getNewMessage()
-            ->addFrom($config->Site->email)
-            ->addTo($email)
-            ->setSubject('VuFind Log Message');
-
         // Make Writers
         $filters = explode(',', $error_types);
-        $writer = new Writer\Mail($msg, $mailer->getTransport());
+        $writer = new Writer\Mail(
+            $container->get(\VuFind\Mailer\Mailer::class),
+            $config->Site->email,
+            $email,
+            'VuFind Log Message'
+        );
         $this->addWriters($logger, $writer, $filters);
     }
 

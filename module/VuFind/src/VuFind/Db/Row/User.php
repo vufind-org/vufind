@@ -798,7 +798,7 @@ class User extends RowGateway implements
      */
     public function getRawCatPassword(): ?string
     {
-        return $this->cat_password;
+        return $this->cat_password ?? null;
     }
 
     /**
