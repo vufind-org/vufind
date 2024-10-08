@@ -176,8 +176,7 @@ class MyResearchController extends AbstractBase
         // If a Shibboleth-style login has failed and the user just logged
         // out, we need to override the error message with a more relevant
         // one:
-        if (
-            $msg == 'authentication_error_admin'
+        if ($msg == 'authentication_error_admin'
             && $this->getAuthManager()->userHasLoggedOut()
             && $this->getSessionInitiator()
         ) {
@@ -235,8 +234,7 @@ class MyResearchController extends AbstractBase
     {
         // Process login request, if necessary (either because a form has been
         // submitted or because we're using an external login provider):
-        if (
-            $this->params()->fromPost('processLogin')
+        if ($this->params()->fromPost('processLogin')
             || $this->getSessionInitiator()
             || $this->params()->fromPost('auth_method')
             || $this->params()->fromQuery('auth_method')
@@ -247,8 +245,7 @@ class MyResearchController extends AbstractBase
                     // Return early to avoid unnecessary processing if we are being
                     // called from login lightbox and don't have a followup action or
                     // followup is set to referrer.
-                    if (
-                        $this->params()->fromPost('processLogin')
+                    if ($this->params()->fromPost('processLogin')
                         && $this->inLightbox()
                         && (!$this->hasFollowupUrl()
                         || $this->followup()->retrieve('isReferrer') === true)
@@ -264,8 +261,7 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->getIdentity()) {
-            if (
-                $this->followup()->retrieve('lightboxParent')
+            if ($this->followup()->retrieve('lightboxParent')
                 && $url = $this->getAndClearFollowupUrl(true)
             ) {
                 return $this->redirect()->toUrl($url);
@@ -364,8 +360,7 @@ class MyResearchController extends AbstractBase
             // Also don't attempt to process a login that hasn't happened yet;
             // if we've just been forced here from another page, we need the user
             // to click the session initiator link before anything can happen.
-            if (
-                !$this->params()->fromPost('processLogin', false)
+            if (!$this->params()->fromPost('processLogin', false)
                 && !$this->params()->fromPost('forcingLogin', false)
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
@@ -825,8 +820,7 @@ class MyResearchController extends AbstractBase
      */
     public function addAccountBlocksToFlashMessenger($catalog, $patron)
     {
-        if (
-            $catalog->checkCapability('getAccountBlocks', compact('patron'))
+        if ($catalog->checkCapability('getAccountBlocks', compact('patron'))
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
@@ -1441,8 +1435,7 @@ class MyResearchController extends AbstractBase
                 $cancelSRR,
                 $patron
             );
-            if (
-                $cancelSRR
+            if ($cancelSRR
                 && $cancelSRR['function'] != 'getCancelStorageRetrievalRequestLink'
                 && isset($current['cancel_details'])
             ) {
@@ -1514,8 +1507,7 @@ class MyResearchController extends AbstractBase
                 $cancelStatus,
                 $patron
             );
-            if (
-                $cancelStatus
+            if ($cancelStatus
                 && $cancelStatus['function'] != 'getCancelILLRequestLink'
                 && isset($current['cancel_details'])
             ) {
@@ -1593,8 +1585,7 @@ class MyResearchController extends AbstractBase
 
         // If the results are not paged in the ILS, collect up to date stats for ajax
         // account notifications:
-        if (
-            !empty($config->Authentication->enableAjax)
+        if (!empty($config->Authentication->enableAjax)
             && (!$pageOptions['ilsPaging'] || !$paginator
             || $result['count'] <= $pageSize)
         ) {
@@ -1611,8 +1602,7 @@ class MyResearchController extends AbstractBase
                 $current,
                 $renewStatus
             );
-            if (
-                $renewStatus && !isset($current['renew_link'])
+            if ($renewStatus && !isset($current['renew_link'])
                 && $current['renewable']
             ) {
                 // Enable renewal form if necessary:
@@ -2126,7 +2116,7 @@ class MyResearchController extends AbstractBase
         // Update hash to prevent reusing hash
         $this->getAuthManager()->updateUserVerifyHash($user);
         if ($followUp = $this->followup()->retrieve('url')) {
-            $newUrl = strstr($followUp, 'Verify', true) . "Home";
+            $newUrl = strstr($followUp, 'Verify', true) . 'Home';
             $this->followup()->clear('url');
             $this->followup()->store([], $newUrl);
         }
@@ -2134,7 +2124,6 @@ class MyResearchController extends AbstractBase
         $this->flashMessenger()->addMessage('new_password_success', 'success');
         return $this->redirect()->toRoute('myresearch-home');
     }
-
 
     /**
      * Handling submission of a new email for a user.
