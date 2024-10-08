@@ -151,7 +151,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @param ?string $text    The text to be encrypted or decrypted
      * @param bool    $encrypt True if we wish to encrypt text, False if we wish to
-     * decrypt text.
+     *                         decrypt text.
      *
      * @return ?string|bool    The encrypted/decrypted string (null = empty input; false = error)
      * @throws \VuFind\Exception\PasswordSecurity
@@ -309,11 +309,13 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * fails, clear the user's stored credentials so they can enter new, corrected
      * ones.
      *
-     * Returns associative array of patron data on success, false on failure.
+     * @param $user_name - the username/barcode for ILS password reset
+     *
+     *                   Returns associative array of patron data on success, false on failure.
      *
      * @return array|bool
      */
-    public function storedCatalogLogin()
+    public function storedCatalogLogin($user_name = null)
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
@@ -336,8 +338,19 @@ class ILSAuthenticator implements DbServiceAwareInterface
                 $this->ilsAccount[$username] = $patron;
                 return $patron;
             }
+        } elseif (!empty($user_name)) {
+            $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($user_name);
+            if (isset($this->ilsAccount[$user_name])) {
+                return $this->ilsAccount[$user_name];
+            }
+            $patron = $this->catalog->patronLogin($user_name, $this->getCatPasswordForUser($user));
+            if (empty($patron)) {
+                $user->setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null);
+            } else {
+                $this->ilsAccount[$user_name] = $patron;
+                return $patron;
+            }
         }
-
         return false;
     }
 
@@ -347,7 +360,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @param string $username Catalog username
      * @param string $password Catalog password
      *
-     * Returns associative array of patron data on success, false on failure.
+     *                         Returns associative array of patron data on success, false on failure.
      *
      * @return array|bool
      * @throws ILSException

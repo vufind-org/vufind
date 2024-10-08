@@ -114,6 +114,24 @@ class ILS extends AbstractBase
     }
 
     /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsPasswordRecovery()
+    {
+        $driver = $this->getCatalog()->getDriver();
+        if (
+            method_exists($driver, 'changePassword')
+            && ($this->config['Authentication']['recover_password'] ?? false)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * Does this authentication method support password changing
      *
      * @return bool
@@ -166,8 +184,13 @@ class ILS extends AbstractBase
         foreach (['oldpwd', 'password', 'password2'] as $param) {
             $params[$param] = $request->getPost()->get($param, '');
         }
-
         // Connect to catalog:
+        if ($hash = $request->getPost('hash') ?? false) {
+            if ($user = $this->getDbService(UserServiceInterface::class)->getUserByVerifyHash($hash)) {
+                $username = $user->getUsername();
+            }
+        }
+
         if (!($patron = $this->authenticator->storedCatalogLogin())) {
             throw new AuthException('authentication_error_technical');
         }
@@ -178,6 +201,7 @@ class ILS extends AbstractBase
         $result = $this->getCatalog()->changePassword(
             [
                 'patron' => $patron,
+                'username' => $patron['cat_username'],
                 'oldPassword' => $params['oldpwd'],
                 'newPassword' => $params['password'],
             ]

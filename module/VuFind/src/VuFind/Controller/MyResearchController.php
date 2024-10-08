@@ -187,6 +187,35 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Store a referer (if appropriate) to keep post-login redirect pointing
+     * to an appropriate location. This is used when the user clicks the
+     * log in link from an arbitrary page or when a password is mistyped;
+     * separate logic is used for storing followup information when VuFind
+     * forces the user to log in from another context.
+     *
+     * @param bool  $allowCurrentUrl Whether the current URL is valid for followup
+     * @param array $extras          Extra data for the followup
+     *
+     * @return mixed
+     */
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true, array $extras = [])
+    {
+        // lbreferer is the stored current url of the lightbox
+        // which overrides the url from the server request when present
+        $refer = $this->getRequest()->getQuery()->get(
+            'lbreferer',
+            $this->getRequest()->getServer()->get('HTTP_REFERER', null)
+        );
+        $normReferer = $this->normalizeUrlForComparison($refer);
+        $myUserReset = $this->getServerUrl('myresearch-verify');
+        $murNorm = $this->normalizeUrlForComparison($myUserReset);
+        if (str_starts_with($normReferer, $murNorm)) {
+            return;
+        }
+        return parent::setFollowupUrlToReferer($allowCurrentUrl, $extras);
+    }
+
+    /**
      * Maintaining this method for backwards compatibility;
      * logic moved to parent and method re-named
      *
@@ -937,7 +966,7 @@ class MyResearchController extends AbstractBase
      * @param UserEntityInterface               $user   Logged-in user
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver for favorite
      * @param int                               $listID List being edited (null
-     * if editing all favorites)
+     *                                                  if editing all favorites)
      *
      * @return object
      */
@@ -1729,6 +1758,23 @@ class MyResearchController extends AbstractBase
         } elseif ($username = $this->params()->fromPost('username')) {
             $user = $userService->getUserByUsername($username);
         }
+        //ILS Driver:
+        //if the user hasn't logged in yet, but is found by the ILS, call function
+        //getPatronFromBarcode
+        if (!$user && $this->formWasSubmitted() && !empty($username)) {
+            $dbService = $this->getDbService(UserServiceInterface::class);
+            $entity = $dbService->createEntityForUsername($username);
+            $catalog = $this->getILS()->getDriver();
+            if ($catalog->supportsMethod('getPatronFromBarcode', $username)) {
+                $patron = $catalog->getPatronFromBarcode($username);
+                $entity->setEmail($patron['email']);
+                $entity->setCatPassEnc($patron['password']);
+                $entity->setFirstname($patron['firstname']);
+                $entity->setLastname($patron['lastname']);
+                $dbService->persistEntity($entity);
+            }
+            $user = $dbService->getUserByUsername($username);
+        }
         $view = $this->createViewModel();
         $view->useCaptcha = $this->captcha()->active('passwordRecovery');
         // If we have a submitted form
@@ -1854,7 +1900,7 @@ class MyResearchController extends AbstractBase
      *
      * @param ?UserEntityInterface $user   User object we're recovering
      * @param bool                 $change Is the user changing their email (true)
-     * or setting up a new account (false).
+     *                                     or setting up a new account (false).
      *
      * @return void (sends email or adds error message)
      */
@@ -2079,12 +2125,16 @@ class MyResearchController extends AbstractBase
         }
         // Update hash to prevent reusing hash
         $this->getAuthManager()->updateUserVerifyHash($user);
-        // Login
+        if ($followUp = $this->followup()->retrieve('url')) {
+            $newUrl = strstr($followUp, 'Verify', true) . "Home";
+            $this->followup()->clear('url');
+            $this->followup()->store([], $newUrl);
+        }
         $this->getAuthManager()->login($this->request);
-        // Return to account home
         $this->flashMessenger()->addMessage('new_password_success', 'success');
         return $this->redirect()->toRoute('myresearch-home');
     }
+
 
     /**
      * Handling submission of a new email for a user.
