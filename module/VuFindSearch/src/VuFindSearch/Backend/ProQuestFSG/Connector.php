@@ -68,7 +68,6 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param array                $options Additional config settings
      */
     public function __construct(
-        // $wsKey,
         \Laminas\Http\Client $client,
         array $options = []
     ) {
