@@ -72,11 +72,11 @@ class Options extends \VuFind\Search\Base\Options
                 $this->basicHandlers[$key] = $value;
             }
         }
-        // if (isset($searchSettings->Advanced_Searches)) {
-        //     foreach ($searchSettings->Advanced_Searches as $key => $value) {
-        //         $this->advancedHandlers[$key] = $value;
-        //     }
-        // }
+        if (isset($searchSettings->Advanced_Searches)) {
+            foreach ($searchSettings->Advanced_Searches as $key => $value) {
+                $this->advancedHandlers[$key] = $value;
+            }
+        }
 
         // Load sort preferences:
         if (isset($searchSettings->Sorting)) {
@@ -111,7 +111,6 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getAdvancedSearchAction()
     {
-        // return 'proquestfsg-advanced';
-        return false;
+        return 'proquestfsg-advanced';
     }
 }

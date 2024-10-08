@@ -94,59 +94,59 @@ class QueryBuilder
      */
     protected function abstractQueryToString(AbstractQuery $query)
     {
-        // if ($query instanceof Query) {
+        if ($query instanceof Query) {
             return $this->queryToString($query);
-        // } else {
-        //     return $this->queryGroupToString($query);
-        // }
+        } else {
+            return $this->queryGroupToString($query);
+        }
     }
 
-    // /**
-    //  * Convert a QueryGroup object to a query string.
-    //  *
-    //  * @param QueryGroup $query QueryGroup to convert
-    //  *
-    //  * @return string
-    //  */
-    // protected function queryGroupToString(QueryGroup $query)
-    // {
-    //     $groups = $excludes = [];
+    /**
+     * Convert a QueryGroup object to a query string.
+     *
+     * @param QueryGroup $query QueryGroup to convert
+     *
+     * @return string
+     */
+    protected function queryGroupToString(QueryGroup $query)
+    {
+        $groups = $excludes = [];
 
-    //     foreach ($query->getQueries() as $params) {
-    //         // Advanced Search
-    //         if ($params instanceof QueryGroup) {
-    //             $thisGroup = [];
-    //             // Process each search group
-    //             foreach ($params->getQueries() as $group) {
-    //                 // Build this group individually as a basic search
-    //                 $thisGroup[] = $this->abstractQueryToString($group);
-    //             }
-    //             // Is this an exclusion (NOT) group or a normal group?
-    //             if ($params->isNegated()) {
-    //                 $excludes[] = implode(' OR ', $thisGroup);
-    //             } else {
-    //                 $groups[]
-    //                     = implode(' ' . $params->getOperator() . ' ', $thisGroup);
-    //             }
-    //         } else {
-    //             // Basic Search
-    //             $groups[] = $this->queryToString($params);
-    //         }
-    //     }
+        foreach ($query->getQueries() as $params) {
+            // Advanced Search
+            if ($params instanceof QueryGroup) {
+                $thisGroup = [];
+                // Process each search group
+                foreach ($params->getQueries() as $group) {
+                    // Build this group individually as a basic search
+                    $thisGroup[] = $this->abstractQueryToString($group);
+                }
+                // Is this an exclusion (NOT) group or a normal group?
+                if ($params->isNegated()) {
+                    $excludes[] = implode(' OR ', $thisGroup);
+                } else {
+                    $groups[]
+                        = implode(' ' . $params->getOperator() . ' ', $thisGroup);
+                }
+            } else {
+                // Basic Search
+                $groups[] = $this->queryToString($params);
+            }
+        }
 
-    //     // Put our advanced search together
-    //     $queryStr = '';
-    //     if (count($groups) > 0) {
-    //         $queryStr
-    //             .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
-    //     }
-    //     // and concatenate exclusion after that
-    //     if (count($excludes) > 0) {
-    //         $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
-    //     }
+        // Put our advanced search together
+        $queryStr = '';
+        if (count($groups) > 0) {
+            $queryStr
+                .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
+        }
+        // and concatenate exclusion after that
+        if (count($excludes) > 0) {
+            $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
+        }
 
-    //     return $queryStr;
-    // }
+        return $queryStr;
+    }
 
     /**
      * Convert a single Query object to a query string.

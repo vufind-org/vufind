@@ -811,7 +811,7 @@ $staticRoutes = [
     'Overdrive/MyContent','Overdrive/Hold',
     'Pazpar2/Home', 'Pazpar2/Search',
     'Primo/Advanced', 'Primo/CitedBy', 'Primo/Cites', 'Primo/Home', 'Primo/Search',
-    'ProQuestFSG/Home', 'ProQuestFSG/Results',
+    'ProQuestFSG/Advanced', 'ProQuestFSG/Home', 'ProQuestFSG/Results',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
     'Search/Advanced',
