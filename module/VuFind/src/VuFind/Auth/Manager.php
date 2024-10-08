@@ -95,7 +95,7 @@ class Manager implements
     /**
      * ILS Authenticator
      *
-     * @var ILSAuthenticator
+     * @var ?ILSAuthenticator
      */
     protected $ilsAuthenticator = null;
 
