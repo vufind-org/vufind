@@ -573,8 +573,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals(
             [
-                '<a href="../EDS/Search?lookfor=%22PSYCHOTHERAPY%22&amp;type=SU">PSYCHOTHERAPY</a>',
-                '<a href="../EDS/Search?lookfor=%22METAPHOR%2E%22&amp;type=SU">METAPHOR.</a>',
+                'PSYCHOTHERAPY',
+                'METAPHOR',
             ],
             $driver->getAllSubjectHeadingsFlattened()
         );

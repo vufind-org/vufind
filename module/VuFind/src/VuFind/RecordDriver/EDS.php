@@ -451,7 +451,7 @@ class EDS extends DefaultRecord
     {
         $subject_arrays = array_map(
             function ($data) {
-                return explode(', ', $data['Data']);
+                return explode(', ', rtrim(strip_tags($data['Data']), '.'));
             },
             $this->getItems(null, null, 'Su')
         );
