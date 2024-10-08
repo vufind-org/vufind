@@ -67,11 +67,6 @@ class Params extends \VuFind\Search\Base\Params
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
-                    // $fq = $filt['field']
-                    //     . ($this->filterRequiresFacetOperator($filt['field']) ?
-                    //         ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
-                    //     . ":{$filt['value']}";
-                    // $params->add('filters', $fq);
                     $value = explode('|', $filt['value'])[0];
                     $backendParams->add('filters', $filt['field'] . ':' . $value);
                 }
@@ -94,15 +89,6 @@ class Params extends \VuFind\Search\Base\Params
     {
         $parts = explode('|', $value);
         return end($parts);
-        // // Check for delimited facets -- if $field is a delimited facet field,
-        // // process $displayText accordingly:
-        // $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
-        // if (isset($delimitedFacetFields[$field])) {
-        //     $parts = explode($delimitedFacetFields[$field], $value);
-        //     return end($parts);
-        // }
-
-        // return $value;
     }
 
 }

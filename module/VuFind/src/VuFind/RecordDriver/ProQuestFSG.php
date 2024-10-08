@@ -72,14 +72,4 @@ class ProQuestFSG extends DefaultRecord
         // record driver can understand.
         parent::setRawData(['fullrecord' => $data]);
     }
-
-    // /**
-    //  * Get the OCLC number of the record.
-    //  *
-    //  * @return array
-    //  */
-    // public function getOCLC()
-    // {
-    //     return [$this->getUniqueID()];
-    // }
 }

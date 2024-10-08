@@ -43,19 +43,12 @@ use VuFindSearch\ParamBag;
  */
 class Connector extends \VuFindSearch\Backend\SRU\Connector
 {
-    // /**
-    //  * OCLC API key
-    //  *
-    //  * @var string
-    //  */
-    // protected $wskey;
-
-    // /**
-    //  * Additional options
-    //  *
-    //  * @var array
-    //  */
-    // protected $options;
+    /**
+     * Additional options
+     *
+     * @var array
+     */
+    protected $options;
 
     /**
      * The version to specify in the URL
@@ -83,39 +76,8 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
             'https://fedsearch.proquest.com/search/sru',
             $client
         );
-        // $this->wskey = $wsKey;
-        // $this->options = $options;
+        $this->options = $options;
     }
-
-    // /**
-    //  * Get holdings information for the specified record.
-    //  *
-    //  * @param string $id Record to obtain holdings for.
-    //  *
-    //  * @throws \Exception
-    //  * @return \SimpleXMLElement
-    //  */
-    // public function getHoldings($id)
-    // {
-    //     $this->client->resetParameters();
-    //     if (!isset($this->options['useFrbrGroupingForHoldings'])) {
-    //         $grouping = 'on';   // default to "on" for backward compatibility
-    //     } else {
-    //         $grouping = $this->options['useFrbrGroupingForHoldings'] ? 'on' : 'off';
-    //     }
-    //     $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}"
-    //         . "?wskey={$this->wskey}&servicelevel=full&frbrGrouping=$grouping";
-    //     if (isset($this->options['latLon'])) {
-    //         [$lat, $lon] = explode(',', $this->options['latLon']);
-    //         $uri .= '&lat=' . urlencode($lat) . '&lon=' . urlencode($lon);
-    //     }
-    //     $this->client->setUri($uri);
-    //     $this->debug('Connect: ' . $uri);
-    //     $result = $this->client->setMethod('POST')->send();
-    //     $this->checkForHttpError($result);
-
-    //     return simplexml_load_string($result->getBody());
-    // }
 
     /**
      * Retrieve a specific record.
@@ -128,29 +90,6 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     public function getRecord($id, ParamBag $params = null)
     {
-        // $params = $params ?: new ParamBag();
-        // $params->set('servicelevel', 'full');
-        // $params->set('wskey', $this->wskey);
-
-        // $this->client->resetParameters();
-        // $uri = 'http://www.worldcat.org/webservices/catalog/content/' . $id;
-        // $uri .= '?' . implode('&', $params->request());
-        // $this->client->setUri($uri);
-        // $this->debug('Connect: ' . $uri);
-        // $result = $this->client->setMethod('POST')->send();
-        // $this->checkForHttpError($result);
-
-        // // Check for error message in response:
-        // $body = $result->getBody();
-        // $xml = simplexml_load_string($body);
-        // $error = isset($xml->diagnostic);
-
-        // return [
-        //     'docs' => $error ? [] : [$body],
-        //     'offset' => 0,
-        //     'total' => $error ? 0 : 1,
-        // ];
-
         $params->set('query', "rec.identifier = \"{$id}\"");
         return $this->search($params, 1, 1);
     }

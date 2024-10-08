@@ -125,18 +125,6 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Set the query builder.
-     *
-     * @param QueryBuilder $queryBuilder Query builder
-     *
-     * @return void
-     */
-    // public function setQueryBuilder(QueryBuilder $queryBuilder)
-    // {
-    //     $this->queryBuilder = $queryBuilder;
-    // }
-
-    /**
      * Return query builder.
      *
      * Lazy loads an empty QueryBuilder if none was set.
@@ -165,29 +153,6 @@ class Backend extends AbstractBackend
         }
         return $this->collectionFactory;
     }
-
-    /**
-     * Get holdings information for the specified record.
-     *
-     * @param string $id Record to obtain holdings for.
-     *
-     * @throws \Exception
-     * @return \SimpleXMLElement
-     */
-    // public function getHoldings($id)
-    // {
-    //     return $this->getConnector()->getHoldings($id);
-    // }
-
-    /**
-     * Return the WorldCat connector.
-     *
-     * @return Connector
-     */
-    // public function getConnector()
-    // {
-    //     return $this->connector;
-    // }
 
     /// Internal API
 

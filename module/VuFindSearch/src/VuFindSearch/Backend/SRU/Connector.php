@@ -267,7 +267,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function process($response)
     {
         // Send back either the raw XML or a SimpleXML object, as requested:
-        // $result = XSLTProcessor::process('sru-convert.xsl', $response);
         $result = XSLTProcessor::process('sru-convert-simple.xsl', $response);
         if (!$result) {
             throw new BackendException(

@@ -62,16 +62,6 @@ class QueryBuilder
 
     /// Public API
 
-    // /**
-    //  * Constructor
-    //  *
-    //  * @param string $exclude OCLC code to exclude from results
-    //  */
-    // public function __construct($exclude = null)
-    // {
-    //     $this->oclcCodeToExclude = $exclude;
-    // }
-
     /**
      * Return WorldCat search parameters based on a user query and params.
      *
@@ -86,11 +76,6 @@ class QueryBuilder
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);
-
-        // // Exclude current library from results (if applicable)
-        // if (null !== $this->oclcCodeToExclude) {
-        //     $queryStr .= ' not srw.li all "' . $this->oclcCodeToExclude . '"';
-        // }
 
         // Send back results
         $newParams = new ParamBag();

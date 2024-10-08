@@ -33,7 +33,6 @@ namespace VuFind\Search\Factory;
 use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\ProQuestFSG\Backend;
 use VuFindSearch\Backend\ProQuestFSG\Connector;
-use VuFindSearch\Backend\ProQuestFSG\QueryBuilder;
 use VuFindSearch\Backend\ProQuestFSG\Response\XML\RecordCollectionFactory;
 
 /**
@@ -114,13 +113,11 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
-        // $wsKey = $this->config->WorldCat->apiKey ?? null;
-        // $connectorOptions = isset($this->wcConfig->Connector)
-        //     ? $this->wcConfig->Connector->toArray() : [];
+        $connectorOptions = isset($this->wcConfig->Connector)
+            ? $this->proQuestFSGConfig->Connector->toArray() : [];
         $connector = new Connector(
-            // $wsKey,
             $this->createHttpClient(),
-            // $connectorOptions
+            $connectorOptions
         );
         $connector->setLogger($this->logger);
         if ($cache = $this->createConnectorCache($this->proQuestFSGConfig)) {

@@ -30,8 +30,6 @@
 
 namespace VuFind\Search\ProQuestFSG;
 
-use function count;
-
 /**
  * ProQuest Federated Search Gateway Search Options
  *
@@ -45,8 +43,6 @@ use function count;
 class Options extends \VuFind\Search\Base\Options
 {
     use \VuFind\Config\Feature\ExplodeSettingTrait;
-
-    // protected $defaultFacetDelimiter = '|';
 
     /**
      * Constructor
@@ -115,7 +111,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getAdvancedSearchAction()
     {
-        // return 'worldcat-advanced';
+        // return 'proquestfsg-advanced';
         return false;
     }
 }
