@@ -52,8 +52,6 @@ class Params extends \VuFind\Search\Base\Params
     public function getBackendParameters()
     {
         $backendParams = new ParamBag();
-        $backendParams->set('operation', 'searchRetrieve');
-        $backendParams->set('recordSchema', 'marcxml');
 
         // Sort
         $sort = $this->getSort();

@@ -105,6 +105,10 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     public function search(ParamBag $params, $offset, $limit)
     {
+        // Constant params
+        $params->set('operation', 'searchRetrieve');
+        $params->set('recordSchema', 'marcxml');
+
         $options = $params->getArrayCopy();
         $options['startRecord'] = $offset;
         if (null !== $limit) {
