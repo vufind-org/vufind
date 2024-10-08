@@ -196,7 +196,7 @@ class MyResearchController extends AbstractBase
      * @param bool  $allowCurrentUrl Whether the current URL is valid for followup
      * @param array $extras          Extra data for the followup
      *
-     * @return mixed
+     * @return void
      */
     protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true, array $extras = [])
     {
@@ -212,7 +212,7 @@ class MyResearchController extends AbstractBase
         if (str_starts_with($normReferer, $murNorm)) {
             return;
         }
-        return parent::setFollowupUrlToReferer($allowCurrentUrl, $extras);
+        parent::setFollowupUrlToReferer($allowCurrentUrl, $extras);
     }
 
     /**
