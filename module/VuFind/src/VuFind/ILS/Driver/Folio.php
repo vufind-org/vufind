@@ -1625,12 +1625,12 @@ class Folio extends AbstractAPI implements
                 [
                     'id' => 'Hold Shelf',
                     'name' => 'fulfillment_method_hold_shelf',
-                    'locationsLabel' => $locationsLabels['Hold Shelf'] ?? '',
+                    'locationsLabel' => $locationsLabels['Hold Shelf'] ?? null,
                 ],
                 [
                     'id' => 'Delivery',
                     'name' => 'fulfillment_method_delivery',
-                    'locationsLabel' => $locationsLabels['Delivery'] ?? '',
+                    'locationsLabel' => $locationsLabels['Delivery'] ?? null,
                 ],
             ];
         }
