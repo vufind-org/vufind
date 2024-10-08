@@ -217,7 +217,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         // Test when a single ind value is passed
         $this->assertEquals(
             ['upc'],
-            $obj->getMarcFieldWithInd('024', null, ['1' => ['1']])
+            $obj->getMarcFieldWithInd('024', null, [['1' => ['1']]])
         );
     }
 
@@ -233,23 +233,41 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         // Test when multiple values for the same ind are passed
         $this->assertEquals(
             ['upc', 'ismn'],
-            $obj->getMarcFieldWithInd('024', null, ['1' => ['1', '2']])
+            $obj->getMarcFieldWithInd('024', null, [['1' => ['1', '2']]])
         );
     }
 
     /**
      * Test getMarcFieldWithInd when multiple indicators are requested
+     * as OR conditions
      *
      * @return void
      */
-    public function testGetMarcFieldWithIndMultInds(): void
+    public function testGetMarcFieldWithIndMultAndInds(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when different ind values are passed for each ind
+        $this->assertEquals(
+            ['spa'],
+            $obj->getMarcFieldWithInd('041', null, [['1' => ['1'], '2' => ['7']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple indicators are requested
+     * as AND conditions
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndMultOrInds(): void
     {
         $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
 
         // Test when different ind values are passed for each ind
         $this->assertEquals(
             ['ger', 'spa'],
-            $obj->getMarcFieldWithInd('041', null, ['1' => ['0'], '2' => ['7']])
+            $obj->getMarcFieldWithInd('041', null, [['1' => ['0']], ['2' => ['7']]])
         );
     }
 
@@ -264,7 +282,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
 
         // Test when no indicator is passed
         $this->assertEquals(
-            [],
+            ['upc', 'ismn', 'ian'],
             $obj->getMarcFieldWithInd('024', null, [])
         );
     }

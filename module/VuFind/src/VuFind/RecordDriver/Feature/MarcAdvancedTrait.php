@@ -35,7 +35,6 @@ namespace VuFind\RecordDriver\Feature;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\XSLT\Processor as XSLTProcessor;
 
-use function array_key_exists;
 use function count;
 use function in_array;
 use function is_array;
@@ -1173,6 +1172,53 @@ trait MarcAdvancedTrait
     }
 
     /**
+     * Check if an array of indicator filters match the provided marc data
+     *
+     * @param array $marc_data MARC data for a specific field
+     * @param array $indFilter Array with up to 2 keys ('1', and '2') with an array as their value
+     * containing what to match on in the marc indicator.
+     * ex: ['1' => ['0','1']] would filter ind1 with 0 or 1
+     *
+     * @return bool
+     */
+    protected function checkIndicatorFilter($marc_data, $indFilter): bool
+    {
+        foreach (range(1, 2) as $indNum) {
+            if (isset($indFilter[$indNum])) {
+                if (!in_array(trim(($marc_data['i' . $indNum] ?? '')), (array)$indFilter[$indNum])) {
+                    return false;
+                }
+            }
+        }
+        // If we got this far, no non-matching filters were encountered.
+        return true;
+    }
+
+    /**
+     * Check if the indicator filters match the provided marc data
+     *
+     * @param array $marc_data MARC data for a specific field
+     * @param array $indData   Array containing the indicator number as the key
+     * and the value as an array of strings for the allowed indicator values
+     * ex: [['1' => ['1', '2']], ['2' => ['']]] would filter fields ind1 = 1 or 2 or ind2 = blank
+     * ex: [['1' => ['1'], '2' => ['7']]] would filter fields with ind1 = 1 and ind2 = 7
+     * ex: [] would apply no filtering based on indicators
+     *
+     * @return bool
+     */
+    protected function checkIndicatorFilters($marc_data, $indData): bool
+    {
+        foreach ($indData as $indFilter) {
+            if ($this->checkIndicatorFilter($marc_data, $indFilter)) {
+                return true;
+            }
+        }
+        // If we got this far, either $indData is empty (no filters defined -- return true)
+        // or it is non-empty (no filters matched -- return false)
+        return empty($indData);
+    }
+
+    /**
      * Takes a Marc field that notes are stored in (ex: 950) and a list of
      * sub fields (ex: ['a','b']) optionally as well as what indicator
      * numbers and values to filter for and concatenates the subfields
@@ -1183,7 +1229,9 @@ trait MarcAdvancedTrait
      * @param ?array $subfield Sub-fields to return or empty for all
      * @param array  $indData  Array containing the indicator number as the key
      * and the value as an array of strings for the allowed indicator values
-     * ex: ['1' => ['1', '2'], '2' => ['']] would filter fields ind1 = 1 or 2 or ind2 = blank
+     * ex: [['1' => ['1', '2']], ['2' => ['']]] would filter fields ind1 = 1 or 2 or ind2 = blank
+     * ex: [['1' => ['1'], '2' => ['7']]] would filter fields with ind1 = 1 and ind2 = 7
+     * ex: [] would apply no filtering based on indicators
      *
      * @return array The values within the subfields under the field
      */
@@ -1197,22 +1245,18 @@ trait MarcAdvancedTrait
         $marc_fields = $marc->getFields($field, $subfield);
         foreach ($marc_fields as $marc_data) {
             $field_vals = [];
-            // Check if that field has either indicator (MARC only has up to 2 indicators)
-            foreach (range(1, 2) as $indNum) {
-                if (array_key_exists($indNum, $indData)) {
-                    if (in_array(trim(($marc_data['i' . $indNum] ?? '')), $indData[$indNum])) {
-                        $subfields = $marc_data['subfields'];
-                        foreach ($subfields as $subfield) {
-                            $field_vals[] = $subfield['data'];
-                        }
-                    }
+            if ($this->checkIndicatorFilters($marc_data, $indData)) {
+                $subfields = $marc_data['subfields'];
+                foreach ($subfields as $subfield) {
+                    $field_vals[] = $subfield['data'];
                 }
             }
-            if (!empty($field_vals)) {
-                $vals[] = implode(' ', $field_vals);
+            $newVal = implode(' ', $field_vals);
+            if (!empty($field_vals) && !in_array($newVal, $vals)) {
+                $vals[] = $newVal;
             }
         }
-        return array_unique($vals);
+        return $vals;
     }
 
     /**
@@ -1222,7 +1266,7 @@ trait MarcAdvancedTrait
      */
     public function getAbstractAndSummaryNotes()
     {
-        return $this->getMarcFieldWithInd('520', null, [1 => ['', '0', '2', '3', '8']]);
+        return $this->getMarcFieldWithInd('520', null, [[1 => ['', '0', '2', '3', '8']]]);
     }
 
     /**
@@ -1232,6 +1276,6 @@ trait MarcAdvancedTrait
      */
     public function getLocationOfArchivalMaterialsNotes()
     {
-        return $this->getMarcFieldWithInd('544', null, [1 => ['', '0']]);
+        return $this->getMarcFieldWithInd('544', null, [[1 => ['', '0']]]);
     }
 }
