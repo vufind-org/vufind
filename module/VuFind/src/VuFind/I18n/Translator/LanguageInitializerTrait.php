@@ -30,9 +30,8 @@
 namespace VuFind\I18n\Translator;
 
 use Laminas\I18n\Translator\TranslatorInterface;
+use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
-
-use function strlen;
 
 /**
  * Logic for initializing a language within a translator used by VuFind.
@@ -46,6 +45,25 @@ use function strlen;
 trait LanguageInitializerTrait
 {
     /**
+     * Path resolver.
+     *
+     * @var PathResolver
+     */
+    protected PathResolver $pathResolver;
+
+    /**
+     * Set path resolver.
+     *
+     * @param PathResolver $pathResolver Path resolver
+     *
+     * @return void
+     */
+    public function setPathResolver(PathResolver $pathResolver)
+    {
+        $this->pathResolver = $pathResolver;
+    }
+
+    /**
      * Look up all text domains.
      *
      * @return array
@@ -53,11 +71,11 @@ trait LanguageInitializerTrait
     protected function getTextDomains()
     {
         $base = APPLICATION_PATH;
-        $local = LOCAL_OVERRIDE_DIR;
         $languagePathParts = ["$base/languages"];
-        if (strlen($local) > 0) {
-            $languagePathParts[] = "$local/languages";
-        }
+        $languagePathParts = array_merge($languagePathParts, array_map(
+            fn ($localConfigDir) => $localConfigDir['directory'] . '/languages',
+            $this->pathResolver->getLocalConfigDirStack()
+        ));
         $languagePathParts[] = "$base/themes/*/languages";
 
         $domains = [];
