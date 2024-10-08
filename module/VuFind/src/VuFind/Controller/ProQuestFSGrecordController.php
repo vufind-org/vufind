@@ -88,9 +88,9 @@ class ProQuestFSGrecordController extends AbstractRecord
      *
      * @return bool
      */
-    // protected function resultScrollerActive()
-    // {
-    //     $config = $this->getService(\VuFind\Config\PluginManager::class)->get('ProQuestFSG');
-    //     return $config->Record->next_prev_navigation ?? false;
-    // }
+    protected function resultScrollerActive()
+    {
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('ProQuestFSG');
+        return $config->Record->next_prev_navigation ?? false;
+    }
 }
