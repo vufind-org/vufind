@@ -43,6 +43,13 @@ use VuFind\Db\Entity\AccessTokenEntityInterface;
 interface AccessTokenServiceInterface extends DbServiceInterface
 {
     /**
+     * Create an access_token entity object.
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function createEntity(): AccessTokenEntityInterface;
+
+    /**
      * Retrieve an object from the database based on id and type; create a new
      * row if no existing match is found.
      *

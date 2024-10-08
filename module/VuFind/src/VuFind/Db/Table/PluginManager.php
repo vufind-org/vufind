@@ -46,25 +46,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'accesstoken' => AccessToken::class,
-        'authhash' => AuthHash::class,
-        'changetracker' => ChangeTracker::class,
-        'comments' => Comments::class,
         'externalsession' => ExternalSession::class,
-        'feedback' => Feedback::class,
         'logintoken' => LoginToken::class,
-        'oairesumption' => OaiResumption::class,
         'ratings' => Ratings::class,
-        'record' => Record::class,
-        'resource' => Resource::class,
-        'resourcetags' => ResourceTags::class,
         'search' => Search::class,
         'session' => Session::class,
-        'shortlinks' => Shortlinks::class,
-        'tags' => Tags::class,
         'user' => User::class,
-        'usercard' => UserCard::class,
-        'userlist' => UserList::class,
         'userresource' => UserResource::class,
     ];
 
@@ -74,25 +61,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AccessToken::class => GatewayFactory::class,
-        AuthHash::class => GatewayFactory::class,
-        ChangeTracker::class => GatewayFactory::class,
-        Comments::class => GatewayFactory::class,
         ExternalSession::class => GatewayFactory::class,
-        Feedback::class => GatewayFactory::class,
         LoginToken::class => GatewayFactory::class,
-        OaiResumption::class => GatewayFactory::class,
         Ratings::class => GatewayFactory::class,
-        Record::class => GatewayFactory::class,
-        Resource::class => ResourceFactory::class,
-        ResourceTags::class => CaseSensitiveTagsFactory::class,
         Search::class => GatewayFactory::class,
         Session::class => GatewayFactory::class,
-        Shortlinks::class => GatewayFactory::class,
-        Tags::class => CaseSensitiveTagsFactory::class,
         User::class => UserFactory::class,
-        UserCard::class => GatewayFactory::class,
-        UserList::class => UserListFactory::class,
         UserResource::class => GatewayFactory::class,
     ];
 

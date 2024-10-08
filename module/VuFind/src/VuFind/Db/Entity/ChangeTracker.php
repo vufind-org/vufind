@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for change_tracker
+ * Entity model for change_tracker table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,44 +21,96 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\ChangeTrackerEntityInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Row Definition for change_tracker
+ * ChangeTracker
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property string  $core
- * @property string  $id
- * @property ?string $first_indexed
- * @property ?string $last_indexed
- * @property ?string $last_record_change
- * @property ?string $deleted
+ * @ORM\Table(name="change_tracker",
+ * indexes={@ORM\Index(name="deleted_index", columns={"deleted"})}
+ * )
+ * @ORM\Entity
  */
-class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
+class ChangeTracker implements ChangeTrackerEntityInterface
 {
     /**
-     * Constructor
+     * Solr core containing record.
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @var string
+     *
+     * @ORM\Column(name="core",
+     *          type="string",
+     *          length=30,
+     *          nullable=false
+     * )
+     * @ORM\Id
      */
-    public function __construct($adapter)
-    {
-        parent::__construct(['core', 'id'], 'change_tracker', $adapter);
-    }
+    protected $core;
+
+    /**
+     * Id of record within core.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="id",
+     *          type="string",
+     *          length=120,
+     *          nullable=false
+     * )
+     * @ORM\Id
+     */
+    protected $id;
+
+    /**
+     * First time added to index
+     *
+     * @var ?DateTime
+     *
+     * @ORM\Column(name="first_indexed", type="datetime", nullable=true)
+     */
+    protected $firstIndexed;
+
+    /**
+     * Last time changed in index.
+     *
+     * @var ?DateTime
+     *
+     * @ORM\Column(name="last_indexed", type="datetime", nullable=true)
+     */
+    protected $lastIndexed;
+
+    /**
+     * Last time original record was edited.
+     *
+     * @var ?DateTime
+     *
+     * @ORM\Column(name="last_record_change", type="datetime", nullable=true)
+     */
+    protected $lastRecordChange;
+
+    /**
+     * Time record was removed from index.
+     *
+     * @var ?DateTime
+     *
+     * @ORM\Column(name="deleted", type="datetime", nullable=true)
+     */
+    protected $deleted;
 
     /**
      * Setter for identifier.
@@ -115,7 +167,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function setFirstIndexed(?DateTime $dateTime): static
     {
-        $this->first_indexed = $dateTime->format('Y-m-d H:i:s');
+        $this->firstIndexed = $dateTime;
         return $this;
     }
 
@@ -126,7 +178,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function getFirstIndexed(): ?DateTime
     {
-        return $this->first_indexed ? DateTime::createFromFormat('Y-m-d H:i:s', $this->first_indexed) : null;
+        return $this->firstIndexed;
     }
 
     /**
@@ -138,7 +190,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function setLastIndexed(?DateTime $dateTime): static
     {
-        $this->last_indexed = $dateTime->format('Y-m-d H:i:s');
+        $this->lastIndexed = $dateTime;
         return $this;
     }
 
@@ -149,7 +201,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function getLastIndexed(): ?DateTime
     {
-        return $this->last_indexed ? DateTime::createFromFormat('Y-m-d H:i:s', $this->last_indexed) : null;
+        return $this->lastIndexed;
     }
 
     /**
@@ -161,7 +213,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function setLastRecordChange(?DateTime $dateTime): static
     {
-        $this->last_record_change = $dateTime->format('Y-m-d H:i:s');
+        $this->lastRecordChange = $dateTime;
         return $this;
     }
 
@@ -172,7 +224,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function getLastRecordChange(): ?DateTime
     {
-        return $this->last_record_change ? DateTime::createFromFormat('Y-m-d H:i:s', $this->last_record_change) : null;
+        return $this->lastRecordChange;
     }
 
     /**
@@ -184,7 +236,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function setDeleted(?DateTime $dateTime): static
     {
-        $this->deleted = $dateTime->format('Y-m-d H:i:s');
+        $this->deleted = $dateTime;
         return $this;
     }
 
@@ -195,6 +247,6 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      */
     public function getDeleted(): ?DateTime
     {
-        return $this->deleted ? DateTime::createFromFormat('Y-m-d H:i:s', $this->deleted) : null;
+        return $this->deleted;
     }
 }

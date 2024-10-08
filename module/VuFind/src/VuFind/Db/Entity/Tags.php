@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database row plugin manager
+ * Entity model for tags table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,63 +21,83 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Database row plugin manager
+ * Tags
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ *
+ * @ORM\Table(name="tags")
+ * @ORM\Entity
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class Tags implements TagsEntityInterface
 {
     /**
-     * Default plugin aliases.
+     * Unique ID.
      *
-     * @var array
+     * @var int
+     *
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    protected $aliases = [
-        'externalsession' => ExternalSession::class,
-        'logintoken' => LoginToken::class,
-        'ratings' => Ratings::class,
-        'search' => Search::class,
-        'session' => Session::class,
-        'user' => User::class,
-        'userresource' => UserResource::class,
-    ];
+    protected $id;
 
     /**
-     * Default plugin factories.
+     * Name of tag.
      *
-     * @var array
+     * @var string
+     *
+     * @ORM\Column(name="tag", type="string", length=64, nullable=false)
      */
-    protected $factories = [
-        ExternalSession::class => RowGatewayFactory::class,
-        LoginToken::class => RowGatewayFactory::class,
-        Ratings::class => RowGatewayFactory::class,
-        Search::class => RowGatewayFactory::class,
-        Session::class => RowGatewayFactory::class,
-        User::class => UserFactory::class,
-        UserResource::class => RowGatewayFactory::class,
-    ];
+    protected $tag = '';
 
     /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Tag setter
+     *
+     * @param string $tag Tag
+     *
+     * @return static
+     */
+    public function setTag(string $tag): static
+    {
+        $this->tag = $tag;
+        return $this;
+    }
+
+    /**
+     * Tag getter
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    public function getTag(): string
     {
-        return RowGateway::class;
+        return $this->tag;
     }
 }

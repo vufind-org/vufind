@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for user_card
+ * Entity model for user_card table
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,50 +21,139 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\UserCardEntityInterface;
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\DbServiceAwareInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Row Definition for user_card
+ * UserCard
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property int     $id
- * @property int     $user_id
- * @property string  $card_name
- * @property string  $cat_username
- * @property ?string $cat_password
- * @property ?string $cat_pass_enc
- * @property ?string $home_library
- * @property string  $created
- * @property string  $saved
+ * @ORM\Table(name="user_card",
+ * indexes={@ORM\Index(name="user_card_cat_username", columns={"cat_username"}),
+ * @ORM\Index(name="user_id",   columns={"user_id"})})
+ * @ORM\Entity
  */
-class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEntityInterface
+class UserCard implements UserCardEntityInterface
 {
-    use \VuFind\Db\Service\DbServiceAwareTrait;
+    /**
+     * Unique ID.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    protected $id;
+
+    /**
+     * Card name.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="card_name", type="string", length=255, nullable=false)
+     */
+    protected $cardName = '';
+
+    /**
+     * Cat username.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="cat_username", type="string", length=50, nullable=false)
+     */
+    protected $catUsername = '';
+
+    /**
+     * Cat password.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="cat_password", type="string", length=70, nullable=true)
+     */
+    protected $catPassword;
+
+    /**
+     * Cat password (encrypted).
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="cat_pass_enc", type="string", length=255, nullable=true)
+     */
+    protected $catPassEnc;
+
+    /**
+     * Home library.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="home_library", type="string", length=100, nullable=true)
+     */
+    protected $homeLibrary = '';
+
+    /**
+     * Creation date.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
+     */
+    protected $created;
+
+    /**
+     * Saved timestamp.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="saved",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="CURRENT_TIMESTAMP"}
+     * )
+     */
+    protected $saved;
+
+    /**
+     * User.
+     *
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="user_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $user;
 
     /**
      * Constructor
-     *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
-    public function __construct($adapter)
+    public function __construct()
     {
-        parent::__construct('id', 'user_card', $adapter);
+        // Set the default value as a \DateTime object
+        $this->created = new \DateTime('2000-01-01 00:00:00');
+        $this->saved = new \DateTime();
     }
 
     /**
@@ -74,7 +163,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getId(): ?int
     {
-        return $this->id ?? null;
+        return $this->id;
     }
 
     /**
@@ -86,7 +175,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setCardName(string $cardName): static
     {
-        $this->card_name = $cardName;
+        $this->cardName = $cardName;
         return $this;
     }
 
@@ -97,7 +186,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getCardName(): string
     {
-        return $this->card_name;
+        return $this->cardName;
     }
 
     /**
@@ -109,7 +198,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setCatUsername(string $catUsername): static
     {
-        $this->cat_username = $catUsername;
+        $this->catUsername = $catUsername;
         return $this;
     }
 
@@ -120,7 +209,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getCatUsername(): string
     {
-        return $this->cat_username;
+        return $this->catUsername;
     }
 
     /**
@@ -132,7 +221,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setRawCatPassword(?string $catPassword): static
     {
-        $this->cat_password = $catPassword;
+        $this->catPassword = $catPassword;
         return $this;
     }
 
@@ -143,7 +232,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getRawCatPassword(): ?string
     {
-        return $this->cat_password;
+        return $this->catPassword;
     }
 
     /**
@@ -155,7 +244,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setCatPassEnc(?string $passEnc): static
     {
-        $this->cat_pass_enc = $passEnc;
+        $this->catPassEnc = $passEnc;
         return $this;
     }
 
@@ -166,7 +255,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getCatPassEnc(): ?string
     {
-        return $this->cat_pass_enc;
+        return $this->catPassEnc;
     }
 
     /**
@@ -178,7 +267,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setHomeLibrary(?string $homeLibrary): static
     {
-        $this->home_library = $homeLibrary;
+        $this->homeLibrary = $homeLibrary;
         return $this;
     }
 
@@ -189,7 +278,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getHomeLibrary(): ?string
     {
-        return $this->home_library;
+        return $this->homeLibrary;
     }
 
     /**
@@ -201,7 +290,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setCreated(DateTime $dateTime): static
     {
-        $this->created = $dateTime->format('Y-m-d H:i:s');
+        $this->created = $dateTime;
         return $this;
     }
 
@@ -212,7 +301,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+        return $this->created;
     }
 
     /**
@@ -224,7 +313,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setSaved(DateTime $dateTime): static
     {
-        $this->saved = $dateTime->format('Y-m-d H:i:s');
+        $this->saved = $dateTime;
         return $this;
     }
 
@@ -235,7 +324,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getSaved(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->saved);
+        return $this->saved;
     }
 
     /**
@@ -247,7 +336,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setUser(UserEntityInterface $user): static
     {
-        $this->user_id = $user->getId();
+        $this->user = $user;
         return $this;
     }
 
@@ -258,6 +347,6 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getUser(): UserEntityInterface
     {
-        return $this->getDbService(\VuFind\Db\Service\UserServiceInterface::class)->getUserById($this->user_id);
+        return $this->user;
     }
 }

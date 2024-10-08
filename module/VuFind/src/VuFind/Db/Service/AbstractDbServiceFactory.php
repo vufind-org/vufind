@@ -65,6 +65,10 @@ class AbstractDbServiceFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        return new $requestedName(...($options ?? []));
+        return new $requestedName(
+            $container->get('doctrine.entitymanager.orm_vufind'),
+            $container->get(\VuFind\Db\Entity\PluginManager::class),
+            ...($options ?? [])
+        );
     }
 }

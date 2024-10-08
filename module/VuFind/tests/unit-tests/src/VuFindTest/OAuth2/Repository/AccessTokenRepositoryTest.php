@@ -59,7 +59,6 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
         $tokenId = $this->createTokenId();
         $token->setIdentifier($tokenId);
         $token->setExpiryDateTime($this->createExpiryDateTime());
-
         $repo->persistNewAccessToken($token);
         $this->assertEquals(
             [
@@ -68,7 +67,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
                     'type' => 'oauth2_access_token',
                     'revoked' => false,
                     'data' => json_encode($token),
-                    'user_id' => '1',
+                    'user_id' => 1,
                 ],
             ],
             $this->accessTokenTable

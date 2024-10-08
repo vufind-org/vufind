@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Row Definition for auth_hash
+ * Entity model for auth_hash table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,51 +21,99 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\AuthHashEntityInterface;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\DbServiceAwareTrait;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Row Definition for auth_hash
+ * AuthHash
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property int    $id
- * @property string $session_id
- * @property string $hash
- * @property string $type
- * @property string $data
- * @property string $created
+ * @ORM\Table(name="auth_hash",
+ * uniqueConstraints={@ORM\UniqueConstraint(name="hash_type",
+ *                  columns={"hash", "type"})},
+ * indexes={@ORM\Index(name="created", columns={"created"}),
+ * @ORM\Index(name="session_id", columns={"session_id"})}
+ * )
+ * @ORM\Entity
  */
-class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceAwareInterface
+class AuthHash implements AuthHashEntityInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
-    use DbServiceAwareTrait;
+    /**
+     * Unique ID.
+     *
+     * @var int
+     *
+     * @ORM\Id
+     * @ORM\Column(name="id",
+     *          type="bigint",
+     *          nullable=false,
+     *          options={"unsigned"=true}
+     * )
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    protected $id;
 
     /**
-     * Constructor
+     * Session ID.
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @var ?string
+     *
+     * @ORM\Column(name="session_id", type="string", length=128, nullable=true)
      */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'auth_hash', $adapter);
-    }
+    protected $sessionId;
+
+    /**
+     * Hash value.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="hash", type="string", length=255, nullable=false)
+     */
+    protected $hash = '';
+
+    /**
+     * Type of the hash.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="type", type="string", length=50, nullable=true)
+     */
+    protected $type;
+
+    /**
+     * Data.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
+     */
+    protected $data;
+
+    /**
+     * Creation date.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="CURRENT_TIMESTAMP"}
+     * )
+     */
+    protected $created = 'CURRENT_TIMESTAMP';
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -75,7 +122,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function getId(): ?int
     {
-        return $this->id ?? null;
+        return $this->id;
     }
 
     /**
@@ -85,7 +132,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function getSessionId(): ?string
     {
-        return $this->session_id ?? null;
+        return $this->sessionId;
     }
 
     /**
@@ -97,7 +144,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function setSessionId(?string $sessionId): static
     {
-        $this->session_id = $sessionId;
+        $this->sessionId = $sessionId;
         return $this;
     }
 
@@ -108,7 +155,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function getHash(): string
     {
-        return $this->hash ?? '';
+        return $this->hash;
     }
 
     /**
@@ -131,7 +178,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function getHashType(): ?string
     {
-        return $this->type ?? null;
+        return $this->type;
     }
 
     /**
@@ -154,7 +201,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function getData(): ?string
     {
-        return $this->__get('data');
+        return $this->data;
     }
 
     /**
@@ -166,7 +213,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function setData(?string $data): static
     {
-        $this->__set('data', $data);
+        $this->data = $data;
         return $this;
     }
 
@@ -177,7 +224,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+        return $this->created;
     }
 
     /**
@@ -189,7 +236,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function setCreated(DateTime $dateTime): static
     {
-        $this->created = $dateTime->format('Y-m-d H:i:s');
+        $this->created = $dateTime;
         return $this;
     }
 }

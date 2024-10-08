@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for shortlinks
+ * Entity model for shortlinks table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,41 +21,86 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\ShortlinksEntityInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Row Definition for shortlinks
+ * Shortlinks
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property int    $id
- * @property string $path
- * @property string $hash
- * @property string $created
+ * @ORM\Entity
+ * @ORM\Table(name="shortlinks",
+ *          uniqueConstraints={@ORM\UniqueConstraint(name="shortlinks_hash_IDX",
+ *                          columns={"hash"})}
+ * )
  */
-class Shortlinks extends RowGateway implements ShortlinksEntityInterface
+class Shortlinks implements ShortlinksEntityInterface
 {
     /**
-     * Constructor
+     * Unique ID.
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @var int
+     *
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public function __construct($adapter)
+    protected $id;
+
+    /**
+     * Path (minus hostname) from shortened URL.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="path", type="text", length=16777215, nullable=false)
+     */
+    protected $path;
+
+    /**
+     * Shortlinks hash.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="hash", type="string", length=32, nullable=true)
+     */
+    protected $hash;
+
+    /**
+     * Creation timestamp.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="CURRENT_TIMESTAMP"}
+     * )
+     */
+    protected $created;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
-        parent::__construct('id', 'shortlinks', $adapter);
+        // Set the default value as a \DateTime object
+        $this->created = new DateTime();
     }
 
     /**
@@ -65,7 +110,7 @@ class Shortlinks extends RowGateway implements ShortlinksEntityInterface
      */
     public function getId(): ?int
     {
-        return $this->id ?? null;
+        return $this->id;
     }
 
     /**
@@ -75,7 +120,7 @@ class Shortlinks extends RowGateway implements ShortlinksEntityInterface
      */
     public function getPath(): string
     {
-        return $this->path ?? '';
+        return $this->path;
     }
 
     /**
@@ -99,7 +144,7 @@ class Shortlinks extends RowGateway implements ShortlinksEntityInterface
      */
     public function getHash(): ?string
     {
-        return $this->hash ?? null;
+        return $this->hash;
     }
 
     /**
@@ -122,7 +167,7 @@ class Shortlinks extends RowGateway implements ShortlinksEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+        return $this->created;
     }
 
     /**
@@ -134,7 +179,7 @@ class Shortlinks extends RowGateway implements ShortlinksEntityInterface
      */
     public function setCreated(DateTime $dateTime): static
     {
-        $this->created = $dateTime->format('Y-m-d H:i:s');
+        $this->created = $dateTime;
         return $this;
     }
 }

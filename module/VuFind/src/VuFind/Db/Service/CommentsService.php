@@ -29,13 +29,15 @@
 
 namespace VuFind\Db\Service;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\Comments;
 use VuFind\Db\Entity\CommentsEntityInterface;
+use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Log\LoggerAwareTrait;
 
-use function is_array;
 use function is_int;
 
 /**
@@ -50,10 +52,10 @@ use function is_int;
 class CommentsService extends AbstractDbService implements
     CommentsServiceInterface,
     DbServiceAwareInterface,
-    DbTableAwareInterface
+    LoggerAwareInterface
 {
     use DbServiceAwareTrait;
-    use DbTableAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Create a comments entity object.
@@ -62,7 +64,8 @@ class CommentsService extends AbstractDbService implements
      */
     public function createEntity(): CommentsEntityInterface
     {
-        return $this->getDbTable('comments')->createRow();
+        $class = $this->getEntityClass(Comments::class);
+        return new $class();
     }
 
     /**
@@ -79,13 +82,20 @@ class CommentsService extends AbstractDbService implements
         UserEntityInterface|int $userOrId,
         ResourceEntityInterface|int $resourceOrId
     ): ?int {
-        $user = is_int($userOrId)
-            ? $this->getDbService(UserServiceInterface::class)->getUserById($userOrId)
-            : $userOrId;
-        $resource = is_int($resourceOrId)
-            ? $this->getDbService(ResourceServiceInterface::class)->getResourceById($resourceOrId)
-            : $resourceOrId;
-        return $resource->addComment($comment, $user);
+        $data = $this->createEntity()
+            ->setUser($this->getDoctrineReference(User::class, $userOrId))
+            ->setComment($comment)
+            ->setCreated(new \DateTime())
+            ->setResource($this->getDoctrineReference(Resource::class, $resourceOrId));
+
+        try {
+            $this->persistEntity($data);
+        } catch (\Exception $e) {
+            $this->logError('Could not save comment: ' . $e->getMessage());
+            return null;
+        }
+
+        return $data->getId();
     }
 
     /**
@@ -98,8 +108,22 @@ class CommentsService extends AbstractDbService implements
      */
     public function getRecordComments(string $id, string $source = DEFAULT_SEARCH_BACKEND): array
     {
-        $comments = $this->getDbTable('comments')->getForResource($id, $source);
-        return is_array($comments) ? $comments : iterator_to_array($comments);
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
+            return [];
+        }
+        $dql = 'SELECT c '
+            . 'FROM ' . $this->getEntityClass(Comments::class) . ' c '
+            . 'LEFT JOIN c.user u '
+            . 'WHERE c.resource = :resource '
+            . 'ORDER BY c.created';
+
+        $parameters = compact('resource');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -112,9 +136,22 @@ class CommentsService extends AbstractDbService implements
      */
     public function deleteIfOwnedByUser(int $id, UserEntityInterface|int $userOrId): bool
     {
-        $user = is_int($userOrId)
-            ? $this->getDbService(UserServiceInterface::class)->getUserById($userOrId) : $userOrId;
-        return $this->getDbTable('comments')->deleteIfOwnedByUser($id, $user);
+        if (null === $userOrId) {
+            return false;
+        }
+
+        $userId = is_int($userOrId) ? $userOrId : $userOrId->getId();
+        $comment = $this->getCommentById($id);
+        if ($userId !== $comment->getUser()->getId()) {
+            return false;
+        }
+
+        $del = 'DELETE FROM ' . $this->getEntityClass(Comments::class) . ' c '
+        . 'WHERE c.id = :id AND c.user = :user';
+        $query = $this->entityManager->createQuery($del);
+        $query->setParameters(['id' => $id, 'user' => $userId]);
+        $query->execute();
+        return true;
     }
 
     /**
@@ -126,9 +163,11 @@ class CommentsService extends AbstractDbService implements
      */
     public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
-        $user = is_int($userOrId)
-            ? $this->getDbService(UserServiceInterface::class)->getUserById($userOrId) : $userOrId;
-        $this->getDbTable('comments')->deleteByUser($user);
+        $dql = 'DELETE FROM ' . $this->getEntityClass(Comments::class) . ' c '
+        . 'WHERE c.user = :user';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(['user' => is_int($userOrId) ? $userOrId : $userOrId->getId()]);
+        $query->execute();
     }
 
     /**
@@ -138,7 +177,13 @@ class CommentsService extends AbstractDbService implements
      */
     public function getStatistics(): array
     {
-        return $this->getDbTable('comments')->getStatistics();
+        $dql = 'SELECT COUNT(DISTINCT(c.user)) AS users, '
+            . 'COUNT(DISTINCT(c.resource)) AS resources, '
+            . 'COUNT(c.id) AS total '
+            . 'FROM ' . $this->getEntityClass(Comments::class) . ' c';
+        $query = $this->entityManager->createQuery($dql);
+        $stats = current($query->getResult());
+        return $stats;
     }
 
     /**
@@ -150,7 +195,10 @@ class CommentsService extends AbstractDbService implements
      */
     public function getCommentById(int $id): ?CommentsEntityInterface
     {
-        return $this->getDbTable('comments')->select(['id' => $id])->current();
+        return $this->entityManager->find(
+            $this->getEntityClass(Comments::class),
+            $id
+        );
     }
 
     /**
@@ -163,6 +211,11 @@ class CommentsService extends AbstractDbService implements
      */
     public function changeResourceId(int $old, int $new): void
     {
-        $this->getDbTable('comments')->update(['resource_id' => $new], ['resource_id' => $old]);
+        $dql = 'UPDATE ' . $this->getEntityClass(Comments::class) . ' e '
+            . 'SET e.resource = :new WHERE e.resource = :old';
+        $parameters = compact('new', 'old');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 }

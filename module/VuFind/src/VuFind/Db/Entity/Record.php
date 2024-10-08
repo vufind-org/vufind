@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for record
+ * Entity model for record table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,44 +21,95 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use Exception;
-use VuFind\Db\Entity\RecordEntityInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Row Definition for user
+ * Record
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property int    $id
- * @property string $record_id
- * @property string $source
- * @property string $version
- * @property string $updated
+ * @ORM\Table(name="record",
+ *          uniqueConstraints={@ORM\UniqueConstraint(name="record_id_source",
+ *                          columns={"record_id", "source"})})
+ * @ORM\Entity
  */
-class Record extends RowGateway implements RecordEntityInterface
+class Record implements RecordEntityInterface
 {
     /**
-     * Constructor
+     * Unique ID.
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @var int
+     *
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'record', $adapter);
-    }
+    protected $id;
+
+    /**
+     * Record ID.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="record_id", type="string", length=255, nullable=true)
+     */
+    protected $recordId;
+
+    /**
+     * Record source.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="source", type="string", length=50, nullable=true)
+     */
+    protected $source;
+
+    /**
+     * Record version.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="version", type="string", length=20, nullable=false)
+     */
+    protected $version;
+
+    /**
+     * Record Data.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="data", type="text", length=0, nullable=true)
+     */
+    protected $data;
+
+    /**
+     * Updated date.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
+     */
+    protected $updated = '2000-01-01 00:00:00';
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -67,7 +118,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function getId(): ?int
     {
-        return $this->id ?? null;
+        return $this->id;
     }
 
     /**
@@ -77,7 +128,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function getRecordId(): ?string
     {
-        return $this->record_id ?? null;
+        return $this->recordId;
     }
 
     /**
@@ -89,7 +140,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function setRecordId(?string $recordId): static
     {
-        $this->record_id = $recordId;
+        $this->recordId = $recordId;
         return $this;
     }
 
@@ -100,19 +151,19 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function getSource(): ?string
     {
-        return $this->source ?? null;
+        return $this->source;
     }
 
     /**
      * Set record source.
      *
-     * @param ?string $recordSource Record source
+     * @param ?string $source Record source
      *
      * @return static
      */
-    public function setSource(?string $recordSource): static
+    public function setSource(?string $source): static
     {
-        $this->source = $recordSource;
+        $this->source = $source;
         return $this;
     }
 
@@ -123,7 +174,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function getVersion(): string
     {
-        return $this->version ?? '';
+        return $this->version;
     }
 
     /**
@@ -146,11 +197,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function getData(): ?string
     {
-        try {
-            return $this->__get('data');
-        } catch (Exception) {
-            return null;
-        }
+        return $this->data;
     }
 
     /**
@@ -162,7 +209,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function setData(?string $recordData): static
     {
-        $this->__set('data', $recordData);
+        $this->data = $recordData;
         return $this;
     }
 
@@ -173,7 +220,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function getUpdated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->updated);
+        return $this->updated;
     }
 
     /**
@@ -185,7 +232,7 @@ class Record extends RowGateway implements RecordEntityInterface
      */
     public function setUpdated(DateTime $dateTime): static
     {
-        $this->updated = $dateTime->format('Y-m-d H:i:s');
+        $this->updated = $dateTime;
         return $this;
     }
 }

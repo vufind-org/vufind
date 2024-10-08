@@ -30,9 +30,8 @@
 namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\OaiResumption;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -45,11 +44,9 @@ use VuFind\Log\LoggerAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class OaiResumptionService extends AbstractDbService implements
-    DbTableAwareInterface,
     LoggerAwareInterface,
     OaiResumptionServiceInterface
 {
-    use DbTableAwareTrait;
     use LoggerAwareTrait;
 
     /**
@@ -59,7 +56,12 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function removeExpired(): void
     {
-        $this->getDbTable('oairesumption')->removeExpired();
+        $dql = 'DELETE FROM ' . $this->getEntityClass(OaiResumption::class) . ' O '
+            . 'WHERE O.expires <= :now';
+        $parameters['now'] = new \DateTime();
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
@@ -70,9 +72,16 @@ class OaiResumptionService extends AbstractDbService implements
      *
      * @return ?OaiResumptionEntityInterface
      */
-    public function findToken(string $token): ?OaiResumptionEntityInterface
+    public function findToken($token): ?OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->findToken($token);
+        $dql = 'SELECT O '
+        . 'FROM ' . $this->getEntityClass(OaiResumption::class) . ' O '
+        . 'WHERE O.id = :token';
+        $parameters = compact('token');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $records = $query->getResult();
+        return current($records);
     }
 
     /**
@@ -105,7 +114,8 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function createEntity(): OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->createRow();
+        $class = $this->getEntityClass(OaiResumption::class);
+        return new $class();
     }
 
     /**

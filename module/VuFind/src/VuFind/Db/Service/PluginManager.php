@@ -77,7 +77,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AccessTokenService::class => AccessTokenServiceFactory::class,
+        AccessTokenService::class => AbstractDbServiceFactory::class,
         AuthHashService::class => AbstractDbServiceFactory::class,
         ChangeTrackerService::class => AbstractDbServiceFactory::class,
         CommentsService::class => AbstractDbServiceFactory::class,

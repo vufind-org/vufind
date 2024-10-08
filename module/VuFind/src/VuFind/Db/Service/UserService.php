@@ -29,9 +29,12 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\DbTableAwareInterface;
@@ -50,19 +53,27 @@ use VuFind\Log\LoggerAwareTrait;
 class UserService extends AbstractDbService implements
     DbTableAwareInterface,
     LoggerAwareInterface,
+    DbServiceAwareInterface,
     UserServiceInterface,
     UserSessionPersistenceInterface
 {
     use DbTableAwareTrait;
     use LoggerAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Constructor
      *
-     * @param SessionContainer $userSessionContainer Session container for user data
+     * @param EntityManager       $entityManager        Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager  VuFind entity plugin manager
+     * @param SessionContainer    $userSessionContainer Session container for user data
      */
-    public function __construct(protected SessionContainer $userSessionContainer)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        protected SessionContainer $userSessionContainer
+    ) {
+        parent::__construct($entityManager, $entityPluginManager);
     }
 
     /**
@@ -93,13 +104,13 @@ class UserService extends AbstractDbService implements
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param int $id ID.
+     * @param int $id ID value.
      *
      * @return ?UserEntityInterface
      */
     public function getUserById(int $id): ?UserEntityInterface
     {
-        return $this->getDbTable('User')->getById($id);
+        return $this->entityManager->find($this->getEntityClass(User::class), $id);
     }
 
     /**
@@ -113,17 +124,22 @@ class UserService extends AbstractDbService implements
      */
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
-        switch ($fieldName) {
-            case 'email':
-                return $this->getDbTable('User')->getByEmail($fieldValue);
-            case 'id':
-                return $this->getDbTable('User')->getById($fieldValue);
-            case 'username':
-                return $this->getDbTable('User')->getByUsername($fieldValue, false);
-            case 'verify_hash':
-                return $this->getDbTable('User')->getByVerifyHash($fieldValue);
-            case 'cat_id':
-                return $this->getDbTable('User')->getByCatalogId($fieldValue);
+        // Map expected incoming values (actual database columns) to legal values (Doctrine properties)
+        $legalFieldMap = [
+            'id' => 'id',
+            'username' => 'username',
+            'email' => 'email',
+            'cat_id' => 'catId',
+            'verify_hash' => 'verifyHash',
+        ];
+        if (isset($legalFieldMap[$fieldName])) {
+            $dql = 'SELECT U FROM ' . $this->getEntityClass(User::class) . ' U '
+                . 'WHERE U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
+            $parameters = compact('fieldValue');
+            $query = $this->entityManager->createQuery($dql);
+            $query->setParameters($parameters);
+            $result = current($query->getResult());
+            return $result ?: null;
         }
         throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
     }

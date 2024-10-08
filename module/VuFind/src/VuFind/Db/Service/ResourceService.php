@@ -30,13 +30,20 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Exception;
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Table\Resource;
+use VuFind\Db\Entity\UserResource;
+use VuFind\Log\LoggerAwareTrait;
 
-use function count;
+use function in_array;
 
 /**
  * Database service for resource.
@@ -44,19 +51,39 @@ use function count;
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceService extends AbstractDbService implements ResourceServiceInterface, Feature\TransactionInterface
+class ResourceService extends AbstractDbService implements
+    ResourceServiceInterface,
+    DbServiceAwareInterface,
+    Feature\TransactionInterface,
+    LoggerAwareInterface
 {
+    use DbServiceAwareTrait;
+    use LoggerAwareTrait;
+
     /**
-     * Constructor.
+     * Callback to load the resource populator.
      *
-     * @param Resource $resourceTable Resource table
+     * @var callable
      */
-    public function __construct(protected Resource $resourceTable)
-    {
+    protected $resourcePopulatorLoader;
+
+    /**
+     * Constructor
+     *
+     * @param EntityManager       $entityManager           Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager     VuFind entity plugin manager
+     * @param callable            $resourcePopulatorLoader Resource populator
+     */
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        callable $resourcePopulatorLoader
+    ) {
+        $this->resourcePopulatorLoader = $resourcePopulatorLoader;
+        parent::__construct($entityManager, $entityPluginManager);
     }
 
     /**
@@ -67,7 +94,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function beginTransaction(): void
     {
-        $this->resourceTable->beginTransaction();
+        $this->entityManager->getConnection()->beginTransaction();
     }
 
     /**
@@ -78,7 +105,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function commitTransaction(): void
     {
-        $this->resourceTable->commitTransaction();
+        $this->entityManager->getConnection()->commit();
     }
 
     /**
@@ -89,7 +116,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function rollBackTransaction(): void
     {
-        $this->resourceTable->rollbackTransaction();
+        $this->entityManager->getConnection()->rollBack();
     }
 
     /**
@@ -101,7 +128,11 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function getResourceById(int $id): ?ResourceEntityInterface
     {
-        return $this->resourceTable->select(['id' => $id])->current();
+        $resource = $this->entityManager->find(
+            $this->getEntityClass(\VuFind\Db\Entity\Resource::class),
+            $id
+        );
+        return $resource;
     }
 
     /**
@@ -111,7 +142,8 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function createEntity(): ResourceEntityInterface
     {
-        return $this->resourceTable->createRow();
+        $class = $this->getEntityClass(Resource::class);
+        return new $class();
     }
 
     /**
@@ -122,12 +154,65 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function findMissingMetadata(): array
     {
-        $callback = function ($select) {
-            $select->where->equalTo('title', '')
-                ->OR->isNull('author')
-                ->OR->isNull('year');
-        };
-        return iterator_to_array($this->resourceTable->select($callback));
+        $dql = 'SELECT r '
+            . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
+            . "WHERE r.title = '' OR r.author IS NULL OR r.year IS NULL";
+
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
+    }
+
+    /**
+     * Apply a sort parameter to a query on the resource table. Returns an
+     * array with two keys: 'orderByClause' (the actual ORDER BY) and
+     * 'extraSelect' (extra values to add to SELECT, if necessary)
+     *
+     * @param string $sort  Field to use for sorting (may include
+     *                      'desc' qualifier)
+     * @param string $alias Alias to the resource table (defaults to 'r')
+     *
+     * @return array
+     */
+    public static function getOrderByClause(string $sort, string $alias = 'r'): array
+    {
+        // Apply sorting, if necessary:
+        $legalSorts = [
+            'title', 'title desc', 'author', 'author desc', 'year', 'year desc', 'last_saved', 'last_saved desc',
+        ];
+        $orderByClause = $extraSelect = '';
+        if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
+            // Strip off 'desc' to obtain the raw field name -- we'll need it
+            // to sort null values to the bottom:
+            $parts = explode(' ', $sort);
+            $rawField = trim($parts[0]);
+
+            // Start building the list of sort fields:
+            $order = [];
+
+            // Only include the table alias on non-virtual fields:
+            $fieldPrefix = (strtolower($rawField) === 'last_saved') ? '' : "$alias.";
+
+            // The title field can't be null, so don't bother with the extra
+            // isnull() sort in that case.
+            if (strtolower($rawField) === 'title') {
+                // Do nothing
+            } elseif (strtolower($rawField) === 'last_saved') {
+                $extraSelect = 'ur.saved AS HIDDEN last_saved, '
+                    . 'CASE WHEN ur.saved IS NULL THEN 1 ELSE 0 END AS HIDDEN last_savedsort';
+                $order[] = 'last_savedsort';
+            } else {
+                $extraSelect = 'CASE WHEN ' . $fieldPrefix . $rawField . ' IS NULL THEN 1 ELSE 0 END AS HIDDEN '
+                    . $rawField . 'sort';
+                $order[] = "{$rawField}sort";
+            }
+
+            // Apply the user-specified sort:
+            $order[] = $fieldPrefix . $sort;
+            // Inject the sort preferences into the query object:
+            $orderByClause = ' ORDER BY ' . implode(', ', $order);
+        }
+        return compact('orderByClause', 'extraSelect');
     }
 
     /**
@@ -140,7 +225,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function getResourceByRecordId(string $id, string $source = DEFAULT_SEARCH_BACKEND): ?ResourceEntityInterface
     {
-        return $this->resourceTable->select(['record_id' => $id, 'source' => $source])->current();
+        return current($this->getResourcesByRecordIds([$id], $source)) ?: null;
     }
 
     /**
@@ -153,11 +238,12 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array
     {
-        $callback = function ($select) use ($ids, $source) {
-            $select->where->in('record_id', $ids);
-            $select->where->equalTo('source', $source);
-        };
-        return iterator_to_array($this->resourceTable->select($callback));
+        $repo = $this->entityManager->getRepository($this->getEntityClass(Resource::class));
+        $criteria = [
+            'recordId' => $ids,
+            'source' => $source,
+        ];
+        return $repo->findBy($criteria);
     }
 
     /**
@@ -183,17 +269,52 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
         ?int $limit = null,
         bool $caseSensitiveTags = false
     ): array {
-        return iterator_to_array(
-            $this->resourceTable->getFavorites(
-                $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId,
-                $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId,
-                $tags,
-                $sort,
-                $offset,
-                $limit,
-                $caseSensitiveTags
-            )
-        );
+        $user = $this->getDoctrineReference(User::class, $userOrId);
+        $list = $listOrId ? $this->getDoctrineReference(UserList::class, $listOrId) : null;
+        $orderByDetails = empty($sort) ? [] : ResourceService::getOrderByClause($sort);
+        $dql = 'SELECT DISTINCT r';
+        if (!empty($orderByDetails['extraSelect'])) {
+            $dql .= ', ' . $orderByDetails['extraSelect'];
+        }
+        $dql .= ' FROM ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH r.id = ur.resource ';
+        $dqlWhere = [];
+        $dqlWhere[] = 'ur.user = :user';
+        $parameters = compact('user');
+        if (null !== $list) {
+            $dqlWhere[] = 'ur.list = :list';
+            $parameters['list'] = $list;
+        }
+
+        // Adjust for tags if necessary:
+        if (!empty($tags)) {
+            $linkingTable = $this->getDbService(TagService::class);
+            $matches = [];
+            foreach ($tags as $tag) {
+                $matches[] = $linkingTable
+                    ->getResourceIDsForTag($tag, $user->getId(), $list?->getId(), $caseSensitiveTags);
+            }
+            $dqlWhere[] = 'r.id IN (:ids)';
+            $parameters['ids'] = $matches;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        //$dql .= ' GROUP BY r.id';
+        if (!empty($orderByDetails['orderByClause'])) {
+            $dql .= $orderByDetails['orderByClause'];
+        }
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        if ($offset > 0) {
+            $query->setFirstResult($offset);
+        }
+        if (null !== $limit) {
+            $query->setMaxResults($limit);
+        }
+
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -208,12 +329,12 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function deleteResourceByRecordId(string $id, string $source): bool
     {
-        $row = $this->resourceTable->select(['source' => $source, 'record_id' => $id])->current();
-        if (!$row) {
-            return false;
-        }
-        $row->delete();
-        return true;
+        $dql = 'DELETE FROM ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
+        $parameters = compact('id', 'source');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->execute();
     }
 
     /**
@@ -226,12 +347,11 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function renameSource(string $old, string $new): int
     {
-        $resourceWhere = ['source' => $old];
-        $resourceRows = $this->resourceTable->select($resourceWhere);
-        if ($count = count($resourceRows)) {
-            $this->resourceTable->update(['source' => $new], $resourceWhere);
-        }
-        return $count;
+        $dql = 'UPDATE ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'SET r.source=:new WHERE r.source=:old';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('new', 'old'));
+        return $query->execute();
     }
 
     /**
@@ -243,7 +363,6 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function deleteResource(ResourceEntityInterface|int $resourceOrId): void
     {
-        $id = $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId;
-        $this->resourceTable->delete(['id' => $id]);
+        $this->deleteEntity($this->getDoctrineReference(UserResource::class, $resourceOrId));
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for resource_tags
+ * Entity model for resource_tags table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,59 +21,117 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\ResourceEntityInterface;
-use VuFind\Db\Entity\ResourceTagsEntityInterface;
-use VuFind\Db\Entity\TagsEntityInterface;
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\DbServiceAwareTrait;
-use VuFind\Db\Service\ResourceServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
-use VuFind\Db\Service\UserListServiceInterface;
-use VuFind\Db\Service\UserServiceInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Row Definition for resource_tags
+ * ResourceTags
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property int    $id
- * @property int    $resource_id
- * @property int    $tag_id
- * @property int    $list_id
- * @property int    $user_id
- * @property string $posted
+ * @ORM\Table(name="resource_tags")
+ * @ORM\Entity
  */
-class ResourceTags extends RowGateway implements
-    ResourceTagsEntityInterface,
-    \VuFind\Db\Table\DbTableAwareInterface,
-    DbServiceAwareInterface
+class ResourceTags implements ResourceTagsEntityInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
-    use DbServiceAwareTrait;
+    /**
+     * Unique ID.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    protected $id;
+
+    /**
+     * Posted time.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="posted",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="CURRENT_TIMESTAMP"}
+     * )
+     */
+    protected $posted;
+
+    /**
+     * Resource ID.
+     *
+     * @var Resource
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="resource_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $resource;
+
+    /**
+     * Tag ID.
+     *
+     * @var Tags
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Tags")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="tag_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $tag;
+
+    /**
+     * List ID.
+     *
+     * @var UserList
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\UserList")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="list_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $list;
+
+    /**
+     * User ID.
+     *
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="user_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $user;
 
     /**
      * Constructor
-     *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
-    public function __construct($adapter)
+    public function __construct()
     {
-        parent::__construct('id', 'resource_tags', $adapter);
+        // Set the default value as a \DateTime object
+        $this->posted = new DateTime();
     }
 
     /**
@@ -83,19 +141,17 @@ class ResourceTags extends RowGateway implements
      */
     public function getId(): ?int
     {
-        return $this->id ?? null;
+        return $this->id;
     }
 
     /**
      * Get resource.
      *
-     * @return ?ResourceEntityInterface
+     * @return ResourceEntityInterface
      */
-    public function getResource(): ?ResourceEntityInterface
+    public function getResource(): ResourceEntityInterface
     {
-        return $this->resource_id
-        ? $this->getDbServiceManager()->get(ResourceServiceInterface::class)->getResourceById($this->resource_id)
-        : null;
+        return $this->resource;
     }
 
     /**
@@ -107,7 +163,7 @@ class ResourceTags extends RowGateway implements
      */
     public function setResource(?ResourceEntityInterface $resource): static
     {
-        $this->resource_id = $resource?->getId();
+        $this->resource = $resource;
         return $this;
     }
 
@@ -118,9 +174,7 @@ class ResourceTags extends RowGateway implements
      */
     public function getTag(): TagsEntityInterface
     {
-        return $this->tag_id
-            ? $this->getDbServiceManager()->get(TagServiceInterface::class)->getTagById($this->tag_id)
-            : null;
+        return $this->tag;
     }
 
     /**
@@ -132,7 +186,7 @@ class ResourceTags extends RowGateway implements
      */
     public function setTag(TagsEntityInterface $tag): static
     {
-        $this->tag_id = $tag->getId();
+        $this->tag = $tag;
         return $this;
     }
 
@@ -143,9 +197,7 @@ class ResourceTags extends RowGateway implements
      */
     public function getUserList(): ?UserListEntityInterface
     {
-        return $this->list_id
-        ? $this->getDbServiceManager()->get(UserListServiceInterface::class)->getUserListById($this->list_id)
-        : null;
+        return $this->list;
     }
 
     /**
@@ -157,7 +209,7 @@ class ResourceTags extends RowGateway implements
      */
     public function setUserList(?UserListEntityInterface $list): static
     {
-        $this->list_id = $list?->getId();
+        $this->list = $list;
         return $this;
     }
 
@@ -168,21 +220,19 @@ class ResourceTags extends RowGateway implements
      */
     public function getUser(): ?UserEntityInterface
     {
-        return $this->user_id
-        ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
-        : null;
+        return $this->user;
     }
 
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User
+     * @param ?UserEntityInterface $user User object
      *
      * @return static
      */
     public function setUser(?UserEntityInterface $user): static
     {
-        $this->user_id = $user?->getId();
+        $this->user = $user;
         return $this;
     }
 
@@ -193,7 +243,7 @@ class ResourceTags extends RowGateway implements
      */
     public function getPosted(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->posted);
+        return $this->posted;
     }
 
     /**
@@ -205,7 +255,7 @@ class ResourceTags extends RowGateway implements
      */
     public function setPosted(DateTime $dateTime): static
     {
-        $this->posted = $dateTime->format('Y-m-d H:i:s');
+        $this->posted = $dateTime;
         return $this;
     }
 }

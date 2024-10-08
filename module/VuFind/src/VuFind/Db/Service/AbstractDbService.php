@@ -29,8 +29,13 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Laminas\Db\RowGateway\AbstractRowGateway;
 use VuFind\Db\Entity\EntityInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+
+use function is_callable;
+use function is_int;
 
 /**
  * Database service abstract base class
@@ -44,6 +49,31 @@ use VuFind\Db\Entity\EntityInterface;
 abstract class AbstractDbService implements DbServiceInterface
 {
     /**
+     * Constructor
+     *
+     * @param EntityManager       $entityManager       Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
+     */
+    public function __construct(
+        protected EntityManager $entityManager,
+        protected EntityPluginManager $entityPluginManager
+    ) {
+    }
+
+    /**
+     * Resolve an entity class name using the plugin manager.
+     *
+     * @param string $entity Entity class name or alias
+     *
+     * @return string
+     */
+    protected function getEntityClass(string $entity): string
+    {
+        $entity = $this->entityPluginManager->get($entity);
+        return $entity::class;
+    }
+
+    /**
      * Persist an entity.
      *
      * @param EntityInterface $entity Entity to persist.
@@ -52,9 +82,82 @@ abstract class AbstractDbService implements DbServiceInterface
      */
     public function persistEntity(EntityInterface $entity): void
     {
-        if (!$entity instanceof AbstractRowGateway) {
-            throw new \Exception('Unexpected entity type');
+        // Compatibility with legacy \VuFind\Db\Row objects:
+        if ($entity instanceof AbstractRowGateway) {
+            $entity->save();
+            return;
         }
-        $entity->save();
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Delete an entity.
+     *
+     * @param EntityInterface $entity Entity to persist.
+     *
+     * @return void
+     */
+    public function deleteEntity(EntityInterface $entity): void
+    {
+        $this->entityManager->remove($entity);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Get a Doctrine reference for an entity or ID.
+     *
+     * @param class-string<T>     $desiredClass Desired Doctrine entity class
+     * @param int|EntityInterface $objectOrId   Object or identifier to convert to entity
+     *
+     * @template T
+     *
+     * @return T
+     */
+    public function getDoctrineReference(string $desiredClass, int|EntityInterface $objectOrId): EntityInterface
+    {
+        if ($objectOrId instanceof $desiredClass) {
+            return $objectOrId;
+        }
+        if (is_int($objectOrId)) {
+            $id = $objectOrId;
+        } else {
+            if (!is_callable([$objectOrId, 'getId'])) {
+                throw new \Exception('No getId() method on ' . $objectOrId::class);
+            }
+            $id = $objectOrId->getId();
+        }
+        return $this->entityManager->getReference($desiredClass, $id);
+    }
+
+    /**
+     * Retrieve an entity by id.
+     *
+     * @param string $entityClass Entity class.
+     * @param int    $id          Id of the entity to be retrieved
+     *
+     * @return ?object
+     */
+    public function getEntityById($entityClass, $id)
+    {
+        return $this->entityManager->find(
+            $this->getEntityClass($entityClass),
+            $id
+        );
+    }
+
+    /**
+     * Get the row count of a given entity.
+     *
+     * @param string $entityClass Entity class.
+     *
+     * @return int
+     */
+    public function getRowCountForTable($entityClass)
+    {
+        $dql = 'SELECT COUNT(e) FROM ' . $this->getEntityClass($entityClass) . ' e ';
+        $query = $this->entityManager->createQuery($dql);
+        $count = $query->getSingleScalarResult();
+        return $count;
     }
 }
