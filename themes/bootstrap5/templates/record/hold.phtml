@@ -58,7 +58,7 @@
         <?php foreach ($this->requestGroups as $group): ?>
           <option
             value="<?=$this->escapeHtmlAttr($group['id'])?>"
-            data-locations-label="<?=$this->transEsc('pick_up_location_label_' . $group['id'], null, $this->transEsc('pick_up_location'))?>"
+            data-locations-label="<?=$this->transEsc($group['locationsLabel'], null, $this->transEsc('pick_up_location'))?>"
             <?=($selected == $group['id']) ? ' selected="selected"' : ''?>
           >
             <?=$this->transEsc('request_group_' . $group['name'], null, $group['name'])?>
