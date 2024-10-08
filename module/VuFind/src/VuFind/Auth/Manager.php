@@ -775,7 +775,7 @@ class Manager implements
 
             // Attempt catalog login so that any bad credentials are cleared before further processing
             // (avoids e.g. multiple login attempts by account AJAX checks):
-            if ($this->ilsAuthenticator && $username = $user->getCatUsername()) {
+            if ($this->ilsAuthenticator && ($username = $user->getCatUsername()) && !$this->ils->getOfflineMode()) {
                 try {
                     $patron = $this->ils->patronLogin(
                         $username,
