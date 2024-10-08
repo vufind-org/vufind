@@ -739,6 +739,38 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check if initiating of password recovery is supported.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return array|false
+     */
+    protected function checkMethodgetPasswordRecoveryData($functionConfig, $params)
+    {
+        if ($this->checkCapability('getPasswordRecoveryData', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
+     * Check if password recovery is supported.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return array|false
+     */
+    protected function checkMethodresetPassword($functionConfig, $params)
+    {
+        if ($this->checkCapability('resetPassword', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
      * Check Current Loans
      *
      * A support method for checkFunction(). This is responsible for checking

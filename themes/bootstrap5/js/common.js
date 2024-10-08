@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, displayILSPasswordRecoveryLink, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -893,6 +893,30 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
       }
     }
   }).trigger("change");
+}
+
+/**
+ * MultiILS: Display password recovery link for enabled login targets
+ * @param {Object} links Recovery links
+ * @param {*} idPrefix
+ */
+function displayILSPasswordRecoveryLink(links, idPrefix) {
+  const searchPrefix = idPrefix ? '#' + idPrefix : '#';
+  const targetSelector = document.querySelector(searchPrefix + 'target');
+  const recoveryLink = document.querySelector('#recovery_link');
+  if (targetSelector && recoveryLink) {
+    const changeListener = () => {
+      const target = targetSelector.value;
+      if (links[target]) {
+        recoveryLink.setAttribute('href', links[target]);
+        recoveryLink.classList.remove('hidden');
+      } else {
+        recoveryLink.classList.add('hidden');
+      }
+    };
+    targetSelector.addEventListener('change', changeListener);
+    changeListener();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
