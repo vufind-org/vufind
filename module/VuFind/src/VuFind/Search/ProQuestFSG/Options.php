@@ -87,10 +87,10 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
-        // // Load list view for result (controls AJAX embedding vs. linking)
-        // if (isset($searchSettings->List->view)) {
-        //     $this->listviewOption = $searchSettings->List->view;
-        // }
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
+        }
     }
 
     /**
