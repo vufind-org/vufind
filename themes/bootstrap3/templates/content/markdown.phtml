@@ -16,4 +16,5 @@ if (!empty($title)) {
   $this->headTitle($title);
 }
 ?>
+<?=$this->flashmessages()?>
 <?=$content->getContent();

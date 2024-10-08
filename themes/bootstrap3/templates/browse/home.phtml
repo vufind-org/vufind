@@ -6,6 +6,8 @@
   $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
 ?>
 
+<?=$this->flashmessages()?>
+
 <?php if (!isset($this->currentAction)): ?>
   <h2><?=$this->transEsc('Choose a Category to Begin Browsing') ?>:</h2>
 <?php endif; ?>

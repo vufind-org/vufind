@@ -63,8 +63,8 @@ var VuFind = (function VuFind() {
     }
 
     // iterate over a copy of the listeners array
-    // this prevents listeners from being skipped
-    // if the listener before it is removed during execution
+    // this prevents the loop from skipping listeners
+    // if any are removed during execution
     for (const fn of Array.from(listeners[event])) {
       fn(...args);
     }
