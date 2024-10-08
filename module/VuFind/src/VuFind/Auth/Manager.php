@@ -774,11 +774,20 @@ class Manager implements
             }
 
             // Attempt catalog login so that any bad credentials are cleared before further processing
-            // (avoids e.g. multiple login attempts by account AJAX checks):
-            if ($this->ilsAuthenticator && ($username = $user->getCatUsername()) && !$this->ils->getOfflineMode()) {
+            // (avoids e.g. multiple login attempts by account AJAX checks).
+            if (
+                ($this->config->Catalog->checkILSCredentialsOnLogin ?? true)
+                && $this->ilsAuthenticator
+                && $this->allowsUserIlsLogin()
+                && ($catUsername = $user->getCatUsername())
+                // If ILS authentication was used, catalog username must not be the same as the username just used for
+                // authentication:
+                && (!in_array($user->getAuthMethod(), ['ils', 'multiils']) || $catUsername !== $user->getUsername())
+                && !$this->ils->getOfflineMode()
+            ) {
                 try {
                     $patron = $this->ils->patronLogin(
-                        $username,
+                        $catUsername,
                         $this->ilsAuthenticator->getCatPasswordForUser($user)
                     );
                     if (empty($patron)) {
