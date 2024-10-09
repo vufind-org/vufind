@@ -757,11 +757,11 @@
     </if>
     <echo file="${themedir}/theme.config.php">&lt;?php
 return [
-    'extends' =&gt; 'sandal',
+    'extends' =&gt; 'sandal5',
 ];
 </echo>
 
-    <copy file="${srcdir}/themes/bootstrap3/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
+    <copy file="${srcdir}/themes/bootstrap5/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
     <!-- Add a script for testing that inline scripts work -->
     <echo file="${themedir}/templates/ajax/status-full.phtml" append="true">
 &lt;div class="js-status-test hidden"&gt;&lt;/div&gt;
