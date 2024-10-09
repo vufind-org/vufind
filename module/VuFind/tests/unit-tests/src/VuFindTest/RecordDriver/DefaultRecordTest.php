@@ -453,7 +453,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetBreadcrumb()
     {
-        $breadcrumb = 'La congiura dei Principi Napoletani 1701 :';
+        $breadcrumb = 'La congiura <em>dei</em> Principi Napoletani 1701 :';
         $this->assertEquals($breadcrumb, $this->getDriver()->getBreadcrumb());
     }
 
