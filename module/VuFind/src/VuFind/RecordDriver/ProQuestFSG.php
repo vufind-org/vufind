@@ -49,6 +49,7 @@ class ProQuestFSG extends DefaultRecord
     use MarcReaderTrait, MarcAdvancedTrait, MarcBasicTrait {
         MarcBasicTrait::getNewerTitles insteadof MarcAdvancedTrait;
         MarcBasicTrait::getPreviousTitles insteadof MarcAdvancedTrait;
+        MarcBasicTrait::getShortTitle as marcGetShortTitle;
     }
 
     /**
@@ -71,5 +72,15 @@ class ProQuestFSG extends DefaultRecord
         // Map the WorldCat response into a format that the parent Solr-based
         // record driver can understand.
         parent::setRawData(['fullrecord' => $data]);
+    }
+
+    /**
+     * Get the short (pre-subtitle) title of the record.
+     *
+     * @return string
+     */
+    public function getShortTitle()
+    {
+        return strip_tags($this->marcGetShortTitle());
     }
 }
