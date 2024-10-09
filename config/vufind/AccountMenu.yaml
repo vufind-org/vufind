@@ -16,6 +16,7 @@ MenuItems:
     label: saved_items
     route: myresearch-favorites
     icon: user-favorites
+    status: true
     checkMethod: checkFavorites
 
   - name: checkedout

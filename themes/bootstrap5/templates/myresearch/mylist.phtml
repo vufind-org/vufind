@@ -108,3 +108,7 @@
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
 </div>
+
+<?php if (!isset($list)): ?>
+  <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'favorites', 'accountStatus' => ['count' => $recordTotal]]); ?>
+<?php endif; ?>
