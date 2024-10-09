@@ -1211,7 +1211,14 @@ class DefaultRecord extends AbstractBase
      */
     public function getShortTitle()
     {
-        return $this->fields['title_short'] ?? '';
+        // Faking an example of HTML that would not be escaped
+        $title = $this->fields['title_short'] ?? '';
+        $words = explode(' ', $title);
+        if (count($words) > 3) {
+            $words[2] = '<em>' . $words[2] . '</em>';
+        }
+        $title = implode(' ', $words);
+        return $title;
     }
 
     /**
