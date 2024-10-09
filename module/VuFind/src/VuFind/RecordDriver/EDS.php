@@ -451,7 +451,8 @@ class EDS extends DefaultRecord
     {
         $subject_arrays = array_map(
             function ($data) {
-                return explode(', ', rtrim(strip_tags($data['Data']), '.'));
+                $str = preg_replace('/>\s*[;,]\s*</', '>|<', $data['Data']);
+                return explode('|', rtrim(strip_tags($str), '.'));
             },
             $this->getItems(null, null, 'Su')
         );
