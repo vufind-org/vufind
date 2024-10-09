@@ -135,6 +135,18 @@
             <subfield code="a">Summary.</subfield>
             <subfield code="b">Expanded.</subfield>
         </datafield>
+        <datafield tag="520" ind1="1" ind2=" ">
+            <subfield code="a">Review Note.</subfield>
+            <subfield code="b">Expanded.</subfield>
+        </datafield>
+        <datafield tag="520" ind1="3" ind2=" ">
+            <subfield code="a">Abstract.</subfield>
+            <subfield code="b">Expanded.</subfield>
+        </datafield>
+        <datafield tag="520" ind1="4" ind2=" ">
+            <subfield code="a">Content Advice.</subfield>
+            <subfield code="b">Expanded.</subfield>
+        </datafield>
         <datafield tag="521" ind1=" " ind2=" ">
             <subfield code="a">Developers</subfield>
         </datafield>

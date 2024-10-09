@@ -288,17 +288,62 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getAbstractAndSummaryNotes to get expected marc data
+     * Test calling getSummaryNotes to get expected marc data
      *
      * @return void
      */
-    public function testGetAbstractAndSummaryNotes(): void
+    public function testGetSummaryNotes(): void
     {
         $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
 
         $this->assertEquals(
             ['Summary. Expanded.'],
-            $obj->getAbstractAndSummaryNotes()
+            $obj->getSummaryNotes()
+        );
+    }
+
+    /**
+     * Test calling getAbstractNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetAbstractNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Abstract. Expanded.'],
+            $obj->getAbstractNotes()
+        );
+    }
+
+    /**
+     * Test calling getReviewNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetReviewNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Review Note. Expanded.'],
+            $obj->getReviewNotes()
+        );
+    }
+
+    /**
+     * Test calling getContentAdviceNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetContentAdviceNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Content Advice. Expanded.'],
+            $obj->getContentAdviceNotes()
         );
     }
 

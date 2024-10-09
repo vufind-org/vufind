@@ -559,16 +559,6 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get an array of summary strings for the record.
-     *
-     * @return array
-     */
-    public function getSummary()
-    {
-        return $this->getFieldArray('520');
-    }
-
-    /**
      * Get an array of technical details on the item represented by the record.
      *
      * @return array
@@ -1258,16 +1248,6 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the abstract and summary notes
-     *
-     * @return array Note fields from the MARC record
-     */
-    public function getAbstractAndSummaryNotes()
-    {
-        return $this->getMarcFieldWithInd('520', null, [[1 => ['', '0', '2', '3', '8']]]);
-    }
-
-    /**
      * Get the location of other archival materials notes
      *
      * @return array Note fields from the MARC record
@@ -1275,5 +1255,55 @@ trait MarcAdvancedTrait
     public function getLocationOfArchivalMaterialsNotes()
     {
         return $this->getMarcFieldWithInd('544', null, [[1 => ['', '0']]]);
+    }
+
+    /**
+     * Get an array of summary strings for the record with only the 'a' subfield.
+     *
+     * @return array
+     */
+    public function getSummary()
+    {
+        return $this->getMarcFieldWithInd('520', ['a'], [[1 => ['', '0', '2', '8']]]);
+    }
+
+    /**
+     * Get the summary note
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getSummaryNotes()
+    {
+        return $this->getMarcFieldWithInd('520', null, [[1 => ['', '0', '2', '8']]]);
+    }
+
+    /**
+     * Get the review by notes
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getReviewNotes()
+    {
+        return $this->getMarcFieldWithInd('520', null, [[1 => ['1']]]);
+    }
+
+    /**
+     * Get the abstract notes
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getAbstractNotes()
+    {
+        return $this->getMarcFieldWithInd('520', null, [[1 => ['3']]]);
+    }
+
+    /**
+     * Get the content advice notes
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getContentAdviceNotes()
+    {
+        return $this->getMarcFieldWithInd('520', null, [[1 => ['4']]]);
     }
 }

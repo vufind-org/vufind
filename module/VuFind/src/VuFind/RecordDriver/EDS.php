@@ -121,7 +121,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getAbstractAndSummaryNotes()
+    public function getAbstractNotes()
     {
         $abstract = $this->getItems(null, null, 'Ab');
         return (array)($abstract[0]['Data'] ?? []);
