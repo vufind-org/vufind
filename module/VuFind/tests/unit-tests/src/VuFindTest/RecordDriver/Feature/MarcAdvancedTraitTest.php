@@ -239,7 +239,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getMarcFieldWithInd when multiple indicators are requested
-     * as OR conditions
+     * as AND conditions
      *
      * @return void
      */
@@ -256,7 +256,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getMarcFieldWithInd when multiple indicators are requested
-     * as AND conditions
+     * as OR conditions
      *
      * @return void
      */

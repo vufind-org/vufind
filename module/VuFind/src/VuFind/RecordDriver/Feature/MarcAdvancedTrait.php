@@ -1198,11 +1198,7 @@ trait MarcAdvancedTrait
      * Check if the indicator filters match the provided marc data
      *
      * @param array $marc_data MARC data for a specific field
-     * @param array $indData   Array containing the indicator number as the key
-     * and the value as an array of strings for the allowed indicator values
-     * ex: [['1' => ['1', '2']], ['2' => ['']]] would filter fields ind1 = 1 or 2 or ind2 = blank
-     * ex: [['1' => ['1'], '2' => ['7']]] would filter fields with ind1 = 1 and ind2 = 7
-     * ex: [] would apply no filtering based on indicators
+     * @param array $indData   Indicator filters as described in getMarcFieldWithInd()
      *
      * @return bool
      */
@@ -1227,8 +1223,10 @@ trait MarcAdvancedTrait
      *
      * @param string $field    Marc field to search within
      * @param ?array $subfield Sub-fields to return or empty for all
-     * @param array  $indData  Array containing the indicator number as the key
-     * and the value as an array of strings for the allowed indicator values
+     * @param array  $indData  Array of filter arrays, each in the format indicator number =>
+     * array of allowed indicator values. If any one of the filter arrays fully matches the indicator
+     * values in the field, data will be returned. If no filter arrays are defined, data will always
+     * be returned regardless of indicators.
      * ex: [['1' => ['1', '2']], ['2' => ['']]] would filter fields ind1 = 1 or 2 or ind2 = blank
      * ex: [['1' => ['1'], '2' => ['7']]] would filter fields with ind1 = 1 and ind2 = 7
      * ex: [] would apply no filtering based on indicators
