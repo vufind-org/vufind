@@ -138,6 +138,7 @@
         <datafield tag="520" ind1="1" ind2=" ">
             <subfield code="a">Review Note.</subfield>
             <subfield code="b">Expanded.</subfield>
+            <subfield code="1">http://expanded.</subfield>
         </datafield>
         <datafield tag="520" ind1="3" ind2=" ">
             <subfield code="a">Abstract.</subfield>

@@ -1254,7 +1254,7 @@ trait MarcAdvancedTrait
      */
     public function getLocationOfArchivalMaterialsNotes()
     {
-        return $this->getMarcFieldWithInd('544', null, [[1 => ['', '0']]]);
+        return $this->getMarcFieldWithInd('544', range('a', 'z'), [[1 => ['', '0']]]);
     }
 
     /**
@@ -1274,17 +1274,7 @@ trait MarcAdvancedTrait
      */
     public function getSummaryNotes()
     {
-        return $this->getMarcFieldWithInd('520', null, [[1 => ['', '0', '2', '8']]]);
-    }
-
-    /**
-     * Get the review by notes
-     *
-     * @return array Note fields from the MARC record
-     */
-    public function getReviewNotes()
-    {
-        return $this->getMarcFieldWithInd('520', null, [[1 => ['1']]]);
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['', '0', '2', '8']]]);
     }
 
     /**
@@ -1294,16 +1284,6 @@ trait MarcAdvancedTrait
      */
     public function getAbstractNotes()
     {
-        return $this->getMarcFieldWithInd('520', null, [[1 => ['3']]]);
-    }
-
-    /**
-     * Get the content advice notes
-     *
-     * @return array Note fields from the MARC record
-     */
-    public function getContentAdviceNotes()
-    {
-        return $this->getMarcFieldWithInd('520', null, [[1 => ['4']]]);
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['3']]]);
     }
 }
