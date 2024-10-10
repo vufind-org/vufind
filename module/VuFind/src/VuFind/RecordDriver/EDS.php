@@ -116,7 +116,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the abstract and summary notes.
+     * Get the abstract notes.
      * For EDS, returns the abstract in an array or an empty array.
      *
      * @return array
