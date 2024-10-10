@@ -1746,6 +1746,38 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get allowed service points for a request.
+     *
+     * @param string $instanceId  Instance UUID being requested
+     * @param string $requesterId Patron UUID placing request
+     * @param string $operation   Operation type (default = create)
+     *
+     * @return array
+     */
+    public function getAllowedServicePoints(
+        string $instanceId,
+        string $requesterId,
+        string $operation = 'create'
+    ): array {
+        try {
+            // circulation.requests.allowed-service-points.get
+            $response = $this->makeRequest(
+                'GET',
+                '/circulation/requests/allowed-service-points?'
+                . http_build_query(compact('instanceId', 'requesterId', 'operation'))
+            );
+            if (!$response->isSuccess()) {
+                $this->warning('Unexpected service point lookup response: ' . $response->getBody());
+                return [];
+            }
+        } catch (\Exception $e) {
+            $this->warning('Exception during allowed service point lookup: ' . (string)$e);
+            return [];
+        }
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1768,9 +1800,9 @@ class Folio extends AbstractAPI implements
         $requiredBy = !empty($holdDetails['requiredByTS'])
             ? gmdate('Y-m-d', $holdDetails['requiredByTS']) : null;
 
+        $instance = $this->getInstanceByBibId($holdDetails['id']);
         $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
         if ($isTitleLevel) {
-            $instance = $this->getInstanceByBibId($holdDetails['id']);
             $baseParams = [
                 'instanceId' => $instance->id,
                 'requestLevel' => 'Title',
@@ -1803,7 +1835,19 @@ class Folio extends AbstractAPI implements
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
+        $allowed = $this->getAllowedServicePoints($instance->id, $holdDetails['patron']['id']);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
+            // Skip illegal request types, if we have validation data available:
+            if (!empty($allowed)) {
+                if (
+                    // Unsupported request type:
+                    !isset($allowed[$requestType])
+                    // Unsupported pickup location:
+                    || !in_array($holdDetails['pickUpLocation'], array_column($allowed[$requestType] ?? [], 'id'))
+                ) {
+                    continue;
+                }
+            }
             $requestBody['requestType'] = $requestType;
             $result = $this->performHoldRequest($requestBody);
             if ($result['success']) {
