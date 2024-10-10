@@ -1537,8 +1537,6 @@ class Folio extends AbstractAPI implements
             }
         }
 
-        // If we got this far, we'll have to satisfy ourselves with the full location list, as we can't
-        // narrow it down further:
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
         foreach (
