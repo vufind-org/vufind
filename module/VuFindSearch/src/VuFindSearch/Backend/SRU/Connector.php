@@ -48,6 +48,7 @@ use function sprintf;
 class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * Whether to Serialize to a PHP Array or not.
@@ -69,6 +70,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @var string
      */
     protected $host;
+
+    protected $defaultPath = '';
 
     /**
      * The version to specify in the URL
@@ -173,7 +176,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $options['maximumRecords'] = $limit;
         }
         if (null !== $sortBy) {
-            $options['sortKeys'] = $sortBy;
+            $options['query'] .= " sortBy {$sortBy}";
         }
 
         return $this->call('GET', $options, $process);
@@ -198,12 +201,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Submit REST Request
      *
      * @param string $method  HTTP Method to use: GET or POST
+     * @param string $path    URL path following $this->host
      * @param array  $params  An array of parameters for the request
      * @param bool   $process Should we convert the MARCXML?
      *
      * @return string|SimpleXMLElement The response from the XServer
      */
-    protected function call($method = 'GET', $params = null, $process = true)
+    protected function call($method = 'GET', $path = '', $params = null, $process = true)
     {
         $queryString = '';
         if ($params) {
@@ -222,17 +226,35 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $queryString = implode('&', $query);
         }
 
-        $url = $this->host . '?' . $queryString;
+        $url = $this->host . $path . '?' . $queryString;
         $this->debug('Connect: ' . $url);
 
         // Send Request
         $this->client->resetParameters();
         $this->client->setUri($url);
-        $result = $this->client->setMethod($method)->send();
-        $this->checkForHttpError($result);
+
+        // Check cache:
+        $cacheKey = null;
+        $resultBody = null;
+        if ($this->cache) {
+            $cacheKey = $this->getCacheKey($this->client);
+            $resultBody = $this->getCachedData($cacheKey);
+        }
+
+        if (!$resultBody) {
+            $result = $this->client->setMethod($method)->send();
+            $this->checkForHttpError($result);
+            $resultBody = $result->getBody();
+            if ($cacheKey) {
+                $this->putCachedData($cacheKey, $resultBody);
+            }
+        }
 
         // Return processed or unprocessed response, as appropriate:
-        return $process ? $this->process($result->getBody()) : $result->getBody();
+        if ($process) {
+            $resultBody = $this->process($resultBody);
+        }
+        return $resultBody;
     }
 
     /**
@@ -246,7 +268,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function process($response)
     {
         // Send back either the raw XML or a SimpleXML object, as requested:
-        $result = XSLTProcessor::process('sru-convert.xsl', $response);
+        $result = XSLTProcessor::process('sru-convert-simple.xsl', $response);
         if (!$result) {
             throw new BackendException(
                 sprintf('Error processing SRU response: %20s', $response)
