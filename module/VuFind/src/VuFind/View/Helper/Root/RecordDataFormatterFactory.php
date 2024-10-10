@@ -372,6 +372,8 @@ class RecordDataFormatterFactory implements FactoryInterface
         $spec = new RecordDataFormatter\SpecBuilder();
         $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
         $spec->setLine('Abstract', 'getAbstractNotes');
+        $spec->setLine('Review', 'getReviewNotes');
+        $spec->setLine('Content Advice', 'getContentAdviceNotes');
         $spec->setLine('Published', 'getDateSpan');
         $spec->setLine('Item Description', 'getGeneralNotes');
         $spec->setLine('Physical Description', 'getPhysicalDescriptions');
