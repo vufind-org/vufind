@@ -333,6 +333,36 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test calling getReviewtNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetReviewNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Review Note. Expanded.'],
+            $obj->getReviewNotes()
+        );
+    }
+
+    /**
+     * Test calling getContentAdviceNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetContentAdviceNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Content Advice. Expanded.'],
+            $obj->getContentAdviceNotes()
+        );
+    }
+
+    /**
      * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data
      *
      * @return void
