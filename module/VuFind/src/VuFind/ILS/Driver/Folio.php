@@ -1746,19 +1746,19 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get allowed service points for a request.
+     * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
      * @param string $instanceId  Instance UUID being requested
      * @param string $requesterId Patron UUID placing request
      * @param string $operation   Operation type (default = create)
      *
-     * @return array
+     * @return ?array
      */
     public function getAllowedServicePoints(
         string $instanceId,
         string $requesterId,
         string $operation = 'create'
-    ): array {
+    ): ?array {
         try {
             // circulation.requests.allowed-service-points.get
             $response = $this->makeRequest(
@@ -1768,11 +1768,11 @@ class Folio extends AbstractAPI implements
             );
             if (!$response->isSuccess()) {
                 $this->warning('Unexpected service point lookup response: ' . $response->getBody());
-                return [];
+                return null;
             }
         } catch (\Exception $e) {
             $this->warning('Exception during allowed service point lookup: ' . (string)$e);
-            return [];
+            return null;
         }
         return json_decode($response->getBody(), true);
     }
@@ -1838,7 +1838,7 @@ class Folio extends AbstractAPI implements
         $allowed = $this->getAllowedServicePoints($instance->id, $holdDetails['patron']['id']);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
             // Skip illegal request types, if we have validation data available:
-            if (!empty($allowed)) {
+            if (null !== $allowed) {
                 if (
                     // Unsupported request type:
                     !isset($allowed[$requestType])
