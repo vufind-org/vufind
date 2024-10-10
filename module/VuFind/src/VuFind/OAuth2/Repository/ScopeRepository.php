@@ -33,6 +33,8 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use VuFind\OAuth2\Entity\ScopeEntity;
 
+use function in_array;
+
 /**
  * OAuth2 scope repository implementation.
  *
@@ -98,6 +100,18 @@ class ScopeRepository implements ScopeRepositoryInterface
         ClientEntityInterface $clientEntity,
         $userIdentifier = null
     ) {
+        $clientId = $clientEntity->getIdentifier();
+        // Apply any client-specific filter to scopes:
+        if ($allowedScopes = $this->oauth2Config['Clients'][$clientId]['allowedScopes'] ?? null) {
+            $scopes = array_values(
+                array_filter(
+                    $scopes,
+                    function ($scope) use ($allowedScopes) {
+                        return in_array($scope->getIdentifier(), $allowedScopes);
+                    }
+                )
+            );
+        }
         return $scopes;
     }
 }

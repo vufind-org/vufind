@@ -230,6 +230,7 @@ VuFind.register('embedded', function embedded() {
   function updateContainer(params) {
     const container = $(params.container);
     container.find('.getFull').on('click', function linkToggle() { return toggleDataView(this); });
+    container.find('.full-record-link').removeClass('hidden');
     loadStorage();
   }
 

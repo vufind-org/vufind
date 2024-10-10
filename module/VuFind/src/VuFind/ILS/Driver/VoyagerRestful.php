@@ -682,7 +682,7 @@ class VoyagerRestful extends Voyager implements
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -747,7 +747,7 @@ class VoyagerRestful extends Voyager implements
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $pickResponse[] = [
                     'locationID' => $row['LOCATION_ID'],
-                    'locationDisplay' => utf8_encode($row['LOCATION_NAME']),
+                    'locationDisplay' => $this->utf8Encode($row['LOCATION_NAME']),
                 ];
             }
         }
@@ -1007,7 +1007,7 @@ class VoyagerRestful extends Voyager implements
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = [
                 'id' => $row['GROUP_ID'],
-                'name' => utf8_encode($row['GROUP_NAME']),
+                'name' => $this->utf8Encode($row['GROUP_NAME']),
             ];
         }
 

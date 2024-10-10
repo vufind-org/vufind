@@ -142,7 +142,7 @@ class CartController extends AbstractBase
         // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
+        if (!empty($referer) && $this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -284,10 +284,13 @@ class CartController extends AbstractBase
             $submitDisabled = true;
         }
 
+        $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
+        if ($emailActionSettings === 'disabled') {
+            throw new ForbiddenException('Email action disabled');
+        }
         // Force login if necessary:
-        $config = $this->getConfig();
         if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
+            $emailActionSettings !== 'enabled'
             && !$this->getUser()
         ) {
             return $this->forceLogin(

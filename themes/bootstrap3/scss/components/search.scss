@@ -743,7 +743,7 @@ table.search-history-table {
 }
 
 .searchForm {
-  margin: 0;
+  margin: 0.2rem 0;
   padding: 0;
   width: 100%;
 
@@ -863,4 +863,14 @@ table.search-history-table {
       content: ', ';
     }
   }
+}
+
+.callnumAndLocation .statusItemsHoldingsTextFields {
+  border: none;
+  padding: 0;
+  padding-left: 15px;
+}
+
+.callnumAndLocation .itemWithAdditionalHoldingFields td {
+  border-bottom-width: 0;
 }

@@ -766,7 +766,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * Assert visibility
      *
      * @param array  $combo    Current Site configuration
-     * @param bool[] $elements Array of element visibilty states indexed by name
+     * @param bool[] $elements Array of element visibility states indexed by name
      * @param string $name     Name of element to check
      * @param string $exp      Expected visibility
      *

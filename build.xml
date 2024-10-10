@@ -65,8 +65,10 @@
   <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
+  <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
+  <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
-  <property name="version" value="10.0" />
+  <property name="version" value="10.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -686,6 +688,7 @@
           <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
           <regexp pattern="(\[System\]\s+)" replace="\1runningTestSuite=1" />
           <regexp pattern="(url\s+= http://localhost):8983/solr" replace="\1:${solr_port}/solr" />
+          <regexp pattern="browserDetectLanguage = true" replace="browserDetectLanguage = false" />
         </replaceregexp>
       </filterchain>
     </copy>
@@ -754,11 +757,11 @@
     </if>
     <echo file="${themedir}/theme.config.php">&lt;?php
 return [
-    'extends' =&gt; 'sandal',
+    'extends' =&gt; 'sandal5',
 ];
 </echo>
 
-    <copy file="${srcdir}/themes/bootstrap3/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
+    <copy file="${srcdir}/themes/bootstrap5/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
     <!-- Add a script for testing that inline scripts work -->
     <echo file="${themedir}/templates/ajax/status-full.phtml" append="true">
 &lt;div class="js-status-test hidden"&gt;&lt;/div&gt;
@@ -805,19 +808,21 @@ return [
           </then>
           <else>
             <exec executable="sudo">
-              <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo">
-              <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'CREATE DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" />
+              <!-- due to deep quote nesting and Phing bugs, we need to use a variable to make this work -->
+              <env key="PG_COMMAND" value="&quot;\&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot;" />
+              <arg line="su -c &quot;psql -c $PG_COMMAND &quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -c 'GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>
@@ -966,10 +971,10 @@ ${git_status}
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
         <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+          <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
         </exec>
         <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+          <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
         </exec>
       </then>
       <else>
@@ -1266,7 +1271,7 @@ ${git_status}
   <!-- Update bootstrap3 templates from bootstrap5 -->
   <!-- N.B. This destroys any existing bootstrap3 templates (except explicitly excluded ones) -->
   <target name="update-bootstrap3">
-    <property name="templatesdir" value="${srcdir}/themes/bootstrap3/templates" />
+    <property name="templatesdir" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
     <if>
       <available file="${templatesdir}"></available>
       <then>
@@ -1284,7 +1289,7 @@ ${git_status}
     </if>
     <mkdir dir="${templatesdir}"></mkdir>
     <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/bootstrap5/templates">
+      <fileset dir="${srcdir}/themes/${bootstrap5_theme}/templates">
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
@@ -1310,7 +1315,7 @@ ${git_status}
   <!-- Update bootstrap5 templates from bootstrap3 -->
   <!-- N.B. This destroys any existing bootstrap5 templates (except explicitly excluded ones) -->
   <target name="update-bootstrap5">
-    <property name="templatesdir" value="${srcdir}/themes/bootstrap5/templates" />
+    <property name="templatesdir" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
     <if>
       <available file="${templatesdir}"></available>
       <then>
@@ -1328,7 +1333,7 @@ ${git_status}
     </if>
     <mkdir dir="${templatesdir}"></mkdir>
     <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/bootstrap3/templates">
+      <fileset dir="${srcdir}/themes/${bootstrap3_theme}/templates">
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
@@ -1351,8 +1356,8 @@ ${git_status}
 
   <!-- Check that bootstrap5 is up to date with bootstrap3 -->
   <target name="check-bootstrap5">
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/templates" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/templates" />
+    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
+    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
     <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
         <type type="file" />
@@ -1362,8 +1367,8 @@ ${git_status}
       </fileset>
     </foreach>
 
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/scss" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/scss" />
+    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/scss" />
+    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/scss" />
     <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
         <type type="file" />
@@ -1374,8 +1379,8 @@ ${git_status}
       </fileset>
     </foreach>
 
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/js" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/js" />
+    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/js" />
+    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/js" />
     <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
         <type type="file" />

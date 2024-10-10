@@ -133,7 +133,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Obtain edsapi search critera and application related settings
+     * Obtain edsapi search criteria and application related settings
      *
      * @param string $authenticationToken Authentication token
      * @param string $sessionToken        Session token

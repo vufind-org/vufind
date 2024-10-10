@@ -172,6 +172,20 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             return $this->handleException('Authorization request', $e);
         }
 
+        // Hide any scopes not allowed by a client-specific filter (see also ScopeRepository for the actual filtering):
+        if ($allowedScopes = $clientConfig['allowedScopes'] ?? null) {
+            $scopes = $authRequest->getScopes();
+            array_map(
+                function ($scope) use ($allowedScopes) {
+                    if (!in_array($scope->getIdentifier(), $allowedScopes)) {
+                        $scope->setHidden(true);
+                    }
+                },
+                $scopes
+            );
+            $authRequest->setScopes($scopes);
+        }
+
         if ($this->formWasSubmitted('allow') || $this->formWasSubmitted('deny')) {
             // Check CSRF and session:
             if (!$this->csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
@@ -278,8 +292,9 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     OAuthServerException::accessDenied('User does not exist anymore')
                 );
             }
-            $result = $this->claimExtractor
-                ->extract($scopes, $userEntity->getClaims());
+            $result = $this->claimExtractor->extract($scopes, $userEntity->getClaims());
+            // The sub claim must always be returned:
+            $result['sub'] = $userId;
             return $this->getJsonResponse($result);
         } catch (OAuthServerException $e) {
             return $this->handleOAuth2Exception('User info request', $e);
@@ -362,9 +377,16 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             'grant_types_supported' => ['authorization_code'],
             'subject_types_supported' => ['public'],
             'id_token_signing_alg_values_supported' => ['RS256'],
+            'token_endpoint_auth_methods_supported' => [
+                'client_secret_post',
+                'client_secret_basic',
+            ],
         ];
         if ($url = $this->oauth2Config['Server']['documentationUrl'] ?? null) {
             $configuration['service_documentation'] = $url;
+        }
+        if ($scopes = $this->oauth2Config['Scopes'] ?? []) {
+            $configuration['scopes_supported'] = array_keys($scopes);
         }
 
         return $this->getJsonResponse($configuration);

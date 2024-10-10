@@ -34,6 +34,7 @@ use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use function is_array;
+use function sprintf;
 
 /**
  * SRU Search Interface

@@ -858,7 +858,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // We have now reloaded the page. Let's toggle format off and on to confirm
         // that it was opened, and let's also toggle building on to confirm that
-        // it was not alread opened.
+        // it was not already opened.
         $this->clickCss($page, '#side-panel-format .title'); // off
         $this->waitForPageLoad($page);
         $this->clickCss($page, '#side-panel-format .collapsed'); // on

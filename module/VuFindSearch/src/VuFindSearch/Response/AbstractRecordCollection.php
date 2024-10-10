@@ -251,8 +251,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->records[$this->pointer];
     }
@@ -282,8 +281,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->pointer + $this->getOffset();
     }

@@ -473,7 +473,8 @@ class AbstractRecord extends AbstractBase
         // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (
-            !str_ends_with($referer, '/Save')
+            !empty($referer)
+            && !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
             && $this->isLocalUrl($referer)
         ) {
@@ -528,10 +529,13 @@ class AbstractRecord extends AbstractBase
      */
     public function emailAction()
     {
+        $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
+        if ($emailActionSettings === 'disabled') {
+            throw new ForbiddenException('Email action disabled');
+        }
         // Force login if necessary:
-        $config = $this->getConfig();
         if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
+            $emailActionSettings !== 'enabled'
             && !$this->getUser()
         ) {
             return $this->forceLogin();

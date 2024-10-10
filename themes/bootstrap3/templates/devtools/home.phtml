@@ -1,11 +1,13 @@
 <?php
     $this->headTitle('Development Tools');
+    $this->layout()->breadcrumbs = '<li class="active">Development Tools</li>';
 ?>
 
-<h2>Development Tools</h2>
+<h1>Development Tools</h1>
 
 <ul>
   <li><a href="<?=$this->url('devtools-deminify')?>">Deminifier</a> - Examine minified search data copied from the search database table.</li>
   <li><a href="<?=$this->url('devtools-icon')?>">Icon List</a> - Show all configured icons.</li>
   <li><a href="<?=$this->url('devtools-language')?>">Language Details</a> - Summarize status of translations in language files.</li>
+  <li><a href="<?=$this->url('devtools-permissions')?>">Permissions</a> - List configured permissions and test access.</li>
 </ul>
