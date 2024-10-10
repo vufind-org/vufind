@@ -22,7 +22,7 @@ foreach ($ids as $id) {
 
     $availabilityStatus = null;
     if ($noshow) {
-        // patron does not have access to OverDrive. Don't show avail.
+        // Patron does not have access to OverDrive. Don't show availability info.
     } elseif ((isset($avail->code) && $avail->code == 'od_code_resource_not_found') || $isError) {
         $current['error'] = $this->transEsc('status_unknown_message');
         $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
