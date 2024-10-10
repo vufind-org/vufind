@@ -18,6 +18,7 @@
     $checkedOutResult = $this->driver->isCheckedOut();
     $checkedOut = $checkedOutResult->data;
     $copiesAvailable = $avail->data->copiesAvailable ?? 0;
+    $copiesOwned = $avail->data->copiesOwned ?? 0;
     $urls = $this->driver->getURLs();
     if (!$checkedOut):
         $hold = $this->driver->isHeld();
@@ -45,7 +46,7 @@
         <?php if (($avail->data->availabilityType ?? 0) == 'AlwaysAvailable'): ?>
           <?=$this->transEsc('od_unlimited')?>
         <?php else: ?>
-          <?=$this->transEsc('od_copies_available', ['%%copies%%' => $copiesAvailable . '/' . ($avail->data->copiesOwned ?? 0)])?>
+          <?=$this->transEsc('od_copies_available', ['%%copies%%' => $copiesAvailable . '/' . $copiesOwned])?>
         <?php endif; ?>
 
         <?php if (($numHolds = $avail->data->numberOfHolds ?? 0) > 0): ?>
@@ -67,7 +68,7 @@
         <?php endif; ?>
       <?php endif; ?>
       <?php if ((!$checkedOut && !$hold) && ($supportsPatronActions || isset($urls[0]['url']))): ?>
-        <?php if ($copiesAvailable == 0): ?>
+        <?php if ($copiesAvailable == 0 && $copiesOwned > 0): ?>
           <p>
             <?php
               $holdLink = $supportsPatronActions && count($urls) ?
