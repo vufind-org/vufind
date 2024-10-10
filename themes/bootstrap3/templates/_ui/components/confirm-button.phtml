@@ -33,9 +33,9 @@
   } else {
     $buttonLabelHtml = $this->buttonLabelHtml ?? $this->transEsc($this->buttonLabel);
   }
-
+  $ulClasses = $this->ulClasses ?? 'dropdown-menu';
   $ulAttrs = [
-    'class' => 'dropdown-menu',
+    'class' => $ulClasses,
     'role' => 'menu',
     'aria-labelledby' => $buttonId,
   ];
