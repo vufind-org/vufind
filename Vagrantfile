@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
     chmod 777 /vufindlocal/cache/cli
 
     # Set up profile for command line.
-    sudo echo export VUFIND_HOME=/vagrant > /etc/profile.d/vufind.sh
-    sudo echo export VUFIND_LOCAL_DIR=/vufindlocal >> /etc/profile.d/vufind.sh
+    echo export VUFIND_HOME=/vagrant > /etc/profile.d/vufind.sh
+    echo export VUFIND_LOCAL_DIR=/vufindlocal >> /etc/profile.d/vufind.sh
   SHELL
 end
