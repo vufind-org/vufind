@@ -281,13 +281,17 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     if (elem.classList.contains('exclude')) {
       elem.classList.toggle('selected');
     } else {
+      let facet;
       if (elem.classList.contains('facet')) {
-        elem.classList.toggle('active');
-      } else if (elem.parentElement.classList.contains('facet')) {
-        elem.parentElement.classList.toggle('active');
+        facet = elem;
+      } else {
+        facet = elem.closest('.facet');
+      }
+      if (!facet.parentElement.classList.contains('checkboxFilter')) {
+        facet.classList.toggle('active');
       }
 
-      let icon = elem.querySelector('.icon');
+      let icon = facet.querySelector('.icon');
       if (icon !== null) {
         const newCheckedState = icon.dataset.checked === 'false';
         let attrs = {};
