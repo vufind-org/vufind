@@ -130,6 +130,7 @@ class GetItemStatuses extends AbstractBase implements
     {
         $transList = [];
         foreach ($list as $current) {
+            // $current can be an array if pickValues() is called with callnumbers and a translation prefix
             $transList[] = is_string($current) ? $this->translateWithPrefix($transPrefix, $current) : $current;
         }
         return $transList;
@@ -247,11 +248,10 @@ class GetItemStatuses extends AbstractBase implements
                 $displayCallnumber = $number['prefix'] . ' ' . $displayCallnumber;
             }
 
-            $html[] = $this->renderer->render('ajax/itemCallnumber', [
-                'actualCallnumber' => $actualCallnumber,
-                'displayCallnumber' => $displayCallnumber,
-                'callnumberHandler' => $callnumberHandler,
-            ]);
+            $html[] = $this->renderer->render(
+                'ajax/itemCallnumber',
+                compact($actualCallnumber, $displayCallnumber, $callnumberHandler)
+            );
         }
 
         return implode(",\t", $html);

@@ -2,11 +2,11 @@
 <?php foreach ($this->locationList as $location): ?>
   <div class="groupLocation">
     <span class="<?= $availabilityStatus->getClass($location['availability'])?>">
-      <?= $this->icon($availabilityStatus->getIcon($location['availability']))?>
-      <?= $this->escapeHtml($location['location'])?>
+      <?=$this->icon($availabilityStatus->getIcon($location['availability']))?>
+      <?=$this->escapeHtml($location['location'])?>
     </span>
   </div>
   <div class="groupCallnumber">
-    <?= $location['callnumber']?>
+    <?=$this->escapeHtml($location['callnumber'])?>
   </div>
 <?php endforeach; ?>
