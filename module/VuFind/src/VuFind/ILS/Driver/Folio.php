@@ -1520,6 +1520,25 @@ class Folio extends AbstractAPI implements
             $limitedServicePoints = $this->getLocationData($itemLocationId)['servicePointIds'];
         }
 
+        // If we have $holdInfo, we can limit ourselves to pickup locations that are valid in context. Because the
+        // allowed service point list doesn't include discovery display names, we can't use it directly; we just
+        // have to obtain a list of IDs to use as a filter below.
+        $legalServicePoints = null;
+        if ($holdInfo) {
+            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($holdInfo['id'])->id, $patron['id']);
+            if ($allowed !== null) {
+                $legalServicePoints = [];
+                $preferredRequestType = $this->getPreferredRequestType($holdInfo);
+                foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
+                    foreach ($allowed[$requestType] ?? [] as $servicePoint) {
+                        $legalServicePoints[] = $servicePoint['id'];
+                    }
+                }
+            }
+        }
+
+        // If we got this far, we'll have to satisfy ourselves with the full location list, as we can't
+        // narrow it down further:
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
         foreach (
@@ -1529,6 +1548,9 @@ class Folio extends AbstractAPI implements
                 $query
             ) as $servicePoint
         ) {
+            if ($legalServicePoints !== null && !in_array($servicePoint->id, $legalServicePoints)) {
+                continue;
+            }
             if ($limitedServicePoints && !in_array($servicePoint->id, $limitedServicePoints)) {
                 continue;
             }
@@ -1778,6 +1800,23 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get the preferred request type for the provided hold details.
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @return string
+     */
+    protected function getPreferredRequestType(array $holdDetails): string
+    {
+        $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
+        $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
+        if ($isTitleLevel) {
+            return $default_request;
+        }
+        return ($holdDetails['status'] ?? '') == 'Available' ? 'Page' : $default_request;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1790,7 +1829,6 @@ class Folio extends AbstractAPI implements
      */
     public function placeHold($holdDetails)
     {
-        $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         if (
             !empty($holdDetails['requiredByTS'])
             && !is_int($holdDetails['requiredByTS'])
@@ -1807,7 +1845,6 @@ class Folio extends AbstractAPI implements
                 'instanceId' => $instance->id,
                 'requestLevel' => 'Title',
             ];
-            $preferredRequestType = $default_request;
         } else {
             // Note: early Lotus releases require instanceId and holdingsRecordId
             // to be set here as well, but the requirement was lifted in a hotfix
@@ -1815,8 +1852,6 @@ class Folio extends AbstractAPI implements
             // of those versions, you can add additional identifiers here, but
             // applying the latest hotfix is a better solution!
             $baseParams = ['itemId' => $holdDetails['item_id']];
-            $preferredRequestType = ($holdDetails['status'] ?? '') == 'Available'
-                ? 'Page' : $default_request;
         }
         // Account for an API spelling change introduced in mod-circulation v24:
         $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
@@ -1836,6 +1871,7 @@ class Folio extends AbstractAPI implements
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
         $allowed = $this->getAllowedServicePoints($instance->id, $holdDetails['patron']['id']);
+        $preferredRequestType = $this->getPreferredRequestType($holdDetails);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
             // Skip illegal request types, if we have validation data available:
             if (null !== $allowed) {
