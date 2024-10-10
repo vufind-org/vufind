@@ -820,7 +820,7 @@ class Folio extends AbstractAPI implements
             'availability' => $item->status->name == 'Available',
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
             'reserve' => 'TODO',
-            'addLink' => true,
+            'addLink' => 'check',
             'bound_with_records' => $boundWithRecords,
         ];
     }
@@ -1948,8 +1948,12 @@ class Folio extends AbstractAPI implements
         // Check outstanding loans
         $currentLoan = $this->getCurrentLoan($data['item_id']);
         if (!$currentLoan || $this->isHoldableByCurrentLoan($currentLoan)) {
+            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($id)->id, $patron['id']);
             return [
-                'valid' => true,
+                // If we got this far, it's valid if we can't obtain allowed service point
+                // data, or if the allowed service point data is non-empty:
+                'valid' => null === $allowed || !empty($allowed),
+                'status' => 'request_place_text',
             ];
         } else {
             return [
