@@ -191,6 +191,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             $this->getAuthorFunction()
         );
         $spec->setLine('Summary', 'getSummary');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setLine(
             'Format',
             'getFormats',
@@ -255,6 +256,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     {
         $spec = new RecordDataFormatter\SpecBuilder();
         $spec->setLine('Summary', 'getSummary');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setMultiLine(
             'Authors',
             'getDeduplicatedAuthors',
@@ -369,6 +371,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     {
         $spec = new RecordDataFormatter\SpecBuilder();
         $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setLine('Published', 'getDateSpan');
         $spec->setLine('Item Description', 'getGeneralNotes');
         $spec->setLine('Physical Description', 'getPhysicalDescriptions');
