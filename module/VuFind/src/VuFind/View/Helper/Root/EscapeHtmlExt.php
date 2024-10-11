@@ -51,7 +51,7 @@ class EscapeHtmlExt extends \Laminas\View\Helper\Escaper\AbstractHelper
      */
     public function __construct(Escaper $escaper, protected CleanHtml $cleanHtml)
     {
-        $this->escaper = $escaper;
+        parent::__construct($escaper);
     }
 
     /**

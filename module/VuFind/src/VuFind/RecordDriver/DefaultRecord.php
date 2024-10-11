@@ -1826,11 +1826,13 @@ class DefaultRecord extends AbstractBase
      */
     protected function getFieldAsArray(string $field): array
     {
-        // Make sure to return only non-empty values and avoid casting since description can be a PropertyString too:
+        // Make sure to return only non-empty values:
         $value = $this->fields['description'] ?? '';
         if ('' === $value) {
             return [];
         }
+        // Avoid casting since description can be a PropertyString too (and casting would return an array of object
+        // properties):
         return is_array($value) ? $value : [$value];
     }
 }
