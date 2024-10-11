@@ -45,6 +45,7 @@
   "devDependencies": {
     "all-iso-language-codes": "^1.0.13",
     "eslint": "^8.15.0",
+    "eslint-plugin-jsdoc": "50.2.2",
     "eslint-plugin-no-jquery": "^2.7.0",
     "grunt-contrib-watch": "^1.1.0",
     "jshint": "^2.13.4"
