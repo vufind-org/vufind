@@ -47,9 +47,9 @@ trait LanguageInitializerTrait
     /**
      * Path resolver.
      *
-     * @var PathResolver
+     * @var ?PathResolver
      */
-    protected PathResolver $pathResolver;
+    protected ?PathResolver $pathResolver = null;
 
     /**
      * Set path resolver.
