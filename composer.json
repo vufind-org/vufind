@@ -34,6 +34,7 @@
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.2",
         "endroid/qr-code": "5.0.9",
+        "ezyang/htmlpurifier": "4.17.0",
         "guzzlehttp/guzzle": "7.9.2",
         "jaybizzle/crawler-detect": "^1.2",
         "laminas/laminas-cache": "3.12.2",

@@ -33,6 +33,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\String\PropertyStringInterface;
 
 use function call_user_func;
 use function count;
@@ -125,6 +126,9 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function allowValue($value, $options, $ignoreCombineAlt = false)
     {
+        if ($value instanceof PropertyStringInterface) {
+            $value = (string)$value;
+        }
         if (!empty($value) || ($ignoreCombineAlt && ($options['renderType'] ?? 'Simple') == 'CombineAlt')) {
             return true;
         }
