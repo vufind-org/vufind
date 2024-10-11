@@ -30,6 +30,7 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 
 /**
  * Web Controller
@@ -57,11 +58,12 @@ class WebController extends AbstractSearch
      * Process the jumpto parameter -- either redirect to a specific record and
      * return view model, or ignore the parameter and return false.
      *
-     * @param \VuFind\Search\Base\Results $results Search results object.
+     * @param \VuFind\Search\Base\Results $results      Search results object.
+     * @param AbstractSearchOrigin|null   $searchOrigin Search origin to propagate
      *
      * @return mixed
      */
-    protected function processJumpTo($results)
+    protected function processJumpTo($results, ?AbstractSearchOrigin $searchOrigin = null)
     {
         // Missing/invalid parameter?  Ignore it:
         $jumpto = $this->params()->fromQuery('jumpto');

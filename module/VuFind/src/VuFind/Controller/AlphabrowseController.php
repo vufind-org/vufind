@@ -30,9 +30,11 @@
 
 namespace VuFind\Controller;
 
+use Exception;
 use Laminas\Config\Config;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\BadRequest;
+use VuFind\Search\SearchOrigin\AlphaBrowseSearchOrigin;
 use VuFindSearch\ParamBag;
 
 use function in_array;
@@ -236,6 +238,16 @@ class AlphabrowseController extends AbstractBase
         $source = $this->params()->fromQuery('source', false);
         $from   = $this->params()->fromQuery('from', false);
         $page   = intval($this->params()->fromQuery('page', 0));
+        try {
+            $origin = new AlphaBrowseSearchOrigin(
+                $this->getTypes($config)[$source] ?? null,
+                $source,
+                $from,
+                $page ?: null
+            );
+        } catch (Exception) {
+            $origin = null;
+        }
 
         // Load highlighting configuration while accounting for special case:
         // highlighting is pointless if there's no user input:
@@ -252,6 +264,7 @@ class AlphabrowseController extends AbstractBase
                 'from' => $from,
                 'source' => $source,
                 'extras' => array_filter(explode(':', $extras[$source] ?? '')),
+                'origin' => $origin,
             ]
         );
 

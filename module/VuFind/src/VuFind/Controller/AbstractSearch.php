@@ -37,7 +37,10 @@ use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Search\Base\Results;
 use VuFind\Search\RecommendListener;
+use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
+use VuFind\Search\SearchOrigin\SearchOriginFactory;
 use VuFind\Solr\Utils as SolrUtils;
 
 use function count;
@@ -393,6 +396,8 @@ class AbstractSearch extends AbstractBase
             $queryParams['page'] = $lastPage;
             return $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
         }
+        $factory = $this->getService(SearchOriginFactory::class);
+        $searchOrigin = $factory->createObject($this->params()->fromQuery());
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
@@ -402,7 +407,7 @@ class AbstractSearch extends AbstractBase
             $view->parseError = true;
         } else {
             // If a "jumpto" parameter is set, deal with that now:
-            if ($jump = $this->processJumpTo($results)) {
+            if ($jump = $this->processJumpTo($results, $searchOrigin)) {
                 return $jump;
             }
 
@@ -415,7 +420,7 @@ class AbstractSearch extends AbstractBase
             }
 
             // Jump to only result, if configured:
-            if ($jump = $this->processJumpToOnlyResult($results)) {
+            if ($jump = $this->processJumpToOnlyResult($results, $searchOrigin)) {
                 return $jump;
             }
 
@@ -428,6 +433,8 @@ class AbstractSearch extends AbstractBase
                 $this->flashMessenger()->addErrorMessage($error);
             }
         }
+        // For the header link
+        $this->layout()->setVariable('searchOrigin', $searchOrigin);
 
         // Special case: If we're in RSS view, we need to render differently:
         if (isset($view->params) && $view->params->getView() == 'rss') {
@@ -444,11 +451,12 @@ class AbstractSearch extends AbstractBase
      * Process the jumpto parameter -- either redirect to a specific record and
      * return view model, or ignore the parameter and return false.
      *
-     * @param \VuFind\Search\Base\Results $results Search results object.
+     * @param Results                   $results      Search results object.
+     * @param AbstractSearchOrigin|null $searchOrigin Search origin to propagate
      *
      * @return bool|HttpResponse
      */
-    protected function processJumpTo($results)
+    protected function processJumpTo($results, ?AbstractSearchOrigin $searchOrigin = null)
     {
         // Missing/invalid parameter?  Ignore it:
         $jumpto = $this->params()->fromQuery('jumpto');
@@ -457,18 +465,20 @@ class AbstractSearch extends AbstractBase
         }
 
         $recordList = $results->getResults();
+        $queryParams = $searchOrigin?->getSearchUrlParamsArray() ?? [];
         return isset($recordList[$jumpto - 1])
-            ? $this->getRedirectForRecord($recordList[$jumpto - 1]) : false;
+            ? $this->getRedirectForRecord($recordList[$jumpto - 1], $queryParams) : false;
     }
 
     /**
      * Process jump to record if there is only one result.
      *
-     * @param \VuFind\Search\Base\Results $results Search results object.
+     * @param Results                   $results      Search results object.
+     * @param AbstractSearchOrigin|null $searchOrigin Search origin to propagate
      *
      * @return bool|HttpResponse
      */
-    protected function processJumpToOnlyResult($results)
+    protected function processJumpToOnlyResult($results, ?AbstractSearchOrigin $searchOrigin = null)
     {
         // If jumpto is explicitly disabled (set to false, e.g. by combined search),
         // we should NEVER jump to a result regardless of other factors.
@@ -479,10 +489,9 @@ class AbstractSearch extends AbstractBase
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {
-            return $this->getRedirectForRecord(
-                reset($recordList),
-                ['sid' => $results->getSearchId()]
-            );
+            $queryParams = $searchOrigin?->getSearchUrlParamsArray() ?? [];
+            $queryParams['sid'] = $results->getSearchId();
+            return $this->getRedirectForRecord(reset($recordList), $queryParams);
         }
 
         return false;

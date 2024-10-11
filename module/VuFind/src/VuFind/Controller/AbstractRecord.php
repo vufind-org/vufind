@@ -37,6 +37,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\Search\SearchOrigin\SearchOriginFactory;
 use VuFind\Tags\TagsService;
 use VuFindSearch\ParamBag;
 
@@ -956,9 +957,9 @@ class AbstractRecord extends AbstractBase
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
-        $view->loadInitialTabWithAjax
-            = isset($config->Site->loadInitialTabWithAjax)
-            ? (bool)$config->Site->loadInitialTabWithAjax : false;
+        $view->loadInitialTabWithAjax = (bool)($config->Site->loadInitialTabWithAjax ?? false);
+        $factory = $this->getService(SearchOriginFactory::class);
+        $this->layout()->setVariable('searchOrigin', $factory->createObject($this->params()->fromQuery()));
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

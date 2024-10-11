@@ -507,6 +507,7 @@ $config = [
             'VuFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\SearchNormalizer' => 'VuFind\Search\SearchNormalizerFactory',
+            \VuFind\Search\SearchOrigin\SearchOriginFactory::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             'VuFind\Search\SearchRunner' => 'VuFind\Search\SearchRunnerFactory',
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',
             'VuFind\Search\Solr\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelperFactory',
