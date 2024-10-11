@@ -255,8 +255,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string $path     Path of file to modify.
      * @param array  $settings Settings to change.
      * @param bool   $replace  Should we replace the existing config entirely
-     *                         (as opposed to extending it with new
-     *                         settings)?
+     * (as opposed to extending it with new settings)?
      *
      * @return void
      */
