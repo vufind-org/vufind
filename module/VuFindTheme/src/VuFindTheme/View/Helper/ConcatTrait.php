@@ -359,7 +359,7 @@ trait ConcatTrait
     /**
      * Process and return items in index order
      *
-     * @param string|int $indent Amount of whitespace/string to use for indention
+     * @param string|int $indent Amount of whitespace/string to use for indentation
      *
      * @return string
      */
@@ -466,7 +466,7 @@ trait ConcatTrait
      * Render link elements as string
      * Customized to minify and concatenate
      *
-     * @param string|int $indent Amount of whitespace or string to use for indention
+     * @param string|int $indent Amount of whitespace or string to use for indentation
      *
      * @return string
      */

@@ -1,1 +1,1 @@
-<?php echo $this->url('primo-search') . '?lookfor=' . urlencode($this->lookfor) . '&amp;type=Subject';
+<?=$this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor') + ['type' => 'Subject', 'quoteQuery' => false]);

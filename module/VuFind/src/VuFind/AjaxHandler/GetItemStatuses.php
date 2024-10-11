@@ -446,14 +446,27 @@ class GetItemStatuses extends AbstractBase implements
      */
     protected function renderFullStatus($record, $simpleStatus, array $values = [])
     {
+        // Default case: no extra holdings fields are shown
+        $holdingsTextFieldsToShow = [];
+
+        if ($this->config->Item_Status->include_holdings_text_fields ?? false) {
+            // If we are showing additional holdings text fields, the set of fields shown is
+            // either config.ini's displayed_holdings_text_fields[] (if set), or the set of
+            // all fields reported by the ILS driver otherwise.
+            $holdingsTextFieldsToShow = $this->config?->Item_Status?->displayed_holdings_text_fields?->toArray()
+                ?? $this->ils->getHoldingsTextFieldNames();
+        }
+
         $values = array_merge(
             [
                 'statusItems' => $record,
                 'simpleStatus' => $simpleStatus,
                 'callnumberHandler' => $this->getCallnumberHandler(),
+                'holdingsTextFieldNames' => $holdingsTextFieldsToShow,
             ],
             $values
         );
+
         return $this->renderer->render('ajax/status-full.phtml', $values);
     }
 

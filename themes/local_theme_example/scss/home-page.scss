@@ -1,15 +1,15 @@
 .searchHomeContent {
-  margin-left: -@grid-gutter-width;
-  margin-right: -@grid-gutter-width;
+  margin-left: -$grid-gutter-width;
+  margin-right: -$grid-gutter-width;
 }
 .search-hero {
-  &:extend(.clearfix all);
+  @extend .clearfix;
 
   position: relative;
   padding: 16rem 8rem;
   font-size: 2rem;
   color: #fff;
-  background-image: url('@{image-path}/yosemite.jpg');
+  background-image: url('#{$image-path}/yosemite.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
