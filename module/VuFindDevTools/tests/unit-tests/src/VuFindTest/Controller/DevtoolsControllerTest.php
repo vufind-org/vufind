@@ -83,5 +83,8 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
 
         // Did the native.ini file get properly ignored?
         $this->assertFalse(isset($result['details']['native']));
+
+        // Did the aliases.ini file get properly ignored?
+        $this->assertFalse(isset($result['details']['aliases']));
     }
 }
