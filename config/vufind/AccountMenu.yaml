@@ -9,10 +9,9 @@
 # array keys for every menu item could be:
 #   - name: name of an item
 #   - label: the text shown as link, will be translated - required
-#   - route: route name used to generate link target - route or url required
-#   - url: target url, alternative to route - route or url required
-#   - template: item has special rendering in template (menu-special-[value])
-#               does not require label, route and url
+#   - route: route name used to generate link target - route, url or template required
+#   - url: target url, alternative to route - route, url or template required
+#   - template: template to render the item with
 #   - icon: icon used for the item, has to be defined in theme config
 #   - iconMethod: method to dynamically create the icon name; ignored when
 #     icon is explicitly set.
