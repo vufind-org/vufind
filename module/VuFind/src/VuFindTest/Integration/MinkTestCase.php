@@ -231,7 +231,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeConfigFile(string $configName, array $settings, bool $replace = false)
+    protected function changeConfigFile(string $configName, array $settings, bool $replace = false): void
     {
         $file = $configName . '.ini';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
