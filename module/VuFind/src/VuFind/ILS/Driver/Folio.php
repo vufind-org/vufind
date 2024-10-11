@@ -1189,8 +1189,8 @@ class Folio extends AbstractAPI implements
     /**
      * Get a total count of records from a FOLIO endpoint.
      *
-     * @param string $interface   FOLIO api interface to call
-     * @param array  $query       Extra GET parameters (e.g. ['query' => 'your cql here'])
+     * @param string $interface FOLIO api interface to call
+     * @param array  $query     Extra GET parameters (e.g. ['query' => 'your cql here'])
      *
      * @return int
      */
