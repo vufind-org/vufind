@@ -61,9 +61,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param ?UserEntityInterface $user User
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): SearchEntityInterface;
+    public function setUser(?UserEntityInterface $user): static;
 
     /**
      * Get session identifier.
@@ -77,9 +77,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param ?string $sessionId Session id
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSessionId(?string $sessionId): SearchEntityInterface;
+    public function setSessionId(?string $sessionId): static;
 
     /**
      * Get created date.
@@ -93,9 +93,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): SearchEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Get title.
@@ -109,9 +109,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param ?string $title Title
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setTitle(?string $title): SearchEntityInterface;
+    public function setTitle(?string $title): static;
 
     /**
      * Get saved.
@@ -125,9 +125,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param bool $saved Saved
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSaved(bool $saved): SearchEntityInterface;
+    public function setSaved(bool $saved): static;
 
     /**
      * Get the search object from the row.
@@ -141,9 +141,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param ?\VuFind\Search\Minified $searchObject Search object
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSearchObject(?\VuFind\Search\Minified $searchObject): SearchEntityInterface;
+    public function setSearchObject(?\VuFind\Search\Minified $searchObject): static;
 
     /**
      * Get checksum.
@@ -157,9 +157,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param ?int $checksum Checksum
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setChecksum(?int $checksum): SearchEntityInterface;
+    public function setChecksum(?int $checksum): static;
 
     /**
      * Get notification frequency.
@@ -173,9 +173,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param int $notificationFrequency Notification frequency
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setNotificationFrequency(int $notificationFrequency): SearchEntityInterface;
+    public function setNotificationFrequency(int $notificationFrequency): static;
 
     /**
      * When was the last notification sent?
@@ -189,9 +189,9 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param DateTime $lastNotificationSent Time when last notification was sent
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setLastNotificationSent(Datetime $lastNotificationSent): SearchEntityInterface;
+    public function setLastNotificationSent(Datetime $lastNotificationSent): static;
 
     /**
      * Get notification base URL.
@@ -205,7 +205,7 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @param string $notificationBaseUrl Notification base URL
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setNotificationBaseUrl(string $notificationBaseUrl): SearchEntityInterface;
+    public function setNotificationBaseUrl(string $notificationBaseUrl): static;
 }

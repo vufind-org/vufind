@@ -334,18 +334,18 @@ class Backend extends AbstractBackend implements
     /**
      * Return terms from SOLR index.
      *
-     * @param string   $field  Index field
-     * @param string   $start  Starting term (blank for beginning of list)
-     * @param int      $limit  Maximum number of terms
-     * @param ParamBag $params Additional parameters
+     * @param string|ParamBag|null $field  Index field
+     * @param ?string              $start  Starting term (blank for beginning of list)
+     * @param ?int                 $limit  Maximum number of terms
+     * @param ?ParamBag            $params Additional parameters
      *
      * @return Terms
      */
     public function terms(
-        $field = null,
-        $start = null,
-        $limit = null,
-        ParamBag $params = null
+        string|ParamBag|null $field = null,
+        ?string $start = null,
+        ?int $limit = null,
+        ?ParamBag $params = null
     ) {
         // Support alternate syntax with ParamBag as first parameter:
         if ($field instanceof ParamBag && $params === null) {
