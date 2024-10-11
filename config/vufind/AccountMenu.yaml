@@ -24,6 +24,12 @@ Account:
   id: acc-menu-acc-header
   class: account-menu
   MenuItems:
+    - name: favorites
+      label: saved_items
+      route: myresearch-favorites
+      icon: user-favorites
+      checkMethod: checkFavorites
+
     - name: checkedout
       label: Checked Out Items
       route: myresearch-checkedout
@@ -98,12 +104,6 @@ Lists:
   label: Your Lists
   id: acc-menu-lists-header
   MenuItems:
-    - name: favorites
-      label: saved_items
-      route: myresearch-favorites
-      icon: user-favorites
-      checkMethod: checkFavorites
-
     - template: myresearch/menu-mylists.phtml
       icon: user-list
       checkMethod: checkUserlistMode
