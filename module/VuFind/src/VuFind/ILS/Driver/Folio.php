@@ -508,7 +508,11 @@ class Folio extends AbstractAPI implements
      */
     public function getConfig($function, $params = [])
     {
-        return $this->config[$function] ?? false;
+        $key = match ($function) {
+            'getMyTransactions' => 'Loans',
+            default => $function
+        };
+        return $this->config[$key] ?? false;
     }
 
     /**
@@ -1183,6 +1187,51 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get a total count of records from a FOLIO endpoint.
+     *
+     * @param string $interface   FOLIO api interface to call
+     * @param array  $query       Extra GET parameters (e.g. ['query' => 'your cql here'])
+     *
+     * @return int
+     */
+    protected function getResultCount(string $interface, array $query = []): int
+    {
+        $combinedQuery = array_merge($query, ['limit' => 0]);
+        $response = $this->makeRequest(
+            'GET',
+            $interface,
+            $combinedQuery
+        );
+        $json = json_decode($response->getBody());
+        return $json->totalRecords ?? 0;
+    }
+
+    /**
+     * Helper function to retrieve a single page of results from FOLIO API
+     *
+     * @param string $interface FOLIO api interface to call
+     * @param array  $query     Extra GET parameters (e.g. ['query' => 'your cql here'])
+     * @param int    $limit     How many results to retrieve from FOLIO per call
+     *
+     * @return array
+     */
+    protected function getResultPage($interface, $query = [], $offset = 0, $limit = 1000)
+    {
+        $combinedQuery = array_merge($query, compact('offset', 'limit'));
+        $response = $this->makeRequest(
+            'GET',
+            $interface,
+            $combinedQuery
+        );
+        $json = json_decode($response->getBody());
+        if (!$response->isSuccess() || !$json) {
+            $msg = $json->errors[0]->message ?? json_last_error_msg();
+            throw new ILSException("Error: '$msg' fetching from '$interface'");
+        }
+        return $json;
+    }
+
+    /**
      * Helper function to retrieve paged results from FOLIO API
      *
      * @param string $responseKey Key containing values to collect in response
@@ -1197,17 +1246,7 @@ class Folio extends AbstractAPI implements
         $offset = 0;
 
         do {
-            $combinedQuery = array_merge($query, compact('offset', 'limit'));
-            $response = $this->makeRequest(
-                'GET',
-                $interface,
-                $combinedQuery
-            );
-            $json = json_decode($response->getBody());
-            if (!$response->isSuccess() || !$json) {
-                $msg = $json->errors[0]->message ?? json_last_error_msg();
-                throw new ILSException("Error: '$msg' fetching '$responseKey'");
-            }
+            $json = $this->getResultPage($interface, $query, $offset, $limit);
             $totalEstimate = $json->totalRecords ?? 0;
             foreach ($json->$responseKey ?? [] as $item) {
                 yield $item ?? '';
@@ -1365,20 +1404,22 @@ class Folio extends AbstractAPI implements
      *                         was checked out (optional – introduced in release 2.4)
      *
      * @param array $patron Patron login information from $this->patronLogin
+     * @param array $params Additional parameters (limit, page, sort)
      *
      * @return array Transactions associative arrays
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
-        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
+        $limit = $params['limit'] ?? 1000;
+        $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
+
+        $query = 'userId==' . $patron['id'] . ' and status.name==Open';
+        if (isset($params['sort'])) {
+            $query .= ' sortby ' . $this->escapeCql($params['sort']);
+        }
+        $resultPage = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
         $transactions = [];
-        foreach (
-            $this->getPagedResults(
-                'loans',
-                '/circulation/loans',
-                $query
-            ) as $trans
-        ) {
+        foreach ($resultPage->loans ?? [] as $trans) {
             $dueStatus = false;
             $date = $this->getDateTimeFromString($trans->dueDate);
             $dueDateTimestamp = $date->getTimestamp();
@@ -1409,7 +1450,14 @@ class Folio extends AbstractAPI implements
                 'title' => $trans->item->title,
             ];
         }
-        return $transactions;
+        // If we have a full page, we need to look up the total count of transactions:
+        $count = count($transactions);
+        if ($count >= $limit) {
+            // We could use the count in the result page, but that may be an estimate;
+            // safer to do a separate lookup to be sure we have the right number!
+            $count = $this->getResultCount('/circulation/loans', compact('query'));
+        }
+        return ['count' => $count, 'records' => $transactions];
     }
 
     /**
