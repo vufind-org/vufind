@@ -210,9 +210,9 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
                         ],
                         'icon' => 'ui-add',
                         'checkMethod' => 'checkUserlistMode',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
