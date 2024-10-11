@@ -33,6 +33,8 @@ use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
+use function get_class;
+
 /**
  * Logic for initializing a language within a translator used by VuFind.
  *
@@ -58,7 +60,7 @@ trait LanguageInitializerTrait
      *
      * @return void
      */
-    public function setPathResolver(PathResolver $pathResolver)
+    public function setPathResolver(PathResolver $pathResolver): void
     {
         $this->pathResolver = $pathResolver;
     }
@@ -68,13 +70,22 @@ trait LanguageInitializerTrait
      *
      * @return array
      */
-    protected function getTextDomains()
+    protected function getTextDomains(): array
     {
         $base = APPLICATION_PATH;
         $languagePathParts = ["$base/languages"];
+        $localConfigDirStack = [];
+        if ($this->pathResolver === null) {
+            error_log(
+                'No PathResolver was set for the LanguageInitializerTrait used by class '
+                . get_class($this) . '.'
+            );
+        } else {
+            $localConfigDirStack = $this->pathResolver->getLocalConfigDirStack();
+        }
         $languagePathParts = array_merge($languagePathParts, array_map(
             fn ($localConfigDir) => $localConfigDir['directory'] . '/languages',
-            $this->pathResolver->getLocalConfigDirStack()
+            $localConfigDirStack
         ));
         $languagePathParts[] = "$base/themes/*/languages";
 
