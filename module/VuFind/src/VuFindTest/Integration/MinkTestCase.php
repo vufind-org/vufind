@@ -259,7 +259,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function writeConfigFile(string $path, array $settings, bool $replace = false)
+    protected function writeConfigFile(string $path, array $settings, bool $replace = false): void
     {
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
