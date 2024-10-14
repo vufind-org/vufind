@@ -291,7 +291,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         facet.classList.toggle('active');
       }
 
-      let icon = facet.querySelector('.icon');
+      let icon = elem.closest('a').querySelector('.icon');
       if (icon !== null) {
         const newCheckedState = icon.dataset.checked === 'false';
         let attrs = {};
