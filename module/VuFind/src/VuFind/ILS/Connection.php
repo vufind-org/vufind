@@ -1293,24 +1293,18 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Get data for an ILS method from shared or session cache
      *
-     * @param string $methodName The name of the called method.
-     * @param array  $params     Array of passed parameters.
+     * @param array $cacheSettings Cache settings
      *
      * @return ?array
      */
-    protected function getCachedData($methodName, $params)
+    protected function getCachedData(array $cacheSettings): ?array
     {
-        $cacheLifeTime = $this->cacheLifeTime[$methodName] ?? null;
-        $cacheStorage = $this->cacheStorage[$methodName] ?? null;
-        if (!$cacheLifeTime || !$cacheStorage) {
-            return null;
-        }
-        $cacheKey = $methodName . md5(serialize($params));
-        if ('shared' === $cacheStorage) {
+        $cacheKey = $cacheSettings['key'];
+        if ('shared' === $cacheSettings['storage']) {
             return $this->getSharedCachedData($cacheKey);
         }
         if ($this->sessionCache && ($entry = $this->sessionCache[$cacheKey] ?? null)) {
-            if (time() - $entry['ts'] <= $cacheLifeTime) {
+            if (time() - $entry['ts'] <= $cacheSettings['lifeTime']) {
                 return $entry['payload'];
             }
             unset($this->sessionCache[$cacheKey]);
@@ -1321,21 +1315,15 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Put data for an ILS method to shared or session cache.
      *
-     * @param string $methodName The name of the called method.
-     * @param array  $params     Array of passed parameters.
-     * @param mixed  $data       Data to cache
+     * @param array $cacheSettings Cache settings
+     * @param array $data          Data to cache
      *
      * @return void
      */
-    protected function putCachedData($methodName, $params, $data): void
+    protected function putCachedData(array $cacheSettings, array $data): void
     {
-        $cacheLifeTime = $this->cacheLifeTime[$methodName] ?? null;
-        $cacheStorage = $this->cacheStorage[$methodName] ?? null;
-        if (!$cacheLifeTime || !$cacheStorage) {
-            return;
-        }
-        $cacheKey = $methodName . md5(serialize($params));
-        if ('shared' === $cacheStorage) {
+        $cacheKey = $cacheSettings['key'];
+        if ('shared' === $cacheSettings['storage']) {
             $this->putSharedCachedData($cacheKey, $data);
             return;
         }
@@ -1345,6 +1333,25 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 'payload' => $data,
             ];
         }
+    }
+
+    /**
+     * Get cache settings for a method
+     *
+     * @param string $methodName The name of the called method.
+     * @param array  $params     Array of passed parameters.
+     *
+     * @return ?array
+     */
+    protected function getCacheSettings($methodName, $params): ?array
+    {
+        $lifeTime = $this->cacheLifeTime[$methodName] ?? null;
+        $storage = $this->cacheStorage[$methodName] ?? null;
+        if (!$lifeTime || !$storage) {
+            return null;
+        }
+        $key = $methodName . md5(serialize($params));
+        return compact('lifeTime', 'storage', 'key');
     }
 
     /**
@@ -1363,13 +1370,16 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function __call($methodName, $params)
     {
+        $cacheSettings = $this->getCacheSettings($methodName, $params);
         // Note: The actual data is cached in an array so that we can differentiate
         // between a missing cache entry and null as a valid value.
-        if ($cached = $this->getCachedData($methodName, $params)) {
+        if ($cacheSettings && ($cached = $this->getCachedData($cacheSettings))) {
             return $cached['data'];
         }
         $data = $this->callIlsWithFailover($methodName, $params);
-        $this->putCachedData($methodName, $params, compact('data'));
+        if ($cacheSettings) {
+            $this->putCachedData($cacheSettings, compact('data'));
+        }
         return $data;
     }
 }
