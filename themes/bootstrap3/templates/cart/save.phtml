@@ -12,17 +12,7 @@
 
 <?php if (count($this->records) > 0): ?>
   <form class="form-cart-save" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
-    <?php
-      if (!isset($this->recordIds)) {
-        $this->recordIds = array_map(
-            fn ($record) => $record->getSourceIdentifier() . '|' . $record->getUniqueId(),
-            $this->records ?? []
-        );
-      }
-    ?>
-    <?php foreach ($this->recordIds as $current): ?>
-      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current)?>">
-    <?php endforeach; ?>
+    <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>
     <div class="form-group">
       <label class="control-label"><?=$this->transEsc('Title')?>:</label>
       <?php if (count($this->records) > 1): ?>

@@ -1181,9 +1181,9 @@ class MyResearchController extends AbstractBase
             // If the user is in the process of saving a record, send them back
             // to the save screen; otherwise, send them back to the list they
             // just edited.
-            $recordId = $this->params()->fromQuery('recordId');
-            $recordSource
-                = $this->params()->fromQuery('recordSource', DEFAULT_SEARCH_BACKEND);
+            $recordId = $this->params()->fromQuery('recordId') ?? $this->params()->fromPost('recordId');
+            $recordSource = $this->params()->fromQuery('recordSource')
+                ?? $this->params()->fromPost('recordSource', DEFAULT_SEARCH_BACKEND);
             if (!empty($recordId)) {
                 $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId,
@@ -1249,10 +1249,8 @@ class MyResearchController extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted()) {
-            if ($redirect = $this->processEditList($user, $list)) {
-                return $redirect;
-            }
+        if ($this->formWasSubmitted() && $redirect = $this->processEditList($user, $list)) {
+            return $redirect;
         }
 
         $listTags = null;
@@ -1268,6 +1266,9 @@ class MyResearchController extends AbstractBase
                 'newList' => $newList,
                 'listTags' => $listTags,
                 'recordIds' => $this->params()->fromQuery('ids') ?? $this->params()->fromPost('ids', []),
+                'recordId' => $this->params()->fromQuery('recordId') ?? $this->params()->fromPost('recordId', false),
+                'recordSource' => $this->params()->fromQuery('recordSource')
+                    ?? $this->params()->fromPost('recordSource', DEFAULT_SEARCH_BACKEND),
             ]
         );
     }
