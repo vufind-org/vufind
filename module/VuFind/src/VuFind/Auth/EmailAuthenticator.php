@@ -32,6 +32,7 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\CsrfInterface;
@@ -51,6 +52,7 @@ use VuFind\Validator\CsrfInterface;
 class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use EmailSettingsTrait;
 
     /**
      * How long a login request is considered to be valid (seconds)
@@ -141,9 +143,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $viewParams['title'] = $this->config->Site->title;
 
         $message = $this->viewRenderer->render($template, $viewParams);
-        $from = !empty($this->config->Mail->user_email_in_from)
-            ? $email
-            : ($this->config->Mail->default_from ?? $this->config->Site->email);
+        $from = $this->getEmailSenderAddress($this->config, $email);
         $subject = $this->translator->translate($subject);
         $subject = str_replace('%%title%%', $viewParams['title'], $subject);
 
