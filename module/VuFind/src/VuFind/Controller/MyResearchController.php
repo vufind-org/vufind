@@ -1197,10 +1197,7 @@ class MyResearchController extends AbstractBase
 
             // Similarly, if the user is in the process of bulk-saving records,
             // send them back to the appropriate place in the cart.
-            $bulkIds = $this->params()->fromPost(
-                'ids',
-                $this->params()->fromQuery('ids', [])
-            );
+            $bulkIds = $this->params()->fromPost('ids') ?? $this->params()->fromQuery('ids', []);
             if (!empty($bulkIds)) {
                 // Add final id of the list to request post so cartcontroller saveaction
                 // can properly load the list
@@ -1237,7 +1234,7 @@ class MyResearchController extends AbstractBase
 
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
-        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        $id = $this->params()->fromRoute('id') ?? $this->params()->fromQuery('id') ?? $this->params()->fromPost('id');
         $newList = ($id == 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in
         // a fresh object; if it's an existing list, we can just fetch from the database.
@@ -1264,15 +1261,13 @@ class MyResearchController extends AbstractBase
             $listTags = $favoritesService
                 ->formatTagStringForEditing($tagsService->getListTags($list, $list->getUser()));
         }
-        $recordIds = $this->params()->fromQuery('ids', $this->params()->fromPost('ids', []));
-        $records = $this->getRecordLoader()->loadBatch($recordIds);
         // Send the list to the view:
         return $this->createViewModel(
             [
                 'list' => $list,
                 'newList' => $newList,
                 'listTags' => $listTags,
-                'records' => $records,
+                'recordIds' => $this->params()->fromQuery('ids') ?? $this->params()->fromPost('ids', []),
             ]
         );
     }
