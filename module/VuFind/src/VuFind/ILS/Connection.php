@@ -144,12 +144,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         'patronLogin' => 60,
         'getProxiedUsers' => 60,
         'getProxyingUsers' => 60,
-        'getPickUpLocations' => 60,
         'getPurchaseHistory' => 60,
     ];
 
     /**
      * Cache storage per method
+     *
+     * Note: Don't cache anything too large in session before
+     * https://openlibraryfoundation.atlassian.net/browse/VUFIND-1652 is implemented
      *
      * @var array
      */
@@ -157,7 +159,6 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         'patronLogin' => 'session',
         'getProxiedUsers' => 'session',
         'getProxyingUsers' => 'session',
-        'getPickUpLocations' => 'session',
         'getPurchaseHistory' => 'shared',
     ];
 
@@ -1310,7 +1311,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         }
         if ($this->sessionCache && ($entry = $this->sessionCache[$cacheKey] ?? null)) {
             if (time() - $entry['ts'] <= $cacheLifeTime) {
-                return $entry['data'];
+                return $entry['payload'];
             }
             unset($this->sessionCache[$cacheKey]);
         }
@@ -1341,7 +1342,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         if ($this->sessionCache) {
             $this->sessionCache[$cacheKey] = [
                 'ts' => time(),
-                'data' => $data,
+                'payload' => $data,
             ];
         }
     }
@@ -1351,6 +1352,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * false otherwise. This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
      *
+     * Results of certain methods (such as patronLogin) mayb be cached to avoid
+     * hammering the ILS with the same request repeatedly.
+     *
      * @param string $methodName The name of the called method.
      * @param array  $params     Array of passed parameters.
      *
@@ -1359,8 +1363,10 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function __call($methodName, $params)
     {
-        if ($entry = $this->getCachedData($methodName, $params)) {
-            return $entry['data'];
+        // Note: The actual data is cached in an array so that we can differentiate
+        // between a missing cache entry and null as a valid value.
+        if ($cached = $this->getCachedData($methodName, $params)) {
+            return $cached['data'];
         }
         $data = $this->callIlsWithFailover($methodName, $params);
         $this->putCachedData($methodName, $params, compact('data'));
