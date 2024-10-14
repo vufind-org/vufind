@@ -1352,7 +1352,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * false otherwise. This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
      *
-     * Results of certain methods (such as patronLogin) mayb be cached to avoid
+     * Results of certain methods (such as patronLogin) may be cached to avoid
      * hammering the ILS with the same request repeatedly.
      *
      * @param string $methodName The name of the called method.
