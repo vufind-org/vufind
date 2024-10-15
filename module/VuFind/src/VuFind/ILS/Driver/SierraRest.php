@@ -698,7 +698,8 @@ class SierraRest extends AbstractBase implements
 
     /**
      * A function that creates an account for password reset
-     * @param $username
+     *
+     * @param string $username username of the account needing reset.
      *
      * @return array|bool returns patron info array on success,
      * and false on failure
@@ -717,7 +718,6 @@ class SierraRest extends AbstractBase implements
             'GET'
         );
         if (!$result['deleted'] && $result['blockInfo']) {
-
             $firstname = '';
             $lastname = '';
             if (!empty($result['names'])) {
@@ -733,7 +733,7 @@ class SierraRest extends AbstractBase implements
                 'email' => !empty($result['emails']) ? $result['emails'][0] : '',
                 'password' => hash('sha256', $lastname . $result['id'] . $result['homeLibraryCode'])
             ];
-        }else{
+        } else {
             return false;
         }
     }
