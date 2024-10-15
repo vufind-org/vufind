@@ -109,7 +109,7 @@ class LanguageHelper
         while ($file = readdir($dir)) {
             if (str_ends_with($file, '.ini')) {
                 $lang = current(explode('.', $file));
-                if ('native' != $lang) {
+                if ('native' != $lang && 'aliases' != $lang) {
                     $langs[] = $lang;
                 }
             }
