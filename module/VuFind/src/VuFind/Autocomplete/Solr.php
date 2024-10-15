@@ -47,7 +47,6 @@ use function is_object;
  */
 class Solr implements AutocompleteInterface
 {
-
     /**
      * Parameter for mungeQuery
      *
@@ -189,7 +188,8 @@ class Solr implements AutocompleteInterface
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', "'"];
         $query = str_replace($forbidden, ' ', $query);
-        if (!str_ends_with($query, ' ') && (!isset($extras[self::NO_WILDCARD]) || $extras[self::NO_WILDCARD] !== true)) {
+        if (!str_ends_with($query, ' ')
+            && (!isset($extras[self::NO_WILDCARD]) || $extras[self::NO_WILDCARD] !== true)) {
             $query .= '*';
         }
         return $query;
