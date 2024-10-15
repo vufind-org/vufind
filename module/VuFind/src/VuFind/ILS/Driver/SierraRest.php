@@ -697,6 +697,48 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
+     * A function that creates an account for password reset
+     * @param $username
+     *
+     * @return array|bool returns patron info array on success,
+     * and false on failure
+     *
+     * @throws ILSException
+     */
+    public function getPatronFromUsername($username)
+    {
+        $result = $this->makeRequest(
+            [$this->apiBase, 'patrons/find'],
+            [
+                'varFieldTag' => 'b',
+                'varFieldContent' => $username,
+                'fields' => 'default,id,emails,addresses,phones,deleted,names',
+            ],
+            'GET'
+        );
+        if (!$result['deleted'] && $result['blockInfo']) {
+
+            $firstname = '';
+            $lastname = '';
+            if (!empty($result['names'])) {
+                $name = $result['names'][0];
+                $parts = explode(', ', $name, 2);
+                $lastname = $parts[0];
+                $firstname = $parts[1] ?? '';
+            }
+            return [
+                'id' => $result['id'],
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'email' => !empty($result['emails']) ? $result['emails'][0] : '',
+                'password' => hash('sha256', $lastname . $result['id'] . $result['homeLibraryCode'])
+            ];
+        }else{
+            return false;
+        }
+    }
+
+    /**
      * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
      *
      * @param array $patron Patron data from patronLogin().
