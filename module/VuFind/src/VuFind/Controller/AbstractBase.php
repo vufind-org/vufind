@@ -870,12 +870,19 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * Construct an HTTP 205 (refresh) response. Useful for reporting success
      * in the lightbox without actually rendering content.
      *
+     * @param bool $forceGet If true, sends a custom header indicating that the page should be reloaded with a GET
+     * request. This can be useful when it is known that the current page only receives transient params in a POST
+     * request (such as canceling of holds).
+     *
      * @return \Laminas\Http\Response
      */
-    protected function getRefreshResponse()
+    protected function getRefreshResponse(bool $forceGet = false)
     {
         $response = $this->getResponse();
         $response->setStatusCode(205);
+        if ($forceGet) {
+            $response->getHeaders()->addHeaderLine('X-VuFind-Refresh-Method', 'GET');
+        }
         return $response;
     }
 
