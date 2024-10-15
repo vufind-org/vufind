@@ -1324,7 +1324,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         $cacheKey = $cacheSettings['key'];
         if ('shared' === $cacheSettings['storage']) {
-            $this->putSharedCachedData($cacheKey, $data);
+            $this->putSharedCachedData($cacheKey, $data, $cacheSettings['lifeTime']);
             return;
         }
         if ($this->sessionCache) {
