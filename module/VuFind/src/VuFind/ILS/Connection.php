@@ -140,12 +140,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @var array
      */
-    protected $cacheLifeTime = [
-        'patronLogin' => 60,
-        'getProxiedUsers' => 60,
-        'getProxyingUsers' => 60,
-        'getPurchaseHistory' => 60,
-    ];
+    protected $cacheLifeTime = ['*' => 60];
 
     /**
      * Cache storage per method
@@ -1345,7 +1340,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     protected function getCacheSettings($methodName, $params): ?array
     {
-        $lifeTime = $this->cacheLifeTime[$methodName] ?? null;
+        $lifeTime = (int)($this->cacheLifeTime[$methodName] ?? $this->cacheLifeTime['*'] ?? 0);
         $storage = $this->cacheStorage[$methodName] ?? null;
         if (!$lifeTime || !$storage) {
             return null;
