@@ -32,6 +32,8 @@ import java.lang.StringBuilder;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.Set;
 
 /**
@@ -136,5 +138,36 @@ public class FieldSpecTools
         }
 
         return result.length() > 0 ? result.toString() : null;
+    }
+
+
+    private static Pattern unicodeEscape = Pattern.compile("(?i)\\\\u([0-9a-f]{4})");
+
+    /**
+     * Retrieves all subfields from a record, separated by a specified UTF-8 delimiter.
+     *
+     * This method takes a MARC record and a specification for the fields to extract, and returns
+     * a set of strings representing the subfields found, concatenated with a specified separator.
+     * The separator can include Unicode escape sequences, which will be converted to their corresponding
+     * characters.
+     *
+     * @param record                the MARC record from which to extract subfields.
+     * @param fieldSpec             a string specifying the fields and subfields to retrieve.
+     * @param separatorWithEscapes  a string representing the delimiter to use between subfields,
+     *                              which can contain Unicode escape sequences in the format \\uXXXX.
+     * @return                      a set of strings with the concatenated subfields, separated by the given delimiter.
+     */
+    public static Set<String> getAllSubfieldsUTF8Delimited(final Record record, String fieldSpec, String separatorWithEscapes)
+    {
+        StringBuilder separator = new StringBuilder(separatorWithEscapes);
+        Matcher m = unicodeEscape.matcher(separator);
+
+        while (m.find()) {
+            int codepoint = Integer.parseInt(m.group(1), 16);
+            separator.replace(m.start(), m.end(), new String(Character.toChars(codepoint)));
+            m.reset();
+        }
+
+        return org.solrmarc.index.SolrIndexer.instance().getAllSubfields(record, fieldSpec, separator.toString());
     }
 }
