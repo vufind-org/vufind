@@ -29,6 +29,8 @@
 
 namespace VuFind\Content\Summaries;
 
+use VuFind\String\PropertyString;
+
 /**
  * Demo (fake data) summaries content loader.
  *
@@ -56,6 +58,8 @@ class Demo extends \VuFind\Content\AbstractBase
         return [
             'Demo summary key: ' . $key,
             'Demo summary ISBN: ' . $isbnObj->get13(),
+            (new PropertyString('Demo non-HTML summary'))
+                ->setHtml('<strong>Demo HTML Summary:</strong><ul><li>Item 1</li><li>Item 2</li></ul>'),
         ];
     }
 }
