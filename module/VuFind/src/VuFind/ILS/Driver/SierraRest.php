@@ -1689,10 +1689,12 @@ class SierraRest extends AbstractBase implements
      * password
      *
      * @return array Associative array of the results
+     *
+     * @throws ILSException
      */
     public function recoverPassword($params)
     {
-        return changePassword($params);
+        return $this->changePassword($params);
     }
 
     /**
