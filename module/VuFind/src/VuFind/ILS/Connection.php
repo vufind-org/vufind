@@ -45,6 +45,7 @@ use function call_user_func_array;
 use function count;
 use function func_get_args;
 use function get_class;
+use function in_array;
 use function intval;
 use function is_array;
 use function is_callable;
