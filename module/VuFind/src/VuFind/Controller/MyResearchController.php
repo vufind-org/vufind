@@ -1760,13 +1760,13 @@ class MyResearchController extends AbstractBase
         }
         //ILS Driver:
         //if the user hasn't logged in yet, but is found by the ILS, call function
-        //getPatronFromBarcode
+        //getPatronFromUsername
         if (!$user && $this->formWasSubmitted() && !empty($username)) {
             $dbService = $this->getDbService(UserServiceInterface::class);
             $entity = $dbService->createEntityForUsername($username);
             $catalog = $this->getILS()->getDriver();
-            if ($catalog->supportsMethod('getPatronFromBarcode', $username)) {
-                $patron = $catalog->getPatronFromBarcode($username);
+            if ($catalog->supportsMethod('getPatronFromUsername', $username)) {
+                $patron = $catalog->getPatronFromUsername($username);
                 $entity->setEmail($patron['email']);
                 $entity->setCatPassEnc($patron['password']);
                 $entity->setFirstname($patron['firstname']);
@@ -2116,9 +2116,9 @@ class MyResearchController extends AbstractBase
                 return $view;
             }
         }
-        // Update password
+        // Set/Reset password
         try {
-            $user = $this->getAuthManager()->updatePassword($this->getRequest());
+            $user = $this->getAuthManager()->newPassword($this->getRequest());
         } catch (AuthException $e) {
             $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             return $view;
@@ -2126,9 +2126,11 @@ class MyResearchController extends AbstractBase
         // Update hash to prevent reusing hash
         $this->getAuthManager()->updateUserVerifyHash($user);
         if ($followUp = $this->followup()->retrieve('url')) {
-            $newUrl = strstr($followUp, 'Verify', true) . 'Home';
+            //This exists because the followupURL gets set to Verify which returns
+            //an error message due to trying to check the hash a second time
+            $followUpUrl = strstr($followUp, 'Verify', true) . 'Home';
             $this->followup()->clear('url');
-            $this->followup()->store([], $newUrl);
+            $this->followup()->store([], $followUpUrl);
         }
         $this->getAuthManager()->login($this->request);
         $this->flashMessenger()->addMessage('new_password_success', 'success');

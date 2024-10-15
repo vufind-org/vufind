@@ -1641,6 +1641,19 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
+     * Recover user's password with a token from getPasswordRecoveryToken
+     *
+     * @param array $params Required params such as cat_username, token and new
+     * password
+     *
+     * @return array Associative array of the results
+     */
+    public function recoverPassword($params)
+    {
+        return changePassword($params);
+    }
+
+    /**
      * Change Password
      *
      * Attempts to change patron password (PIN code)
@@ -1652,7 +1665,8 @@ class SierraRest extends AbstractBase implements
      * 'newPassword' New password
      *
      * @return array An array of data on the request including
-     * whether or not it was successful and a system message (if available)
+     * whether it was successful or not and a system message (if available)
+     * @throws ILSException
      */
     public function changePassword($details)
     {
@@ -1668,13 +1682,16 @@ class SierraRest extends AbstractBase implements
             ];
         }
 
-        $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
-        if (strlen($newPIN) != 4) {
-            return [
-                'success' => false, 'status' => 'password_error_invalid',
-            ];
+        if ($this->config['Authentication']['digits_only'] ?? false) {
+            $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
+            if (strlen($newPIN) != 4) {
+                return [
+                    'success' => false, 'status' => 'password_error_invalid',
+                ];
+            }
+        } else {
+            $newPIN = trim($details['newPassword']);
         }
-
         $request = ['pin' => $newPIN];
 
         $result = $this->makeRequest(

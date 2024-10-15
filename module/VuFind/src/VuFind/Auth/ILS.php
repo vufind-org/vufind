@@ -122,7 +122,7 @@ class ILS extends AbstractBase
     {
         $driver = $this->getCatalog()->getDriver();
         if (
-            method_exists($driver, 'changePassword')
+            method_exists($driver, 'recoverPassword')
             && ($this->config['Authentication']['recover_password'] ?? false)
         ) {
             return true;
@@ -198,6 +198,54 @@ class ILS extends AbstractBase
         $this->validatePasswordUpdate($params);
 
         $result = $this->getCatalog()->changePassword(
+            [
+                'patron' => $patron,
+                'username' => $patron['cat_username'],
+                'oldPassword' => $params['oldpwd'],
+                'newPassword' => $params['password'],
+            ]
+        );
+        if (!$result['success']) {
+            throw new AuthException($result['status']);
+        }
+
+        // Update the user and send it back to the caller:
+        $username = $patron[$this->getUsernameField()];
+        $user = $this->getOrCreateUserByUsername($username);
+        $this->authenticator->saveUserCatalogCredentials($user, $patron['cat_username'], $params['password']);
+        return $user;
+    }
+
+    /**
+     * Change/Reset a user's password when they've forgotten.
+     *
+     * @param Request $request Request object containing new account details.
+     *
+     * @return UserEntityInterface Updated user entity.
+     *
+     * @throws PasswordSecurity
+     * @throws AuthException
+     * @throws \Exception
+     */
+    public function newPassword($request)
+    {
+        foreach (['oldpwd', 'password', 'password2'] as $param) {
+            $params[$param] = $request->getPost()->get($param, '');
+        }
+        // Connect to catalog:
+        if ($hash = $request->getPost('hash') ?? false) {
+            if ($user = $this->getDbService(UserServiceInterface::class)->getUserByVerifyHash($hash)) {
+                $username = $user->getUsername();
+            }
+        }
+        if (!($patron = $this->authenticator->storedCatalogLogin($username ?? null))) {
+            throw new AuthException('authentication_error_technical');
+        }
+        $this->validatePasswordUpdate($params);
+        if (empty($params['oldpwd'])) {
+            $params['oldpwd'] = $patron['cat_password'];
+        }
+        $result = $this->getCatalog()->recoverPassword(
             [
                 'patron' => $patron,
                 'username' => $patron['cat_username'],
