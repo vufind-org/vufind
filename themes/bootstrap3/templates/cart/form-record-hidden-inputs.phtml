@@ -1,9 +1,6 @@
 <?php
   $recordId = $this->driver?->getUniqueId() ?? $this->recordId ?? false;
   $recordSource = $this->driver?->getSourceIdentifier() ?? $this->recordSource ?? DEFAULT_SEARCH_BACKEND;
-  if ($recordId && str_contains($recordId, '|')) {
-    [$recordId, $recordSource] = explode('|', $recordId, 2);
-  }
 ?>
 <?php if ($recordId): ?>
   <input type="hidden" name="recordId" value="<?=$this->escapeHtmlAttr($recordId)?>">
