@@ -1,6 +1,6 @@
 <?php
-  $recordId = $this->record?->getUniqueId() ?? $this->driver?->getUniqueId() ?? $this->recordId ?? false;
-  $recordSource = $this->record?->getSourceIdentifier() ?? $this->driver?->getSourceIdentifier() ?? $this->recordSource ?? DEFAULT_SEARCH_BACKEND;
+  $recordId = $this->driver?->getUniqueId() ?? $this->recordId ?? false;
+  $recordSource = $this->driver?->getSourceIdentifier() ?? $this->recordSource ?? DEFAULT_SEARCH_BACKEND;
   if ($recordId && str_contains($recordId, '|')) {
     [$recordId, $recordSource] = explode('|', $recordId, 2);
   }
