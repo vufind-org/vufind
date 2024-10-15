@@ -34,6 +34,7 @@
 namespace VuFind\ILS;
 
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Session\Container;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -44,6 +45,7 @@ use function call_user_func_array;
 use function count;
 use function func_get_args;
 use function get_class;
+use function in_array;
 use function intval;
 use function is_array;
 use function is_callable;
@@ -64,6 +66,10 @@ use function is_object;
  */
 class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 {
+    use \VuFind\Cache\CacheTrait {
+        getCachedData as getSharedCachedData;
+        putCachedData as putSharedCachedData;
+    }
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -131,6 +137,42 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $request;
 
     /**
+     * Cache life time per method
+     *
+     * @var array
+     */
+    protected $cacheLifeTime = ['*' => 60];
+
+    /**
+     * Cache storage per method
+     *
+     * Note: Don't cache anything too large in session before
+     * https://openlibraryfoundation.atlassian.net/browse/VUFIND-1652 is implemented
+     *
+     * @var array
+     */
+    protected $cacheStorage = [
+        'patronLogin' => 'session',
+        'getProxiedUsers' => 'session',
+        'getProxyingUsers' => 'session',
+        'getPurchaseHistory' => 'shared',
+    ];
+
+    /**
+     * Methods that invalidate the session cache
+     *
+     * @var array
+     */
+    protected $sessionCacheInvalidatingMethods = ['changePassword'];
+
+    /**
+     * Session cache
+     *
+     * @var Container
+     */
+    protected $sessionCache = null;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config           $config        Configuration
@@ -169,6 +211,31 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $this->holdsMode = $settings->getHoldsMode();
         $this->titleHoldsMode = $settings->getTitleHoldsMode();
         return $this;
+    }
+
+    /**
+     * Set session container for cache.
+     *
+     * @param Container $container Session container
+     *
+     * @return Connection
+     */
+    public function setSessionCache(Container $container)
+    {
+        $this->sessionCache = $container;
+        return $this;
+    }
+
+    /**
+     * Set cache lifetime settings
+     *
+     * @param array $settings Lifetime settings
+     *
+     * @return void
+     */
+    public function setCacheLifeTime(array $settings): void
+    {
+        $this->cacheLifeTime = array_merge($this->cacheLifeTime, $settings);
     }
 
     /**
@@ -1198,9 +1265,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Default method -- pass along calls to the driver if available; return
-     * false otherwise. This allows custom functions to be implemented in
-     * the driver without constant modification to the connection class.
+     * Call an ILS method with failover to NoILS if configured.
      *
      * @param string $methodName The name of the called method.
      * @param array  $params     Array of passed parameters.
@@ -1208,7 +1273,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @throws ILSException
      * @return mixed             Varies by method (false if undefined method)
      */
-    public function __call($methodName, $params)
+    public function callIlsWithFailover($methodName, $params)
     {
         try {
             if ($this->checkCapability($methodName, $params)) {
@@ -1226,5 +1291,115 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         throw new ILSException(
             'Cannot call method: ' . $this->getDriverClass() . '::' . $methodName
         );
+    }
+
+    /**
+     * Get data for an ILS method from shared or session cache
+     *
+     * @param array $cacheSettings Cache settings
+     *
+     * @return ?array
+     */
+    protected function getCachedData(array $cacheSettings): ?array
+    {
+        $cacheKey = $cacheSettings['key'];
+        if ('shared' === $cacheSettings['storage']) {
+            return $this->getSharedCachedData($cacheKey);
+        }
+        if ($this->sessionCache && ($entry = $this->sessionCache[$cacheKey] ?? null)) {
+            if (time() - $entry['ts'] <= $cacheSettings['lifeTime']) {
+                return $entry['payload'];
+            }
+            unset($this->sessionCache[$cacheKey]);
+        }
+        return null;
+    }
+
+    /**
+     * Put data for an ILS method to shared or session cache.
+     *
+     * @param array $cacheSettings Cache settings
+     * @param array $data          Data to cache
+     *
+     * @return void
+     */
+    protected function putCachedData(array $cacheSettings, array $data): void
+    {
+        $cacheKey = $cacheSettings['key'];
+        if ('shared' === $cacheSettings['storage']) {
+            $this->putSharedCachedData($cacheKey, $data, $cacheSettings['lifeTime']);
+            return;
+        }
+        if ($this->sessionCache) {
+            $this->sessionCache[$cacheKey] = [
+                'ts' => time(),
+                'payload' => $data,
+            ];
+        }
+    }
+
+    /**
+     * Clear session cache if the given method requires it
+     *
+     * @param string $methodName Method name
+     *
+     * @return void
+     */
+    protected function clearSessionCacheIfRequired($methodName): void
+    {
+        if ($this->sessionCache && in_array($methodName, $this->sessionCacheInvalidatingMethods)) {
+            $this->sessionCache->exchangeArray([]);
+        }
+    }
+
+    /**
+     * Get cache settings for a method
+     *
+     * @param string $methodName The name of the called method.
+     * @param array  $params     Array of passed parameters.
+     *
+     * @return ?array
+     */
+    protected function getCacheSettings($methodName, $params): ?array
+    {
+        $lifeTime = (int)($this->cacheLifeTime[$methodName] ?? $this->cacheLifeTime['*'] ?? 0);
+        $storage = $this->cacheStorage[$methodName] ?? null;
+        if (!$lifeTime || !$storage) {
+            return null;
+        }
+        $key = $methodName . md5(serialize($params));
+        return compact('lifeTime', 'storage', 'key');
+    }
+
+    /**
+     * Default method -- pass along calls to the driver if available; return
+     * false otherwise. This allows custom functions to be implemented in
+     * the driver without constant modification to the connection class.
+     *
+     * Results of certain methods (such as patronLogin) may be cached to avoid
+     * hammering the ILS with the same request repeatedly.
+     *
+     * @param string $methodName The name of the called method.
+     * @param array  $params     Array of passed parameters.
+     *
+     * @throws ILSException
+     * @return mixed             Varies by method (false if undefined method)
+     */
+    public function __call($methodName, $params)
+    {
+        $cacheSettings = $this->getCacheSettings($methodName, $params);
+        // Note: The actual data is cached in an array so that we can differentiate
+        // between a missing cache entry and null as a valid value.
+        if ($cacheSettings && ($cached = $this->getCachedData($cacheSettings))) {
+            return $cached['data'];
+        }
+
+        $this->clearSessionCacheIfRequired($methodName);
+
+        $data = $this->callIlsWithFailover($methodName, $params);
+        if ($cacheSettings) {
+            $this->putCachedData($cacheSettings, compact('data'));
+        }
+        return $data;
     }
 }

@@ -37,6 +37,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
+use VuFindTest\Feature\PathResolverTrait;
 
 use function array_key_exists;
 
@@ -51,6 +52,8 @@ use function array_key_exists;
  */
 class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use PathResolverTrait;
+
     /**
      * Container for building mocks.
      *
@@ -507,6 +510,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $command->setTranslator(
             $options['translator'] ?? $this->container->createMock(\Laminas\Mvc\I18n\Translator::class)
         );
+        $command->setPathResolver($this->getPathResolver());
         return $command;
     }
 
