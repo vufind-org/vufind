@@ -158,6 +158,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     ];
 
     /**
+     * Methods that invalidate the session cache
+     *
+     * @var array
+     */
+    protected $sessionCacheInvalidatingMethods = ['changePassword'];
+
+    /**
      * Session cache
      *
      * @var Container
@@ -1331,6 +1338,20 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Clear session cache if the given method requires it
+     *
+     * @param string $methodName Method name
+     *
+     * @return void
+     */
+    protected function clearSessionCacheIfRequired($methodName): void
+    {
+        if ($this->sessionCache && in_array($methodName, $this->sessionCacheInvalidatingMethods)) {
+            $this->sessionCache->exchangeArray([]);
+        }
+    }
+
+    /**
      * Get cache settings for a method
      *
      * @param string $methodName The name of the called method.
@@ -1371,6 +1392,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         if ($cacheSettings && ($cached = $this->getCachedData($cacheSettings))) {
             return $cached['data'];
         }
+
+        $this->clearSessionCacheIfRequired($methodName);
+
         $data = $this->callIlsWithFailover($methodName, $params);
         if ($cacheSettings) {
             $this->putCachedData($cacheSettings, compact('data'));
