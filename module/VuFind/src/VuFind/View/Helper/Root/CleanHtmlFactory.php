@@ -133,7 +133,7 @@ class CleanHtmlFactory implements FactoryInterface
      */
     protected function setAdditionalConfiguration(HTMLPurifier_Config $config)
     {
-        // Add support for deprecated tags:
+        // Add support for details and summary elements:
         $definition = $config->getHTMLDefinition(true);
         $definition->addElement(
             'details',
