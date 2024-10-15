@@ -61,11 +61,11 @@ class PropertyString implements PropertyStringInterface
      * @param string $html       HTML
      * @param array  $properties Any additional properties (see __construct)
      *
-     * @return static
+     * @return PropertyString
      */
-    public static function fromHtml(string $html, array $properties = []): static
+    public static function fromHtml(string $html, array $properties = []): PropertyString
     {
-        return (new static(strip_tags($html), $properties))->setHtml($html);
+        return (new PropertyString(strip_tags($html), $properties))->setHtml($html);
     }
 
     /**
