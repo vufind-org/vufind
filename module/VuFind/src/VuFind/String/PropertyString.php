@@ -56,6 +56,19 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
+     * Create a PropertyString from an HTML string
+     *
+     * @param string $html       HTML
+     * @param array  $properties Any additional properties (see __construct)
+     *
+     * @return static
+     */
+    public static function fromHtml(string $html, array $properties = []): static
+    {
+        return (new static(strip_tags($html), $properties))->setHtml($html);
+    }
+
+    /**
      * Set string value
      *
      * @param string $str String value
