@@ -29,6 +29,8 @@
 
 namespace VuFind\Content\TOC;
 
+use function sprintf;
+
 /**
  * Syndetics TOC content loader.
  *

@@ -30,7 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function call_user_func_array;
@@ -166,7 +166,7 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -188,7 +188,7 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface New user entity.
      */
     public function create($request)
     {
@@ -331,7 +331,7 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object containing password change details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface Updated user entity.
      */
     public function updatePassword($request)
     {
@@ -400,7 +400,7 @@ class ChoiceAuth extends AbstractBase
 
     /**
      * Proxy auth method that checks the request for an active method and then
-     * loads a User object from the database (e.g. authenticate or create).
+     * loads a UserEntityInterface object from the database (e.g. authenticate or create).
      *
      * @param Request $request Request object to check.
      * @param string  $method  the method to proxy
@@ -477,7 +477,7 @@ class ChoiceAuth extends AbstractBase
         } catch (AuthException $e) {
             return false;
         }
-        return isset($user) && $user instanceof User;
+        return isset($user) && $user instanceof UserEntityInterface;
     }
 
     /**

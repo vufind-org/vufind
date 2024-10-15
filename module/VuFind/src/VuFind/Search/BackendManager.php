@@ -39,6 +39,7 @@ use VuFindSearch\Service;
 
 use function gettype;
 use function is_object;
+use function sprintf;
 
 /**
  * Manager for search backends.

@@ -123,7 +123,10 @@ class Factory implements FactoryInterface
             ->get('config');
 
         // Create service:
-        $class = new $requestedName($this->getTransport($config));
+        $class = new $requestedName(
+            $this->getTransport($config),
+            $config->Mail->message_log
+        );
         if (!empty($config->Mail->override_from)) {
             $class->setFromAddressOverride($config->Mail->override_from);
         }

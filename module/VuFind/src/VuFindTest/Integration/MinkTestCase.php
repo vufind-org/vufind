@@ -56,6 +56,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\RemoteCoverageTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
 
@@ -86,6 +87,88 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var PathResolver
      */
     protected $pathResolver;
+
+    /**
+     * Selector for an open button group dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $btnGroupDropdownMenuSelector = '.btn-group.open .dropdown-menu, .btn-group .dropdown-menu.show';
+
+    /**
+     * Selector for first item in a dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $firstOpenDropdownMenuItemSelector
+        = '.mainbody .open .dropdown-menu li:nth-child(2) a, .mainbody .dropdown-menu.show li:nth-child(2) a';
+
+    /**
+     * Selector for popover content
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $popoverContentSelector = '.popover-body, .popover-content';
+
+    /**
+     * Selector for an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalSelector = '#modal.in, #modal.show';
+
+    /**
+     * Selector for a button link in an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalButtonLinkSelector = '#modal.in a.btn, #modal.show a.btn';
+
+    /**
+     * Selector for a username field in open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalUsernameFieldSelector = '#modal.in [name="username"], #modal.show [name="username"]';
+
+    /**
+     * Selector for next page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pageNextSelector = 'a.page-next, .page-next a';
+
+    /**
+     * Selector for previous page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pagePrevSelector = 'a.page-prev, .page-prev a';
+
+    /**
+     * Selector for active record tab
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
 
     /**
      * Get name of the current test
@@ -148,7 +231,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeConfigFile($configName, $settings, $replace = false)
+    protected function changeConfigFile(string $configName, array $settings, bool $replace = false): void
     {
         $file = $configName . '.ini';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
@@ -163,12 +246,27 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
             $this->modifiedConfigs[] = $configName;
         }
+        $this->writeConfigFile($local, $settings, $replace);
+    }
+
+    /**
+     * Write settings to a file.
+     *
+     * @param string $path     Path of file to modify.
+     * @param array  $settings Settings to change.
+     * @param bool   $replace  Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
+     *
+     * @return void
+     */
+    protected function writeConfigFile(string $path, array $settings, bool $replace = false): void
+    {
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
-            file_put_contents($local, '');
+            file_put_contents($path, '');
         }
 
-        $writer = new ConfigWriter($local);
+        $writer = new ConfigWriter($path);
         foreach ($settings as $section => $contents) {
             foreach ($contents as $key => $value) {
                 $writer->set($section, $key, $value);
@@ -283,7 +381,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
-            if ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR')) {
+            if ($coverageDir = $this->getRemoteCoverageDirectory()) {
                 $this->session->setRemoteCoverageConfig(
                     $this->getTestName(),
                     $coverageDir
@@ -545,6 +643,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param int     $timeout     Wait timeout for CSS selection (in ms)
      * @param int     $retries     Retry count for set loop
      * @param bool    $verifyValue Whether to verify that the value was written
+     * @param bool    $reFocus     Whether to focus the element when done setting the value
      *
      * @return mixed
      */
@@ -554,7 +653,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $value,
         $timeout = null,
         $retries = 6,
-        $verifyValue = true
+        $verifyValue = true,
+        $reFocus = false
     ) {
         $timeout ??= $this->getDefaultTimeout();
 
@@ -564,14 +664,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $field = $this->findCss($page, $selector, $timeout, 0);
                 $field->setValue($value);
-                if (!$verifyValue) {
+                // Did it work? If so, we're done and can leave....
+                if (
+                    !$verifyValue
+                    || $field->getValue() === $value
+                ) {
+                    if ($reFocus) {
+                        $field->focus();
+                    }
                     return;
                 }
 
-                // Did it work? If so, we're done and can leave....
-                if ($field->getValue() === $value) {
-                    return;
-                }
                 $this->logWarning(
                     'RETRY setValue after failure in ' . $this->getTestName()
                     . " (try $i)."
@@ -655,12 +758,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element  $page     Page element
-     * @param string   $selector CSS selector
-     * @param callable $method   Method to call
-     * @param int      $timeout  Wait timeout for CSS selection (in ms)
-     * @param int      $index    Index of the element (0-based)
-     * @param int      $retries  Retry count for set loop
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $method   Method to call
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
      *
      * @return string
      */
@@ -688,7 +791,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->snooze();
         }
 
-        throw new \Exception('Failed to get text after ' . $retries . ' attempts.');
+        throw new \Exception("Failed to call $method on '$selector' after $retries attempts.");
     }
 
     /**
@@ -824,20 +927,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string $handler Search type (optional)
      * @param string $path    Path to use as search starting point (optional)
      *
-     * @return \Behat\Mink\Element\Element
+     * @return Element
      */
     protected function performSearch($query, $handler = null, $path = '/Search')
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
+        $this->submitSearchForm($page, $query, $handler);
+        return $page;
+    }
+
+    /**
+     * Submit a search on the provided page.
+     *
+     * @param Element $page    Current page object
+     * @param string  $query   Search term(s)
+     * @param string  $handler Search type (optional)
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected function submitSearchForm(
+        Element $page,
+        string $query,
+        ?string $handler = null
+    ): void {
         $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         if ($handler) {
             $this->findCssAndSetValue($page, '#searchForm_type', $handler);
         }
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
-        return $page;
     }
 
     /**

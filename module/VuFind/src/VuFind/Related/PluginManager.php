@@ -51,6 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'channels' => Channels::class,
         'bookplate' => Bookplate::class,
         'editions' => Deprecated::class,
+        'morebyauthorsolr' => MoreByAuthorSolr::class,
         'similar' => Similar::class,
         'worldcateditions' => Deprecated::class,
         'worldcatsimilar' => WorldCatSimilar::class,
@@ -65,6 +66,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Channels::class => InvokableFactory::class,
         Bookplate::class => BookplateFactory::class,
         Deprecated::class => InvokableFactory::class,
+        MoreByAuthorSolr::class => SimilarFactory::class,
         Similar::class => SimilarFactory::class,
         WorldCatSimilar::class => SimilarFactory::class,
     ];

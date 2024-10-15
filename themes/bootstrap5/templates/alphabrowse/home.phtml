@@ -1,0 +1,177 @@
+<?php
+  $this->headTitle($this->translate('Browse the Collection Alphabetically'));
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a></li>';
+  $baseQuery = ['source' => $this->source, 'from' => $this->from];
+
+  // Set up upper search box if necessary:
+  if ($this->searchbox()->alphaBrowseOptionsEnabled()) {
+    $this->layout()->searchbox = $this->context($this)->renderInContext(
+        'search/searchbox.phtml',
+        [
+          'lookfor' => $this->from,
+          'searchIndex' => 'AlphaBrowse:' . $this->source,
+        ]
+    );
+  }
+?>
+
+<?php /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
+<?php ob_start(); ?>
+  <ul class="pager">
+    <?php if (isset($this->prevpage)): ?>
+      <li>
+        <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->prevpage]]))?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
+          <?=$this->icon('page-prev') ?>
+          <?=$this->transEsc('Prev')?>
+        </a>
+      </li>
+    <?php else: ?>
+      <li class="disabled" aria-hidden="true"><a><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
+    <?php endif; ?>
+
+    <?php if (isset($this->nextpage)): ?>
+      <li>
+        <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->nextpage]]))?>" aria-label="<?=$this->transEscAttr('page_next')?>">
+          <?=$this->transEsc('Next')?>
+          <?=$this->icon('page-next') ?>
+        </a>
+      </li>
+    <?php else: ?>
+      <li class="disabled" aria-hidden="true"><a><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
+    <?php endif; ?>
+  </ul>
+<?php $pageLinks = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+
+<?php /* If the top search box is not configured to show alphabrowse, or if no option
+      is selected yet, set up a separate form: */ ?>
+<?php if (!$this->searchbox()->alphaBrowseOptionsEnabled() || empty($this->source)): ?>
+  <form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
+    <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
+    <select id="alphaBrowseForm_source" name="source" class="form-control">
+      <?php foreach ($this->alphaBrowseTypes as $key => $item): ?>
+        <option value="<?=$this->escapeHtmlAttr($key) ?>"<?php if ($this->source == $key): ?> selected="selected"<?php endif; ?>><?=$this->transEsc($item) ?></option>
+      <?php endforeach; ?>
+    </select>
+    <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
+    <?php
+      $searchboxAttributes = [
+        'type' => 'text',
+        'name' => 'from',
+        'id' => 'alphaBrowseForm_from',
+        'value' => $this->from,
+        'class' => 'form-control',
+      ];
+      if ($this->searchbox()->autocompleteEnabled('Solr')) {
+        $searchboxAttributes['class'] .= ' autocomplete'
+          . ($this->searchbox()->autocompleteAutoSubmit('SolrReserves') ? ' ac-auto-submit' : '');
+        $searchboxAttributes['data-autocomplete-type-field-selector'] = '#alphaBrowseForm_source';
+        $searchboxAttributes['data-autocomplete-type-prefix'] = 'alphabrowse_';
+        $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson('Solr');
+      }
+    ?>
+    <input<?=$this->htmlAttributes($searchboxAttributes)?>>
+    <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Browse') ?>">
+  </form>
+<?php endif; ?>
+
+<?php if ($this->result): ?>
+  <?=$pageLinks ?>
+  <table class="alphabrowse table table-striped">
+    <thead>
+      <tr>
+        <th class="<?=$this->source ?>">
+          <?=$this->transEsc('browse_' . $this->source) ?>
+        </th>
+        <?php foreach ($this->extras as $e): ?>
+          <th><?=$this->transEsc('browse_' . $e) ?></th>
+        <?php endforeach; ?>
+        <th class="titles"><?=$this->transEsc('alphabrowse_matches') ?></th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php $row = 0; ?>
+      <?php foreach ($this->result['Browse']['items'] as $item): ?>
+        <?php if (isset($this->highlight_row) && $row == $this->highlight_row): ?>
+          <tr class="browse-match">
+          <?php if (isset($this->match_type) && ($this->match_type == 'NONE')): ?>
+            <?php // this is the right row but query doesn't match value ?>
+            <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
+            </tr>
+            <tr>
+          <?php endif; ?>
+        <?php else: ?>
+          <tr>
+        <?php endif; ?>
+          <td class="<?=$this->source ?>">
+            <b>
+              <?php if ($url = $this->alphabrowse()->getUrl($this->source, $item)): ?>
+                <a href="<?=$this->escapeHtmlAttr($url)?>"><?=$this->escapeHtml($item['heading'])?></a>
+              <?php else: ?>
+                <?=$this->escapeHtml($item['heading'])?>
+              <?php endif; ?>
+            </b>
+
+            <?php if (count($item['useInstead']) > 0): ?>
+              <div>
+                <?=$this->transEsc('Use instead') ?>:
+                <ul>
+                  <?php foreach ($item['useInstead'] as $heading): ?>
+                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+            <?php endif; ?>
+
+            <?php if (count($item['seeAlso']) > 0): ?>
+              <div>
+                <?=$this->transEsc('See also') ?>:
+                <ul>
+                  <?php foreach ($item['seeAlso'] as $heading): ?>
+                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+            <?php endif; ?>
+
+            <?php if ($item['note'] ?? false): ?>
+              <div>
+                <?=$this->transEsc('Note') ?>:
+                <ul>
+                  <li><?=$this->escapeHtml($item['note'])?></li>
+                </ul>
+              </div>
+            <?php endif; ?>
+          </td>
+
+          <?php foreach ($this->extras as $extraName): ?>
+            <td>
+              <?php
+                $extraDisplayArray = [];
+                foreach ($item['extras'][$extraName] as $j => $e):
+                  $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
+                endforeach;
+                echo empty($extraDisplayArray)
+                  ? '&nbsp;'
+                  : implode('<br>', array_map([$this, 'escapeHtml'], $extraDisplayArray));
+              ?>
+            </td>
+          <?php endforeach; ?>
+
+          <td class="titles">
+            <?php if ($item['count'] > 0): ?>
+              <?=$item['count']; ?>
+            <?php endif; ?>
+          </td>
+        </tr>
+        <?php $row++; ?>
+        <?php endforeach; ?>
+        <?php if (isset($this->highlight_end)): ?>
+          <tr class="browse-match">
+            <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
+          </tr>
+        <?php endif; ?>
+    </tbody>
+  </table>
+  <?= $pageLinks ?>
+<?php endif; ?>

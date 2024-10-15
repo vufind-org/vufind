@@ -32,8 +32,10 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Favorites\FavoritesService;
 
 use function count;
 use function is_array;
@@ -101,7 +103,7 @@ class CartController extends AbstractBase
      */
     protected function getCart()
     {
-        return $this->serviceLocator->get(\VuFind\Cart::class);
+        return $this->getService(\VuFind\Cart::class);
     }
 
     /**
@@ -140,7 +142,7 @@ class CartController extends AbstractBase
         // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
+        if (!empty($referer) && $this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -282,10 +284,13 @@ class CartController extends AbstractBase
             $submitDisabled = true;
         }
 
+        $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
+        if ($emailActionSettings === 'disabled') {
+            throw new ForbiddenException('Email action disabled');
+        }
         // Force login if necessary:
-        $config = $this->getConfig();
         if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
+            $emailActionSettings !== 'enabled'
             && !$this->getUser()
         ) {
             return $this->forceLogin(
@@ -303,7 +308,7 @@ class CartController extends AbstractBase
         $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
@@ -314,7 +319,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
+                $mailer = $this->getService(\VuFind\Mailer\Mailer::class);
                 $mailer->setMaxRecipients($view->maxRecipients);
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
@@ -531,8 +536,8 @@ class CartController extends AbstractBase
 
         // Process submission if necessary:
         if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
-            $results = $this->favorites()
-                ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
+            $results = $this->getService(FavoritesService::class)
+                ->saveRecordsToFavorites($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
                 'userList',
                 ['id' => $results['listId']]
@@ -551,7 +556,7 @@ class CartController extends AbstractBase
         return $this->createViewModel(
             [
                 'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $user->getLists(),
+                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
             ]
         );
     }

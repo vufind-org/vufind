@@ -1,0 +1,120 @@
+/* ------ Border radius changes ------ */
+$list-group-border-radius: 0;
+$border-radius-large: 0; // modal
+
+/* ------ Common element changes ------ */
+.help-block {
+  h1,
+  h2,
+  h3,
+  h4 { margin: 0; }
+}
+
+.highlight,
+mark { background-color: $highlighter-color; }
+
+/* ------ Bootstrap class overrides ------ */
+.badge {
+  margin-bottom: 1px;
+}
+.btn {
+  border-radius: .25rem;
+  border-color: $silver;
+}
+.btn-link,
+.btn-primary { border-color: transparent; }
+.btn-primary:hover {
+  background-color: $action-hover-bg;
+  color: $action-color;
+  border-color: $brand-primary;
+}
+.btn-link { color: $brand-primary; }
+
+.media,
+.media-body { overflow: initial; }
+
+.form-control { box-shadow: none; }
+.form-control:hover,
+.form-control:focus {
+  /* #LESS>
+  --outline-color: rgba($brand-primary, (40/100));
+  <#LESS */
+  /* #SCSS> */
+  --outline-color: color.change($brand-primary, $alpha: 0.4);
+  /* <#SCSS */
+
+  border-color: $brand-primary;
+  outline: 4px solid var(--outline-color);
+}
+.form-control:focus {
+  --outline-color: #{$gold};
+}
+
+.breadcrumb a { color: $dark-gray; }
+.breadcrumb .active { color: $near-black; }
+
+.nav > li > a {
+  color: $brand-primary;
+}
+.navbar-collapse,
+.navbar-form { box-shadow: none; }
+
+.alert {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  color: $black;
+
+  .btn {
+    color: $mid-gray;
+    background-color: $white;
+    border-color: $gray;
+  }
+  .btn-primary {
+    color: $action-color;
+    background-color: $white;
+    border-color: $action-color;
+  }
+}
+.alert-info,
+.alert-info:hover {
+  color: $navy;
+  background-color: $lightest-blue;
+  a { color: $blue; }
+}
+.alert-success,
+.alert-success:hover {
+  color: $dark-green;
+  background-color: $washed-green;
+  a { color: $green; }
+}
+.alert-danger,
+.alert-danger:hover {
+  color: $white;
+  background-color: $red;
+  a { color: $washed-red; }
+}
+
+.label { font-weight: 400; }
+
+$pagination-border: transparent;
+$pagination-hover-border: transparent;
+.pagination {
+  border-radius: 0;
+}
+.pagination > li > a {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: $reduced-font-size;
+  font-weight: 500;
+  line-height: 1rem;
+}
+.pagination > li {
+  &.page-prev a,
+  &.page-next a {
+    font-size: 1rem;
+    font-weight: bold;
+    color: $brand-primary;
+  }
+}
+.pagination > .active > a { border-radius: $border-radius-base; }

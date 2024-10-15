@@ -90,7 +90,7 @@ VuFind.register('lightbox', function Lightbox() {
     if (alerts.length > 0) {
       var msgs = alerts.toArray().map(function getSuccessHtml(el) {
         return el.innerHTML;
-      }).join('<br/>');
+      }).join('<br>');
       var href = alerts.find('.download').attr('href');
       if (typeof href !== 'undefined') {
         location.href = href;
@@ -187,7 +187,7 @@ VuFind.register('lightbox', function Lightbox() {
             if (errorMsgs.length && testDiv.find('.record').length) {
               var msgs = errorMsgs.toArray().map(function getAlertHtml(el) {
                 return el.innerHTML;
-              }).join('<br/>');
+              }).join('<br>');
               showAlert(msgs, 'danger');
               return false;
             }
@@ -227,13 +227,13 @@ VuFind.register('lightbox', function Lightbox() {
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
         if (jq_xhr.status === 205) {
-          VuFind.refreshPage();
+          VuFind.refreshPage(jq_xhr.getResponseHeader('X-VuFind-Refresh-Method') === 'GET');
           return;
         }
         render(content);
       })
       .fail(function lbAjaxFail(deferred, errorType, msg) {
-        showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
+        showAlert(VuFind.translate('error_occurred') + '<br>' + msg, 'danger');
       });
     return _xhr;
   }
@@ -305,7 +305,7 @@ VuFind.register('lightbox', function Lightbox() {
     // Add submit button information
     var submit = $(_clickedButton);
     _clickedButton = null;
-    var buttonData = { name: 'submit', value: 1 };
+    var buttonData = { name: 'submitButton', value: 1 };
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-close') !== 'undefined') {
         close();
@@ -314,7 +314,7 @@ VuFind.register('lightbox', function Lightbox() {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
       }
-      buttonData.name = submit.attr('name') || 'submit';
+      buttonData.name = submit.attr('name') || 'submitButton';
       buttonData.value = submit.attr('value') || 1;
     }
     data.push(buttonData);
@@ -501,6 +501,11 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modalParams = {};
   }
+
+  function updateContainer(params) {
+    bind(params.container);
+  }
+
   function init() {
     _modal = $('#modal');
     _modalBody = _modal.find('.modal-body');
@@ -523,6 +528,18 @@ VuFind.register('lightbox', function Lightbox() {
     });
     _modal.on("shown.bs.modal", function lightboxShown() {
       bindFocus();
+
+      // Disable bootstrap-accessibility.js "enforceFocus" events.
+      // retainFocus() above handles it better.
+      // This is moot once that library (and bootstrap3) are retired.
+      try {
+        var focEls = _modal.find(":tabbable");
+        var firstEl = $(focEls[0]);
+        var lastEl = $(focEls[focEls.length - 1]);
+        $(firstEl).add(lastEl).off('keydown.bs.modal');
+      } catch (ex) {
+        // :tabbable won't work if bootstrap-accessibility.js isn't loaded, in which case we're already good
+      }
     });
 
     VuFind.modal = function modalShortcut(cmd) {
@@ -535,6 +552,7 @@ VuFind.register('lightbox', function Lightbox() {
         _modal.modal(cmd);
       }
     };
+    VuFind.listen('results-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

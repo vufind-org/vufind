@@ -115,7 +115,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
         );
         $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, '.modal.in'); // Lightbox open
+        $this->findCss($page, $this->openModalSelector); // Lightbox open
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
         $this->makeAccount($page, 'username1');
@@ -169,8 +169,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
         );
         $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, '.modal.in'); // Lightbox open
-        $this->findCss($page, '.modal [name="username"]');
+        $this->findCss($page, $this->openModalSelector); // Lightbox open
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Log in to existing account
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
@@ -247,7 +247,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click to add tag
         $this->clickCss($page, '.tag-record');
         // Lightbox login open?
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Make account
         $this->makeAccount($page, 'username2');
         // Add tag exists?
@@ -287,7 +287,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNull($page->find('css', '.tagList .tag .tag-submit'));
         // Login with second account
         $this->clickCss($page, '#loginOptions a');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
@@ -435,6 +435,186 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Set up and access the Tag Admin page.
+     *
+     * @param string $subPage The tag admin sub-page (optional)
+     *
+     * @return Element
+     */
+    protected function goToTagAdmin(string $subPage = ''): Element
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => ['admin_enabled' => 1],
+                    'Social' => ['case_sensitive_tags' => 'true'],
+                ],
+            ],
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Admin/Tags' . $subPage));
+        return $session->getPage();
+    }
+
+    /**
+     * Test that the tag admin module works.
+     *
+     * @return void
+     *
+     * @depends testTagSearch
+     * @depends testAddSensitiveTag
+     */
+    public function testTagAdminHome(): void
+    {
+        // Go to admin page:
+        $page = $this->goToTagAdmin();
+        $this->assertEquals(
+            'Total Users Total Resources Total Tags Unique Tags Anonymous Tags 1 3 8 6 0',
+            $this->findCss($page, 'table.table-striped')->getText()
+        );
+    }
+
+    /**
+     * Test that listing tags in Admin works.
+     *
+     * @return void
+     *
+     * @depends testTagSearch
+     * @depends testAddSensitiveTag
+     */
+    public function testTagAdminList(): void
+    {
+        $page = $this->goToTagAdmin('/List');
+
+        // We expect the three feedback entries created by the previous test:
+        $this->assertCount(8, $page->findAll('css', 'input[name="ids[]"]'));
+
+        // We expect specific form name and site URL values:
+        $this->assertEquals('All username2', $this->findCss($page, '#user_id')->getText());
+        // We need to do a case-insensitive comparison here because different database engines
+        // may make different decisions about uppercase-first vs. lowercase-first:
+        $this->assertEquals(
+            strtolower('All five new tag ONE one THREE 4 three 4'),
+            strtolower($this->findCss($page, '#tag_id')->getText())
+        );
+
+        // Apply a filter to see just the "five" tag (we need to extract the ID value
+        // from the text of the list).
+        $firstTag = $this->findCss($page, 'td')->getText();
+        $tagId = preg_replace('/five \((.*)\)/', '$1', $firstTag);
+        $this->assertTrue(intval($tagId) > 0, "Could not extract integer from '$firstTag'");
+        $this->findCss($page, '#tag_id')->setValue($tagId);
+        $this->clickCss($page, '#taglistsubmit');
+        $this->waitForPageLoad($page);
+        $this->assertCount(3, $page->findAll('css', 'input[name="ids[]"]'));
+
+        // Now delete the tags and confirm that they are gone:
+        $this->clickCss($page, 'input[name="deletePage"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Warning! You are about to delete 3 resource tag(s)',
+            $this->findCss($page, '.alert-info')->getText()
+        );
+        $this->clickCss($page, 'input[value="Yes"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            '3 tag(s) deleted',
+            $this->findCss($page, '.alert-success')->getText()
+        );
+        $this->assertCount(0, $page->findAll('css', 'input[name="ids[]"]'));
+
+        // Clear the filter; there should be two items left:
+        $page->clickLink('Clear Filter');
+        $this->waitForPageLoad($page);
+        $this->assertCount(5, $page->findAll('css', 'input[name="ids[]"]'));
+    }
+
+    /**
+     * Test that managing tags in Admin works.
+     *
+     * @return void
+     *
+     * @depends testTagAdminList
+     */
+    public function testTagAdminManage(): void
+    {
+        $page = $this->goToTagAdmin('/Manage');
+
+        // First, delete the first tag:
+        $this->findCss($page, '#type')->setValue('tag');
+        $this->clickCss($page, 'input[value="Submit"]');
+        $this->waitForPageLoad($page);
+        // We need to do a case-insensitive comparison here because different database engines
+        // may make different decisions about uppercase-first vs. lowercase-first:
+        $this->assertEquals(
+            strtolower('new tag ONE one THREE 4 three 4'),
+            strtolower($this->findCss($page, '#tag_id')->getText())
+        );
+        $this->clickCss($page, 'input[value="Delete Tags"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Warning! You are about to delete 1 resource tag(s)',
+            $this->findCss($page, '.alert-info')->getText()
+        );
+        $this->assertStringContainsString(
+            'Tag: new tag (',
+            $this->findCss($page, '.alert-info', index: 1)->getText()
+        );
+        $this->clickCss($page, 'input[value="Yes"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            '1 tag(s) deleted',
+            $this->findCss($page, '.alert-success')->getText()
+        );
+
+        // Now, start to delete tags by the first title, but opt out:
+        $this->findCss($page, '#type')->setValue('resource');
+        $this->clickCss($page, 'input[value="Submit"]');
+        $this->waitForPageLoad($page);
+        $this->assertStringMatchesFormat(
+            'dewey browse test (%d)',
+            $this->findCss($page, '#resource_id')->getText()
+        );
+        $this->clickCss($page, 'input[value="Delete Tags"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Warning! You are about to delete 4 resource tag(s)',
+            $this->findCss($page, '.alert-info')->getText()
+        );
+        $this->assertStringContainsString(
+            'You are using the following filter - Username: All, Tag: All, Resource: dewey browse test (',
+            $this->findCss($page, '.alert-info', index: 1)->getText()
+        );
+        $this->clickCss($page, 'input[value="No"]');
+        $this->waitForPageLoad($page);
+
+        // We can now clean up the remaining tags by wiping them out by username (which should be the default):
+        $this->assertEquals('user', $this->findCss($page, '#type')->getValue());
+        $this->clickCss($page, 'input[value="Submit"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'username2',
+            $this->findCss($page, '#user_id')->getText()
+        );
+        $this->clickCss($page, 'input[value="Delete Tags"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Warning! You are about to delete 4 resource tag(s)',
+            $this->findCss($page, '.alert-info')->getText()
+        );
+        $this->assertStringContainsString(
+            'You are using the following filter - Username: username2 (',
+            $this->findCss($page, '.alert-info', index: 1)->getText()
+        );
+        $this->clickCss($page, 'input[value="Yes"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            '4 tag(s) deleted',
+            $this->findCss($page, '.alert-success')->getText()
+        );
+    }
+
+    /**
      * Test record view email.
      *
      * @return void
@@ -454,7 +634,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Make account
         $this->makeAccount($page, 'emailmaniac');
         // Make sure Lightbox redirects to email view
@@ -476,7 +656,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, ' [name="username"]');
         // Login in Lightbox
         $this->fillInLoginForm($page, 'emailmaniac', 'test');
         $this->submitLoginForm($page);
@@ -639,9 +819,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click to add rating
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
-        $this->clickCss($page, '.modal.in a.btn');
+        $this->clickCss($page, $this->openModalButtonLinkSelector);
         // Lightbox login open?
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Make account
         $this->makeAccount($page, 'username2');
         $this->waitForPageLoad($page);
@@ -651,7 +831,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click rating link:
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
-        $this->clickCss($page, '.modal.in a.btn');
+        $this->clickCss($page, $this->openModalButtonLinkSelector);
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Click rating link again:
@@ -702,7 +882,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Login with second account
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->clickCss($page, '#loginOptions a');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         $this->makeAccount($page, 'username3');
         $this->waitForPageLoad($page);
 
@@ -720,7 +900,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Login with third account
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->clickCss($page, '#loginOptions a');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         $this->makeAccount($page, 'username4');
         $this->waitForPageLoad($page);
 

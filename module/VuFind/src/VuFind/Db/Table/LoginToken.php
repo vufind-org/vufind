@@ -47,6 +47,8 @@ use VuFind\Exception\LoginToken as LoginTokenException;
  */
 class LoginToken extends Gateway
 {
+    use ExpirationTrait;
+
     /**
      * Constructor
      *
@@ -64,41 +66,6 @@ class LoginToken extends Gateway
         $table = 'login_token'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
-    }
-
-    /**
-     * Save a token
-     *
-     * @param int    $userId    User identifier
-     * @param string $token     Login token
-     * @param string $series    Series the token belongs to
-     * @param string $browser   User browser
-     * @param string $platform  User platform
-     * @param int    $expires   Token expiration timestamp
-     * @param string $sessionId Session associated with the token
-     *
-     * @return LoginTokenRow
-     */
-    public function saveToken(
-        int $userId,
-        string $token,
-        string $series,
-        string $browser = '',
-        string $platform = '',
-        int $expires = 0,
-        string $sessionId = ''
-    ): LoginTokenRow {
-        $row = $this->createRow();
-        $row->token = hash('sha256', $token);
-        $row->series = $series;
-        $row->user_id = $userId;
-        $row->last_login = date('Y-m-d H:i:s');
-        $row->browser = $browser;
-        $row->platform = $platform;
-        $row->expires = $expires;
-        $row->last_session_id = $sessionId;
-        $row->save();
-        return $row;
     }
 
     /**
@@ -212,15 +179,19 @@ class LoginToken extends Gateway
     }
 
     /**
-     * Remove expired login tokens
+     * Update the select statement to find records to delete.
+     *
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function deleteExpired(): void
+    protected function expirationCallback($select, $dateLimit)
     {
-        $callback = function ($select) {
-            $select->where->lessThanOrEqualTo('expires', time());
-        };
-        $this->delete($callback);
+        // Date limit ignored since login token already contains an expiration time.
+        $select->where->lessThan('expires', time());
     }
 }

@@ -133,7 +133,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Obtain edsapi search critera and application related settings
+     * Obtain edsapi search criteria and application related settings
      *
      * @param string $authenticationToken Authentication token
      * @param string $sessionToken        Session token
@@ -282,7 +282,7 @@ abstract class Base implements LoggerAwareInterface
         $json = $method === 'GET' ? null : $query->convertToSearchRequestJSON();
         $qs = $method === 'GET' ? $query->convertToQueryStringParameterArray() : [];
         $this->debug(
-            'Query: ' . ($method === 'GET' ? print_r($qs, true) : $json)
+            'Query: ' . ($method === 'GET' ? $this->varDump($qs) : $json)
         );
         $url = $this->apiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);

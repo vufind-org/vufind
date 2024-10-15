@@ -43,11 +43,115 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface UserServiceInterface extends DbServiceInterface
 {
     /**
-     * Retrieve a user object from the database based on ID.
+     * Create an entity for the specified username.
      *
-     * @param string $id ID.
+     * @param string $username Username
      *
      * @return UserEntityInterface
      */
-    public function getUserById($id);
+    public function createEntityForUsername(string $username): UserEntityInterface;
+
+    /**
+     * Delete a user entity.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUser(UserEntityInterface|int $userOrId): void;
+
+    /**
+     * Retrieve a user object from the database based on ID.
+     *
+     * @param int $id ID.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserById(int $id): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object from the database based on the given field.
+     * Field name must be id, username, email, verify_hash or cat_id.
+     *
+     * @param string          $fieldName  Field name
+     * @param int|string|null $fieldValue Field value
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by catalog ID. Returns null if no match is found.
+     *
+     * @param string $catId Catalog ID
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByCatId(string $catId): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by email address. Returns null if no match is found.
+     *
+     * @param string $email Email address
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByEmail(string $email): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by username. Returns null if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByUsername(string $username): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by verify hash. Returns null if no match is found.
+     *
+     * @param string $hash Verify hash
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByVerifyHash(string $hash): ?UserEntityInterface;
+
+    /**
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * persist the data.
+     *
+     * @param UserEntityInterface $user         User entity to update
+     * @param string              $email        New email address
+     * @param bool                $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
+     *
+     * @return void
+     */
+    public function updateUserEmail(
+        UserEntityInterface $user,
+        string $email,
+        bool $userProvided = false
+    ): void;
+
+    /**
+     * Get all rows with catalog usernames.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getAllUsersWithCatUsernames(): array;
+
+    /**
+     * Get user rows with insecure catalog passwords.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getInsecureRows(): array;
+
+    /**
+     * Create a new user entity.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface;
 }

@@ -29,12 +29,14 @@
 
 namespace VuFindTest\Solr;
 
-use VuFind\Db\Table\ChangeTracker;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFind\Solr\Writer;
 use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Solr Utils Test Class
@@ -52,10 +54,9 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCommit()
+    public function testCommit(): void
     {
-        $expectedCommand
-            = new WriteDocumentCommand('Solr', new CommitDocument(), 60 * 60);
+        $expectedCommand = new WriteDocumentCommand('Solr', new CommitDocument(), 60 * 60);
         $this->getWriter($expectedCommand)->commit('Solr');
     }
 
@@ -64,7 +65,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSave()
+    public function testSave(): void
     {
         $commit = new CommitDocument();
         $expectedCommand = new WriteDocumentCommand('Solr', $commit);
@@ -76,7 +77,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSaveWithNonDefaults()
+    public function testSaveWithNonDefaults(): void
     {
         $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument('a,b,c');
         $params = new \VuFindSearch\ParamBag(['foo' => 'bar']);
@@ -87,8 +88,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             'customUpdateHandler',
             $params
         );
-        $this->getWriter($expectedCommand)
-            ->save('Solr', $csv, 'customUpdateHandler', $params);
+        $this->getWriter($expectedCommand)->save('Solr', $csv, 'customUpdateHandler', $params);
     }
 
     /**
@@ -96,10 +96,9 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptimize()
+    public function testOptimize(): void
     {
-        $expectedCommand
-            = new WriteDocumentCommand('Solr', new OptimizeDocument(), 60 * 60 * 24);
+        $expectedCommand = new WriteDocumentCommand('Solr', new OptimizeDocument(), 60 * 60 * 24);
         $this->getWriter($expectedCommand)->optimize('Solr');
     }
 
@@ -108,7 +107,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDeleteAll()
+    public function testDeleteAll(): void
     {
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addQuery('*:*');
@@ -121,25 +120,22 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDeleteRecords()
+    public function testDeleteRecords(): void
     {
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addKeys(['foo', 'bar']);
         $expectedCommand = new WriteDocumentCommand('Solr', $deleteDoc);
-        $this->getWriter($expectedCommand, ['core' => 'biblio'])
-            ->deleteRecords('Solr', ['foo', 'bar']);
+        $this->getWriter($expectedCommand, ['core' => 'biblio'])->deleteRecords('Solr', ['foo', 'bar']);
     }
 
     /**
-     * Get mock change tracker
+     * Get mock change tracker service
      *
-     * @return ChangeTracker
+     * @return MockObject&ChangeTrackerServiceInterface
      */
-    protected function getMockChangeTracker()
+    protected function getMockChangeTracker(): MockObject&ChangeTrackerServiceInterface
     {
-        return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(ChangeTrackerServiceInterface::class);
     }
 
     /**
@@ -150,20 +146,16 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&SearchService
      */
-    protected function getMockSearchService($expectedCommand, $result)
+    protected function getMockSearchService($expectedCommand, $result): MockObject&SearchService
     {
-        $resultCommand = $this->getMockBuilder($expectedCommand::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $resultCommand->expects($this->once())->method('getResult')
-            ->willReturn($result);
+        $resultCommand = $this->createMock($expectedCommand::class);
+        $resultCommand->expects($this->once())->method('getResult')->willReturn($result);
 
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         $searchService->expects($this->once())
             ->method('invoke')
             ->with($expectedCommand)
-            ->will($this->returnValue($resultCommand));
+            ->willReturn($resultCommand);
         return $searchService;
     }
 
@@ -175,7 +167,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return Writer
      */
-    protected function getWriter($expectedCommand, $result = 'TEST')
+    protected function getWriter($expectedCommand, $result = 'TEST'): Writer
     {
         return new Writer(
             $this->getMockSearchService($expectedCommand, $result),

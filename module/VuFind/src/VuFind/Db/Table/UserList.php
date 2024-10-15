@@ -34,6 +34,9 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use Laminas\Session\Container;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 
@@ -46,8 +49,10 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class UserList extends Gateway
+class UserList extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Session container for last list information.
      *
@@ -86,6 +91,8 @@ class UserList extends Gateway
      *
      * @return \VuFind\Db\Row\UserList
      * @throws LoginRequiredException
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::createListForUser()
      */
     public function getNew($user)
     {
@@ -106,14 +113,12 @@ class UserList extends Gateway
      *
      * @return \VuFind\Db\Row\UserList
      * @throws RecordMissingException
+     *
+     * @deprecated Use \VuFind\Db\Service\UserListServiceInterface::getUserListById()
      */
     public function getExisting($id)
     {
-        $result = $this->select(['id' => $id])->current();
-        if (empty($result)) {
-            throw new RecordMissingException('Cannot load list ' . $id);
-        }
-        return $result;
+        return $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
     }
 
     /**

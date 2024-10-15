@@ -151,7 +151,7 @@ class Session extends Gateway
      *
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return int
      */
     public function garbageCollect($sess_maxlifetime)
     {
@@ -159,7 +159,7 @@ class Session extends Gateway
             $select->where
                 ->lessThan('last_used', time() - intval($sess_maxlifetime));
         };
-        $this->delete($callback);
+        return $this->delete($callback);
     }
 
     /**

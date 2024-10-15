@@ -1,0 +1,128 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('ill_request_place_text') . ': ' . $this->driver->getBreadcrumb());
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+        . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
+        . '<li class="active">' . $this->transEsc('ill_request_place_text') . '</li>';
+?>
+<h2><?=$this->transEsc('ill_request_place_text')?></h2>
+<?php if ($this->helpTextHtml): ?>
+  <p class="help-block"><?=$this->helpTextHtml?></p>
+<?php endif; ?>
+
+<form id="ILLRequestForm" name="placeILLRequest" class="form-ill-retrieval-request" method="post" data-clear-account-cache="illRequests">
+  <?=$this->flashmessages()?>
+  <?php if (in_array('itemId', $this->extraFields)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc('ill_request_item')?>:</label>
+      <select id="itemId" name="gatheredDetails[itemId]" class="form-control">
+        <?php foreach ($this->items as $item): ?>
+          <option value="<?=$this->escapeHtmlAttr($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>>
+            <?=$this->escapeHtml($item['name'])?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+  <?php endif; ?>
+
+  <?php if (in_array('pickUpLibrary', $this->extraFields) && !empty($this->pickupLibraries)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc('ill_request_pick_up_library')?>:</label>
+      <?php if (count($this->pickupLibraries) > 1): ?>
+        <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" class="form-control">
+        <?php
+          if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== '') {
+              $selected = $this->gatheredDetails['pickUpLibrary'];
+          } else {
+              $selected = false;
+          }
+        ?>
+        <?php foreach ($this->pickupLibraries as $lib): ?>
+          <option value="<?=$this->escapeHtmlAttr($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
+            <?=$this->transEsc('library_' . $lib['name'], null, $lib['name'])?>
+          </option>
+        <?php endforeach; ?>
+        </select>
+      <?php else: ?>
+        <?php $lib = $this->pickupLibraries[0]; ?>
+        <input type="text" class="form-control" size="40" readonly="readonly" value="<?=$this->transEscAttr('library_' . $lib['name'], null, $lib['name'])?>">
+        <input type="hidden" id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" value="<?=$this->escapeHtmlAttr($lib['id'])?>">
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if (in_array('pickUpLibraryLocation', $this->extraFields)): ?>
+    <div class="form-group">
+      <label id="pickupLibraryLocationLabel" class="control-label">
+        <span class="loading-icon"><?=$this->icon('spinner') ?></span>
+        <?=$this->transEsc('ill_request_pick_up_location')?>:
+        <noscript> (<?=$this->transEsc('Please enable JavaScript.')?>)</noscript>
+      </label>
+      <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control"></select>
+    </div>
+  <?php endif; ?>
+
+  <?php if (in_array('pickUpLocation', $this->extraFields)): ?>
+    <?php if (count($this->pickup) > 1): ?>
+      <div class="form-group">
+        <?php
+          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== '') {
+            $selected = $this->gatheredDetails['pickUpLocation'];
+          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== '') {
+            $selected = $this->homeLibrary;
+          } else {
+            $selected = $this->defaultPickup;
+          }
+        ?>
+        <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
+        <select name="gatheredDetails[pickUpLocation]" class="form-control">
+          <?php foreach ($this->pickup as $lib): ?>
+            <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+              <?=$this->escapeHtml($lib['locationDisplay'])?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    <?php else: ?>
+      <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>">
+    <?php endif; ?>
+  <?php endif; ?>
+
+  <?php if (in_array('requiredByDate', $this->extraFields)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc('hold_required_by')?>:</label>
+      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control">
+      (<?=$this->dateTime()->getDisplayDateFormat()?>)
+    </div>
+  <?php endif; ?>
+
+  <?php if (in_array('comments', $this->extraFields)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc('Comments')?>:</label>
+      <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+    </div>
+  <?php endif; ?>
+
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" name="placeILLRequest" value="<?=$this->transEscAttr('ill_request_submit_text')?>">
+  </div>
+</form>
+
+<?php
+    // Set up ill script; we do this inline instead of in the header for lightbox compatibility:
+    $this->inlineScript()->appendFile('ill.js');
+
+    $js = <<<JS
+        if ($.isReady) {
+            setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+        } else {
+            $(document).ready(function() {
+                setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+            });
+        }
+        JS;
+
+    echo $this->inlineScript()->appendScript($js);
+?>

@@ -22,6 +22,9 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/font-awesome/font-awesome";
 <#LESS */
 
+@import "../vendor/bootstrap-accessibility/bootstrap-accessibility";
+@import "../vendor/a11y";
+
 @import "components/accessibility";
 @import "components/variables";
 
@@ -172,6 +175,11 @@ h3 { font-size: 16px; }
 }
 
 /* ------ Layout ------ */
+.sticky {
+  position: fixed;
+  left: 0;
+}
+
 footer {
   @extend .container;
   padding: 1rem;
@@ -457,6 +465,9 @@ ul.list-group {
     vertical-align: middle;
   }
 }
+.fines-total {
+  font-weight: bold;
+}
 
 /* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
@@ -612,6 +623,12 @@ div.holding-notes {
 
 .odbrand {
   padding: 7px;
+}
+
+.od_download {
+    width: 100%;
+    border-width: 0px;
+    height: 450px;
 }
 
 .oauth2-prompt {

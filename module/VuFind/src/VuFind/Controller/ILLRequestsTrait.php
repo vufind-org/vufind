@@ -140,8 +140,7 @@ trait ILLRequestsTrait
         // Find and format the default required date:
         $defaultRequiredDate = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequiredDate
-            = $this->serviceLocator->get(\VuFind\Date\Converter::class)
+        $defaultRequiredDate = $this->getService(\VuFind\Date\Converter::class)
             ->convertToDisplayDate('U', $defaultRequiredDate);
 
         // Get pickup libraries
@@ -166,7 +165,7 @@ trait ILLRequestsTrait
 
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
-            ? $this->getUser()->home_library : '';
+            ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility:
         $helpText = $helpTextHtml = $checkRequests['helpText'];
 

@@ -48,29 +48,31 @@ use function in_array;
 class AccountCapabilities
 {
     /**
-     * Auth manager
+     * Function to fetch auth manager
      *
-     * @var AuthManager
+     * @var callable
      */
-    protected $auth;
-
-    /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
+    protected $authCallback;
 
     /**
      * Constructor
      *
-     * @param Config      $config VuFind configuration
-     * @param AuthManager $auth   Auth manager
+     * @param Config   $config  Top-level configuration
+     * @param callable $getAuth Function to fetch auth manager
      */
-    public function __construct(Config $config, AuthManager $auth)
+    public function __construct(protected Config $config, callable $getAuth)
     {
-        $this->auth = $auth;
-        $this->config = $config;
+        $this->authCallback = $getAuth;
+    }
+
+    /**
+     * Get authentication manager
+     *
+     * @return AuthManager
+     */
+    protected function getAuth(): AuthManager
+    {
+        return ($this->authCallback)();
     }
 
     /**
@@ -176,6 +178,29 @@ class AccountCapabilities
     }
 
     /**
+     * Get email action setting ('enabled', 'require_login' or 'disabled').
+     *
+     * @return string
+     */
+    public function getEmailActionSetting(): string
+    {
+        return $this->config?->Mail?->email_action ??
+            (($this->config?->Mail?->require_login ?? true) ? 'require_login' : 'enabled');
+    }
+
+    /**
+     * Check if emailing of records and searches is available.
+     *
+     * @return bool
+     */
+    public function isEmailActionAvailable(): bool
+    {
+        $emailActionSettings = $this->getEmailActionSetting();
+        return $emailActionSettings === 'enabled'
+            || $emailActionSettings === 'require_login' && $this->getAuth()->loginEnabled();
+    }
+
+    /**
      * Is a user account capable of saving data currently available?
      *
      * @return bool
@@ -183,7 +208,8 @@ class AccountCapabilities
     protected function isAccountAvailable()
     {
         // We can't use account features if login is broken or privacy is on:
-        return $this->auth->loginEnabled() && !$this->auth->inPrivacyMode();
+        $auth = $this->getAuth();
+        return $auth->loginEnabled() && !$auth->inPrivacyMode();
     }
 
     /**
@@ -194,5 +220,15 @@ class AccountCapabilities
     public function isRatingRemovalAllowed(): bool
     {
         return (bool)($this->config->Social->remove_rating ?? true);
+    }
+
+    /**
+     * Are library cards enabled and supported?
+     *
+     * @return bool
+     */
+    public function libraryCardsEnabled(): bool
+    {
+        return ($this->config->Catalog->library_cards ?? false) && !$this->getAuth()->inPrivacyMode();
     }
 }

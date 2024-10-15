@@ -753,7 +753,7 @@ class Form extends \Laminas\Form\Form implements
 
         $elements[] = [
             'type' => 'submit',
-            'name' => 'submit',
+            'name' => 'submitButton',
             'label' => 'Send',
         ];
 
@@ -956,7 +956,7 @@ class Form extends \Laminas\Form\Form implements
             !empty($el['label']) && 'hidden' !== $type
             && !isset($attributes['aria-label'])
         ) {
-            $attributes['aria-label'] = $el['label'];
+            $attributes['aria-label'] = $this->translate($el['label']);
         }
 
         switch ($type) {

@@ -102,11 +102,10 @@ class PrimoBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
         $this->primoConfig = $configReader->get('Primo');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
 
         if (($this->primoConfig->General->api ?? 'legacy') === 'rest') {
@@ -148,7 +147,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function createListeners(Backend $backend)
     {
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->getService('SharedEventManager');
 
         $this->getInjectOnCampusListener()->attach($events);
 
@@ -211,7 +210,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
 
         $session = new \Laminas\Session\Container(
             'Primo',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
 
         // Create connector:
@@ -254,8 +253,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);
@@ -287,7 +285,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
                 $this->primoConfig->Institutions
             );
             $permHandler->setAuthorizationService(
-                $this->serviceLocator->get(AuthorizationService::class)
+                $this->getService(AuthorizationService::class)
             );
             return $permHandler;
         }

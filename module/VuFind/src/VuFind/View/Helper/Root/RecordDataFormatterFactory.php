@@ -51,6 +51,23 @@ use function count;
 class RecordDataFormatterFactory implements FactoryInterface
 {
     /**
+     * Schema.org view helper
+     *
+     * @var SchemaOrg
+     */
+    protected $schemaOrgHelper = null;
+
+    /**
+     * The order in which groups of authors are displayed.
+     *
+     * The dictionary keys here correspond to the dictionary keys in the $labels
+     * array in getAuthorFunction()
+     *
+     * @var array<string, int>
+     */
+    protected $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -74,6 +91,7 @@ class RecordDataFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $this->schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         $config = $container
             ->get(\VuFind\Config\PluginManager::class)
             ->get('RecordDataFormatter');
@@ -112,8 +130,6 @@ class RecordDataFormatterFactory implements FactoryInterface
                 'corporate' => 'creator',
                 'secondary' => 'contributor',
             ];
-            // Lookup array of sort orders.
-            $order = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
 
             // Sort the data:
             $final = [];
@@ -122,7 +138,7 @@ class RecordDataFormatterFactory implements FactoryInterface
                     'label' => $labels[$type][count($values) == 1 ? 0 : 1],
                     'values' => [$type => $values],
                     'options' => [
-                        'pos' => $options['pos'] + $order[$type],
+                        'pos' => $options['pos'] + $this->authorOrder[$type],
                         'renderType' => 'RecordDriverTemplate',
                         'template' => 'data-authors.phtml',
                         'context' => [
@@ -140,6 +156,28 @@ class RecordDataFormatterFactory implements FactoryInterface
     }
 
     /**
+     * Get the settings for formatting language lines.
+     *
+     * @return array
+     */
+    protected function getLanguageLineSettings(): array
+    {
+        if ($this->schemaOrgHelper) {
+            $langSpan = $this->schemaOrgHelper
+                ->getTag('span', ['property' => 'availableLanguage', 'typeof' => 'Language']);
+            $nameSpan = $this->schemaOrgHelper->getTag('span', ['property' => 'name']);
+            $itemPrefix = $langSpan . $nameSpan;
+            $itemSuffix = ($nameSpan ? '</span>' : '') . ($langSpan ? '</span>' : '');
+        } else {
+            $itemPrefix = $itemSuffix = '';
+        }
+        return compact('itemPrefix', 'itemSuffix') + [
+            'translate' => true,
+            'translationTextDomain' => 'ISO639-3::',
+        ];
+    }
+
+    /**
      * Get default specifications for displaying data in collection-info metadata.
      *
      * @return array
@@ -153,6 +191,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             $this->getAuthorFunction()
         );
         $spec->setLine('Summary', 'getSummary');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setLine(
             'Format',
             'getFormats',
@@ -163,13 +202,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            [
-                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                    . '<span property="name">',
-                'itemSuffix' => '</span></span>',
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ]
+            $this->getLanguageLineSettings()
         );
         $spec->setTemplateLine(
             'Published',
@@ -180,8 +213,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Edition',
             'getEdition',
             null,
-            ['itemPrefix' => '<span property="bookEdition">',
-             'itemSuffix' => '</span>']
+            [
+                'itemPrefix' => '<span property="bookEdition">',
+                'itemSuffix' => '</span>',
+            ]
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -221,6 +256,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     {
         $spec = new RecordDataFormatter\SpecBuilder();
         $spec->setLine('Summary', 'getSummary');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setMultiLine(
             'Authors',
             'getDeduplicatedAuthors',
@@ -230,13 +266,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            [
-                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                    . '<span property="name">',
-                'itemSuffix' => '</span></span>',
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ]
+            $this->getLanguageLineSettings()
         );
         $spec->setLine(
             'Format',
@@ -289,13 +319,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            [
-                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                    . '<span property="name">',
-                'itemSuffix' => '</span></span>',
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ]
+            $this->getLanguageLineSettings()
         );
         $spec->setTemplateLine(
             'Published',
@@ -306,8 +330,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Edition',
             'getEdition',
             null,
-            ['itemPrefix' => '<span property="bookEdition">',
-             'itemSuffix' => '</span>']
+            [
+                'itemPrefix' => '<span property="bookEdition">',
+                'itemSuffix' => '</span>',
+            ]
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -345,6 +371,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     {
         $spec = new RecordDataFormatter\SpecBuilder();
         $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setLine('Published', 'getDateSpan');
         $spec->setLine('Item Description', 'getGeneralNotes');
         $spec->setLine('Physical Description', 'getPhysicalDescriptions');
@@ -371,8 +398,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'DOI',
             'getCleanDOI',
             null,
-            ['itemPrefix' => '<span property="identifier">',
-             'itemSuffix' => '</span>']
+            [
+                'itemPrefix' => '<span property="identifier">',
+                'itemSuffix' => '</span>',
+            ]
         );
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');

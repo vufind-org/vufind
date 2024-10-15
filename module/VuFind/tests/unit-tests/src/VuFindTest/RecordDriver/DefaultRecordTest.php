@@ -94,6 +94,17 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getSchemaOrgFormatsArray for a record.
+     *
+     * @return void
+     */
+    public function testGetSchemaOrgFormatsArray()
+    {
+        $formats = ['Book'];
+        $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormatsArray());
+    }
+
+    /**
      * Test getSchemaOrgFormats for a record.
      *
      * @return void
@@ -541,7 +552,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test whether author deduplication works corrrectly.
+     * Test whether author deduplication works correctly.
      *
      * @return void
      */

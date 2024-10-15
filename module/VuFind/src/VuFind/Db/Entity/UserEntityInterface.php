@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Interface for representing a user account record.
  *
@@ -41,11 +43,11 @@ namespace VuFind\Db\Entity;
 interface UserEntityInterface extends EntityInterface
 {
     /**
-     * Get identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId();
+    public function getId(): ?int;
 
     /**
      * Username setter
@@ -64,11 +66,61 @@ interface UserEntityInterface extends EntityInterface
     public function getUsername(): string;
 
     /**
+     * Set raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @param string $password Password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawPassword(string $password): UserEntityInterface;
+
+    /**
+     * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @return string
+     */
+    public function getRawPassword(): string;
+
+    /**
+     * Set hashed password. This should only be used when hashing is enabled.
+     *
+     * @param ?string $hash Password hash
+     *
+     * @return UserEntityInterface
+     */
+    public function setPasswordHash(?string $hash): UserEntityInterface;
+
+    /**
+     * Get hashed password. This should only be used when hashing is enabled.
+     *
+     * @return ?string
+     */
+    public function getPasswordHash(): ?string;
+
+    /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface;
+
+    /**
      * Get firstname.
      *
      * @return string
      */
     public function getFirstname(): string;
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface;
 
     /**
      * Get lastname.
@@ -108,6 +160,22 @@ interface UserEntityInterface extends EntityInterface
      * @return string
      */
     public function getPendingEmail(): string;
+
+    /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface;
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string;
 
     /**
      * Catalog username setter
@@ -174,6 +242,47 @@ interface UserEntityInterface extends EntityInterface
     public function getCatPassEnc(): ?string;
 
     /**
+     * Set college.
+     *
+     * @param string $college College
+     *
+     * @return UserEntityInterface
+     */
+    public function setCollege(string $college): UserEntityInterface;
+
+    /**
+     * Get college.
+     *
+     * @return string
+     */
+    public function getCollege(): string;
+
+    /**
+     * Set major.
+     *
+     * @param string $major Major
+     *
+     * @return UserEntityInterface
+     */
+    public function setMajor(string $major): UserEntityInterface;
+
+    /**
+     * Get major.
+     *
+     * @return string
+     */
+    public function getMajor(): string;
+
+    /**
+     * Set verification hash for recovery.
+     *
+     * @param string $hash Hash value to save
+     *
+     * @return UserEntityInterface
+     */
+    public function setVerifyHash(string $hash): UserEntityInterface;
+
+    /**
      * Get verification hash for recovery.
      *
      * @return string
@@ -181,9 +290,98 @@ interface UserEntityInterface extends EntityInterface
     public function getVerifyHash(): string;
 
     /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface;
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string;
+
+    /**
+     * Set last language.
+     *
+     * @param string $lang Last language
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLanguage(string $lang): UserEntityInterface;
+
+    /**
      * Get last language.
      *
      * @return string
      */
     public function getLastLanguage(): string;
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool;
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface;
+
+    /**
+     * Last login setter.
+     *
+     * @param DateTime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Last login getter
+     *
+     * @return DateTime
+     */
+    public function getLastLogin(): DateTime;
+
+    /**
+     * Created setter
+     *
+     * @param DateTime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Created getter
+     *
+     * @return DateTime
+     */
+    public function getCreated(): Datetime;
+
+    /**
+     * Set email verification date (or null for unverified).
+     *
+     * @param ?DateTime $dateTime Verification date (or null)
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Get email verification date (or null for unverified).
+     *
+     * @return ?DateTime
+     */
+    public function getEmailVerified(): ?DateTime;
 }

@@ -71,7 +71,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     protected $wsPickUpLocations;
 
     /**
-     * Defaut pickup location for holds
+     * Default pickup location for holds
      *
      * @var string
      */
@@ -561,7 +561,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param string $session        A valid Horizon session key
      * @param array  $requestDetails An array of request details
      *
-     * @return array  An array witk keys indicating the a success (boolean),
+     * @return array  An array with keys indicating the success (boolean),
      * status (string) and sysMessage (string) if available
      */
     protected function placeRequest($session, $requestDetails)
@@ -676,7 +676,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 }
             }
 
-            // Go through the submited bib ids and look for a match
+            // Go through the submitted bib ids and look for a match
             foreach ($data as $values) {
                 $itemID = $values['item_id'];
                 // If the bib id is matched, the cancel must have failed

@@ -34,8 +34,10 @@ namespace VuFind\Db\Table;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
-use minSO;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\NormalizedSearch;
 use VuFind\Search\SearchNormalizer;
 
@@ -52,8 +54,9 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Search extends Gateway
+class Search extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
     use ExpirationTrait;
 
     /**
@@ -128,17 +131,12 @@ class Search extends Gateway
      * @param int    $uid User ID of current user (optional).
      *
      * @return void
+     *
+     * @deprecated Use SearchServiceInterface::destroySession()
      */
     public function destroySession($sid, $uid = null)
     {
-        $callback = function ($select) use ($sid, $uid) {
-            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
-            if ($uid !== null) {
-                $select->where->OR
-                    ->equalTo('user_id', $uid)->and->equalTo('saved', 0);
-            }
-        };
-        return $this->delete($callback);
+        $this->getDbService(SearchServiceInterface::class)->destroySession($sid, $uid);
     }
 
     /**
@@ -148,17 +146,12 @@ class Search extends Gateway
      * @param int    $uid User ID of current user (optional).
      *
      * @return array      Matching SearchEntry objects.
+     *
+     * @deprecated Use SearchServiceInterface::getSearches()
      */
     public function getSearches($sid, $uid = null)
     {
-        $callback = function ($select) use ($sid, $uid) {
-            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
-            if ($uid !== null) {
-                $select->where->OR->equalTo('user_id', $uid);
-            }
-            $select->order('created');
-        };
-        return $this->select($callback);
+        return $this->getDbService(SearchServiceInterface::class)->getSearches($sid, $uid);
     }
 
     /**
@@ -169,7 +162,9 @@ class Search extends Gateway
      * missing?
      *
      * @throws \Exception
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
+     *
+     * @deprecated
      */
     public function getRowById($id, $exceptionIfMissing = true)
     {
@@ -189,35 +184,24 @@ class Search extends Gateway
      * @param int    $userId Current logged-in user ID (or null if none)
      *
      * @return ?\VuFind\Db\Row\Search
+     *
+     * @deprecated Use SearchServiceInterface::getSearchByIdAndOwner()
      */
     public function getOwnedRowById($id, $sessId, $userId)
     {
-        $callback = function ($select) use ($id, $sessId, $userId) {
-            $nest = $select->where
-                ->equalTo('id', $id)
-                ->and
-                ->nest
-                ->equalTo('session_id', $sessId);
-            if (!empty($userId)) {
-                $nest->or->equalTo('user_id', $userId);
-            }
-        };
-        return $this->select($callback)->current();
+        return $this->getDbService(SearchServiceInterface::class)->getSearchByIdAndOwner($id, $sessId, $userId);
     }
 
     /**
      * Get scheduled searches.
      *
      * @return array Array of VuFind\Db\Row\Search objects.
+     *
+     * @deprecated Use SearchServiceInterface::getScheduledSearches()
      */
     public function getScheduledSearches()
     {
-        $callback = function ($select) {
-            $select->where->equalTo('saved', 1);
-            $select->where->greaterThan('notification_frequency', 0);
-            $select->order('user_id');
-        };
-        return $this->select($callback);
+        return $this->getDbService(SearchServiceInterface::class)->getScheduledSearches();
     }
 
     /**
@@ -230,6 +214,8 @@ class Search extends Gateway
      * (default = no limit)
      *
      * @return \VuFind\Db\Row\Search[]
+     *
+     * @deprecated Use SearchNormalizer::getSearchesMatchingNormalizedSearch()
      */
     public function getSearchRowsMatchingNormalizedSearch(
         NormalizedSearch $normalized,
@@ -251,7 +237,7 @@ class Search extends Gateway
         };
         $results = [];
         foreach ($this->select($callback) as $match) {
-            $minified = $match->getSearchObject();
+            $minified = $match->getSearchObjectOrThrowException();
             if ($normalized->isEquivalentToMinifiedSearch($minified)) {
                 $results[] = $match;
                 if (count($results) >= $limit) {
@@ -271,6 +257,8 @@ class Search extends Gateway
      * @param int|null                    $userId     Current user ID
      *
      * @return \VuFind\Db\Row\Search
+     *
+     * @deprecated Use SearchNormalizer::saveNormalizedSearch()
      */
     public function saveSearch(
         SearchNormalizer $normalizer,
@@ -278,52 +266,7 @@ class Search extends Gateway
         $sessionId,
         $userId
     ) {
-        $normalized = $normalizer->normalizeSearch($results);
-        $duplicates = $this->getSearchRowsMatchingNormalizedSearch(
-            $normalized,
-            $sessionId,
-            $userId,
-            1 // we only need to identify at most one duplicate match
-        );
-        if ($existingRow = array_shift($duplicates)) {
-            // Update the existing search only if it wasn't already saved
-            // (to make it the most recent history entry and make sure it's
-            // using the most up-to-date serialization):
-            if (!$existingRow->saved) {
-                $existingRow->created = date('Y-m-d H:i:s');
-                // Keep the ID of the old search:
-                $minified = $normalized->getMinified();
-                $minified->id = $existingRow->getSearchObject()->id;
-                $existingRow->search_object = serialize($minified);
-                $existingRow->session_id = $sessionId;
-                $existingRow->save();
-            }
-            // Register the appropriate search history database row with the current
-            // search results object.
-            $results->updateSaveStatus($existingRow);
-            return $existingRow;
-        }
-
-        // If we got this far, we didn't find a saved duplicate, so we should
-        // save the new search:
-        $this->insert(
-            [
-                'created' => date('Y-m-d H:i:s'),
-                'checksum' => $normalized->getChecksum(),
-            ]
-        );
-        $row = $this->getRowById($this->getLastInsertValue());
-
-        // Chicken and egg... We didn't know the id before insert
-        $results->updateSaveStatus($row);
-
-        // Don't set session ID until this stage, because we don't want to risk
-        // ever having a row that's associated with a session but which has no
-        // search object data attached to it; this could cause problems!
-        $row->session_id = $sessionId;
-        $row->search_object = serialize(new minSO($results));
-        $row->save();
-        return $row;
+        return $normalizer->saveNormalizedSearch($results, $sessionId, $userId);
     }
 
     /**

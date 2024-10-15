@@ -128,7 +128,7 @@ class Spellcheck implements IteratorAggregate, Countable
             }
         }
 
-        // Store secondary suggestions in case merge yielded non-useful
+        // Store secondary suggestions in case merge yielded useless
         // result set:
         if (!$this->secondary) {
             $this->secondary = $spellcheck;

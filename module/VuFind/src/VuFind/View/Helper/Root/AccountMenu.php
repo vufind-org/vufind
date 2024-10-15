@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection as IlsConnection;
 
 /**
@@ -243,8 +243,8 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     public function checkLibraryCards(): bool
     {
-        $user = $this->getUser();
-        return $this->isIlsOnline() && $user && $user->libraryCardsEnabled();
+        return $this->isIlsOnline() && $this->getUser()
+            && $this->getView()->plugin('accountCapabilities')()->libraryCardsEnabled();
     }
 
     /**
@@ -360,10 +360,11 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      * Render account menu
      *
      * @param string $activeItem The name of current active item
+     * @param string $idPrefix   Element ID prefix
      *
      * @return string
      */
-    public function render(string $activeItem): string
+    public function render(string $activeItem, string $idPrefix = ''): string
     {
         $contextHelper = $this->getView()->plugin('context');
         return $contextHelper->renderInContext(
@@ -371,6 +372,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
             [
                 'items' => $this->getItems(),
                 'active' => $activeItem,
+                'idPrefix' => $idPrefix,
             ]
         );
     }
@@ -378,9 +380,9 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get authenticated user
      *
-     * @return ?User Object if user is logged in, null otherwise.
+     * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
-    protected function getUser(): ?User
+    protected function getUser(): ?UserEntityInterface
     {
         return $this->getAuthHelper()->getUserObject();
     }

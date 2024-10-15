@@ -201,6 +201,21 @@ class Initializer
      */
     protected function pickTheme(?Request $request)
     {
+        // The admin theme should always be picked if
+        // - the Admin module is enabled AND
+        // - an admin theme is set AND
+        // - an admin route is requested (route configuration has an
+        //   'admin_route' => true default parameter).
+        if (
+            isset($this->event)
+            && ($routeMatch = $this->event->getRouteMatch())
+            && $routeMatch->getParam('admin_route')
+            && ($this->config->admin_enabled ?? false)
+            && ($adminTheme = ($this->config->admin_theme ?? false))
+        ) {
+            return $adminTheme;
+        }
+
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
         if (PHP_SAPI == 'cli') {

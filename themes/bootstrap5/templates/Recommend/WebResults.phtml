@@ -1,0 +1,28 @@
+<?php
+  $searchObject = $this->recommend->getResults();
+  $results = $searchObject->getResults();
+  $heading = $this->recommend->getHeading();
+?>
+<?php if (!empty($results)): ?>
+<div class="sidegroup">
+  <h2><?=$this->transEsc($heading)?></h2>
+
+  <ul class="similar">
+    <?php foreach ($results as $driver): ?>
+    <li>
+      <a href="<?=$this->escapeHtmlAttr($driver->getUrl())?>" class="title">
+        <?=$this->record($driver)->getTitleHtml()?>
+      </a>
+      <?php $snippet = $driver->getHighlightedSnippet(); ?>
+      <?php $summary = $driver->getSummary(); ?>
+      <?php if (!empty($snippet)): ?>
+        <br><?=$this->highlight($snippet['snippet'])?>
+      <?php elseif (!empty($summary)): ?>
+        <br><?=$this->escapeHtml($summary[0])?>
+      <?php endif; ?>
+    </li>
+    <?php endforeach; ?>
+  </ul>
+  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('find_more_ellipsis')?></a></p>
+</div>
+<?php endif ?>

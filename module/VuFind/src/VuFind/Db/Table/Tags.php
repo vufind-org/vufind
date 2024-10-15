@@ -34,6 +34,10 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Predicate\Predicate;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 
 use function count;
 use function is_callable;
@@ -47,14 +51,9 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Tags extends Gateway
+class Tags extends Gateway implements DbServiceAwareInterface
 {
-    /**
-     * Are tags case sensitive?
-     *
-     * @var bool
-     */
-    protected $caseSensitive;
+    use DbServiceAwareTrait;
 
     /**
      * Constructor
@@ -71,71 +70,66 @@ class Tags extends Gateway
         PluginManager $tm,
         $cfg,
         ?RowGateway $rowObj = null,
-        $caseSensitive = false,
+        protected $caseSensitive = false,
         $table = 'tags'
     ) {
-        $this->caseSensitive = $caseSensitive;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
      * Get the row associated with a specific tag string.
      *
-     * @param string $tag       Tag to look up.
-     * @param bool   $create    Should we create the row if it does not exist?
-     * @param bool   $firstOnly Should we return the first matching row (true)
+     * @param string $tag           Tag to look up.
+     * @param bool   $create        Should we create the row if it does not exist?
+     * @param bool   $firstOnly     Should we return the first matching row (true)
      * or the entire result set (in case of multiple matches)?
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return mixed Matching row/result set if found or created, null otherwise.
      */
-    public function getByText($tag, $create = true, $firstOnly = true)
+    public function getByText($tag, $create = true, $firstOnly = true, $caseSensitive = null)
     {
-        $cs = $this->caseSensitive;
-        $callback = function ($select) use ($tag, $cs) {
-            if ($cs) {
-                $select->where->equalTo('tag', $tag);
-            } else {
-                $select->where->literal('lower(tag) = lower(?)', [$tag]);
-            }
-        };
-        $result = $this->select($callback);
+        $cs = $caseSensitive ?? $this->caseSensitive;
+        $result = $this->getDbService(TagServiceInterface::class)->getTagsByText($tag, $cs);
         if (count($result) == 0 && $create) {
             $row = $this->createRow();
             $row->tag = $cs ? $tag : mb_strtolower($tag, 'UTF8');
             $row->save();
             return $firstOnly ? $row : [$row];
         }
-        return $firstOnly ? $result->current() : $result;
+        return $firstOnly ? $result[0] ?? null : $result;
     }
 
     /**
      * Get the tags that match a string
      *
-     * @param string $text  Tag to look up.
-     * @param string $sort  Sort/search parameter
-     * @param int    $limit Maximum number of tags
+     * @param string $text          Tag to look up.
+     * @param string $sort          Sort/search parameter
+     * @param int    $limit         Maximum number of tags
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return array Array of \VuFind\Db\Row\Tags objects
      */
-    public function matchText($text, $sort = 'alphabetical', $limit = 100)
+    public function matchText($text, $sort = 'alphabetical', $limit = 100, $caseSensitive = null)
     {
         $callback = function ($select) use ($text) {
             $select->where->literal('lower(tag) like lower(?)', [$text . '%']);
             // Discard tags assigned to a user list.
             $select->where->isNotNull('resource_tags.resource_id');
         };
-        return $this->getTagList($sort, $limit, $callback);
+        return $this->getTagList($sort, $limit, $callback, $caseSensitive);
     }
 
     /**
      * Get all resources associated with the provided tag query.
      *
-     * @param string $q      Search query
-     * @param string $source Record source (optional limiter)
-     * @param string $sort   Resource field to sort on (optional)
-     * @param int    $offset Offset for results
-     * @param int    $limit  Limit for results (null for none)
-     * @param bool   $fuzzy  Are we doing an exact or fuzzy search?
+     * @param string $q             Search query
+     * @param string $source        Record source (optional limiter)
+     * @param string $sort          Resource field to sort on (optional)
+     * @param int    $offset        Offset for results
+     * @param int    $limit         Limit for results (null for none)
+     * @param bool   $fuzzy         Are we doing an exact or fuzzy search?
+     * @param ?bool  $caseSensitive Should search be case sensitive? (null to use configured default)
      *
      * @return array
      */
@@ -145,9 +139,10 @@ class Tags extends Gateway
         $sort = null,
         $offset = 0,
         $limit = null,
-        $fuzzy = true
+        $fuzzy = true,
+        $caseSensitive = null
     ) {
-        $cb = function ($select) use ($q, $source, $sort, $offset, $limit, $fuzzy) {
+        $cb = function ($select) use ($q, $source, $sort, $offset, $limit, $fuzzy, $caseSensitive) {
             $columns = [
                 new Expression(
                     'DISTINCT(?)',
@@ -168,7 +163,7 @@ class Tags extends Gateway
             );
             if ($fuzzy) {
                 $select->where->literal('lower(tags.tag) like lower(?)', [$q]);
-            } elseif (!$this->caseSensitive) {
+            } elseif (!($caseSensitive ?? $this->caseSensitive)) {
                 $select->where->literal('lower(tags.tag) = lower(?)', [$q]);
             } else {
                 $select->where->equalTo('tags.tag', $q);
@@ -198,16 +193,17 @@ class Tags extends Gateway
     /**
      * Get tags associated with the specified resource.
      *
-     * @param string $id          Record ID to look up
-     * @param string $source      Source of record to look up
-     * @param int    $limit       Max. number of tags to return (0 = no limit)
-     * @param int    $list        ID of list to load tags from (null for no
-     * restriction,  true for on ANY list, false for on NO list)
-     * @param int    $user        ID of user to load tags from (null for all users)
-     * @param string $sort        Sort type ('count' or 'tag')
-     * @param int    $userToCheck ID of user to check for ownership (this will
+     * @param string $id            Record ID to look up
+     * @param string $source        Source of record to look up
+     * @param int    $limit         Max. number of tags to return (0 = no limit)
+     * @param int    $list          ID of list to load tags from (null for no
+     * restriction, true for on ANY list, false for on NO list)
+     * @param int    $user          ID of user to load tags from (null for all users)
+     * @param string $sort          Sort type ('count' or 'tag')
+     * @param int    $userToCheck   ID of user to check for ownership (this will
      * not filter the result list, but rows owned by this user will have an is_me
      * column set to 1)
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return array
      */
@@ -218,7 +214,8 @@ class Tags extends Gateway
         $list = null,
         $user = null,
         $sort = 'count',
-        $userToCheck = null
+        $userToCheck = null,
+        $caseSensitive = null
     ) {
         return $this->select(
             function ($select) use (
@@ -228,7 +225,8 @@ class Tags extends Gateway
                 $list,
                 $user,
                 $sort,
-                $userToCheck
+                $userToCheck,
+                $caseSensitive
             ) {
                 // If we're looking for ownership, create sub query to merge in
                 // an "is_me" flag value if the selected resource is tagged by
@@ -254,7 +252,7 @@ class Tags extends Gateway
                 $select->columns(
                     [
                         'id',
-                        'tag' => $this->caseSensitive
+                        'tag' => ($caseSensitive ?? $this->caseSensitive)
                             ? 'tag' : new Expression('lower(tag)'),
                         'cnt' => new Expression(
                             'COUNT(DISTINCT(?))',
@@ -304,13 +302,11 @@ class Tags extends Gateway
      * the returned list WILL NOT include tags attached to records that are not
      * saved in favorites lists.
      *
-     * @param string $userId     User ID to look up.
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source
-     * (null for no filter).
+     * @param string $userId        User ID to look up.
+     * @param string $resourceId    Filter for tags tied to a specific resource (null for no filter).
+     * @param int    $listId        Filter for tags tied to a specific list (null for no filter).
+     * @param string $source        Filter for tags tied to a specific record source (null for no filter).
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
@@ -318,9 +314,10 @@ class Tags extends Gateway
         $userId,
         $resourceId = null,
         $listId = null,
-        $source = null
+        $source = null,
+        $caseSensitive = null
     ) {
-        $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
+        $callback = function ($select) use ($userId, $resourceId, $listId, $source, $caseSensitive) {
             $select->columns(
                 [
                     'id' => new Expression(
@@ -328,7 +325,7 @@ class Tags extends Gateway
                         ['tags.id'],
                         [Expression::TYPE_IDENTIFIER]
                     ),
-                    'tag' => $this->caseSensitive
+                    'tag' => ($caseSensitive ?? $this->caseSensitive)
                         ? 'tag' : new Expression('lower(tag)'),
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))',
@@ -380,14 +377,15 @@ class Tags extends Gateway
     /**
      * Get tags assigned to a user list.
      *
-     * @param int    $listId List ID
-     * @param string $userId User ID to look up (null for no filter).
+     * @param int   $listId        List ID
+     * @param ?int  $userId        User ID to look up (null for no filter).
+     * @param ?bool $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getForList($listId, $userId = null)
+    public function getForList($listId, $userId = null, $caseSensitive = null)
     {
-        $callback = function ($select) use ($listId, $userId) {
+        $callback = function ($select) use ($listId, $userId, $caseSensitive) {
             $select->columns(
                 [
                     'id' => new Expression(
@@ -395,7 +393,7 @@ class Tags extends Gateway
                         ['tags.id'],
                         [Expression::TYPE_IDENTIFIER]
                     ),
-                    'tag' => $this->caseSensitive
+                    'tag' => ($caseSensitive ?? $this->caseSensitive)
                         ? 'tag' : new Expression('lower(tag)'),
                 ]
             );
@@ -446,20 +444,20 @@ class Tags extends Gateway
     /**
      * Get a list of tags based on a sort method ($sort)
      *
-     * @param string   $sort        Sort/search parameter
-     * @param int      $limit       Maximum number of tags (default = 100,
-     * < 1 = no limit)
-     * @param callback $extra_where Extra code to modify $select (null for none)
+     * @param string   $sort          Sort/search parameter
+     * @param int      $limit         Maximum number of tags (default = 100, < 1 = no limit)
+     * @param callback $extra_where   Extra code to modify $select (null for none)
+     * @param ?bool    $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return array Tag details.
      */
-    public function getTagList($sort, $limit = 100, $extra_where = null)
+    public function getTagList($sort, $limit = 100, $extra_where = null, $caseSensitive = null)
     {
-        $callback = function ($select) use ($sort, $limit, $extra_where) {
+        $callback = function ($select) use ($sort, $limit, $extra_where, $caseSensitive) {
             $select->columns(
                 [
                     'id',
-                    'tag' => $this->caseSensitive
+                    'tag' => ($caseSensitive ?? $this->caseSensitive)
                         ? 'tag' : new Expression('lower(tag)'),
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))',
@@ -539,11 +537,13 @@ class Tags extends Gateway
      * Get a list of duplicate tags (this should never happen, but past bugs
      * and the introduction of case-insensitive tags have introduced problems).
      *
+     * @param ?bool $caseSensitive Should tags be case sensitive? (null to use configured default)
+     *
      * @return mixed
      */
-    public function getDuplicates()
+    public function getDuplicates($caseSensitive = null)
     {
-        $callback = function ($select) {
+        $callback = function ($select) use ($caseSensitive) {
             $select->columns(
                 [
                     'tag' => new Expression(
@@ -564,7 +564,7 @@ class Tags extends Gateway
                 ]
             );
             $select->group(
-                $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+                ($caseSensitive ?? $this->caseSensitive) ? 'tag' : new Expression('lower(tag)')
             );
             $select->having('COUNT(tag) > 1');
         };
@@ -586,16 +586,17 @@ class Tags extends Gateway
             return;
         }
         $table = $this->getDbTable('ResourceTags');
+        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
         $result = $table->select(['tag_id' => $source]);
 
         foreach ($result as $current) {
             // Move the link to the target ID:
-            $table->createLink(
+            $resourceTagsService->createLink(
                 $current->resource_id,
                 $target,
                 $current->user_id,
                 $current->list_id,
-                $current->posted
+                $current->getPosted()
             );
 
             // Remove the duplicate link:
@@ -609,33 +610,37 @@ class Tags extends Gateway
     /**
      * Support method for fixDuplicateTags()
      *
-     * @param string $tag Tag to deduplicate.
+     * @param string $tag           Tag to deduplicate.
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return void
      */
-    protected function fixDuplicateTag($tag)
+    protected function fixDuplicateTag($tag, $caseSensitive = null)
     {
         // Make sure this really is a duplicate.
-        $result = $this->getByText($tag, false, false);
+        $result = $this->getDbService(TagServiceInterface::class)
+            ->getTagsByText($tag, $caseSensitive ?? $this->caseSensitive);
         if (count($result) < 2) {
             return;
         }
 
-        $first = $result->current();
+        $first = $result[0];
         foreach ($result as $current) {
-            $this->mergeTags($first->id, $current->id);
+            $this->mergeTags($first->getId(), $current->getId());
         }
     }
 
     /**
      * Repair duplicate tags in the database (if any).
      *
+     * @param ?bool $caseSensitive Should tags be case sensitive? (null to use configured default)
+     *
      * @return void
      */
-    public function fixDuplicateTags()
+    public function fixDuplicateTags($caseSensitive = null)
     {
-        foreach ($this->getDuplicates() as $dupe) {
-            $this->fixDuplicateTag($dupe->tag);
+        foreach ($this->getDuplicates($caseSensitive) as $dupe) {
+            $this->fixDuplicateTag($dupe->tag, $caseSensitive);
         }
     }
 }

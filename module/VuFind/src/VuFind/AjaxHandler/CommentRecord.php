@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,10 +32,12 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\Resource;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\ResourcePopulator;
 
 use function intval;
 
@@ -55,20 +57,24 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource            $table               Resource database table
-     * @param Captcha             $captcha             Captcha controller plugin
-     * @param ?User               $user                Logged in user (or null)
-     * @param bool                $enabled             Are comments enabled?
-     * @param RecordLoader        $recordLoader        Record loader
-     * @param AccountCapabilities $accountCapabilities Account capabilities helper
+     * @param ResourcePopulator        $resourcePopulator   Resource populator service
+     * @param CommentsServiceInterface $commentsService     Comments database service
+     * @param Captcha                  $captcha             Captcha controller plugin
+     * @param ?UserEntityInterface     $user                Logged in user (or null)
+     * @param bool                     $enabled             Are comments enabled?
+     * @param RecordLoader             $recordLoader        Record loader
+     * @param AccountCapabilities      $accountCapabilities Account capabilities helper
+     * @param RatingsService           $ratingsService      Ratings service
      */
     public function __construct(
-        protected Resource $table,
+        protected ResourcePopulator $resourcePopulator,
+        protected CommentsServiceInterface $commentsService,
         protected Captcha $captcha,
-        protected ?User $user,
+        protected ?UserEntityInterface $user,
         protected bool $enabled,
         protected RecordLoader $recordLoader,
-        protected AccountCapabilities $accountCapabilities
+        protected AccountCapabilities $accountCapabilities,
+        protected RatingsService $ratingsService
     ) {
     }
 
@@ -129,8 +135,12 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-        $resource = $this->table->findResource($id, $source);
-        $commentId = $resource->addComment($comment, $this->user);
+        $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
+        $commentId = $this->commentsService->addComment(
+            $comment,
+            $this->user,
+            $resource
+        );
 
         $rating = $params->fromPost('rating', '');
         if (
@@ -138,8 +148,9 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             && ('' !== $rating
             || $this->accountCapabilities->isRatingRemovalAllowed())
         ) {
-            $driver->addOrUpdateRating(
-                $this->user->id,
+            $this->ratingsService->saveRating(
+                $driver,
+                $this->user->getId(),
                 '' === $rating ? null : intval($rating)
             );
         }

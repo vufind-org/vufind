@@ -31,6 +31,7 @@ namespace VuFind\XSLT\Import;
 
 use function call_user_func;
 use function count;
+use function sprintf;
 
 /**
  * XSLT importer support methods for geographic indexing.
@@ -44,7 +45,7 @@ use function count;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overrideable for testing purposes)
+     * Method for logging errors (overridable for testing purposes)
      *
      * @var callable
      */

@@ -29,8 +29,10 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\RecordDriver\Response\PublicationDetails;
+use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -56,16 +58,16 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock record router.
      *
-     * @return \VuFind\Record\Router
+     * @return MockObject&\VuFind\Record\Router
      */
-    protected function getMockRecordRouter()
+    protected function getMockRecordRouter(): MockObject&\VuFind\Record\Router
     {
         $mock = $this->getMockBuilder(\VuFind\Record\Router::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getActionRouteDetails'])
             ->getMock();
         $mock->expects($this->any())->method('getActionRouteDetails')
-            ->will($this->returnValue(['route' => 'home', 'params' => []]));
+            ->willReturn(['route' => 'home', 'params' => []]);
         return $mock;
     }
 
@@ -76,13 +78,19 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getViewHelpers($container)
+    protected function getViewHelpers($container): array
     {
         $context = new \VuFind\View\Helper\Root\Context();
+        $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
+        $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
+        $serviceManager->method('get')->willReturnCallback(function ($service) {
+            return $this->createMock($service);
+        });
+        $record->setDbServiceManager($serviceManager);
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
-                $this->getMockBuilder(\VuFind\Auth\Manager::class)->disableOriginalConstructor()->getMock(),
-                $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)->disableOriginalConstructor()->getMock()
+                $this->createMock(\VuFind\Auth\Manager::class),
+                $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
             ),
             'context' => $context,
             'config' => new \VuFind\View\Helper\Root\Config($container->get(\VuFind\Config\PluginManager::class)),
@@ -96,12 +104,14 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
                 $context,
                 [],
-                $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)
-                    ->disableOriginalConstructor()->getMock()
+                $this->createMock(\VuFind\Resolver\Driver\PluginManager::class)
             ),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
-            'record' => new \VuFind\View\Helper\Root\Record(),
+            'record' => $record,
             'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
+            'schemaOrg' => new \VuFind\View\Helper\Root\SchemaOrg(
+                new \Laminas\View\Helper\HtmlAttributes()
+            ),
             'searchMemory' => $this->getSearchMemoryViewHelper(),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
                 new \VuFind\Search\Options\PluginManager($container)
@@ -125,7 +135,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $onlyMethods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary', 'getNewerTitles',
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getSummary', 'getNewerTitles',
         ];
         $addMethods = [
             'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
@@ -136,8 +146,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods($onlyMethods)
             ->addMethods($addMethods)
             ->getMock();
-        $record->expects($this->any())->method('getTags')
-            ->will($this->returnValue([]));
         // Force a return value of zero so we can test this edge case value (even
         // though in the context of "building"/"container title" it makes no sense):
         $record->expects($this->any())->method('getBuildings')
@@ -236,11 +244,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ])
         );
         $this->addPathResolverToContainer($container);
-        $formatter = $factory($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers($container);
         $view = $this->getPhpRenderer($helpers);
+        $container->set(\Laminas\View\HelperPluginManager::class, $view->getHelperPluginManager());
+        $formatter = $factory($container, RecordDataFormatter::class);
 
         // Mock out the router to avoid errors:
         $match = new \Laminas\Router\RouteMatch([]);

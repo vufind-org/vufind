@@ -1,0 +1,16 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+?>
+<table class="staff-view table table-striped">
+  <?php
+    $rawData = $this->driver->getRawData();
+    ksort($rawData);
+  ?>
+  <?php foreach ($rawData as $field => $values): ?>
+    <tr>
+      <th><?=$this->escapeHtml($field)?></th>
+      <td><?=$this->printArrayHtml($values)?></td>
+    </tr>
+  <?php endforeach; ?>
+</table>

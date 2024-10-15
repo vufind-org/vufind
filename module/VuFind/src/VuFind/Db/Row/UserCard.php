@@ -29,6 +29,11 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
+use VuFind\Db\Entity\UserCardEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+
 /**
  * Row Definition for user_card
  *
@@ -48,8 +53,10 @@ namespace VuFind\Db\Row;
  * @property string  $created
  * @property string  $saved
  */
-class UserCard extends RowGateway
+class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEntityInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -58,5 +65,199 @@ class UserCard extends RowGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'user_card', $adapter);
+    }
+
+    /**
+     * ID getter (returns null if the entity has not been saved/populated yet)
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
+     * Card name setter
+     *
+     * @param string $cardName User card name.
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCardName(string $cardName): UserCardEntityInterface
+    {
+        $this->card_name = $cardName;
+        return $this;
+    }
+
+    /**
+     * Get user card name.
+     *
+     * @return string
+     */
+    public function getCardName(): string
+    {
+        return $this->card_name;
+    }
+
+    /**
+     * Catalog username setter
+     *
+     * @param string $catUsername Catalog username
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCatUsername(string $catUsername): UserCardEntityInterface
+    {
+        $this->cat_username = $catUsername;
+        return $this;
+    }
+
+    /**
+     * Get catalog username.
+     *
+     * @return string
+     */
+    public function getCatUsername(): string
+    {
+        return $this->cat_username;
+    }
+
+    /**
+     * Raw catalog password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setRawCatPassword(?string $catPassword): UserCardEntityInterface
+    {
+        $this->cat_password = $catPassword;
+        return $this;
+    }
+
+    /**
+     * Get raw catalog password.
+     *
+     * @return ?string
+     */
+    public function getRawCatPassword(): ?string
+    {
+        return $this->cat_password;
+    }
+
+    /**
+     * Encrypted catalog password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCatPassEnc(?string $passEnc): UserCardEntityInterface
+    {
+        $this->cat_pass_enc = $passEnc;
+        return $this;
+    }
+
+    /**
+     * Get encrypted catalog password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string
+    {
+        return $this->cat_pass_enc;
+    }
+
+    /**
+     * Home library setter
+     *
+     * @param ?string $homeLibrary Home library
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setHomeLibrary(?string $homeLibrary): UserCardEntityInterface
+    {
+        $this->home_library = $homeLibrary;
+        return $this;
+    }
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string
+    {
+        return $this->home_library;
+    }
+
+    /**
+     * Created date setter.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserCardEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set time the card is saved.
+     *
+     * @param DateTime $dateTime Saved date and time
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setSaved(DateTime $dateTime): UserCardEntityInterface
+    {
+        $this->saved = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get saved time.
+     *
+     * @return DateTime
+     */
+    public function getSaved(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->saved);
+    }
+
+    /**
+     * User setter.
+     *
+     * @param UserEntityInterface $user User that owns card
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setUser(UserEntityInterface $user): UserCardEntityInterface
+    {
+        $this->user_id = $user->getId();
+        return $this;
+    }
+
+    /**
+     * User getter
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface
+    {
+        return $this->getDbService(\VuFind\Db\Service\UserServiceInterface::class)->getUserById($this->user_id);
     }
 }

@@ -214,7 +214,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.modal-body input[name=submit]');
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
@@ -303,7 +303,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
@@ -339,6 +339,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the print control works.
      *
      * @return void
+     *
+     * @depends testBulkEmail
      */
     public function testBulkActionLimits(): void
     {
@@ -396,7 +398,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.modal-body input[name=submit]');
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
@@ -407,7 +409,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#format');
         $select->selectOption('EndNote');
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->checkForLimitExceededMessage($page, 2, 1);
         $this->closeLightbox($page);
@@ -418,7 +420,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#format');
         $select->selectOption('MARC');
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->assertEquals(
             'Download File',

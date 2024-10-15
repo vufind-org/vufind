@@ -197,11 +197,16 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         };
 
         $runner = $this->searchRunner;
-        return $runner->run(
+        $results = $runner->run(
             $request,
             $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
             $setupCallback
         );
+        // Restore limit overridden by the setup callback above:
+        if ($limit = $request['limit'] ?? null) {
+            $results->getParams()->setLimit($limit);
+        }
+        return $results;
     }
 
     /**
@@ -229,6 +234,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             } else {
                 $context['facet'] = $facet;
                 $context['cluster'] = $facetSet[$facet] ?? [
+                    'label' => $results->getParams()->getFacetLabel($facet),
                     'list' => [],
                 ];
                 $context['collapsedFacets'] = [];

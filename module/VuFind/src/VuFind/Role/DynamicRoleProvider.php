@@ -51,20 +51,6 @@ class DynamicRoleProvider implements RoleProviderInterface
     protected $roles = false;
 
     /**
-     * Permission provider manager
-     *
-     * @var PermissionProviderPluginManager
-     */
-    protected $manager;
-
-    /**
-     * Configuration for determining permissions.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
      * @param PermissionProvider\PluginManager $manager Permission provider manager
@@ -72,11 +58,9 @@ class DynamicRoleProvider implements RoleProviderInterface
      * permissions
      */
     public function __construct(
-        PermissionProvider\PluginManager $manager,
-        array $config
+        protected PermissionProvider\PluginManager $manager,
+        protected array $config
     ) {
-        $this->manager = $manager;
-        $this->config = $config;
     }
 
     /**

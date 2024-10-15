@@ -172,7 +172,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function clickButtonGroupLink(Element $page, string $text): void
     {
-        $link = $this->findCss($page, '.btn-group.open')->findLink($text);
+        $link = $this->findCss($page, $this->btnGroupDropdownMenuSelector)->findLink($text);
         $this->assertIsObject($link);
         $link->click();
     }
@@ -575,7 +575,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#renewAll');
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
-            'Renewal Successful',
+            'Successfully renewed 1 item.',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
     }
@@ -632,7 +632,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Selected loans have been purged from your loan history',
-            $this->findCssAndGetText($page, '.alert.alert-info')
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
         $this->findCss($page, '.checkbox-select-item');
         $this->unFindCss($page, '.checkbox-select-item', null, 1);
@@ -642,7 +642,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Your loan history has been purged',
-            $this->findCssAndGetText($page, '.alert.alert-info')
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
         $this->unFindCss($page, '.checkbox-select-item');
     }

@@ -38,7 +38,6 @@ use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use LmcRbacMvc\Service\AuthorizationService as LmAuthorizationService;
 use OpenIDConnectServer\ClaimExtractor;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\AccessTokenServiceInterface;
@@ -90,7 +89,6 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      * @param array                       $oauth2Config       OAuth2 configuration
      * @param callable                    $asf                OAuth2 authorization server factory
      * @param callable                    $rsf                OAuth2 resource server factory
-     * @param LmAuthorizationService      $authService        Laminas authorization service
      * @param CsrfInterface               $csrf               CSRF validator
      * @param SessionContainer            $session            Session container
      * @param IdentityRepository          $identityRepository Identity repository
@@ -104,7 +102,6 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         protected array $oauth2Config,
         callable $asf,
         callable $rsf,
-        protected LmAuthorizationService $authService,
         protected CsrfInterface $csrf,
         protected \Laminas\Session\Container $session,
         protected IdentityRepository $identityRepository,
@@ -175,6 +172,20 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             return $this->handleException('Authorization request', $e);
         }
 
+        // Hide any scopes not allowed by a client-specific filter (see also ScopeRepository for the actual filtering):
+        if ($allowedScopes = $clientConfig['allowedScopes'] ?? null) {
+            $scopes = $authRequest->getScopes();
+            array_map(
+                function ($scope) use ($allowedScopes) {
+                    if (!in_array($scope->getIdentifier(), $allowedScopes)) {
+                        $scope->setHidden(true);
+                    }
+                },
+                $scopes
+            );
+            $authRequest->setScopes($scopes);
+        }
+
         if ($this->formWasSubmitted('allow') || $this->formWasSubmitted('deny')) {
             // Check CSRF and session:
             if (!$this->csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
@@ -213,10 +224,14 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             }
         }
 
+        $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
         $patron = $this->catalogLogin();
         $patronLoginView = is_array($patron) ? null : $patron;
+        if ($patronLoginView instanceof \Laminas\View\Model\ViewModel) {
+            $patronLoginView->showMenu = false;
+        }
         return $this->createViewModel(
-            compact('authRequest', 'user', 'patron', 'patronLoginView')
+            compact('authRequest', 'user', 'patron', 'patronLoginView', 'userIdentifierField')
         );
     }
 
@@ -277,8 +292,9 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     OAuthServerException::accessDenied('User does not exist anymore')
                 );
             }
-            $result = $this->claimExtractor
-                ->extract($scopes, $userEntity->getClaims());
+            $result = $this->claimExtractor->extract($scopes, $userEntity->getClaims());
+            // The sub claim must always be returned:
+            $result['sub'] = $userId;
             return $this->getJsonResponse($result);
         } catch (OAuthServerException $e) {
             return $this->handleOAuth2Exception('User info request', $e);
@@ -361,9 +377,16 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             'grant_types_supported' => ['authorization_code'],
             'subject_types_supported' => ['public'],
             'id_token_signing_alg_values_supported' => ['RS256'],
+            'token_endpoint_auth_methods_supported' => [
+                'client_secret_post',
+                'client_secret_basic',
+            ],
         ];
         if ($url = $this->oauth2Config['Server']['documentationUrl'] ?? null) {
             $configuration['service_documentation'] = $url;
+        }
+        if ($scopes = $this->oauth2Config['Scopes'] ?? []) {
+            $configuration['scopes_supported'] = array_keys($scopes);
         }
 
         return $this->getJsonResponse($configuration);

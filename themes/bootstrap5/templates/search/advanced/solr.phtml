@@ -1,0 +1,12 @@
+<?=$this->render('search/advanced/solr-facets.phtml')?>
+<?php if (isset($this->illustratedLimit)): ?>
+  <fieldset class="solr">
+    <legend><?=$this->transEsc('Illustrated')?>:</legend>
+    <?php foreach ($this->illustratedLimit as $current): ?>
+      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected'] ? ' checked="checked" data-checked-by-default="true"' : ''?>>
+      <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br>
+    <?php endforeach; ?>
+  </fieldset>
+<?php endif; ?>
+<?=$this->render('search/advanced/limit.phtml')?>
+<?=$this->render('search/advanced/ranges.phtml')?>

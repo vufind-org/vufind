@@ -48,8 +48,6 @@ use function in_array;
 use function intval;
 use function is_array;
 use function is_callable;
-use function is_float;
-use function is_int;
 use function is_object;
 use function strlen;
 
@@ -1416,8 +1414,8 @@ class Params
     }
 
     /**
-     * Support method for initNumericRangeFilters() -- normalize a year for use in
-     * a date range.
+     * Support method for initNumericRangeFilters() -- normalize a number for use in
+     * a numeric range.
      *
      * @param ?string $num      Value to format into a number.
      * @param bool    $rangeEnd Is this the end of a range?
@@ -1428,15 +1426,12 @@ class Params
      */
     protected function formatValueForNumericRange($num, $rangeEnd = false)
     {
-        // empty strings are always wildcards:
-        if ($num == '') {
+        // empty strings, null values and non-numeric values are treated as wildcards:
+        if ($num === '' || $num === null || !is_numeric($num)) {
             return '*';
         }
-
-        // it's a string by default so this will kick it into interpreting it as a
-        // number
-        $num = $num + 0;
-        return $num = !is_float($num) && !is_int($num) ? '*' : $num;
+        // If we got this far, it's a number!
+        return $num;
     }
 
     /**

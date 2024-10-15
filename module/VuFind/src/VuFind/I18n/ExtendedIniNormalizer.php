@@ -31,6 +31,8 @@ namespace VuFind\I18n;
 
 use Laminas\I18n\Translator\TextDomain;
 
+use function in_array;
+
 /**
  * Class to consistently format ExtendedIni language files.
  *
@@ -43,6 +45,13 @@ use Laminas\I18n\Translator\TextDomain;
 class ExtendedIniNormalizer
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * Reserved words that need to be quoted when used as keys.
+     *
+     * @var string[]
+     */
+    protected $reservedWords = ['yes'];
 
     /**
      * Normalize a directory on disk.
@@ -166,7 +175,8 @@ class ExtendedIniNormalizer
         $output = '';
         foreach ($input as $key => $value) {
             // Put purely numeric keys in single quotes for Lokalise compatibility:
-            $normalizedKey = is_numeric($key) ? "'$key'" : $key;
+            $normalizedKey = is_numeric($key) || in_array($key, $this->reservedWords)
+                ? "'$key'" : $key;
             // Choose most appropriate type of outer quotes to reduce need for escaping:
             $quote = str_contains($value, '"') ? "'" : '"';
             // Apply minimal escaping (to existing slashes and quotes matching the outer ones):

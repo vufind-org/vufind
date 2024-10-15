@@ -40,8 +40,8 @@
       <select id="save_list" name="list" class="form-control">
         <?php if (count($this->lists) > 0): ?>
           <?php foreach ($this->lists as $list): ?>
-            <option value="<?=$this->escapeHtmlAttr($list['id']) ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
-              <?=$this->escapeHtml($list['title'])?><?php if ($list['public']):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
+            <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+              <?=$this->escapeHtml($list->getTitle())?><?php if ($list->isPublic()):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
             </option>
           <?php endforeach; ?>
         <?php else: ?>
@@ -59,7 +59,7 @@
       </div>
     <?php endif; ?>
     <div class="form-group">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>">
+      <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Save') ?>">
     </div>
   </form>
 <?php endif; ?>

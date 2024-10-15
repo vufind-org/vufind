@@ -68,13 +68,14 @@ class IdentityRepository implements IdentityProviderInterface
     /**
      * Get a user entity by identifier.
      *
-     * @param int $identifier User ID
+     * @param int|string $identifier User Identifier
      *
      * @return ?UserEntity
      */
     public function getUserEntityByIdentifier($identifier)
     {
-        if ($user = $this->userService->getUserById($identifier)) {
+        $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        if ($user = $this->userService->getUserByField($userIdentifierField, $identifier)) {
             return new UserEntity(
                 $user,
                 $this->ils,
