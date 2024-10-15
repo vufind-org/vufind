@@ -7,8 +7,8 @@
     '<br>',
     array_map(
         function ($summary) {
-        $htmlContent = str_starts_with($summary, '<') && str_ends_with($summary, '>');
-        return $htmlContent ? $summary : ($this->escapeHtmlExt($summary, allowHtml: true));
+            $htmlContent = str_starts_with($summary, '<') && str_ends_with($summary, '>');
+            return $htmlContent ? $summary : ($this->escapeHtmlExt($summary, allowHtml: true));
       },
         $content
     )
