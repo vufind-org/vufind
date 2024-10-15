@@ -731,7 +731,7 @@ class SierraRest extends AbstractBase implements
                 'firstname' => $firstname,
                 'lastname' => $lastname,
                 'email' => !empty($result['emails']) ? $result['emails'][0] : '',
-                'password' => hash('sha256', $lastname . $result['id'] . $result['homeLibraryCode'])
+                'password' => hash('sha256', $lastname . $result['id'] . $result['homeLibraryCode']),
             ];
         } else {
             return false;
