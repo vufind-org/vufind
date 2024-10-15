@@ -3,14 +3,16 @@
 <?php endforeach; ?>
 <?php $isbn = $this->driver->getCleanISBN(); ?>
 <?php foreach ($this->summaries($isbn) as $provider => $content): ?>
-  <?=implode(
-    '<br>',
-    array_map(
-        function ($summary) {
-        $htmlContent = str_starts_with($summary, '<') && str_ends_with($summary, '>');
-        return $htmlContent ? $summary : ($this->escapeHtmlExt($summary, allowHtml: true));
-      },
-        $content
+  <?=
+    implode(
+        '<br>',
+        array_map(
+            function ($summary) {
+                $htmlContent = str_starts_with($summary, '<') && str_ends_with($summary, '>');
+                return $htmlContent ? $summary : ($this->escapeHtmlExt($summary, allowHtml: true));
+            },
+            $content
+        )
     )
-)?>
+  ?>
 <?php endforeach; ?>
