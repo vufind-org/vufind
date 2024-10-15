@@ -128,15 +128,16 @@ class IconTest extends \PHPUnit\Framework\TestCase
         array $plugins = [],
         $rtl = false
     ): Icon {
+        $escaper = new Escaper();
         $icon = new Icon(
             $config ?? $this->getDefaultTestConfig(),
             $cache ?? new BlackHole(),
-            new EscapeHtmlAttr(new \VuFind\Escaper\Escaper(false)),
+            new EscapeHtmlAttr($escaper),
             $rtl
         );
         $plugins = array_merge(
             [
-                'escapeHtmlAttr' => new EscapeHtmlAttr(new Escaper(false)),
+                'escapeHtmlAttr' => new EscapeHtmlAttr($escaper),
             ],
             $plugins
         );

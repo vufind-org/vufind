@@ -212,7 +212,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         };
 
         $plugins = [
-            'escapeHtmlAttr' => new EscapeHtmlAttr(new \VuFind\Escaper\Escaper(false)),
+            'escapeHtmlAttr' => new EscapeHtmlAttr(new \VuFind\Escaper\Escaper()),
             'layout' => $layout,
             'serverUrl' => $serverUrl,
             'url' => $url,

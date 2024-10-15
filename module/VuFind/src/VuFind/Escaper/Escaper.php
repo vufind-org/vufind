@@ -45,7 +45,7 @@ class Escaper extends \Laminas\Escaper\Escaper
      *
      * @param bool $extendedHtmlAttrEscaping Use Laminas' extended HTML attribute escaping?
      */
-    public function __construct(protected bool $extendedHtmlAttrEscaping)
+    public function __construct(protected bool $extendedHtmlAttrEscaping = false)
     {
         parent::__construct();
     }

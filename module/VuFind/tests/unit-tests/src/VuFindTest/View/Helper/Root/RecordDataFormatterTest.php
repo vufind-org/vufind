@@ -100,7 +100,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
-                new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper(false)),
+                new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper()),
             ),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
                 $context,
