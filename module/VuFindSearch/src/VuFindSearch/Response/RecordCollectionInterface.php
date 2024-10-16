@@ -122,7 +122,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return void
      */
-    public function setResultSetIdentifier($uuid);
+    public function setResultSetIdentifier(string $uuid);
 
     /**
      * Add a record to the collection.

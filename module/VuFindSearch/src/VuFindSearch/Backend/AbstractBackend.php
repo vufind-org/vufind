@@ -129,7 +129,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid): void {
+    public function setResultSetIdentifier(string $uuid) {
         $this->recordCollection->setResultSetIdentifier($uuid);
     }
     

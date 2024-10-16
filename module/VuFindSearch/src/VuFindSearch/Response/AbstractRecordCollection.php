@@ -308,7 +308,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function setResultSetIdentifier($uuid) {
+    public function setResultSetIdentifier(string $uuid) {
         foreach ($this->records as $record) {
             $record->setResultSetIdentifier($uuid);
         }

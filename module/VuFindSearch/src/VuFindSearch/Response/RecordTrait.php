@@ -129,7 +129,7 @@ trait RecordTrait
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid): void {
+    public function setResultSetIdentifier(string $uuid) {
         $this->resultSetIdentifier = $uuid;
     }
     

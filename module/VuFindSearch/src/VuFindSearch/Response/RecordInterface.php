@@ -78,7 +78,7 @@ interface RecordInterface
      */
     public function getSearchBackendIdentifier();
 
-    public function setResultSetIdentifier($uuid);
+    public function setResultSetIdentifier(string $uuid);
 
     public function getResultSetIdentifier();
 
