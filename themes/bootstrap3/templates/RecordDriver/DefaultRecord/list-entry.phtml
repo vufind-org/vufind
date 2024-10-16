@@ -217,6 +217,7 @@
               ? $this->url('myresearch-favorites')
               : $this->url('userList', ['id' => $list_id]);
           $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
+          $md5Id = md5($id);
         ?>
         <?=
           $this->component(
@@ -226,7 +227,7 @@
                   'buttonLink' => $deleteUrlGet,
                   'buttonIcon' => 'user-list-remove',
                   'buttonLabel' => 'Delete',
-                  'confirmId' => 'confirm_delete_item_' . md5($id),
+                  'confirmId' => 'confirm_delete_item_' . $md5id,
               ]
           )
         ?>
@@ -239,7 +240,6 @@
   </div>
   <?php
     $escId = $this->escapeJs($id);
-    $md5Id = md5($id);
     $escSource = $this->escapeJs($source);
     $script = <<<JS
         $('#confirm_delete_item_{$md5Id}').click(function(e) {
