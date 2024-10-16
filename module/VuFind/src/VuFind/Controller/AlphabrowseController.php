@@ -202,9 +202,11 @@ class AlphabrowseController extends AbstractBase
         $config = $this->getConfig();
 
         foreach ($result['Browse']['items'] as &$item) {
-            $item['heading'] = str_replace("\u{2002}",
-                                           ($config->AlphaBrowse->topic_browse_separator ?? ' > '),
-                                           $item['heading']);
+            $item['heading'] = str_replace(
+                "\u{2002}",
+                ($config->AlphaBrowse->topic_browse_separator ?? ' > '),
+                $item['heading']
+            );
         }
     }
 
