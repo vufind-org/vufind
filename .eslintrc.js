@@ -10,6 +10,9 @@ module.exports = {
     "es6": true,
     "jquery": true
   },
+  parserOptions: {
+    "ecmaVersion": "2020"
+  },
   rules: {
     // errors
     "block-scoped-var": "error",
