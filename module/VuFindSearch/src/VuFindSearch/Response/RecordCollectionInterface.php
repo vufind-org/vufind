@@ -116,7 +116,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @return string
      */
     public function getSourceIdentifier();
-    
+
     /**
      * Sets the result set identifier for the record.
      *

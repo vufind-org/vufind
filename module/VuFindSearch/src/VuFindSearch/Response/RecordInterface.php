@@ -86,7 +86,7 @@ interface RecordInterface
      * @return void
      */
     public function setResultSetIdentifier(string $uuid);
-    
+
     /**
      * Retrieves the unique result set identifier.
      *
