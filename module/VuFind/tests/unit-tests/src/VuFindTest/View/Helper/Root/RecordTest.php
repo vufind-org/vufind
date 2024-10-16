@@ -392,6 +392,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver = $this->loadRecordFixture('testbug1.json');
         $tpl = 'record/checkbox.phtml';
         $context = $this->getMockContext();
+        $randomIdentifier = 'baz';
+        $driver->setResultSetIdentifier($randomIdentifier);
 
         $expectedCalls = [
             [
@@ -399,7 +401,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 [
                     'number' => 1,
                     'id' => 'Solr|000105196',
-                    'checkboxElementId' => 'bar-Solr|000105196',
+                    'checkboxElementId' => "bar-{$randomIdentifier}-000105196",
                     'prefix' => 'bar',
                     'formAttr' => 'foo',
                 ],
@@ -409,7 +411,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 [
                     'number' => 2,
                     'id' => 'Solr|000105196',
-                    'checkboxElementId' => 'bar-Solr|000105196',
+                    'checkboxElementId' => "bar-{$randomIdentifier}-000105196",
                     'prefix' => 'bar',
                     'formAttr' => 'foo',
                 ],
@@ -439,16 +441,18 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->loadRecordFixture('testbug1.json');
         $record = $this->getRecord($driver);
+        $randomIdentifier = 'bar';
+        $driver->setResultSetIdentifier($randomIdentifier);
 
         // with prefix
         $this->assertEquals(
-            'testPrefix-Solr|000105196',
+            "testPrefix-{$randomIdentifier}-000105196",
             $record->getUniqueHtmlElementId('testPrefix')
         );
 
         // without prefix
         $this->assertEquals(
-            'Solr|000105196',
+            "{$randomIdentifier}-000105196",
             $record->getUniqueHtmlElementId()
         );
     }

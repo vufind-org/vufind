@@ -871,7 +871,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         return preg_replace(
             "/\s+/",
             '_',
-            ($idPrefix ? $idPrefix . '-' : '') . $this->getUniqueIdWithSourcePrefix()
+            ($idPrefix ? $idPrefix . '-' : '')
+            . $this->driver->getResultSetIdentifier() . '-'
+            . $this->driver->getUniqueId()
         );
     }
 

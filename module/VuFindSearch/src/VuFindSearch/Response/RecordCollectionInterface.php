@@ -118,6 +118,13 @@ interface RecordCollectionInterface extends \Countable, \Iterator
     public function getSourceIdentifier();
 
     /**
+     * Return the result set identifier.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier($uuid);
+
+    /**
      * Add a record to the collection.
      *
      * @param RecordInterface $record Record to add

@@ -78,6 +78,10 @@ interface RecordInterface
      */
     public function getSearchBackendIdentifier();
 
+    public function setResultSetIdentifier($uuid);
+
+    public function getResultSetIdentifier();
+
     /**
      * Add a label for the record
      *

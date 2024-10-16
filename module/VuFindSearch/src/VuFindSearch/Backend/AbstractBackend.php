@@ -30,6 +30,7 @@
 namespace VuFindSearch\Backend;
 
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Math\Rand;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
@@ -116,6 +117,37 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
     protected function injectSourceIdentifier(RecordCollectionInterface $response)
     {
         $response->setSourceIdentifiers($this->identifier);
+        $response->setResultSetIdentifier($this->generateUuid());
+
         return $response;
+    }
+    
+    /**
+     * Sets the result set identifier for the record collection.
+     *
+     * @param string $uuid A valid UUID associated with the data set.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid): void {
+        $this->recordCollection->setResultSetIdentifier($uuid);
+    }
+    
+    /**
+     * Generates a shorter UUID-like identifier.
+     *
+     * This method uses Laminas\Math\Rand to generate cryptographically secure random bytes
+     * and formats them into a shorter identifier.
+     *
+     * @return string A randomly generated shorter UUID-like identifier.
+     */
+    function generateUuid(): string {
+        $data = bin2hex(Rand::getBytes(8));
+        return sprintf(
+            '%08s-%04s-%04s',
+            substr($data, 0, 8),
+            substr($data, 8, 4),
+            substr($data, 12, 4)
+        );
     }
 }

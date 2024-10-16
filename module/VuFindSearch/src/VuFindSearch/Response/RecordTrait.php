@@ -46,6 +46,16 @@ trait RecordTrait
      * @var string
      */
     protected $sourceIdentifier = '';
+    
+    /**
+     * The unique identifier for the result set.
+     *
+     * This property stores a UUID or similar identifier that uniquely identifies
+     * the result set. It is typically set by calling the `setResultSetIdentifier` method.
+     *
+     * @var string|null
+     */
+    protected $resultSetIdentifier;
 
     /**
      * Used for identifying the search backend used to find the record
@@ -108,6 +118,31 @@ trait RecordTrait
     public function getSearchBackendIdentifier()
     {
         return $this->searchBackendIdentifier;
+    }
+    
+    /**
+     * Sets the unique result set identifier.
+     *
+     * This method assigns a UUID or similar identifier to the result set.
+     *
+     * @param string $uuid A valid UUID or identifier to assign to the result set.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid): void {
+        $this->resultSetIdentifier = $uuid;
+    }
+    
+    /**
+     * Retrieves the unique result set identifier.
+     *
+     * This method returns the UUID or similar identifier associated with the result set.
+     * If no identifier has been set, it will return null.
+     *
+     * @return string|null The UUID of the result set, or null if not set.
+     */
+    public function getResultSetIdentifier(): ?string {
+        return $this->resultSetIdentifier;
     }
 
     /**
