@@ -57,6 +57,13 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
     protected $collectionFactory = null;
 
     /**
+     * Record collection.
+     *
+     * @var RecordCollectionInterface|null
+     */
+    protected $recordCollection = null;
+
+    /**
      * Backend identifier.
      *
      * @var string
