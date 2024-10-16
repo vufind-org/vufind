@@ -1542,6 +1542,46 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get Default Pick Up Location
+     *
+     * Returns the default pick up location set in FOLIO user record
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. (Unused by the FOLIO driver.)
+     *
+     * @return false|string      The default pickup location for the patron or false
+     * if the user has to choose.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDefaultPickUpLocation($patron, $holdDetails = null)
+    {
+        // There should always be a patron, but just a paranoia check to avoid hitting the API with empty values.
+        if (!($patron['id'] ?? '')) {
+            return false;
+        }
+
+        // Find the patron's default pickup location in their preferences
+        $query = ['query' => 'userId==' . $patron['id']];
+        foreach (
+            $this->getPagedResults(
+                'requestPreferences',
+                '/request-preference-storage/request-preference',
+                $query
+            ) as $pref
+        ) {
+            if ($pref->defaultServicePointId) {
+                return $pref->defaultServicePointId;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * This method queries the ILS for a patron's current holds
      *
      * Input: Patron array returned by patronLogin method
