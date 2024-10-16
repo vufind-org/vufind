@@ -34,6 +34,8 @@ use Laminas\Math\Rand;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
+use function sprintf;
+
 /**
  * Abstract backend.
  *
