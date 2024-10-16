@@ -116,9 +116,13 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @return string
      */
     public function getSourceIdentifier();
-
+    
     /**
-     * Return the result set identifier.
+     * Sets the result set identifier for the record.
+     *
+     * This method assigns a UUID or a unique string identifier to the result set.
+     *
+     * @param string $uuid A valid UUID or unique identifier to be assigned to the result set.
      *
      * @return void
      */

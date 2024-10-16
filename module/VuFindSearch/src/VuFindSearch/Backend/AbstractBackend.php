@@ -121,7 +121,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
 
         return $response;
     }
-    
+
     /**
      * Sets the result set identifier for the record collection.
      *
@@ -129,10 +129,11 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid) {
+    public function setResultSetIdentifier(string $uuid)
+    {
         $this->recordCollection->setResultSetIdentifier($uuid);
     }
-    
+
     /**
      * Generates a shorter UUID-like identifier.
      *
@@ -141,7 +142,8 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return string A randomly generated shorter UUID-like identifier.
      */
-    function generateUuid(): string {
+    public function generateUuid(): string
+    {
         $data = bin2hex(Rand::getBytes(8));
         return sprintf(
             '%08s-%04s-%04s',

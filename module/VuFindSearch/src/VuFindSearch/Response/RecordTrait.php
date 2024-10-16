@@ -46,7 +46,7 @@ trait RecordTrait
      * @var string
      */
     protected $sourceIdentifier = '';
-    
+
     /**
      * The unique identifier for the result set.
      *
@@ -119,7 +119,7 @@ trait RecordTrait
     {
         return $this->searchBackendIdentifier;
     }
-    
+
     /**
      * Sets the unique result set identifier.
      *
@@ -129,10 +129,11 @@ trait RecordTrait
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid) {
+    public function setResultSetIdentifier(string $uuid)
+    {
         $this->resultSetIdentifier = $uuid;
     }
-    
+
     /**
      * Retrieves the unique result set identifier.
      *
@@ -141,7 +142,8 @@ trait RecordTrait
      *
      * @return string|null The UUID of the result set, or null if not set.
      */
-    public function getResultSetIdentifier(): ?string {
+    public function getResultSetIdentifier(): ?string
+    {
         return $this->resultSetIdentifier;
     }
 
