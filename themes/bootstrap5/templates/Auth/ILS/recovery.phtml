@@ -1,0 +1,8 @@
+<div class="form-group">
+  <label class="control-label" for="recovery_username"><?=$this->transEsc('recovery_by_username') ?>:</label>
+  <input type="text" name="username" class="form-control" id="recovery_username" autocomplete="username">
+</div>
+<?=$this->captcha()->html($this->useCaptcha) ?>
+<div class="form-group">
+  <input class="btn btn-primary" name="submitButton" type="submit" value="<?=$this->transEscAttr('Recover Account') ?>">
+</div>

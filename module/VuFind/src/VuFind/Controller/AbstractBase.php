@@ -710,6 +710,14 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         if ($mrhuNorm === $refererNorm) {
             return;
         }
+        // if  is the stored current url of the lightbox
+        // which overrides the url from the server request when present
+        $normReferer = $this->normalizeUrlForComparison($referer);
+        $myUserReset = $this->getServerUrl('myresearch-verify');
+        $murNorm = $this->normalizeUrlForComparison($myUserReset);
+        if (str_starts_with($normReferer, $murNorm)) {
+            return;
+        }
 
         // If the referer is the MyResearch/UserLogin action, it probably means
         // that the user is repeatedly mistyping their password. We should
