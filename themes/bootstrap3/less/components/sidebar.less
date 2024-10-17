@@ -57,7 +57,7 @@
   .exclude {
     flex-shrink: 0;
     text-align: center;
-    padding-left: 0.5rem;
+    margin-left: 0.5rem;
 
     body.rtl & {
       padding-left: 0;
@@ -102,6 +102,23 @@
 }
 .facet .text {
   overflow: hidden;
+}
+
+.multi-facet-selection {
+  .facet {
+    .exclude {
+      border: 2px dotted transparent;
+    }
+    .exclude.selected {
+      border: 2px dotted @list-group-active-bg;
+    }
+    .exclude {
+      .icon {
+        width: 1.5em;
+        height: 1.5em;
+      }
+    }
+  }
 }
 
 .top-facets-contents {
@@ -203,4 +220,19 @@ h3.facet-title {
 @media (min-width: 768px) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
+}
+
+.multi-filters-selection {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  padding: 1em;
+  border-bottom: 1px solid #C1C1C1;
+  background: white;
+  box-shadow: 0 5px 5px -4px #000;
+  font-weight: bold;
+}
+.apply-filters {
+  height: 3.5em;
+  padding: 1em;
 }
