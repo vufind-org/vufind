@@ -353,7 +353,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     let finalContext = (typeof context === "undefined") ? defaultContext : context;
     finalContext.classList.toggle('multi-facet-selection');
     finalContext.querySelectorAll('a.facet:not(.narrow-toggle), .facet a').forEach(function addListeners(link) {
-      link.addEventListener('click', function handling(e) {
+      link.addEventListener('click', function handleMultiSelectionClick(e) {
         if (isMultiFacetsSelectionActivated === true) {
           handleClickedFacet(e);
         } else if (callbackWhenDeactivated instanceof Function) {
@@ -487,11 +487,12 @@ VuFind.register('sideFacets', function SideFacets() {
             }
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(VuFind.updateCspNonce(facetData.html));
-            if (multiFacetsSelectionEnabled === true) {
-              VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get()[0]);
-            } else {
+            if (multiFacetsSelectionEnabled !== true) {
               activateFacetBlocking($facetContainer);
             }
+          }
+          if (multiFacetsSelectionEnabled === true) {
+            VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get()[0]);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
