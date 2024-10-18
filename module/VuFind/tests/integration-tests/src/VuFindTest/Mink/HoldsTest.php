@@ -115,21 +115,31 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Support method to place a hold and click through to "Your Holds and Recalls."
      *
-     * @param Element $page   Page element.
-     * @param array   $extras Associative array of selector => value for additional
+     * @param Element $page           Page element.
+     * @param array   $extras         Associative array of selector => value for additional
      * form values to set.
+     * @param ?string $expectedStatus The status value expected in the hold URL
+     * (null to skip the check)
      *
      * @return void
      */
     protected function placeHold(
         Element $page,
-        array $extras = []
+        array $extras = [],
+        ?string $expectedStatus = null
     ): void {
         $this->waitForPageLoad($page);
         // Wait for request checks to complete (they may affect layout):
         $this->unFindCss($page, '.request-check');
         // Open the "place hold" dialog
-        $this->clickCss($page, 'a.placehold');
+        $placeHold = $this->findCss($page, 'a.placehold');
+        $href = $placeHold->getAttribute('href');
+        if ($expectedStatus) {
+            [, $query] = explode('?', $href);
+            parse_str($query, $queryParams);
+            $this->assertEquals($expectedStatus, $queryParams['status']);
+        }
+        $placeHold->click();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
@@ -147,17 +157,20 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Support method to place a hold and click through to "Your Holds and Recalls."
      *
-     * @param Element $page   Page element.
-     * @param array   $extras Associative array of selector => value for additional
+     * @param Element $page           Page element.
+     * @param array   $extras         Associative array of selector => value for additional
      * form values to set.
+     * @param ?string $expectedStatus The status value expected in the hold URL
+     * (null to skip the check)
      *
      * @return void
      */
     protected function placeHoldAndGoToHoldsScreen(
         Element $page,
-        array $extras = []
+        array $extras = [],
+        ?string $expectedStatus = null
     ): void {
-        $this->placeHold($page, $extras);
+        $this->placeHold($page, $extras, $expectedStatus);
 
         // If successful, we should now have a link to review the hold:
         $link = $this->findCss($page, '.modal-body a');
@@ -346,7 +359,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test placing a hold with an optional "required by" date
+     * Test placing a hold with an optional "required by" date, and with the
+     * status included in the URL.
      *
      * @return void
      */
@@ -354,7 +368,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $demoConfig = $this->getDemoIniOverrides();
         $demoConfig['Holds'] = [
-            'HMACKeys' => 'record_id:item_id:level',
+            'HMACKeys' => 'record_id:item_id:level:status',
             'extraHoldFields' =>
                 'comments:requestGroup:pickUpLocation:requiredByDateOptional',
             'defaultRequiredDate' => '',
@@ -388,7 +402,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Test placing a hold with an invalid "required by" date:
-        $this->placeHold($page, ['#requiredByDate' => '01-01-2023']);
+        $this->placeHold($page, ['#requiredByDate' => '01-01-2023'], 'Available');
         $this->assertEquals(
             "Please enter a valid 'required by' date",
             $this->findCssAndGetText($page, '.alert.alert-danger')
@@ -401,7 +415,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
 
         // Create the hold and go to the holds screen:
-        $this->placeHoldAndGoToHoldsScreen($page, ['#requiredByDate' => '']);
+        $this->placeHoldAndGoToHoldsScreen($page, ['#requiredByDate' => ''], 'Available');
 
         // Verify the hold is correct:
         $this->assertEquals(
