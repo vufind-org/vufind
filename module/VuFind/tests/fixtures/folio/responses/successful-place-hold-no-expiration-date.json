@@ -94,6 +94,21 @@
         "status": 200
     },
     {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/requests\/allowed-service-points?instanceId=instanceid&requesterId=foo&operation=create",
+        "expectedParams": [],
+        "body": {
+            "Page": [
+                {
+                    "id": "desk1",
+                    "name": "Main Service Desk"
+                }
+            ]
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
         "expectedMethod": "POST",
         "expectedPath": "/circulation/requests",
         "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfillmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":null,\"pickupServicePointId\":\"desk1\",\"requestType\":\"Page\"}/",
