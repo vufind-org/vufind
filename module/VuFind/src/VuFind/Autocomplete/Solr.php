@@ -178,19 +178,17 @@ class Solr implements AutocompleteInterface
     /**
      * Process the user query to make it suitable for a Solr query.
      *
-     * @param string $query  Incoming user query
-     * @param ?array $extras Array of extra parameter
+     * @param string $query   Incoming user query
+     * @param array  $options Array of extra parameter
      *
      * @return string        Processed query
      */
-    protected function mungeQuery(string $query, array $extras = null): string
+    protected function mungeQuery(string $query, array $options = []): string
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', "'"];
         $query = str_replace($forbidden, ' ', $query);
-        if (
-            !str_ends_with($query, ' ') && (!isset($extras[self::NO_WILDCARD]) || $extras[self::NO_WILDCARD] !== true)
-        ) {
+        if (!str_ends_with($query, ' ') && !($options[self::NO_WILDCARD] ?? false)) {
             $query .= '*';
         }
         return $query;
