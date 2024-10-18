@@ -868,11 +868,13 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      */
     public function getUniqueHtmlElementId($idPrefix = '')
     {
+        $resultSetId = $this->driver->getResultSetIdentifier() ?? '';
+
         return preg_replace(
             "/\s+/",
             '_',
             ($idPrefix ? $idPrefix . '-' : '')
-            . $this->driver->getResultSetIdentifier() . '-'
+            . ($resultSetId ? $resultSetId . '-' : '')
             . $this->driver->getUniqueId()
         );
     }

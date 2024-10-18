@@ -119,7 +119,12 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
     protected function injectSourceIdentifier(RecordCollectionInterface $response)
     {
         $response->setSourceIdentifiers($this->identifier);
-        $response->setResultSetIdentifier($this->generateUuid());
+
+        if (count($response->getRecords()) > 0) {
+            // TODO: Replace custom UUID generation with Doctrine
+            // UUID generator once available (after the merge of #2233)
+            $response->setResultSetIdentifier($this->generateUuid());
+        }
 
         return $response;
     }
