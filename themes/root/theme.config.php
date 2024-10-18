@@ -21,6 +21,7 @@ return [
             'VuFind\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'VuFind\View\Helper\Root\Content' => 'VuFind\View\Helper\Root\ContentFactory',
             'VuFind\View\Helper\Root\CookieConsent' => 'VuFind\View\Helper\Root\CookieConsentFactory',
+            'VuFind\View\Helper\Root\CookieManager' => 'VuFind\View\Helper\Root\CookieManagerFactory',
             'VuFind\View\Helper\Root\ContentBlock' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Context' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Csp' => 'VuFind\View\Helper\Root\CspFactory',
@@ -98,7 +99,12 @@ return [
             'VuFind\View\Helper\Root\Url' => 'VuFind\View\Helper\Root\UrlFactory',
             'VuFind\View\Helper\Root\UserList' => 'VuFind\View\Helper\Root\UserListFactory',
             'VuFind\View\Helper\Root\UserTags' => 'VuFind\View\Helper\Root\UserTagsFactory',
+
+            'Laminas\View\Helper\EscapeHtmlAttr' => 'VuFind\View\Helper\Root\EscapeHtmlAttrFactory',
             'Laminas\View\Helper\ServerUrl' => 'VuFind\View\Helper\Root\ServerUrlFactory',
+        ],
+        'initializers' => [
+            \VuFind\View\Helper\Root\HelperInitializer::class,
         ],
         'aliases' => [
             'accountCapabilities' => 'VuFind\View\Helper\Root\AccountCapabilities',
@@ -120,6 +126,7 @@ return [
             'contentBlock' => 'VuFind\View\Helper\Root\ContentBlock',
             'context' => 'VuFind\View\Helper\Root\Context',
             'cookieConsent' => 'VuFind\View\Helper\Root\CookieConsent',
+            'cookieManager' => 'VuFind\View\Helper\Root\CookieManager',
             'csp' => 'VuFind\View\Helper\Root\Csp',
             'cspNonce' => 'VuFind\View\Helper\Root\CspNonce',
             'currentPath' => 'VuFind\View\Helper\Root\CurrentPath',
@@ -194,6 +201,7 @@ return [
             'truncate' => 'VuFind\View\Helper\Root\Truncate',
             'userlist' => 'VuFind\View\Helper\Root\UserList',
             'usertags' => 'VuFind\View\Helper\Root\UserTags',
+
             'Laminas\View\Helper\Url' => 'VuFind\View\Helper\Root\Url',
         ],
     ],

@@ -29,9 +29,9 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -831,18 +831,19 @@ class InstallController extends AbstractBase
         // Now we want to loop through the database and update passwords (if
         // necessary).
         $ilsAuthenticator = $this->getService(\VuFind\Auth\ILSAuthenticator::class);
-        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+        $userService = $this->getDbService(UserServiceInterface::class);
+        $userRows = $userService->getInsecureRows();
         if (count($userRows) > 0) {
-            $bcrypt = new Bcrypt();
+            $hasher = $this->getService(PasswordHasher::class);
             foreach ($userRows as $row) {
                 if ($row->getRawPassword() != '') {
-                    $row->setPasswordHash($bcrypt->create($row->getRawPassword()));
+                    $row->setPasswordHash($hasher->create($row->getRawPassword()));
                     $row->setRawPassword('');
                 }
                 if ($rawPassword = $row->getRawCatPassword()) {
                     $ilsAuthenticator->saveUserCatalogCredentials($row, $row->getCatUsername(), $rawPassword);
                 } else {
-                    $row->save();
+                    $userService->persistEntity($row);
                 }
             }
             $msg = count($userRows) . ' user row(s) encrypted.';

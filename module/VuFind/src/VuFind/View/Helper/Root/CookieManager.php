@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Tweaked Laminas "Bcc" header class
+ * CookieManager view helper
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,24 +21,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Mailer
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Mailer;
+namespace VuFind\View\Helper\Root;
 
 /**
- * Tweaked Laminas "Bcc" header class
+ * CookieManager view helper
  *
  * @category VuFind
- * @package  Mailer
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class Bcc extends \Laminas\Mail\Header\Bcc
+class CookieManager extends \Laminas\View\Helper\AbstractHelper
 {
-    use GetFieldValueFixTrait;
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Cookie\CookieManager $cookieManager Cookie manager
+     */
+    public function __construct(
+        protected \VuFind\Cookie\CookieManager $cookieManager,
+    ) {
+    }
+
+    /**
+     * Get cookie manager.
+     *
+     * @return \VuFind\Cookie\CookieManager
+     */
+    public function __invoke(): \VuFind\Cookie\CookieManager
+    {
+        return $this->cookieManager;
+    }
 }

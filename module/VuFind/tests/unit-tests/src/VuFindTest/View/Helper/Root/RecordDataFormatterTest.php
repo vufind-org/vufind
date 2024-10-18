@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
+use VuFind\Escaper\Escaper;
 use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\RecordDataFormatter;
@@ -99,7 +100,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
-                new \Laminas\View\Helper\EscapeHtmlAttr(),
+                new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper()),
             ),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
                 $context,

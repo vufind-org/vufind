@@ -1286,4 +1286,24 @@ trait MarcAdvancedTrait
     {
         return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['3']]]);
     }
+
+    /**
+     * Get the review notes
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getReviewNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['1']]]);
+    }
+
+    /**
+     * Get the content advice notes
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getContentAdviceNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['4']]]);
+    }
 }

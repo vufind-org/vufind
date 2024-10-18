@@ -54,7 +54,7 @@ use VuFind\Db\Service\UserServiceInterface;
  * @property string $created
  */
 class Ratings extends RowGateway implements
-    \VuFind\Db\Entity\RatingsEntityInterface,
+    RatingsEntityInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     DbServiceAwareInterface
 {
@@ -98,9 +98,9 @@ class Ratings extends RowGateway implements
      *
      * @param ?UserEntityInterface $user User
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): RatingsEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user_id = $user?->getId();
         return $this;
@@ -123,9 +123,9 @@ class Ratings extends RowGateway implements
      *
      * @param ResourceEntityInterface $resource Resource
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): RatingsEntityInterface
+    public function setResource(ResourceEntityInterface $resource): static
     {
         $this->resource_id = $resource->getId();
         return $this;
@@ -146,9 +146,9 @@ class Ratings extends RowGateway implements
      *
      * @param int $rating Rating
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setRating(int $rating): RatingsEntityInterface
+    public function setRating(int $rating): static
     {
         $this->rating = $rating;
         return $this;
@@ -169,9 +169,9 @@ class Ratings extends RowGateway implements
      *
      * @param DateTime $dateTime Created date
      *
-     * @return RatingsEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): RatingsEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;

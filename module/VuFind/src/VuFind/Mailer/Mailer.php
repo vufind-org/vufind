@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,23 +24,23 @@
  * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\Mailer;
 
-use Laminas\Mail\Address;
-use Laminas\Mail\AddressList;
-use Laminas\Mail\Header\ContentType;
-use Laminas\Mail\Transport\TransportInterface;
-use Laminas\Mime\Message as MimeMessage;
-use Laminas\Mime\Mime;
-use Laminas\Mime\Part as MimePart;
+use Laminas\View\Renderer\PhpRenderer;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Exception\RfcComplianceException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\RecordDriver\AbstractBase;
 
 use function count;
-use function is_callable;
+use function is_array;
 
 /**
  * VuFind Mailer Class
@@ -47,6 +48,7 @@ use function is_callable;
  * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -60,17 +62,14 @@ class Mailer implements
     /**
      * Mail transport
      *
-     * @var TransportInterface
+     * @var MailerInterface
      */
     protected $transport;
 
     /**
-     * A clone of $transport above. This can be used to reset the connection state
-     * in case transport doesn't support the disconnect method or it throws an
-     * exception (this can happen if the connection is stale and the connector tries
-     * to issue a QUIT message for clean disconnect).
+     * A clone of $transport above. This can be used to reset the connection state.
      *
-     * @var TransportInterface
+     * @var MailerInterface
      */
     protected $initialTransport;
 
@@ -91,10 +90,10 @@ class Mailer implements
     /**
      * Constructor
      *
-     * @param TransportInterface $transport  Mail transport
-     * @param ?string            $messageLog File to log messages into (null for no logging)
+     * @param MailerInterface $transport Mail transport
+     * @param array           $options   Message log options
      */
-    public function __construct(TransportInterface $transport, protected ?string $messageLog = null)
+    public function __construct(MailerInterface $transport, protected array $options = [])
     {
         $this->setTransport($transport);
     }
@@ -102,27 +101,21 @@ class Mailer implements
     /**
      * Get the mail transport object.
      *
-     * @return TransportInterface
+     * @return MailerInterface
      */
-    public function getTransport()
+    public function getTransport(): MailerInterface
     {
         return $this->transport;
     }
 
     /**
-     * Get a text email message object.
+     * Get an email message object.
      *
-     * @return Message
+     * @return Email
      */
-    public function getNewMessage()
+    public function getNewMessage(): Email
     {
-        $message = $this->getNewBlankMessage();
-        $headers = $message->getHeaders();
-        $ctype = new ContentType();
-        $ctype->setType(Mime::TYPE_TEXT);
-        $ctype->addParameter('charset', 'UTF-8');
-        $headers->addHeader($ctype);
-        return $message;
+        return new Email();
     }
 
     /**
@@ -132,46 +125,33 @@ class Mailer implements
      */
     public function resetConnection()
     {
-        // If the transport has a disconnect method, call it. Otherwise, and in case
-        // disconnect fails, revert to the transport instance clone made before a
-        // connection was made.
-        $transport = $this->getTransport();
-        if (is_callable([$transport, 'disconnect'])) {
-            try {
-                $transport->disconnect();
-            } catch (\Exception $e) {
-                $this->setTransport($this->initialTransport);
-            }
-        } else {
-            $this->setTransport($this->initialTransport);
-        }
+        $this->setTransport($this->initialTransport);
         return $this;
     }
 
     /**
      * Get a blank email message object.
      *
-     * @return Message
+     * @return Email
+     *
+     * @deprecated Use getNewMessage
      */
-    public function getNewBlankMessage()
+    public function getNewBlankMessage(): Email
     {
-        $message = new Message();
-        $message->setEncoding('UTF-8');
-        return $message;
+        return $this->getNewMessage();
     }
 
     /**
      * Set the mail transport object.
      *
-     * @param TransportInterface $transport Mail transport object
+     * @param MailerInterface $transport Mail transport object
      *
      * @return void
      */
-    public function setTransport($transport)
+    public function setTransport(MailerInterface $transport): void
     {
         $this->transport = $transport;
-        // Store a clone of the given transport so that we can reset the connection
-        // as necessary.
+        // Store a clone of the given transport so that we can reset the connection as necessary:
         $this->initialTransport = clone $this->transport;
     }
 
@@ -180,83 +160,91 @@ class Mailer implements
      *
      * @param string $input String to convert
      *
-     * @return AddressList
+     * @return array
      */
-    public function stringToAddressList($input)
+    public function stringToAddressList($input): array
     {
         // Create recipient list
-        $list = new AddressList();
+        $list = [];
         foreach (preg_split('/[\s,;]/', $input) as $current) {
             $current = trim($current);
             if (!empty($current)) {
-                $list->add($current);
+                $list[] = $current;
             }
         }
         return $list;
     }
 
     /**
-     * Constructs a {@see MimeMessage} body from given text and html content.
+     * Constructs an {@see Email} body from given text and html content.
      *
      * @param string|null $text Mail content used for plain text part
      * @param string|null $html Mail content used for html part
      *
-     * @return MimeMessage
+     * @return Email
      */
     public function buildMultipartBody(
         string $text = null,
         string $html = null
-    ): MimeMessage {
-        $parts = new MimeMessage();
-
-        if ($text) {
-            $textPart = new MimePart($text);
-            $textPart->setType(Mime::TYPE_TEXT);
-            $textPart->setCharset('utf-8');
-            $textPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
-            $parts->addPart($textPart);
+    ): Email {
+        $email = $this->getNewMessage();
+        if (null !== $text) {
+            $email->text($text);
         }
-
-        if ($html) {
-            $htmlPart = new MimePart($html);
-            $htmlPart->setType(Mime::TYPE_HTML);
-            $htmlPart->setCharset('utf-8');
-            $htmlPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
-            $parts->addPart($htmlPart);
+        if (null !== $html) {
+            $email->html($html);
         }
-
-        $alternativePart = new MimePart($parts->generateMessage());
-        $alternativePart->setType('multipart/alternative');
-        $alternativePart->setBoundary($parts->getMime()->boundary());
-        $alternativePart->setCharset('utf-8');
-
-        $body = new MimeMessage();
-        $body->setParts([$alternativePart]);
-
-        return $body;
+        return $email;
     }
 
     /**
      * Send an email message.
      *
-     * @param string|Address|AddressList $to      Recipient email address (or
-     * delimited list)
-     * @param string|Address             $from    Sender name and email address
-     * @param string                     $subject Subject line for message
-     * @param string|MimeMessage         $body    Message body
-     * @param string                     $cc      CC recipient (null for none)
-     * @param string|Address|AddressList $replyTo Reply-To address (or delimited
-     * list, null for none)
+     * @param string|string[]|Address|Address[]      $to      Recipient email address(es) (or delimited list)
+     * @param string|Address                         $from    Sender name and email address
+     * @param string                                 $subject Subject line for message
+     * @param string|Email                           $body    Message body
+     * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
+     * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
      *
      * @throws MailException
      * @return void
      */
-    public function send($to, $from, $subject, $body, $cc = null, $replyTo = null)
-    {
-        $recipients = $this->convertToAddressList($to);
-        $replyTo = $this->convertToAddressList($replyTo);
+    public function send(
+        string|Address|array $to,
+        string|Address $from,
+        string $subject,
+        string|Email $body,
+        string|Address|array|null $cc = null,
+        string|Address|array|null $replyTo = null
+    ) {
+        try {
+            if (!($from instanceof Address)) {
+                $from = new Address($from);
+            }
+        } catch (RfcComplianceException $e) {
+            throw new MailException('Invalid Sender Email Address', MailException::ERROR_INVALID_SENDER, $e);
+        }
+        try {
+            $recipients = $this->convertToAddressList($to);
+        } catch (RfcComplianceException $e) {
+            throw new MailException('Invalid Recipient Email Address', MailException::ERROR_INVALID_RECIPIENT, $e);
+        }
+        try {
+            $replyTo = $this->convertToAddressList($replyTo);
+        } catch (RfcComplianceException $e) {
+            throw new MailException('Invalid Reply-To Email Address', MailException::ERROR_INVALID_REPLY_TO, $e);
+        }
+        try {
+            $cc = $this->convertToAddressList($cc);
+        } catch (RfcComplianceException $e) {
+            throw new MailException('Invalid CC Email Address', MailException::ERROR_INVALID_RECIPIENT, $e);
+        }
 
-        // Validate email addresses:
+        // Validate recipient email address count:
+        if (count($recipients) == 0) {
+            throw new MailException('Invalid Recipient Email Address', MailException::ERROR_INVALID_RECIPIENT);
+        }
         if ($this->maxRecipients > 0) {
             if ($this->maxRecipients < count($recipients)) {
                 throw new MailException(
@@ -265,53 +253,19 @@ class Mailer implements
                 );
             }
         }
-        $validator = new \Laminas\Validator\EmailAddress();
-        if (count($recipients) == 0) {
-            throw new MailException(
-                'Invalid Recipient Email Address',
-                MailException::ERROR_INVALID_RECIPIENT
-            );
-        }
-        foreach ($recipients as $current) {
-            if (!$validator->isValid($current->getEmail())) {
-                throw new MailException(
-                    'Invalid Recipient Email Address',
-                    MailException::ERROR_INVALID_RECIPIENT
-                );
-            }
-        }
-        foreach ($replyTo as $current) {
-            if (!$validator->isValid($current->getEmail())) {
-                throw new MailException(
-                    'Invalid Reply-To Email Address',
-                    MailException::ERROR_INVALID_REPLY_TO
-                );
-            }
-        }
-        $fromEmail = ($from instanceof Address)
-            ? $from->getEmail() : $from;
-        if (!$validator->isValid($fromEmail)) {
-            throw new MailException(
-                'Invalid Sender Email Address',
-                MailException::ERROR_INVALID_SENDER
-            );
-        }
 
         if (
             !empty($this->fromAddressOverride)
-            && $this->fromAddressOverride != $fromEmail
+            && $this->fromAddressOverride != $from->getAddress()
         ) {
             // Add the original from address as the reply-to address unless
             // a reply-to address has been specified
-            if (count($replyTo) === 0) {
-                $replyTo->add($fromEmail);
-            }
-            if (!($from instanceof Address)) {
-                $from = new Address($from);
+            if (!$replyTo) {
+                $replyTo[] = $from->getAddress();
             }
             $name = $from->getName();
             if (!$name) {
-                [$fromPre] = explode('@', $from->getEmail());
+                [$fromPre] = explode('@', $from->getAddress());
                 $name = $fromPre ? $fromPre : null;
             }
             $from = new Address($this->fromAddressOverride, $name);
@@ -320,59 +274,64 @@ class Mailer implements
         // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
-            $message = $body instanceof MimeMessage
-                ? $this->getNewBlankMessage()
-                : $this->getNewMessage();
-            $message->addFrom($from)
-                ->addTo($recipients)
-                ->setBody($body)
-                ->setSubject($subject);
-            if ($cc !== null) {
-                $message->addCc($cc);
+            if ($body instanceof Email) {
+                $email = $body;
+                if (null === $email->getSubject()) {
+                    $email->subject($subject);
+                }
+            } else {
+                $email = $this->getNewMessage();
+                $email->text($body);
+                $email->subject($subject);
             }
-            if ($replyTo) {
-                $message->addReplyTo($replyTo);
+            $email->addFrom($from);
+            foreach ($recipients as $current) {
+                $email->addTo($current);
             }
-            $this->getTransport()->send($message);
-            if ($this->messageLog) {
-                file_put_contents($this->messageLog, $message->toString() . "\n", FILE_APPEND);
+            foreach ($cc as $current) {
+                $email->addCc($current);
+            }
+            foreach ($replyTo as $current) {
+                $email->addReplyTo($current);
+            }
+            $this->getTransport()->send($email);
+            if ($logFile = $this->options['message_log'] ?? null) {
+                $format = $this->options['message_log_format'] ?? 'plain';
+                $data = 'serialized' === $format
+                    ? serialize($email) . "\x1E" // use Record Separator to separate messages
+                    : $email->toString() . "\n\n";
+                file_put_contents($logFile, $data, FILE_APPEND);
             }
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN);
+            throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN, $e);
         }
     }
 
     /**
      * Send an email message representing a link.
      *
-     * @param string                             $to      Recipient email address
-     * @param string|\Laminas\Mail\Address       $from    Sender name and email
-     * address
-     * @param string                             $msg     User notes to include in
-     * message
-     * @param string                             $url     URL to share
-     * @param \Laminas\View\Renderer\PhpRenderer $view    View object (used to render
-     * email templates)
-     * @param string                             $subject Subject for email
-     * (optional)
-     * @param string                             $cc      CC recipient (null for
-     * none)
-     * @param string|Address|AddressList         $replyTo Reply-To address (or
-     * delimited list, null for none)
+     * @param string|string[]|Address|Address[]      $to      Recipient email address(es) (or delimited list)
+     * @param string|Address                         $from    Sender name and email address
+     * @param string                                 $msg     User notes to include in message
+     * @param string                                 $url     URL to share
+     * @param PhpRenderer                            $view    View object (used to render email templates)
+     * @param ?string                                $subject Subject for email (optional)
+     * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
+     * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
      *
      * @throws MailException
      * @return void
      */
     public function sendLink(
-        $to,
-        $from,
-        $msg,
-        $url,
-        $view,
-        $subject = null,
-        $cc = null,
-        $replyTo = null
+        string|Address|array $to,
+        string|Address $from,
+        string $msg,
+        string $url,
+        PhpRenderer $view,
+        ?string $subject = null,
+        string|Address|array|null $cc = null,
+        string|Address|array|null $replyTo = null
     ) {
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
@@ -399,33 +358,27 @@ class Mailer implements
     /**
      * Send an email message representing a record.
      *
-     * @param string                             $to      Recipient email address
-     * @param string|\Laminas\Mail\Address       $from    Sender name and email
-     * address
-     * @param string                             $msg     User notes to include in
-     * message
-     * @param \VuFind\RecordDriver\AbstractBase  $record  Record being emailed
-     * @param \Laminas\View\Renderer\PhpRenderer $view    View object (used to render
-     * email templates)
-     * @param string                             $subject Subject for email
-     * (optional)
-     * @param string                             $cc      CC recipient (null for
-     * none)
-     * @param string|Address|AddressList         $replyTo Reply-To address (or
-     * delimited list, null for none)
+     * @param string|Address|Address[]      $to      Recipient email address(es) (or delimited list)
+     * @param string|Address                $from    Sender name and email address
+     * @param string                        $msg     User notes to include in message
+     * @param AbstractBase                  $record  Record being emailed
+     * @param PhpRenderer                   $view    View object (used to render email templates)
+     * @param ?string                       $subject Subject for email (optional)
+     * @param string|Address|Address[]|null $cc      CC recipient(s) (null for none)
+     * @param string|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
      *
      * @throws MailException
      * @return void
      */
     public function sendRecord(
-        $to,
-        $from,
-        $msg,
-        $record,
-        $view,
-        $subject = null,
-        $cc = null,
-        $replyTo = null
+        string|Address|array $to,
+        string|Address $from,
+        string $msg,
+        AbstractBase $record,
+        PhpRenderer $view,
+        ?string $subject = null,
+        string|Address|array|null $cc = null,
+        string|Address|array|null $replyTo = null
     ) {
         if (null === $subject) {
             $subject = $this->getDefaultRecordSubject($record);
@@ -460,8 +413,7 @@ class Mailer implements
      */
     public function getDefaultRecordSubject($record)
     {
-        return $this->translate('Library Catalog Record') . ': '
-            . $record->getBreadcrumb();
+        return $this->translate('Library Catalog Record') . ': ' . $record->getBreadcrumb();
     }
 
     /**
@@ -487,21 +439,27 @@ class Mailer implements
     }
 
     /**
-     * Convert the given addresses to an AddressList object
+     * Convert the given addresses to an array
      *
-     * @param string|Address|AddressList $addresses Addresses
+     * @param string|Address|Address[]|null $addresses Addresses
      *
-     * @return AddressList
+     * @return array
      */
-    protected function convertToAddressList($addresses)
+    protected function convertToAddressList(string|Address|array|null $addresses): array
     {
-        if ($addresses instanceof AddressList) {
-            $result = $addresses;
-        } elseif ($addresses instanceof Address) {
-            $result = new AddressList();
-            $result->add($addresses);
-        } else {
-            $result = $this->stringToAddressList($addresses ? $addresses : '');
+        if (empty($addresses)) {
+            return [];
+        }
+        if ($addresses instanceof Address) {
+            return [$addresses];
+        }
+        if (is_array($addresses)) {
+            // Address::createArray takes an array of strings or Address objects, so this handles both cases:
+            return Address::createArray($addresses);
+        }
+        $result = [];
+        foreach (explode(';', $addresses) as $current) {
+            $result[] = Address::create($current);
         }
         return $result;
     }

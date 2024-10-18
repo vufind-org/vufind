@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Tweaked Laminas "From" header class
+ * View Helper Initializer
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,24 +21,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Mailer
+ * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Mailer;
+namespace VuFind\View\Helper\Root;
+
+use Laminas\ServiceManager\Initializer\InitializerInterface;
+use Laminas\View\Helper\Placeholder\Container\AbstractStandalone;
+use Psr\Container\ContainerInterface;
 
 /**
- * Tweaked Laminas "From" header class
+ * View Helper Initializer
  *
  * @category VuFind
- * @package  Mailer
+ * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class From extends \Laminas\Mail\Header\From
+class HelperInitializer implements InitializerInterface
 {
-    use GetFieldValueFixTrait;
+    /**
+     * Given an instance and a Service Manager, initialize the instance.
+     *
+     * @param ContainerInterface $container Service manager
+     * @param object             $instance  Instance to initialize
+     *
+     * @return object
+     */
+    public function __invoke(ContainerInterface $container, $instance)
+    {
+        if ($instance instanceof AbstractStandalone) {
+            $instance->setEscaper($container->get(\VuFind\Escaper\Escaper::class));
+        }
+        return $instance;
+    }
 }

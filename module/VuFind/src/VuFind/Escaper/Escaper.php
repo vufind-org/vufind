@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Tweaked Laminas "To" header class
+ * Escaper with configurable HTML attribute handling.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,24 +21,46 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Mailer
+ * @package  Escaper
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Mailer;
+namespace VuFind\Escaper;
 
 /**
- * Tweaked Laminas "To" header class
+ * Escaper with configurable HTML attribute handling.
  *
  * @category VuFind
- * @package  Mailer
+ * @package  Escaper
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class To extends \Laminas\Mail\Header\To
+class Escaper extends \Laminas\Escaper\Escaper
 {
-    use GetFieldValueFixTrait;
+    /**
+     * Constructor
+     *
+     * @param bool $extendedHtmlAttrEscaping Use Laminas' extended HTML attribute escaping?
+     */
+    public function __construct(protected bool $extendedHtmlAttrEscaping = false)
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Escape a string for the HTML Attribute context.
+     *
+     * @param string $string String to escape
+     *
+     * @return string
+     */
+    public function escapeHtmlAttr(string $string)
+    {
+        return $this->extendedHtmlAttrEscaping
+            ? parent::escapeHtmlAttr($string)
+            : parent::escapeHtml($string);
+    }
 }
