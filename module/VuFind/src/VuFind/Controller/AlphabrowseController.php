@@ -193,7 +193,7 @@ class AlphabrowseController extends AbstractBase
     /**
      * Applies topic delimiters to the 'heading' field of each item in the browse results.
      *
-     * @param array &$result The result array containing 'Browse' items to be modified.
+     * @param array $result The result array containing 'Browse' items to be modified.
      *
      * @return void
      */
