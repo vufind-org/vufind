@@ -1,0 +1,19 @@
+<?php // This is a text-only email template; do not include HTML! ?>
+<?=$this->translate('request_email_item_message', ['%%id%%' => $hold_details['id']])?>
+
+
+-----
+
+<?=$this->translate('patron_barcode')?>: <?=$hold_details['patron']['cat_username'] ?? ''?>
+
+<?=$this->translate('item_barcode')?>: <?=$hold_details['barcode'] ?? ''?>
+
+<?=$this->translate('Title')?>: <?=$hold_details['itemTitle'] ?? ''?>
+
+<?=$this->translate('Call Number')?>: <?=$hold_details['callNo'] ?? ''?>
+
+<?=$this->translate('Location')?>: <?=$hold_details['homeLocation'] ?? ''?>
+
+<?=$this->translate('Comments')?>: <?=$hold_details['comment'] ?? ''?>
+
+<?php /* Request Group: <?=$this->translate('request_group')?>: <?=$hold_details['requestGroupId'] ?? ''?> */ ?>
