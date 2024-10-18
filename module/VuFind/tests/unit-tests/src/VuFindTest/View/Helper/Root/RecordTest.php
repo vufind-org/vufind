@@ -441,19 +441,32 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->loadRecordFixture('testbug1.json');
         $record = $this->getRecord($driver);
+        $contextPrefix = 'foo';
         $randomIdentifier = 'bar';
-        $driver->setResultSetIdentifier($randomIdentifier);
 
-        // with prefix
+        // no result set identifier and no prefix
         $this->assertEquals(
-            "testPrefix-{$randomIdentifier}-000105196",
-            $record->getUniqueHtmlElementId('testPrefix')
+            '000105196',
+            $record->getUniqueHtmlElementId()
         );
 
-        // without prefix
+        // no result set identifier but with prefix
+        $this->assertEquals(
+            "{$contextPrefix}-000105196",
+            $record->getUniqueHtmlElementId($contextPrefix)
+        );
+
+        // with result set identifier but no prefix
+        $driver->setResultSetIdentifier($randomIdentifier);
         $this->assertEquals(
             "{$randomIdentifier}-000105196",
             $record->getUniqueHtmlElementId()
+        );
+
+        // with result set identifier and with prefix
+        $this->assertEquals(
+            "{$contextPrefix}-{$randomIdentifier}-000105196",
+            $record->getUniqueHtmlElementId($contextPrefix)
         );
     }
 
