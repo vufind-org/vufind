@@ -55,7 +55,7 @@ trait RecordTrait
      *
      * @var string|null
      */
-    protected $resultSetIdentifier;
+    protected $resultSetIdentifier = null;
 
     /**
      * Used for identifying the search backend used to find the record
