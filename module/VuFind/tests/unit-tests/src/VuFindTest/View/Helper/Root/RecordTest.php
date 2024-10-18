@@ -433,6 +433,56 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getCheckboxWithoutIdAndWithoutPrefix.
+     *
+     * @return void
+     */
+    public function testGetCheckboxWithoutIdAndWithEmptyPrefix(): void
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $tpl = 'record/checkbox.phtml';
+        $context = $this->getMockContext();
+
+        $expectedCalls = [
+            [
+                $tpl,
+                [
+                    'number' => 1,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => '000105196',
+                    'prefix' => '',
+                    'formAttr' => 'foo',
+                ],
+            ],
+            [
+                $tpl,
+                [
+                    'number' => 2,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => '000105196',
+                    'prefix' => '',
+                    'formAttr' => 'foo',
+                ],
+            ],
+        ];
+
+        $record = $this->getRecord($driver, [], $context);
+
+        $this->expectConsecutiveCalls(
+            $context,
+            'renderInContext',
+            $expectedCalls,
+            ['success', 'success']
+        );
+
+        $record = $this->getRecord($driver, [], $context);
+
+        // We run the test twice to ensure that checkbox incrementing works properly:
+        $this->assertEquals('success', $record->getCheckbox(formAttr: 'foo', number: 1));
+        $this->assertEquals('success', $record->getCheckbox('', 'foo', 2));
+    }
+
+    /**
      * Test getUniqueHtmlElementId.
      *
      * @return void
