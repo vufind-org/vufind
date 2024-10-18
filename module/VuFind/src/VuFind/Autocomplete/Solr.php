@@ -179,7 +179,7 @@ class Solr implements AutocompleteInterface
      * Process the user query to make it suitable for a Solr query.
      *
      * @param string $query   Incoming user query
-     * @param array  $options Array of extra parameter
+     * @param array  $options Array of extra parameters
      *
      * @return string        Processed query
      */
