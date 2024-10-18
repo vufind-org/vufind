@@ -57,13 +57,6 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
     protected $collectionFactory = null;
 
     /**
-     * Record collection.
-     *
-     * @var RecordCollectionInterface|null
-     */
-    protected $recordCollection = null;
-
-    /**
      * Backend identifier.
      *
      * @var string
@@ -129,18 +122,6 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
         $response->setResultSetIdentifier($this->generateUuid());
 
         return $response;
-    }
-
-    /**
-     * Sets the result set identifier for the record collection.
-     *
-     * @param string $uuid A valid UUID associated with the data set.
-     *
-     * @return void
-     */
-    public function setResultSetIdentifier(string $uuid)
-    {
-        $this->recordCollection->setResultSetIdentifier($uuid);
     }
 
     /**
