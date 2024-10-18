@@ -190,7 +190,14 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
-     * @inheritdoc
+     * Sets the result set identifier for all records in the collection.
+     *
+     * This method assigns a given UUID to each record in the collection by calling
+     * the `setResultSetIdentifier` method on each record.
+     *
+     * @param string $uuid A valid UUID to be assigned to each record in the collection.
+     *
+     * @return void
      */
     public function setResultSetIdentifier(string $uuid)
     {
