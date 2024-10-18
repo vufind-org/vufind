@@ -64,6 +64,8 @@ class SolrCN extends Solr
      * @param array  $options Array of extra parameter
      *
      * @return string        Processed query
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function mungeQuery(string $query, array $options = []): string
     {
