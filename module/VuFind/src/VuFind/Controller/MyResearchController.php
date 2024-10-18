@@ -1288,8 +1288,8 @@ class MyResearchController extends AbstractBase
         if ($this->params()->fromQuery('reverify')) {
             $change = false;
             // Case 1: new user:
-            $user = $this->getDbService(UserServiceInterface::class)
-                ->getUserByUsername($this->getUserVerificationContainer()->user);
+            $username = $this->getUserVerificationContainer()->user;
+            $user = $username ? $this->getDbService(UserServiceInterface::class)->getUserByUsername($username) : null;
             // Case 2: pending email change:
             if (!$user) {
                 $user = $this->getUser();
