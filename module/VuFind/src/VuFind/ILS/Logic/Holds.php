@@ -534,6 +534,13 @@ class Holds
         // Include request type in the details
         $details['requestType'] = $action;
 
+        if (
+            ($details['availability'] ?? null) instanceof AvailabilityStatusInterface
+            && empty($details['status'])
+        ) {
+            $details['status'] = $details['availability']->getStatusDescription();
+        }
+
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $details);
 
