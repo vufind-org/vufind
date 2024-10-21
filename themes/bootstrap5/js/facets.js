@@ -302,7 +302,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
-  function handleClickedFacet(e) {
+  function handleMultiSelectionClick(e) {
     e.preventDefault();
     let elem = e.currentTarget;
 
@@ -349,17 +349,19 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     callbackWhenDeactivated = callback;
   }
 
+  function handleClickedFacet(e) {
+    if (isMultiFacetsSelectionActivated === true) {
+      handleMultiSelectionClick(e);
+    } else if (callbackWhenDeactivated instanceof Function) {
+      callbackWhenDeactivated();
+    }
+  }
+
   function applyClickHandling(context) {
     let finalContext = (typeof context === "undefined") ? defaultContext : context;
     finalContext.classList.toggle('multi-facet-selection');
     finalContext.querySelectorAll('a.facet:not(.narrow-toggle), .facet a').forEach(function addListeners(link) {
-      link.addEventListener('click', function handleMultiSelectionClick(e) {
-        if (isMultiFacetsSelectionActivated === true) {
-          handleClickedFacet(e);
-        } else if (callbackWhenDeactivated instanceof Function) {
-          callbackWhenDeactivated();
-        }
-      });
+      link.addEventListener('click', handleClickedFacet);
     });
   }
 
