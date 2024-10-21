@@ -33,6 +33,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Reserves\CsvReader;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
@@ -54,8 +55,10 @@ use function ini_get;
     name: 'util/index_reserves',
     description: 'Course reserves index builder'
 )]
-class IndexReservesCommand extends AbstractSolrAndIlsCommand
+class IndexReservesCommand extends AbstractSolrAndIlsCommand implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Default delimiter for reading files
      *
@@ -154,11 +157,11 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                     'id' => $id,
                     'bib_id' => [],
                     'instructor_id' => $instructorId,
-                    'instructor' => $instructors[$instructorId] ?? '',
+                    'instructor' => $instructors[$instructorId] ?? $this->translate('no_instructor_listed'),
                     'course_id' => $courseId,
-                    'course' => $courses[$courseId] ?? '',
+                    'course' => $courses[$courseId] ?? $this->translate('no_course_listed'),
                     'department_id' => $departmentId,
-                    'department' => $departments[$departmentId] ?? '',
+                    'department' => $departments[$departmentId] ?? $this->translate('no_department_listed'),
                 ];
             }
             if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
@@ -195,6 +198,19 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
     }
 
     /**
+     * Print the message to the provided output stream prefixed with a timestamp.
+     *
+     * @param OutputInterface $output  Output object
+     * @param string          $message Message to display
+     *
+     * @return null
+     */
+    protected function writeln(OutputInterface $output, string $message)
+    {
+        $output->writeln(date('Y-m-d H:i:s') . ' ' . $message);
+    }
+
+    /**
      * Run the command.
      *
      * @param InputInterface  $input  Input object
@@ -204,6 +220,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->writeln($output, 'Starting reserves processing');
+        $startTime = date('Y-m-d H:i:s');
         // Check time limit; increase if necessary:
         if (ini_get('max_execution_time') < 3600) {
             ini_set('max_execution_time', '3600');
@@ -215,29 +233,45 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
         if ($file = $input->getOption('filename')) {
             try {
                 $reader = $this->getCsvReader($file, $delimiter, $template);
+                $this->writeln($output, 'Retrieving instructors');
                 $instructors = $reader->getInstructors();
+                $this->writeln($output, 'Found instructor count: ' . count($instructors));
+                $this->writeln($output, 'Retrieving courses');
                 $courses = $reader->getCourses();
+                $this->writeln($output, 'Found course count: ' . count($courses));
+                $this->writeln($output, 'Retrieving departments');
                 $departments = $reader->getDepartments();
+                $this->writeln($output, 'Found department count: ' . count($departments));
+                $this->writeln($output, 'Retrieving reserves');
                 $reserves = $reader->getReserves();
+                $this->writeln($output, 'Found reserve count: ' . count($reserves));
             } catch (\Exception $e) {
-                $output->writeln($e->getMessage());
+                $this->writeln($output, $e->getMessage());
                 return 1;
             }
         } elseif ($delimiter !== $this->defaultDelimiter) {
-            $output->writeln('-d (delimiter) is meaningless without -f (filename)');
+            $this->writeln($output, '-d (delimiter) is meaningless without -f (filename)');
             return 1;
         } elseif ($template !== $this->defaultTemplate) {
-            $output->writeln('-t (template) is meaningless without -f (filename)');
+            $this->writeln($output, '-t (template) is meaningless without -f (filename)');
             return 1;
         } else {
             try {
                 // Connect to ILS and load data:
+                $this->writeln($output, 'Retrieving instructors');
                 $instructors = $this->catalog->getInstructors();
+                $this->writeln($output, 'Found instructor count: ' . count($instructors ?? []));
+                $this->writeln($output, 'Retrieving courses');
                 $courses = $this->catalog->getCourses();
+                $this->writeln($output, 'Found course count: ' . count($courses ?? []));
+                $this->writeln($output, 'Retrieving departments');
                 $departments = $this->catalog->getDepartments();
+                $this->writeln($output, 'Found department count: ' . count($departments ?? []));
+                $this->writeln($output, 'Retrieving reserves');
                 $reserves = $this->catalog->findReserves('', '', '');
+                $this->writeln($output, 'Found reserve count: ' . count($reserves ?? []));
             } catch (\Exception $e) {
-                $output->writeln($e->getMessage());
+                $this->writeln($output, $e->getMessage());
                 return 1;
             }
         }
@@ -249,22 +283,27 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             && !empty($reserves)
         ) {
             // Delete existing records
+            $this->writeln($output, 'Clearing existing reserves');
             $this->solr->deleteAll('SolrReserves');
 
             // Build and Save the index
+            $this->writeln($output, 'Building new reserves index');
             $index = $this->buildReservesIndex(
                 $instructors,
                 $courses,
                 $departments,
                 $reserves
             );
+            $this->writeln($output, 'Writing new reserves index');
             $this->solr->save('SolrReserves', $index);
 
             // Commit and Optimize the Solr Index
             $this->solr->commit('SolrReserves');
             $this->solr->optimize('SolrReserves');
 
-            $output->writeln('Successfully loaded ' . count($reserves) . ' rows.');
+            $this->writeln($output, 'Successfully loaded ' . count($reserves) . ' rows.');
+            $endTime = date('Y-m-d H:i:s');
+            $this->writeln($output, ' Stated at: ' . $startTime . ' Completed at: ' . $endTime);
             return 0;
         }
         $missing = array_merge(
@@ -273,7 +312,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             empty($departments) ? ['departments'] : [],
             empty($reserves) ? ['reserves'] : []
         );
-        $output->writeln(
+        $this->writeln(
+            $output,
             'Unable to load data. No data found for: ' . implode(', ', $missing)
         );
         return 1;
