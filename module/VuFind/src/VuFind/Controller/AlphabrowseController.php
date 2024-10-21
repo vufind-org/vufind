@@ -177,11 +177,36 @@ class AlphabrowseController extends AbstractBase
                 $view->prevpage = $page - 1;
             }
         }
+
+        if ($view->source === 'topic') {
+            $this->applyTopicDelimiters($result);
+        }
+
         $view->result = $result;
 
         // set up highlighting: page 0 contains match location
         if ($highlighting && $page == 0 && isset($view->result['Browse'])) {
             $this->applyHighlighting($view, $rowsBefore);
+        }
+    }
+
+    /**
+     * Applies topic delimiters to the 'heading' field of each item in the browse results.
+     *
+     * @param array $result The result array containing 'Browse' items to be modified.
+     *
+     * @return void
+     */
+    protected function applyTopicDelimiters(&$result): void
+    {
+        $config = $this->getConfig();
+
+        foreach ($result['Browse']['items'] as &$item) {
+            $item['heading'] = str_replace(
+                "\u{2002}",
+                ($config->AlphaBrowse->topic_browse_separator ?? ' > '),
+                $item['heading']
+            );
         }
     }
 
