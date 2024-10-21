@@ -269,7 +269,6 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output = $output;
-        $this->showTimestampedMessage('Starting reserves processing');
         $startTime = date('Y-m-d H:i:s');
         // Check time limit; increase if necessary:
         if (ini_get('max_execution_time') < 3600) {
@@ -281,6 +280,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
 
         if ($file = $input->getOption('filename')) {
             try {
+                $this->showTimestampedMessage('Starting reserves processing from file');
+
                 $reader = $this->getCsvReader($file, $delimiter, $template);
                 $this->showTimestampedMessage('Retrieving instructors');
                 $instructors = $reader->getInstructors();
@@ -299,13 +300,15 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
                 return 1;
             }
         } elseif ($delimiter !== $this->defaultDelimiter) {
-            $this->showTimestampedMessage('-d (delimiter) is meaningless without -f (filename)');
+            $this->output->writeln('-d (delimiter) is meaningless without -f (filename)');
             return 1;
         } elseif ($template !== $this->defaultTemplate) {
-            $this->showTimestampedMessage('-t (template) is meaningless without -f (filename)');
+            $this->output->writeln('-t (template) is meaningless without -f (filename)');
             return 1;
         } else {
             try {
+                $this->showTimestampedMessage('Starting reserves processing from ILS');
+
                 // Connect to ILS and load data:
                 $this->showTimestampedMessage('Retrieving instructors');
                 $instructors = $this->catalog->getInstructors();
