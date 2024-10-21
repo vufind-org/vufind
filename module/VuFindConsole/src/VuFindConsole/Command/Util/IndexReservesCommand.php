@@ -41,6 +41,7 @@ use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use function count;
 use function in_array;
 use function ini_get;
+use function sprintf;
 
 /**
  * Console command: index course reserves into Solr.
@@ -58,6 +59,13 @@ use function ini_get;
 class IndexReservesCommand extends AbstractSolrAndIlsCommand implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * Output interface
+     *
+     * @var OutputInterface
+     */
+    protected $output;
 
     /**
      * Default delimiter for reading files
@@ -167,6 +175,47 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
             if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
                 $index[$id]['bib_id'][] = $record['BIB_ID'];
             }
+
+            // Show a warning if the any of the IDs were set, but was not found in the resulting data
+            if (!empty($instructorId) && !isset($instructors[$instructorId])) {
+                $this->showTimestampedMessage(
+                    sprintf(
+                        'WARNING! The instructor (ID: %s) for the course: %s (ID: %s) ' .
+                        'and department: %s (ID: %s) did not match any found instructors.',
+                        $index[$id]['instructor_id'],
+                        $index[$id]['course'],
+                        $index[$id]['course_id'],
+                        $index[$id]['department'],
+                        $index[$id]['department_id']
+                    )
+                );
+            }
+            if (!empty($departmentId) && !isset($departments[$departmentId])) {
+                $this->showTimestampedMessage(
+                    sprintf(
+                        'WARNING! The department (ID: %s) for the course: %s (ID: %s) ' .
+                        'and instructor: %s (ID: %s) did not match any found departments.',
+                        $index[$id]['department_id'],
+                        $index[$id]['course'],
+                        $index[$id]['course_id'],
+                        $index[$id]['instructor'],
+                        $index[$id]['instructor_id']
+                    )
+                );
+            }
+            if (!empty($courseId) && !isset($courses[$courseId])) {
+                $this->showTimestampedMessage(
+                    sprintf(
+                        'WARNING! The course (ID: %s) for the instructor: %s (ID: %s) ' .
+                        'and department: %s (ID: %s) did not match any found courses.',
+                        $index[$id]['course_id'],
+                        $index[$id]['instructor'],
+                        $index[$id]['instructor_id'],
+                        $index[$id]['department'],
+                        $index[$id]['department_id']
+                    )
+                );
+            }
         }
 
         $updates = new UpdateDocument();
@@ -200,14 +249,13 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
     /**
      * Print the message to the provided output stream prefixed with a timestamp.
      *
-     * @param OutputInterface $output  Output object
-     * @param string          $message Message to display
+     * @param string $message Message to display
      *
      * @return null
      */
-    protected function writeln(OutputInterface $output, string $message)
+    protected function showTimestampedMessage(string $message)
     {
-        $output->writeln(date('Y-m-d H:i:s') . ' ' . $message);
+        $this->output->writeln(date('Y-m-d H:i:s') . ' ' . $message);
     }
 
     /**
@@ -220,7 +268,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->writeln($output, 'Starting reserves processing');
+        $this->output = $output;
+        $this->showTimestampedMessage('Starting reserves processing');
         $startTime = date('Y-m-d H:i:s');
         // Check time limit; increase if necessary:
         if (ini_get('max_execution_time') < 3600) {
@@ -233,45 +282,45 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
         if ($file = $input->getOption('filename')) {
             try {
                 $reader = $this->getCsvReader($file, $delimiter, $template);
-                $this->writeln($output, 'Retrieving instructors');
+                $this->showTimestampedMessage('Retrieving instructors');
                 $instructors = $reader->getInstructors();
-                $this->writeln($output, 'Found instructor count: ' . count($instructors));
-                $this->writeln($output, 'Retrieving courses');
+                $this->showTimestampedMessage('Found instructor count: ' . count($instructors));
+                $this->showTimestampedMessage('Retrieving courses');
                 $courses = $reader->getCourses();
-                $this->writeln($output, 'Found course count: ' . count($courses));
-                $this->writeln($output, 'Retrieving departments');
+                $this->showTimestampedMessage('Found course count: ' . count($courses));
+                $this->showTimestampedMessage('Retrieving departments');
                 $departments = $reader->getDepartments();
-                $this->writeln($output, 'Found department count: ' . count($departments));
-                $this->writeln($output, 'Retrieving reserves');
+                $this->showTimestampedMessage('Found department count: ' . count($departments));
+                $this->showTimestampedMessage('Retrieving reserves');
                 $reserves = $reader->getReserves();
-                $this->writeln($output, 'Found reserve count: ' . count($reserves));
+                $this->showTimestampedMessage('Found reserve count: ' . count($reserves));
             } catch (\Exception $e) {
-                $this->writeln($output, $e->getMessage());
+                $this->showTimestampedMessage($e->getMessage());
                 return 1;
             }
         } elseif ($delimiter !== $this->defaultDelimiter) {
-            $this->writeln($output, '-d (delimiter) is meaningless without -f (filename)');
+            $this->showTimestampedMessage('-d (delimiter) is meaningless without -f (filename)');
             return 1;
         } elseif ($template !== $this->defaultTemplate) {
-            $this->writeln($output, '-t (template) is meaningless without -f (filename)');
+            $this->showTimestampedMessage('-t (template) is meaningless without -f (filename)');
             return 1;
         } else {
             try {
                 // Connect to ILS and load data:
-                $this->writeln($output, 'Retrieving instructors');
+                $this->showTimestampedMessage('Retrieving instructors');
                 $instructors = $this->catalog->getInstructors();
-                $this->writeln($output, 'Found instructor count: ' . count($instructors ?? []));
-                $this->writeln($output, 'Retrieving courses');
+                $this->showTimestampedMessage('Found instructor count: ' . count($instructors ?? []));
+                $this->showTimestampedMessage('Retrieving courses');
                 $courses = $this->catalog->getCourses();
-                $this->writeln($output, 'Found course count: ' . count($courses ?? []));
-                $this->writeln($output, 'Retrieving departments');
+                $this->showTimestampedMessage('Found course count: ' . count($courses ?? []));
+                $this->showTimestampedMessage('Retrieving departments');
                 $departments = $this->catalog->getDepartments();
-                $this->writeln($output, 'Found department count: ' . count($departments ?? []));
-                $this->writeln($output, 'Retrieving reserves');
+                $this->showTimestampedMessage('Found department count: ' . count($departments ?? []));
+                $this->showTimestampedMessage('Retrieving reserves');
                 $reserves = $this->catalog->findReserves('', '', '');
-                $this->writeln($output, 'Found reserve count: ' . count($reserves ?? []));
+                $this->showTimestampedMessage('Found reserve count: ' . count($reserves ?? []));
             } catch (\Exception $e) {
-                $this->writeln($output, $e->getMessage());
+                $this->showTimestampedMessage($e->getMessage());
                 return 1;
             }
         }
@@ -283,27 +332,27 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
             && !empty($reserves)
         ) {
             // Delete existing records
-            $this->writeln($output, 'Clearing existing reserves');
+            $this->showTimestampedMessage('Clearing existing reserves');
             $this->solr->deleteAll('SolrReserves');
 
             // Build and Save the index
-            $this->writeln($output, 'Building new reserves index');
+            $this->showTimestampedMessage('Building new reserves index');
             $index = $this->buildReservesIndex(
                 $instructors,
                 $courses,
                 $departments,
                 $reserves
             );
-            $this->writeln($output, 'Writing new reserves index');
+            $this->showTimestampedMessage('Writing new reserves index');
             $this->solr->save('SolrReserves', $index);
 
             // Commit and Optimize the Solr Index
             $this->solr->commit('SolrReserves');
             $this->solr->optimize('SolrReserves');
 
-            $this->writeln($output, 'Successfully loaded ' . count($reserves) . ' rows.');
+            $this->showTimestampedMessage('Successfully loaded ' . count($reserves) . ' rows.');
             $endTime = date('Y-m-d H:i:s');
-            $this->writeln($output, ' Stated at: ' . $startTime . ' Completed at: ' . $endTime);
+            $this->showTimestampedMessage('Started at: ' . $startTime . ' Completed at: ' . $endTime);
             return 0;
         }
         $missing = array_merge(
@@ -312,10 +361,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
             empty($departments) ? ['departments'] : [],
             empty($reserves) ? ['reserves'] : []
         );
-        $this->writeln(
-            $output,
-            'Unable to load data. No data found for: ' . implode(', ', $missing)
-        );
+        $this->showTimestampedMessage('Unable to load data. No data found for: ' . implode(', ', $missing));
         return 1;
     }
 }

@@ -103,7 +103,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(['--template' => '|']);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
-            "-t (template) is meaningless without -f (filename)\n",
+            '-t (template) is meaningless without -f (filename)',
             $commandTester->getDisplay()
         );
     }
@@ -120,7 +120,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(['--delimiter' => '|']);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
-            "-d (delimiter) is meaningless without -f (filename)\n",
+            '-d (delimiter) is meaningless without -f (filename)',
             $commandTester->getDisplay()
         );
     }
@@ -137,7 +137,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(['--filename' => '/does/not/exist']);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
-            "Could not open /does/not/exist!\n",
+            'Could not open /does/not/exist!',
             $commandTester->getDisplay()
         );
     }
@@ -212,7 +212,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
-            "Successfully loaded 3 rows.\n",
+            'Successfully loaded 3 rows.',
             $commandTester->getDisplay()
         );
     }
@@ -242,7 +242,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Unable to load data. No data found for: '
-            . "instructors, courses, departments, reserves\n",
+            . 'instructors, courses, departments, reserves',
             $commandTester->getDisplay()
         );
     }
@@ -351,7 +351,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
-            "Successfully loaded 3 rows.\n",
+            'Successfully loaded 3 rows.',
             $commandTester->getDisplay()
         );
     }
@@ -370,8 +370,8 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $reserves = [
             [
                 'BIB_ID' => 1,
-                'COURSE_ID' => 'course1',
-                'DEPARTMENT_ID' => 'dept1',
+                'COURSE_ID' => 'course2',
+                'DEPARTMENT_ID' => 'dept2',
                 'INSTRUCTOR_ID' => 'inst2',
             ],
         ];
@@ -398,14 +398,14 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
             $expectedXml = "<?xml version=\"1.0\"?>\n"
                 . '<add>'
                 . '<doc>'
-                . '<field name="id">course1|inst2|dept1</field>'
+                . '<field name="id">course2|inst2|dept2</field>'
                 . '<field name="bib_id">1</field>'
                 . '<field name="instructor_id">inst2</field>'
                 . '<field name="instructor">No Instructor Listed</field>'
-                . '<field name="course_id">course1</field>'
-                . '<field name="course">course1</field>'
-                . '<field name="department_id">dept1</field>'
-                . '<field name="department">dept1</field>'
+                . '<field name="course_id">course2</field>'
+                . '<field name="course">No Course Listed</field>'
+                . '<field name="department_id">dept2</field>'
+                . '<field name="department">No Department Listed</field>'
                 . '</doc>'
                 . '</add>';
             $that->assertEquals($expectedXml, trim($update->getContent()));
@@ -420,6 +420,8 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator(
             [
                 'default' => [
+                    'no_course_listed' => 'No Course Listed',
+                    'no_department_listed' => 'No Department Listed',
                     'no_instructor_listed' => 'No Instructor Listed',
                 ],
             ]
@@ -429,7 +431,19 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
-            "Successfully loaded 1 rows.\n",
+            'Successfully loaded 1 rows.',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringContainsString(
+            'WARNING! The instructor (ID: inst2)',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringContainsString(
+            'WARNING! The department (ID: dept2)',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringContainsString(
+            'WARNING! The course (ID: course2)',
             $commandTester->getDisplay()
         );
     }
@@ -507,7 +521,11 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
-            "Successfully loaded 1 rows.\n",
+            'Successfully loaded 1 rows.',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringNotContainsString(
+            'WARNING',
             $commandTester->getDisplay()
         );
     }
