@@ -68,7 +68,7 @@
   <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
   <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
-  <property name="version" value="10.0" />
+  <property name="version" value="10.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -732,11 +732,21 @@
         <mkdir dir="${localdir}/languages/Facets" />
       </then>
     </if>
+    <if>
+      <not>
+        <available file="${localdir}/languages/ChildDomain" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages/ChildDomain" />
+      </then>
+    </if>
     <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
+    <append destFile="${localdir}/languages/en.ini" text="test_string_1 = Child Text" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1a/ = Top Level, Sorted Last${line.separator}" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1z/ = Top Level, Sorted First${line.separator}" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2y/ = Second Level, Sorted Last${line.separator}" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2z/ = Second Level, Sorted First${line.separator}" />
+    <append destFile="${localdir}/languages/ChildDomain/en.ini" text="test = Child Text" />
 
     <!-- Add templates to a minktest theme for tests -->
     <property name="themedir" value="${srcdir}/themes/minktest" />
@@ -757,11 +767,11 @@
     </if>
     <echo file="${themedir}/theme.config.php">&lt;?php
 return [
-    'extends' =&gt; 'sandal',
+    'extends' =&gt; 'sandal5',
 ];
 </echo>
 
-    <copy file="${srcdir}/themes/bootstrap3/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
+    <copy file="${srcdir}/themes/bootstrap5/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
     <!-- Add a script for testing that inline scripts work -->
     <echo file="${themedir}/templates/ajax/status-full.phtml" append="true">
 &lt;div class="js-status-test hidden"&gt;&lt;/div&gt;

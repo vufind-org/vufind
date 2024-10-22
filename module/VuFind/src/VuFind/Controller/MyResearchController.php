@@ -42,6 +42,7 @@ use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -1180,9 +1181,9 @@ class MyResearchController extends AbstractBase
             // If the user is in the process of saving a record, send them back
             // to the save screen; otherwise, send them back to the list they
             // just edited.
-            $recordId = $this->params()->fromQuery('recordId');
-            $recordSource
-                = $this->params()->fromQuery('recordSource', DEFAULT_SEARCH_BACKEND);
+            $recordId = $this->params()->fromQuery('recordId') ?? $this->params()->fromPost('recordId');
+            $recordSource = $this->params()->fromQuery('recordSource')
+                ?? $this->params()->fromPost('recordSource', DEFAULT_SEARCH_BACKEND);
             if (!empty($recordId)) {
                 $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId,
@@ -1196,19 +1197,12 @@ class MyResearchController extends AbstractBase
 
             // Similarly, if the user is in the process of bulk-saving records,
             // send them back to the appropriate place in the cart.
-            $bulkIds = $this->params()->fromPost(
-                'ids',
-                $this->params()->fromQuery('ids', [])
-            );
+            $bulkIds = $this->params()->fromPost('ids') ?? $this->params()->fromQuery('ids', []);
             if (!empty($bulkIds)) {
-                $params = [];
-                foreach ($bulkIds as $id) {
-                    $params[] = urlencode('ids[]') . '=' . urlencode($id);
-                }
-                $saveUrl = $this->url()->fromRoute('cart-save');
-                $saveUrl .= (!str_contains($saveUrl, '?')) ? '?' : '&';
-                return $this->redirect()
-                    ->toUrl($saveUrl . implode('&', $params));
+                // Add final id of the list to request post so cartcontroller saveaction
+                // can properly load the list
+                $this->getRequest()->getPost()->set('list', $finalId);
+                return $this->forwardTo('Cart', 'Save');
             }
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
@@ -1240,7 +1234,7 @@ class MyResearchController extends AbstractBase
 
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
-        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        $id = $this->params()->fromRoute('id') ?? $this->params()->fromQuery('id') ?? $this->params()->fromPost('id');
         $newList = ($id == 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in
         // a fresh object; if it's an existing list, we can just fetch from the database.
@@ -1255,10 +1249,8 @@ class MyResearchController extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted()) {
-            if ($redirect = $this->processEditList($user, $list)) {
-                return $redirect;
-            }
+        if ($this->formWasSubmitted() && $redirect = $this->processEditList($user, $list)) {
+            return $redirect;
         }
 
         $listTags = null;
@@ -1273,6 +1265,10 @@ class MyResearchController extends AbstractBase
                 'list' => $list,
                 'newList' => $newList,
                 'listTags' => $listTags,
+                'recordIds' => $this->params()->fromQuery('ids') ?? $this->params()->fromPost('ids', []),
+                'recordId' => $this->params()->fromQuery('recordId') ?? $this->params()->fromPost('recordId', false),
+                'recordSource' => $this->params()->fromQuery('recordSource')
+                    ?? $this->params()->fromPost('recordSource', DEFAULT_SEARCH_BACKEND),
             ]
         );
     }
@@ -1288,8 +1284,8 @@ class MyResearchController extends AbstractBase
         if ($this->params()->fromQuery('reverify')) {
             $change = false;
             // Case 1: new user:
-            $user = $this->getDbService(UserServiceInterface::class)
-                ->getUserByUsername($this->getUserVerificationContainer()->user);
+            $username = $this->getUserVerificationContainer()->user;
+            $user = $username ? $this->getDbService(UserServiceInterface::class)->getUserByUsername($username) : null;
             // Case 2: pending email change:
             if (!$user) {
                 $user = $this->getUser();
@@ -1782,7 +1778,7 @@ class MyResearchController extends AbstractBase
                     );
                     $this->getService(Mailer::class)->send(
                         $user->getEmail(),
-                        $config->Site->email,
+                        $this->getEmailSenderAddress($config),
                         $this->translate('recovery_email_subject'),
                         $message
                     );
@@ -1843,7 +1839,7 @@ class MyResearchController extends AbstractBase
         // address; if they have a pending address change, use that.
         $this->getService(Mailer::class)->send(
             $user->getEmail(),
-            $config->Site->email,
+            $this->getEmailSenderAddress($config),
             $this->translate('change_notification_email_subject'),
             $message
         );
@@ -1893,7 +1889,7 @@ class MyResearchController extends AbstractBase
                     $to = ($pending = $user->getPendingEmail()) ? $pending : $user->getEmail();
                     $this->getService(Mailer::class)->send(
                         $to,
-                        $config->Site->email,
+                        $this->getEmailSenderAddress($config),
                         $this->translate('verification_email_subject'),
                         $message
                     );
