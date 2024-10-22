@@ -280,7 +280,7 @@ public class FormatCalculator
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
                 // Make sure we have the applicable LDR/06: Language Material
-                if (recordType == 'a' || recordType == 'm') {
+                if (recordType == 'a') {
                     switch (get008Value(marc008, 21)) {
                         case 'n':
                             return "Newspaper";
@@ -288,7 +288,14 @@ public class FormatCalculator
                             return "Journal";
                         default: break;
                     }
+                } else if (recordType == 'm') {
+                    switch (get008Value(marc008, 23)) {
+                        case 'o':
+                            return "eJournal";
+                        default: break;
+                    }
                 }
+
                 // Default to serial even if 008 is missing
                 if (!isConferenceProceeding(record)) {
                     return "Serial";
