@@ -89,7 +89,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Return record collection.
      *
-     * @param array $response Collection of XML documents
+     * @param array $response WorldCat API response (decoded to array format)
      *
      * @return RecordCollection
      */
