@@ -17,6 +17,8 @@
     $supportsPatronActions = $this->driver->supportsPatronActions();
     $checkedOutResult = $this->driver->isCheckedOut();
     $checkedOut = $checkedOutResult->data;
+    $copiesAvailable = $avail->data->copiesAvailable ?? 0;
+    $copiesOwned = $avail->data->copiesOwned ?? 0;
     $urls = $this->driver->getURLs();
     if (!$checkedOut):
         $hold = $this->driver->isHeld();
@@ -31,7 +33,7 @@
     </h3>
     <div class="availability">
       <p>
-        <?php if ($avail->data->copiesAvailable > 0): ?>
+        <?php if ($copiesAvailable > 0): ?>
           <span class="text-success">
             <?=$this->icon('status-available', 'icon-link__icon')?>
           </span>
@@ -44,16 +46,16 @@
         <?php if (($avail->data->availabilityType ?? 0) == 'AlwaysAvailable'): ?>
           <?=$this->transEsc('od_unlimited')?>
         <?php else: ?>
-          <?=$this->transEsc('od_copies_available', ['%%copies%%' => $avail->data->copiesAvailable . '/' . $avail->data->copiesOwned])?>
+          <?=$this->transEsc('od_copies_available', ['%%copies%%' => $copiesAvailable . '/' . $copiesOwned])?>
         <?php endif; ?>
 
-        <?php if ($avail->data->numberOfHolds > 0): ?>
-          <?='; ' . $this->transEsc('od_waiting', ['holds' => $avail->data->numberOfHolds], null, true)?>
+        <?php if (($numHolds = $avail->data->numberOfHolds ?? 0) > 0): ?>
+          <?='; ' . $this->transEsc('od_waiting', ['holds' => $numHolds], null, true)?>
         <?php endif; ?>
       </p>
 
       <?php if ((!$checkedOut || $checkedOutResult->isMagazine) && ($supportsPatronActions || isset($urls[0]['url']))): ?>
-        <?php if (($avail->data->copiesAvailable ?? 0) > 0): ?>
+        <?php if ($copiesAvailable > 0): ?>
           <p>
             <a class="btn btn-primary checkout" data-lightbox title="<?=$this->transEsc('request_place_text')?>"
               href="<?=$supportsPatronActions ?
@@ -66,16 +68,20 @@
         <?php endif; ?>
       <?php endif; ?>
       <?php if ((!$checkedOut && !$hold) && ($supportsPatronActions || isset($urls[0]['url']))): ?>
-        <?php if (($avail->data->copiesAvailable ?? 0) == 0): ?>
+        <?php if ($copiesAvailable == 0 && $copiesOwned > 0): ?>
           <p>
-            <a class="btn btn-primary placehold" data-lightbox title="<?=$this->transEsc('request_place_texts')?>"
-              href="<?=$supportsPatronActions && count($urls) ?
+            <?php
+              $holdLink = $supportsPatronActions && count($urls) ?
                 "$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=holdConfirm' :
-                $urls[0]['url']
-              ?>">
-              <?=$this->icon('place-hold', 'icon-link__icon')?>
-              <?=$this->transEsc('od_but_hold')?>
-            </a>
+                $urls[0]['url'] ?? null;
+            ?>
+            <?php if ($holdLink): ?>
+              <a class="btn btn-primary placehold" data-lightbox title="<?=$this->transEsc('request_place_texts')?>"
+                href="<?=$this->escapeHtmlAttr($holdLink)?>">
+                <?=$this->icon('place-hold', 'icon-link__icon')?>
+                <?=$this->transEsc('od_but_hold')?>
+              </a>
+            <?php endif; ?>
           </p>
         <?php endif; ?>
       <?php endif; ?>

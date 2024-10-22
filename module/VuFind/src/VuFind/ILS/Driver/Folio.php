@@ -824,7 +824,7 @@ class Folio extends AbstractAPI implements
             'availability' => $item->status->name == 'Available',
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
             'reserve' => 'TODO',
-            'addLink' => true,
+            'addLink' => 'check',
             'bound_with_records' => $boundWithRecords,
         ];
     }
@@ -1317,6 +1317,10 @@ class Folio extends AbstractAPI implements
             'firstname' => $profile->personal->firstName ?? null,
             'lastname' => $profile->personal->lastName ?? null,
             'email' => $profile->personal->email ?? null,
+            'addressTypeIds' => array_map(
+                fn ($address) => $address->addressTypeId,
+                $profile->personal->addresses ?? []
+            ),
         ];
     }
 
@@ -1557,6 +1561,22 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
+        if ('Delivery' == ($holdInfo['requestGroupId'] ?? null)) {
+            $addressTypes = $this->getAddressTypes();
+            $limitDeliveryAddressTypes = $this->config['Holds']['limitDeliveryAddressTypes'] ?? [];
+            $deliveryPickupLocations = [];
+            foreach ($patron['addressTypeIds'] as $addressTypeId) {
+                $addressType = $addressTypes[$addressTypeId];
+                if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
+                    $deliveryPickupLocations[] = [
+                        'locationID' => $addressTypeId,
+                        'locationDisplay' => $addressType,
+                    ];
+                }
+            }
+            return $deliveryPickupLocations;
+        }
+
         $limitedServicePoints = null;
         if (
             str_contains($this->config['Holds']['limitPickupLocations'] ?? '', 'itemEffectiveLocation')
@@ -1569,6 +1589,23 @@ class Folio extends AbstractAPI implements
             $limitedServicePoints = $this->getLocationData($itemLocationId)['servicePointIds'];
         }
 
+        // If we have $holdInfo, we can limit ourselves to pickup locations that are valid in context. Because the
+        // allowed service point list doesn't include discovery display names, we can't use it directly; we just
+        // have to obtain a list of IDs to use as a filter below.
+        $legalServicePoints = null;
+        if ($holdInfo) {
+            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($holdInfo['id'])->id, $patron['id']);
+            if ($allowed !== null) {
+                $legalServicePoints = [];
+                $preferredRequestType = $this->getPreferredRequestType($holdInfo);
+                foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
+                    foreach ($allowed[$requestType] ?? [] as $servicePoint) {
+                        $legalServicePoints[] = $servicePoint['id'];
+                    }
+                }
+            }
+        }
+
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
         foreach (
@@ -1578,6 +1615,9 @@ class Folio extends AbstractAPI implements
                 $query
             ) as $servicePoint
         ) {
+            if ($legalServicePoints !== null && !in_array($servicePoint->id, $legalServicePoints)) {
+                continue;
+            }
             if ($limitedServicePoints && !in_array($servicePoint->id, $limitedServicePoints)) {
                 continue;
             }
@@ -1588,6 +1628,107 @@ class Folio extends AbstractAPI implements
             ];
         }
         return $locations;
+    }
+
+    /**
+     * Get Default Pick Up Location
+     *
+     * Returns the default pick up location set in HorizonXMLAPI.ini
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the pickup options
+     * or may be ignored.
+     *
+     * @return false|string      The default pickup location for the patron or false
+     * if the user has to choose.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    {
+        if ('Delivery' == ($holdDetails['requestGroupId'] ?? null)) {
+            $deliveryPickupLocations = $this->getPickupLocations($patron, $holdDetails);
+            if (count($deliveryPickupLocations) == 1) {
+                return $deliveryPickupLocations[0]['locationDisplay'];
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get request groups
+     *
+     * @param int   $bibId       BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return array  False if request groups not in use or an array of
+     * associative arrays with id and name keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRequestGroups(
+        $bibId = null,
+        $patron = null,
+        $holdDetails = null
+    ) {
+        // circulation-storage.request-preferences.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
+        );
+        $requestPreferencesResponse = json_decode($response->getBody());
+        $requestPreferences = $requestPreferencesResponse->requestPreferences[0];
+        $allowHoldShelf = $requestPreferences->holdShelf;
+        $allowDelivery = $requestPreferences->delivery && ($this->config['Holds']['allowDelivery'] ?? true);
+        $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
+        if ($allowHoldShelf && $allowDelivery) {
+            return [
+                [
+                    'id' => 'Hold Shelf',
+                    'name' => 'fulfillment_method_hold_shelf',
+                    'locationsLabel' => $locationsLabels['Hold Shelf'] ?? null,
+                ],
+                [
+                    'id' => 'Delivery',
+                    'name' => 'fulfillment_method_delivery',
+                    'locationsLabel' => $locationsLabels['Delivery'] ?? null,
+                ],
+            ];
+        }
+        return false;
+    }
+
+    /**
+     * Get list of address types from FOLIO.  Cache as needed.
+     *
+     * @return array An array mapping an address type id to its name.
+     */
+    protected function getAddressTypes()
+    {
+        $cacheKey = 'addressTypes';
+        $addressTypes = $this->getCachedData($cacheKey);
+        if (null == $addressTypes) {
+            $addressTypes = [];
+            // addresstypes.collection.get
+            foreach (
+                $this->getPagedResults(
+                    'addressTypes',
+                    '/addresstypes'
+                ) as $addressType
+            ) {
+                $addressTypes[$addressType->id] = $addressType->addressType;
+            }
+            $this->putCachedData($cacheKey, $addressTypes);
+        }
+        return $addressTypes;
     }
 
     /**
@@ -1795,6 +1936,55 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get allowed service points for a request. Returns null if data cannot be obtained.
+     *
+     * @param string $instanceId  Instance UUID being requested
+     * @param string $requesterId Patron UUID placing request
+     * @param string $operation   Operation type (default = create)
+     *
+     * @return ?array
+     */
+    public function getAllowedServicePoints(
+        string $instanceId,
+        string $requesterId,
+        string $operation = 'create'
+    ): ?array {
+        try {
+            // circulation.requests.allowed-service-points.get
+            $response = $this->makeRequest(
+                'GET',
+                '/circulation/requests/allowed-service-points?'
+                . http_build_query(compact('instanceId', 'requesterId', 'operation'))
+            );
+            if (!$response->isSuccess()) {
+                $this->warning('Unexpected service point lookup response: ' . $response->getBody());
+                return null;
+            }
+        } catch (\Exception $e) {
+            $this->warning('Exception during allowed service point lookup: ' . (string)$e);
+            return null;
+        }
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Get the preferred request type for the provided hold details.
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @return string
+     */
+    protected function getPreferredRequestType(array $holdDetails): string
+    {
+        $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
+        $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
+        if ($isTitleLevel) {
+            return $default_request;
+        }
+        return ($holdDetails['status'] ?? '') == 'Available' ? 'Page' : $default_request;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1807,7 +1997,6 @@ class Folio extends AbstractAPI implements
      */
     public function placeHold($holdDetails)
     {
-        $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         if (
             !empty($holdDetails['requiredByTS'])
             && !is_int($holdDetails['requiredByTS'])
@@ -1817,14 +2006,13 @@ class Folio extends AbstractAPI implements
         $requiredBy = !empty($holdDetails['requiredByTS'])
             ? gmdate('Y-m-d', $holdDetails['requiredByTS']) : null;
 
+        $instance = $this->getInstanceByBibId($holdDetails['id']);
         $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
         if ($isTitleLevel) {
-            $instance = $this->getInstanceByBibId($holdDetails['id']);
             $baseParams = [
                 'instanceId' => $instance->id,
                 'requestLevel' => 'Title',
             ];
-            $preferredRequestType = $default_request;
         } else {
             // Note: early Lotus releases require instanceId and holdingsRecordId
             // to be set here as well, but the requirement was lifted in a hotfix
@@ -1832,18 +2020,21 @@ class Folio extends AbstractAPI implements
             // of those versions, you can add additional identifiers here, but
             // applying the latest hotfix is a better solution!
             $baseParams = ['itemId' => $holdDetails['item_id']];
-            $preferredRequestType = ($holdDetails['status'] ?? '') == 'Available'
-                ? 'Page' : $default_request;
         }
         // Account for an API spelling change introduced in mod-circulation v24:
         $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
             ? 'fulfillmentPreference' : 'fulfilmentPreference';
+        $fulfillmentValue = $holdDetails['requestGroupId'] ?? 'Hold Shelf';
+        $fulfillmentLocationKey = match ($fulfillmentValue) {
+            'Hold Shelf' => 'pickupServicePointId',
+            'Delivery' => 'deliveryAddressTypeId',
+        };
         $requestBody = $baseParams + [
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
-            $fulfillmentKey => 'Hold Shelf',
+            $fulfillmentKey => $fulfillmentValue,
             'requestExpirationDate' => $requiredBy,
-            'pickupServicePointId' => $holdDetails['pickUpLocation'],
+            $fulfillmentLocationKey => $holdDetails['pickUpLocation'],
         ];
         if (!empty($holdDetails['proxiedUser'])) {
             $requestBody['requesterId'] = $holdDetails['proxiedUser'];
@@ -1852,7 +2043,20 @@ class Folio extends AbstractAPI implements
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
+        $allowed = $this->getAllowedServicePoints($instance->id, $holdDetails['patron']['id']);
+        $preferredRequestType = $this->getPreferredRequestType($holdDetails);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
+            // Skip illegal request types, if we have validation data available:
+            if (null !== $allowed) {
+                if (
+                    // Unsupported request type:
+                    !isset($allowed[$requestType])
+                    // Unsupported pickup location:
+                    || !in_array($holdDetails['pickUpLocation'], array_column($allowed[$requestType] ?? [], 'id'))
+                ) {
+                    continue;
+                }
+            }
             $requestBody['requestType'] = $requestType;
             $result = $this->performHoldRequest($requestBody);
             if ($result['success']) {
@@ -1953,8 +2157,12 @@ class Folio extends AbstractAPI implements
         // Check outstanding loans
         $currentLoan = $this->getCurrentLoan($data['item_id']);
         if (!$currentLoan || $this->isHoldableByCurrentLoan($currentLoan)) {
+            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($id)->id, $patron['id']);
             return [
-                'valid' => true,
+                // If we got this far, it's valid if we can't obtain allowed service point
+                // data, or if the allowed service point data is non-empty:
+                'valid' => null === $allowed || !empty($allowed),
+                'status' => 'request_place_text',
             ];
         } else {
             return [

@@ -332,6 +332,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'firstname' => 'first',
             'lastname' => 'last',
             'email' => 'fake@fake.com',
+            'addressTypeIds' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -361,6 +362,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'firstname' => 'first',
             'lastname' => 'last',
             'email' => 'fake@fake.com',
+            'addressTypeIds' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -380,6 +382,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -406,6 +409,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -430,6 +434,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $details = [
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -458,6 +463,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => '3333-33-33',
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -514,6 +520,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => 946739390,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];

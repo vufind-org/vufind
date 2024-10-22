@@ -26,7 +26,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
   function displayItemStatus(result, el) {
     el.querySelectorAll('.status').forEach((status) => {
-      status.innerHTML = result.availability_message;
+      status.innerHTML = typeof result.availability_message === "undefined" ? "" : result.availability_message;
     });
     el.querySelectorAll('.ajax-availability').forEach((ajaxAvailability) => {
       ajaxAvailability.classList.remove('ajax-availability');

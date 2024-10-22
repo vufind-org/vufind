@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
 use VuFind\Db\Service\SearchServiceInterface;
 
 /**
@@ -77,7 +78,7 @@ class NotifyCommandFactory implements FactoryInterface
         $theme->init();
 
         // Now build the object:
-        return new $requestedName(
+        $command = new $requestedName(
             $container->get(\VuFind\Crypt\SecretCalculator::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\Search\Results\PluginManager::class),
@@ -88,5 +89,7 @@ class NotifyCommandFactory implements FactoryInterface
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
             ...($options ?? [])
         );
+        $command->setPathResolver($container->get(PathResolver::class));
+        return $command;
     }
 }

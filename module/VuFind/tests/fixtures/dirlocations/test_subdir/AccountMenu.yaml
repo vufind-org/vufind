@@ -1,0 +1,5 @@
+MenuItems:
+  - name: parent-test
+    label: parent test
+    route: myresearch-favorites
+    icon: user-favorites
