@@ -564,7 +564,6 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
             'id' => $this->getUniqueIdWithSourcePrefix(),
             'checkboxElementId' => $this->getUniqueHtmlElementId($idPrefix),
             'prefix' => $idPrefix,
-            'titleHtml' => $this->getTitleHtml(),
         ];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
