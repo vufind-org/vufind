@@ -1455,9 +1455,9 @@ class Folio extends AbstractAPI implements
                 'title' => $trans->item->title,
             ];
         }
-        // If we have a full page, we need to look up the total count of transactions:
+        // If we have a full page or have applied an offset, we need to look up the total count of transactions:
         $count = count($transactions);
-        if ($count >= $limit) {
+        if ($offset > 0 || $count >= $limit) {
             // We could use the count in the result page, but that may be an estimate;
             // safer to do a separate lookup to be sure we have the right number!
             $count = $this->getResultCount('/circulation/loans', compact('query'));
