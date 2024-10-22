@@ -1264,10 +1264,6 @@ ${git_status}
     <delete file="${localdir}/import/import-${BASENAME}.properties" />
   </target>
 
-  <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- No patching needed at present; leaving hook here for future use. -->
-  </target>
-
   <!-- Update bootstrap3 templates from bootstrap5 -->
   <!-- N.B. This destroys any existing bootstrap3 templates (except explicitly excluded ones) -->
   <target name="update-bootstrap3">
