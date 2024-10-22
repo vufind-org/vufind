@@ -34,6 +34,8 @@ use VuFind\ILS\Connection;
 use VuFind\Solr\Writer;
 use VuFindConsole\Command\Util\IndexReservesCommand;
 
+use function ini_get;
+
 /**
  * IndexReservesCommand test.
  *
@@ -47,6 +49,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\WithConsecutiveTrait;
+    use \VuFindTest\Feature\TranslatorTrait;
 
     /**
      * Get mock ILS connection.
@@ -89,18 +92,35 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test bad parameter combination.
+     * Test bad parameter combination with template.
      *
      * @return void
      */
-    public function testBadParameterCombination()
+    public function testBadParameterCombinationTemplate()
+    {
+        $command = $this->getCommand();
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['--template' => '|']);
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertStringContainsString(
+            '-t (template) is meaningless without -f (filename)',
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test bad parameter combination with delimiter.
+     *
+     * @return void
+     */
+    public function testBadParameterCombinationDelimiter()
     {
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--delimiter' => '|']);
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
-            "-d (delimiter) is meaningless without -f (filename)\n",
+        $this->assertStringContainsString(
+            '-d (delimiter) is meaningless without -f (filename)',
             $commandTester->getDisplay()
         );
     }
@@ -116,8 +136,8 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--filename' => '/does/not/exist']);
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
-            "Could not open /does/not/exist!\n",
+        $this->assertStringContainsString(
+            'Could not open /does/not/exist!',
             $commandTester->getDisplay()
         );
     }
@@ -191,8 +211,8 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
-            "Successfully loaded 3 rows.\n",
+        $this->assertStringContainsString(
+            'Successfully loaded 3 rows.',
             $commandTester->getDisplay()
         );
     }
@@ -220,9 +240,9 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertStringContainsString(
             'Unable to load data. No data found for: '
-            . "instructors, courses, departments, reserves\n",
+            . 'instructors, courses, departments, reserves',
             $commandTester->getDisplay()
         );
     }
@@ -330,9 +350,260 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
-            "Successfully loaded 3 rows.\n",
+        $this->assertStringContainsString(
+            'Successfully loaded 3 rows.',
             $commandTester->getDisplay()
         );
+    }
+
+    /**
+     * Test successful ILS loading with some invalid data in reserves.
+     *
+     * @return void
+     */
+    public function testSuccessWithILSWithInvalidData()
+    {
+        $ils = $this->getMockIlsConnection();
+        $instructors = ['inst1' => 'inst1'];
+        $courses = ['course1' => 'course1'];
+        $departments = ['dept1' => 'dept1'];
+        $reserves = [
+            [
+                'BIB_ID' => 1,
+                'COURSE_ID' => 'course2',
+                'DEPARTMENT_ID' => 'dept2',
+                'INSTRUCTOR_ID' => 'inst2',
+            ],
+        ];
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves'],
+            ],
+            [
+                $instructors,
+                $courses,
+                $departments,
+                $reserves,
+            ]
+        );
+
+        $writer = $this->getMockSolrWriter();
+        $that = $this;
+        $updateValidator = function ($update) use ($that) {
+            $expectedXml = "<?xml version=\"1.0\"?>\n"
+                . '<add>'
+                . '<doc>'
+                . '<field name="id">course2|inst2|dept2</field>'
+                . '<field name="bib_id">1</field>'
+                . '<field name="instructor_id">inst2</field>'
+                . '<field name="instructor">no_instructor_listed</field>'
+                . '<field name="course_id">course2</field>'
+                . '<field name="course">no_course_listed</field>'
+                . '<field name="department_id">dept2</field>'
+                . '<field name="department">no_department_listed</field>'
+                . '</doc>'
+                . '</add>';
+            $that->assertEquals($expectedXml, trim($update->getContent()));
+            return true;
+        };
+        $writer->expects($this->once())->method('save')
+            ->with(
+                $this->equalTo('SolrReserves'),
+                $this->callback($updateValidator)
+            );
+        $command = $this->getCommand($writer, $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertStringContainsString(
+            'Successfully loaded 1 rows.',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringContainsString(
+            'WARNING! The instructor (ID: inst2)',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringContainsString(
+            'WARNING! The department (ID: dept2)',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringContainsString(
+            'WARNING! The course (ID: course2)',
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test successful ILS loading with some missing data in reserves.
+     *
+     * @return void
+     */
+    public function testSuccessWithILSWithMissingData()
+    {
+        $ils = $this->getMockIlsConnection();
+        $instructors = ['inst1' => 'inst1'];
+        $courses = ['course1' => 'course1'];
+        $departments = ['dept1' => 'dept1'];
+        $reserves = [
+            [
+                'BIB_ID' => 1,
+                'COURSE_ID' => 'course1',
+                'DEPARTMENT_ID' => '',
+                'INSTRUCTOR_ID' => 'inst1',
+            ],
+        ];
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves'],
+            ],
+            [
+                $instructors,
+                $courses,
+                $departments,
+                $reserves,
+            ]
+        );
+
+        $writer = $this->getMockSolrWriter();
+        $that = $this;
+        $updateValidator = function ($update) use ($that) {
+            $expectedXml = "<?xml version=\"1.0\"?>\n"
+                . '<add>'
+                . '<doc>'
+                . '<field name="id">course1|inst1|</field>'
+                . '<field name="bib_id">1</field>'
+                . '<field name="instructor_id">inst1</field>'
+                . '<field name="instructor">inst1</field>'
+                . '<field name="course_id">course1</field>'
+                . '<field name="course">course1</field>'
+                . '<field name="department_id"></field>'
+                . '<field name="department">no_department_listed</field>'
+                . '</doc>'
+                . '</add>';
+            $that->assertEquals($expectedXml, trim($update->getContent()));
+            return true;
+        };
+        $writer->expects($this->once())->method('save')
+            ->with(
+                $this->equalTo('SolrReserves'),
+                $this->callback($updateValidator)
+            );
+        $command = $this->getCommand($writer, $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertStringContainsString(
+            'Successfully loaded 1 rows.',
+            $commandTester->getDisplay()
+        );
+        $this->assertStringNotContainsString(
+            'WARNING',
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test successful ILS loading with some missing required fields
+     *
+     * @return void
+     */
+    public function testSuccessWithILSWithMissingRequiredData()
+    {
+        $ils = $this->getMockIlsConnection();
+        $instructors = ['inst1' => 'inst1'];
+        $courses = ['course1' => 'course1'];
+        $departments = ['dept1' => 'dept1'];
+        $reserves = [
+            [
+                'BIB_ID' => 1,
+                'COURSE_ID' => 'course1',
+                'INSTRUCTOR_ID' => 'inst1',
+            ],
+        ];
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves'],
+            ],
+            [
+                $instructors,
+                $courses,
+                $departments,
+                $reserves,
+            ]
+        );
+
+        $writer = $this->getMockSolrWriter();
+        $that = $this;
+        $command = $this->getCommand($writer, $ils);
+        $commandTester = new CommandTester($command);
+        $this->expectException(
+            \Exception::class
+        );
+        $this->expectExceptionMessage(
+            'fields not present in reserve records. Please update ILS driver.'
+        );
+        $commandTester->execute([]);
+    }
+
+    /**
+     * Test unsuccessful ILS call that raises exception
+     *
+     * @return void
+     */
+    public function testILSExcetpion()
+    {
+        $exception = new \VuFind\Exception\ILS('Simulated exception');
+        $ils = $this->getMockIlsConnection();
+
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
+                ['getInstructors'],
+            ],
+            []
+        );
+        $ils->method('__call')->willThrowException($exception);
+
+        $writer = $this->getMockSolrWriter();
+        $that = $this;
+        $command = $this->getCommand($writer, $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertStringContainsString(
+            $exception->getMessage(),
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test different ini setting.
+     *
+     * @return void
+     */
+    public function testShortIniSetting()
+    {
+        $command = $this->getCommand();
+        $commandTester = new CommandTester($command);
+        ini_set('max_execution_time', '60');
+        // Run a command that will fail and exit right away, since the ini check happens first
+        $commandTester->execute(['--template' => '|']);
+        $this->assertEquals('3600', ini_get('max_execution_time'));
     }
 }
