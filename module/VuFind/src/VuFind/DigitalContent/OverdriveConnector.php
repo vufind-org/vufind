@@ -276,10 +276,12 @@ class OverdriveConnector implements
                 }
             } else {
                 $result->status = true;
-                $res->copiesAvailable ??= 0;
-                $res->copiesOwned ??= 0;
-                $res->numberOfHolds ??= 0;
-                $res->code = 'od_none';
+                if ($res) {
+                    $res->copiesAvailable ??= 0;
+                    $res->copiesOwned ??= 0;
+                    $res->numberOfHolds ??= 0;
+                    $res->code = 'od_none';
+                }
                 $result->data = $res;
             }
         }
@@ -983,9 +985,9 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns permanant links for Ovedrive resources
+     * Returns permanent links for OverDrive resources
      *
-     * @param array $overDriveIds An array of overdrive IDs we need links for
+     * @param array $overDriveIds An array of OverDrive IDs we need links for
      *
      * @return array<string>
      */

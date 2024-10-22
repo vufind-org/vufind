@@ -204,4 +204,146 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
             $obj->getTitleSectionsAltScript()
         );
     }
+
+    /**
+     * Test getMarcFieldWithInd when a single indicator value is sent
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndOneValue(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when a single ind value is passed
+        $this->assertEquals(
+            ['upc'],
+            $obj->getMarcFieldWithInd('024', null, [['1' => ['1']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple values for the indicator are sent
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndTwoValues(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when multiple values for the same ind are passed
+        $this->assertEquals(
+            ['upc', 'ismn'],
+            $obj->getMarcFieldWithInd('024', null, [['1' => ['1', '2']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple indicators are requested
+     * as AND conditions
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndMultAndInds(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when different ind values are passed for each ind
+        $this->assertEquals(
+            ['spa'],
+            $obj->getMarcFieldWithInd('041', null, [['1' => ['1'], '2' => ['7']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple indicators are requested
+     * as OR conditions
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndMultOrInds(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when different ind values are passed for each ind
+        $this->assertEquals(
+            ['ger', 'spa'],
+            $obj->getMarcFieldWithInd('041', null, [['1' => ['0']], ['2' => ['7']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when no indicator filters are sent
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndNoValues(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when no indicator is passed
+        $this->assertEquals(
+            ['upc', 'ismn', 'ian'],
+            $obj->getMarcFieldWithInd('024', null, [])
+        );
+    }
+
+    /**
+     * Test calling getSummary to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetSummary(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Summary.'],
+            $obj->getSummary()
+        );
+    }
+
+    /**
+     * Test calling getSummaryNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetSummaryNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Summary. Expanded.'],
+            $obj->getSummaryNotes()
+        );
+    }
+
+    /**
+     * Test calling getAbstractNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetAbstractNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Abstract. Expanded.'],
+            $obj->getAbstractNotes()
+        );
+    }
+
+    /**
+     * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data
+     *
+     * @return void
+     */
+    public function testGetLocationOfArchivalMaterialsNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Location of archival materials'],
+            $obj->getLocationOfArchivalMaterialsNotes()
+        );
+    }
 }

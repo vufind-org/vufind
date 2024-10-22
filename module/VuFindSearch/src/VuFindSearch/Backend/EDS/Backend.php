@@ -647,7 +647,7 @@ class Backend extends AbstractBackend
      * Obtain the session to use with the EDS API from cache if it exists. If not,
      * then generate a new one.
      *
-     * @param bool   $isGuest Whether or not this sesssion will be a guest session
+     * @param bool   $isGuest Whether or not this session will be a guest session
      * @param string $profile Authentication to use for generating a new session
      * if necessary
      *

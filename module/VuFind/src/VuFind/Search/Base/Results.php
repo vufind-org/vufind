@@ -512,6 +512,9 @@ abstract class Results
     public function updateSaveStatus($row)
     {
         $this->searchId = $row->getId();
+        foreach ($this->results as $driver) {
+            $driver->setExtraDetail('searchId', $this->searchId);
+        }
         $this->savedSearch = $row->getSaved();
         $this->notificationFrequency = $this->savedSearch ? $row->getNotificationFrequency() : 0;
     }

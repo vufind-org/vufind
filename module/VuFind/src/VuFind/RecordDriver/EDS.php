@@ -116,6 +116,18 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the abstract notes.
+     * For EDS, returns the abstract in an array or an empty array.
+     *
+     * @return array
+     */
+    public function getAbstractNotes()
+    {
+        $abstract = $this->getItems(null, null, 'Ab');
+        return (array)($abstract[0]['Data'] ?? []);
+    }
+
+    /**
      * Get the access level of the record.
      *
      * @return string If not empty, will contain a numerical value corresponding to these levels of access:
@@ -431,19 +443,20 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the subject data of the record.
+     * Get the subject headings as a flat array of strings.
      *
-     * @return string
+     * @return array Subject headings
      */
-    public function getItemsSubjects()
+    public function getAllSubjectHeadingsFlattened()
     {
-        $subjects = array_map(
+        $subject_arrays = array_map(
             function ($data) {
-                return $data['Data'];
+                $str = preg_replace('/>\s*[;,]\s*</', '>|<', $data['Data']);
+                return explode('|', rtrim(strip_tags($str), '.'));
             },
             $this->getItems(null, null, 'Su')
         );
-        return empty($subjects) ? '' : implode(', ', $subjects);
+        return array_merge(...$subject_arrays);
     }
 
     /**
@@ -682,7 +695,7 @@ class EDS extends DefaultRecord
     {
         $doi = $this->getItems(null, null, null, 'DOI');
         if (isset($doi[0]['Data'])) {
-            return $doi[0]['Data'];
+            return strip_tags($doi[0]['Data']);
         }
         $dois = $this->getFilteredIdentifiers(['doi']);
         return $dois[0] ?? false;

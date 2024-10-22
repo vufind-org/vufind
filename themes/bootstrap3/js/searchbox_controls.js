@@ -58,10 +58,18 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   }
 
   function _updateKeyboardLayout(layoutName) {
-    $('.keyboard-selection-item').each(function deactivateItems() {
-      $(this).parent().removeClass("active");
-    });
-    $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
+    if (VuFind.getBootstrapMajorVersion() === 3) {
+      $('.keyboard-selection-item').each(function deactivateItems() {
+        $(this).parent().removeClass("active");
+      });
+      $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
+    } else {
+      $('.keyboard-selection-item').each(function deactivateItems() {
+        $(this).removeClass("active");
+        $(this).addClass("dropdown-item");
+      });
+      $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
+    }
     window.Cookies.set("keyboard", layoutName);
     if (layoutName === "none") {
       $("#keyboard-selection-button").removeClass("activated");

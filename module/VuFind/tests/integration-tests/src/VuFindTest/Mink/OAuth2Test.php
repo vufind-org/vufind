@@ -31,6 +31,8 @@ declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
+use function count;
+
 /**
  * OAuth2/OIDC test class.
  *
@@ -115,6 +117,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                     'isConfidential' => true,
                     'secret' => password_hash('mysecret', PASSWORD_DEFAULT),
                 ],
+                'test_limited' => [
+                    'name' => 'Integration Test',
+                    'redirectUri' => $redirectUri,
+                    'isConfidential' => true,
+                    'secret' => password_hash('mysecret', PASSWORD_DEFAULT),
+                    'allowedScopes' => [
+                        'openid',
+                        'profile',
+                    ],
+                ],
             ],
         ];
     }
@@ -141,23 +153,60 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testOAuth2Authorization
+     *
+     * @return array
+     */
+    public static function oauth2AuthorizationProvider(): array
+    {
+        return [
+            'test client' => [
+                'test',
+                [
+                    'Read your user identifier',
+                    'Read your basic profile information (name, language, birthdate)',
+                    'Read a unique hash based on your library user identifier',
+                    'Read your age',
+                ],
+                false,
+            ],
+            'limited test client' => [
+                'test_limited',
+                [
+                    'Read your user identifier',
+                    'Read your basic profile information (name, language, birthdate)',
+                ],
+                true,
+            ],
+        ];
+    }
+
+    /**
      * Test OAuth2 authorization.
      *
+     * @param string $clientId            Client ID
+     * @param array  $expectedPermissions Expected permissions in the request
+     * @param bool   $limited             Whether the permission set has been limited by the server
+     *
      * @return void
+     *
+     * @dataProvider oauth2AuthorizationProvider
      */
-    public function testOAuth2Authorization(): void
+    public function testOAuth2Authorization(string $clientId, array $expectedPermissions, bool $limited): void
     {
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
         $this->setUpTest($redirectUri);
 
+        static::removeUsers(['username1']);
+
         $nonce = time();
         $state = md5((string)$nonce);
 
         // Go to OAuth2 authorization screen:
         $params = [
-            'client_id' => 'test',
+            'client_id' => $clientId,
             'scope' => 'openid profile library_user_id age',
             'response_type' => 'code',
             'redirect_uri' => $redirectUri,
@@ -184,18 +233,14 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'catuser' . $oauth2ConfigOverrides['Server']['hashSalt']
         );
 
-        $expectedPermissions = [
-            'Read your user identifier',
-            'Read your basic profile information (name, language, birthdate)',
-            'Read a unique hash based on your library user identifier',
-            'Read your age',
-        ];
         foreach ($expectedPermissions as $index => $permission) {
             $this->assertEquals(
                 $permission,
                 $this->findCssAndGetText($page, 'div.oauth2-prompt li', null, $index)
             );
         }
+        // Ensure that there are no more permissions:
+        $this->unFindCss($page, 'div.oauth2-prompt li', null, count($expectedPermissions));
 
         $this->clickCss($page, '.form-oauth2-authorize button.btn.btn-primary');
 
@@ -213,7 +258,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'code' => $queryParams['code'],
             'grant_type' => 'authorization_code',
             'redirect_uri' => $redirectUri,
-            'client_id' => 'test',
+            'client_id' => $clientId,
             'client_secret' => 'mysecret',
         ];
         $response = $this->httpPost(
@@ -243,21 +288,26 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         );
 
         $this->assertInstanceOf(\stdClass::class, $idToken);
-        $this->assertEquals('test', $idToken->aud);
+        $this->assertEquals($clientId, $idToken->aud);
         $this->assertEquals($nonce, $idToken->nonce);
         $this->assertEquals('Tester McTestenson', $idToken->name);
         $this->assertEquals('Tester', $idToken->given_name);
         $this->assertEquals('McTestenson', $idToken->family_name);
-        $this->assertEquals($catIdHash, $idToken->library_user_id);
         $this->assertMatchesRegularExpression(
             '/^\d{4}-\d{2}-\d{2}$/',
             $idToken->birthdate
         );
-        $this->assertEquals(
-            \DateTime::createFromFormat('Y-m-d', $idToken->birthdate)
-                ->diff(new \DateTimeImmutable())->format('%y'),
-            $idToken->age
-        );
+        if ($limited) {
+            $this->assertObjectNotHasProperty('library_user_id', $idToken);
+            $this->assertObjectNotHasProperty('age', $idToken);
+        } else {
+            $this->assertEquals($catIdHash, $idToken->library_user_id);
+            $this->assertEquals(
+                \DateTime::createFromFormat('Y-m-d', $idToken->birthdate)
+                    ->diff(new \DateTimeImmutable())->format('%y'),
+                $idToken->age
+            );
+        }
 
         // Test the userinfo endpoint:
         $response = $this->httpGet(
@@ -276,15 +326,26 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         );
 
         $userInfo = json_decode($response->getBody(), true);
+        $this->assertEquals($idToken->sub, $userInfo['sub']);
         $this->assertEquals($nonce, $userInfo['nonce']);
         $this->assertEquals('Tester McTestenson', $userInfo['name']);
         $this->assertEquals('Tester', $userInfo['given_name']);
         $this->assertEquals('McTestenson', $userInfo['family_name']);
-        $this->assertEquals($catIdHash, $userInfo['library_user_id']);
         $this->assertMatchesRegularExpression(
             '/^\d{4}-\d{2}-\d{2}$/',
             $userInfo['birthdate']
         );
+        if ($limited) {
+            $this->assertObjectNotHasProperty('library_user_id', $idToken);
+            $this->assertObjectNotHasProperty('age', $idToken);
+        } else {
+            $this->assertEquals($catIdHash, $userInfo['library_user_id']);
+            $this->assertEquals(
+                \DateTime::createFromFormat('Y-m-d', $userInfo['birthdate'])
+                    ->diff(new \DateTimeImmutable())->format('%y'),
+                $userInfo['age']
+            );
+        }
 
         // Test token request with bad credentials:
         $tokenParams['client_secret'] = 'badsecret';
@@ -400,6 +461,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     public function testOAuth2InvalidClient(): void
     {
+        // Disable logging of a known exception:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
@@ -418,6 +489,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'state' => $state,
         ];
         $session = $this->getMinkSession();
+        // We expect an error, so let's act like production mode for realistic testing:
+        $session->setWhoopsDisabled(true);
         $session->visit(
             $this->getVuFindUrl() . '/OAuth2/Authorize?' . http_build_query($params)
         );

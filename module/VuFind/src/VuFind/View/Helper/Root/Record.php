@@ -38,6 +38,8 @@ use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Search\Memory;
+use VuFind\Search\UrlQueryHelper;
 use VuFind\Tags\TagsService;
 
 use function get_class;
@@ -75,6 +77,13 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     protected $coverRouter = null;
 
     /**
+     * Search memory
+     *
+     * @var Memory
+     */
+    protected $searchMemory = null;
+
+    /**
      * Record driver
      *
      * @var \VuFind\RecordDriver\AbstractBase
@@ -102,6 +111,18 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     public function setCoverRouter($router)
     {
         $this->coverRouter = $router;
+    }
+
+    /**
+     * Inject the search memory
+     *
+     * @param Memory $memory Search memory
+     *
+     * @return void
+     */
+    public function setSearchMemory(Memory $memory): void
+    {
+        $this->searchMemory = $memory;
     }
 
     /**
@@ -462,13 +483,30 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
 
         $prepend = (!str_contains($link, '?')) ? '?' : '&amp;';
 
-        $link .= $this->getView()->plugin('searchTabs')
-            ->getCurrentHiddenFilterParams(
-                $this->driver->getSearchBackendIdentifier(),
-                false,
-                $prepend
-            );
-        return $link;
+        $hiddenFilters = null;
+        // Try to get hidden filters for the current search:
+        if ($this->searchMemory) {
+            $searchId = $this->driver->getExtraDetail('searchId')
+                ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
+            if ($searchId && ($search = $this->searchMemory->getSearchById($searchId))) {
+                $filters = UrlQueryHelper::buildQueryString(
+                    [
+                        'hiddenFilters' => $search->getParams()->getHiddenFiltersAsQueryParams(),
+                    ]
+                );
+                $hiddenFilters = $filters ? $prepend . $filters : '';
+            }
+        }
+        // If we couldn't get hidden filters for the current search, use last filters:
+        if (null === $hiddenFilters) {
+            $hiddenFilters = $this->getView()->plugin('searchTabs')
+                ->getCurrentHiddenFilterParams(
+                    $this->driver->getSearchBackendIdentifier(),
+                    false,
+                    $prepend
+                );
+        }
+        return $link . $hiddenFilters;
     }
 
     /**
@@ -522,10 +560,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      */
     public function getCheckbox($idPrefix = '', $formAttr = false, $number = null)
     {
-        $id = $this->driver->getSourceIdentifier() . '|'
-            . $this->driver->getUniqueId();
-        $context
-            = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
+        $context = compact('number') + [
+            'id' => $this->getUniqueIdWithSourcePrefix(),
+            'checkboxElementId' => $this->getUniqueHtmlElementId($idPrefix),
+            'prefix' => $idPrefix,
+        ];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }
@@ -818,5 +857,39 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     protected function deduplicateLinks($links)
     {
         return array_values(array_unique($links, SORT_REGULAR));
+    }
+
+    /**
+     * Get the source identifier + unique id of the record without spaces
+     *
+     * @param string $idPrefix Prefix for HTML ids
+     *
+     * @return string
+     */
+    public function getUniqueHtmlElementId($idPrefix = '')
+    {
+        $resultSetId = $this->driver->getResultSetIdentifier() ?? '';
+
+        return preg_replace(
+            "/\s+/",
+            '_',
+            ($idPrefix ? $idPrefix . '-' : '')
+            . ($resultSetId ? $resultSetId . '-' : '')
+            . $this->driver->getUniqueId()
+        );
+    }
+
+    /**
+     * Get the source identifier + unique id of the record
+     *
+     * @return string
+     */
+    public function getUniqueIdWithSourcePrefix()
+    {
+        if ($this->driver) {
+            return "{$this->driver->getSourceIdentifier()}"
+                . "|{$this->driver->getUniqueId()}";
+        }
+        throw new \Exception('No record driver found.');
     }
 }

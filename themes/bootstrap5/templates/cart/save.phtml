@@ -12,11 +12,7 @@
 
 <?php if (count($this->records) > 0): ?>
   <form class="form-cart-save" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
-    <?php $idParams = []; ?>
-    <?php foreach ($this->records as $current): ?>
-      <?php $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getSourceIdentifier() . '|' . $current->getUniqueId()) ?>
-      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
-    <?php endforeach; ?>
+    <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>
     <div class="form-group">
       <label class="control-label"><?=$this->transEsc('Title')?>:</label>
       <?php if (count($this->records) > 1): ?>
@@ -48,7 +44,7 @@
           <option value=""><?=$this->transEsc('default_list_title') ?></option>
         <?php endif; ?>
       </select>
-      <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', ['id' => 'NEW']) . '?' . implode('&amp;', $idParams) ?>"><?=$this->transEsc('or create a new list'); ?></a>
+      <button type="submit" id="make-list" name="newList" class="btn btn-link"><?=$this->transEsc('or create a new list'); ?></button>
     </div>
 
     <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
