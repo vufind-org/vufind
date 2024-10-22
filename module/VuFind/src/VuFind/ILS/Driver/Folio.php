@@ -1373,8 +1373,9 @@ class Folio extends AbstractAPI implements
      * This method queries the ILS for a patron's current checked out items
      *
      * Input: Patron array returned by patronLogin method
-     * Output: Returns an array of associative arrays.
-     *         Each associative array contains these keys:
+     * Output: Returns with a 'count' key (overall result set size) and a 'records'
+     *         key (current page of results) containing subarrays representing records
+     *         and containing these keys:
      *         duedate - The item's due date (a string).
      *         dueTime - The item's due time (a string, optional).
      *         dueStatus - A special status – may be 'due' (for items due very soon)
@@ -1411,7 +1412,7 @@ class Folio extends AbstractAPI implements
      * @param array $patron Patron login information from $this->patronLogin
      * @param array $params Additional parameters (limit, page, sort)
      *
-     * @return array Transactions associative arrays
+     * @return array Transaction data as described above
      */
     public function getMyTransactions($patron, $params = [])
     {
