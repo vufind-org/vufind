@@ -53,8 +53,10 @@ use function is_callable;
  */
 class Manager implements
     \LmcRbacMvc\Identity\IdentityProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface,
+    \VuFind\Db\Table\DbTableAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -548,6 +550,10 @@ class Manager implements
                 // End the session if the logged-in user cannot be found:
                 if (null === $this->currentUser) {
                     $this->logout('');
+                }
+                // Temporary backward-compatibility shim while we transition from Laminas to Doctrine:
+                if (!($this->currentUser instanceof \VuFind\Db\Row\User)) {
+                    $this->currentUser = $this->getDbTable('User')->getById($this->currentUser->getId());
                 }
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                 if ($this->getAuth() instanceof ChoiceAuth) {

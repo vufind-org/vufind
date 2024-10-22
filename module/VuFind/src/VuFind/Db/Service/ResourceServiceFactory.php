@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Record\ResourcePopulator;
 
 /**
  * Database resource service factory
@@ -67,7 +68,9 @@ class ResourceServiceFactory extends AbstractDbServiceFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $table = $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource');
-        return parent::__invoke($container, $requestedName, [$table]);
+        $populatorLoader = function () use ($container) {
+            return $container->get(ResourcePopulator::class);
+        };
+        return parent::__invoke($container, $requestedName, [$populatorLoader]);
     }
 }

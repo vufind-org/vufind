@@ -38,8 +38,6 @@ use VuFind\Db\Service\Feature\TransactionInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -54,10 +52,8 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class TagsService implements DbTableAwareInterface
+class TagsService
 {
-    use DbTableAwareTrait;
-
     /**
      * Constructor
      *
@@ -218,7 +214,7 @@ class TagsService implements DbTableAwareInterface
      */
     public function fixDuplicateTags(): void
     {
-        $this->getDbTable('Tags')->fixDuplicateTags($this->caseSensitive);
+        $this->tagDbService->fixDuplicateTags();
     }
 
     /**

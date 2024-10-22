@@ -4,6 +4,8 @@ require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
+    'DoctrineModule',
+    'DoctrineORMModule',
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',

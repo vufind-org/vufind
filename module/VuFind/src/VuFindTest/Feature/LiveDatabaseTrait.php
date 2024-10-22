@@ -45,8 +45,6 @@ use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
 use VuFindTest\Container\MockContainer;
 
-use function count;
-
 /**
  * Mix-in for accessing a real database during testing.
  *
@@ -69,29 +67,142 @@ trait LiveDatabaseTrait
     public bool $hasLiveDatabaseTrait = true;
 
     /**
-     * Container connected to live database.
+     * Plugin manager for database services.
+     *
+     * @var ?ServiceManager
+     */
+    protected ?ServiceManager $liveDatabaseServiceManager = null;
+
+    /**
+     * Container with database-related services configured.
      *
      * @var ?MockContainer
      */
     protected ?MockContainer $liveDatabaseContainer = null;
 
     /**
-     * Get a real, working table manager.
+     * Get merged module config for database access.
+     *
+     * @return array
+     */
+    protected function getMergedConfig(): array
+    {
+        $dm = new \DoctrineModule\Module();
+        $dmConfig = $dm->getConfig();
+        $dmo = new \DoctrineORMModule\Module();
+        $dmoConfig = $dmo->getConfig();
+        $vfConfig
+            = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
+        return array_replace_recursive($dmConfig, $dmoConfig, $vfConfig);
+    }
+
+    /**
+     * Set up minimum Doctrine dependencies in the provided container.
+     *
+     * @param object $container Container to populate
+     *
+     * @return void
+     */
+    protected function addDoctrineDependenciesToContainer($container): void
+    {
+        $container->setAlias(
+            'doctrine.entitymanager.orm_vufind',
+            \Doctrine\ORM\EntityManager::class
+        );
+        $container->setAlias(
+            'doctrine.connection.orm_vufind',
+            \VuFind\Db\Connection::class
+        );
+        $connectionFactory = new \VuFind\Db\ConnectionFactory();
+        $container->set(
+            \VuFind\Db\Connection::class,
+            $connectionFactory($container, \VuFind\Db\Connection::class)
+        );
+        $config = $container->get('config');
+        $options = $config['caches']['doctrinemodule.cache.filesystem']['options'];
+        $options['cache_dir']
+            = LOCAL_CACHE_DIR . '/' . $options['cache_dir'] . '_testmode';
+        if (!is_dir($options['cache_dir'])) {
+            mkdir($options['cache_dir'], 0o777, true);
+        }
+        $cacheAdapter = new \Laminas\Cache\Storage\Adapter\Filesystem($options);
+        $cacheAdapter->addPlugin(new \Laminas\Cache\Storage\Plugin\Serializer());
+        $container->set(
+            'doctrine.cache.filesystem',
+            new \DoctrineModule\Cache\LaminasStorageCache($cacheAdapter)
+        );
+        $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
+        $container->set(
+            'doctrine.driver.orm_default',
+            $driverFactory($container, 'orm_default')
+        );
+        $configFactory
+            = new \DoctrineORMModule\Service\ConfigurationFactory('orm_vufind');
+        $container->set(
+            'doctrine.configuration.orm_vufind',
+            $configFactory($container, 'orm_vufind')
+        );
+        $eventManagerFactory
+            = new \DoctrineModule\Service\EventManagerFactory('orm_default');
+        $container->set(
+            'doctrine.eventmanager.orm_default',
+            $eventManagerFactory($container, 'orm_default')
+        );
+        $entityResolverFactory
+            = new \DoctrineORMModule\Service\EntityResolverFactory('orm_default');
+        $container->set(
+            'doctrine.entity_resolver.orm_default',
+            $entityResolverFactory($container, 'orm_default')
+        );
+        $entityManagerFactory = new \DoctrineORMModule\Service\EntityManagerFactory(
+            'orm_vufind'
+        );
+        $container->set(
+            \Doctrine\ORM\EntityManager::class,
+            $entityManagerFactory($container, 'orm_vufind')
+        );
+        $container->set(
+            \VuFind\Db\Entity\PluginManager::class,
+            new \VuFind\Db\Entity\PluginManager($container, [])
+        );
+        $container->set(
+            \VuFind\Db\Service\PluginManager::class,
+            new \VuFind\Db\Service\PluginManager($container, [])
+        );
+    }
+
+    /**
+     * Get a container with Doctrine dependencies included
+     *
+     * @return \VuFindTest\Container\MockContainer
+     */
+    public function getMockContainerWithDoctrineDependencies()
+    {
+        // Set up the bare minimum services to actually load real configs:
+        $config = $this->getMergedConfig();
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+        $container->set('config', $config);
+        $configManager = new \VuFind\Config\PluginManager(
+            $container,
+            $config['vufind']['config_reader']
+        );
+        $container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $this->addPathResolverToContainer($container);
+        $this->addDoctrineDependenciesToContainer($container);
+        return $container;
+    }
+
+    /**
+     * Get a container with database-related services configured.
      *
      * @return MockContainer
      */
     public function getLiveDatabaseContainer(): MockContainer
     {
         if (!$this->liveDatabaseContainer) {
-            // Set up the bare minimum services to actually load real configs:
-            $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
-            $container = new MockContainer($this);
-            $configManager = new \VuFind\Config\PluginManager(
-                $container,
-                $config['vufind']['config_reader']
-            );
-            $container->set(\VuFind\Config\PluginManager::class, $configManager);
-            $this->addPathResolverToContainer($container);
+            $container = $this->getMockContainerWithDoctrineDependencies();
+            $configManager = $container->get(\VuFind\Config\PluginManager::class);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );
@@ -99,7 +210,6 @@ trait LiveDatabaseTrait
                 \Laminas\Db\Adapter\Adapter::class,
                 $adapterFactory->getAdapter()
             );
-            $container->set('config', $config);
             $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
             $container->set(
                 \VuFind\Db\Row\PluginManager::class,
@@ -206,17 +316,19 @@ trait LiveDatabaseTrait
         // server)
         $checks = [
             [
-                'table' => \VuFind\Db\Table\User::class,
+                'service' => \VuFind\Db\Service\UserService::class,
+                'entity' => \VuFind\Db\Entity\User::class,
                 'name' => 'users',
             ],
             [
-                'table' => \VuFind\Db\Table\Tags::class,
+                'service' => \VuFind\Db\Service\TagService::class,
+                'entity' => \VuFind\Db\Entity\Tags::class,
                 'name' => 'tags',
             ],
         ];
         foreach ($checks as $check) {
-            $table = $test->getTable($check['table']);
-            if (count($table->select()) > 0) {
+            $dbService = $test->getDbService($check['service']);
+            if ($dbService->getRowCountForTable($check['entity']) > 0) {
                 self::fail(
                     $failMessage ?? "Test cannot run with pre-existing {$check['name']} in database!"
                 );

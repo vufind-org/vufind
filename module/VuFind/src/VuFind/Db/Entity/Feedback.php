@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class Feedback
+ * Entity model for feedback table
  *
  * PHP version 8
  *
- * Copyright (C) Moravian Library 2022.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,56 +21,167 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-declare(strict_types=1);
-
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\FeedbackEntityInterface;
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\DbServiceAwareTrait;
-use VuFind\Db\Service\UserServiceInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Feedback
+ * Entity model for feedback table
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property int    $id
- * @property int    $user_id
- * @property string $message
- * @property string $form_data
- * @property string $form_name
- * @property string $created
- * @property string $updated
- * @property int    $updated_by
- * @property string $status
- * @property string $site_url
+ * @ORM\Table(name="feedback",
+ * indexes={@ORM\Index(name="created", columns={"created"}),
+ * @ORM\Index(name="status",    columns={"status"}),
+ * @ORM\Index(name="form_name", columns={"form_name"})}
+ * )
+ * @ORM\Entity
  */
-class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceAwareInterface
+class Feedback implements FeedbackEntityInterface
 {
-    use DbServiceAwareTrait;
+    /**
+     * Unique ID.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false,
+     *          options={"unsigned"=true}
+     * )
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    protected $id;
 
     /**
-     * Constructor
+     * Message
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @var string
+     *
+     * @ORM\Column(name="message",
+     *          type="text",
+     *          length=0,
+     *          nullable=false
+     * )
      */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'feedback', $adapter);
-    }
+    protected $message;
+
+    /**
+     * Form data
+     *
+     * @var mixed
+     *
+     * @ORM\Column(name="form_data",
+     *          type="json",
+     *          length=0,
+     *          nullable=true
+     * )
+     */
+    protected $formData;
+
+    /**
+     * Form name
+     *
+     * @var string
+     *
+     * @ORM\Column(name="form_name",
+     *          type="string",
+     *          length=255,
+     *          nullable=false
+     * )
+     */
+    protected $formName;
+
+    /**
+     * Creation date
+     *
+     * @var DateTime
+     *
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="CURRENT_TIMESTAMP"}
+     * )
+     */
+    protected $created = 'CURRENT_TIMESTAMP';
+
+    /**
+     * Last update date
+     *
+     * @var DateTime
+     *
+     * @ORM\Column(name="updated",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="CURRENT_TIMESTAMP"}
+     * )
+     */
+    protected $updated = 'CURRENT_TIMESTAMP';
+
+    /**
+     * Status
+     *
+     * @var string
+     *
+     * @ORM\Column(name="status",
+     *          type="string",
+     *          length=255,
+     *          nullable=false,
+     *          options={"default"="open"}
+     * )
+     */
+    protected $status = 'open';
+
+    /**
+     * Site URL
+     *
+     * @var string
+     *
+     * @ORM\Column(name="site_url",
+     *          type="string",
+     *          length=255,
+     *          nullable=false
+     * )
+     */
+    protected $siteUrl;
+
+    /**
+     * User that created request
+     *
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="user_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $user;
+
+    /**
+     * User that updated request
+     *
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="updated_by",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $updatedBy;
 
     /**
      * Id getter
@@ -108,13 +219,13 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
     /**
      * Form data setter.
      *
-     * @param array $data Form data
+     * @param mixed $data Form data
      *
      * @return static
      */
     public function setFormData(array $data): static
     {
-        $this->form_data = json_encode($data);
+        $this->formData = $data;
         return $this;
     }
 
@@ -125,7 +236,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function getFormData(): array
     {
-        return json_decode($this->form_data, true);
+        return $this->formData;
     }
 
     /**
@@ -137,7 +248,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function setFormName(string $name): static
     {
-        $this->form_name = $name;
+        $this->formName = $name;
         return $this;
     }
 
@@ -148,7 +259,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function getFormName(): string
     {
-        return $this->form_name;
+        return $this->formName;
     }
 
     /**
@@ -160,7 +271,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function setCreated(DateTime $dateTime): static
     {
-        $this->created = $dateTime->format('Y-m-d H:i:s');
+        $this->created = $dateTime;
         return $this;
     }
 
@@ -171,7 +282,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+        return $this->created;
     }
 
     /**
@@ -183,7 +294,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function setUpdated(DateTime $dateTime): static
     {
-        $this->updated = $dateTime->format('Y-m-d H:i:s');
+        $this->updated = $dateTime;
         return $this;
     }
 
@@ -194,7 +305,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function getUpdated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->updated);
+        return $this->updated;
     }
 
     /**
@@ -229,7 +340,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function setSiteUrl(string $url): static
     {
-        $this->site_url = $url;
+        $this->siteUrl = $url;
         return $this;
     }
 
@@ -240,7 +351,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function getSiteUrl(): string
     {
-        return $this->site_url;
+        return $this->siteUrl;
     }
 
     /**
@@ -252,7 +363,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function setUser(?UserEntityInterface $user): static
     {
-        $this->user_id = $user?->getId();
+        $this->user = $user;
         return $this;
     }
 
@@ -263,9 +374,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function getUser(): ?UserEntityInterface
     {
-        return $this->user_id
-            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
-            : null;
+        return $this->user;
     }
 
     /**
@@ -277,7 +386,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function setUpdatedBy(?UserEntityInterface $user): static
     {
-        $this->updated_by = $user ? $user->getId() : null;
+        $this->updatedBy = $user;
         return $this;
     }
 
@@ -288,8 +397,6 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function getUpdatedBy(): ?UserEntityInterface
     {
-        return $this->updated_by
-            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->updated_by)
-            : null;
+        return $this->updatedBy;
     }
 }

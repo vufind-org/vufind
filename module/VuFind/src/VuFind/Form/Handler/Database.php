@@ -33,8 +33,10 @@ declare(strict_types=1);
 namespace VuFind\Form\Handler;
 
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -54,10 +56,12 @@ class Database implements HandlerInterface, LoggerAwareInterface
      * Constructor
      *
      * @param FeedbackServiceInterface $feedbackService Feedback database service
+     * @param UserService              $userService     User database service
      * @param string                   $baseUrl         Site base url
      */
     public function __construct(
         protected FeedbackServiceInterface $feedbackService,
+        protected UserService $userService,
         protected string $baseUrl
     ) {
     }
@@ -82,7 +86,7 @@ class Database implements HandlerInterface, LoggerAwareInterface
         unset($formData['message']);
         $now = new \DateTime();
         $data = $this->feedbackService->createEntity()
-            ->setUser($user)
+            ->setUser($user ? $this->userService->getDoctrineReference(User::class, $user) : null)
             ->setMessage($fields['message'] ?? '')
             ->setFormData($formData)
             ->setFormName($form->getFormId())

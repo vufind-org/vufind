@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Table Definition for shortlinks
+ * Wrapper class for VuFind Doctrine connections.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,44 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Db
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db\Table;
-
-use Laminas\Db\Adapter\Adapter;
-use VuFind\Db\Row\RowGateway;
+namespace VuFind\Db;
 
 /**
- * Table Definition for shortlinks
+ * Wrapper class for VuFind Doctrine connections.
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Db
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Shortlinks extends Gateway
+class Connection extends \Doctrine\DBAL\Connection
 {
-    /**
-     * Constructor
-     *
-     * @param Adapter       $adapter Database adapter
-     * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
-     * @param string        $table   Name of database table to interface with
-     */
-    public function __construct(
-        Adapter $adapter,
-        PluginManager $tm,
-        $cfg,
-        ?RowGateway $rowObj = null,
-        $table = 'shortlinks'
-    ) {
-        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
-    }
 }

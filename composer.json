@@ -33,6 +33,8 @@
         "colinmollenhour/credis": "1.16.1",
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.3",
+        "doctrine/doctrine-orm-module": "^6.0",
+        "doctrine/orm": "^2.10.2",
         "endroid/qr-code": "5.1.0",
         "guzzlehttp/guzzle": "7.9.2",
         "jaybizzle/crawler-detect": "^1.2",

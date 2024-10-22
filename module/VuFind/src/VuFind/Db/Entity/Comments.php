@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for comments
+ * Entity model for comments table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,49 +21,92 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\CommentsEntityInterface;
-use VuFind\Db\Entity\ResourceEntityInterface;
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\UserServiceInterface;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Row Definition for comments
+ * Comments
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @property int     $id
- * @property ?int    $user_id
- * @property int     $resource_id
- * @property string  $comment
- * @property string  $created
+ * @ORM\Table(name="comments")
+ * @ORM\Entity
  */
-class Comments extends RowGateway implements CommentsEntityInterface, DbServiceAwareInterface
+class Comments implements CommentsEntityInterface
 {
-    use \VuFind\Db\Service\DbServiceAwareTrait;
+    /**
+     * Unique ID.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    protected $id;
 
     /**
-     * Constructor
+     * Comment.
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @var string
+     *
+     * @ORM\Column(name="comment", type="text", length=65535, nullable=false)
      */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'comments', $adapter);
-    }
+    protected $comment;
+
+    /**
+     * Creation date.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
+     */
+    protected $created = '2000-01-01 00:00:00';
+
+    /**
+     * User ID.
+     *
+     * @var ?User
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="user_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $user;
+
+    /**
+     * Resource ID.
+     *
+     * @var Resource
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="resource_id",
+     *              referencedColumnName="id")
+     * })
+     */
+    protected $resource;
 
     /**
      * Id getter
@@ -107,7 +150,7 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      */
     public function setCreated(DateTime $dateTime): static
     {
-        $this->created = $dateTime->format('Y-m-d H:i:s');
+        $this->created = $dateTime;
         return $this;
     }
 
@@ -118,7 +161,7 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      */
     public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+        return $this->created;
     }
 
     /**
@@ -130,7 +173,7 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      */
     public function setUser(?UserEntityInterface $user): static
     {
-        $this->user_id = $user ? $user->getId() : null;
+        $this->user = $user;
         return $this;
     }
 
@@ -141,9 +184,7 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      */
     public function getUser(): ?UserEntityInterface
     {
-        return $this->user_id
-            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
-            : null;
+        return $this->user;
     }
 
     /**
@@ -155,7 +196,7 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      */
     public function setResource(ResourceEntityInterface $resource): static
     {
-        $this->resource_id = $resource->getId();
+        $this->resource = $resource;
         return $this;
     }
 }

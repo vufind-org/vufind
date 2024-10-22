@@ -440,6 +440,8 @@ $config = [
             'VuFind\Crypt\SecretCalculator' => 'VuFind\Crypt\SecretCalculatorFactory',
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
+            'VuFind\Db\Connection' => 'VuFind\Db\ConnectionFactory',
+            'VuFind\Db\Entity\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Service\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -543,6 +545,8 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'doctrine.connection.orm_vufind' => 'VuFind\Db\Connection',
+
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\AuthPluginManager' => 'VuFind\Auth\PluginManager',
@@ -615,6 +619,44 @@ $config = [
             'VuFind\Http\CachingDownloader' => false,
         ],
     ],
+    'caches' => [
+        'doctrinemodule.cache.filesystem' => [
+            'options' => [
+                'cache_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/objects',
+            ],
+        ],
+    ],
+    'doctrine' => [
+        'configuration' => [
+            'orm_vufind' => [
+                'query_cache' => 'filesystem',
+                'result_cache' => 'filesystem',
+                'metadata_cache' => 'filesystem',
+                'hydration_cache' => 'filesystem',
+                'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
+            ],
+        ],
+        'driver' => [
+            'vufind_annotation_driver' => [
+                'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
+                'cache' => 'filesystem',
+                'paths' => [
+                    'module/VuFind/src/VuFind/Db/Entity',
+                ],
+            ],
+            'orm_default' => [
+                'drivers' => [
+                    'VuFind\Db\Entity' => 'vufind_annotation_driver',
+                ],
+            ],
+        ],
+        'entitymanager' => [
+            'orm_vufind' => [
+                'connection' => 'orm_vufind',
+                'configuration' => 'orm_vufind',
+            ],
+        ],
+    ],
     'translator' => [],
     'translator_plugins' => [
         'factories' => [
@@ -679,6 +721,7 @@ $config = [
             'content_toc' => [ /* see VuFind\Content\TOC\PluginManager for defaults */ ],
             'contentblock' => [ /* see VuFind\ContentBlock\PluginManager for defaults */ ],
             'cover_layer' => [ /* see VuFind\Cover\Layer\PluginManager for defaults */ ],
+            'db_entity' => [ /* see VuFind\Db\Entity\PluginManager for defaults */ ],
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_service' => [ /* see VuFind\Db\Service\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
