@@ -4,10 +4,10 @@
     $this->slot('search-heading')->set($this->transEsc('Reserves'));
     $headingParts = [];
     if (isset($this->instructor)) {
-        $headingParts[] = $this->transEsc('Instructor') . ': <strong>' . $this->escapeHtml($this->instructor) . '</strong>';
+        $headingParts[] = $this->transEsc('Instructor') . ': <strong>' . $this->transEsc('Reserves::' . $this->instructor) . '</strong>';
     }
     if (isset($this->course)) {
-        $headingParts[] = $this->transEsc('Course') . ': <strong>' . $this->escapeHtml($this->course) . '</strong>';
+        $headingParts[] = $this->transEsc('Course') . ': <strong>' . $this->transEsc('Reserves::' . $this->course) . '</strong>';
     }
     if (!empty($headingParts)) {
         $this->slot('search-heading')->append(' (' . implode(', ', $headingParts) . ')');

@@ -33,7 +33,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Reserves\CsvReader;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
@@ -56,10 +55,8 @@ use function sprintf;
     name: 'util/index_reserves',
     description: 'Course reserves index builder'
 )]
-class IndexReservesCommand extends AbstractSolrAndIlsCommand implements TranslatorAwareInterface
+class IndexReservesCommand extends AbstractSolrAndIlsCommand
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
     /**
      * Output interface
      *
@@ -165,11 +162,11 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand implements Translat
                     'id' => $id,
                     'bib_id' => [],
                     'instructor_id' => $instructorId,
-                    'instructor' => $instructors[$instructorId] ?? $this->translate('no_instructor_listed'),
+                    'instructor' => $instructors[$instructorId] ?? 'no_instructor_listed',
                     'course_id' => $courseId,
-                    'course' => $courses[$courseId] ?? $this->translate('no_course_listed'),
+                    'course' => $courses[$courseId] ?? 'no_course_listed',
                     'department_id' => $departmentId,
-                    'department' => $departments[$departmentId] ?? $this->translate('no_department_listed'),
+                    'department' => $departments[$departmentId] ?? 'no_department_listed',
                 ];
             }
             if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {

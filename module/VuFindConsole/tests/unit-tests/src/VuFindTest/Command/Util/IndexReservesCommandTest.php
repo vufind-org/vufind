@@ -401,11 +401,11 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="id">course2|inst2|dept2</field>'
                 . '<field name="bib_id">1</field>'
                 . '<field name="instructor_id">inst2</field>'
-                . '<field name="instructor">No Instructor Listed</field>'
+                . '<field name="instructor">no_instructor_listed</field>'
                 . '<field name="course_id">course2</field>'
-                . '<field name="course">No Course Listed</field>'
+                . '<field name="course">no_course_listed</field>'
                 . '<field name="department_id">dept2</field>'
-                . '<field name="department">No Department Listed</field>'
+                . '<field name="department">no_department_listed</field>'
                 . '</doc>'
                 . '</add>';
             $that->assertEquals($expectedXml, trim($update->getContent()));
@@ -417,16 +417,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 $this->callback($updateValidator)
             );
         $command = $this->getCommand($writer, $ils);
-        $translator = $this->getMockTranslator(
-            [
-                'default' => [
-                    'no_course_listed' => 'No Course Listed',
-                    'no_department_listed' => 'No Department Listed',
-                    'no_instructor_listed' => 'No Instructor Listed',
-                ],
-            ]
-        );
-        $command->setTranslator($translator);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -497,7 +487,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="course_id">course1</field>'
                 . '<field name="course">course1</field>'
                 . '<field name="department_id"></field>'
-                . '<field name="department">No Department Listed</field>'
+                . '<field name="department">no_department_listed</field>'
                 . '</doc>'
                 . '</add>';
             $that->assertEquals($expectedXml, trim($update->getContent()));
@@ -509,14 +499,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 $this->callback($updateValidator)
             );
         $command = $this->getCommand($writer, $ils);
-        $translator = $this->getMockTranslator(
-            [
-                'default' => [
-                    'no_department_listed' => 'No Department Listed',
-                ],
-            ]
-        );
-        $command->setTranslator($translator);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
