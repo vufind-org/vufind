@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
  * Factory for ScheduledSearch/Notify command.
@@ -68,7 +70,6 @@ class NotifyCommandFactory implements FactoryInterface
         $scheduleOptions = $container
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         $mainConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
@@ -77,17 +78,18 @@ class NotifyCommandFactory implements FactoryInterface
         $theme->init();
 
         // Now build the object:
-        return new $requestedName(
-            $container->get(\VuFind\Crypt\HMAC::class),
+        $command = new $requestedName(
+            $container->get(\VuFind\Crypt\SecretCalculator::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $scheduleOptions,
             $mainConfig,
             $container->get(\VuFind\Mailer\Mailer::class),
-            $tableManager->get(\VuFind\Db\Table\Search::class),
-            $tableManager->get(\VuFind\Db\Table\User::class),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
             ...($options ?? [])
         );
+        $command->setPathResolver($container->get(PathResolver::class));
+        return $command;
     }
 }

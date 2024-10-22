@@ -42,10 +42,9 @@ use Laminas\Log\LoggerAwareInterface;
  * @link     https://vufind.org
  */
 class ExternalVuFind implements
-    \VuFindHttp\HttpServiceAwareInterface,
     LoggerAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Http\CachingDownloaderAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -54,6 +53,18 @@ class ExternalVuFind implements
      * @var string
      */
     protected $baseUrl = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Http\CachingDownloader $cachingDownloader The caching downloader
+     */
+    public function __construct(\VuFind\Http\CachingDownloader $cachingDownloader)
+    {
+        $this->cacheOptionsSection = 'ExternalVuFind_Defaults';
+        $this->cacheOptionsFile = 'ExternalVuFind';
+        $this->setCachingDownloader($cachingDownloader);
+    }
 
     /**
      * Set the API base URL.
@@ -97,7 +108,7 @@ class ExternalVuFind implements
         }
 
         try {
-            $response = $this->httpService->get($this->baseUrl . '/search', $params);
+            $arr = $this->cachingDownloader->downloadJson($this->baseUrl . '/search', $params, true);
         } catch (Exception $ex) {
             $this->logError(
                 'Exception during request: ' .
@@ -106,16 +117,6 @@ class ExternalVuFind implements
             return [];
         }
 
-        if ($response->isServerError()) {
-            $this->logError(
-                'ExternalVuFind API HTTP Error: ' .
-                $response->getStatusCode()
-            );
-            return [];
-        }
-
-        $responseData = trim($response->getBody());
-        $arr = json_decode($responseData, true);
-        return $arr ?? [];
+        return $arr;
     }
 }

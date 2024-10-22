@@ -48,6 +48,7 @@ use VuFindTheme\ThemeInfo;
 class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
+    use RelativePathTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -112,17 +113,18 @@ class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\Log
      */
     public function itemToString(stdClass $item)
     {
-        // Normalize href to account for themes, then call the parent class:
-        $relPath = 'css/' . $item->href;
-        $details = $this->themeInfo
-            ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
-
-        if (!empty($details)) {
-            $urlHelper = $this->getView()->plugin('url');
-            $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
-            $url .= strstr($url, '?') ? '&_=' : '?_=';
-            $url .= filemtime($details['path']);
-            $item->href = $url;
+        // Normalize href to account for themes (if appropriate), then call the parent class:
+        if (isset($item->href) && $this->isRelativePath($item->href)) {
+            $relPath = 'css/' . $item->href;
+            $details = $this->themeInfo
+                ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
+            if (!empty($details)) {
+                $urlHelper = $this->getView()->plugin('url');
+                $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+                $url .= strstr($url, '?') ? '&_=' : '?_=';
+                $url .= filemtime($details['path']);
+                $item->href = $url;
+            }
         }
         $this->addNonce($item);
         return parent::itemToString($item);
@@ -166,7 +168,7 @@ class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\Log
     protected function isExcludedFromConcat($item)
     {
         return !isset($item->rel) || $item->rel != 'stylesheet'
-            || strpos($item->href, '://');
+            || !$this->isRelativePath($item->href);
     }
 
     /**

@@ -60,7 +60,7 @@ class Options extends \VuFind\Search\Solr\Options
         } else {
             $this->sortOptions = [
                 'title' => 'sort_title',
-                'year' => 'sort_year', 'year asc' => 'sort_year asc',
+                'year' => 'sort_year', 'year asc' => 'sort_year_asc',
                 'author' => 'sort_author',
             ];
         }

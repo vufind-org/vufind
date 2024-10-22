@@ -101,7 +101,7 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return Comments
      */
@@ -114,11 +114,11 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created, new \DateTimeZone('UTC'));
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
     }
 
     /**

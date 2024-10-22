@@ -528,7 +528,7 @@ class Options extends \VuFind\Search\Base\Options
             case 'Date Newest':
                 return 'sort_year';
             case 'Date Oldest':
-                return 'sort_year asc';
+                return 'sort_year_asc';
             default:
                 return 'sort_' . strtolower($label);
         }

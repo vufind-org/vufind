@@ -34,6 +34,7 @@ use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
@@ -54,6 +55,8 @@ use function in_array;
  */
 class Backend extends AbstractBackend
 {
+    use SecretTrait;
+
     /**
      * Client user to make the actually requests to the EdsApi
      *
@@ -173,7 +176,7 @@ class Backend extends AbstractBackend
 
         // Extract key values from configuration:
         $this->userName = $config->EBSCO_Account->user_name ?? null;
-        $this->password = $config->EBSCO_Account->password ?? null;
+        $this->password = $this->getSecretFromConfig($config->EBSCO_Account, 'password');
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
@@ -273,8 +276,9 @@ class Backend extends AbstractBackend
                         $e
                     );
                 default:
-                    $response = [];
-                    break;
+                    $errorMessage = "Unhandled EDS API error {$e->getApiErrorCode()} : {$e->getMessage()}";
+                    $this->logError($errorMessage);
+                    throw new BackendException($errorMessage, $e->getCode(), $e);
             }
         } catch (Exception $e) {
             $this->debug('Exception found: ' . $e->getMessage());
@@ -643,7 +647,7 @@ class Backend extends AbstractBackend
      * Obtain the session to use with the EDS API from cache if it exists. If not,
      * then generate a new one.
      *
-     * @param bool   $isGuest Whether or not this sesssion will be a guest session
+     * @param bool   $isGuest Whether or not this session will be a guest session
      * @param string $profile Authentication to use for generating a new session
      * if necessary
      *
@@ -756,7 +760,7 @@ class Backend extends AbstractBackend
     /**
      * Set the EBSCO backend type. Backend/EDS is used for both EDS and EPF.
      *
-     * @param str $backendType 'EDS' or 'EPF'
+     * @param string $backendType 'EDS' or 'EPF'
      *
      * @return void
      */

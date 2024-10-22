@@ -31,10 +31,15 @@ namespace VuFind\Db\Row;
 
 use VuFind\Date\DateException;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 use function intval;
-use function is_object;
 use function strlen;
 
 /**
@@ -54,9 +59,10 @@ use function strlen;
  * @property string  $source
  * @property ?string $extra_metadata
  */
-class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, ResourceEntityInterface
+class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwareInterface, ResourceEntityInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+    use DbTableAwareTrait;
 
     /**
      * Constructor
@@ -76,22 +82,26 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * (optional -- omitting this will delete ALL of the user's tags).
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyResourceTagsLinksForUser()
      */
     public function deleteTags($user, $list_id = null)
     {
-        $unlinker = $this->getDbTable('ResourceTags');
-        $unlinker->destroyResourceLinks($this->id, $user->id, $list_id);
+        $this->getDbService(ResourceTagsServiceInterface::class)
+            ->destroyResourceTagsLinksForUser($this->getId(), $user, $list_id);
     }
 
     /**
      * Add a tag to the current resource.
      *
      * @param string              $tagText The tag to save.
-     * @param \VuFind\Db\Row\User $user    The user posting the tag.
+     * @param UserEntityInterface $user    The user posting the tag.
      * @param string              $list_id The list associated with the tag
      * (optional).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Tags\TagService::linkTagToResource()
      */
     public function addTag($tagText, $user, $list_id = null)
     {
@@ -100,11 +110,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $tags = $this->getDbTable('Tags');
             $tag = $tags->getByText($tagText);
 
-            $linker = $this->getDbTable('ResourceTags');
-            $linker->createLink(
-                $this->id,
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+                $this,
                 $tag->id,
-                is_object($user) ? $user->id : null,
+                $user,
                 $list_id
             );
         }
@@ -119,6 +128,8 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * (optional).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Tags\TagsService::unlinkTagFromResource()
      */
     public function deleteTag($tagText, $user, $list_id = null)
     {
@@ -127,13 +138,12 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $tags = $this->getDbTable('Tags');
             $tagIds = [];
             foreach ($tags->getByText($tagText, false, false) as $tag) {
-                $tagIds[] = $tag->id;
+                $tagIds[] = $tag->getId();
             }
             if (!empty($tagIds)) {
-                $linker = $this->getDbTable('ResourceTags');
-                $linker->destroyResourceLinks(
-                    $this->id,
-                    $user->id,
+                $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(
+                    $this->getId(),
+                    $user,
                     $list_id,
                     $tagIds
                 );
@@ -220,6 +230,8 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * @param \VuFind\Date\Converter            $converter Date converter
      *
      * @return \VuFind\Db\Row\Resource
+     *
+     * @deprecated Use \VuFind\Record\ResourcePopulator::assignMetadata()
      */
     public function assignMetadata($driver, \VuFind\Date\Converter $converter)
     {

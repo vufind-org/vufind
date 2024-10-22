@@ -52,4 +52,50 @@ interface SessionServiceInterface extends DbServiceInterface
      * @return ?SessionEntityInterface
      */
     public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface;
+
+    /**
+     * Retrieve data for the given session ID.
+     *
+     * @param string $sid      Session ID to retrieve
+     * @param int    $lifetime Session lifetime (in seconds)
+     *
+     * @throws SessionExpiredException
+     * @return string     Session data
+     */
+    public function readSession(string $sid, int $lifetime): string;
+
+    /**
+     * Store data for the given session ID.
+     *
+     * @param string $sid  Session ID to retrieve
+     * @param string $data Data to store
+     *
+     * @return bool
+     */
+    public function writeSession(string $sid, string $data): bool;
+
+    /**
+     * Destroy data for the given session ID.
+     *
+     * @param string $sid Session ID to erase
+     *
+     * @return void
+     */
+    public function destroySession(string $sid): void;
+
+    /**
+     * Garbage collect expired sessions. Returns number of deleted rows.
+     *
+     * @param int $maxLifetime Maximum session lifetime.
+     *
+     * @return int
+     */
+    public function garbageCollect(int $maxLifetime): int;
+
+    /**
+     * Create a session entity object.
+     *
+     * @return SessionEntityInterface
+     */
+    public function createEntity(): SessionEntityInterface;
 }

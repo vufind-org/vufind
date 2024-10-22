@@ -106,12 +106,11 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
         // Legacy support for "isn", "isbn" param which has been superseded by isbns:
         foreach (['isbns', 'isbn', 'isn'] as $identification) {
             if ($isbns = $params()->fromQuery($identification)) {
-                $isbns = (array)$isbns;
                 break;
             }
         }
         return [
-            'isbns' => $isbns,
+            'isbns' => $isbns ? (array)$isbns : null,
             'size' => $params()->fromQuery('size'),
             'type' => $params()->fromQuery('contenttype'),
             'title' => $params()->fromQuery('title'),

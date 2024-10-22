@@ -1,6 +1,5 @@
 .keyboard-selection {
   display: inline-block;
-  margin-top: 2px;
 
   button.dropdown-toggle {
     color: @input-color;
@@ -43,6 +42,9 @@
   height: 0;
   z-index: 60;
   width: 95%;
+  left: 50%;
+  right: 50%;
+  transform: translate(-50%, -50%);
 
   @media (min-width: 768px) {
     width: 720px;

@@ -99,8 +99,7 @@ class HoldsController extends AbstractBase
         // Process cancel requests if necessary:
         $cancelStatus = $catalog->checkFunction('cancelHolds', compact('patron'));
         $view = $this->createViewModel();
-        $view->cancelResults = $cancelStatus
-            ? $this->holds()->cancelHolds($catalog, $patron) : [];
+        $view->cancelResults = $cancelStatus ? $this->holds()->cancelHolds($catalog, $patron) : [];
         // If we need to confirm
         if (!is_array($view->cancelResults)) {
             return $view->cancelResults;
@@ -281,7 +280,7 @@ class HoldsController extends AbstractBase
                     $this->flashMessenger()->addErrorMessage($msg);
                 }
                 return $this->inLightbox()
-                    ? $this->getRefreshResponse()
+                    ? $this->getRefreshResponse(true)
                     : $this->redirect()->toRoute('holds-list');
             }
         }
@@ -467,7 +466,7 @@ class HoldsController extends AbstractBase
     {
         return new \Laminas\Session\Container(
             'hold_update',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
     }
 

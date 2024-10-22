@@ -1370,7 +1370,7 @@ class SierraRest extends AbstractBase implements
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -1784,7 +1784,9 @@ class SierraRest extends AbstractBase implements
     {
         foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
-                return trim($varField['content']);
+                // Depending on Sierra version/configuration, the content may be in a couple
+                // of different places. This logic checks both possibilities.
+                return trim($varField['subfields'][0]['content'] ?? $varField['content'] ?? '');
             }
         }
         return '';
@@ -2433,6 +2435,7 @@ class SierraRest extends AbstractBase implements
                 'id' => $id,
                 'item_id' => 'HLD_' . $holdings[0]['id'],
                 'location' => $location,
+                'callnumber' => '',
                 'requests_placed' => 0,
                 'number' => '',
                 'status' => '',

@@ -31,8 +31,19 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Config\Config;
 use Laminas\View\Exception\RuntimeException;
+use Laminas\View\Helper\ServerUrl;
+use Laminas\View\Helper\Url;
+use Laminas\View\Resolver\ResolverInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Cover\Loader;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\PluginManager;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Tags\TagsService;
+use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Record;
+use VuFind\View\Helper\Root\SearchTabs;
 use VuFindTheme\ThemeInfo;
 
 use function is_array;
@@ -63,7 +74,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingTemplate()
+    public function testMissingTemplate(): void
     {
         $this->expectException(\Laminas\View\Exception\RuntimeException::class);
         $this->expectExceptionMessage(
@@ -94,7 +105,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingTemplateWithoutException()
+    public function testMissingTemplateWithoutException(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->assertEquals(
@@ -108,7 +119,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTemplateInheritance()
+    public function testTemplateInheritance(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $tpl = 'RecordDriver/SolrDefault/collection-record.phtml';
@@ -120,7 +131,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo($tpl))
-            ->will($this->returnValue('success'));
+            ->willReturn('success');
         $this->assertEquals('success', $record->getCollectionBriefRecord());
     }
 
@@ -129,7 +140,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetExport()
+    public function testGetExport(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/export-foo.phtml');
@@ -141,12 +152,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFormatClass()
+    public function testGetFormatClass(): void
     {
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
             ->with($this->equalTo(['format' => 'foo']))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
@@ -163,7 +174,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFormatList()
+    public function testGetFormatList(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/format-list.phtml');
@@ -175,7 +186,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetToolbar()
+    public function testGetToolbar(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/toolbar.phtml');
@@ -187,7 +198,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCollectionMetadata()
+    public function testGetCollectionMetadata(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/collection-info.phtml');
@@ -199,7 +210,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSearchResult()
+    public function testGetSearchResult(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/result-foo.phtml');
@@ -211,24 +222,30 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetListEntry()
+    public function testGetListEntry(): void
     {
-        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->once())->method('getContainingLists')
-            ->with($this->equalTo(42))
-            ->will($this->returnValue([1, 2, 3]));
-        $user = new \StdClass();
-        $user->id = 42;
+        $driver = $this->createMock(RecordDriver::class);
+        $driver->method('getUniqueID')->willReturn('foo');
+        $driver->method('getSourceIdentifier')->willReturn('bar');
+        $user = $this->createMock(UserEntityInterface::class);
+        $listService = $this->createMock(UserListServiceInterface::class);
+        $listService->expects($this->once())->method('getListsContainingRecord')
+            ->with('foo', 'bar', $user)
+            ->willReturn([1, 2, 3]);
+        $serviceManager = $this->createMock(PluginManager::class);
+        $serviceManager->expects($this->once())->method('get')->with(UserListServiceInterface::class)
+            ->willReturn($listService);
         $expected = [
             'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3],
         ];
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
             ->with($this->equalTo($expected))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord($driver, [], $context);
+        $record->setDbServiceManager($serviceManager);
         // Because we are using a mock object, the first round of testing will
         // include an arbitrary class name in the template path; we need to make
         // that one fail so we can load the parent class' template instead:
@@ -241,7 +258,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo($tpl))
-            ->will($this->returnValue('success'));
+            ->willReturn('success');
         $this->assertEquals('success', $record->getListEntry(null, $user));
     }
 
@@ -250,7 +267,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPreviewIds()
+    public function testGetPreviewIds(): void
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
@@ -272,19 +289,19 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPreviews()
+    public function testGetPreviews(): void
     {
         $driver = $this->loadRecordFixture('testbug1.json');
         $config = new \Laminas\Config\Config(['foo' => 'bar']);
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('apply')
             ->with($this->equalTo(compact('driver', 'config')))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $context->expects($this->exactly(2))->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord($driver, $config, $context);
         $record->getView()->resolver()->expects($this->any())->method('resolve')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $tpl1 = 'RecordDriver/SolrMarc/previewdata.phtml';
         $tpl2 = 'RecordDriver/SolrMarc/previewlink.phtml';
         $callback = function ($tpl) use ($tpl1, $tpl2) {
@@ -298,7 +315,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         };
         $record->getView()->expects($this->any())->method('render')
             ->with($this->logicalOr($this->equalTo($tpl1), $this->equalTo($tpl2)))
-            ->will($this->returnCallback($callback));
+            ->willReturnCallback($callback);
         $this->assertEquals('success1success2', $record->getPreviews());
     }
 
@@ -345,7 +362,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         };
         $context->expects($this->once())->method('apply')
             ->with($this->callback($callback))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
@@ -360,7 +377,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $container->get('searchTabs')->expects($this->once())
             ->method('getCurrentHiddenFilterParams')
             ->with($this->equalTo('Solr'), $this->equalTo(false), $this->equalTo($expectedSeparator))
-            ->will($this->returnValue($hiddenFilter));
+            ->willReturn($hiddenFilter);
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml', $linkUrl);
         $this->assertEquals($expected, $record->getLink('bar', 'foo'));
     }
@@ -370,32 +387,137 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCheckbox()
+    public function testGetCheckbox(): void
     {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $tpl = 'record/checkbox.phtml';
         $context = $this->getMockContext();
+        $randomIdentifier = 'baz';
+        $driver->setResultSetIdentifier($randomIdentifier);
+
+        $expectedCalls = [
+            [
+                $tpl,
+                [
+                    'number' => 1,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => "bar-{$randomIdentifier}-000105196",
+                    'prefix' => 'bar',
+                    'formAttr' => 'foo',
+                ],
+            ],
+            [
+                $tpl,
+                [
+                    'number' => 2,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => "bar-{$randomIdentifier}-000105196",
+                    'prefix' => 'bar',
+                    'formAttr' => 'foo',
+                ],
+            ],
+        ];
+
         $this->expectConsecutiveCalls(
             $context,
             'renderInContext',
-            [
-                [
-                    'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ],
-                [
-                    'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ],
-            ],
-            'success'
+            $expectedCalls,
+            ['success', 'success']
         );
-        $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'),
-            [],
-            $context
-        );
+
+        $record = $this->getRecord($driver, [], $context);
+
         // We run the test twice to ensure that checkbox incrementing works properly:
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
+    }
+
+    /**
+     * Test getCheckboxWithoutIdAndWithoutPrefix.
+     *
+     * @return void
+     */
+    public function testGetCheckboxWithoutIdAndWithEmptyPrefix(): void
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $tpl = 'record/checkbox.phtml';
+        $context = $this->getMockContext();
+
+        $expectedCalls = [
+            [
+                $tpl,
+                [
+                    'number' => 1,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => '000105196',
+                    'prefix' => '',
+                    'formAttr' => 'foo',
+                ],
+            ],
+            [
+                $tpl,
+                [
+                    'number' => 2,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => '000105196',
+                    'prefix' => '',
+                    'formAttr' => 'foo',
+                ],
+            ],
+        ];
+
+        $record = $this->getRecord($driver, [], $context);
+
+        $this->expectConsecutiveCalls(
+            $context,
+            'renderInContext',
+            $expectedCalls,
+            ['success', 'success']
+        );
+
+        $record = $this->getRecord($driver, [], $context);
+
+        // We run the test twice to ensure that checkbox incrementing works properly:
+        $this->assertEquals('success', $record->getCheckbox(formAttr: 'foo', number: 1));
+        $this->assertEquals('success', $record->getCheckbox('', 'foo', 2));
+    }
+
+    /**
+     * Test getUniqueHtmlElementId.
+     *
+     * @return void
+     */
+    public function testGetUniqueHtmlElementId()
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $record = $this->getRecord($driver);
+        $contextPrefix = 'foo';
+        $randomIdentifier = 'bar';
+
+        // no result set identifier and no prefix
+        $this->assertEquals(
+            '000105196',
+            $record->getUniqueHtmlElementId()
+        );
+
+        // no result set identifier but with prefix
+        $this->assertEquals(
+            "{$contextPrefix}-000105196",
+            $record->getUniqueHtmlElementId($contextPrefix)
+        );
+
+        // with result set identifier but no prefix
+        $driver->setResultSetIdentifier($randomIdentifier);
+        $this->assertEquals(
+            "{$randomIdentifier}-000105196",
+            $record->getUniqueHtmlElementId()
+        );
+
+        // with result set identifier and with prefix
+        $this->assertEquals(
+            "{$contextPrefix}-{$randomIdentifier}-000105196",
+            $record->getUniqueHtmlElementId($contextPrefix)
+        );
     }
 
     /**
@@ -403,20 +525,20 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTab()
+    public function testGetTab(): void
     {
         $tab = new \VuFind\RecordTab\Description();
         $driver = $this->loadRecordFixture('testbug1.json');
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
             ->with($this->equalTo(compact('driver', 'tab')))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord($driver, [], $context);
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo('RecordTab/description.phtml'))
-            ->will($this->returnValue('success'));
+            ->willReturn('success');
         $this->assertEquals('success', $record->getTab($tab));
     }
 
@@ -425,7 +547,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetQrCodeFailures()
+    public function testGetQrCodeFailures(): void
     {
         // Disabled by default:
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
@@ -445,13 +567,13 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetQrCodeSuccess()
+    public function testGetQrCodeSuccess(): void
     {
         $driver = $this->loadRecordFixture('testbug1.json');
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
             ->with($this->equalTo(['driver' => $driver, 'extra' => 'xyzzy']))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $config = ['QRCode' => ['showInCore' => true]];
@@ -468,7 +590,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThumbnailNone()
+    public function testGetThumbnailNone(): void
     {
         // No thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
@@ -482,7 +604,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThumbnailHardCoded()
+    public function testGetThumbnailHardCoded(): void
     {
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
@@ -496,7 +618,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThumbnailDynamic()
+    public function testGetThumbnailDynamic(): void
     {
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
@@ -510,7 +632,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLinkDetailsEmpty()
+    public function testGetLinkDetailsEmpty(): void
     {
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
@@ -523,7 +645,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLinkDetailsSuccess()
+    public function testGetLinkDetailsSuccess(): void
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
@@ -552,7 +674,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLinkDetailsFailure()
+    public function testGetLinkDetailsFailure(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Invalid URL array.');
@@ -584,7 +706,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLinkDetailsWithDuplicateURLs()
+    public function testGetLinkDetailsWithDuplicateURLs(): void
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
@@ -618,7 +740,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetUrlList()
+    public function testGetUrlList(): void
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
@@ -638,26 +760,23 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a Record object ready for testing.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver                   Record driver
-     * @param array|Config                      $config                   Configuration
-     * @param \VuFind\View\Helper\Root\Context  $context                  Context helper
-     * @param bool|string                       $url                      Should we add a URL helper?
-     * False if no, expected route if yes.
-     * @param bool                              $serverurl                Should we add a ServerURL
-     * helper?
-     * @param bool                              $setSearchTabExpectations Should we set default
-     * search tab expectations?
+     * @param RecordDriver $driver                   Record driver
+     * @param array|Config $config                   Configuration
+     * @param Context      $context                  Context helper
+     * @param bool|string  $url                      Should we add a URL helper? False if no, expected route if yes.
+     * @param bool         $serverurl                Should we add a ServerURL helper?
+     * @param bool         $setSearchTabExpectations Should we set default search tab expectations?
      *
      * @return Record
      */
     protected function getRecord(
-        $driver,
-        $config = [],
-        $context = null,
-        $url = false,
-        $serverurl = false,
-        $setSearchTabExpectations = true
-    ) {
+        RecordDriver $driver,
+        array|Config $config = [],
+        Context $context = null,
+        bool|string $url = false,
+        bool $serverurl = false,
+        bool $setSearchTabExpectations = true
+    ): Record {
         if (null === $context) {
             $context = $this->getMockContext();
         }
@@ -672,9 +791,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $container->set('searchTabs', $this->getMockSearchTabs($setSearchTabExpectations));
         $view->setHelperPluginManager($container);
         $view->expects($this->any())->method('resolver')
-            ->will($this->returnValue($this->getMockResolver()));
+            ->willReturn($this->getMockResolver());
         $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
-        $record = new Record($config);
+        $record = new Record($this->createMock(TagsService::class), $config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);
         return $record($driver);
@@ -683,23 +802,22 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock resolver object
      *
-     * @return \Laminas\View\Resolver\ResolverInterface
+     * @return MockObject&ResolverInterface
      */
-    protected function getMockResolver()
+    protected function getMockResolver(): MockObject&ResolverInterface
     {
-        return $this->createMock(\Laminas\View\Resolver\ResolverInterface::class);
+        return $this->createMock(ResolverInterface::class);
     }
 
     /**
      * Get a mock context object
      *
-     * @return \VuFind\View\Helper\Root\Context
+     * @return MockObject&Context
      */
-    protected function getMockContext()
+    protected function getMockContext(): MockObject&Context
     {
         $context = $this->createMock(\VuFind\View\Helper\Root\Context::class);
-        $context->expects($this->any())->method('__invoke')
-            ->will($this->returnValue($context));
+        $context->expects($this->any())->method('__invoke')->willReturn($context);
         return $context;
     }
 
@@ -708,27 +826,26 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $expectedRoute Route expected by mock helper
      *
-     * @return \Laminas\View\Helper\Url
+     * @return MockObject&Url
      */
-    protected function getMockUrl($expectedRoute)
+    protected function getMockUrl($expectedRoute): MockObject&Url
     {
-        $url = $this->createMock(\Laminas\View\Helper\Url::class);
+        $url = $this->createMock(Url::class);
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo($expectedRoute))
-            ->will($this->returnValue('http://foo/bar'));
+            ->willReturn('http://foo/bar');
         return $url;
     }
 
     /**
      * Get a mock server URL helper
      *
-     * @return \Laminas\View\Helper\ServerUrl
+     * @return MockObject&ServerUrl
      */
-    protected function getMockServerUrl()
+    protected function getMockServerUrl(): MockObject&ServerUrl
     {
-        $url = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $url->expects($this->once())->method('__invoke')
-            ->will($this->returnValue('http://server-foo/baz'));
+        $url = $this->createMock(ServerUrl::class);
+        $url->expects($this->once())->method('__invoke')->willReturn('http://server-foo/baz');
         return $url;
     }
 
@@ -737,15 +854,14 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @param bool $setDefaultExpectations Should we set up default expectations?
      *
-     * @return \VuFind\View\Helper\Root\SearchTabs
+     * @return MockObject&SearchTabs
      */
-    protected function getMockSearchTabs($setDefaultExpectations = true)
+    protected function getMockSearchTabs(bool $setDefaultExpectations = true): MockObject&SearchTabs
     {
-        $searchTabs = $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)
+        $searchTabs = $this->getMockBuilder(SearchTabs::class)
             ->disableOriginalConstructor()->getMock();
         if ($setDefaultExpectations) {
-            $searchTabs->expects($this->any())->method('getCurrentHiddenFilterParams')
-                ->will($this->returnValue(''));
+            $searchTabs->expects($this->any())->method('getCurrentHiddenFilterParams')->willReturn('');
         }
         return $searchTabs;
     }
@@ -755,9 +871,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $file File to load from fixture directory.
      *
-     * @return array
+     * @return object
      */
-    protected function loadRecordFixture($file)
+    protected function loadRecordFixture(string $file): object
     {
         $json = $this->getJsonFixture('misc/' . $file);
         $record = new \VuFind\RecordDriver\SolrMarc();
@@ -768,25 +884,25 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Set up expectations for a template
      *
-     * @param Record $record   Record helper
-     * @param string $tpl      Template to expect
-     * @param string $response Response to send
-     * @param mixed  $matcher  Matcher for frequency of calls (default = once)
+     * @param Record  $record   Record helper
+     * @param string  $tpl      Template to expect
+     * @param string  $response Response to send
+     * @param ?object $matcher  Matcher for frequency of calls (default = once)
      *
      * @return void
      */
     protected function setSuccessTemplate(
-        $record,
-        $tpl,
-        $response = 'success',
-        $matcher = null
+        Record $record,
+        string $tpl,
+        string $response = 'success',
+        ?object $matcher = null
     ) {
         $record->getView()->resolver()->expects($matcher ?? $this->once())->method('resolve')
             ->with($this->equalTo($tpl))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $record->getView()->expects($matcher ?? $this->once())->method('render')
             ->with($this->equalTo($tpl))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
     }
 
     /**
@@ -800,8 +916,13 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return Loader
      */
-    protected function getCoverLoader($config = [], $manager = null, $theme = null, $httpService = null, $mock = false)
-    {
+    protected function getCoverLoader(
+        array $config = [],
+        \VuFind\Content\Covers\PluginManager $manager = null,
+        ThemeInfo $theme = null,
+        \VuFindHttp\HttpService $httpService = null,
+        array|bool $mock = false
+    ): Loader {
         $config = new Config($config);
         if (null === $manager) {
             $manager = $this->createMock(\VuFind\Content\Covers\PluginManager::class);
@@ -826,7 +947,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getThemeDir()
+    protected function getThemeDir(): string
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
     }

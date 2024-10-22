@@ -31,7 +31,7 @@ namespace VuFindTest\ILS\Driver;
 
 use Laminas\Config\Exception\RuntimeException;
 use VuFind\ILS\Driver\ComposedDriver;
-use VuFind\ILS\Logic\ItemStatus;
+use VuFind\ILS\Logic\AvailabilityStatusInterface;
 
 use function call_user_func_array;
 
@@ -1246,7 +1246,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                 ],
             ],
         ];
@@ -1274,7 +1274,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                 ],
             ],
         ];
@@ -1337,7 +1337,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                 ],
             ],
         ];
@@ -1396,7 +1396,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                     'location' => 'location_3',
                 ],
             ],
@@ -1471,7 +1471,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                 ],
             ],
         ];
@@ -1497,7 +1497,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                 ],
             ],
         ];
@@ -1564,7 +1564,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                 ],
             ],
         ];
@@ -1621,7 +1621,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
                 [
                     'id' => '654321',
                     'callnumber' => '3333',
-                    'availability' => ItemStatus::STATUS_AVAILABLE,
+                    'availability' => AvailabilityStatusInterface::STATUS_AVAILABLE,
                     'location' => 'location_3',
                 ],
             ],

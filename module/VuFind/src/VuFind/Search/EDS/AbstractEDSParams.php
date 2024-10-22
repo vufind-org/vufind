@@ -35,6 +35,8 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
 
+use function in_array;
+
 /**
  * Common EDS & EPF API Params
  *
@@ -48,6 +50,14 @@ use VuFindSearch\ParamBag;
  */
 class AbstractEDSParams extends \VuFind\Search\Base\Params
 {
+    /**
+     * Fields that the EDS API will always filter multiple values using OR, not AND.
+     *
+     * @var array
+     */
+    protected $forcedOrFields = [
+    ];
+
     /**
      * Set up filters based on VuFind settings.
      *
@@ -64,8 +74,10 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
-                    // Standard case:
-                    $fq = "{$filt['field']}:{$filt['value']}";
+                    $fq = $filt['field']
+                        . ($this->filterRequiresFacetOperator($filt['field']) ?
+                            ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
+                        . ":{$filt['value']}";
                     $params->add('filters', $fq);
                 }
             }
@@ -73,12 +85,35 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
         if (!empty($hiddenFilterList)) {
             foreach ($hiddenFilterList as $field => $hiddenFilters) {
                 foreach ($hiddenFilters as $value) {
-                    // Standard case:
-                    $hfq = "{$field}:{$value}";
+                    $hfq = $field
+                        . ($this->filterRequiresFacetOperator($field) ?
+                            ":{$this->getFacetOperator($field)}" : '')
+                        . ":{$value}";
                     $params->add('filters', $hfq);
                 }
             }
         }
+    }
+
+    /**
+     * Determines if the given filter field is a normal one, which should include the AND/OR operator,
+     * or a special filter which should not.
+     *
+     * @param string $field Filter field name
+     *
+     * @return boolean
+     */
+    protected function filterRequiresFacetOperator($field)
+    {
+        if (
+            str_starts_with($field, 'LIMIT') ||
+            str_starts_with($field, 'EXPAND') ||
+            str_starts_with($field, 'SEARCHMODE') ||
+            str_starts_with($field, 'PublicationDate')
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -90,5 +125,24 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     {
         $viewArr = explode('|', $this->view ?? '');
         return $viewArr[0];
+    }
+
+    /**
+     * Get facet operator for the specified field
+     *
+     * @param string $field             Field name
+     * @param string $specifiedOperator Operator specified on a config filter line
+     *
+     * @return string
+     */
+    public function getFacetOperator($field, $specifiedOperator = null)
+    {
+        if ($specifiedOperator && $specifiedOperator != 'AND') {
+            return $specifiedOperator;
+        }
+        if (in_array($field, $this->forcedOrFields)) {
+            return 'OR';
+        }
+        return parent::getFacetOperator($field);
     }
 }

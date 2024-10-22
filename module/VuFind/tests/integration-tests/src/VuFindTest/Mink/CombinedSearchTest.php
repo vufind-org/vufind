@@ -62,6 +62,24 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Start a session, perform a combined search, and return the resulting page.
+     *
+     * @param string $query Combined search query to perform.
+     *
+     * @return Element
+     */
+    protected function performCombinedSearch(string $query): Element
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
      * Several different methods perform the same query against different
      * configurations of the combined feature; this support method makes a
      * standard set of assertions against the final results.
@@ -108,13 +126,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $this->getCombinedIniOverrides()],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->unFindCss($page, '.fa-spinner.icon--spin');
         $this->assertResultsForDefaultQuery($page);
     }
@@ -135,6 +147,47 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that combined results contain valid author links with appropriate filtering.
+     *
+     * @param bool $leftAjax  Should left column load via AJAX?
+     * @param bool $rightAjax Should right column load via AJAX?
+     *
+     * @return void
+     *
+     * @dataProvider ajaxCombinationsProvider
+     */
+    public function testCombinedSearchResultsAuthorLinks(bool $leftAjax, bool $rightAjax): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        // Default configuration does not have authors in both columns; switch to a
+        // different data set that will let us test authors:
+        $config['Solr:one']['hiddenFilter'] = 'building:author_relators.mrc';
+        $config['Solr:one']['ajax'] = $leftAjax;
+        $config['Solr:two']['ajax'] = $rightAjax;
+        $this->changeConfigs(
+            ['combined' => $config],
+            ['combined']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('id:"0001732009-1" OR id:"theplus+andtheminus-"');
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
+        // The author link in each column should have an appropriate hidden filter applied:
+        $this->assertStringContainsString(
+            'hiddenFilters%5B%5D=building%3A%22author_relators.mrc%22',
+            $this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
+        );
+        $this->assertStringContainsString(
+            'hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22',
+            $this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
+        );
+    }
+
+    /**
      * Test that combined results work in AJAX mode.
      *
      * @return void
@@ -148,13 +201,24 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $config],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
+     * Test that combined results work in mixed AJAX mode when Explain is turned on.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsMixedAjaxWithExplain(): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:two']['ajax'] = true;
+        $this->changeConfigs(
+            ['combined' => $config, 'searches' => ['Explain' => ['enabled' => true]]],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -171,13 +235,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $config],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -209,13 +267,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('*:*');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('*:*');
         // Whether the combined column was loaded inline or via AJAX, it should
         // now include a DOI link:
         $this->assertStringStartsWith(

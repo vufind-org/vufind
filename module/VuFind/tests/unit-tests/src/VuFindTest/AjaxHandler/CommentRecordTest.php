@@ -32,12 +32,12 @@ namespace VuFindTest\AjaxHandler;
 use VuFind\AjaxHandler\CommentRecord;
 use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
-use VuFind\Db\Row\Resource;
-use VuFind\Db\Row\User;
-use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Table\Resource as ResourceTable;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\DefaultRecord;
 
 /**
@@ -54,17 +54,15 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     /**
      * Set up a CommentRecord handler for testing.
      *
-     * @param bool  $enabled Are comments enabled?
-     * @param ?User $user    Return value for getUserObject() in auth manager
+     * @param bool                 $enabled Are comments enabled?
+     * @param ?UserEntityInterface $user    Return value for getUserObject() in auth manager
      *
      * @return CommentRecord
      */
-    protected function getHandler($enabled = true, $user = null)
+    protected function getHandler(bool $enabled = true, ?UserEntityInterface $user = null): CommentRecord
     {
         // For simplicity, let the top-level container stand in for the plugin
         // managers:
-        $this->container
-            ->set(\VuFind\Db\Table\PluginManager::class, $this->container);
         $this->container
             ->set(\VuFind\Db\Service\PluginManager::class, $this->container);
         $this->container->set('ControllerPluginManager', $this->container);
@@ -77,7 +75,12 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $cfg = new \Laminas\Config\Config(
             ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']]
         );
-        $capabilities = new AccountCapabilities($cfg, $authManager);
+        $capabilities = new AccountCapabilities(
+            $cfg,
+            function () use ($authManager) {
+                return $authManager;
+            }
+        );
         $this->container->set(AccountCapabilities::class, $capabilities);
 
         // Build the handler:
@@ -86,28 +89,11 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Return a mock resource row that expects a specific user and comment.
-     *
-     * @param string $comment Comment to expect
-     * @param User   $user    User to expect
-     *
-     * @return Resource
-     */
-    protected function getMockResource($comment, $user)
-    {
-        $row = $this->container->createMock(Resource::class, ['addComment']);
-        $row->expects($this->once())->method('addComment')
-            ->with($this->equalTo($comment), $this->equalTo($user))
-            ->will($this->returnValue(1));
-        return $row;
-    }
-
-    /**
      * Test the AJAX handler's response when comments are disabled.
      *
      * @return void
      */
-    public function testDisabledResponse()
+    public function testDisabledResponse(): void
     {
         $handler = $this->getHandler(false);
         $this->assertEquals(
@@ -121,7 +107,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testLoggedOutUser()
+    public function testLoggedOutUser(): void
     {
         $handler = $this->getHandler(true);
         $this->assertEquals(
@@ -135,7 +121,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testEmptyQuery()
+    public function testEmptyQuery(): void
     {
         $handler = $this->getHandler(true, $this->getMockUser());
         $this->assertEquals(
@@ -149,33 +135,34 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testSuccessfulTransaction()
+    public function testSuccessfulTransaction(): void
     {
-        $user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([])
-            ->getMock();
-        $user->id = 1;
-        $table = $this->container
-            ->createMock(ResourceTable::class, ['findResource']);
-        $table->expects($this->once())->method('findResource')
-            ->with($this->equalTo('foo'), $this->equalTo('Solr'))
-            ->will($this->returnValue($this->getMockResource('bar', $user)));
-        $this->container->set(ResourceTable::class, $table);
-        $this->container->set(CommentsServiceInterface::class, new CommentsService());
+        $user = $this->createMock(UserEntityInterface::class);
+        $user->method('getId')->willReturn(1);
+        $resource = $this->createMock(ResourceEntityInterface::class);
+        $this->container->get(ResourcePopulator::class)->expects($this->once())
+            ->method('getOrCreateResourceForRecordId')
+            ->with('foo', 'Solr')
+            ->willReturn($resource);
+        $mockCommentsService = $this->createMock(CommentsServiceInterface::class);
+        $mockCommentsService->expects($this->once())->method('addComment')
+            ->with('bar', $user, $resource)
+            ->willReturn(1);
+        $this->container->set(CommentsServiceInterface::class, $mockCommentsService);
 
         $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();
         $driver->expects($this->once())
             ->method('isRatingAllowed')
-            ->will($this->returnValue(true));
-        $driver->expects($this->once())
-            ->method('addOrUpdateRating')
-            ->with($user->id, 100);
+            ->willReturn(true);
+        $ratingService = $this->container->get(RatingsService::class);
+        $ratingService->expects($this->once())
+            ->method('saveRating')
+            ->with($driver, $user->getId(), 100);
         $recordLoader = $this->container->createMock(RecordLoader::class, ['load']);
         $recordLoader->expects($this->once())
             ->method('load')
             ->with('foo', DEFAULT_SEARCH_BACKEND)
-            ->will($this->returnValue($driver));
+            ->willReturn($driver);
         $this->container->set(RecordLoader::class, $recordLoader);
 
         $handler = $this->getHandler(true, $user);

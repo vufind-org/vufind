@@ -55,6 +55,7 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use function count;
 use function is_object;
+use function sprintf;
 
 /**
  * Abstract factory for SOLR backends.
@@ -200,10 +201,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $this->config = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $this->config = $this->getService(\VuFind\Config\PluginManager::class);
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -308,7 +308,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function createListeners(Backend $backend)
     {
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->getService('SharedEventManager');
 
         // Load configurations:
         $config = $this->config->get($this->mainConfig);
@@ -337,8 +337,12 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Spellcheck
         if ($config->Spelling->enabled ?? true) {
-            $dictionaries = ($config->Spelling->simple ?? false)
-                ? ['basicSpell'] : ['default', 'basicSpell'];
+            $dictionaries = $config->Spelling->dictionaries?->toArray() ?? [];
+            if (empty($dictionaries)) {
+                // Respect the deprecated 'simple' configuration setting.
+                $dictionaries = ($config->Spelling->simple ?? false)
+                    ? ['basicSpell'] : ['default', 'basicSpell'];
+            }
             $spellingListener = new InjectSpellingListener(
                 $backend,
                 $dictionaries,
@@ -612,8 +616,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function loadSpecs()
     {
-        return $this->serviceLocator->get(\VuFind\Config\SearchSpecsReader::class)
-            ->get($this->searchYaml);
+        return $this->getService(\VuFind\Config\SearchSpecsReader::class)->get($this->searchYaml);
     }
 
     /**
@@ -709,8 +712,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $search->ConditionalHiddenFilters->toArray()
         );
         $listener->setAuthorizationService(
-            $this->serviceLocator
-                ->get(\LmcRbacMvc\Service\AuthorizationService::class)
+            $this->getService(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $listener;
     }

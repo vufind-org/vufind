@@ -51,6 +51,7 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;
     }
+    use RelativePathTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -105,8 +106,8 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
      */
     public function itemToString($item, $indent, $escapeStart, $escapeEnd)
     {
-        // Normalize href to account for themes:
-        if (!empty($item->attributes['src'])) {
+        // Normalize href to account for themes (if appropriate):
+        if (!empty($item->attributes['src']) && $this->isRelativePath($item->attributes['src'])) {
             $relPath = 'js/' . $item->attributes['src'];
             $details = $this->themeInfo
                 ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
@@ -165,7 +166,7 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
     {
         return empty($item->attributes['src'])
             || isset($item->attributes['conditional'])
-            || strpos($item->attributes['src'], '://');
+            || !$this->isRelativePath($item->attributes['src']);
     }
 
     /**

@@ -180,8 +180,7 @@ class CollectionsController extends AbstractBase implements
 
         $browseField = 'hierarchy_browse';
 
-        $searchObject = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $searchObject = $this->getService(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         foreach ($appliedFilters as $filter) {
             $searchObject->getParams()->addFilter($filter);
         }
@@ -348,7 +347,7 @@ class CollectionsController extends AbstractBase implements
     {
         $title = addcslashes($title, '"');
         $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
-        $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
+        $searchService = $this->getService(\VuFindSearch\Service::class);
         $command = new SearchCommand(
             'Solr',
             $query,

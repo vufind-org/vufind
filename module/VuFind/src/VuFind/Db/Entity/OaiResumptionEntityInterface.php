@@ -68,7 +68,7 @@ interface OaiResumptionEntityInterface extends EntityInterface
     /**
      * Expiry date setter.
      *
-     * @param Datetime $dateTime Expiration date
+     * @param DateTime $dateTime Expiration date
      *
      * @return OaiResumptionEntityInterface
      */

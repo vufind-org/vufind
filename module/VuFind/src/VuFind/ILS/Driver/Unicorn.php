@@ -38,6 +38,7 @@ use function array_slice;
 use function count;
 use function floatval;
 use function in_array;
+use function sprintf;
 use function strlen;
 
 /**
@@ -161,7 +162,7 @@ class Unicorn extends AbstractBase implements
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -1284,18 +1285,6 @@ class Unicorn extends AbstractBase implements
             $dateTimeString = $this->dateConverter->convertToDisplayDate('U', $time);
         }
         return $dateTimeString;
-    }
-
-    /**
-     * Convert the given ISO-8859-1 string to UTF-8 if it is not already UTF-8.
-     *
-     * @param string $s The string to convert.
-     *
-     * @return string   The input string converted to UTF-8
-     */
-    protected function toUTF8($s)
-    {
-        return (mb_detect_encoding($s, 'UTF-8') == 'UTF-8') ? $s : utf8_encode($s);
     }
 
     /**

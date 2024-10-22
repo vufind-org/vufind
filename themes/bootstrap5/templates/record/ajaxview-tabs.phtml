@@ -1,0 +1,80 @@
+<?=$this->piwik()?>
+<?=$this->matomo(['context' => 'tabs'])?>
+<?=$this->googleanalytics()?>
+<?php
+  $this->defaultTab = strtolower($this->defaultTab);
+  $idSuffixEsc = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
+?>
+<ul class="list-tabs nav nav-tabs">
+  <?php $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
+  <?php if (!empty($coreMetadata)): ?>
+    <li<?php if ($this->defaultTab === 'information'): ?> class="active"<?php endif; ?>>
+      <a id="information_<?=$idSuffixEsc?>" class="list-tab-toggle loaded" data-bs-toggle="tab" data-bs-target="#information_<?=$idSuffixEsc?>-content" class="noajax">
+        <?=$this->translate('ajaxview_label_information') ?>
+      </a>
+    </li>
+  <?php endif; ?>
+
+  <?php $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
+  <?php if (!empty($toolbar)): ?>
+    <li<?php if ($this->defaultTab === 'tools'): ?> class="active"<?php endif; ?>>
+      <a id="tools_<?=$idSuffixEsc?>" class="list-tab-toggle loaded" data-bs-toggle="tab" data-bs-target="#tools_<?=$idSuffixEsc?>-content" class="noajax">
+      <?=$this->translate('ajaxview_label_tools') ?>
+      </a>
+    </li>
+  <?php endif; ?>
+
+  <?php $list = $this->related()->getList($this->driver); ?>
+  <?php if (!empty($list)): ?>
+    <li<?php if ($this->defaultTab === 'related'): ?> class="active"<?php endif; ?>>
+      <a id="related_<?=$idSuffixEsc?>" class="list-tab-toggle loaded" data-bs-toggle="tab" data-bs-target="#related_<?=$idSuffixEsc?>-content" class="noajax">
+        <?=$this->transEsc('Related Items')?>
+      </a>
+    </li>
+  <?php endif; ?>
+
+  <?php foreach ($this->tabs as $tab => $obj): ?>
+    <?php // add current tab to breadcrumbs if applicable:
+      $desc = $obj->getDescription();
+      $tab_classes = [];
+      if ($this->defaultTab === strtolower($tab)) {
+        if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+          $tab_classes[] = 'active';
+        }
+      }
+      if (!$obj->isVisible()) {
+        $tab_classes[] = 'hidden';
+      }
+      if (!$obj->supportsAjax()) {
+        $tab_classes[] = 'noajax';
+      }
+    ?>
+    <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+      <a id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-bs-toggle="tab" data-bs-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
+    </li>
+  <?php endforeach; ?>
+</ul>
+<div class="tab-content">
+  <?php if (!empty($coreMetadata)): ?>
+    <div class="list-tab-content record tab-pane<?php if ($this->defaultTab === 'information'): ?> active<?php endif; ?>" id="information_<?=$idSuffixEsc?>-content">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
+      <?=$coreMetadata ?>
+    </div>
+  <?php endif; ?>
+  <?php if (!empty($toolbar)): ?>
+    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === 'tools'): ?> active<?php endif; ?>" id="tools_<?=$idSuffixEsc?>-content">
+      <?=$toolbar ?>
+    </div>
+  <?php endif; ?>
+  <?php if (!empty($list)): ?>
+    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === 'related'): ?> active<?php endif; ?>" id="related_<?=$idSuffixEsc?>-content">
+      <?php foreach ($list as $current): ?>
+        <?=$this->related()->render($current)?>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+  <?php foreach ($this->tabs as $tab => $obj): ?>
+    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === strtolower($tab)): ?> active<?php endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"></div>
+  <?php endforeach; ?>
+</div>

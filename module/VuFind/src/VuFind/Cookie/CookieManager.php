@@ -104,7 +104,7 @@ class CookieManager
      * @param ?string $sessionName Session cookie name (if null defaults to PHP
      * settings)
      * @param bool    $httpOnly    Are cookies HTTP only? (default = true)
-     * @param string  $sameSite    Default SameSite attribute (defaut = 'Lax')
+     * @param string  $sameSite    Default SameSite attribute (default = 'Lax')
      */
     public function __construct(
         $cookies,

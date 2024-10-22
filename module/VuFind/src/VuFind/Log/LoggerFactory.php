@@ -337,7 +337,9 @@ class LoggerFactory implements FactoryInterface
         $hasDebugWriter = true;
         $writer = new Writer\Stream('php://output');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
+            PHP_SAPI === 'cli'
+                ? '%timestamp% %priorityName%: %message%'
+                : '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
         );
         $writer->setFormatter($formatter);
         $level = (is_int($debug) ? $debug : '5');

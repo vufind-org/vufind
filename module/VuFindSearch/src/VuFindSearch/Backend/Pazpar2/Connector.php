@@ -34,6 +34,8 @@ use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\ParamBag;
 
+use function sprintf;
+
 /**
  * Central class for connecting to resources used by VuFind.
  *
@@ -117,7 +119,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function query($command, ParamBag $data = null)
     {
-        // If we don't have a session as long as we're not being explict
+        // If we don't have a session as long as we're not being explicit
         if (!$this->session && $command !== 'init') {
             $this->init();
         }

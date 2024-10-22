@@ -1,0 +1,20 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('User Account'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Account') . '</li>';
+?>
+<h2><?=$this->transEsc('User Account')?></h2>
+<?=$this->flashmessages()?>
+
+<form method="post" name="accountForm" id="accountForm" class="form-user-create" data-bs-toggle="validator">
+  <?=$this->auth()->getCreateFields()?>
+  <?=$this->captcha()->html($this->useCaptcha) ?>
+  <div class="form-group">
+    <a class="back-to-login btn btn-link" href="<?=$this->url('myresearch-userlogin') ?>">
+      <?=$this->icon('page-prev') ?> <?=$this->transEsc('navigate_back')?>
+    </a>
+    <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Submit')?>">
+  </div>
+</form>

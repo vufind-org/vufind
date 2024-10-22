@@ -109,7 +109,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     'No items were selected. '
@@ -139,7 +139,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     '0 item(s) added to your Book Bag 2 item(s) are either '
@@ -766,7 +766,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * Assert visibility
      *
      * @param array  $combo    Current Site configuration
-     * @param bool[] $elements Array of element visibilty states indexed by name
+     * @param bool[] $elements Array of element visibility states indexed by name
      * @param string $name     Name of element to check
      * @param string $exp      Expected visibility
      *

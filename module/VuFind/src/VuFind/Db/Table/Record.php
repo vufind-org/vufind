@@ -36,6 +36,9 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Where;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\RecordServiceInterface;
 
 use function count;
 
@@ -49,8 +52,10 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Record extends Gateway
+class Record extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -77,12 +82,11 @@ class Record extends Gateway
      * @param string $source Record source
      *
      * @throws \Exception
-     * @return false|Record row object
+     * @return ?\VuFind\Db\Row\Record
      */
     public function findRecord($id, $source)
     {
-        $records = $this->select(['record_id' => $id, 'source' => $source]);
-        return $records->count() > 0 ? $records->current() : false;
+        return $this->select(['record_id' => $id, 'source' => $source])->current();
     }
 
     /**
@@ -108,7 +112,7 @@ class Record extends Gateway
             );
         }
 
-        return $this->select($where)->toArray();
+        return iterator_to_array($this->select($where));
     }
 
     /**
@@ -116,29 +120,15 @@ class Record extends Gateway
      *
      * @param string $id      Record ID
      * @param string $source  Data source
-     * @param string $rawData Raw data from source
+     * @param mixed  $rawData Raw data from source (must be serializable)
      *
-     * @return Updated or newly added record
+     * @return \VuFind\Db\Row\Record Updated or newly added record
+     *
+     * @deprecated Use RecordServiceInterface::updateRecord()
      */
     public function updateRecord($id, $source, $rawData)
     {
-        $records = $this->select(['record_id' => $id, 'source' => $source]);
-        if ($records->count() == 0) {
-            $record = $this->createRow();
-        } else {
-            $record = $records->current();
-        }
-
-        $record->record_id = $id;
-        $record->source = $source;
-        $record->data = serialize($rawData);
-        $record->version = \VuFind\Config\Version::getBuildVersion();
-        $record->updated = date('Y-m-d H:i:s');
-
-        // Create or update record.
-        $record->save();
-
-        return $record;
+        return $this->getDbService(RecordServiceInterface::class)->updateRecord($id, $source, $rawData);
     }
 
     /**
