@@ -1265,17 +1265,7 @@ ${git_status}
   </target>
 
   <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- Fix for PHP 8 incompatibility in chrome-mink-driver 2.8.0: -->
-    <reflexive>
-      <fileset dir="vendor/dmore/chrome-mink-driver/src">
-        <include pattern="ChromeDriver.php" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <regexp pattern="\$base_url," replace="\$base_url = &apos;&apos;," />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
+    <!-- No patching needed at present; leaving hook here for future use. -->
   </target>
 
   <!-- Update bootstrap3 templates from bootstrap5 -->
