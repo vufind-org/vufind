@@ -1,0 +1,5 @@
+<?php if ($this->callnumberHandler): ?>
+  <a href="<?= $this->url('alphabrowse-home')?>?source=<?=$this->escapeUrl($this->callnumberHandler)?>&from=<?=$this->escapeUrl($this->actualCallnumber)?>"><?=$this->escapeHtml($this->displayCallnumber)?></a>
+<?php else: ?>
+  <?=$this->escapeHtml($this->displayCallnumber)?>
+<?php endif; ?>
