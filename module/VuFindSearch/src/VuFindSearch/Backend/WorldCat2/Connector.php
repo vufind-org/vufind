@@ -114,7 +114,7 @@ class Connector implements LoggerAwareInterface
         $this->client->setUri($this->baseUrl . $path);
         $this->debug($path);
         $response = $this->client->send();
-        // If authorization failed, the token may be expired; re-request and try again:
+        // If authentication failed, the token may be expired; re-request and try again:
         if ($response->getStatusCode() === 401) {
             $this->session->token = $this->getToken();
             $headers = ['Authorization: Bearer ' . $this->session->token];
