@@ -270,10 +270,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
         string|array $attrs
     ): void {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon&#x20;icon--font&#x20;icon--unicode'
+        $expected = '<span class="icon&#x20;icon--text&#x20;icon--unicode'
             . ($expectedClasses ? "&#x20;$expectedClasses" : '') . '"'
             . ($expectedAttrs ? " $expectedAttrs" : '')
-            . ' role="img" aria-hidden="true" data-icon="&#x' . $expectedIcon . ';"></span>';
+            . ' role="img" aria-hidden="true">&#x' . $expectedIcon . ';</span>';
         $this->assertEquals($expected, trim($helper($icon, $attrs)));
     }
 
@@ -284,8 +284,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
      */
     public function testCaching(): void
     {
-        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo" '
-            . 'bar="baz" role="img" aria-hidden="true"></span>';
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo"'
+            . ' bar="baz" role="img" aria-hidden="true"></span>';
         $key = 'foo+c0dc783820069fb9337be7366f7945bf';
 
         // Create a mock cache that simulates normal cache functionality;
