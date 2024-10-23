@@ -195,13 +195,7 @@ public class FormatCalculator
                     case 'd':
                         char formatCode5 = formatString.length() > 4
                             ? formatString.charAt(4) : ' ';
-                        switch(formatCode5) {
-                            case 's':
-                                return "BRDisc";
-                            case 'g':
-                                return "LaserDisc";
-                        }
-                        return "VideoDisc";
+                        return formatCode5 == 's' ? "BRDisc" : "VideoDisc";
                     case 'f':
                         return "VideoCassette";
                     case 'r':
