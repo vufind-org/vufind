@@ -1,3 +1,7 @@
+/**
+ * TODO: Temporary file for rules. Merge this file into eslintrc.js
+ * after all the ignored patterns under themes/bootstrap5/js are removed.
+ */
 module.exports = {
   plugins: ["jsdoc"],
   ignorePatterns: [
