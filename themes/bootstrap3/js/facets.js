@@ -309,6 +309,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     // Switch data-multi-filters-modified to keep track of changed facets
     const currentAttrVal = elem.getAttribute('data-multi-filters-modified');
     const isOriginalState = currentAttrVal === null || currentAttrVal === 'false';
+    if (isOriginalState && elem.closest('.facet').querySelectorAll('[data-multi-filters-modified="true"]').length > 0) {
+      elem.closest('.facet').querySelector('[data-multi-filters-modified="true"]').click();
+    }
     elem.setAttribute('data-multi-filters-modified', isOriginalState);
     toggleSelectedFacetStyle(elem);
   }
