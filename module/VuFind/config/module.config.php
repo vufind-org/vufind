@@ -226,6 +226,8 @@ $config = [
             'VuFind\Controller\WebController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\WorldcatController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\WorldcatrecordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\Worldcat2Controller' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\Worldcat2recordController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -353,6 +355,10 @@ $config = [
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'WorldcatRecord' => 'VuFind\Controller\WorldcatrecordController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
+            'Worldcat2' => 'VuFind\Controller\Worldcat2Controller',
+            'worldcat2' => 'VuFind\Controller\Worldcat2Controller',
+            'Worldcat2Record' => 'VuFind\Controller\Worldcat2recordController',
+            'worldcat2record' => 'VuFind\Controller\Worldcat2recordController',
         ],
     ],
     'controller_plugins' => [
@@ -738,6 +744,7 @@ $recordRoutes = [
     'solrauthrecord' => 'AuthorityRecord',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
+    'worldcat2record' => 'Worldcat2Record',
     'search2record' => 'Search2Record',
     'search2collection' => 'Search2Collection',
     'search2collectionrecord' => 'Search2Record',
@@ -824,6 +831,7 @@ $staticRoutes = [
     'Upgrade/CriticalFixInsecureDatabase',
     'Web/Home', 'Web/FacetList', 'Web/Results',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search',
+    'Worldcat2/Advanced', 'Worldcat2/Home', 'Worldcat2/Search',
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

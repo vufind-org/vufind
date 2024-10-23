@@ -73,6 +73,7 @@
         "laminas/laminas-validator": "2.55.0",
         "laminas/laminas-view": "2.27.0",
         "league/commonmark": "2.5.3",
+        "league/oauth2-client": "^2.7",
         "league/oauth2-server": "8.5.4",
         "lm-commons/lmc-rbac-mvc": "3.4.0",
         "matthiasmullie/minify": "1.3.73",
@@ -131,7 +132,7 @@
     },
     "scripts": {
         "fix": "phing fix-php",
-        "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
+        "phing-install-dependencies": ["phing installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
         "qa": "phing qa-console -Ddefaultconfigs=true",
