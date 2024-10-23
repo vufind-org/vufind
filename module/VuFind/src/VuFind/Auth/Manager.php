@@ -671,6 +671,22 @@ class Manager implements
     }
 
     /**
+     * Reset a user's password from the request.
+     *
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
+     * password change details.
+     *
+     * @throws AuthException
+     * @return UserEntityInterface Updated user entity.
+     */
+    public function newPassword($request)
+    {
+        $user = $this->getAuth()->newPassword($request);
+        $this->updateSession($user);
+        return $user;
+    }
+
+    /**
      * Update a user's email from the request.
      *
      * @param UserEntityInterface $user  Object representing user being updated.

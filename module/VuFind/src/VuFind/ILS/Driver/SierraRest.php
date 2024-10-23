@@ -697,6 +697,48 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
+     * A function that creates an account for password reset
+     *
+     * @param string $username username of the account needing reset.
+     *
+     * @return array|bool returns patron info array on success,
+     * and false on failure
+     *
+     * @throws ILSException
+     */
+    public function getPatronFromUsername($username)
+    {
+        $result = $this->makeRequest(
+            [$this->apiBase, 'patrons/find'],
+            [
+                'varFieldTag' => 'b',
+                'varFieldContent' => $username,
+                'fields' => 'default,id,emails,addresses,phones,deleted,names',
+            ],
+            'GET'
+        );
+        if (!$result['deleted'] && $result['blockInfo']) {
+            $firstname = '';
+            $lastname = '';
+            if (!empty($result['names'])) {
+                $name = $result['names'][0];
+                $parts = explode(', ', $name, 2);
+                $lastname = $parts[0];
+                $firstname = $parts[1] ?? '';
+            }
+            return [
+                'id' => $result['id'],
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'email' => !empty($result['emails']) ? $result['emails'][0] : '',
+                'password' => hash('sha256', $lastname . $result['id'] . $result['homeLibraryCode']),
+            ];
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
      *
      * @param array $patron Patron data from patronLogin().
@@ -1641,6 +1683,21 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
+     * Recover user's password with a token from getPasswordRecoveryToken
+     *
+     * @param array $params Required params such as cat_username, token and new
+     * password
+     *
+     * @return array Associative array of the results
+     *
+     * @throws ILSException
+     */
+    public function recoverPassword($params)
+    {
+        return $this->changePassword($params);
+    }
+
+    /**
      * Change Password
      *
      * Attempts to change patron password (PIN code)
@@ -1652,7 +1709,8 @@ class SierraRest extends AbstractBase implements
      * 'newPassword' New password
      *
      * @return array An array of data on the request including
-     * whether or not it was successful and a system message (if available)
+     * whether it was successful or not and a system message (if available)
+     * @throws ILSException
      */
     public function changePassword($details)
     {
@@ -1668,13 +1726,16 @@ class SierraRest extends AbstractBase implements
             ];
         }
 
-        $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
-        if (strlen($newPIN) != 4) {
-            return [
-                'success' => false, 'status' => 'password_error_invalid',
-            ];
+        if ($this->config['Authentication']['digits_only'] ?? false) {
+            $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
+            if (strlen($newPIN) != 4) {
+                return [
+                    'success' => false, 'status' => 'password_error_invalid',
+                ];
+            }
+        } else {
+            $newPIN = trim($details['newPassword']);
         }
-
         $request = ['pin' => $newPIN];
 
         $result = $this->makeRequest(

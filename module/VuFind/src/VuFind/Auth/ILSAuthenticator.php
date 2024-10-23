@@ -309,11 +309,12 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * fails, clear the user's stored credentials so they can enter new, corrected
      * ones.
      *
-     * Returns associative array of patron data on success, false on failure.
+     * @param $user_name - the username/barcode for ILS password reset
      *
-     * @return array|bool
+     * @return array|bool Returns associative array of patron data on success,
+     * false on failure.
      */
-    public function storedCatalogLogin()
+    public function storedCatalogLogin($user_name = null)
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
@@ -336,8 +337,22 @@ class ILSAuthenticator implements DbServiceAwareInterface
                 $this->ilsAccount[$username] = $patron;
                 return $patron;
             }
+        } elseif (!empty($user_name)) {
+            if (isset($this->ilsAccount[$user_name])) {
+                return $this->ilsAccount[$user_name];
+            }
+            $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($user_name);
+            if (empty($user)) {
+                return false;
+            }
+            $patron = $this->catalog->patronLogin($user_name, $this->getCatPasswordForUser($user));
+            if (empty($patron)) {
+                $user->setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null);
+            } else {
+                $this->ilsAccount[$user_name] = $patron;
+                return $patron;
+            }
         }
-
         return false;
     }
 
@@ -347,9 +362,9 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @param string $username Catalog username
      * @param string $password Catalog password
      *
-     * Returns associative array of patron data on success, false on failure.
+     * @return array|bool Returns associative array of patron data on success,
+     * false on failure.
      *
-     * @return array|bool
      * @throws ILSException
      */
     public function newCatalogLogin($username, $password)
