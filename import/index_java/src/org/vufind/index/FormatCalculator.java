@@ -288,7 +288,15 @@ public class FormatCalculator
                             return "Journal";
                         default: break;
                     }
+                } 
+                if (recordType == 'a' || recordType == 'm') {
+                    switch (get008Value(marc008, 23)) {
+                        case 'o':
+                            return "eJournal";
+                        default: break;
+                    }
                 }
+
                 // Default to serial even if 008 is missing
                 if (!isConferenceProceeding(record)) {
                     return "Serial";
