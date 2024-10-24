@@ -1,4 +1,5 @@
 <?php
+  $this->layout()->sideFacetsInstanceCounter = ($this->layout()->sideFacetsInstanceCounter ?? 0) + 1;
   $this->headScript()->appendFile('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
@@ -34,6 +35,9 @@
 ?>
 <?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+  <?php if ($this->multiFacetsSelection && $this->layout()->sideFacetsInstanceCounter === 1): ?>
+    <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
+  <?php endif; ?>
   <span class="sr-only"><?=$this->transEscAttr('page_reload_on_select_hint') ?></span>
 <?php endif; ?>
 <?php if ($hasVisibleCheckboxes): ?>

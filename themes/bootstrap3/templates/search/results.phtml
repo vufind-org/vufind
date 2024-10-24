@@ -48,6 +48,8 @@
       ]
   );
   $recommendations = $this->results->getRecommendations('side');
+  $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
+  $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
 ?>
 
 <h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
