@@ -288,7 +288,8 @@ public class FormatCalculator
                             return "Journal";
                         default: break;
                     }
-                } else if (recordType == 'm') {
+                } 
+                if (recordType == 'a' || recordType == 'm') {
                     switch (get008Value(marc008, 23)) {
                         case 'o':
                             return "eJournal";
