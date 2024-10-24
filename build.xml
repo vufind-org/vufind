@@ -274,14 +274,14 @@
     </exec>
   </target>
 
-  <!-- ESLint jsDoc -->
+  <!-- ESLint jsDoc (test only) -->
   <target name="eslint-jsdoc">
     <exec executable="npx" escape="false" checkreturn="true" passthru="true">
       <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js" />
     </exec>
   </target>
 
-  <!-- ESLint jsDoc -->
+  <!-- ESLint jsDoc (auto-fix eligible issues) -->
   <target name="eslint-jsdoc-fix">
     <exec executable="npx" escape="false" checkreturn="true" passthru="true">
       <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js --fix" />
