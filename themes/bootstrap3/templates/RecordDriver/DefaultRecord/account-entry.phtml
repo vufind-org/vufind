@@ -1,15 +1,16 @@
 <h2>
   <?php
     $ilsDetails = $driver->getExtraDetail('ils_details');
+    $id = $this->record($driver)->getUniqueHtmlElementId();
     // If this is a non-missing Solr record, we should display a link:
     if (is_a($driver, \VuFind\RecordDriver\SolrDefault::class) && !is_a($driver, \VuFind\RecordDriver\Missing::class)) {
       $title = $driver->getTitle();
       $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
       echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))
-        . '" class="title">' . $title . '</a>';
+        . '" class="title" id="' . $id . '">' . $title . '</a>';
     } elseif (!empty($ilsDetails['title'])) {
       // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-      echo '<span class="title">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
+      echo '<span class="title" id="' . $id . '">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
     } else {
       // Last resort -- indicate that no title could be found.
       echo $this->transEsc('Title not available');
