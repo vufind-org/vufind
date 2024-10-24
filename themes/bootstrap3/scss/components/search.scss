@@ -98,11 +98,17 @@ $thumbnail-width-large:  160px !default;
 
 header .container.navbar { margin-bottom: 0; }
 
-.search-sort, .search-result-limit { display: flex; }
-.search-sort label, .search-result-limit label {
-  line-height: $input-height-base;
-  padding-right: .5rem;
+.search-sort,
+.search-result-limit {
+  display: flex;
+  gap: 0.5rem;
 }
+.search-sort label,
+.search-result-limit label {
+  white-space: nowrap;
+  line-height: $input-height-base;
+}
+
 .search-stats {
   display: block;
   padding-top: 0.5rem;
