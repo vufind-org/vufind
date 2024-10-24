@@ -48,6 +48,13 @@ use function is_object;
 class Solr implements AutocompleteInterface
 {
     /**
+     * Parameter for mungeQuery
+     *
+     * @var string
+     */
+    protected const NO_WILDCARD = 'NO_WILDCARD';
+
+    /**
      * Autocomplete handler
      *
      * @var string
@@ -171,19 +178,47 @@ class Solr implements AutocompleteInterface
     /**
      * Process the user query to make it suitable for a Solr query.
      *
-     * @param string $query Incoming user query
+     * @param string $query   Incoming user query
+     * @param array  $options Array of extra parameters
      *
-     * @return string       Processed query
+     * @return string        Processed query
      */
-    protected function mungeQuery($query)
+    protected function mungeQuery(string $query, array $options = []): string
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', "'"];
         $query = str_replace($forbidden, ' ', $query);
-        if (!str_ends_with($query, ' ')) {
+        if (!str_ends_with($query, ' ') && !($options[self::NO_WILDCARD] ?? false)) {
             $query .= '*';
         }
         return $query;
+    }
+
+    /**
+     * This method perform and returns the search for a query for the autocomplete box.
+     *
+     * @param string $query       The user query
+     * @param bool   $rerunSearch Force the search to avoid cached results
+     *
+     * @return array              The suggestions for the provided query
+     */
+    protected function getSearchResultsForSuggestions(string $query, bool $rerunSearch = false): array
+    {
+        $this->searchObject->getParams()->setBasicSearch(
+            $query,
+            $this->handler
+        );
+        $this->searchObject->getParams()->setSort($this->sortField);
+        foreach ($this->filters as $current) {
+            $this->searchObject->getParams()->addFilter($current);
+        }
+
+        if ($rerunSearch) {
+            // Perform the search (force the function, not to have cached results):
+            $this->searchObject->performAndProcessSearch();
+        }
+        // Perform and/or return the search:
+        return $this->searchObject->getResults();
     }
 
     /**
@@ -202,17 +237,13 @@ class Solr implements AutocompleteInterface
         }
 
         try {
-            $this->searchObject->getParams()->setBasicSearch(
-                $this->mungeQuery($query),
-                $this->handler
-            );
-            $this->searchObject->getParams()->setSort($this->sortField);
-            foreach ($this->filters as $current) {
-                $this->searchObject->getParams()->addFilter($current);
+            $mungedQuery = $this->mungeQuery($query);
+            $searchResults = $this->getSearchResultsForSuggestions($mungedQuery);
+            // Re-run without wildcard, if previously ran with wildcard
+            if (empty($searchResults) && str_ends_with($mungedQuery, '*')) {
+                $mungedQuery = $this->mungeQuery($query, [self::NO_WILDCARD => true]);
+                $searchResults = $this->getSearchResultsForSuggestions($mungedQuery, true);
             }
-
-            // Perform the search:
-            $searchResults = $this->searchObject->getResults();
 
             // Build the recommendation list -- first we'll try with exact matches;
             // if we don't get anything at all, we'll try again with a less strict
