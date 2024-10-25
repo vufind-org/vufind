@@ -102,11 +102,16 @@ header .container.navbar { margin-bottom: 0; }
 .search-result-limit {
   display: flex;
   gap: 0.5rem;
-}
-.search-sort label,
-.search-result-limit label {
-  white-space: nowrap;
-  line-height: $input-height-base;
+
+  label {
+    flex: none;
+    white-space: nowrap;
+    line-height: $input-height-base;
+  }
+
+  select.form-control {
+    flex: 1 1 0%;
+  }
 }
 
 .search-stats {
