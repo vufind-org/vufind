@@ -29,8 +29,6 @@
 
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
 /**
  * WorldCat Controller (legacy -- redirects to WorldCat v2 controller)
  *
@@ -44,6 +42,8 @@ class WorldcatController extends AbstractBase
 {
     /**
      * Home action -- redirect to WorldCat v2.
+     *
+     * @return mixed
      */
     public function homeAction()
     {
@@ -52,6 +52,8 @@ class WorldcatController extends AbstractBase
 
     /**
      * Advanced search action -- redirect to WorldCat v2.
+     *
+     * @return mixed
      */
     public function advancedAction()
     {
