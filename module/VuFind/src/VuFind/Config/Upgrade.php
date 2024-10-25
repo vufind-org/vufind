@@ -620,23 +620,12 @@ class Upgrade
         }
 
         // Warn the user about deprecated WorldCat settings:
-        if (isset($newConfig['WorldCat']['LimitCodes'])) {
-            unset($newConfig['WorldCat']['LimitCodes']);
+        if (isset($newConfig['WorldCat'])) {
+            unset($newConfig['WorldCat']);
             $this->addWarning(
-                'The [WorldCat] LimitCodes setting never had any effect and has been'
-                . ' removed.'
+                'The [WorldCat] section of config.ini has been removed following'
+                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.'
             );
-        }
-        $badKeys
-            = ['id', 'xISBN_token', 'xISBN_secret', 'xISSN_token', 'xISSN_secret'];
-        foreach ($badKeys as $key) {
-            if (isset($newConfig['WorldCat'][$key])) {
-                unset($newConfig['WorldCat'][$key]);
-                $this->addWarning(
-                    'The [WorldCat] ' . $key . ' setting is no longer used and'
-                    . ' has been removed.'
-                );
-            }
         }
         if (
             isset($newConfig['Record']['related'])
