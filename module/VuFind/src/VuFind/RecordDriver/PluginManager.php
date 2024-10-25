@@ -71,7 +71,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrreserves' => SolrReserves::class,
         'solrweb' => SolrWeb::class,
         'summon' => Summon::class,
-        'worldcat' => WorldCat::class,
         'worldcat2' => WorldCat2::class,
     ];
 
