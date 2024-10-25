@@ -337,10 +337,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             ['Similar'],
             $results['config.ini']['Record']['related']
         );
-        $this->assertEquals(
-            ['WorldCatSimilar'],
-            $results['WorldCat.ini']['Record']['related']
-        );
         $this->assertEquals(['apiKey' => 'foo'], $results['config.ini']['WorldCat']);
         $expectedWarnings = [
             'The [WorldCat] id setting is no longer used and has been removed.',
@@ -350,8 +346,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
             'The Editions related record module is no longer supported due to OCLC\'s xID '
             . 'API shutdown. It has been removed from your settings.',
-            'The WorldCatEditions related record module is no longer supported due to OCLC\'s '
-            . 'xID API shutdown. It has been removed from your settings.',
         ];
         $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
     }
@@ -478,26 +472,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 . ' removed.',
                 $warnings
             )
-        );
-    }
-
-    /**
-     * Test WorldCat-specific upgrades.
-     *
-     * @return void
-     */
-    public function testWorldCatUpgrades()
-    {
-        $upgrader = $this->getUpgrader('worldcatupgrades');
-        $upgrader->run();
-        $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            'Author',
-            $results['WorldCat.ini']['Basic_Searches']['srw.au']
-        );
-        $this->assertEquals(
-            'adv_search_author',
-            $results['WorldCat.ini']['Advanced_Searches']['srw.au']
         );
     }
 
