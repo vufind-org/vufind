@@ -153,6 +153,7 @@
   <!-- Quality Assurance Javascript Tasks -->
   <target name="qa-js-and-less" description="quality assurance js and less tasks">
     <phingcall target="eslint"/>
+    <phingcall target="eslint-jsdoc"/>
     <phingcall target="jshint"/>
     <phingcall target="checkLessToSass"/>
     <phingcall target="checkSassBuild"/>
