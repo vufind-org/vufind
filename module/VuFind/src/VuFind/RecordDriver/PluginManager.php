@@ -110,7 +110,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SolrReserves::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrWeb::class => SolrWebFactory::class,
         Summon::class => SummonFactory::class,
-        WorldCat::class => NameBasedConfigFactory::class,
         WorldCat2::class => NameBasedConfigFactory::class,
     ];
 
