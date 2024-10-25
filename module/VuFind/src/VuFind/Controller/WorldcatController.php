@@ -68,6 +68,7 @@ class WorldcatController extends AbstractBase
     public function searchAction()
     {
         $params = $this->params()->fromQuery();
+        // v1 types are prefixed with "srw." but v2 types are not; convert!
         foreach ($params as $key => $value) {
             if (str_starts_with($key, 'type')) {
                 $params[$key] = str_replace('srw.', '', $value);
