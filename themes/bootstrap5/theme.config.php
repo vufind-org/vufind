@@ -228,7 +228,7 @@ return [
             'format-physicalobject' => 'fa-solid fa-box-archive',
             'format-print' => 'fa-regular fa-image',
             'format-sensorimage' => 'fa-solid fa-camera-retro',
-            'format-serial' => 'fa fa-file-text-o',
+            'format-serial' => 'fa-regular fa-file',
             'format-slide' => 'fa-solid fa-film',
             'format-software' => 'fa-solid fa-laptop-code',
             'format-soundcassette' => 'fa-solid fa-headphones-simple',
@@ -355,7 +355,7 @@ return [
             'warning' => 'fa-solid fa-circle-exclamation',
         ],
     ],
-];
+
     /**
      * Html elements can be made sticky which means that they don't leave the screen on scrolling.
      * You can make an element sticky by adding an array with the css selector to stickyElements.
