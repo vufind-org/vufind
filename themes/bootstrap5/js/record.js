@@ -198,7 +198,7 @@ function setPrintBtnHash(hash) {
   let printBtn = document.querySelector(".print-record");
   let printHref = printBtn.getAttribute("href");
   let printURL = new URL(printHref, window.location.origin);
-  printURL.hash = hash ?? "";
+  printURL.hash = hash === null ? "" : hash;
   printBtn.setAttribute("href", printURL.href);
 }
 
