@@ -379,7 +379,7 @@ function recordDocReady() {
         $(this).tab('show');
         $top.find('.tab-pane.active').removeClass('active');
         $top.find('.' + tabid + '-tab').addClass('active');
-        window.location.hash = 'tabnav';
+        addTabToURL('tabnav');
         return false;
       }
       // otherwise, we need to let the browser follow the link:
