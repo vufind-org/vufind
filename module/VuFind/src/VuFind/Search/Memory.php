@@ -262,7 +262,8 @@ class Memory
      */
     public function getSearchById(int $id, ?UserEntityInterface $user = null): ?\VuFind\Search\Base\Results
     {
-        $cacheKey = $id . '_' . ($user?->getId() ?? '');
+        $userId = $user?->getId();
+        $cacheKey = $userId ? "{$id}_$userId" : $id;
         if (!array_key_exists($cacheKey, $this->searchCache)) {
             $search = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, $user);
             $this->searchCache[$cacheKey] = $search?->getSearchObject()?->deminify($this->resultsManager);
