@@ -59,8 +59,18 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     public function getMenu(): array
     {
+        $menu = $this->config;
+        if ($menu ?? false) {
+            $menu = $this->getDefaultMenu();
+        } elseif ($menu['MenuItems'] ?? false) {
+            // backward compatibility for outdated configurations
+            $default = $this->getDefaultMenu();
+            $default['Account']['MenuItems'] = $menu['MenuItems'];
+            $menu = $default;
+        }
+
         $availableGroups = [];
-        foreach ($this->config ?? $this->getDefaultMenu() as $group) {
+        foreach ($menu as $group) {
             // skip groups without items to display
             if ($items = $this->filterItems($group['MenuItems'])) {
                 $group['MenuItems'] = $items;
