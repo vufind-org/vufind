@@ -60,7 +60,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     public function getMenu(): array
     {
         $menu = $this->config;
-        if ($menu ?? false) {
+        if (!$menu) {
             $menu = $this->getDefaultMenu();
         } elseif ($menu['MenuItems'] ?? false) {
             // backward compatibility for outdated configurations
