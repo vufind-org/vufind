@@ -438,12 +438,16 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     public function render(string $activeItem, string $idPrefix = ''): string
     {
         $contextHelper = $this->getView()->plugin('context');
+        $menu = $this->getMenu();
+
         return $contextHelper->renderInContext(
             'myresearch/menu.phtml',
             [
-                'menu' => $this->getMenu(),
+                'menu' => $menu,
                 'active' => $activeItem,
                 'idPrefix' => $idPrefix,
+                // set items for backward compatibility, might be removed in future releases
+                'items' => $menu['Account']['MenuItems'],
             ]
         );
     }
