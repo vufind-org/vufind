@@ -338,6 +338,7 @@ function applyRecordTabHash(scrollToTabs) {
         $('html, body').animate({
           scrollTop: $('.record-tabs').offset().top
         }, 500);
+        $tabLink.trigger("focus");
       }
     }
   }
