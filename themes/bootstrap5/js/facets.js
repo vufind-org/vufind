@@ -1,4 +1,12 @@
 /*global multiFacetsSelectionEnabled, VuFind */
+/*exported multiFacetsSelectionEnabled*/
+
+/**
+ * Global variable for multi facet selection enabling
+ *
+ * @type {boolean} multiFacetsSelectionEnabled Is multi facet selection enabled?
+ */
+let multiFacetsSelectionEnabled = false;
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
