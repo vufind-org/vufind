@@ -29,11 +29,11 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Net\UserIpReader;
 use VuFind\Validator\CsrfInterface;
 
 /**
@@ -66,7 +66,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param CsrfInterface                   $csrf            CSRF Validator
      * @param \VuFind\Mailer\Mailer           $mailer          Mailer
      * @param PhpRenderer                     $viewRenderer    View Renderer
-     * @param RemoteAddress                   $remoteAddress   Remote address
+     * @param UserIpReader                    $userIpReader    User IP address reader
      * @param \Laminas\Config\Config          $config          Configuration
      * @param AuthHashServiceInterface        $authHashService AuthHash database service
      */
@@ -75,7 +75,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         protected CsrfInterface $csrf,
         protected \VuFind\Mailer\Mailer $mailer,
         protected PhpRenderer $viewRenderer,
-        protected RemoteAddress $remoteAddress,
+        protected UserIpReader $userIpReader,
         protected \Laminas\Config\Config $config,
         protected AuthHashServiceInterface $authHashService
     ) {
@@ -121,7 +121,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             'timestamp' => time(),
             'data' => $data,
             'email' => $email,
-            'ip' => $this->remoteAddress->getIpAddress(),
+            'ip' => $this->userIpReader->getUserIp(),
         ];
         $hash = $this->csrf->getHash(true);
 
@@ -171,7 +171,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $sessionId = $this->sessionManager->getId();
         if (
             $row->getSessionId() !== $sessionId
-            && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
+            && $linkData['ip'] !== $this->userIpReader->getUserIp()
         ) {
             throw new AuthException('authentication_error_session_ip_mismatch');
         }
