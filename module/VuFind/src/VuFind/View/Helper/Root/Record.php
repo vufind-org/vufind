@@ -486,9 +486,13 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         $hiddenFilters = null;
         // Try to get hidden filters for the current search:
         if ($this->searchMemory) {
+            $view = $this->getView();
             $searchId = $this->driver->getExtraDetail('searchId')
-                ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
-            if ($searchId && ($search = $this->searchMemory->getSearchById($searchId))) {
+                ?? $view->plugin('searchMemory')->getLastSearchId();
+            if (
+                $searchId
+                && ($search = $this->searchMemory->getSearchById($searchId, $view->plugin('auth')->getUserObject()))
+            ) {
                 $filters = UrlQueryHelper::buildQueryString(
                     [
                         'hiddenFilters' => $search->getParams()->getHiddenFiltersAsQueryParams(),

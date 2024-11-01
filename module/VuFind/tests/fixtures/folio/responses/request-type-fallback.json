@@ -79,6 +79,27 @@
         "status": 200
     },
     {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/requests\/allowed-service-points?instanceId=record1&requesterId=user1&operation=create",
+        "expectedParams": [],
+        "body": {
+            "Page": [
+                {
+                    "id": "servicepoint1",
+                    "name": "Main Service Desk"
+                }
+            ],
+            "Recall": [
+                {
+                    "id": "servicepoint1",
+                    "name": "Main Service Desk"
+                }
+            ]
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
         "expectedMethod": "POST",
         "expectedPath": "\/circulation\/requests",
         "expectedParamsRegEx": "/{\"instanceId\":\"record1\",\"requestLevel\":\"Title\",\"requesterId\":\"user1\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2000-01-01\",\"pickupServicePointId\":\"servicepoint1\",\"requestType\":\"Recall\"}/",

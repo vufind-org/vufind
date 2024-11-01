@@ -1,12 +1,11 @@
 <?php
 
 /**
- * RemoteAddress utility factory. This uses the core Laminas RemoteAddress but
- * configures it according to VuFind settings.
+ * Factory for WorldCat2Similar related record module.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,30 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Related_Records
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Http\PhpEnvironment;
+namespace VuFind\Related;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * RemoteAddress utility factory.
+ * Factory for WorldCat2Similar related record module.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Related_Records
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RemoteAddressFactory implements FactoryInterface
+class WorldCat2SimilarFactory extends SimilarFactory
 {
     /**
      * Create an object
@@ -66,14 +64,9 @@ class RemoteAddressFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $object = new $requestedName();
-        if ($cfg->Site->reverse_proxy ?? false) {
-            $object->setUseProxy(true);
-        }
-        return $object;
+        $module = parent::__invoke($container, $requestedName, $options);
+        $wc2Options = $container->get(\VuFind\Search\Options\PluginManager::class)->get('WorldCat2');
+        $module->setTermLimit($wc2Options->getQueryTermsLimit());
+        return $module;
     }
 }
