@@ -393,7 +393,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function init() {
-    if (multiFacetsSelectionEnabled !== true) {
+    if (!multiFacetsSelectionEnabled) {
       return;
     }
     if (defaultContext === undefined) {
@@ -492,18 +492,18 @@ VuFind.register('sideFacets', function SideFacets() {
             }
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(VuFind.updateCspNonce(facetData.html));
-            if (multiFacetsSelectionEnabled !== true) {
+            if (!multiFacetsSelectionEnabled) {
               activateFacetBlocking($facetContainer);
             }
           }
-          if (multiFacetsSelectionEnabled === true) {
+          if (multiFacetsSelectionEnabled) {
             VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get()[0]);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
         VuFind.lightbox.bind($('.sidebar'));
         VuFind.emit('VuFind.sidefacets.loaded');
-        if (multiFacetsSelectionEnabled === true) {
+        if (multiFacetsSelectionEnabled) {
           VuFind.multiFacetsSelection.rangeSelectorInit();
         }
       })
@@ -525,7 +525,7 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function init() {
-    if (multiFacetsSelectionEnabled === true) {
+    if (multiFacetsSelectionEnabled) {
       VuFind.multiFacetsSelection.registerCallbackOnApply(showLoadingOverlay);
       VuFind.multiFacetsSelection.registerCallbackWhenDeactivated(showLoadingOverlay);
     } else {
@@ -600,7 +600,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
   }
 
   function setup() {
-    if (multiFacetsSelectionEnabled === true) {
+    if (multiFacetsSelectionEnabled) {
       let elem = document.getElementById('facet-info-result').children[0];
       VuFind.multiFacetsSelection.applyClickHandling(elem);
       VuFind.multiFacetsSelection.addSwitchAndButton(elem);
