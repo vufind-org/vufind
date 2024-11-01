@@ -1,4 +1,4 @@
-/*global multiFacetsSelectionEnabled, VuFind */
+/*global VuFind */
 /*exported multiFacetsSelectionEnabled*/
 
 /**
