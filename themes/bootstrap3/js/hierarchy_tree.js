@@ -22,9 +22,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
       console.error('Record preview element not found');
       return false;
     }
-    if (recordEl.classList.contains('js-hide-narrow')
-      && window.getComputedStyle(recordEl, null).getPropertyValue('display') === 'none'
-    ) {
+    if (window.getComputedStyle(recordEl, null).getPropertyValue('display') === 'none') {
       return false;
     }
     const queryParams = new URLSearchParams({id: id, source: treeEl.dataset.source});

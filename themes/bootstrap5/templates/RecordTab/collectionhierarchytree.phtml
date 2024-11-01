@@ -7,7 +7,7 @@
   <div class="tree-panel">
     <?=$this->render('RecordTab/hierarchytree.phtml')?>
   </div>
-  <div id="tree-preview" class="<?= $this->tab->hidePreviewInNarrowDisplays() ? 'hidden-xs hidden-sm js-hide-narrow' : ''?>">
+  <div id="tree-preview"<?php if ($this->tab->hidePreviewInNarrowDisplays()): ?> class="hidden-xs"<?php endif;?>>
     <?php if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
       <?php if ($collectionRecord === null): ?>
         <?=$this->render('collection/collection-record-error.phtml')?>
