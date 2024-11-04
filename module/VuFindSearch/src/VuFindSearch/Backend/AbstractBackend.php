@@ -30,8 +30,12 @@
 namespace VuFindSearch\Backend;
 
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Math\Rand;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function count;
+use function sprintf;
 
 /**
  * Abstract backend.
@@ -116,6 +120,32 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
     protected function injectSourceIdentifier(RecordCollectionInterface $response)
     {
         $response->setSourceIdentifiers($this->identifier);
+
+        if (count($response->getRecords()) > 0) {
+            // TODO: Replace custom UUID generation with Doctrine
+            // UUID generator once available (after the merge of #2233)
+            $response->setResultSetIdentifier($this->generateUuid());
+        }
+
         return $response;
+    }
+
+    /**
+     * Generates a shorter UUID-like identifier.
+     *
+     * This method uses Laminas\Math\Rand to generate cryptographically secure random bytes
+     * and formats them into a shorter identifier.
+     *
+     * @return string A randomly generated shorter UUID-like identifier.
+     */
+    public function generateUuid(): string
+    {
+        $data = bin2hex(Rand::getBytes(8));
+        return sprintf(
+            '%08s-%04s-%04s',
+            substr($data, 0, 8),
+            substr($data, 8, 4),
+            substr($data, 12, 4)
+        );
     }
 }
