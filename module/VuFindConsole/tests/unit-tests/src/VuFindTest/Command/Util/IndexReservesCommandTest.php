@@ -49,7 +49,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\WithConsecutiveTrait;
-    use \VuFindTest\Feature\TranslatorTrait;
 
     /**
      * Get mock ILS connection.
@@ -61,6 +60,64 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         return $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
             ->getMock();
+    }
+
+    /**
+     * Get command tester object given the course data provided.
+     *
+     * @param array  $instructors Instructors returned from getInstructors
+     * @param array  $courses     Courses returned from getCourses
+     * @param array  $departments Departments returned from getDepartments
+     * @param array  $reserves    Reserves returned from findReserves
+     * @param string $expectedXml Data to expect for the Solr document
+     *
+     * @return Symfony\Component\Console\Tester\CommandTester
+     */
+    protected function getMockIlsCommandTesterWithCourseData(
+        $instructors = [],
+        $courses = [],
+        $departments = [],
+        $reserves = [],
+        $expectedXml = null
+    ) {
+        $ils = $this->getMockIlsConnection();
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves'],
+            ],
+            [
+                $instructors,
+                $courses,
+                $departments,
+                $reserves,
+            ]
+        );
+        $writer = $this->getMockSolrWriter();
+        if ($expectedXml) {
+            $updateValidator = function ($update) use ($expectedXml) {
+                $this->assertEquals($expectedXml, trim($update->getContent()));
+                return true;
+            };
+            $writer->expects($this->once())->method('save')
+                ->with(
+                    $this->equalTo('SolrReserves'),
+                    $this->callback($updateValidator)
+                );
+            $writer->expects($this->once())->method('deleteAll')
+                ->with($this->equalTo('SolrReserves'));
+            $writer->expects($this->once())->method('commit')
+                ->with($this->equalTo('SolrReserves'));
+            $writer->expects($this->once())->method('optimize')
+                ->with($this->equalTo('SolrReserves'));
+        }
+        $command = $this->getCommand($writer, $ils);
+        $commandTester = new CommandTester($command);
+        return $commandTester;
     }
 
     /**
@@ -224,20 +281,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testMissingData()
     {
-        $ils = $this->getMockIlsConnection();
-        $this->expectConsecutiveCalls(
-            $ils,
-            '__call',
-            [
-                ['getInstructors'],
-                ['getCourses'],
-                ['getDepartments'],
-                ['findReserves'],
-            ],
-            []
-        );
-        $command = $this->getCommand($this->getMockSolrWriter(), $ils);
-        $commandTester = new CommandTester($command);
+        $commandTester = $this->getMockIlsCommandTesterWithCourseData();
         $commandTester->execute([]);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
@@ -254,7 +298,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithILS()
     {
-        $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1', 'inst2' => 'inst2', 'inst3' => 'inst3'];
         $courses = [
             'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3',
@@ -280,75 +323,48 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 'INSTRUCTOR_ID' => 'inst3',
             ],
         ];
-        $this->expectConsecutiveCalls(
-            $ils,
-            '__call',
-            [
-                ['getInstructors'],
-                ['getCourses'],
-                ['getDepartments'],
-                ['findReserves'],
-            ],
-            [
-                $instructors,
-                $courses,
-                $departments,
-                $reserves,
-            ]
+        $expectedXml = "<?xml version=\"1.0\"?>\n"
+            . '<add>'
+            . '<doc>'
+            . '<field name="id">course1|inst1|dept1</field>'
+            . '<field name="bib_id">1</field>'
+            . '<field name="instructor_id">inst1</field>'
+            . '<field name="instructor">inst1</field>'
+            . '<field name="course_id">course1</field>'
+            . '<field name="course">course1</field>'
+            . '<field name="department_id">dept1</field>'
+            . '<field name="department">dept1</field>'
+            . '</doc>'
+            . '<doc>'
+            . '<field name="id">course2|inst2|dept2</field>'
+            . '<field name="bib_id">2</field>'
+            . '<field name="instructor_id">inst2</field>'
+            . '<field name="instructor">inst2</field>'
+            . '<field name="course_id">course2</field>'
+            . '<field name="course">course2</field>'
+            . '<field name="department_id">dept2</field>'
+            . '<field name="department">dept2</field>'
+            . '</doc>'
+            . '<doc>'
+            . '<field name="id">course3|inst3|dept3</field>'
+            . '<field name="bib_id">3</field>'
+            . '<field name="instructor_id">inst3</field>'
+            . '<field name="instructor">inst3</field>'
+            . '<field name="course_id">course3</field>'
+            . '<field name="course">course3</field>'
+            . '<field name="department_id">dept3</field>'
+            . '<field name="department">dept3</field>'
+            . '</doc>'
+            . '</add>';
+        $commandTester = $this->getMockIlsCommandTesterWithCourseData(
+            $instructors,
+            $courses,
+            $departments,
+            $reserves,
+            $expectedXml
         );
-        $writer = $this->getMockSolrWriter();
-        $writer->expects($this->once())->method('deleteAll')
-            ->with($this->equalTo('SolrReserves'));
-        $that = $this;
-        $updateValidator = function ($update) use ($that) {
-            $expectedXml = "<?xml version=\"1.0\"?>\n"
-                . '<add>'
-                . '<doc>'
-                . '<field name="id">course1|inst1|dept1</field>'
-                . '<field name="bib_id">1</field>'
-                . '<field name="instructor_id">inst1</field>'
-                . '<field name="instructor">inst1</field>'
-                . '<field name="course_id">course1</field>'
-                . '<field name="course">course1</field>'
-                . '<field name="department_id">dept1</field>'
-                . '<field name="department">dept1</field>'
-                . '</doc>'
-                . '<doc>'
-                . '<field name="id">course2|inst2|dept2</field>'
-                . '<field name="bib_id">2</field>'
-                . '<field name="instructor_id">inst2</field>'
-                . '<field name="instructor">inst2</field>'
-                . '<field name="course_id">course2</field>'
-                . '<field name="course">course2</field>'
-                . '<field name="department_id">dept2</field>'
-                . '<field name="department">dept2</field>'
-                . '</doc>'
-                . '<doc>'
-                . '<field name="id">course3|inst3|dept3</field>'
-                . '<field name="bib_id">3</field>'
-                . '<field name="instructor_id">inst3</field>'
-                . '<field name="instructor">inst3</field>'
-                . '<field name="course_id">course3</field>'
-                . '<field name="course">course3</field>'
-                . '<field name="department_id">dept3</field>'
-                . '<field name="department">dept3</field>'
-                . '</doc>'
-                . '</add>';
-            $that->assertEquals($expectedXml, trim($update->getContent()));
-            return true;
-        };
-        $writer->expects($this->once())->method('save')
-            ->with(
-                $this->equalTo('SolrReserves'),
-                $this->callback($updateValidator)
-            );
-        $writer->expects($this->once())->method('commit')
-            ->with($this->equalTo('SolrReserves'));
-        $writer->expects($this->once())->method('optimize')
-            ->with($this->equalTo('SolrReserves'));
-        $command = $this->getCommand($writer, $ils);
-        $commandTester = new CommandTester($command);
         $commandTester->execute([]);
+
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Successfully loaded 3 rows.',
@@ -363,7 +379,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithILSWithInvalidData()
     {
-        $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1'];
         $courses = ['course1' => 'course1'];
         $departments = ['dept1' => 'dept1'];
@@ -375,50 +390,28 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 'INSTRUCTOR_ID' => 'inst2',
             ],
         ];
-        $this->expectConsecutiveCalls(
-            $ils,
-            '__call',
-            [
-                ['getInstructors'],
-                ['getCourses'],
-                ['getDepartments'],
-                ['findReserves'],
-            ],
-            [
-                $instructors,
-                $courses,
-                $departments,
-                $reserves,
-            ]
+        $expectedXml = "<?xml version=\"1.0\"?>\n"
+            . '<add>'
+            . '<doc>'
+            . '<field name="id">course2|inst2|dept2</field>'
+            . '<field name="bib_id">1</field>'
+            . '<field name="instructor_id">inst2</field>'
+            . '<field name="instructor">no_instructor_listed</field>'
+            . '<field name="course_id">course2</field>'
+            . '<field name="course">no_course_listed</field>'
+            . '<field name="department_id">dept2</field>'
+            . '<field name="department">no_department_listed</field>'
+            . '</doc>'
+            . '</add>';
+        $commandTester = $this->getMockIlsCommandTesterWithCourseData(
+            $instructors,
+            $courses,
+            $departments,
+            $reserves,
+            $expectedXml
         );
-
-        $writer = $this->getMockSolrWriter();
-        $that = $this;
-        $updateValidator = function ($update) use ($that) {
-            $expectedXml = "<?xml version=\"1.0\"?>\n"
-                . '<add>'
-                . '<doc>'
-                . '<field name="id">course2|inst2|dept2</field>'
-                . '<field name="bib_id">1</field>'
-                . '<field name="instructor_id">inst2</field>'
-                . '<field name="instructor">no_instructor_listed</field>'
-                . '<field name="course_id">course2</field>'
-                . '<field name="course">no_course_listed</field>'
-                . '<field name="department_id">dept2</field>'
-                . '<field name="department">no_department_listed</field>'
-                . '</doc>'
-                . '</add>';
-            $that->assertEquals($expectedXml, trim($update->getContent()));
-            return true;
-        };
-        $writer->expects($this->once())->method('save')
-            ->with(
-                $this->equalTo('SolrReserves'),
-                $this->callback($updateValidator)
-            );
-        $command = $this->getCommand($writer, $ils);
-        $commandTester = new CommandTester($command);
         $commandTester->execute([]);
+
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Successfully loaded 1 rows.',
@@ -445,7 +438,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithILSWithMissingData()
     {
-        $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1'];
         $courses = ['course1' => 'course1'];
         $departments = ['dept1' => 'dept1'];
@@ -457,50 +449,28 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 'INSTRUCTOR_ID' => 'inst1',
             ],
         ];
-        $this->expectConsecutiveCalls(
-            $ils,
-            '__call',
-            [
-                ['getInstructors'],
-                ['getCourses'],
-                ['getDepartments'],
-                ['findReserves'],
-            ],
-            [
-                $instructors,
-                $courses,
-                $departments,
-                $reserves,
-            ]
+        $expectedXml = "<?xml version=\"1.0\"?>\n"
+            . '<add>'
+            . '<doc>'
+            . '<field name="id">course1|inst1|</field>'
+            . '<field name="bib_id">1</field>'
+            . '<field name="instructor_id">inst1</field>'
+            . '<field name="instructor">inst1</field>'
+            . '<field name="course_id">course1</field>'
+            . '<field name="course">course1</field>'
+            . '<field name="department_id"></field>'
+            . '<field name="department">no_department_listed</field>'
+            . '</doc>'
+            . '</add>';
+        $commandTester = $this->getMockIlsCommandTesterWithCourseData(
+            $instructors,
+            $courses,
+            $departments,
+            $reserves,
+            $expectedXml
         );
-
-        $writer = $this->getMockSolrWriter();
-        $that = $this;
-        $updateValidator = function ($update) use ($that) {
-            $expectedXml = "<?xml version=\"1.0\"?>\n"
-                . '<add>'
-                . '<doc>'
-                . '<field name="id">course1|inst1|</field>'
-                . '<field name="bib_id">1</field>'
-                . '<field name="instructor_id">inst1</field>'
-                . '<field name="instructor">inst1</field>'
-                . '<field name="course_id">course1</field>'
-                . '<field name="course">course1</field>'
-                . '<field name="department_id"></field>'
-                . '<field name="department">no_department_listed</field>'
-                . '</doc>'
-                . '</add>';
-            $that->assertEquals($expectedXml, trim($update->getContent()));
-            return true;
-        };
-        $writer->expects($this->once())->method('save')
-            ->with(
-                $this->equalTo('SolrReserves'),
-                $this->callback($updateValidator)
-            );
-        $command = $this->getCommand($writer, $ils);
-        $commandTester = new CommandTester($command);
         $commandTester->execute([]);
+
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Successfully loaded 1 rows.',
@@ -519,7 +489,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithILSWithMissingRequiredData()
     {
-        $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1'];
         $courses = ['course1' => 'course1'];
         $departments = ['dept1' => 'dept1'];
@@ -530,27 +499,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 'INSTRUCTOR_ID' => 'inst1',
             ],
         ];
-        $this->expectConsecutiveCalls(
-            $ils,
-            '__call',
-            [
-                ['getInstructors'],
-                ['getCourses'],
-                ['getDepartments'],
-                ['findReserves'],
-            ],
-            [
-                $instructors,
-                $courses,
-                $departments,
-                $reserves,
-            ]
-        );
-
-        $writer = $this->getMockSolrWriter();
-        $that = $this;
-        $command = $this->getCommand($writer, $ils);
-        $commandTester = new CommandTester($command);
+        $commandTester = $this->getMockIlsCommandTesterWithCourseData($instructors, $courses, $departments, $reserves);
         $this->expectException(
             \Exception::class
         );
@@ -565,7 +514,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testILSExcetpion()
+    public function testILSException()
     {
         $exception = new \VuFind\Exception\ILS('Simulated exception');
         $ils = $this->getMockIlsConnection();
