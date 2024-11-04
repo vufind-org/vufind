@@ -130,7 +130,7 @@ class GetItemStatuses extends AbstractBase implements
     {
         $transList = [];
         foreach ($list as $current) {
-            // $current can be an array if pickValue() is called with callnumbers and a translation prefix
+            // $current can be an array if pickValue() is called with callnumbers
             $transList[] = is_string($current) ? $this->translateWithPrefix($transPrefix, $current) : $current;
         }
         return $transList;
@@ -143,8 +143,7 @@ class GetItemStatuses extends AbstractBase implements
      * @param array  $rawList     Array of values to choose from.
      * @param string $mode        config.ini setting -- first, all or msg
      * @param string $msg         Message to display if $mode == "msg"
-     * @param string $transPrefix Translator prefix to apply to values (false to
-     *                            omit translation of values)
+     * @param string $transPrefix Translator prefix to apply to values (false to omit translation of values)
      *
      * @return array
      */
