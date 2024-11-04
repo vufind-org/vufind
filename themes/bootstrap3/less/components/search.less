@@ -680,8 +680,13 @@ body.rtl {
 
 .clear-selection{
   font-weight: 700;
-  padding: .25rem .4rem .15rem .4rem;
   flex-basis: 100%;
+}
+
+.selection-controls-bar {
+  .clear-selection, label {
+    padding: .25rem .4rem .15rem .4rem;
+  }
 }
 
 .active-filters .filters a.filter-value:hover,
