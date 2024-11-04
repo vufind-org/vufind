@@ -66,14 +66,14 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      * @param string $data    Data
      * @param string $version Version
      *
-     * @return RecordEntityInterface
+     * @return MockObject&RecordEntityInterface
      */
     protected function getMockRecord(
         string $id,
         string $source,
         string $data,
         string $version = '2.5'
-    ): RecordEntityInterface {
+    ): MockObject&RecordEntityInterface {
         $mock = $this->createMock(RecordEntityInterface::class);
         $mock->method('getRecordId')->willReturn($id);
         $mock->method('getSource')->willReturn($source);
@@ -91,7 +91,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     {
         $this->recordData = [
             $this->getMockRecord('020645147', 'Solr', 's:17:"dummy_solr_record";'),
-            $this->getMockRecord('70764764', 'WorldCat', 's:21:"dummy_worldcat_record";'),
+            $this->getMockRecord('70764764', 'WorldCat2', 's:22:"dummy_worldcat2_record";'),
             $this->getMockRecord('00033321', 'Solr', 's:19:"dummy_solr_record_2";'),
         ];
     }
@@ -101,14 +101,14 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLookup()
+    public function testLookup(): void
     {
         $recordCache = $this->getRecordCache();
 
         $record = $recordCache->lookup('020645147', 'Solr');
         $this->assertNotEmpty($record);
 
-        $record = $recordCache->lookup('70764764', 'WorldCat');
+        $record = $recordCache->lookup('70764764', 'WorldCat2');
         $this->assertNotEmpty($record);
 
         $record = $recordCache->lookup('1234', 'Solr');
@@ -123,7 +123,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLookupBatch()
+    public function testLookupBatch(): void
     {
         $recordCache = $this->getRecordCache();
 
@@ -133,7 +133,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
         $records = $recordCache->lookupBatch(['020645147', '1234'], 'Solr');
         $this->assertCount(1, $records);
 
-        $records = $recordCache->lookupBatch(['020645147', '00033321'], 'WorldCat');
+        $records = $recordCache->lookupBatch(['020645147', '00033321'], 'WorldCat2');
         $this->assertEmpty($records);
 
         $records = $recordCache->lookupBatch(['0206451', '1234'], 'Solr');
@@ -145,12 +145,12 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsFallback()
+    public function testIsFallback(): void
     {
         $recordCache = $this->getRecordCache();
 
         $this->assertFalse($recordCache->isFallback('Solr'));
-        $this->assertTrue($recordCache->isFallback('WorldCat'));
+        $this->assertTrue($recordCache->isFallback('WorldCat2'));
 
         $this->assertFalse($recordCache->isFallback('Summon'));
     }
@@ -160,12 +160,12 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsPrimary()
+    public function testIsPrimary(): void
     {
         $recordCache = $this->getRecordCache();
 
         $this->assertTrue($recordCache->isPrimary('Solr'));
-        $this->assertFalse($recordCache->isPrimary('WorldCat'));
+        $this->assertFalse($recordCache->isPrimary('WorldCat2'));
 
         $this->assertFalse($recordCache->isPrimary('Summon'));
     }
@@ -175,12 +175,12 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsCachable()
+    public function testIsCachable(): void
     {
         $recordCache = $this->getRecordCache();
 
         $this->assertTrue($recordCache->isCachable('Solr'));
-        $this->assertTrue($recordCache->isCachable('WorldCat'));
+        $this->assertTrue($recordCache->isCachable('WorldCat2'));
         $this->assertFalse($recordCache->isCachable('Summon'));
     }
 
@@ -189,7 +189,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetContext()
+    public function testSetContext(): void
     {
         $recordCache = $this->getRecordCache();
 
@@ -211,7 +211,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateOrUpdate()
+    public function testCreateOrUpdate(): void
     {
         $recordCache = $this->getRecordCache();
 
@@ -230,7 +230,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
         $configArr = [
             'Default' => [
                 'Solr' => ['operatingMode' => 'primary'],
-                'WorldCat' => ['operatingMode' => 'fallback'],
+                'WorldCat2' => ['operatingMode' => 'fallback'],
             ],
             'Disabled' => [
                 'Solr' => [],
@@ -292,16 +292,16 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     {
         $recordFactoryManager = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         $recordFactoryManager->method('getSolrRecord')->willReturn($this->getDriver('test', 'Solr'));
-        $recordFactoryManager->method('get')->willReturn($this->getDriver('test', 'WorldCat'));
+        $recordFactoryManager->method('get')->willReturn($this->getDriver('test', 'WorldCat2'));
         return $recordFactoryManager;
     }
 
     /**
      * Create a Cache object
      *
-     * @return \VuFind\Record\Cache
+     * @return Cache
      */
-    protected function getRecordCache()
+    protected function getRecordCache(): Cache
     {
         $recordCache = new Cache(
             $this->getRecordFactoryManager(),
@@ -318,12 +318,12 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      * @param string $id     id
      * @param string $source source
      *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return MockObject&\VuFind\RecordDriver\AbstractBase
      */
     protected function getDriver(
         $id = 'test',
         $source = 'Solr'
-    ): \VuFind\RecordDriver\AbstractBase {
+    ): MockObject&\VuFind\RecordDriver\AbstractBase {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->method('getUniqueId')->willReturn($id);
         $driver->method('getSourceIdentifier')->willReturn($source);

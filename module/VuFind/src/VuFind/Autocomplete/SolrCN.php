@@ -60,11 +60,14 @@ class SolrCN extends Solr
     /**
      * Process the user query to make it suitable for a Solr query.
      *
-     * @param string $query Incoming user query
+     * @param string $query   Incoming user query
+     * @param array  $options Array of extra parameters
      *
-     * @return string       Processed query
+     * @return string        Processed query
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function mungeQuery($query)
+    protected function mungeQuery(string $query, array $options = []): string
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"'];

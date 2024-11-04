@@ -155,6 +155,7 @@
   <!-- Quality Assurance Javascript Tasks -->
   <target name="qa-js-and-less" description="quality assurance js and less tasks">
     <phingcall target="eslint"/>
+    <phingcall target="eslint-jsdoc"/>
     <phingcall target="jshint"/>
     <phingcall target="checkLessToSass"/>
     <phingcall target="checkSassBuild"/>
@@ -273,6 +274,20 @@
   <target name="eslint-report">
     <exec executable="npx" escape="false">
       <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
+    </exec>
+  </target>
+
+  <!-- ESLint jsDoc (test only) -->
+  <target name="eslint-jsdoc">
+    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js" />
+    </exec>
+  </target>
+
+  <!-- ESLint jsDoc (auto-fix eligible issues) -->
+  <target name="eslint-jsdoc-fix">
+    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js --fix" />
     </exec>
   </target>
 
@@ -1262,20 +1277,6 @@ ${git_status}
     <!-- clean up temp files -->
     <delete file="${localdir}/import/marc-${BASENAME}.properties" />
     <delete file="${localdir}/import/import-${BASENAME}.properties" />
-  </target>
-
-  <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- Fix for PHP 8 incompatibility in chrome-mink-driver 2.8.0: -->
-    <reflexive>
-      <fileset dir="vendor/dmore/chrome-mink-driver/src">
-        <include pattern="ChromeDriver.php" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <regexp pattern="\$base_url," replace="\$base_url = &apos;&apos;," />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
   </target>
 
   <!-- Update bootstrap3 templates from bootstrap5 -->
