@@ -243,6 +243,20 @@ $(function registerAccountAjax() {
     }
   });
 
+  VuFind.account.register("favorites", {
+    selector: ".favorites-status",
+    ajaxMethod: "getUserFavoritesStatus",
+    render: function render($element, status, ICON_LEVELS) {
+      var html = '<span class="badge">' + parseInt(status.count || 0) + '</span>';
+      var level = ICON_LEVELS.NONE;
+      $element.html(html);
+      return level;
+    },
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return currentStatus.count !== status.count;
+    }
+  });
+
   VuFind.account.register("holds", {
     selector: ".holds-status",
     ajaxMethod: "getUserHolds",
