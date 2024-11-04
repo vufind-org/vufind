@@ -3,7 +3,7 @@
 /**
  * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
  *
- * @type {Function} Function to check if value is missing
+ * @type {Function} Function to check for multiFacetsSelectionEnabled
  */
 let isMultiFacetsSelectionEnabled = () => {
   if (typeof multiFacetsSelectionEnabled === "undefined") {
