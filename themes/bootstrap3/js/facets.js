@@ -493,7 +493,7 @@ VuFind.register('sideFacets', function SideFacets() {
       .done(function onGetSideFacetsDone(response) {
         $.each(response.data.facets, function initFacet(facet, facetData) {
           var containerSelector = typeof facetData.checkboxCount !== 'undefined'
-            ? '.checkboxFilter ' : ':not(.checkbox-filter)';
+            ? '.checkboxFilter ' : '.facet-group ';
           var $facetContainer = $container.find(containerSelector + '[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData.checkboxCount !== 'undefined') {
