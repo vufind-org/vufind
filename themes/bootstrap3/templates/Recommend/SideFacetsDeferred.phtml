@@ -46,6 +46,7 @@
   <?php if ($this->multiFacetsSelection && $this->layout()->sideFacetsInstanceCounter === 1): ?>
     <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
   <?php endif; ?>
+  <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
   <?php
     // We need to pass the current URL query to the Javascript; we use substr() to
     // strip off the leading ? character. The "suppress query" option is used for
