@@ -19,7 +19,7 @@
         <select name="course" id="reserves_by_course" class="form-control">
           <option></option>
           <?php foreach ($this->courseList as $courseId => $courseName): ?>
-            <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
+            <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->transEsc('Reserves::' . $courseName)?></option>
           <?php endforeach; ?>
         </select>
         <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
@@ -32,7 +32,7 @@
         <select name="inst" id="reserves_by_inst" class="form-control">
           <option></option>
           <?php foreach ($this->instList as $instId => $instName): ?>
-            <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->escapeHtml($instName)?></option>
+            <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->transEsc('Reserves::' . $instName)?></option>
           <?php endforeach; ?>
         </select>
         <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
@@ -45,7 +45,7 @@
         <select name="dept" id="reserves_by_dept" class="form-control">
           <option></option>
           <?php foreach ($this->deptList as $deptId => $deptName): ?>
-            <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
+            <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->transEsc('Reserves::' . $deptName)?></option>
           <?php endforeach; ?>
         </select>
         <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">

@@ -1,4 +1,16 @@
-/*global multiFacetsSelectionEnabled, VuFind */
+/*global VuFind, multiFacetsSelectionEnabled */
+
+/**
+ * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
+ *
+ * @type {Function} Function to check for multiFacetsSelectionEnabled
+ */
+let isMultiFacetsSelectionEnabled = () => {
+  if (typeof multiFacetsSelectionEnabled === "undefined") {
+    return false;
+  }
+  return multiFacetsSelectionEnabled;
+};
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
@@ -393,7 +405,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function init() {
-    if (multiFacetsSelectionEnabled !== true) {
+    if (!isMultiFacetsSelectionEnabled()) {
       return;
     }
     if (defaultContext === undefined) {
@@ -492,18 +504,18 @@ VuFind.register('sideFacets', function SideFacets() {
             }
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(VuFind.updateCspNonce(facetData.html));
-            if (multiFacetsSelectionEnabled !== true) {
+            if (!isMultiFacetsSelectionEnabled()) {
               activateFacetBlocking($facetContainer);
             }
           }
-          if (multiFacetsSelectionEnabled === true) {
+          if (isMultiFacetsSelectionEnabled()) {
             VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get()[0]);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
         VuFind.lightbox.bind($('.sidebar'));
         VuFind.emit('VuFind.sidefacets.loaded');
-        if (multiFacetsSelectionEnabled === true) {
+        if (isMultiFacetsSelectionEnabled()) {
           VuFind.multiFacetsSelection.rangeSelectorInit();
         }
       })
@@ -525,7 +537,7 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function init() {
-    if (multiFacetsSelectionEnabled === true) {
+    if (isMultiFacetsSelectionEnabled()) {
       VuFind.multiFacetsSelection.registerCallbackOnApply(showLoadingOverlay);
       VuFind.multiFacetsSelection.registerCallbackWhenDeactivated(showLoadingOverlay);
     } else {
@@ -600,7 +612,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
   }
 
   function setup() {
-    if (multiFacetsSelectionEnabled === true) {
+    if (isMultiFacetsSelectionEnabled()) {
       let elem = document.getElementById('facet-info-result').children[0];
       VuFind.multiFacetsSelection.applyClickHandling(elem);
       VuFind.multiFacetsSelection.addSwitchAndButton(elem);

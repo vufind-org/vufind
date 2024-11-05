@@ -209,6 +209,16 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
+     * Disable record preview when screen width is narrow
+     *
+     * @return bool
+     */
+    public function hidePreviewInNarrowDisplays(): bool
+    {
+        return (bool)$this->config->Hierarchy?->hide_preview_in_narrow_displays;
+    }
+
+    /**
      * Get the current active record. Returns record driver if there is an active
      * record or null otherwise.
      *

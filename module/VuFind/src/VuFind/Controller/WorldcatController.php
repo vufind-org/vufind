@@ -1,11 +1,11 @@
 <?php
 
 /**
- * WorldCat Controller
+ * WorldCat Controller (legacy -- redirects to WorldCat v2 controller)
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,10 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
 /**
- * WorldCat Controller
+ * WorldCat Controller (legacy -- redirects to WorldCat v2 controller)
  *
  * @category VuFind
  * @package  Controller
@@ -40,37 +38,42 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class WorldcatController extends AbstractSearch
+class WorldcatController extends AbstractBase
 {
     /**
-     * Constructor
+     * Home action -- redirect to WorldCat v2.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @return mixed
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    public function homeAction()
     {
-        $this->searchClassId = 'WorldCat';
-        parent::__construct($sm);
+        return $this->redirect()->toRoute('worldcat2-home');
     }
 
     /**
-     * Is the result scroller active?
+     * Advanced search action -- redirect to WorldCat v2.
      *
-     * @return bool
+     * @return mixed
      */
-    protected function resultScrollerActive()
+    public function advancedAction()
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('WorldCat');
-        return $config->Record->next_prev_navigation ?? false;
+        return $this->redirect()->toRoute('worldcat2-advanced');
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- transform search and redirect to WorldCat v2.
      *
      * @return mixed
      */
     public function searchAction()
     {
-        return $this->resultsAction();
+        $params = $this->params()->fromQuery();
+        // v1 types are prefixed with "srw." but v2 types are not; convert!
+        foreach ($params as $key => $value) {
+            if (str_starts_with($key, 'type')) {
+                $params[$key] = str_replace('srw.', '', $value);
+            }
+        }
+        return $this->redirect()->toRoute('worldcat2-search', options: ['query' => $params]);
     }
 }

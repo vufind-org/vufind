@@ -196,6 +196,9 @@ function registerTabEvents() {
 // Update print button to correct tab prints
 function setPrintBtnHash(hash) {
   let printBtn = document.querySelector(".print-record");
+  if (!printBtn) {
+    return;
+  }
   let printHref = printBtn.getAttribute("href");
   let printURL = new URL(printHref, window.location.origin);
   printURL.hash = hash === null ? "" : hash;
