@@ -219,11 +219,8 @@ a:hover .login-dropdown-caret {
     }
   }
 
-  a.facet:hover,
-  .facet.checkbox:hover { background-color: $sidebar-item-hover-bg; }
-
-  .facet.active,
-  .facet.active:hover,
+  .facet-group .facet.active,
+  .facet-group .facet.active:hover,
   .active-filters .facet,
   .active-filters .facet:hover {
     border-color: $sidebar-active-bg;

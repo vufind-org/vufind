@@ -299,9 +299,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       } else {
         facet = elem.closest('.facet');
       }
-      if (!facet.parentElement.classList.contains('checkboxFilter')) {
-        facet.classList.toggle('active');
-      }
+      facet.classList.toggle('active');
 
       let icon = elem.closest('a').querySelector('.icon');
       if (icon !== null) {

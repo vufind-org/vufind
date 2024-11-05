@@ -5,7 +5,7 @@
       ? $results->getUrlQuery()->removeFilter($current['filter'])
       : $results->getUrlQuery()->addFilter($current['filter']);
   ?>
-  <div class="facet" >
+  <div class="facet<?=$current['selected'] ? ' active' : ''?>">
     <a class="checkbox-filter icon-link<?=$isHidden ? ' hidden' : '' ?>" href="<?=$href ?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
       <?php if ($current['selected']): ?>
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
