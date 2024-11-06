@@ -69,7 +69,7 @@ class ProQuestFSG extends DefaultRecord
             $data = $data['fullrecord'];
         }
 
-        // Map the WorldCat response into a format that the parent Solr-based
+        // Map the ProQuestFSG response into a format that the parent Solr-based
         // record driver can understand.
         parent::setRawData(['fullrecord' => $data]);
     }

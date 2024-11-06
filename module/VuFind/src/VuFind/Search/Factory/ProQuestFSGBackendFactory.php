@@ -93,7 +93,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the WorldCat backend.
+     * Create the ProQuestFSG backend.
      *
      * @param Connector $connector Connector
      *
@@ -107,7 +107,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the WorldCat connector.
+     * Create the ProQuestFSG connector.
      *
      * @return Connector
      */
