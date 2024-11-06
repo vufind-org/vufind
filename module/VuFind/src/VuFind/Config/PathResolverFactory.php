@@ -124,6 +124,7 @@ class PathResolverFactory implements FactoryInterface
                     'defaultConfigSubdir' =>
                         $systemConfig['Local_Dir']['config_subdir']
                         ?? $this->defaultLocalConfigSubdir,
+                    'dirLocationConfig' => $systemConfig,
                 ]
             );
 

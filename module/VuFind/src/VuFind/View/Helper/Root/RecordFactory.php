@@ -72,6 +72,7 @@ class RecordFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $helper = new $requestedName($container->get(TagsService::class), $config);
         $helper->setCoverRouter($container->get(\VuFind\Cover\Router::class));
+        $helper->setSearchMemory($container->get(\VuFind\Search\Memory::class));
         return $helper;
     }
 }

@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\SecretTrait;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -47,6 +48,8 @@ use VuFind\I18n\Locale\LocaleSettings;
  */
 class ReCaptchaFactory implements FactoryInterface
 {
+    use SecretTrait;
+
     /**
      * Create an object
      *
@@ -95,7 +98,7 @@ class ReCaptchaFactory implements FactoryInterface
         }
 
         $siteKey = $recaptchaConfig['recaptcha_siteKey'] ?? '';
-        $secretKey = $recaptchaConfig['recaptcha_secretKey'] ?? '';
+        $secretKey = $this->getSecretFromConfig($recaptchaConfig, 'recaptcha_secretKey') ?? '';
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $language = $container->get(LocaleSettings::class)->getUserLocale();

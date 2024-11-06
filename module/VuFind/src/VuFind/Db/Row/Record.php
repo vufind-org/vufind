@@ -85,9 +85,9 @@ class Record extends RowGateway implements RecordEntityInterface
      *
      * @param ?string $recordId Record id
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setRecordId(?string $recordId): RecordEntityInterface
+    public function setRecordId(?string $recordId): static
     {
         $this->record_id = $recordId;
         return $this;
@@ -108,9 +108,9 @@ class Record extends RowGateway implements RecordEntityInterface
      *
      * @param ?string $recordSource Record source
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setSource(?string $recordSource): RecordEntityInterface
+    public function setSource(?string $recordSource): static
     {
         $this->source = $recordSource;
         return $this;
@@ -131,9 +131,9 @@ class Record extends RowGateway implements RecordEntityInterface
      *
      * @param string $recordVersion Record version
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setVersion(string $recordVersion): RecordEntityInterface
+    public function setVersion(string $recordVersion): static
     {
         $this->version = $recordVersion;
         return $this;
@@ -158,9 +158,9 @@ class Record extends RowGateway implements RecordEntityInterface
      *
      * @param ?string $recordData Record data
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setData(?string $recordData): RecordEntityInterface
+    public function setData(?string $recordData): static
     {
         $this->__set('data', $recordData);
         return $this;
@@ -181,9 +181,9 @@ class Record extends RowGateway implements RecordEntityInterface
      *
      * @param DateTime $dateTime Updated date
      *
-     * @return RecordEntityInterface
+     * @return static
      */
-    public function setUpdated(DateTime $dateTime): RecordEntityInterface
+    public function setUpdated(DateTime $dateTime): static
     {
         $this->updated = $dateTime->format('Y-m-d H:i:s');
         return $this;

@@ -111,9 +111,9 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
      *
      * @param ?string $params Resumption parameters.
      *
-     * @return OaiResumptionEntityInterface
+     * @return static
      */
-    public function setResumptionParameters(?string $params): OaiResumptionEntityInterface
+    public function setResumptionParameters(?string $params): static
     {
         $this->params = $params;
         return $this;
@@ -134,9 +134,9 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
      *
      * @param DateTime $dateTime Expiration date
      *
-     * @return OaiResumptionEntityInterface
+     * @return static
      */
-    public function setExpiry(DateTime $dateTime): OaiResumptionEntityInterface
+    public function setExpiry(DateTime $dateTime): static
     {
         $this->expires = $dateTime->format('Y-m-d H:i:s');
         return $this;

@@ -227,7 +227,7 @@ VuFind.register('lightbox', function Lightbox() {
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
         if (jq_xhr.status === 205) {
-          VuFind.refreshPage();
+          VuFind.refreshPage(jq_xhr.getResponseHeader('X-VuFind-Refresh-Method') === 'GET');
           return;
         }
         render(content);

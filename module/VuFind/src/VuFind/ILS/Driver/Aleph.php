@@ -1632,7 +1632,7 @@ class Aleph extends AbstractBase implements
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron   Patron information returned by the patronLogin method.

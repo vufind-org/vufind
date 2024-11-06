@@ -72,6 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summon' => \VuFind\Search\Summon\Results::class,
         'tags' => \VuFind\Search\Tags\Results::class,
         'worldcat' => \VuFind\Search\WorldCat\Results::class,
+        'worldcat2' => \VuFind\Search\WorldCat2\Results::class,
     ];
 
     /**
@@ -112,6 +113,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Tags\Results::class =>
             \VuFind\Search\Tags\ResultsFactory::class,
         \VuFind\Search\WorldCat\Results::class => ResultsFactory::class,
+        \VuFind\Search\WorldCat2\Results::class => ResultsFactory::class,
     ];
 
     /**

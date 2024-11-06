@@ -112,18 +112,6 @@ class CartTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cookie domain setting.
-     *
-     * @return void
-     */
-    public function testCookieDomain()
-    {
-        $manager = $this->getMockCookieManager([], '/', '.example.com');
-        $cart = $this->getCart(100, true, $manager);
-        $this->assertEquals('.example.com', $cart->getCookieDomain());
-    }
-
-    /**
      * Check that the cart is empty by default.
      *
      * @return void

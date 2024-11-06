@@ -455,6 +455,12 @@ class AbstractRecord extends AbstractBase
             return $response;
         }
 
+        if ($this->formWasSubmitted('newList')) {
+            // Remove submit now from parameters
+            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
+            return $this->forwardTo('MyResearch', 'editList', ['id' => 'NEW']);
+        }
+
         // Process form submission:
         if ($this->formWasSubmitted()) {
             return $this->processSave();
@@ -473,7 +479,8 @@ class AbstractRecord extends AbstractBase
         // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (
-            !str_ends_with($referer, '/Save')
+            !empty($referer)
+            && !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
             && $this->isLocalUrl($referer)
         ) {

@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -72,8 +73,13 @@ class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         }
         $pathStack = [
             APPLICATION_PATH . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages',
         ];
+        $localConfigDirStack = $container->get(PathResolver::class)->getLocalConfigDirStack();
+        $localPathStack = array_map(
+            fn ($localConfigDir) => $localConfigDir['directory'] . '/languages',
+            $localConfigDirStack
+        );
+        $pathStack = array_merge($pathStack, $localPathStack);
         $settings = $container->get(LocaleSettings::class);
         return new $requestedName($pathStack, $settings->getFallbackLocales());
     }

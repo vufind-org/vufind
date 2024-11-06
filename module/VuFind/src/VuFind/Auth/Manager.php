@@ -93,6 +93,13 @@ class Manager implements
     protected $hideLogin = null;
 
     /**
+     * ILS Authenticator
+     *
+     * @var ?ILSAuthenticator
+     */
+    protected $ilsAuthenticator = null;
+
+    /**
      * Constructor
      *
      * @param Config                          $config            VuFind configuration
@@ -121,6 +128,18 @@ class Manager implements
         $method = $config->Authentication->method ?? 'Database';
         $this->legalAuthOptions = [$method];   // mark it as legal
         $this->setAuthMethod($method);         // load it
+    }
+
+    /**
+     * Set ILS Authenticator
+     *
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     *
+     * @return void
+     */
+    public function setILSAuthenticator(ILSAuthenticator $ilsAuthenticator): void
+    {
+        $this->ilsAuthenticator = $ilsAuthenticator;
     }
 
     /**
@@ -754,6 +773,34 @@ class Manager implements
                 throw new AuthException('authentication_error_technical', 0, $e);
             }
 
+            // Attempt catalog login so that any bad credentials are cleared before further processing
+            // (avoids e.g. multiple login attempts by account AJAX checks).
+            if (
+                ($this->config->Catalog->checkILSCredentialsOnLogin ?? true)
+                && $this->ilsAuthenticator
+                && $this->allowsUserIlsLogin()
+                && ($catUsername = $user->getCatUsername())
+                // If ILS authentication was used, catalog username must not be the same as the username just used for
+                // authentication:
+                && (!in_array($user->getAuthMethod(), ['ils', 'multiils']) || $catUsername !== $user->getUsername())
+                && !$this->ils->getOfflineMode()
+            ) {
+                try {
+                    $patron = $this->ils->patronLogin(
+                        $catUsername,
+                        $this->ilsAuthenticator->getCatPasswordForUser($user)
+                    );
+                    if (empty($patron)) {
+                        // Problem logging in -- clear user credentials so they can be
+                        // prompted again; perhaps their password has changed in the
+                        // system!
+                        $user->setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null);
+                    }
+                } catch (\Exception $e) {
+                    // Ignore exceptions here so that the login can continue
+                }
+            }
+
             // Update user object
             $this->updateUser($user, $mainAuthMethod);
 
@@ -765,8 +812,11 @@ class Manager implements
                     throw new AuthException('authentication_error_technical', 0, $e);
                 }
             }
-            // Store the user in the session and send it back to the caller:
+
+            // Store the user in the session:
             $this->updateSession($user);
+
+            // Send user back to caller:
             return $user;
         } catch (\Exception $e) {
             $this->getAuth()->resetState();

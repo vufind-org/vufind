@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Record;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Record\Cache;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\Record\Loader;
@@ -58,23 +59,20 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingRecord()
+    public function testMissingRecord(): void
     {
         $this->expectException(\VuFind\Exception\RecordMissing::class);
         $this->expectExceptionMessage('Record Solr:test does not exist.');
 
         $collection = $this->getCollection([]);
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+            ->willReturn($collection);
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
                 ->with($this->callback($this->getCommandChecker($arguments)))
-                ->will($this->returnValue($commandObj));
+                ->willReturn($commandObj);
         $loader = $this->getLoader($service);
         $loader->load('test');
     }
@@ -84,16 +82,13 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingRecordWithFallback()
+    public function testMissingRecordWithFallback(): void
     {
         $collection = $this->getCollection([]);
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+            ->willReturn($collection);
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $class = \VuFindSearch\Command\RetrieveCommand::class;
         $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
@@ -101,7 +96,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
                 $this->callback(
                     $this->getCommandChecker($arguments, $class, 'Summon')
                 )
-            )->will($this->returnValue($commandObj));
+            )->willReturn($commandObj);
         $driver = $this->getDriver();
         $fallbackLoader = $this->getFallbackLoader([$driver]);
         $loader = $this->getLoader($service, null, null, $fallbackLoader);
@@ -113,27 +108,21 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testToleratedMissingRecord()
+    public function testToleratedMissingRecord(): void
     {
         $collection = $this->getCollection([]);
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $commandObj->expects($this->once())->method('getResult')->willReturn($collection);
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($this->getCommandChecker($arguments)))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $missing = $this->getDriver('missing', 'Missing');
-        $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         $factory->expects($this->once())->method('get')
             ->with($this->equalTo('Missing'))
-            ->will($this->returnValue($missing));
+            ->willReturn($missing);
         $loader = $this->getLoader($service, $factory);
         $record = $loader->load('test', 'Solr', true);
         $this->assertEquals($missing, $record);
@@ -144,21 +133,18 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSingleRecord()
+    public function testSingleRecord(): void
     {
         $driver = $this->getDriver();
         $collection = $this->getCollection([$driver]);
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+            ->willReturn($collection);
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($this->getCommandChecker($arguments)))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $loader = $this->getLoader($service);
         $this->assertEquals($driver, $loader->load('test'));
     }
@@ -168,7 +154,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSingleRecordWithBackendParameters()
+    public function testSingleRecordWithBackendParameters(): void
     {
         $params = new ParamBag();
         $params->set('fq', 'id:test');
@@ -176,17 +162,13 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver();
         $collection = $this->getCollection([$driver]);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $commandObj->expects($this->once())->method('getResult')->willReturn($collection);
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $arguments = ['test', $params];
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($this->getCommandChecker($arguments)))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $loader = $this->getLoader($service);
         $this->assertEquals($driver, $loader->load('test', 'Solr', false, $params));
     }
@@ -196,7 +178,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBatchLoad()
+    public function testBatchLoad(): void
     {
         $driver1 = $this->getDriver('test1', 'Solr');
         $driver2 = $this->getDriver('test2', 'Solr');
@@ -213,21 +195,16 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $worldCatParams = new ParamBag();
         $worldCatParams->set('fq', 'id:test4');
 
-        $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         $factory->expects($this->once())->method('get')
             ->with($this->equalTo('Missing'))
-            ->will($this->returnValue($missing));
+            ->willReturn($missing);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->exactly(3))->method('getResult')
             ->willReturnOnConsecutiveCalls($collection1, $collection2, $collection3);
 
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
 
         $class = \VuFindSearch\Command\RetrieveBatchCommand::class;
         $arguments1 = [['test1', 'test2'], $solrParams];
@@ -240,7 +217,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             [
                 [$this->callback($this->getCommandChecker($arguments1, $class))],
                 [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
-                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))],
+                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat2'))],
             ],
             $commandObj
         );
@@ -248,14 +225,14 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($service, $factory);
         $input = [
             ['source' => 'Solr', 'id' => 'test1'],
-            'Solr|test2', 'Summon|test3', 'WorldCat|test4',
+            'Solr|test2', 'Summon|test3', 'WorldCat2|test4',
         ];
         $this->assertEquals(
             [$driver1, $driver2, $driver3, $missing],
             $loader->loadBatch(
                 $input,
                 false,
-                ['Solr' => $solrParams, 'WorldCat' => $worldCatParams]
+                ['Solr' => $solrParams, 'WorldCat2' => $worldCatParams]
             )
         );
     }
@@ -265,7 +242,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBatchLoadWithFallback()
+    public function testBatchLoadWithFallback(): void
     {
         $driver1 = $this->getDriver('test1', 'Solr');
         $driver2 = $this->getDriver('test2', 'Solr');
@@ -277,14 +254,11 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $solrParams = new ParamBag();
         $solrParams->set('fq', 'id:test1');
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->exactly(2))->method('getResult')
             ->willReturnOnConsecutiveCalls($collection1, $collection2);
 
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
 
         $arguments1 = [['test1', 'test2'], $solrParams];
         $arguments2 = [['test3'], new ParamBag()];
@@ -325,10 +299,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      * @return callable
      */
     protected function getCommandChecker(
-        $args = [],
-        $class = \VuFindSearch\Command\RetrieveCommand::class,
-        $target = 'Solr'
-    ) {
+        array $args = [],
+        string $class = \VuFindSearch\Command\RetrieveCommand::class,
+        string $target = 'Solr'
+    ): callable {
         return function ($command) use ($class, $args, $target) {
             return $command::class === $class
                 && $command->getArguments() == $args
@@ -342,16 +316,13 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      * @param string $id     Record ID
      * @param string $source Record source
      *
-     * @return RecordDriver
+     * @return MockObject&RecordDriver
      */
-    protected function getDriver($id = 'test', $source = 'Solr')
+    protected function getDriver(string $id = 'test', string $source = 'Solr'): MockObject&RecordDriver
     {
-        $driver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
-            ->getMock();
-        $driver->expects($this->any())->method('getUniqueId')
-            ->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue($source));
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
+        $driver->expects($this->any())->method('getUniqueId')->willReturn($id);
+        $driver->expects($this->any())->method('getSourceIdentifier')->willReturn($source);
         return $driver;
     }
 
@@ -370,10 +341,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         RecordFactory $factory = null,
         Cache $recordCache = null,
         FallbackLoader $fallbackLoader = null
-    ) {
+    ): Loader {
         if (null === $factory) {
-            $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
-                ->disableOriginalConstructor()->getMock();
+            $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         }
         return new Loader($service, $factory, $recordCache, $fallbackLoader);
     }
@@ -383,9 +353,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $records Records to return from the fallback plugin
      *
-     * @return FallbackLoader
+     * @return MockObject&FallbackLoader
      */
-    protected function getFallbackLoader($records)
+    protected function getFallbackLoader($records): MockObject&FallbackLoader
     {
         $fallbackPlugin = $this
             ->getMockBuilder(\VuFind\Record\FallbackLoader\Summon::class)
@@ -398,17 +368,17 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $expectedIds = array_map($callback, $records);
         $fallbackPlugin->expects($this->once())->method('load')
             ->with($this->equalTo($expectedIds))
-            ->will($this->returnValue($records));
+            ->willReturn($records);
         $fallbackLoader = $this->getMockBuilder(FallbackLoader::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['get', 'has'])
             ->getMock();
         $fallbackLoader->expects($this->once())->method('has')
             ->with($this->equalTo('Summon'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $fallbackLoader->expects($this->once())->method('get')
             ->with($this->equalTo('Summon'))
-            ->will($this->returnValue($fallbackPlugin));
+            ->willReturn($fallbackPlugin);
         return $fallbackLoader;
     }
 
@@ -419,12 +389,11 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordCollectionInterface
      */
-    protected function getCollection($records)
+    protected function getCollection(array $records): MockObject&RecordCollectionInterface
     {
-        $collection = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->getMock();
-        $collection->expects($this->any())->method('getRecords')->will($this->returnValue($records));
-        $collection->expects($this->any())->method('count')->will($this->returnValue(count($records)));
+        $collection = $this->createMock(RecordCollectionInterface::class);
+        $collection->expects($this->any())->method('getRecords')->willReturn($records);
+        $collection->expects($this->any())->method('count')->willReturn(count($records));
         return $collection;
     }
 }

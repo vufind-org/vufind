@@ -49,7 +49,7 @@ use VuFind\Db\Entity\ExternalSessionEntityInterface;
  * @property string $external_session_id
  * @property string $created
  */
-class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSessionEntityInterface
+class ExternalSession extends RowGateway implements ExternalSessionEntityInterface
 {
     /**
      * Constructor
@@ -86,9 +86,9 @@ class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSe
      *
      * @param string $sessionId PHP session id string
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setSessionId(string $sessionId): ExternalSessionEntityInterface
+    public function setSessionId(string $sessionId): static
     {
         $this->session_id = $sessionId;
         return $this;
@@ -109,9 +109,9 @@ class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSe
      *
      * @param string $externalSessionId External session id string
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setExternalSessionId(string $externalSessionId): ExternalSessionEntityInterface
+    public function setExternalSessionId(string $externalSessionId): static
     {
         $this->external_session_id = $externalSessionId;
         return $this;
@@ -132,9 +132,9 @@ class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSe
      *
      * @param DateTime $dateTime Created date
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): ExternalSessionEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;

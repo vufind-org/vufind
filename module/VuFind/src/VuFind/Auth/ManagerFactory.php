@@ -91,6 +91,7 @@ class ManagerFactory implements FactoryInterface
             $loginTokenManager,
             $ils
         );
+        $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));
         $manager->checkForExpiredCredentials();
         return $manager;
     }

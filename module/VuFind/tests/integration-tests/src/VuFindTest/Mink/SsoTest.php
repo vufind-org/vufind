@@ -68,14 +68,41 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testLogin()
+     *
+     * @return array[]
+     */
+    public static function loginConfigProvider(): array
+    {
+        return [
+            'with cat_username mapping' => [ // test for regression of #3992
+                [
+                    'General' => [
+                        'attributes' => [
+                            'cat_username' => 'foo',
+                        ],
+                    ],
+                ],
+            ],
+            'defaults' => [],
+        ];
+    }
+
+    /**
      * Test SSO login
      *
+     * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
+     *
      * @return void
+     *
+     * @dataProvider loginConfigProvider
      */
-    public function testLogin(): void
+    public function testLogin(array $extraSsoConfigs = []): void
     {
         // Set up configs
-        $this->changeConfigs($this->getConfigIniOverrides());
+        $configs = $this->getConfigIniOverrides();
+        $configs['SimulatedSSO'] = array_merge_recursive($configs['SimulatedSSO'], $extraSsoConfigs);
+        $this->changeConfigs($configs);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();

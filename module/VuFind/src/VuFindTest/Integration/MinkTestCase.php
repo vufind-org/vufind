@@ -231,7 +231,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeConfigFile($configName, $settings, $replace = false)
+    protected function changeConfigFile(string $configName, array $settings, bool $replace = false): void
     {
         $file = $configName . '.ini';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
@@ -246,12 +246,27 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
             $this->modifiedConfigs[] = $configName;
         }
+        $this->writeConfigFile($local, $settings, $replace);
+    }
+
+    /**
+     * Write settings to a file.
+     *
+     * @param string $path     Path of file to modify.
+     * @param array  $settings Settings to change.
+     * @param bool   $replace  Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
+     *
+     * @return void
+     */
+    protected function writeConfigFile(string $path, array $settings, bool $replace = false): void
+    {
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
-            file_put_contents($local, '');
+            file_put_contents($path, '');
         }
 
-        $writer = new ConfigWriter($local);
+        $writer = new ConfigWriter($path);
         foreach ($settings as $section => $contents) {
             foreach ($contents as $key => $value) {
                 $writer->set($section, $key, $value);

@@ -13,8 +13,8 @@ $this->jsConfigs()->add(
     $themeConfig['stickyElements'] ?? []
 );
 $this->jsConfigs()->add(
-    'hidden-sticky-elements',
-    $themeConfig['hiddenStickyElements'] ?? []
+    'sticky-children-classes',
+    $themeConfig['stickyChildrenClasses'] ?? $themeConfig['hiddenStickyElements'] ?? []
 );
 $this->jsConfigs()->add(
     'item-status:load-batch-wise',

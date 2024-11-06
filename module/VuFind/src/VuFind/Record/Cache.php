@@ -229,7 +229,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Check whether a record source is cachable
+     * Check whether a record source is cacheable
      *
      * @param string $source Record source
      *

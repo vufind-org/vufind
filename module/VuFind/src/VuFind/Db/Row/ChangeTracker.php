@@ -65,9 +65,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      *
      * @param string $id Id
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setId(string $id): ChangeTrackerEntityInterface
+    public function setId(string $id): static
     {
         $this->id = $id;
         return $this;
@@ -88,9 +88,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      *
      * @param string $name Index name
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setIndexName(string $name): ChangeTrackerEntityInterface
+    public function setIndexName(string $name): static
     {
         $this->core = $name;
         return $this;
@@ -111,9 +111,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Time first added to index.
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setFirstIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface
+    public function setFirstIndexed(?DateTime $dateTime): static
     {
         $this->first_indexed = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -134,9 +134,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Last time changed in index.
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setLastIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface
+    public function setLastIndexed(?DateTime $dateTime): static
     {
         $this->last_indexed = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -157,9 +157,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Last time original record was edited
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setLastRecordChange(?DateTime $dateTime): ChangeTrackerEntityInterface
+    public function setLastRecordChange(?DateTime $dateTime): static
     {
         $this->last_record_change = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -180,9 +180,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Time record was removed from index
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setDeleted(?DateTime $dateTime): ChangeTrackerEntityInterface
+    public function setDeleted(?DateTime $dateTime): static
     {
         $this->deleted = $dateTime->format('Y-m-d H:i:s');
         return $this;

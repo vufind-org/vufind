@@ -332,6 +332,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'firstname' => 'first',
             'lastname' => 'last',
             'email' => 'fake@fake.com',
+            'addressTypeIds' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -361,6 +362,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'firstname' => 'first',
             'lastname' => 'last',
             'email' => 'fake@fake.com',
+            'addressTypeIds' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -380,6 +382,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -406,6 +409,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -430,6 +434,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $details = [
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -458,6 +463,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => '3333-33-33',
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -514,6 +520,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'requiredByTS' => 946739390,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
+            'id' => 'instanceid',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
@@ -807,7 +814,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable using exact mode with invalid
-     * location values and paramter values to isHoldable
+     * location values and parameter values to isHoldable
      *
      * @depends testTokens
      *
@@ -1264,7 +1271,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test getPagedResults with estimates being passed back from folio
      * for the first response. This is different from
      * testGetPagedResultsEqualToLimit since the totalRecords in the
-     * response from the API is inacurrate for the first response
+     * response from the API is inaccurate for the first response
      * (i.e. just an estimate).
      *
      * @depends testTokens

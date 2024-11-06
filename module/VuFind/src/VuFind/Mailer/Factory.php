@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,20 +24,19 @@
  * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\Mailer;
 
-use Laminas\Mail\Transport\InMemory;
-use Laminas\Mail\Transport\Smtp;
-use Laminas\Mail\Transport\SmtpOptions;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\SecretTrait;
 
 /**
  * Factory for instantiating Mailer objects
@@ -44,6 +44,7 @@ use Psr\Container\ContainerInterface;
  * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  *
@@ -51,48 +52,52 @@ use Psr\Container\ContainerInterface;
  */
 class Factory implements FactoryInterface
 {
+    use SecretTrait;
+
     /**
-     * Build the mail transport object.
+     * Return DSN from the configuration
      *
-     * @param \Laminas\Config\Config $config Configuration
+     * @param array $config Configuration
      *
-     * @return InMemory|Smtp
+     * @return string
      */
-    protected function getTransport($config)
+    protected function getDSN(array $config): string
     {
-        // In test mode? Return fake object:
-        if (isset($config->Mail->testOnly) && $config->Mail->testOnly) {
-            return new InMemory();
+        // In test mode? Use null transport:
+        if ($config['Mail']['testOnly'] ?? false) {
+            return 'null://null';
         }
 
-        // Create mail transport:
-        $settings = [
-            'host' => $config->Mail->host, 'port' => $config->Mail->port,
-        ];
-        if (isset($config->Mail->name)) {
-            $settings['name'] = $config->Mail->name;
+        if ($dsn = $config['Mail']['dsn'] ?? null) {
+            return $dsn;
         }
-        if (isset($config->Mail->username) && isset($config->Mail->password)) {
-            $settings['connection_class'] = 'login';
-            $settings['connection_config'] = [
-                'username' => $config->Mail->username,
-                'password' => $config->Mail->password,
-            ];
-            // Set user defined secure connection if provided; otherwise set default
-            // secure connection based on configured port number.
-            if (isset($config->Mail->secure)) {
-                $settings['connection_config']['ssl'] = $config->Mail->secure;
-            } elseif ($settings['port'] == '587') {
-                $settings['connection_config']['ssl'] = 'tls';
-            } elseif ($settings['port'] == '487') {
-                $settings['connection_config']['ssl'] = 'ssl';
-            }
+
+        // Create DSN from settings:
+        $protocol = ($config['Mail']['secure'] ?? false) ? 'smtps' : 'smtp';
+        $dsn = "$protocol://";
+        if (
+            ($username = $config['Mail']['username'] ?? null)
+            && ($password = $this->getSecretFromConfig($config['Mail'], 'password'))
+        ) {
+            $dsn .= "$username:$password@";
         }
-        if (isset($config->Mail->connection_time_limit)) {
-            $settings['connection_time_limit']
-                = $config->Mail->connection_time_limit;
+        $dsn .= $config['Mail']['host'];
+        if ($port = $config['Mail']['port'] ?? null) {
+            $dsn .= ":$port";
         }
-        return new Smtp(new SmtpOptions($settings));
+
+        $dsnParams = [];
+        if ($name = $config['Mail']['name'] ?? null) {
+            $dsnParams['local_domain'] = $name;
+        }
+        if (null !== ($limit = $config['Mail']['connection_time_limit'] ?? null)) {
+            $dsnParams['ping_threshold'] = $limit;
+        }
+        if ($dsnParams) {
+            $dsn .= '?' . http_build_query($dsnParams);
+        }
+
+        return $dsn;
     }
 
     /**
@@ -119,16 +124,20 @@ class Factory implements FactoryInterface
         }
 
         // Load configurations:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
 
         // Create service:
         $class = new $requestedName(
-            $this->getTransport($config),
-            $config->Mail->message_log
+            new \Symfony\Component\Mailer\Mailer(
+                \Symfony\Component\Mailer\Transport::fromDsn($this->getDSN($config))
+            ),
+            [
+                'message_log' => $config['Mail']['message_log'] ?? null,
+                'message_log_format' => $config['Mail']['message_log_format'] ?? null,
+            ]
         );
         if (!empty($config->Mail->override_from)) {
-            $class->setFromAddressOverride($config->Mail->override_from);
+            $class->setFromAddressOverride($config['Mail']['override_from'] ?? null);
         }
         return $class;
     }

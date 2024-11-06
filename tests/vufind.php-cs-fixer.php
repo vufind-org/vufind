@@ -76,4 +76,5 @@ $config = new PhpCsFixer\Config();
 return $config->setCacheFile($cacheDir . '/.code.cache')
     ->setRiskyAllowed(true)
     ->setRules($rules)
-    ->setFinder($finder);
+    ->setFinder($finder)
+    ->setParallelConfig(\PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect());

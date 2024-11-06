@@ -65,8 +65,10 @@
   <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
+  <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
+  <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
-  <property name="version" value="10.0" />
+  <property name="version" value="10.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -153,6 +155,7 @@
   <!-- Quality Assurance Javascript Tasks -->
   <target name="qa-js-and-less" description="quality assurance js and less tasks">
     <phingcall target="eslint"/>
+    <phingcall target="eslint-jsdoc"/>
     <phingcall target="jshint"/>
     <phingcall target="checkLessToSass"/>
     <phingcall target="checkSassBuild"/>
@@ -271,6 +274,20 @@
   <target name="eslint-report">
     <exec executable="npx" escape="false">
       <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
+    </exec>
+  </target>
+
+  <!-- ESLint jsDoc (test only) -->
+  <target name="eslint-jsdoc">
+    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js" />
+    </exec>
+  </target>
+
+  <!-- ESLint jsDoc (auto-fix eligible issues) -->
+  <target name="eslint-jsdoc-fix">
+    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js --fix" />
     </exec>
   </target>
 
@@ -730,11 +747,21 @@
         <mkdir dir="${localdir}/languages/Facets" />
       </then>
     </if>
+    <if>
+      <not>
+        <available file="${localdir}/languages/ChildDomain" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages/ChildDomain" />
+      </then>
+    </if>
     <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
+    <append destFile="${localdir}/languages/en.ini" text="test_string_1 = Child Text" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1a/ = Top Level, Sorted Last${line.separator}" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1z/ = Top Level, Sorted First${line.separator}" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2y/ = Second Level, Sorted Last${line.separator}" />
     <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2z/ = Second Level, Sorted First${line.separator}" />
+    <append destFile="${localdir}/languages/ChildDomain/en.ini" text="test = Child Text" />
 
     <!-- Add templates to a minktest theme for tests -->
     <property name="themedir" value="${srcdir}/themes/minktest" />
@@ -755,11 +782,11 @@
     </if>
     <echo file="${themedir}/theme.config.php">&lt;?php
 return [
-    'extends' =&gt; 'sandal',
+    'extends' =&gt; 'sandal5',
 ];
 </echo>
 
-    <copy file="${srcdir}/themes/bootstrap3/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
+    <copy file="${srcdir}/themes/bootstrap5/templates/ajax/status-full.phtml" tofile="${themedir}/templates/ajax/status-full.phtml" overwrite="true" />
     <!-- Add a script for testing that inline scripts work -->
     <echo file="${themedir}/templates/ajax/status-full.phtml" append="true">
 &lt;div class="js-status-test hidden"&gt;&lt;/div&gt;
@@ -1252,24 +1279,10 @@ ${git_status}
     <delete file="${localdir}/import/import-${BASENAME}.properties" />
   </target>
 
-  <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- Fix for PHP 8 incompatibility in chrome-mink-driver 2.8.0: -->
-    <reflexive>
-      <fileset dir="vendor/dmore/chrome-mink-driver/src">
-        <include pattern="ChromeDriver.php" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <regexp pattern="\$base_url," replace="\$base_url = &apos;&apos;," />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
-  </target>
-
   <!-- Update bootstrap3 templates from bootstrap5 -->
   <!-- N.B. This destroys any existing bootstrap3 templates (except explicitly excluded ones) -->
   <target name="update-bootstrap3">
-    <property name="templatesdir" value="${srcdir}/themes/bootstrap3/templates" />
+    <property name="templatesdir" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
     <if>
       <available file="${templatesdir}"></available>
       <then>
@@ -1287,7 +1300,7 @@ ${git_status}
     </if>
     <mkdir dir="${templatesdir}"></mkdir>
     <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/bootstrap5/templates">
+      <fileset dir="${srcdir}/themes/${bootstrap5_theme}/templates">
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
@@ -1313,7 +1326,7 @@ ${git_status}
   <!-- Update bootstrap5 templates from bootstrap3 -->
   <!-- N.B. This destroys any existing bootstrap5 templates (except explicitly excluded ones) -->
   <target name="update-bootstrap5">
-    <property name="templatesdir" value="${srcdir}/themes/bootstrap5/templates" />
+    <property name="templatesdir" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
     <if>
       <available file="${templatesdir}"></available>
       <then>
@@ -1331,7 +1344,7 @@ ${git_status}
     </if>
     <mkdir dir="${templatesdir}"></mkdir>
     <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/bootstrap3/templates">
+      <fileset dir="${srcdir}/themes/${bootstrap3_theme}/templates">
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
@@ -1354,8 +1367,8 @@ ${git_status}
 
   <!-- Check that bootstrap5 is up to date with bootstrap3 -->
   <target name="check-bootstrap5">
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/templates" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/templates" />
+    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
+    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
     <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
         <type type="file" />
@@ -1365,8 +1378,8 @@ ${git_status}
       </fileset>
     </foreach>
 
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/scss" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/scss" />
+    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/scss" />
+    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/scss" />
     <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
         <type type="file" />
@@ -1377,8 +1390,8 @@ ${git_status}
       </fileset>
     </foreach>
 
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/js" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/js" />
+    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/js" />
+    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/js" />
     <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
         <type type="file" />

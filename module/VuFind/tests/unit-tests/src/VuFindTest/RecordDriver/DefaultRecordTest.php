@@ -552,7 +552,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test whether author deduplication works corrrectly.
+     * Test whether author deduplication works correctly.
      *
      * @return void
      */

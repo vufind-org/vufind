@@ -125,6 +125,23 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get the subject headings as a flat array of strings.
+     *
+     * @return array Subject headings
+     */
+    public function getAllSubjectHeadingsFlattened()
+    {
+        $headings = [];
+        $subjects = $this->getAllSubjectHeadings();
+        if (is_array($subjects)) {
+            foreach ($subjects as $subj) {
+                $headings[] = implode(' -- ', $subj);
+            }
+        }
+        return $headings;
+    }
+
+    /**
      * Get all record links related to the current record. Each link is returned as
      * array.
      * NB: to use this method you must override it.
@@ -243,7 +260,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCallNumbers()
     {
-        return (array)($this->fields['callnumber-raw'] ?? []);
+        return array_unique((array)($this->fields['callnumber-raw'] ?? []));
     }
 
     /**

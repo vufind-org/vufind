@@ -234,6 +234,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             } else {
                 $context['facet'] = $facet;
                 $context['cluster'] = $facetSet[$facet] ?? [
+                    'label' => $results->getParams()->getFacetLabel($facet),
                     'list' => [],
                 ];
                 $context['collapsedFacets'] = [];

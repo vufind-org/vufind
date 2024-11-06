@@ -157,7 +157,6 @@ class QueryBuilder implements QueryBuilderInterface
         $highlight = !empty($this->fieldsToHighlight);
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
-            $string = $handler->preprocessQueryString($string);
             if (
                 !$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
@@ -577,9 +576,13 @@ class QueryBuilder implements QueryBuilderInterface
      */
     protected function getNormalizedQueryString($query)
     {
+        $queryString = $query->getString();
+        if ($handler = $this->getSearchHandler($query->getHandler(), $queryString)) {
+            $queryString = $handler->preprocessQueryString($queryString);
+        }
         return $this->fixTrailingQuestionMarks(
             $this->getLuceneHelper()->normalizeSearchString(
-                $query->getString()
+                $queryString
             )
         );
     }

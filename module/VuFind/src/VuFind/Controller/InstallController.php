@@ -29,9 +29,9 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -117,7 +117,8 @@ class InstallController extends AbstractBase
     {
         $config = $this->getForcedLocalConfigPath('config.ini');
         if (!file_exists($config)) {
-            return copy($this->getBaseConfigFilePath('config.ini'), $config);
+            // Suppress errors so we don't cause a fatal error if copy is disallowed.
+            return @copy($this->getBaseConfigFilePath('config.ini'), $config);
         }
         return true;        // report success if file already exists
     }
@@ -184,6 +185,9 @@ class InstallController extends AbstractBase
                 throw new \Exception('Cannot copy file into position.');
             }
             $writer = new ConfigWriter($config);
+            // Choose secure defaults when creating initial config.ini:
+            $this->fixSecurityConfiguration($config, $writer);
+            // Set appropriate URLs:
             $serverUrl = $this->getViewRenderer()->plugin('serverurl');
             $path = $this->url()->fromRoute('home');
             $writer->set('Site', 'url', rtrim($serverUrl($path), '/'));
@@ -408,14 +412,17 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.', 'error');
             } else {
                 // Connect to database:
-                $connection = $view->driver . '://' . $view->dbrootuser . ':'
-                    . $this->params()->fromPost('dbrootpass') . '@'
-                    . $view->dbhost;
                 try {
-                    $dbName = ($view->driver == 'pgsql')
-                        ? 'template1' : $view->driver;
-                    $db = $this->getService(\VuFind\Db\AdapterFactory::class)
-                        ->getAdapterFromConnectionString("{$connection}/{$dbName}");
+                    $dbName = ($view->driver == 'pgsql') ? 'template1' : $view->driver;
+                    $connectionParams = [
+                        'driver' => $view->driver,
+                        'hostname' => $view->dbhost,
+                        'username' => $view->dbrootuser,
+                        'password' => $this->params()->fromPost('dbrootpass'),
+                    ];
+                    $db = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                        $connectionParams + ['database' => $dbName]
+                    );
                 } catch (\Exception $e) {
                     $this->flashMessenger()
                         ->addMessage(
@@ -451,9 +458,8 @@ class InstallController extends AbstractBase
                         foreach ($preCommands as $query) {
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
-                        $dbFactory = $this->getService(\VuFind\Db\AdapterFactory::class);
-                        $db = $dbFactory->getAdapterFromConnectionString(
-                            $connection . '/' . $view->dbname
+                        $db = $this->getService(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                            $connectionParams + ['database' => $view->dbname]
                         );
                         $statements = explode(';', $sql);
                         foreach ($statements as $current) {
@@ -718,9 +724,14 @@ class InstallController extends AbstractBase
      */
     protected function checkSecurity()
     {
+        try {
+            $secureDb = $this->hasSecureDatabase();
+        } catch (\Throwable $e) {
+            $secureDb = false;
+        }
         return [
             'title' => 'Security',
-            'status' => $this->hasSecureDatabase(),
+            'status' => $secureDb,
             'fix' => 'fixsecurity',
         ];
     }
@@ -773,8 +784,16 @@ class InstallController extends AbstractBase
         }
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
-        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
-        $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
+        try {
+            $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+            $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
+        } catch (\Throwable $e) {
+            $this->flashMessenger()->addMessage(
+                'Cannot connect to database; please configure database before fixing security.',
+                'error'
+            );
+            return $this->redirect()->toRoute('install-home');
+        }
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
@@ -812,18 +831,19 @@ class InstallController extends AbstractBase
         // Now we want to loop through the database and update passwords (if
         // necessary).
         $ilsAuthenticator = $this->getService(\VuFind\Auth\ILSAuthenticator::class);
-        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+        $userService = $this->getDbService(UserServiceInterface::class);
+        $userRows = $userService->getInsecureRows();
         if (count($userRows) > 0) {
-            $bcrypt = new Bcrypt();
+            $hasher = $this->getService(PasswordHasher::class);
             foreach ($userRows as $row) {
                 if ($row->getRawPassword() != '') {
-                    $row->setPasswordHash($bcrypt->create($row->getRawPassword()));
+                    $row->setPasswordHash($hasher->create($row->getRawPassword()));
                     $row->setRawPassword('');
                 }
                 if ($rawPassword = $row->getRawCatPassword()) {
                     $ilsAuthenticator->saveUserCatalogCredentials($row, $row->getCatUsername(), $rawPassword);
                 } else {
-                    $row->save();
+                    $userService->persistEntity($row);
                 }
             }
             $msg = count($userRows) . ' user row(s) encrypted.';

@@ -142,7 +142,7 @@ class CartController extends AbstractBase
         // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
+        if (!empty($referer) && $this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -533,9 +533,22 @@ class CartController extends AbstractBase
                 ['cartIds' => $ids, 'cartAction' => 'Save']
             );
         }
-
+        $viewModel = $this->createViewModel(
+            [
+                'records' => $this->getRecordLoader()->loadBatch($ids),
+                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
+            ]
+        );
+        if ($submitDisabled ?? false) {
+            return $viewModel;
+        }
+        if ($this->formWasSubmitted('newList')) {
+            // Remove submit now from parameters
+            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
+            return $this->forwardTo('MyResearch', 'editlist', ['id' => 'NEW']);
+        }
         // Process submission if necessary:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
+        if ($this->formWasSubmitted()) {
             $results = $this->getService(FavoritesService::class)
                 ->saveRecordsToFavorites($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
@@ -553,11 +566,6 @@ class CartController extends AbstractBase
         }
 
         // Pass record and list information to view:
-        return $this->createViewModel(
-            [
-                'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
-            ]
-        );
+        return $viewModel;
     }
 }

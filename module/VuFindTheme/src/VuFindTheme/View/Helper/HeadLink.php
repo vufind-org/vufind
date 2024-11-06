@@ -114,7 +114,7 @@ class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\Log
     public function itemToString(stdClass $item)
     {
         // Normalize href to account for themes (if appropriate), then call the parent class:
-        if ($this->isRelativePath($item->href)) {
+        if (isset($item->href) && $this->isRelativePath($item->href)) {
             $relPath = 'css/' . $item->href;
             $details = $this->themeInfo
                 ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
