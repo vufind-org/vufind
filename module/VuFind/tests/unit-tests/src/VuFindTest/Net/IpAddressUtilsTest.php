@@ -133,11 +133,11 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
             $utils->truncate($address, 2, 1)
         );
         $this->assertEquals(
-            '123.234.432', 
+            '123.234.432',
             $utils->truncate($address, 3, 1)
         );
         $this->assertEquals(
-            '123.234.432.321', 
+            '123.234.432.321',
             $utils->truncate($address)
         );
 
@@ -156,5 +156,4 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
             $utils->truncate($address)
         );
     }
-
 }

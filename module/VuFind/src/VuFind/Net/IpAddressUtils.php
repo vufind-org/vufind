@@ -29,6 +29,7 @@
 
 namespace VuFind\Net;
 
+use function array_slice;
 use function count;
 use function defined;
 
@@ -132,7 +133,9 @@ class IpAddressUtils
      * @param string $ip IP address to truncate
      * @param int $ipv4Octets Number of octets to return if it is IPv4
      * @param int $ipv6Hextets Number of hextets to return if it is IPv6
-     *  
+     *
+     * @return string The possibly truncated IP address
+     *
      */
     public function truncate($ip, $ipv4Octets = null, $ipv6Hextets = null)
     {
@@ -143,8 +146,7 @@ class IpAddressUtils
                 $ipComponents = array_slice($ipComponents, 0, $ipv4Octets);
                 $ip = implode('.', $ipComponents);
             }
-        }
-        else {
+        } else {
             // IPv6 address
             if ($ipv6Hextets) {
                 $ipComponents = explode(':', $ip);
