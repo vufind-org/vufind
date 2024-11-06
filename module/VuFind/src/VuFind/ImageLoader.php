@@ -154,15 +154,15 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Load the user-specified "cover unavailable" graphic (or default if none
-     * specified).
+     * Load the user-specified "cover unavailable" graphic (or return status
+     * code 404 if none specified).
      *
      * @return void
      * @author Thomas Schwaerzler <vufind-tech@lists.sourceforge.net>
      */
     public function loadUnavailable()
     {
-        // No setting -- use default, and don't log anything:
+        // No setting -- return status code 404, and don't log anything:
         if (empty($this->configuredFailImage)) {
             throw new CoverUnavailable();
         }
@@ -170,7 +170,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
         // Setting found -- get "no cover" image from config.ini:
         $noCoverImage = $this->searchTheme($this->configuredFailImage);
 
-        // If file is blank/inaccessible, log error and display default:
+        // If file is blank/inaccessible, log error and return status code 404:
         if (
             empty($noCoverImage) || !file_exists($noCoverImage)
             || !is_readable($noCoverImage)
