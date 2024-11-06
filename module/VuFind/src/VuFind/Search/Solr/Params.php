@@ -262,6 +262,20 @@ class Params extends \VuFind\Search\Base\Params
                 }
             }
         }
+
+        // Add checkbox facets for checkbox counts:
+        if ($this->checkboxFacets && $this->getOptions()->displayCheckboxFacetCounts()) {
+            $customField = $this->getCustomFilterFieldName();
+            foreach (array_keys($this->checkboxFacets) as $facetField) {
+                // Ignore custom filters using a virtual field:
+                if ($facetField === $customField) {
+                    continue;
+                }
+                $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                $facetSet['field'][] = $facetField;
+            }
+        }
+
         return $facetSet;
     }
 
@@ -719,7 +733,7 @@ class Params extends \VuFind\Search\Base\Params
         $facets = parent::getCheckboxFacets($include, $includeDynamic);
 
         $config = $this->configLoader->get($this->getOptions()->getFacetsIni());
-        $filterField = $config->CustomFilters->custom_filter_field ?? 'vufind';
+        $filterField = $this->getCustomFilterFieldName();
 
         // Special case -- inverted checkbox facets should always appear, even on
         // the "no results" screen, since setting them actually EXPANDS rather than
@@ -737,5 +751,16 @@ class Params extends \VuFind\Search\Base\Params
 
         // Return modified list:
         return $facets;
+    }
+
+    /**
+     * Return virtual field name for custom filters
+     *
+     * @return string
+     */
+    protected function getCustomFilterFieldName(): string
+    {
+        $config = $this->configLoader->get($this->getOptions()->getFacetsIni());
+        return $config->CustomFilters->custom_filter_field ?? 'vufind';
     }
 }

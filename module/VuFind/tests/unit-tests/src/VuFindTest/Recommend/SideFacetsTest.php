@@ -308,16 +308,21 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             [],
             $this->once()
         );
-        $checkboxData = ['fake result'];
+        $checkboxData = [
+            [
+                'filter' => 'fake result:1',
+            ],
+        ];
         $results = $this->getMockResults();
         $params = $results->getParams();
-        $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['foo']), $this->equalTo(true))
-            ->will($this->returnValue($checkboxData));
+        $params->expects($this->exactly(2))->method('getCheckboxFacets')
+            ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
             ->with($this->equalTo('foo'), $this->equalTo('bar'));
         $sf = $this->getSideFacets($configLoader, $results, ':Checkboxes');
-        $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
+        $expected = $checkboxData;
+        $expected[0]['count'] = null;
+        $this->assertEquals($expected, $sf->getCheckboxFacetSet());
     }
 
     /**
@@ -336,17 +341,22 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             [],
             $this->once()
         );
-        $checkboxData = ['fake result'];
+        $checkboxData = [
+            [
+                'filter' => 'fake result:1',
+            ],
+        ];
         $results = $this->getMockResults();
         $params = $results->getParams();
-        $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['foo']), $this->equalTo(false))
-            ->will($this->returnValue($checkboxData));
+        $params->expects($this->exactly(2))->method('getCheckboxFacets')
+            ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
             ->with($this->equalTo('foo'), $this->equalTo('bar'));
         $settings = 'Results:Checkboxes:facets:false';
         $sf = $this->getSideFacets($configLoader, $results, $settings);
-        $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
+        $expected = $checkboxData;
+        $expected[0]['count'] = null;
+        $this->assertEquals($expected, $sf->getCheckboxFacetSet());
     }
 
     /**
@@ -390,10 +400,15 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
+        $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
+            ->disableOriginalConstructor()->getMock();
+        $params->expects($this->any())->method('getOptions')
+            ->willReturn($options);
+
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+            ->willReturn($params);
         return $results;
     }
 
