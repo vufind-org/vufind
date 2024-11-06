@@ -30,6 +30,7 @@
 namespace VuFindTest\QRCode;
 
 use Laminas\Config\Config;
+use VuFind\Exception\CoverUnavailable;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 
@@ -60,40 +61,58 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testUtterFailure()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Could not load default fail image.');
-
-        $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
-            ->setConstructorArgs(['foo', 'bar'])->getMock();
-        $theme->expects($this->once())
-            ->method('findContainingTheme')
-            ->with($this->equalTo(['images/noQRCode.gif']))
-            ->will($this->returnValue(false));
-        $loader = $this->getLoader([], $theme);
+        $this->expectException(CoverUnavailable::class);
+        $loader = $this->getLoader();
         $loader->getImage();
     }
 
     /**
-     * Test that requesting a blank QR code returns the fail image.
+     * Test that requesting a blank QR code results in an exception.
+     *
+     * @return void
+     */
+    public function testExceptionLoadingForBlankText()
+    {
+        $this->expectException(CoverUnavailable::class);
+        $loader = $this->getLoader();
+        $loader->loadQRCode('');
+    }
+
+    /**
+     * Test that requesting a too small image results in an exception.
+     *
+     * @return void
+     */
+    public function testExceptionForTooSmallImage()
+    {
+        $this->expectException(CoverUnavailable::class);
+        $loader = $this->getLoader();
+        $loader->loadQRCode('foofoofoofoofoofoofoofoofoofoofoofoo', ['size' => 1]);
+    }
+
+    /**
+     * Test that requesting a blank QR code returns the fail image if configured.
      *
      * @return void
      */
     public function testDefaultLoadingForBlankText()
     {
-        $loader = $this->getLoader();
+        $cfg = ['QRCode' => ['noQRCodeAvailableImage' => 'images/noQRCode.gif']];
+        $loader = $this->getLoader($cfg);
         $loader->loadQRCode('');
         $this->assertEquals('image/gif', $loader->getContentType());
         $this->assertEquals('483', strlen($loader->getImage()));
     }
 
     /**
-     * Test that requesting a too small image returns the fail image.
+     * Test that requesting a too small image returns the fail image if configured.
      *
      * @return void
      */
     public function testDefaultLoadingForTooSmallImage()
     {
-        $loader = $this->getLoader();
+        $cfg = ['QRCode' => ['noQRCodeAvailableImage' => 'images/noQRCode.gif']];
+        $loader = $this->getLoader($cfg);
         $loader->loadQRCode('foofoofoofoofoofoofoofoofoofoofoofoo', ['size' => 1]);
         $this->assertEquals('image/gif', $loader->getContentType());
         $this->assertEquals('483', strlen($loader->getImage()));

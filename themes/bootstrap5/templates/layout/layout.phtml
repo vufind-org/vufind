@@ -130,10 +130,6 @@
       }
 
       $this->headScript()->appendScript(implode("\n", $appendScripts));
-
-      if ($this->config()->ajaxCoversEnabled()) {
-          $this->headScript()->appendFile('covers.js');
-      }
     ?>
     <?=$this->cookieConsent()->render()?>
     <?=$this->headScript() ?>

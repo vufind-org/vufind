@@ -71,6 +71,7 @@ return [
         ['file' => 'observer_manager.js', 'priority' => 380],
         ['file' => 'openurl.js', 'priority' => 390],
         ['file' => 'list_item_selection.js', 'priority' => 400],
+        ['file' => 'covers.js', 'priority' => 410],
     ],
     /**
      * Configuration for a single or multiple favicons.

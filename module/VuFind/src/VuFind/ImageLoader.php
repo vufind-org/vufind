@@ -30,6 +30,8 @@
 
 namespace VuFind;
 
+use VuFind\Exception\CoverUnavailable;
+
 use function array_key_exists;
 
 /**
@@ -73,13 +75,6 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
      * @var string
      */
     protected $configuredFailImage = null;
-
-    /**
-     * Default image to load from theme if user-configured option fails.
-     *
-     * @var string
-     */
-    protected $defaultFailImage = 'images/noCover2.gif';
 
     /**
      * Array containing map of allowed file extensions to mimetypes
@@ -169,8 +164,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     {
         // No setting -- use default, and don't log anything:
         if (empty($this->configuredFailImage)) {
-            $this->loadDefaultFailImage();
-            return;
+            throw new CoverUnavailable();
         }
 
         // Setting found -- get "no cover" image from config.ini:
@@ -182,8 +176,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
             || !is_readable($noCoverImage)
         ) {
             $this->debug("Cannot access '{$this->configuredFailImage}'");
-            $this->loadDefaultFailImage();
-            return;
+            throw new CoverUnavailable();
         }
 
         try {
@@ -192,27 +185,11 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             // Log error and bail out if file lacks a known image extension:
             $this->debug($e->getMessage());
-            $this->loadDefaultFailImage();
-            return;
+            throw new CoverUnavailable();
         }
 
         // Load the image data:
         $this->image = file_get_contents($noCoverImage);
-    }
-
-    /**
-     * Display the default "cover unavailable" graphic.
-     *
-     * @return void
-     */
-    protected function loadDefaultFailImage()
-    {
-        $file = $this->searchTheme($this->defaultFailImage);
-        if (!file_exists($file)) {
-            throw new \Exception('Could not load default fail image.');
-        }
-        $this->contentType = $this->getContentTypeFromExtension($file);
-        $this->image = file_get_contents($file);
     }
 
     /**
