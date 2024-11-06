@@ -1146,4 +1146,81 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '.search-header .search-stats')
         );
     }
+
+    /**
+     * Data provider for testCheckboxFacets
+     *
+     * @return array
+     */
+    public static function checkboxFacetsProvider(): array
+    {
+        return [
+            [false, false],
+            [false, true],
+            [true, false],
+            [true, true],
+        ];
+    }
+
+    /**
+     * Test checkbox facets
+     *
+     * @param bool $deferred Are deferred facets enabled?
+     * @param bool $counts   Are checkbox facet counts enabled?
+     *
+     * @dataProvider checkboxFacetsProvider
+     *
+     * @return void
+     */
+    public function testCheckboxFacets(bool $deferred, bool $counts): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_side_recommend[]'
+                            => ($deferred ? 'SideFacetsDeferred' : 'SideFacets') . ':Results:CheckboxFacets',
+                    ],
+                ],
+                'facets' => [
+                    'Results_Settings' => [
+                        'checkboxFacetCounts' => $counts,
+                    ],
+                    'CheckboxFacets' => [
+                        'format:Book' => 'Books',
+                        'illustrated:Illustrated' => 'Illustrated',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('');
+        $this->waitForPageLoad($page);
+
+        // Confirm that we ARE using the correct sidebar type:
+        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
+        $this->assertCount($deferred ? 1 : 0, $ajaxContainer);
+
+        // format:Book is also a normal facet, but count should still be empty unless enabled:
+        $filter = $this->findCss($page, '.checkbox-filter');
+        $this->assertNotNull($filter);
+        $this->assertEquals('Books', $this->findCssAndGetText($filter, '.icon-link__label'));
+        $this->assertEquals($counts ? '101' : '', $this->findCssAndGetText($filter, '.avail-count'));
+
+        // illustrated:Illustrated is only a checkbox facet:
+        $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);
+        $this->assertNotNull($filter2);
+        $this->assertEquals('Illustrated', $this->findCssAndGetText($filter2, '.icon-link__label'));
+        $illustratedCount = $this->findCssAndGetText($filter2, '.avail-count');
+        $this->assertEquals($counts ? '289' : '', $illustratedCount);
+
+        // If we have counts, apply the checkbox facet and check result count:
+        if ($counts) {
+            $filter2->click();
+            $this->waitForPageLoad($page);
+            $this->assertStringContainsString(
+                "Showing 1 - 20 results of $illustratedCount",
+                $this->findCssAndGetText($page, '.search-header .search-stats')
+            );
+        }
+    }
 }
