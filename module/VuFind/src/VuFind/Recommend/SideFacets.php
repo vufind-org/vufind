@@ -291,8 +291,9 @@ class SideFacets extends AbstractFacets
             $this->showDynamicCheckboxFacets
         );
         // Add counts if available:
+        $checkboxCounts = $this->results->getOptions()->displayCheckboxFacetCounts();
         foreach ($result as &$facet) {
-            $facet['count'] = $this->getCheckboxFacetCount($facet['filter']);
+            $facet['count'] = $checkboxCounts ? $this->getCheckboxFacetCount($facet['filter']) : null;
         }
         unset($facet);
         return $result;

@@ -227,9 +227,10 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     ) {
         $response = [];
         $facetSet = $recommend->getFacetSet();
+        $checkboxCounts = $results->getOptions()->displayCheckboxFacetCounts();
         foreach ($facets as $facet) {
             if (strpos($facet, ':')) {
-                $response[$facet]['checkboxCount'] = $recommend->getCheckboxFacetCount($facet);
+                $response[$facet]['checkboxCount'] = $checkboxCounts ? $recommend->getCheckboxFacetCount($facet) : null;
             } else {
                 $context['facet'] = $facet;
                 $context['cluster'] = $facetSet[$facet] ?? [
