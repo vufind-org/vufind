@@ -65,7 +65,7 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param Connector                        $connector WorldCat connector
+     * @param Connector                        $connector ProQuestFSG connector
      * @param RecordCollectionFactoryInterface $factory   Record collection factory
      * (null for default)
      *

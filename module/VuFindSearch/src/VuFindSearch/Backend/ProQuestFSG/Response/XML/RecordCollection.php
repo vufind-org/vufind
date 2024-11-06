@@ -54,7 +54,7 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Constructor.
      *
-     * @param array $response WorldCat response
+     * @param array $response ProQuestFSG response
      *
      * @return void
      */

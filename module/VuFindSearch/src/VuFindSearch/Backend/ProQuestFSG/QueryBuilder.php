@@ -56,7 +56,7 @@ class QueryBuilder
     /// Public API
 
     /**
-     * Return WorldCat search parameters based on a user query and params.
+     * Return ProQuestFSG search parameters based on a user query and params.
      *
      * @param AbstractQuery $query  User query
      * @param ?ParamBag     $params Search backend parameters

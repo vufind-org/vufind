@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for accessing OCLC WorldCat search API
+ * Class for accessing ProQuestFSG search API
  *
  * PHP version 8
  *
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  WorldCat
+ * @package  ProQuestFSG
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -36,10 +36,10 @@ use function intval;
 use function strval;
 
 /**
- * WorldCat SRU Search Interface
+ * ProQuestFSG SRU Search Interface
  *
  * @category VuFind
- * @package  WorldCat
+ * @package  ProQuestFSG
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
