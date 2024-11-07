@@ -120,7 +120,7 @@ class RateLimiterManagerFactory implements FactoryInterface
         $ipv4Octets = $policy['groupByIpv4Octets'] ?? null;
         $ipv6Hextets = $policy['groupByIpv6Hextets'] ?? null;
         if ($ipv4Octets || $ipv6Hextets) {
-            $ipUtils = new \VuFind\Net\IpAddressUtils();
+            $ipUtils = $this->serviceLocator->get(\VuFind\Net\IpAddressUtils::class);
             $clientIp = $ipUtils->truncate($clientIp, $ipv4Octets, $ipv6Hextets);
         }
 
