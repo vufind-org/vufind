@@ -1,12 +1,12 @@
 <?php $availabilityStatus = $this->availabilityStatus(); ?>
 <?php foreach ($this->locationList as $location): ?>
   <div class="groupLocation">
-    <span class="<?= $availabilityStatus->getClass($location['availability'])?>">
+    <span class="<?= $this->escapeHtmlAttr($availabilityStatus->getClass($location['availability']))?>">
       <?=$this->icon($availabilityStatus->getIcon($location['availability']))?>
       <?=$this->escapeHtml($location['location'])?>
     </span>
   </div>
   <div class="groupCallnumber">
-    <?=$location['callnumber']?>
+    <?=$location['callnumberHtml']?>
   </div>
 <?php endforeach; ?>

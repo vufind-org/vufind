@@ -325,7 +325,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
-            'callnumber' => $this->renderCallnumbers($callnumberSetting, $callNumber),
+            'callnumberHtml' => $this->renderCallnumbers($callnumberSetting, $callNumber),
         ];
     }
 
@@ -370,7 +370,7 @@ class GetItemStatuses extends AbstractBase implements
                     ENT_COMPAT,
                     'UTF-8'
                 ),
-                'callnumber' =>
+                'callnumberHtml' =>
                     $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
             ];
             $locationList[] = $locationInfo;
@@ -392,7 +392,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
-            'callnumber' => false,
+            'callnumberHtml' => false,
         ];
     }
 

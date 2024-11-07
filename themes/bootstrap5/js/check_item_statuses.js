@@ -46,7 +46,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     } else {
       // Default case -- load call number and location into appropriate containers:
       el.querySelectorAll('.callnumber').forEach((callnumber) => {
-        callnumber.innerHTML = result.callnumber + '<br>';
+        callnumber.innerHTML = typeof(result.callnumberHtml) !== 'undefined' && result.callnumberHtml
+          ? result.callnumberHtml + '<br>'
+          : '';
       });
       el.querySelectorAll('.location').forEach((location) => {
         location.innerHTML = result.reserve === 'true'
