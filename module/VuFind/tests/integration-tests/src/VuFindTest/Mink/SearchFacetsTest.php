@@ -62,12 +62,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get filtered search
      *
+     * @param string $building Building filter to use
+     *
      * @return Element
      */
-    protected function getFilteredSearch(): Element
+    protected function getFilteredSearch(string $building = 'weird_ids.mrc'): Element
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"weird_ids.mrc"');
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"' . $building . '"');
         return $session->getPage();
     }
 
@@ -1193,28 +1195,28 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $page = $this->performSearch('');
+        $page = $this->getFilteredSearch('authoritybibs.mrc');
         $this->waitForPageLoad($page);
 
         // format:Book is also a normal facet, but count should still be empty unless enabled:
         $filter = $this->findCss($page, '.checkbox-filter');
         $this->assertNotNull($filter);
         $this->assertEquals('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
-        $this->assertEquals($counts ? '101' : '', $this->findCssAndGetText($filter, '.avail-count'));
+        $this->assertEquals($counts ? '9' : '', $this->findCssAndGetText($filter, '.avail-count'));
 
         // illustrated:Illustrated is only a checkbox facet:
         $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);
         $this->assertNotNull($filter2);
         $this->assertEquals('Illustrated', $this->findCssAndGetText($filter2, '.icon-link__label'));
         $illustratedCount = $this->findCssAndGetText($filter2->getParent(), '.avail-count');
-        $this->assertEquals($counts ? '289' : '', $illustratedCount);
+        $this->assertEquals($counts ? '2' : '', $illustratedCount);
 
         // If we have counts, apply the checkbox facet and check result count:
         if ($counts) {
             $filter2->click();
             $this->waitForPageLoad($page);
             $this->assertStringContainsString(
-                "Showing 1 - 20 results of $illustratedCount",
+                "Showing 1 - $illustratedCount results of $illustratedCount",
                 $this->findCssAndGetText($page, '.search-header .search-stats')
             );
         }
