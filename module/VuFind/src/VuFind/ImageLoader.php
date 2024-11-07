@@ -30,7 +30,7 @@
 
 namespace VuFind;
 
-use VuFind\Exception\CoverUnavailable;
+use VuFind\Exception\ImageUnavailable;
 
 use function array_key_exists;
 
@@ -164,7 +164,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     {
         // No setting -- return status code 404, and don't log anything:
         if (empty($this->configuredFailImage)) {
-            throw new CoverUnavailable();
+            throw new ImageUnavailable();
         }
 
         // Setting found -- get "no cover" image from config.ini:
@@ -176,7 +176,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
             || !is_readable($noCoverImage)
         ) {
             $this->debug("Cannot access '{$this->configuredFailImage}'");
-            throw new CoverUnavailable();
+            throw new ImageUnavailable();
         }
 
         try {
@@ -185,7 +185,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             // Log error and bail out if file lacks a known image extension:
             $this->debug($e->getMessage());
-            throw new CoverUnavailable();
+            throw new ImageUnavailable();
         }
 
         // Load the image data:

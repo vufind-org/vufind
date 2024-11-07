@@ -30,7 +30,7 @@
 namespace VuFindTest\QRCode;
 
 use Laminas\Config\Config;
-use VuFind\Exception\CoverUnavailable;
+use VuFind\Exception\ImageUnavailable;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 
@@ -61,7 +61,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testUtterFailure()
     {
-        $this->expectException(CoverUnavailable::class);
+        $this->expectException(ImageUnavailable::class);
         $loader = $this->getLoader();
         $loader->getImage();
     }
@@ -73,7 +73,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testExceptionLoadingForBlankText()
     {
-        $this->expectException(CoverUnavailable::class);
+        $this->expectException(ImageUnavailable::class);
         $loader = $this->getLoader();
         $loader->loadQRCode('');
     }
@@ -85,7 +85,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testExceptionForTooSmallImage()
     {
-        $this->expectException(CoverUnavailable::class);
+        $this->expectException(ImageUnavailable::class);
         $loader = $this->getLoader();
         $loader->loadQRCode('foofoofoofoofoofoofoofoofoofoofoofoo', ['size' => 1]);
     }

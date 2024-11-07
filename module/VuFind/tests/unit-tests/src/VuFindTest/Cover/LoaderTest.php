@@ -31,7 +31,7 @@ namespace VuFindTest\Cover;
 
 use Laminas\Config\Config;
 use VuFind\Cover\Loader;
-use VuFind\Exception\CoverUnavailable;
+use VuFind\Exception\ImageUnavailable;
 use VuFindTheme\ThemeInfo;
 
 use function strlen;
@@ -61,7 +61,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testUtterFailure()
     {
-        $this->expectException(CoverUnavailable::class);
+        $this->expectException(ImageUnavailable::class);
         $loader = $this->getLoader();
         $loader->getImage();
     }
@@ -106,7 +106,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and throw an exception:
-        $this->expectException(CoverUnavailable::class);
+        $this->expectException(ImageUnavailable::class);
         $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
         $loader->loadUnavailable();
     }
@@ -123,7 +123,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and throw an exception:
-        $this->expectException(CoverUnavailable::class);
+        $this->expectException(ImageUnavailable::class);
         $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/'
             . $this->testTheme . '/' . $badfile . "'";
         $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
