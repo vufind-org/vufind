@@ -536,7 +536,7 @@ class SideFacets extends AbstractFacets
                 if (
                     $itemValue == $value
                     || ($truncate
-                    && preg_match('/^' . $value . '/', $item['value']))
+                    && preg_match('/^' . preg_quote($value, '/') . '/', $item['value']))
                     || ($item['value'] == 'true' && $value == '1')
                     || ($item['value'] == 'false' && $value == '0')
                 ) {

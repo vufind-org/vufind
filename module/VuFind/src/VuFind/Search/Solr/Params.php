@@ -135,6 +135,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
+     * Virtual field name used for custom filters
+     *
+     * @var string
+     */
+    protected $customFilterFieldName;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -164,6 +171,7 @@ class Params extends \VuFind\Search\Base\Params
                 $config->Results_Settings->sorted_by_index->toArray()
             );
         }
+        $this->customFilterFieldName = $config->CustomFilters->custom_filter_field ?? 'vufind';
     }
 
     /**
@@ -265,10 +273,9 @@ class Params extends \VuFind\Search\Base\Params
 
         // Add checkbox facets for checkbox counts:
         if ($this->checkboxFacets && $this->getOptions()->displayCheckboxFacetCounts()) {
-            $customField = $this->getCustomFilterFieldName();
             foreach (array_keys($this->checkboxFacets) as $facetField) {
                 // Ignore custom filters using a virtual field:
-                if ($facetField === $customField) {
+                if ($facetField === $this->customFilterFieldName) {
                     continue;
                 }
                 $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
@@ -733,7 +740,6 @@ class Params extends \VuFind\Search\Base\Params
         $facets = parent::getCheckboxFacets($include, $includeDynamic);
 
         $config = $this->configLoader->get($this->getOptions()->getFacetsIni());
-        $filterField = $this->getCustomFilterFieldName();
 
         // Special case -- inverted checkbox facets should always appear, even on
         // the "no results" screen, since setting them actually EXPANDS rather than
@@ -742,7 +748,7 @@ class Params extends \VuFind\Search\Base\Params
             // Append colon on end to ensure that $customFilter is always set.
             [$field, $customFilter] = explode(':', $facet['filter'] . ':');
             if (
-                $field == $filterField
+                $field === $this->customFilterFieldName
                 && isset($config->CustomFilters->inverted_filters[$customFilter])
             ) {
                 $facets[$i]['alwaysVisible'] = true;
@@ -751,16 +757,5 @@ class Params extends \VuFind\Search\Base\Params
 
         // Return modified list:
         return $facets;
-    }
-
-    /**
-     * Return virtual field name for custom filters
-     *
-     * @return string
-     */
-    protected function getCustomFilterFieldName(): string
-    {
-        $config = $this->configLoader->get($this->getOptions()->getFacetsIni());
-        return $config->CustomFilters->custom_filter_field ?? 'vufind';
     }
 }

@@ -242,13 +242,6 @@ class Params
     protected $queryAdapterClass = QueryAdapter::class;
 
     /**
-     * Whether to request checkbox facet counts
-     *
-     * @var bool
-     */
-    protected $checkboxFacetCounts = true;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use

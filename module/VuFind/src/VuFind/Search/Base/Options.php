@@ -398,7 +398,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $displayCheckboxFacetCounts = false;
+    protected $displayCheckboxFacetCounts;
 
     /**
      * Constructor

@@ -402,8 +402,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()->getMock();
+        $options = $this->createMock(\VuFind\Search\Solr\Options::class);
         $params->expects($this->any())->method('getOptions')
             ->willReturn($options);
 
