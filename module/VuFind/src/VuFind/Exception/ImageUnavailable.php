@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover Unavailable Exception
+ * Image Unavailable Exception
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Cover Unavailable Exception
+ * Image Unavailable Exception
  *
  * @category VuFind
  * @package  Exceptions
