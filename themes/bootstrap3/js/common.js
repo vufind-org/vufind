@@ -10,7 +10,7 @@ let domParser = new DOMParser();
 /**
  * Convert given string into nodes.
  * @param {string} htmlString String to convert into nodes
- * @returns 
+ * @returns {NodeList} Given string as a node list
  */
 function stringToNodes(htmlString) {
   return domParser.parseFromString(htmlString, 'text/html').body.childNodes;
