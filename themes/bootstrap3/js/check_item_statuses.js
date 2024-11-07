@@ -26,7 +26,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
   function displayItemStatus(result, el) {
     el.querySelectorAll('.status').forEach((status) => {
-      status.innerHTML = typeof result.availability_message === "undefined" ? "" : result.availability_message;
+      status.textContent = typeof result.availability_message === "undefined" ? "" : result.availability_message;
     });
     el.querySelectorAll('.ajax-availability').forEach((ajaxAvailability) => {
       ajaxAvailability.classList.remove('ajax-availability');
@@ -38,7 +38,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       && result.error.length > 0
     ) {
       callnumAndLocations.forEach((callnumAndLocation) => {
-        callnumAndLocation.innerHTML = result.error;
+        callnumAndLocation.textContent = result.error;
         callnumAndLocation.classList.add('text-danger');
       });
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location').forEach((e) => { e.classList.add('hidden'); });
@@ -48,7 +48,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     ) {
       // Full status mode is on -- display the HTML and hide extraneous junk:
       callnumAndLocations.forEach((callnumAndLocation) => {
-        VuFind.setElementContents(callnumAndLocation, VuFind.updateCspNonce(result.full_status));
+        VuFind.setInnerHtml(callnumAndLocation, VuFind.updateCspNonce(result.full_status));
       });
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.status').forEach((e) => { e.classList.add('hidden'); });
     } else if (typeof(result.missing_data) !== 'undefined'
@@ -90,15 +90,15 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       }
       el.querySelectorAll('.locationDetails').forEach((locationDetails) => {
         locationDetails.classList.remove('hidden');
-        locationDetails.innerHTML = locationListHTML;
+        VuFind.setInnerHtml(locationDetails, locationListHTML);
       });
     } else {
       // Default case -- load call number and location into appropriate containers:
       el.querySelectorAll('.callnumber').forEach((callnumber) => {
-        callnumber.innerHTML = formatCallnumbers(result.callnumber, result.callnumber_handler) + '<br>';
+        VuFind.setInnerHtml(callnumber, formatCallnumbers(result.callnumber, result.callnumber_handler) + '<br>');
       });
       el.querySelectorAll('.location').forEach((location) => {
-        location.innerHTML = result.reserve === 'true'
+        location.textContent = result.reserve === 'true'
           ? result.reserve_message
           : result.location;
       });
@@ -145,11 +145,11 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       items.forEach(function displayItemStatusFailure(item) {
         item.el.querySelectorAll(".callnumAndLocation").forEach((callNumAndLocation) => {
           callNumAndLocation.classList.add("text-danger");
-          callNumAndLocation.innerHTML = "";
           callNumAndLocation.classList.remove("hidden");
-          callNumAndLocation.innerHTML = typeof body.data === "string"
+          const content = typeof body.data === "string"
             ? body.data
             : VuFind.translate("error_occurred");
+          VuFind.setInnerHtml(callNumAndLocation, content);
         });
       });
     }).finally(() => {

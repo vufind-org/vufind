@@ -249,7 +249,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
         if (loadIndicatorEl) {
           loadIndicatorEl.classList.add('hidden');
         }
-        treePlaceholderEl.innerHTML = VuFind.translate('error_occurred');
+        treePlaceholderEl.textContent = VuFind.translate('error_occurred');
       });
   }
 

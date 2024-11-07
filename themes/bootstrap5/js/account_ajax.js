@@ -79,7 +79,7 @@ VuFind.register('account', function Account() {
     }
     const accountIconEl = document.querySelector('#account-icon');
     if (accountIconEl) {
-      accountIconEl.innerHTML = VuFind.icon(..._accountIcons[accountStatus]);
+      VuFind.setInnerHtml(accountIconEl, VuFind.icon(..._accountIcons[accountStatus]));
       if (accountStatus > ICON_LEVELS.NONE) {
         accountIconEl.dataset.bsToggle = 'tooltip';
         accountIconEl.dataset.bsPlacement = 'bottom';

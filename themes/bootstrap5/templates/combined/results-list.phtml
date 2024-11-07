@@ -51,13 +51,15 @@
         count = count.toLocaleString();
 
         const template = document.createElement('template');
-        template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
-        const span = template.content.children[0];
+        const recordTotalSpan = document.createElement('span');
+        recordTotalSpan.classList.add('record-total');
+        recordTotalSpan.textContent = '(' + count + ')';
+        template.append(recordTotalSpan);
 
         const combinedJumpLinks = document.querySelector('.combined-jump-links');
         const link = combinedJumpLinks?.querySelector('.$classId');
         if (link) {
-          link.append(span);
+          link.append(recordTotalSpan);
           link.style.display = "inline";
           combinedJumpLinks.style.visibility = "inherit";
         }

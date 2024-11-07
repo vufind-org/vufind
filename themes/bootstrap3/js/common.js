@@ -1,5 +1,20 @@
 /*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, stringToNodes */
+
+/**
+ * Instance of a DOMParser
+ * @member {DOMParser}
+ */
+let domParser = new DOMParser();
+
+/**
+ * Convert given string into nodes.
+ * @param {string} htmlString String to convert into nodes
+ * @returns 
+ */
+function stringToNodes(htmlString) {
+  return domParser.parseFromString(htmlString, 'text/html').body.childNodes;
+}
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -294,46 +309,15 @@ var VuFind = (function VuFind() {
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
     // Extract any scripts from the HTML and add them separately so that they are executed properly:
-    const scripts = [];
-    const tmpDiv = document.createElement('div');
-    tmpDiv.innerHTML = html;
-    tmpDiv.querySelectorAll('script').forEach((el) => {
-      const type = el.getAttribute('type');
-      if (!type || 'text/javascript' === type) {
-        scripts.push(el.cloneNode(true));
-        el.remove();
-      }
-    });
-
-    let newElm = elm;
+    const content = stringToNodes(html);
+    elm.textContent = '';
     if (property === 'innerHTML') {
-      elm.innerHTML = tmpDiv.innerHTML;
+      elm.append(...content);
     } else if (property === 'outerHTML') {
-      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
-      const nextElm = elm.nextElementSibling;
-      const parentElm = elm.parentElement ? elm.parentElement : null;
-      elm.outerHTML = tmpDiv.innerHTML;
-      // Try to find a new reference, leave as is if not possible:
-      if (nextElm) {
-        newElm = nextElm.previousElementSibling;
-      } else if (parentElm) {
-        newElm = parentElm.lastElementChild;
-      }
+      elm.replaceWith(...content);
     }
-
     // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
-    Object.entries(attrs).forEach(([attr, value]) => newElm.setAttribute(attr, value));
-
-    // Append any scripts:
-    scripts.forEach((script) => {
-      const scriptEl = document.createElement('script');
-      scriptEl.innerHTML = script.innerHTML;
-      scriptEl.setAttribute('nonce', getCspNonce());
-      if (script.src) {
-        scriptEl.src = script.src;
-      }
-      newElm.appendChild(scriptEl);
-    });
+    Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
   }
 
   /**
@@ -415,7 +399,10 @@ var VuFind = (function VuFind() {
           // Replace the QRCode template with the image:
           const templateEl = holder.querySelector('.qrCodeImgTag');
           if (templateEl) {
-            templateEl.parentNode.innerHTML = templateEl.innerHTML;
+            const templateContent = templateEl.cloneNode(true).childNodes;
+            const parent = templateEl.parentNode;
+            parent.textContent = '';
+            parent.append(...templateContent.childNodes);
           }
         }
       });
