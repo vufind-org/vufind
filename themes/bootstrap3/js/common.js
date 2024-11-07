@@ -308,16 +308,25 @@ var VuFind = (function VuFind() {
    * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
-    // Extract any scripts from the HTML and add them separately so that they are executed properly:
-    const content = stringToNodes(html);
-    elm.textContent = '';
+    const tmpDiv = document.createElement('div');
+    const scripts = [];
+    tmpDiv.append(...stringToNodes(html));
+    tmpDiv.querySelectorAll('script:not([type]), script[type="text/javascript"]').forEach(script => {
+      const scriptClone = script.cloneNode(true);
+      scriptClone.setAttribute('nonce', getCspNonce());
+      scripts.push(scriptClone);
+      script.remove();
+    });
     if (property === 'innerHTML') {
-      elm.append(...content);
+      elm.textContent = '';
+      elm.append(...tmpDiv.childNodes);
     } else if (property === 'outerHTML') {
-      elm.replaceWith(...content);
+      elm.textContent = '';
+      elm.replaceWith(...tmpDiv.childNodes);
     }
     // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
     Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
+    elm.append(...scripts);
   }
 
   /**
