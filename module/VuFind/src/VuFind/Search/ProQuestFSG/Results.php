@@ -101,6 +101,9 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
+        if (null === $this->simplifiedResponseFacets) {
+            $this->performAndProcessSearch();
+        }
         return $this->buildFacetList($this->simplifiedResponseFacets, $filter);
     }
 
