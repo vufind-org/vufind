@@ -54,4 +54,37 @@ class SolrReserves extends Solr
         $this->defaultDisplayField = 'course';
         $this->searchClassId = 'SolrReserves';
     }
+
+    /**
+     * Try to turn an array of record drivers into an array of suggestions.
+     * Excluding `no_*_listed` matches since those are the translation values
+     * when there is no data in that field.
+     *
+     * @param array  $searchResults An array of record drivers
+     * @param string $query         User search query
+     * @param bool   $exact         Ignore non-exact matches?
+     *
+     * @return array
+     */
+    protected function getSuggestionsFromSearch($searchResults, $query, $exact)
+    {
+        $results = [];
+        foreach ($searchResults as $object) {
+            $current = $object->getRawData();
+            foreach ($this->displayField as $field) {
+                if (isset($current[$field]) && !preg_match('/no_.*_listed/', $current[$field])) {
+                    $bestMatch = $this->pickBestMatch(
+                        $current[$field],
+                        $query,
+                        $exact
+                    );
+                    if ($bestMatch) {
+                        $results[] = $bestMatch;
+                        break;
+                    }
+                }
+            }
+        }
+        return $results;
+    }
 }

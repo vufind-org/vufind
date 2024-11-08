@@ -37,6 +37,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -65,6 +66,7 @@ use function sprintf;
 )]
 class NotifyCommand extends Command implements TranslatorAwareInterface
 {
+    use EmailSettingsTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
@@ -410,7 +412,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $subject = $this->mainConfig->Site->title
             . ': ' . $this->translate('Scheduled Alert Results');
-        $from = $this->mainConfig->Site->email;
+        $from = $this->getEmailSenderAddress($this->mainConfig);
         $to = $user->getEmail();
         try {
             $this->mailer->send($to, $from, $subject, $message);

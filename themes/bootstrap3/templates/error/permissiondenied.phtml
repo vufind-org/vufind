@@ -16,10 +16,5 @@
       <div class="alert alert-danger"><?=$this->transEsc($msg)?></div>
     <?php endif; ?>
   </p>
-  <p>
-    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
-    <br>
-    <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
-  </p>
+  <?=$this->render('error/contact.phtml')?>
 </div>

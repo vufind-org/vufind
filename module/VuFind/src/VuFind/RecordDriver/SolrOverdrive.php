@@ -229,15 +229,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             $data = json_decode($jsonData, false);
         }
 
-        if (isset($data->formats[0]->samples[0])) {
-            foreach ($data->formats[0]->samples as $format) {
-                if (
-                    $format->formatType == 'audiobook-overdrive'
-                    || $format->formatType == 'ebook-overdrive'
-                    || $format->formatType == 'magazine-overdrive'
-                ) {
-                    $results = $format;
-                }
+        $samples = $data->formats[0]->samples ?? [];
+        $previewFormats = ['audiobook-overdrive', 'ebook-overdrive', 'magazine-overdrive'];
+        foreach ($samples as $format) {
+            if (in_array($format->formatType ?? '', $previewFormats) && isset($format->url)) {
+                $results[] = $format->url;
             }
         }
         return $results;

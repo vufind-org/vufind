@@ -265,14 +265,16 @@ class SideFacets extends AbstractFacets
     public function init($params, $request)
     {
         $mainFacets = $this->mainFacets;
+        $checkboxFacets = $this->checkboxFacets;
         if ($request != null && ($enabledFacets = $request->get('enabledFacets', null)) !== null) {
             $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
+            $checkboxFacets = array_intersect_key($checkboxFacets, array_flip($enabledFacets));
         }
         // Turn on side facets in the search results:
         foreach ($mainFacets as $name => $desc) {
             $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
-        foreach ($this->checkboxFacets as $name => $desc) {
+        foreach ($checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
         }
     }
@@ -284,10 +286,17 @@ class SideFacets extends AbstractFacets
      */
     public function getCheckboxFacetSet()
     {
-        return $this->results->getParams()->getCheckboxFacets(
+        $result = $this->results->getParams()->getCheckboxFacets(
             array_keys($this->checkboxFacets),
             $this->showDynamicCheckboxFacets
         );
+        // Add counts if available:
+        $checkboxCounts = $this->results->getOptions()->displayCheckboxFacetCounts();
+        foreach ($result as &$facet) {
+            $facet['count'] = $checkboxCounts ? $this->getCheckboxFacetCount($facet['filter']) : null;
+        }
+        unset($facet);
+        return $result;
     }
 
     /**
@@ -492,5 +501,50 @@ class SideFacets extends AbstractFacets
     public function getHierarchicalFacetSortOptions()
     {
         return $this->hierarchicalFacetSortOptions;
+    }
+
+    /**
+     * Get the result count for a checkbox facet
+     *
+     * @param string $facet Facet
+     *
+     * @return ?int
+     */
+    public function getCheckboxFacetCount(string $facet): ?int
+    {
+        $checkboxFacets = $this->results->getParams()->getCheckboxFacets();
+        $delimitedFacets = $this->results->getParams()->getOptions()->getDelimitedFacets(true);
+        foreach ($checkboxFacets as $checkboxFacet) {
+            if ($facet !== $checkboxFacet['filter']) {
+                continue;
+            }
+            [$field, $value] = explode(':', $facet, 2);
+            $checkboxResults = $this->results->getFacetList([$field => $value]);
+            if (!isset($checkboxResults[$field]['list'])) {
+                return null;
+            }
+            $count = 0;
+            $truncate = substr($value, -1) === '*';
+            if ($truncate) {
+                $value = substr($value, 0, -1);
+            }
+            foreach ($checkboxResults[$field]['list'] as $item) {
+                $itemValue = $item['value'];
+                if ($delimiter = $delimitedFacets[$field] ?? '') {
+                    [$itemValue] = explode($delimiter, $itemValue);
+                }
+                if (
+                    $itemValue == $value
+                    || ($truncate
+                    && preg_match('/^' . preg_quote($value, '/') . '/', $item['value']))
+                    || ($item['value'] == 'true' && $value == '1')
+                    || ($item['value'] == 'false' && $value == '0')
+                ) {
+                    $count += $item['count'];
+                }
+            }
+            return $count;
+        }
+        return null;
     }
 }

@@ -36,6 +36,7 @@ use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
@@ -77,6 +78,7 @@ use function is_object;
  */
 class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
+    use EmailSettingsTrait;
     use GetServiceTrait;
     use TranslatorAwareTrait;
 
@@ -266,7 +268,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // Fail if we're missing a from and the form element is disabled:
         if ($view->disableFrom) {
             if (empty($view->from)) {
-                $view->from = $config->Site->email;
+                $view->from = $this->getEmailSenderAddress($config);
             }
             if (empty($view->from)) {
                 throw new \Exception('Unable to determine email from address');
@@ -868,12 +870,19 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * Construct an HTTP 205 (refresh) response. Useful for reporting success
      * in the lightbox without actually rendering content.
      *
+     * @param bool $forceGet If true, sends a custom header indicating that the page should be reloaded with a GET
+     * request. This can be useful when it is known that the current page only receives transient params in a POST
+     * request (such as canceling of holds).
+     *
      * @return \Laminas\Http\Response
      */
-    protected function getRefreshResponse()
+    protected function getRefreshResponse(bool $forceGet = false)
     {
         $response = $this->getResponse();
         $response->setStatusCode(205);
+        if ($forceGet) {
+            $response->getHeaders()->addHeaderLine('X-VuFind-Refresh-Method', 'GET');
+        }
         return $response;
     }
 

@@ -14,6 +14,6 @@
         "expectedParams": {
             "query": "username == foo"
         },
-        "body": "{ \"users\": [ { \"id\": \"fake-id\", \"personal\": { \"firstName\": \"first\", \"lastName\": \"last\", \"email\": \"fake@fake.com\" } } ] }"
+        "body": "{ \"users\": [ { \"id\": \"fake-id\", \"personal\": { \"firstName\": \"first\", \"lastName\": \"last\", \"email\": \"fake@fake.com\", \"addresses\": [] } } ] }"
     }
 ]

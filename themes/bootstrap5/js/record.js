@@ -193,6 +193,23 @@ function registerTabEvents() {
   }
 }
 
+// Update print button to correct tab prints
+function setPrintBtnHash(hash) {
+  let printBtn = document.querySelector(".print-record");
+  if (!printBtn) {
+    return;
+  }
+  let printHref = printBtn.getAttribute("href");
+  let printURL = new URL(printHref, window.location.origin);
+  printURL.hash = hash === null ? "" : hash;
+  printBtn.setAttribute("href", printURL.href);
+}
+
+function addTabToURL(tabid) {
+  window.location.hash = tabid;
+  setPrintBtnHash(tabid);
+}
+
 function removeHashFromLocation() {
   if (window.history.replaceState) {
     var href = window.location.href.split('#');
@@ -200,6 +217,8 @@ function removeHashFromLocation() {
   } else {
     window.location.hash = '#';
   }
+
+  setPrintBtnHash(null);
 }
 
 ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
@@ -231,7 +250,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
         syn_get_widget();
       }
       if (typeof setHash == 'undefined' || setHash) {
-        window.location.hash = tabid;
+        addTabToURL(tabid);
       } else {
         removeHashFromLocation();
       }
@@ -322,6 +341,7 @@ function applyRecordTabHash(scrollToTabs) {
         $('html, body').animate({
           scrollTop: $('.record-tabs').offset().top
         }, 500);
+        $tabLink.trigger("focus");
       }
     }
   }
@@ -363,7 +383,7 @@ function recordDocReady() {
         $(this).tab('show');
         $top.find('.tab-pane.active').removeClass('active');
         $top.find('.' + tabid + '-tab').addClass('active');
-        window.location.hash = 'tabnav';
+        addTabToURL('tabnav');
         return false;
       }
       // otherwise, we need to let the browser follow the link:
@@ -376,7 +396,7 @@ function recordDocReady() {
       if ($(this).parent().hasClass('initiallyActive')) {
         removeHashFromLocation();
       } else {
-        window.location.hash = tabid;
+        addTabToURL(tabid);
       }
       return false;
     } else {

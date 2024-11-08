@@ -276,10 +276,12 @@ class OverdriveConnector implements
                 }
             } else {
                 $result->status = true;
-                $res->copiesAvailable ??= 0;
-                $res->copiesOwned ??= 0;
-                $res->numberOfHolds ??= 0;
-                $res->code = 'od_none';
+                if ($res) {
+                    $res->copiesAvailable ??= 0;
+                    $res->copiesOwned ??= 0;
+                    $res->numberOfHolds ??= 0;
+                    $res->code = 'od_none';
+                }
                 $result->data = $res;
             }
         }

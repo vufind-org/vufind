@@ -85,9 +85,9 @@
         );
       ?>
       <tr>
-        <td class="department"><a href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?></a></td>
-        <td class="course"><a href="<?=$url?>"><?=$this->escapeHtml($record->getCourse())?></a></td>
-        <td class="instructor"><a href="<?=$url?>"><?=$this->escapeHtml($record->getInstructor())?></a></td>
+        <td class="department"><a href="<?=$url?>"><?=$this->transEsc('Reserves::' . $record->getDepartment())?></a></td>
+        <td class="course"><a href="<?=$url?>"><?=$this->transEsc('Reserves::' . $record->getCourse())?></a></td>
+        <td class="instructor"><a href="<?=$url?>"><?=$this->transEsc('Reserves::' . $record->getInstructor())?></a></td>
         <td class="items"><?=$this->escapeHtml($record->getItemCount())?></td>
       </tr>
     <?php endforeach; ?>

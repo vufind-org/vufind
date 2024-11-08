@@ -13,10 +13,5 @@
     <?=$this->transEsc('The system is currently unavailable due to system maintenance')?>.
     <?=$this->transEsc('Please check back soon')?>.
   </p>
-  <p>
-    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
-    <br>
-    <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
-  </p>
+  <?=$this->render('error/contact.phtml')?>
 </div>

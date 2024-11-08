@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
 use function extension_loaded;
@@ -74,6 +75,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
         callable $callback,
         array $options = null
     ) {
+        $this->setPathResolver($container->get(PathResolver::class));
         $translator = $callback();
         if (!extension_loaded('intl')) {
             error_log(

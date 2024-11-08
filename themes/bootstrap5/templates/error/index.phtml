@@ -7,12 +7,7 @@
 <div class="alert alert-danger">
   <p><?=$this->transEsc('An error has occurred')?></p>
   <p><?=$this->transEsc($this->message)?></p>
-  <p>
-    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
-    <br>
-    <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
-  </p>
+  <?=$this->render('error/contact.phtml')?>
 </div>
 
 <?php if ($this->showInstallLink): ?>

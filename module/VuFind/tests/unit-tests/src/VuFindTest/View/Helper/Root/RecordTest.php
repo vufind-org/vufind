@@ -389,30 +389,135 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetCheckbox(): void
     {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $tpl = 'record/checkbox.phtml';
         $context = $this->getMockContext();
+        $randomIdentifier = 'baz';
+        $driver->setResultSetIdentifier($randomIdentifier);
+
+        $expectedCalls = [
+            [
+                $tpl,
+                [
+                    'number' => 1,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => "bar-{$randomIdentifier}-000105196",
+                    'prefix' => 'bar',
+                    'formAttr' => 'foo',
+                ],
+            ],
+            [
+                $tpl,
+                [
+                    'number' => 2,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => "bar-{$randomIdentifier}-000105196",
+                    'prefix' => 'bar',
+                    'formAttr' => 'foo',
+                ],
+            ],
+        ];
+
         $this->expectConsecutiveCalls(
             $context,
             'renderInContext',
-            [
-                [
-                    'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ],
-                [
-                    'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ],
-            ],
-            'success'
+            $expectedCalls,
+            ['success', 'success']
         );
-        $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'),
-            [],
-            $context
-        );
+
+        $record = $this->getRecord($driver, [], $context);
+
         // We run the test twice to ensure that checkbox incrementing works properly:
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
+    }
+
+    /**
+     * Test getCheckboxWithoutIdAndWithoutPrefix.
+     *
+     * @return void
+     */
+    public function testGetCheckboxWithoutIdAndWithEmptyPrefix(): void
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $tpl = 'record/checkbox.phtml';
+        $context = $this->getMockContext();
+
+        $expectedCalls = [
+            [
+                $tpl,
+                [
+                    'number' => 1,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => '000105196',
+                    'prefix' => '',
+                    'formAttr' => 'foo',
+                ],
+            ],
+            [
+                $tpl,
+                [
+                    'number' => 2,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => '000105196',
+                    'prefix' => '',
+                    'formAttr' => 'foo',
+                ],
+            ],
+        ];
+
+        $record = $this->getRecord($driver, [], $context);
+
+        $this->expectConsecutiveCalls(
+            $context,
+            'renderInContext',
+            $expectedCalls,
+            ['success', 'success']
+        );
+
+        $record = $this->getRecord($driver, [], $context);
+
+        // We run the test twice to ensure that checkbox incrementing works properly:
+        $this->assertEquals('success', $record->getCheckbox(formAttr: 'foo', number: 1));
+        $this->assertEquals('success', $record->getCheckbox('', 'foo', 2));
+    }
+
+    /**
+     * Test getUniqueHtmlElementId.
+     *
+     * @return void
+     */
+    public function testGetUniqueHtmlElementId()
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $record = $this->getRecord($driver);
+        $contextPrefix = 'foo';
+        $randomIdentifier = 'bar';
+
+        // no result set identifier and no prefix
+        $this->assertEquals(
+            '000105196',
+            $record->getUniqueHtmlElementId()
+        );
+
+        // no result set identifier but with prefix
+        $this->assertEquals(
+            "{$contextPrefix}-000105196",
+            $record->getUniqueHtmlElementId($contextPrefix)
+        );
+
+        // with result set identifier but no prefix
+        $driver->setResultSetIdentifier($randomIdentifier);
+        $this->assertEquals(
+            "{$randomIdentifier}-000105196",
+            $record->getUniqueHtmlElementId()
+        );
+
+        // with result set identifier and with prefix
+        $this->assertEquals(
+            "{$contextPrefix}-{$randomIdentifier}-000105196",
+            $record->getUniqueHtmlElementId($contextPrefix)
+        );
     }
 
     /**

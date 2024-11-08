@@ -394,6 +394,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $displayCitationLinksInResults;
 
     /**
+     * Should we display checkbox facet counts in results?
+     *
+     * @var bool
+     */
+    protected $displayCheckboxFacetCounts;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -421,6 +428,7 @@ abstract class Options implements TranslatorAwareInterface
             = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
         $this->hierarchicalFacetFilters
             = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
+        $this->displayCheckboxFacetCounts = (bool)($facetSettings->Results_Settings->checkboxFacetCounts ?? false);
 
         $searchSettings = $configLoader->get($this->searchIni);
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
@@ -1305,6 +1313,16 @@ abstract class Options implements TranslatorAwareInterface
     public function displayCitationLinksInResults(): bool
     {
         return $this->displayCitationLinksInResults;
+    }
+
+    /**
+     * Should we display counts for checkbox facets in results?
+     *
+     * @return bool
+     */
+    public function displayCheckboxFacetCounts(): bool
+    {
+        return $this->displayCheckboxFacetCounts;
     }
 
     /**

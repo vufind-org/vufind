@@ -22,6 +22,9 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
       console.error('Record preview element not found');
       return false;
     }
+    if (window.getComputedStyle(recordEl, null).getPropertyValue('display') === 'none') {
+      return false;
+    }
     const queryParams = new URLSearchParams({id: id, source: treeEl.dataset.source});
     fetch(VuFind.path + '/Hierarchy/GetRecord?' + queryParams.toString())
       .then((response) => response.text())
