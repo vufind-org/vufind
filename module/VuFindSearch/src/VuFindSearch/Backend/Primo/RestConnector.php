@@ -40,6 +40,7 @@ use Laminas\Session\Container as SessionContainer;
 use function array_key_exists;
 use function in_array;
 use function is_array;
+use function is_string;
 use function strlen;
 
 /**
