@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Extended Escape HTML view helper
+ * View helper for escaping or cleaning HTML
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,10 +30,11 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Escaper\Escaper;
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\String\PropertyStringInterface;
 
 /**
- * Extended Escape HTML view helper
+ * View helper for escaping or cleaning HTML
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,36 +42,43 @@ use VuFind\String\PropertyStringInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EscapeHtmlExt extends \Laminas\View\Helper\Escaper\AbstractHelper
+class EscapeOrCleanHtml extends AbstractHelper
 {
+    /**
+     * Field types that allow HTML
+     *
+     * @var array
+     */
+    protected array $htmlFields;
+
     /**
      * Constructor
      *
      * @param Escaper   $escaper   Escaper
      * @param CleanHtml $cleanHtml Clean HTML helper
+     * @param array     $config    VuFind configuration
      */
-    public function __construct(Escaper $escaper, protected CleanHtml $cleanHtml)
+    public function __construct(protected Escaper $escaper, protected CleanHtml $cleanHtml, array $config)
     {
-        parent::__construct($escaper);
+        $this->htmlFields = (array)($config['HTML_Fields'] ?? []);
     }
 
     /**
      * Invoke this helper: escape a value
      *
-     * @param mixed $value     Value to escape
-     * @param int   $recurse   Expects one of the recursion constants;
-     *                         used to decide whether or not to recurse the given value when escaping
-     * @param bool  $allowHtml Whether to allow sanitized HTML if passed a PropertyString
+     * @param ?string $value     Value to escape
+     * @param ?string $fieldType Field type (for fields that allow sanitized HTML)
+     * @param ?bool   $allowHtml Whether to allow sanitized HTML if passed a PropertyString
      *
-     * @return mixed Given a scalar, a scalar value is returned. Given an object, with the $recurse flag not
-     *               allowing object recursion, returns a string. Otherwise, returns an array.
-     *
-     * @throws Exception\InvalidArgumentException
+     * @return mixed Given a string, returns an escaped string, otherwise returns self
      */
-    public function __invoke($value, $recurse = self::RECURSE_NONE, bool $allowHtml = false)
+    public function __invoke($value = null, ?string $fieldType = null, ?bool $allowHtml = null)
     {
+        if (null === $value) {
+            return $this;
+        }
         if ($value instanceof PropertyStringInterface) {
-            if ($allowHtml && $html = $value->getHtml()) {
+            if (($allowHtml ?? ($fieldType && ($this->htmlFields[$fieldType] ?? false))) && $html = $value->getHtml()) {
                 return ($this->cleanHtml)($html);
             }
             $value = (string)$value;

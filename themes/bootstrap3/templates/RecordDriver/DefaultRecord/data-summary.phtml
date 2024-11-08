@@ -1,5 +1,5 @@
 <?php foreach ($this->driver->getSummary() as $summary): ?>
-  <?=$this->escapeHtmlExt($summary, allowHtml: true) ?><br>
+  <?=$this->escapeOrCleanHtml($summary, allowHtml: true) ?><br>
 <?php endforeach; ?>
 <?php $isbn = $this->driver->getCleanISBN(); ?>
 <?php foreach ($this->summaries($isbn) as $provider => $content): ?>
@@ -9,7 +9,7 @@
         array_map(
             function ($summary) {
                 $htmlContent = str_starts_with($summary, '<') && str_ends_with($summary, '>');
-                return $htmlContent ? $summary : ($this->escapeHtmlExt($summary, allowHtml: true));
+                return $htmlContent ? $summary : ($this->escapeOrCleanHtml($summary, allowHtml: true));
             },
             $content
         )

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Extended Escape HTML helper factory.
+ * EscapeOrCleanHtml helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Extended Escape HTML helper factory.
+ * EscapeOrCleanHtml helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,7 +45,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EscapeHtmlExtFactory implements FactoryInterface
+class EscapeOrCleanHtmlFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -71,6 +71,7 @@ class EscapeHtmlExtFactory implements FactoryInterface
         }
 
         $helpers = $container->get('ViewHelperManager');
-        return new $requestedName(new Escaper(), $helpers->get('cleanHtml'));
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        return new $requestedName(new Escaper(), $helpers->get('cleanHtml'), $config->toArray());
     }
 }

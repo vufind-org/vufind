@@ -116,8 +116,7 @@ class CleanHtmlFactory implements FactoryInterface
         // which ensures that the libxml2 options (namely keepBlanks) are set up
         // properly, and whitespace nodes are preserved. This should not be an
         // issue from libxml2 version 2.9.5, but during testing the issue was
-        // still intermittently present. Regardless of that, CentOS 7.x have an
-        // older libxml2 that exhibits the issue.
+        // still intermittently present, and this setting should remain in place.
         $config->set('Core.AllowParseManyTags', true);
 
         $this->setAdditionalConfiguration($config);
