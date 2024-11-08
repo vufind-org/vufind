@@ -98,9 +98,7 @@ class Backend extends AbstractBackend
         $limit,
         ParamBag $params = null
     ) {
-        if (null === $params) {
-            $params = new ParamBag();
-        }
+        $params ??= new ParamBag();
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params, $offset, $limit);
         $collection = $this->createRecordCollection($response);
