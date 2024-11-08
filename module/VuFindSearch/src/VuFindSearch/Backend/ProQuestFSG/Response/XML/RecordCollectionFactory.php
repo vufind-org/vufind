@@ -78,7 +78,6 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     {
         if (null === $recordFactory) {
             $recordFactory = function ($i) {
-                // return new Record(new MarcReader($i));
                 $reader = new MarcReader($i);
                 $record = new Record($reader);
                 return $record;

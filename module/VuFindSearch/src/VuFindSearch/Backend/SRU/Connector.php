@@ -71,8 +71,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected $host;
 
-    protected $defaultPath = '';
-
     /**
      * The version to specify in the URL
      *
