@@ -67,6 +67,19 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test deactivated no QR code available image.
+     *
+     * @return void
+     */
+    public function testDeactivatedNoQRCodeAvailableImage()
+    {
+        $cfg = ['QRCode' => ['noQRCodeAvailableImage' => false]];
+        $loader = $this->getLoader($cfg);
+        $this->expectException(ImageUnavailable::class);
+        $loader->loadUnavailable();
+    }
+
+    /**
      * Test that requesting a blank QR code results in an exception.
      *
      * @return void

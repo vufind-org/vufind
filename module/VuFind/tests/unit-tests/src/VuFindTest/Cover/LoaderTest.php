@@ -67,6 +67,19 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test deactivated no cover available image.
+     *
+     * @return void
+     */
+    public function testDeactivatedNoCoverAvailableImage()
+    {
+        $cfg = ['Content' => ['noCoverAvailableImage' => false]];
+        $loader = $this->getLoader($cfg);
+        $this->expectException(ImageUnavailable::class);
+        $loader->loadUnavailable();
+    }
+
+    /**
      * Test that requesting a content type causes default data to load if configured.
      *
      * @return void
