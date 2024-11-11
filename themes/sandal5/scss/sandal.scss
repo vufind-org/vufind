@@ -219,11 +219,8 @@ a:hover .login-dropdown-caret {
     }
   }
 
-  a.facet:hover,
-  .facet.checkbox:hover { background-color: $sidebar-item-hover-bg; }
-
-  .facet.active,
-  .facet.active:hover,
+  .facet-group .facet.active,
+  .facet-group .facet.active:hover,
   .active-filters .facet,
   .active-filters .facet:hover {
     border-color: $sidebar-active-bg;
@@ -234,11 +231,6 @@ a:hover .login-dropdown-caret {
       color: $sidebar-active-bg;
       background-color: $white;
     }
-  }
-
-  .facet .badge {
-    max-height: 15px;
-    margin-top: 5px;
   }
 
   .more-btn, .less-btn {
