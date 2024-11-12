@@ -418,10 +418,7 @@ var VuFind = (function VuFind() {
           // Replace the QRCode template with the image:
           const templateEl = holder.querySelector('.qrCodeImgTag');
           if (templateEl) {
-            const templateContent = templateEl.cloneNode(true).childNodes;
-            const parent = templateEl.parentNode;
-            parent.textContent = '';
-            parent.append(...templateContent.childNodes);
+            setInnerHtml(templateEl.parentElement, templateEl.innerText);
           }
         }
       });
