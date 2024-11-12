@@ -17,7 +17,7 @@ return [
             'VuFind\View\Helper\Root\Captcha' => 'VuFind\View\Helper\Root\CaptchaFactory',
             'VuFind\View\Helper\Root\Cart' => 'VuFind\View\Helper\Root\CartFactory',
             'VuFind\View\Helper\Root\Citation' => 'VuFind\View\Helper\Root\CitationFactory',
-            'VuFind\View\Helper\Root\Component' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            \VuFind\View\Helper\Root\Component::class => \VuFind\View\Helper\Root\ComponentFactory::class,
             'VuFind\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'VuFind\View\Helper\Root\Content' => 'VuFind\View\Helper\Root\ContentFactory',
             'VuFind\View\Helper\Root\CookieConsent' => 'VuFind\View\Helper\Root\CookieConsentFactory',

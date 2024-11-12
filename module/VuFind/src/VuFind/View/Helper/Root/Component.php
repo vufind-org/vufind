@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Component view helper
@@ -42,6 +43,15 @@ use Laminas\View\Helper\AbstractHelper;
  */
 class Component extends AbstractHelper
 {
+    /**
+     * Constructor
+     *
+     * @param ThemeInfo $themeInfo Current theme info
+     */
+    public function __construct(protected ThemeInfo $themeInfo)
+    {
+    }
+
     /**
      * Expand path and render template
      *
@@ -67,6 +77,7 @@ class Component extends AbstractHelper
 
         ++$invocation;
         $params['_invocation'] = $invocation;
+        $params['_themeClass'] = 'vc-' . $this->themeInfo->getTheme() . '-' . $name;
 
         return $this->view->render("_ui/$path/" . $name, $params);
     }

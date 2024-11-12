@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\View\Helper\Root\Component;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Component Test Class
@@ -50,7 +51,8 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $helper = new Component();
+        $themeInfoMock = $this->getMockBuilder(ThemeInfo::class)->disableOriginalConstructor()->getMock();
+        $helper = new Component($themeInfoMock);
 
         $view = $this->getMockBuilder(PhpRenderer::class)->getMock();
         $helper->setView($view);
