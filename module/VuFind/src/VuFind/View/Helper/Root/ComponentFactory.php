@@ -69,8 +69,6 @@ class ComponentFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
-
-        return new $requestedName($themeInfo);
+        return new $requestedName($container->get(\VuFindTheme\ThemeInfo::class));
     }
 }
