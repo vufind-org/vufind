@@ -57,13 +57,16 @@ trait EmailSettingsTrait
         if ($config instanceof Config) {
             $config = $config->toArray();
         }
-        if (null !== $userEmail && ($config['Mail']['user_email_in_from'] ?? false)) {
+        if ($userEmail && ($config['Mail']['user_email_in_from'] ?? false)) {
             return $userEmail;
         }
-        if (null === ($result = $config['Mail']['default_from'] ?? $config['Site']['email'] ?? null)) {
-            throw new \Exception(
-                'Missing configuration for email sender. Please check settings Mail/default_from and Site/email.'
-            );
+        // Check for a setting that's defined and not empty:
+        if (!($result = $config['Mail']['default_from'] ?? null)) {
+            if (!($result = $config['Site']['email'] ?? null)) {
+                throw new \Exception(
+                    'Missing configuration for email sender. Please check settings Mail/default_from and Site/email.'
+                );
+            }
         }
         return $result;
     }

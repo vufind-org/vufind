@@ -277,7 +277,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm Serial',
+            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
@@ -286,7 +286,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
+            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
@@ -313,7 +313,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm Serial',
+            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
@@ -322,7 +322,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
+            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
