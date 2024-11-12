@@ -51,7 +51,7 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $themeInfoMock = $this->getMockBuilder(ThemeInfo::class)->disableOriginalConstructor()->getMock();
+        $themeInfoMock = $this->createMock(ThemeInfo::class);
         $helper = new Component($themeInfoMock);
 
         $view = $this->getMockBuilder(PhpRenderer::class)->getMock();
