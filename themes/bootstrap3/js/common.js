@@ -1,20 +1,5 @@
 /*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, stringToNodes */
-
-/**
- * Instance of a DOMParser
- * @member {DOMParser}
- */
-let domParser = new DOMParser();
-
-/**
- * Convert given string into nodes.
- * @param {string} htmlString String to convert into nodes
- * @returns {NodeList} Given string as a node list
- */
-function stringToNodes(htmlString) {
-  return domParser.parseFromString(htmlString, 'text/html').body.childNodes;
-}
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -29,6 +14,21 @@ var VuFind = (function VuFind() {
 
   var _elementBase;
   var _iconsCache = {};
+
+  /**
+   * Instance of a DOMParser
+   * @member {DOMParser}
+   */
+  const domParser = new DOMParser();
+
+  /**
+   * Convert given string into nodes.
+   * @param {string} htmlString String to convert into nodes
+   * @returns {NodeList} Given string as a node list
+   */
+  function stringToNodes(htmlString) {
+    return domParser.parseFromString(htmlString, 'text/html').body.childNodes;
+  }
 
   // Event controls
 
