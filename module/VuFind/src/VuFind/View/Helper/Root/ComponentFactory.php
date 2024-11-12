@@ -22,8 +22,6 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -42,8 +40,6 @@ use Psr\Container\ContainerInterface;
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
