@@ -77,7 +77,9 @@ class Component extends AbstractHelper
 
         ++$invocation;
         $params['_invocation'] = $invocation;
-        $params['_themeClass'] = 'vc-' . $this->themeInfo->getTheme() . '-' . $name;
+        // Theme specific class name to prevent accidental style calls. Prefix vc- stands for VuFind component.
+        $normalizedName = str_replace('/', '-', $name);
+        $params['_themeClass'] = 'vc-' . $this->themeInfo->getTheme() . '-' . $normalizedName;
 
         return $this->view->render("_ui/$path/" . $name, $params);
     }
