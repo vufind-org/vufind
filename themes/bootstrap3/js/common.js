@@ -311,11 +311,13 @@ var VuFind = (function VuFind() {
     const tmpDiv = document.createElement('div');
     const scripts = [];
     tmpDiv.append(...stringToNodes(html));
-    tmpDiv.querySelectorAll('script:not([type]), script[type="text/javascript"]').forEach(script => {
-      const scriptClone = script.cloneNode(true);
-      scriptClone.setAttribute('nonce', getCspNonce());
-      scripts.push(scriptClone);
-      script.remove();
+    // Cloning scripts wont work as they pass internal executed state.
+    tmpDiv.querySelectorAll('script').forEach(script => {
+      const type = script.getAttribute('type');
+      if (!type || 'text/javascript' === type) {
+        scripts.push(script.cloneNode(true));
+        script.remove();
+      }
     });
     if (property === 'innerHTML') {
       elm.textContent = '';
@@ -326,7 +328,15 @@ var VuFind = (function VuFind() {
     }
     // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
     Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
-    elm.append(...scripts);
+    scripts.forEach(script => {
+      const newScript = document.createElement('script');
+      newScript.append(...script.childNodes);
+      if (script.src) {
+        newScript.src = script.src;
+      }
+      newScript.setAttribute('nonce', getCspNonce());
+      elm.appendChild(newScript);
+    });
   }
 
   /**
