@@ -123,8 +123,7 @@ class Demo extends \VuFind\Content\AbstractCover
      * Selects demo covers or no cover based on the $ids array and returns location information.
      *
      * @param array $ids Associative array of identifiers (keys may include 'isbn'
-     *                   pointing to an ISBN object and 'issn' pointing to a
-     *                   string)
+     * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool
      */
