@@ -73,13 +73,15 @@ class LayoutClassFactory implements FactoryInterface
         $sidebarOnLeft = $config->Site->sidebarOnLeft ?? false;
         $mirror = $config->Site->mirrorSidebarInRTL ?? true;
         $offcanvas = $config->Site->offcanvas ?? false;
+        $theme = $config->Site->theme ?? 'default';
         // The right-to-left setting is injected into the layout by the Bootstrapper;
         // pull it back out here to avoid duplicate effort, then use it to apply
         // the mirror setting appropriately.
         $layout = $container->get('ViewManager')->getViewModel();
+
         if ($layout->rtl && $mirror) {
             $sidebarOnLeft = !$sidebarOnLeft;
         }
-        return new $requestedName($sidebarOnLeft, $offcanvas, $layout->rtl);
+        return new $requestedName($sidebarOnLeft, $offcanvas, $layout->rtl, $theme);
     }
 }
