@@ -394,8 +394,21 @@ class Bootstrapper
             $result = $rateLimiterManager->check($event);
             if (!$result['allow']) {
                 $response = $event->getResponse();
-                $response->setStatusCode(429);
-                $response->setContent($result['message']);
+                if ($result['performTurnstileChallenge'] ?? false) {
+                    $response->setStatusCode(307);
+                    $policyId = $rateLimiterManager->checkPolicyUsesTurnstile($event);
+                    $context = base64_encode(json_encode([
+                        'policyId' => $policyId,
+                        'destination' => $event->getRequest()->getUri()->getPath(),
+                    ]));
+                    $response->getHeaders()->addHeaderLine(
+                        'Location',
+                        '/vufind/Turnstile/Challenge?context=' . $context
+                    );
+                } else {
+                    $response->setStatusCode(429);
+                    $response->setContent($result['message']);
+                }
                 $event->stopPropagation(true);
                 return $response;
             }

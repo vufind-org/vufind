@@ -94,6 +94,7 @@ class RateLimiterManagerFactory implements FactoryInterface
             $request->getServer('REMOTE_ADDR'),
             $authManager->getUserObject()?->getId(),
             Closure::fromCallable([$this, 'getRateLimiter']),
+            $this->createTurnstileCache($config),
             $container->get(\VuFind\Net\IpAddressUtils::class)
         );
     }
@@ -112,32 +113,35 @@ class RateLimiterManagerFactory implements FactoryInterface
         array $config,
         string $policyId,
         string $clientIp,
-        ?string $userId
+        ?string $userId,
+        string $configSection = 'rateLimiterSettings'
     ): LimiterInterface {
         $policy = $config['Policies'][$policyId] ?? [];
-        $rateLimiterConfig = $policy['rateLimiterSettings'] ?? [];
+        $rateLimiterConfig = $policy[$configSection] ?? [];
         $rateLimiterConfig['id'] = $policyId;
         if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {
             $clientId = "u:$userId";
         } else {
             $clientId = "ip:$clientIp";
         }
-        $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config));
+        $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config, $configSection));
         return $factory->create($clientId);
     }
 
     /**
      * Create cache for the rate limiter
      *
-     * @param array $config Rate limiter configuration
+     * @param array  $config          Rate limiter configuration
+     * @param string $namespaceSuffix Qualifier for the namespace
      *
      * @return ?StorageInterface
      */
-    protected function createCache(array $config): StorageInterface
+    protected function createCache(array $config, string $namespaceSuffix): StorageInterface
     {
         $storageConfig = $config['Storage'] ?? [];
         $adapter = $storageConfig['adapter'] ?? 'memcached';
         $storageConfig['options']['namespace'] ??= 'RateLimiter';
+        $storageConfig['options']['namespace'] .= '-' . $namespaceSuffix;
 
         // Handle Redis cache separately:
         $adapterLc = strtolower($adapter);
@@ -206,5 +210,23 @@ class RateLimiterManagerFactory implements FactoryInterface
         }
 
         return new CredisStorage($redis, $options);
+    }
+
+    /**
+     * Create a cache for Turnstile results.
+     *
+     * @param array $config Rate limiter configuration
+     *
+     * @return ?StorageInterface
+     */
+    protected function createTurnstileCache(array $config): \Laminas\Cache\Storage\StorageInterface
+    {
+        $turnstileConfig = unserialize(serialize($config));
+        $storageOptions = $turnstileConfig['Storage']['options'] ?? [];
+        $storageOptions['namespace'] = $storageOptions['turnstileNamespace'] ?? 'Turnstile';
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
+        $cache = $cacheManager->getCache('object', $storageOptions['namespace']);
+        $cache->getOptions()->setTtl($storageOptions['turnstileTtl'] ?? 60 * 60 * 24);
+        return $cache;
     }
 }

@@ -40,6 +40,12 @@ Storage:
     #redis_version            : 6
     #redis_standalone         : true
 
+  # Namespace for Turnstile result cache (default is Turnstile)
+  # turnstileNamespace: Turnstile
+
+  # Time-to-live (seconds) for Turnstile result cache (default is 86400, i.e. 1 day)
+  # turnstileTtl: 86400
+
 # Policies define the actual rate limiting settings. The request is checked against
 # the list of policies, and the first matching policy is used.
 # Keys under "Policies" are used as rate limiter IDs.
@@ -81,6 +87,13 @@ Storage:
 #                         policy: token_bucket
 #                         limit: 500
 #                         rate: { interval: '10 minutes', amount: 100 }
+#
+# turnstileRateLimiterSettings Defined like rateLimiterSettings, but when the limit is
+#                              reached, a Turnstile challenge is used instead of simply
+#                              returning a 429. The challenge result is cached. 
+#                              Failing the challenge results in standard 429 behavior.
+#                              Passing the challenge bypasses this check, but note the
+#                              rateLimiterSettings quota is still separately applied.
 #
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
 #
@@ -130,3 +143,17 @@ Policies:
       policy: token_bucket
       limit: 2000
       rate: { interval: '10 minutes', amount: 400 }
+
+# Cloudflare Turnstile is a cloud-based "CAPTCHA alternative" to detect bots.
+# https://developers.cloudflare.com/turnstile/
+# These are the global settings for Turnstile. See also the turnstile config above:
+# - within each policy, to enable turnstile for that policy
+# - storage settings for the result cache
+# Turnstile:
+  # These two keys are required. See also values they can be set to for testing purposes:
+  # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+  # siteKey: 0x1234567890
+  # secretKey: 0x1234567890
+
+  # Verify API URL.  Default is https://challenges.cloudflare.com/turnstile/v0/siteverify
+  # verifyUrl: https://challenges.cloudflare.com/turnstile/v0/siteverify
