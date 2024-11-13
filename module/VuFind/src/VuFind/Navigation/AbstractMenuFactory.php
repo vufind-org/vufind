@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Account menu view helper factory
+ * Menu factory
  *
  * PHP version 8
  *
- * Copyright (C) Moravian library 2024.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @package  Navigation
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Navigation;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,16 +35,18 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function array_slice;
+
 /**
- * Account menu view helper factory
+ * Menu factory
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @package  Navigation
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountMenuFactory implements FactoryInterface
+class AbstractMenuFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,11 +67,14 @@ class AccountMenuFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+        if (empty($options)) {
+            throw new \Exception('Expected options not sent to factory.');
         }
-        $menu = $container->get(\VuFind\Navigation\PluginManager::class)
-            ->get(\VuFind\Navigation\AccountMenu::class);
-        return new $requestedName($menu);
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        return new $requestedName(
+            // First array item should be the name of the menu configuration file.
+            $yamlReader->get(reset($options)),
+            ...array_slice($options, 1)
+        );
     }
 }

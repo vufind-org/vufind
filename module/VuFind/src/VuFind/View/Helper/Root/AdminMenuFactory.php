@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Account menu view helper factory
+ * Admin menu view helper factory
  *
  * PHP version 8
  *
- * Copyright (C) Moravian library 2024.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,9 +22,9 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\View\Helper\Root;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Account menu view helper factory
+ * Admin menu view helper factory
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountMenuFactory implements FactoryInterface
+class AdminMenuFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -69,7 +69,7 @@ class AccountMenuFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $menu = $container->get(\VuFind\Navigation\PluginManager::class)
-            ->get(\VuFind\Navigation\AccountMenu::class);
+            ->get(\VuFind\Navigation\AdminMenu::class);
         return new $requestedName($menu);
     }
 }
