@@ -147,6 +147,7 @@ Policies:
 
 # Cloudflare Turnstile is a cloud-based "CAPTCHA alternative" to detect bots.
 # https://developers.cloudflare.com/turnstile/
+# See also [Captcha] settings in config.ini for actual CAPTCHAs.
 # These are the global settings for Turnstile. See also the turnstile config above:
 # - within each policy, to enable turnstile for that policy
 # - storage settings for the result cache
