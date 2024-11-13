@@ -125,7 +125,7 @@ class Demo extends \VuFind\Content\AbstractCover
      * @param array $ids Associative array of identifiers (keys may include 'isbn'
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
-     * @return string|bool
+     * @return array
      */
     protected function getCover($ids)
     {
@@ -133,6 +133,6 @@ class Demo extends \VuFind\Content\AbstractCover
         // selects either one of the available demo covers or no image
         // evenly distributed based on the checksum of the ids.
         $coverNum = crc32(serialize($ids)) % (count($covers) + 1);
-        return $covers[$coverNum];
+        return $covers[$coverNum] ?? [];
     }
 }
