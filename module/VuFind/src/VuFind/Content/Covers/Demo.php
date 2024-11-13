@@ -132,7 +132,7 @@ class Demo extends \VuFind\Content\AbstractCover
         $covers = $this->themeInfo->findInThemes('images/demo-cover-*');
         // selects either one of the available demo covers or no image
         // evenly distributed based on the checksum of the ids.
-        $coverNum = crc32(serialize($ids)) % (count($covers) + 1);
+        $coverNum = crc32($ids['recordid'] ?? serialize($ids)) % (count($covers) + 1);
         return $covers[$coverNum] ?? [];
     }
 }
