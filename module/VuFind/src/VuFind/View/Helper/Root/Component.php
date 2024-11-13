@@ -74,10 +74,8 @@ class Component extends AbstractHelper
 
         ++$invocation;
         $params['_invocation'] = $invocation;
-        if (!($this->cache[$name] ?? false)) {
-            // Prefix normalized component name with vc- (VuFind component) to avoid accidental style assignments
-            $this->cache[$name] = 'vc-' . preg_replace('/[^-_A-Za-z0-9]/', '-', $name);
-        }
+        // Prefix normalized component name with vc- (VuFind component) to avoid accidental style assignments
+        $this->cache[$name] ??= 'vc-' . preg_replace('/[^-_A-Za-z0-9]/', '-', $name);
         $params['_componentClass'] = $this->cache[$name];
 
         return $this->view->render("_ui/$path/" . $name, $params);
