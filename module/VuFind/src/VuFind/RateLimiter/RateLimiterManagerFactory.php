@@ -102,10 +102,11 @@ class RateLimiterManagerFactory implements FactoryInterface
     /**
      * Get rate limiter
      *
-     * @param array   $config   Rate limiter configuration
-     * @param string  $policyId Policy ID
-     * @param string  $clientIp Client's IP address
-     * @param ?string $userId   User ID or null if not logged in
+     * @param array   $config        Rate limiter configuration
+     * @param string  $policyId      Policy ID
+     * @param string  $clientIp      Client's IP address
+     * @param ?string $userId        User ID or null if not logged in
+     * @param string  $configSection Section of $config to get the rate limiter settings
      *
      * @return LimiterInterface
      */
