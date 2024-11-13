@@ -94,6 +94,7 @@ Storage:
 #                              Failing the challenge results in standard 429 behavior.
 #                              Passing the challenge bypasses this check, but note the
 #                              rateLimiterSettings quota is still separately applied.
+#                              Default (not defined) means don't use Turnstile.
 #
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
 #
