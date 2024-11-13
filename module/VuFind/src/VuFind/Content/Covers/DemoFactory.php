@@ -69,6 +69,9 @@ class DemoFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get(\VuFindTheme\ThemeInfo::class));
+        $helpers = $container->get('ViewHelperManager');
+        $basePath = ($helpers->get('url'))('home');
+        $baseUrl = ($helpers->get('serverurl'))($basePath);
+        return new $requestedName($container->get(\VuFindTheme\ThemeInfo::class), $baseUrl);
     }
 }

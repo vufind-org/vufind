@@ -30,7 +30,6 @@
 namespace VuFindTest\QRCode;
 
 use Laminas\Config\Config;
-use VuFind\Exception\ImageUnavailable;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 
@@ -61,7 +60,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testUtterFailure()
     {
-        $this->expectException(ImageUnavailable::class);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Could not load default fail image.');
+
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())

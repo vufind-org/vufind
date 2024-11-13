@@ -85,8 +85,10 @@ VuFind.register('covers', function covers() {
   function checkLoaded(container) {
     container.querySelectorAll('.recordcover').forEach(
       (img) => {
-        img.addEventListener('error', () => {
-          img.classList.add('hidden');
+        img.addEventListener('load', () => {
+          if (img.getBoundingClientRect().width < 2) {
+            img.classList.add('hidden');
+          }
         });
       }
     );

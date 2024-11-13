@@ -31,7 +31,6 @@ namespace VuFindTest\Cover;
 
 use Laminas\Config\Config;
 use VuFind\Cover\Loader;
-use VuFind\Exception\ImageUnavailable;
 use VuFindTheme\ThemeInfo;
 
 use function strlen;
@@ -61,30 +60,51 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testUtterFailure()
     {
-        $this->expectException(ImageUnavailable::class);
-        $loader = $this->getLoader();
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Could not load default fail image.');
+
+        $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
+            ->setConstructorArgs(['foo', 'bar'])->getMock();
+        $theme->expects($this->once())
+            ->method('findContainingTheme')
+            ->with($this->equalTo(['images/hidden-image.gif']))
+            ->will($this->returnValue(false));
+        $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
     }
 
     /**
-     * Test deactivated no cover available image.
-     *
-     * @return void
-     */
-    public function testDeactivatedNoCoverAvailableImage()
-    {
-        $cfg = ['Content' => ['noCoverAvailableImage' => false]];
-        $loader = $this->getLoader($cfg);
-        $this->expectException(ImageUnavailable::class);
-        $loader->loadUnavailable();
-    }
-
-    /**
-     * Test that requesting a content type causes default data to load if configured.
+     * Test that requesting a content type causes default data to load.
      *
      * @return void
      */
     public function testDefaultLoadingForContentType()
+    {
+        $loader = $this->getLoader();
+        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertEquals('64', strlen($loader->getImage()));
+    }
+
+    /**
+     * Test that requesting an image causes default data to load.
+     * (same as above test, but with assertions in different order to
+     * force appropriate loading).
+     *
+     * @return void
+     */
+    public function testDefaultLoadingForImage()
+    {
+        $loader = $this->getLoader();
+        $this->assertEquals('64', strlen($loader->getImage()));
+        $this->assertEquals('image/gif', $loader->getContentType());
+    }
+
+    /**
+     * Test that requesting a content type causes configured default data to load.
+     *
+     * @return void
+     */
+    public function testConfiguredDefaultLoadingForContentType()
     {
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
@@ -93,13 +113,13 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that requesting an image causes default data to load if configured.
+     * Test that requesting an image causes configured default data to load.
      * (same as above test, but with assertions in different order to
      * force appropriate loading).
      *
      * @return void
      */
-    public function testDefaultLoadingForImage()
+    public function testConfiguredDefaultLoadingForImage()
     {
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
@@ -118,10 +138,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $cfg = ['Content' => ['noCoverAvailableImage' => $badfile]];
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
-        // We expect the loader to complain about the bad filename and throw an exception:
-        $this->expectException(ImageUnavailable::class);
+        // We expect the loader to complain about the bad filename and load the default image:
         $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
         $loader->loadUnavailable();
+        $this->assertEquals('64', strlen($loader->getImage()));
     }
 
     /**
@@ -135,12 +155,12 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $cfg = ['Content' => ['noCoverAvailableImage' => $badfile]];
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
-        // We expect the loader to complain about the bad filename and throw an exception:
-        $this->expectException(ImageUnavailable::class);
+        // We expect the loader to complain about the bad filename and load the default image:
         $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/'
             . $this->testTheme . '/' . $badfile . "'";
         $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
         $loader->loadUnavailable();
+        $this->assertEquals('64', strlen($loader->getImage()));
     }
 
     /**

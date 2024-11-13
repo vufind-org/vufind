@@ -30,8 +30,6 @@
 
 namespace VuFind;
 
-use VuFind\Exception\ImageUnavailable;
-
 use function array_key_exists;
 
 /**
@@ -75,6 +73,13 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
      * @var ?string
      */
     protected $configuredFailImage = null;
+
+    /**
+     * Default image to load from theme if user-configured option fails.
+     *
+     * @var string
+     */
+    protected $defaultFailImage = 'images/hidden-image.gif';
 
     /**
      * Array containing map of allowed file extensions to mimetypes
@@ -154,29 +159,31 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Load the user-specified "cover unavailable" graphic (or return status
-     * code 404 if none specified).
+     * Load the user-specified "cover unavailable" graphic (or default if none
+     * specified).
      *
      * @return void
      * @author Thomas Schwaerzler <vufind-tech@lists.sourceforge.net>
      */
     public function loadUnavailable()
     {
-        // No setting -- return status code 404, and don't log anything:
+        // No setting -- use default, and don't log anything:
         if (empty($this->configuredFailImage)) {
-            throw new ImageUnavailable();
+            $this->loadDefaultFailImage();
+            return;
         }
 
         // Setting found -- get "no cover" image from config.ini:
         $noCoverImage = $this->searchTheme($this->configuredFailImage);
 
-        // If file is blank/inaccessible, log error and return status code 404:
+        // If file is blank/inaccessible, log error and display default:
         if (
             empty($noCoverImage) || !file_exists($noCoverImage)
             || !is_readable($noCoverImage)
         ) {
             $this->debug("Cannot access '{$this->configuredFailImage}'");
-            throw new ImageUnavailable();
+            $this->loadDefaultFailImage();
+            return;
         }
 
         try {
@@ -185,11 +192,27 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             // Log error and bail out if file lacks a known image extension:
             $this->debug($e->getMessage());
-            throw new ImageUnavailable();
+            $this->loadDefaultFailImage();
+            return;
         }
 
         // Load the image data:
         $this->image = file_get_contents($noCoverImage);
+    }
+
+    /**
+     * Display the default "cover unavailable" graphic.
+     *
+     * @return void
+     */
+    protected function loadDefaultFailImage()
+    {
+        $file = $this->searchTheme($this->defaultFailImage);
+        if (!file_exists($file)) {
+            throw new \Exception('Could not load default fail image.');
+        }
+        $this->contentType = $this->getContentTypeFromExtension($file);
+        $this->image = file_get_contents($file);
     }
 
     /**

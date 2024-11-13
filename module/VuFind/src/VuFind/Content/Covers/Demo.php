@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Content
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -39,6 +40,7 @@ use function count;
  * @category VuFind
  * @package  Content
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -48,9 +50,12 @@ class Demo extends \VuFind\Content\AbstractCover
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme info
+     * @param string    $baseUrl   VuFind's base URL
      */
-    public function __construct(protected ThemeInfo $themeInfo)
+    public function __construct(protected ThemeInfo $themeInfo, protected string $baseUrl)
     {
+        $this->directUrls = true;
+        $this->mandatoryBacklinkLocations = ['core'];
     }
 
     /**
@@ -70,7 +75,7 @@ class Demo extends \VuFind\Content\AbstractCover
     /**
      * Get image location from local file storage.
      *
-     * @param string $key  local file directory path
+     * @param string $key  If backlink functionality should be used
      * @param string $size Size of image to load (small/medium/large)
      * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
      * pointing to an ISBN object and 'issn' pointing to a string)
@@ -79,13 +84,56 @@ class Demo extends \VuFind\Content\AbstractCover
      */
     public function getUrl($key, $size, $ids)
     {
+        $cover = $this->getCover($ids);
+        if ($path = $cover['file'] ?? null) {
+            return 'file://' . $path;
+        }
+        return false;
+    }
+
+    /**
+     * Get cover metadata for a particular API key and set of IDs (or empty array).
+     *
+     * @param ?string $key  If backlink functionality should be used
+     * @param string  $size Size of image to load (small/medium/large)
+     * @param array   $ids  Associative array of identifiers (keys may include 'isbn'
+     * pointing to an ISBN object, 'issn' pointing to a string and 'oclc' pointing
+     * to an OCLC number string)
+     *
+     * @return array Array with keys: url, backlink_url, backlink_text
+     */
+    public function getMetadata(?string $key, string $size, array $ids)
+    {
+        $cover = $this->getCover($ids);
+        $path = $cover['relativeFile'] ?? null;
+        if (empty($path)) {
+            return [];
+        }
+        $res = [
+            'url' => $this->baseUrl . 'themes/' . $cover['theme'] . '/' . $path,
+        ];
+        if ($key === 'true') {
+            $res['backlink_url'] = 'https://vufind.org';
+            $res['backlink_text'] = 'vufind.org';
+        }
+        return $res;
+    }
+
+    /**
+     * Selects demo covers or no cover based on the $ids array and returns location information.
+     *
+     * @param array $ids Associative array of identifiers (keys may include 'isbn'
+     *                   pointing to an ISBN object and 'issn' pointing to a
+     *                   string)
+     *
+     * @return string|bool
+     */
+    protected function getCover($ids)
+    {
         $covers = $this->themeInfo->findInThemes('images/demo-cover-*');
         // selects either one of the available demo covers or no image
         // evenly distributed based on the checksum of the ids.
         $coverNum = crc32(serialize($ids)) % (count($covers) + 1);
-        if ($path = $covers[$coverNum]['file'] ?? null) {
-            return 'file://' . $path;
-        }
-        return false;
+        return $covers[$coverNum];
     }
 }
