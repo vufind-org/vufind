@@ -41,7 +41,8 @@
   <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
 <?php endif; ?>
 <?php if ($hasVisibleCheckboxes): ?>
-  <div class="checkboxFilter">
+  <?php // checkboxFilter class remains only for back-compatibility: ?>
+  <div class="checkbox-filters checkboxFilter">
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
   </div>
 <?php endif; ?>

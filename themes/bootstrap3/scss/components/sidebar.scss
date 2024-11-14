@@ -184,7 +184,11 @@
   }
 }
 
-.full-facet-list { margin-top: 1rem; }
+.full-facets {
+  margin: 1rem 0;
+  border-top: 1px solid $list-group-border;
+  border-bottom: 1px solid $list-group-border;
+}
 .full-facet-list .active .fa.fa-times {
   float: right;
   margin-top: .25rem;
@@ -225,14 +229,26 @@ h3.facet-title {
 .multi-filters-selection {
   position: sticky;
   top: 0;
-  z-index: 500;
-  padding: 1em;
-  border-bottom: 1px solid #C1C1C1;
+  z-index: 40;
+  padding: 1em 0;
   background: white;
-  box-shadow: 0 5px 5px -4px #000;
-  font-weight: bold;
+
+  .apply-filters {
+    margin-top: 1em;
+    display: none;
+  }
 }
-.apply-filters {
-  height: 3.5em;
+.multi-facet-selection-active .apply-filters {
+  display: block;
+}
+.sidebar .multi-filters-selection {
   padding: 1em;
+  border-bottom: 1px solid $list-group-border;
+  box-shadow: 0 5px 5px -4px #000;
+}
+.multi-facet-selection-active {
+  // Hide submit buttons of range forms when multi-facet selection is active:
+  .facet input[type="submit"] {
+    display: none;
+  }
 }
