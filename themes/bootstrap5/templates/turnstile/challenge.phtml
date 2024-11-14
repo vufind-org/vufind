@@ -15,7 +15,7 @@
     data-callback="turnstileChallengeEnded"
     data-error-callback="turnstileChallengeEnded"
 ></div>
-<form id="turnstile_form" method="post" action="/vufind/Turnstile/Verify">
+<form id="turnstile_form" method="post" action="<?=$this->url('turnstile-verify')?>">
     <input id="turnstile_token" name="token" type="hidden">
     <input name="policyId" type="hidden" value="<?=$this->escapeHtml($policyId)?>">
     <input name="destination" type="hidden" value="<?=$this->escapeHtml($destination)?>">

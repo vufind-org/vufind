@@ -403,7 +403,7 @@ class Bootstrapper
                     ]));
                     $response->getHeaders()->addHeaderLine(
                         'Location',
-                        '/vufind/Turnstile/Challenge?context=' . $context
+                        $event->getRequest()->getBaseUrl() . '/Turnstile/Challenge?context=' . $context
                     );
                 } else {
                     $response->setStatusCode(429);
