@@ -449,7 +449,7 @@ VuFind.register('sideFacets', function SideFacets() {
   function activateSingleAjaxFacetContainer() {
     var $container = $(this);
     var facetList = [];
-    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkboxFilter [data-facet]');
+    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filters [data-facet]');
     $facets.each(function addFacet() {
       if (!$(this).data('loaded')) {
         facetList.push($(this).data('facet'));
@@ -491,7 +491,7 @@ VuFind.register('sideFacets', function SideFacets() {
       .done(function onGetSideFacetsDone(response) {
         $.each(response.data.facets, function initFacet(facet, facetData) {
           var containerSelector = typeof facetData.checkboxCount !== 'undefined'
-            ? '.checkboxFilter ' : '.facet-group ';
+            ? '.checkbox-filters ' : '.facet-group ';
           var $facetContainer = $container.find(containerSelector + '[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData.checkboxCount !== 'undefined') {

@@ -272,7 +272,7 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         // Add checkbox facets for checkbox counts:
-        if ($this->checkboxFacets && $this->getOptions()->displayCheckboxFacetCounts()) {
+        if ($this->checkboxFacets && $this->fetchCheckboxFacetCounts) {
             foreach (array_keys($this->checkboxFacets) as $facetField) {
                 // Ignore custom filters using a virtual field:
                 if ($facetField === $this->customFilterFieldName) {

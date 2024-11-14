@@ -174,6 +174,13 @@ class Params
     protected $checkboxFacets = [];
 
     /**
+     * Whether to fetch result counts for checkbox facets
+     *
+     * @var bool
+     */
+    protected $fetchCheckboxFacetCounts = false;
+
+    /**
      * Applied filters
      *
      * @var array
@@ -1062,6 +1069,18 @@ class Params
         [$fieldName] = explode(':', $filter);
         $this->checkboxFacets[$fieldName][$filter]
             = compact('desc', 'filter', 'dynamic');
+    }
+
+    /**
+     * Enable or disable fetching of checkbox facet counts
+     *
+     * @param bool $enable Whether to enable counts
+     *
+     * @return void
+     */
+    public function toggleCheckboxFacetCounts(bool $enable): void
+    {
+        $this->fetchCheckboxFacetCounts = $enable;
     }
 
     /**
