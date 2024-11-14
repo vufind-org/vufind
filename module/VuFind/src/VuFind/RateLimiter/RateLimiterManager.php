@@ -184,9 +184,9 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                     ]
                 );
             }
-            if (isset($turnstileLimit)) {
+            if (isset($turnstileLimit) && !$turnstileLimit->isAccepted()) {
                 $priorTurnstileResult = $this->checkPriorTurnstileResult($policyId, $this->clientIp);
-                if (!$priorTurnstileResult && !$turnstileLimit->isAccepted()) {
+                if (!$priorTurnstileResult) {
                     $result['allow'] = false;
                     $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
                     $result['performTurnstileChallenge'] = ($priorTurnstileResult === null);
