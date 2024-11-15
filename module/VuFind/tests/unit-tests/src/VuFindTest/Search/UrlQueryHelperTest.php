@@ -160,7 +160,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
         $faceted = $helper->addFacet('f', '1')->addFilter('f:2');
         $this->assertEquals(
-            '?foo=bar&lookfor=search&filter%5B%5D=f%3A%221%22&filter%5B%5D=f%3A%222%22',
+            '?foo=bar&lookfor=search&filter%5B%5D=f%3A%221%22&filter%5B%5D=f%3A2',
             $faceted->getParams(false)
         );
         $this->assertEquals(
@@ -168,7 +168,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
             $faceted->removeFacet('f', '2')->getParams(false)
         );
         $this->assertEquals(
-            '?foo=bar&lookfor=search&filter%5B%5D=f%3A%222%22',
+            '?foo=bar&lookfor=search&filter%5B%5D=f%3A2',
             $faceted->removeFilter('f:1')->getParams(false)
         );
         $this->assertEquals(
