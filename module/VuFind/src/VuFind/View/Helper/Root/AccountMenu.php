@@ -70,9 +70,9 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
         }
 
         $availableGroups = [];
-        foreach ($menu as $group) {
+        foreach ($this->filterAvailable($menu) as $group) {
             // skip groups without items to display
-            if ($items = $this->filterItems($group['MenuItems'])) {
+            if ($items = $this->filterAvailable($group['MenuItems'])) {
                 $group['MenuItems'] = $items;
                 $availableGroups[] = $group;
             }
@@ -82,16 +82,16 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get available menu items
+     * Get available items from a given list.
      *
-     * @param array $items Items to filter
+     * @param array $list Items to filter
      *
      * @return array
      */
-    protected function filterItems(array $items): array
+    protected function filterAvailable(array $list): array
     {
         return array_filter(
-            $items,
+            $list,
             function ($item) {
                 return !isset($item['checkMethod']) || $this->{$item['checkMethod']}();
             }

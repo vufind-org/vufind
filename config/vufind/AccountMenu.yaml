@@ -6,10 +6,12 @@
 #   - id: html id for the group - required
 #   - class: class for the list of items
 #   - MenuItems: items shown in the menu - required
+#   - checkMethod: the name of an AccountMenu view helper method to perform
 # array keys for every menu item could be:
 #   - name: name of an item
 #   - label: the text shown as link, will be translated - required
 #   - route: route name used to generate link target - route, url or template required
+#   - routeParams: parameters for dynamic routes
 #   - url: target url, alternative to route - route, url or template required
 #   - template: template to render the item with
 #   - icon: icon used for the item, has to be defined in theme config
