@@ -234,12 +234,17 @@ a:hover .login-dropdown-caret {
       color: $sidebar-active-bg;
       background-color: $white;
     }
+
   }
 
   .more-btn, .less-btn {
     border: 0;
     border-bottom: 1px solid $list-group-border;
     border-radius: 0;
+  }
+
+  .btn {
+    font-size: $reduced-font-size;
   }
 }
 
