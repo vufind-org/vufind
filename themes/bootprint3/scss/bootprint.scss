@@ -158,17 +158,18 @@ ul.random.image li img { margin: 0 auto; }
   .facet-tree .facet {
     padding-left: 2px;
   }
-  .facet.active,
-  .facet.active:hover,
+  .facet-group .facet.active,
+  .facet-group .facet.active:hover,
   .active-filters .facet {
     color: #fff;
     background-color: $active-orange;
     border-color: $active-orange;
+
+    .badge { color: $active-orange; }
   }
-  .facet.active .badge { color: $active-orange; }
   .facet .badge a { color: #fff; }
 }
-.checkboxFilter .facet { padding-left: 1px; }
+.checkbox-filters .facet { padding-left: 1px; }
 
 .slider-container .slider-handle {
   background: $brand-primary;

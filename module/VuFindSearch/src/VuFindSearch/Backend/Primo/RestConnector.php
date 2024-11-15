@@ -40,6 +40,7 @@ use Laminas\Session\Container as SessionContainer;
 use function array_key_exists;
 use function in_array;
 use function is_array;
+use function is_string;
 use function strlen;
 
 /**
@@ -234,10 +235,16 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
         }
         // Query String Parameters
         $qs = [];
+        $index = 'rid';
+        // For some reason Alma records cannot be fetched using rid, so try to cope:
+        if (preg_match('/^alma\d/', $recordId)) {
+            $index = 'mms_id';
+            $recordId = substr($recordId, 4);
+        }
         // It would be tempting to use 'exact' matching here, but it does not work
         // with all record IDs, so need to use 'contains'. Contrary to the old
         // brief search API, quotes are necessary here for all IDs to work.
-        $qs['q'] = 'rid,contains,"' . str_replace(';', ' ', $recordId) . '"';
+        $qs['q'] = $index . ',exact,"' . str_replace(';', ' ', $recordId) . '"';
         $qs['offset'] = '0';
         $qs['limit'] = '1';
         // pcAvailability=true is needed for records, which
@@ -462,17 +469,34 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             $addata = $pnx->addata;
             $control = $pnx->control;
             $display = $pnx->display;
-            $search = $pnx->search;
-            $item['recordid'] = substr($control->recordid[0], 3);
+            $search = $pnx->search ?? null;
+            $item['recordid'] = $this->getRecordId($control->recordid[0]);
             $item['title'] = $display->title[0] ?? '';
             $item['format'] = $display->type ?? [];
-            // creators (use the search fields instead of display to get them as an array instead of a long string)
+            // creators (use the search fields instead of display (if available) to get them as an array instead of a
+            // long string):
             if ($search->creator ?? null) {
                 $item['creator'] = array_map('trim', $search->creator);
+            } elseif ($creators = $display->creator ?? null) {
+                if (is_string($creators)) {
+                    $creators = explode(';', $creators);
+                }
+                $item['creator'] = array_map(
+                    function ($s) {
+                        return trim($this->getFirstSubfield($s));
+                    },
+                    $creators
+                );
             }
-            // subjects (use the search fields instead of display to get them as an array instead of a long string)
+            foreach ($display->contributor ?? [] as $contributor) {
+                $item['author2'][] = $this->getFirstSubfield($contributor);
+            }
+            // subjects (use the search fields, if available, instead of display to get them as an array instead of a
+            // long string):
             if ($search->subject ?? null) {
                 $item['subjects'] = $search->subject;
+            } elseif ($subjects = $display->subject ?? null) {
+                $item['subjects'] = (array)$subjects;
             }
             $item['ispartof'] = $display->ispartof[0] ?? '';
             $item['description'] = $display->description[0]
@@ -483,6 +507,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             $item['source'] = implode('; ', $display->source ?? []);
             $item['identifier'] = $display->identifier[0] ?? '';
             $item['fulltext'] = $pnx->delivery->fulltext[0] ?? '';
+            $item['isbn'] = array_values(array_unique($addata->isbn ?? []));
             $item['issn'] = $search->issn ?? [];
             $item['publisher'] = $display->publisher ?? [];
             $item['peer_reviewed'] = ($display->lds50[0] ?? '') === 'peer_reviewed';
@@ -699,5 +724,32 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     protected function getUrl(string $url): string
     {
         return str_replace('{{INSTCODE}}', urlencode($this->inst), $url);
+    }
+
+    /**
+     * Get a working identifier from an identifier of a search result
+     *
+     * @param string $id Identifier
+     *
+     * @return string
+     */
+    protected function getRecordId(string $id): string
+    {
+        // CDI records may have a TN_ prefix that must be stripped:
+        return str_starts_with($id, 'TN_') ? substr($id, 3) : $id;
+    }
+
+    /**
+     * Get first subfield from a field that can contain subfields
+     *
+     * Example field: 'Mattila, Jaakko$$QMattila, Jaakko'
+     *
+     * @param string $field Field
+     *
+     * @return string
+     */
+    protected function getFirstSubfield(string $field): string
+    {
+        return false !== ($p = strpos($field, '$$')) ? substr($field, 0, $p) : $field;
     }
 }

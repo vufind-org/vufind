@@ -86,7 +86,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
             $this->apiErrorDetails['ErrorCode'] = $message['ErrorNumber'];
             $this->apiErrorDetails['Description'] = $message['ErrorDescription'];
             $this->apiErrorDetails['DetailedDescription']
-                = $message['DetailedErrorDescription'];
+                = $message['DetailedErrorDescription'] ?? '-';
         } elseif (
             is_array($message['errors'] ?? null)
             && count($message['errors']) > 0

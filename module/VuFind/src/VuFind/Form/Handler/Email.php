@@ -117,7 +117,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
 
         $replyToName = $params->fromPost(
             'name',
-            $user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : null
+            $user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : ''
         );
         $replyToEmail = $params->fromPost('email', $user?->getEmail());
         $recipients = $form->getRecipient($postParams);
