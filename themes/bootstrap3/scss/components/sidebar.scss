@@ -141,8 +141,10 @@
   border: 1px solid $list-group-border;
 }
 
-.checkboxFilter {
+.checkbox-filters {
   padding-bottom: 0.5rem;
+  // For blocking overlay:
+  position: relative;
 }
 .checkbox-filter {
   display: flex;

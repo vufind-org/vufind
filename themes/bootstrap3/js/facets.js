@@ -286,21 +286,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     window.location.assign(params.url);
   }
 
-  // Save all the form ids for date range facets and add a listener on them to prevent submission
-  function rangeSelectorInit() {
-    document.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
-      const formElement = elem.closest('form');
-      if (formElement && !rangeSelectorForms.includes(formElement)) {
-        rangeSelectorForms.push(formElement);
-        formElement.addEventListener('submit', function rangeFormSubmit(e) {
-          if (isMultiFacetsSelectionActivated) {
-            e.preventDefault();
-          }
-        });
-      }
-    });
-  }
-
   function toggleSelectedFacetStyle(elem) {
     if (elem.classList.contains('exclude')) {
       elem.classList.toggle('selected');
@@ -376,31 +361,38 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
-  function applyClickHandling(context) {
-    let finalContext = (typeof context === "undefined") ? defaultContext : context;
-    if (null === finalContext) {
-      return;
-    }
-    finalContext.classList.toggle('multi-facet-selection');
-    finalContext.querySelectorAll('a.facet:not(.narrow-toggle):not(.js-facet-next-page), .facet a').forEach(function addListeners(link) {
+  function initMultiFacetControls(context) {
+    // Listener on checkbox for multiFacetsSelection feature
+    context.getElementsByClassName('js-user-selection-multi-filters')[0]
+      .addEventListener('change', function multiFacetSelectionChange() { toggleMultiFacetsSelection(this.checked); } );
+    // Listener on apply filters button
+    context.getElementsByClassName('js-apply-multi-facets-selection')[0]
+      .addEventListener('click', applyMultiFacetsSelection);
+  }
+
+  function initFacetClickHandler(context) {
+    context.classList.toggle('multi-facet-selection');
+    context.querySelectorAll('a.facet:not(.narrow-toggle):not(.js-facet-next-page), .facet a').forEach(function addListeners(link) {
       link.addEventListener('click', handleClickedFacet);
     });
   }
 
-  function initMultiFacetControls(context) {
-    let finalContext = (typeof context === "undefined") ? defaultContext : context;
-    if (null === finalContext) {
-      return;
-    }
-    // Listener on checkbox for multiFacetsSelection feature
-    finalContext.getElementsByClassName('js-user-selection-multi-filters')[0]
-      .addEventListener('change', function multiFacetSelectionChange() { toggleMultiFacetsSelection(this.checked); } );
-    // Listener on apply filters button
-    finalContext.getElementsByClassName('js-apply-multi-facets-selection')[0]
-      .addEventListener('click', applyMultiFacetsSelection);
+  // List all the forms for date range facets and add a listener on them to prevent submission
+  function initRangeSelection(context) {
+    context.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
+      const formElement = elem.closest('form');
+      if (formElement && !rangeSelectorForms.includes(formElement)) {
+        rangeSelectorForms.push(formElement);
+        formElement.addEventListener('submit', function rangeFormSubmit(e) {
+          if (isMultiFacetsSelectionActivated) {
+            e.preventDefault();
+          }
+        });
+      }
+    });
   }
 
-  function init() {
+  function init(_context) {
     if (!isMultiFacetsSelectionEnabled()) {
       return;
     }
@@ -415,18 +407,18 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         }
       }
     }
-    initMultiFacetControls();
-    rangeSelectorInit();
-    applyClickHandling();
+    const context = (typeof _context === "undefined") ? defaultContext : _context;
+    initMultiFacetControls(context);
+    initFacetClickHandler(context);
+    initRangeSelection(context);
+    // Synchronize the state of multi-facet checkboxes in case there's e.g. a lightbox with its own controls:
+    VuFind.multiFacetsSelection.toggleMultiFacetsSelection();
   }
 
   return {
     init: init,
-    applyClickHandling: applyClickHandling,
-    rangeSelectorInit: rangeSelectorInit,
     registerCallbackOnApply: registerCallbackOnApply,
     registerCallbackWhenDeactivated: registerCallbackWhenDeactivated,
-    initMultiFacetControls: initMultiFacetControls,
     toggleMultiFacetsSelection: toggleMultiFacetsSelection
   };
 });
@@ -436,7 +428,7 @@ VuFind.register('sideFacets', function SideFacets() {
   function showLoadingOverlay() {
     let elem;
     if (this === undefined || this.nodeName === undefined) {
-      elem = $('#search-sidebar .collapse');
+      elem = $('#search-sidebar .collapse, .checkbox-filters');
     } else {
       elem = $(this).closest(".collapse");
     }
@@ -456,7 +448,7 @@ VuFind.register('sideFacets', function SideFacets() {
   function activateSingleAjaxFacetContainer() {
     var $container = $(this);
     var facetList = [];
-    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkboxFilter [data-facet]');
+    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filters [data-facet]');
     $facets.each(function addFacet() {
       if (!$(this).data('loaded')) {
         facetList.push($(this).data('facet'));
@@ -498,7 +490,7 @@ VuFind.register('sideFacets', function SideFacets() {
       .done(function onGetSideFacetsDone(response) {
         $.each(response.data.facets, function initFacet(facet, facetData) {
           var containerSelector = typeof facetData.checkboxCount !== 'undefined'
-            ? '.checkboxFilter ' : '.facet-group ';
+            ? '.checkbox-filters ' : '.facet-group ';
           var $facetContainer = $container.find(containerSelector + '[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData.checkboxCount !== 'undefined') {
@@ -514,14 +506,14 @@ VuFind.register('sideFacets', function SideFacets() {
             }
           }
           if (isMultiFacetsSelectionEnabled()) {
-            VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get()[0]);
+            VuFind.multiFacetsSelection.initFacetClickHandler($facetContainer.get()[0]);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
         VuFind.lightbox.bind($('.sidebar'));
         VuFind.emit('VuFind.sidefacets.loaded');
         if (isMultiFacetsSelectionEnabled()) {
-          VuFind.multiFacetsSelection.rangeSelectorInit();
+          VuFind.multiFacetsSelection.initRangeSelection();
         }
       })
       .fail(function onGetSideFacetsFail() {
@@ -620,8 +612,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     if (isMultiFacetsSelectionEnabled()) {
       let elem = document.querySelector('.js-full-facet-list');
       if (elem) {
-        // Synchronize the state of multi-facet checkboxes:
-        VuFind.multiFacetsSelection.toggleMultiFacetsSelection();
+        VuFind.multiFacetsSelection.init(elem);
       }
     }
     lightboxFacetSorting();
@@ -648,7 +639,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         } else {
           button.remove();
         }
-        VuFind.multiFacetsSelection.applyClickHandling(document.querySelector('.full-facet-list'));
+        VuFind.multiFacetsSelection.initFacetClickHandler(document.querySelector('.full-facet-list'));
       });
       return false;
     });
