@@ -109,7 +109,7 @@
         "firebase/php-jwt": "6.10.1",
         "friendsofphp/php-cs-fixer": "3.64.0",
         "phpmd/phpmd": "2.15.0",
-        "phpstan/phpstan": "1.12.7",
+        "phpstan/phpstan": "2.0.1",
         "phpunit/php-code-coverage": "10.1.16",
         "phpunit/phpcov": "^9.0",
         "phpunit/phpunit": "10.5.36",
