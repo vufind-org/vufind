@@ -363,11 +363,15 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function initMultiFacetControls(context) {
     // Listener on checkbox for multiFacetsSelection feature
-    context.getElementsByClassName('js-user-selection-multi-filters')[0]
-      .addEventListener('change', function multiFacetSelectionChange() { toggleMultiFacetsSelection(this.checked); } );
+    const activationElem = context.querySelector('.js-user-selection-multi-filters');
+    if (activationElem) {
+      activationElem.addEventListener('change', function multiFacetSelectionChange() { toggleMultiFacetsSelection(this.checked); } );
+    }
     // Listener on apply filters button
-    context.getElementsByClassName('js-apply-multi-facets-selection')[0]
-      .addEventListener('click', applyMultiFacetsSelection);
+    const applyElem = context.querySelector('.js-apply-multi-facets-selection');
+    if (applyElem) {
+      applyElem.addEventListener('click', applyMultiFacetsSelection);
+    }
   }
 
   function initFacetClickHandler(context) {
