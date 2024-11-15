@@ -311,19 +311,7 @@ class UrlQueryHelper
     {
         // Facets are just a special case of filters:
         $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-
-        $params = $this->urlParams;
-
-        // Add the filter:
-        if (!isset($params['filter'])) {
-            $params['filter'] = [];
-        }
-        $params['filter'][] = $prefix . $field . ':"' . $value . '"';
-
-        // Clear page:
-        unset($params['page']);
-
-        return new static($params, $this->queryObject, $this->config, false);
+        return $this->addFilter($prefix . $field . ':"' . $value . '"');
     }
 
     /**
@@ -335,8 +323,18 @@ class UrlQueryHelper
      */
     public function addFilter($filter)
     {
-        [$field, $value] = $this->parseFilter($filter);
-        return $this->addFacet($field, $value);
+        $params = $this->urlParams;
+
+        // Add the filter:
+        if (!isset($params['filter'])) {
+            $params['filter'] = [];
+        }
+        $params['filter'][] = $filter;
+
+        // Clear page:
+        unset($params['page']);
+
+        return new static($params, $this->queryObject, $this->config, false);
     }
 
     /**
