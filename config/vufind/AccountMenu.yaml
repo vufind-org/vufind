@@ -7,6 +7,7 @@
 #   - class: class for the list of items
 #   - MenuItems: items shown in the menu - required
 #   - checkMethod: the name of an AccountMenu view helper method to perform
+#     a check whether to show the group. If omitted, group will always display.
 # array keys for every menu item could be:
 #   - name: name of an item
 #   - label: the text shown as link, will be translated - required
