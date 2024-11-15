@@ -9,7 +9,9 @@
   $this->headScript()->appendFile("check_save_statuses.js");
   $this->headScript()->appendFile("tamu_config.js");
   $this->headScript()->appendFile("tamu_gifm.js");
-  $this->headScript()->appendFile("tamu_fulltext.js");
+  // The below script, tamu_fulltext.js, was previously used to dynamically hide/display the SFX button.
+  // The link and script are retained only for possible future use.
+  //$this->headScript()->appendFile("tamu_fulltext.js");
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
@@ -42,25 +44,33 @@
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
 <?php
-//TAMU Customization inject and id for GIFM
-$idFields = $this->driver->getMarcReader()->getFields("999");
 
-$fieldCount = count($idFields);
-if ($fieldCount > 0) {
-	
-	foreach ($idFields[$fieldCount - 1] as $subfield) {
-		if (is_array($subfield)) {
-			foreach ($subfield as $subfield1) {
-				if ( $subfield1['code'] == 'i') {
-					$instanceIdSubField = $subfield1['data'];
-				}
-			}
-		}
-	}
-		
-	if ($instanceIdSubField) {
-		echo '<input type="hidden" value="' . $this->escapeHtmlAttr($instanceIdSubField) . '" class="hiddenInstanceId" id="hiddenInstanceId" />';
-	}
+// TAMU Customization inject and id for GIFM
+
+// First, determine if this is a catalog record (which uses DefaultRecord)
+if ($recordDriver instanceof \VuFind\RecordDriver\DefaultRecord) {
+  $idFields = $this->driver->getMarcReader()->getFields("999");
+
+  $fieldCount = count($idFields);
+  if ($fieldCount > 0) {
+    
+    foreach ($idFields[$fieldCount - 1] as $subfield) {
+      if (is_array($subfield)) {
+        foreach ($subfield as $subfield1) {
+          if ( $subfield1['code'] == 'i') {
+            $instanceIdSubField = $subfield1['data'];
+          }
+        }
+      }
+    }
+      
+    if ($instanceIdSubField) {
+      echo '<input type="hidden" value="' . $this->escapeHtmlAttr($instanceIdSubField) . '" class="hiddenInstanceId" id="hiddenInstanceId" />';
+    }
+  }
+} else {
+  // If it's not a catalog record, the only other source is EDS and the above code is not compatible with EDS records.
+  // So, do nothing.
 }
 ?>
     <?=$this->flashmessages()?>
