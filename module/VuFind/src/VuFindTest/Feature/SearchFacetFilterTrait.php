@@ -32,6 +32,7 @@
 namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
 
 /**
  * Trait for working with faceting and filtering of search results.
@@ -84,7 +85,7 @@ trait SearchFacetFilterTrait
      *
      * @var string
      */
-    protected $facetSecondLevelActiveLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.active';
+    protected $facetSecondLevelActiveLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul .active a';
 
     /**
      * CSS selector for finding the first second level hierarchical facet
@@ -107,5 +108,24 @@ trait SearchFacetFilterTrait
         $label = $this->findCss($page, $this->activeFilterLabelSelector);
         $this->assertEquals('hierarchy:', $label->getText());
         $this->assertEquals("Remove Filter $expectedFilter", $filter->getText());
+    }
+
+    /**
+     * Get textual content of a facet element by data-title attribute
+     *
+     * @param Element $page     Page
+     * @param string  $selector Facet link selector
+     *
+     * @return string
+     */
+    protected function getFacetTextByLinkSelector(Element $page, string $selector): string
+    {
+        return $this->findCssAndCallMethod(
+            $page,
+            $selector,
+            function (NodeElement $node): string {
+                return $node->getParent()->getText();
+            }
+        );
     }
 }
