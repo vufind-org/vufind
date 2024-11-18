@@ -242,6 +242,10 @@ a:hover .login-dropdown-caret {
     border-bottom: 1px solid $list-group-border;
     border-radius: 0;
   }
+
+  .btn {
+    font-size: $reduced-font-size;
+  }
 }
 
 .facet .badge {
