@@ -666,6 +666,52 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test multiselection in facet lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxMultiselect(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => 10,
+                        'multiFacetsSelection' => true,
+                        'exclude' => '*',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the genre facet
+        $this->clickCss($page, $this->genreMoreSelector);
+        $modal = $this->findCss($page, '#modal');
+        $this->assertIsObject($modal);
+        // Check for multi-filter controls:
+        $this->clickCss($modal, '.js-user-selection-multi-filters');
+        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
+        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        // Change order and check for multi-filter controls:
+        $this->clickCss($modal, '[data-sort="index"]');
+        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
+        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        // Load more:
+        $this->clickCss($modal, '.js-facet-next-page');
+        // Select and exclude a facet item:
+        $this->clickCss($modal, 'a[data-title="Weird IDs"]');
+        $this->clickCss($this->findCss($modal, 'a[data-title="Fiction"]')->getParent(), 'a.exclude');
+        $this->clickCss($modal, '.js-apply-multi-facets-selection');
+        $this->waitForPageLoad($page);
+        $this->assertCount(2, $page->findAll('css', $this->activeFilterSelector));
+        $this->assertEquals(
+            'Genre: NOT Remove Filter Fiction AND Remove Filter Weird IDs',
+            $this->findCss($page, $this->activeFilterListSelector)->getText()
+        );
+    }
+
+    /**
      * Support method to click a hierarchical facet.
      *
      * @param Element $page Mink page object

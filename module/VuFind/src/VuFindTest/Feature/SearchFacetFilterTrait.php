@@ -60,6 +60,13 @@ trait SearchFacetFilterTrait
     protected $activeFilterLabelSelector = '.active-filters.hidden-xs .filters .filters-title';
 
     /**
+     * CSS selector for finding the active filter list
+     *
+     * @var string
+     */
+    protected $activeFilterListSelector = '.active-filters.hidden-xs .filters .title-value-pair';
+
+    /**
      * CSS selector for finding the first hierarchical facet expand button
      *
      * @var string
