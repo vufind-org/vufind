@@ -375,7 +375,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function initFacetClickHandler(context) {
-    context.classList.toggle('multi-facet-selection');
+    context.classList.add('multi-facet-selection');
     context.querySelectorAll('a.facet:not(.narrow-toggle):not(.js-facet-next-page), .facet a').forEach(function addListeners(link) {
       link.addEventListener('click', handleClickedFacet);
     });
@@ -643,7 +643,8 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         } else {
           button.remove();
         }
-        VuFind.multiFacetsSelection.initFacetClickHandler(document.querySelector('.full-facet-list'));
+        document.querySelectorAll('.full-facet-list')
+          .forEach(facetList => VuFind.multiFacetsSelection.initFacetClickHandler(facetList));
       });
       return false;
     });
