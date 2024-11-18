@@ -423,7 +423,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     init: init,
     registerCallbackOnApply: registerCallbackOnApply,
     registerCallbackWhenDeactivated: registerCallbackWhenDeactivated,
-    toggleMultiFacetsSelection: toggleMultiFacetsSelection
+    toggleMultiFacetsSelection: toggleMultiFacetsSelection,
+    initFacetClickHandler: initFacetClickHandler
   };
 });
 
@@ -643,8 +644,10 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         } else {
           button.remove();
         }
-        document.querySelectorAll('.full-facet-list')
-          .forEach(facetList => VuFind.multiFacetsSelection.initFacetClickHandler(facetList));
+        if (isMultiFacetsSelectionEnabled()) {
+          document.querySelectorAll('.full-facet-list')
+            .forEach(facetList => VuFind.multiFacetsSelection.initFacetClickHandler(facetList));
+        }
       });
       return false;
     });
