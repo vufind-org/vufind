@@ -197,6 +197,10 @@
   margin-left: 0.5rem;
 }
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
+.full-facet-controls .form-group {
+  margin: 0;
+  padding: $padding-base-vertical 0;
+}
 
 .truncate-done {
   overflow: clip;
@@ -229,9 +233,6 @@ h3.facet-title {
 }
 
 .multi-filters-selection {
-  position: sticky;
-  top: 0;
-  z-index: 40;
   padding: 1em 0;
   background: white;
 
@@ -248,7 +249,10 @@ h3.facet-title {
   display: block;
 }
 .sidebar .multi-filters-selection {
+  position: sticky;
+  top: 0;
   padding: 1em;
+  z-index: 40;
   border-bottom: 1px solid $list-group-border;
   box-shadow: 0 5px 5px -4px #000;
 }

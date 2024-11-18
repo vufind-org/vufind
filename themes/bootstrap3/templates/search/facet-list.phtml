@@ -26,7 +26,7 @@
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
 
 <div class="js-full-facet-list" data-search-url="<?=$this->escapeHtmlAttr($searchAction)?>">
-  <form class="form-inline">
+  <form class="form-inline full-facet-controls">
     <?php if (count($this->sortOptions) > 1): ?>
       <div class="full-facet-sort-options form-group" role="group" aria-labelledby="full-facet-sort-label">
         <label id="full-facet-sort-label" class="control-label"><?=$this->translate('Sort') ?></label>
