@@ -118,10 +118,10 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Get textual content of a facet element by data-title attribute
+     * Get textual content of a facet element by facet link CSS selector
      *
      * @param Element $page     Page
-     * @param string  $selector Facet link selector
+     * @param string  $selector CSS selector for facet link
      *
      * @return string
      */
@@ -134,5 +134,53 @@ trait SearchFacetFilterTrait
                 return $node->getParent()->getText();
             }
         );
+    }
+
+    /**
+     * Assert that no filters are applied.
+     *
+     * @param Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoFilters(Element $page): void
+    {
+        $this->assertFilterCount($page, 0);
+    }
+
+    /**
+     * Assert that then given number of filters are applied.
+     *
+     * @param Element $page     Mink page object
+     * @param int     $expected Expected filter count
+     *
+     * @return void
+     */
+    protected function assertFilterCount(Element $page, int $expected): void
+    {
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertCount($expected, $items);
+    }
+
+    /**
+     * Assert that then given number of facets are present in the full facet list
+     *
+     * @param Element $page            Mink page object
+     * @param string  $list            List type ('count' or 'index')
+     * @param int     $expected        Expected filter count
+     * @param bool    $exclusionActive Should exclude links be present?
+     *
+     * @return void
+     */
+    protected function assertFullListFacetCount(
+        Element $page,
+        string $list,
+        int $expected,
+        bool $exclusionActive
+    ): void {
+        $items = $page->findAll('css', "#modal #facet-list-$list .js-facet-item");
+        $this->assertCount($expected, $items);
+        $excludes = $page->findAll('css', "#modal #facet-list-$list .exclude");
+        $this->assertCount($exclusionActive ? $expected : 0, $excludes);
     }
 }

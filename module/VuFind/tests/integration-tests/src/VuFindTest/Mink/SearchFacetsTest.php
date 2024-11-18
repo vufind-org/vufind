@@ -87,8 +87,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             'Showing 1 - 9 results of 9',
             $this->findCssAndGetText($page, '.search-stats')
         );
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount(0, $items);
+        $this->assertNoFilters($page);
 
         $active = 0;
 
@@ -115,8 +114,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     "Showing 1 - $resultCount results of $resultCount",
                     $this->findCssAndGetText($page, '.search-stats')
                 );
-                $items = $page->findAll('css', $this->activeFilterSelector);
-                $this->assertCount($active, $items);
+                $this->assertFilterCount($page, $active);
             }
         }
         if ($multiselect) {
@@ -129,8 +127,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 "Showing 1 - $resultCount results of $resultCount",
                 $this->findCssAndGetText($page, '.search-stats')
             );
-            $items = $page->findAll('css', $this->activeFilterSelector);
-            $this->assertCount($active, $items);
+            $this->assertFilterCount($page, $active);
         }
 
         // Confirm that all selected facets show as active:
@@ -153,16 +150,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function facetListProcedure(Element $page, int $limit, bool $exclusionActive = false): void
     {
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertCount($limit, $items);
-        $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertCount($exclusionActive ? $limit : 0, $excludes);
+        $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertCount($limit * 2, $items);
+        $this->assertFullListFacetCount($page, 'count', $limit * 2, $exclusionActive);
+
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
         $this->assertEquals(
             'Weird IDs 9 results 9 ' . $excludeControl
@@ -176,15 +169,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'more…',
             $this->findCssAndGetText($page, '#modal #facet-list-count')
         );
-        $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertCount($exclusionActive ? $limit * 2 : 0, $excludes);
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
-        $this->assertCount($limit, $items); // reset number of items
+        $this->assertFullListFacetCount($page, 'index', $limit, $exclusionActive);
         $this->assertEquals(
             'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
@@ -193,21 +182,17 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'more…',
             $this->findCssAndGetText($page, '#modal #facet-list-index')
         );
-        $excludes = $page
-            ->findAll('css', '#modal #facet-list-index .exclude');
-        $this->assertCount($exclusionActive ? $limit : 0, $excludes);
         // sort by count again
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertCount($limit, $items); // reload, resetting to just one page of results
+        // reload, resetting to just one page of results:
+        $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // now back to title, to see if loading a second page works
         $this->clickCss($page, '[data-sort="index"]');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '#modal #facet-list-index .js-facet-next-page');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
-        $this->assertCount($limit * 2, $items); // reset number of items
+        $this->assertFullListFacetCount($page, 'index', $limit * 2, $exclusionActive);
         $this->assertEquals(
             'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
@@ -615,7 +600,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Open the genre facet
         $this->clickCss($page, $this->genreMoreSelector);
         $this->facetListProcedure($page, $limit, true);
-        $this->assertCount(1, $page->findAll('css', $this->activeFilterSelector));
+        $this->assertFilterCount($page, 1);
     }
 
     /**
@@ -704,7 +689,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($this->findCss($modal, 'a[data-title="Fiction"]')->getParent(), 'a.exclude');
         $this->clickCss($modal, '.js-apply-multi-facets-selection');
         $this->waitForPageLoad($page);
-        $this->assertCount(2, $page->findAll('css', $this->activeFilterSelector));
+        $this->assertFilterCount($page, 2);
         $this->assertEquals(
             'Genre: NOT Remove Filter Fiction AND Remove Filter Weird IDs',
             $this->findCss($page, $this->activeFilterListSelector)->getText()
@@ -979,19 +964,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Assert that no filters are applied.
-     *
-     * @param Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertNoFilters(Element $page): void
-    {
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount(0, $items);
-    }
-
-    /**
      * Assert that the "reset filters" button is present.
      *
      * @param \Behat\Mink\Element\Element $page Mink page object
@@ -1250,7 +1222,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public static function checkboxFacetselectionProvider(): array
+    public static function checkboxFacetSelectionProvider(): array
     {
         $result = [];
         foreach ([false, true] as $selectMulti) {
@@ -1282,7 +1254,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $selectMulti   Select multiple?
      * @param bool  $unselectMulti Unselect multiple?
      *
-     * @dataProvider checkboxFacetselectionProvider
+     * @dataProvider checkboxFacetSelectionProvider
      *
      * @return void
      */
