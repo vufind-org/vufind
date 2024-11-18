@@ -92,26 +92,30 @@ class SystemStatus extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $this->log('info', 'SystemStatus log check', [], true);
 
         // Test search index
-        try {
-            $results = $this->resultsManager->get(DEFAULT_SEARCH_BACKEND);
-            $paramsObj = $results->getParams();
-            $paramsObj->setQueryIDs(['healthcheck' . date('His')]);
-            $results->performAndProcessSearch();
-        } catch (\Exception $e) {
-            return $this->formatResponse(
-                'Search index error: ' . $e->getMessage(),
-                self::STATUS_HTTP_ERROR
-            );
+        if ($params->fromPost('index') ?? $params->fromQuery('index', 1)) {
+            try {
+                $results = $this->resultsManager->get(DEFAULT_SEARCH_BACKEND);
+                $paramsObj = $results->getParams();
+                $paramsObj->setQueryIDs(['healthcheck' . date('His')]);
+                $results->performAndProcessSearch();
+            } catch (\Exception $e) {
+                return $this->formatResponse(
+                    'Search index error: ' . $e->getMessage(),
+                    self::STATUS_HTTP_ERROR
+                );
+            }
         }
 
         // Test database connection
-        try {
-            $this->sessionService->getSessionById('healthcheck', false);
-        } catch (\Exception $e) {
-            return $this->formatResponse(
-                'Database error: ' . $e->getMessage(),
-                self::STATUS_HTTP_ERROR
-            );
+        if ($params->fromPost('database') ?? $params->fromQuery('database', 1)) {
+            try {
+                $this->sessionService->getSessionById('healthcheck', false);
+            } catch (\Exception $e) {
+                return $this->formatResponse(
+                    'Database error: ' . $e->getMessage(),
+                    self::STATUS_HTTP_ERROR
+                );
+            }
         }
 
         // This may be called frequently, don't leave sessions dangling
