@@ -149,7 +149,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Assert that then given number of filters are applied.
+     * Assert that the given number of filters are applied.
      *
      * @param Element $page     Mink page object
      * @param int     $expected Expected filter count
@@ -163,7 +163,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Assert that then given number of facets are present in the full facet list
+     * Assert that the given number of facets are present in the full facet list
      *
      * @param Element $page            Mink page object
      * @param string  $list            List type ('count' or 'index')
