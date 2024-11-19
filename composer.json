@@ -44,7 +44,6 @@
         "laminas/laminas-captcha": "2.17.0",
         "laminas/laminas-code": "4.14.0",
         "laminas/laminas-config": "3.9.0",
-        "laminas/laminas-crypt": "3.11.0",
         "laminas/laminas-db": "2.20.0",
         "laminas/laminas-diactoros": "3.5.0",
         "laminas/laminas-dom": "2.14.0",
