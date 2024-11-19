@@ -31,7 +31,6 @@
 
 namespace VuFind\Session;
 
-use Laminas\Math\Rand;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Table\PluginManager;
@@ -132,7 +131,7 @@ class SecureDelegator implements HandlerInterface
     {
         $cookieName = "{$name}_KEY";
         $cipherKey = ($cookieValue = $this->cookieManager->get($cookieName))
-            ?? base64_encode(Rand::getBytes(64));
+            ?? base64_encode(random_bytes(64));
 
         if (!$cookieValue) {
             $lifetime = session_get_cookie_params()['lifetime'];
