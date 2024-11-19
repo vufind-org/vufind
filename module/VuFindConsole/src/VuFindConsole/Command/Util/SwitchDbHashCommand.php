@@ -29,10 +29,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use InvalidArgumentException;
 use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Exception\InvalidArgumentException;
-use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,6 +39,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Entity\UserCardEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceInterface;
@@ -113,16 +112,16 @@ class SwitchDbHashCommand extends Command
     }
 
     /**
-     * Get an OpenSsl object for the specified algorithm (or return null if the
+     * Get cipher options for the specified algorithm (or return null if the
      * algorithm is 'none').
      *
      * @param string $algorithm Encryption algorithm
      *
-     * @return Openssl
+     * @return ?array
      */
-    protected function getOpenSsl($algorithm)
+    protected function getCipherOptions(string $algorithm): ?array
     {
-        return ($algorithm == 'none') ? null : new Openssl(compact('algorithm'));
+        return ($algorithm == 'none') ? null : compact('algorithm');
     }
 
     /**
@@ -195,8 +194,8 @@ class SwitchDbHashCommand extends Command
         // Initialize Openssl first, so we can catch any illegal algorithms before
         // making any changes:
         try {
-            $oldCrypt = $this->getOpenSsl($oldhash);
-            $newCrypt = $this->getOpenSsl($newhash);
+            $oldCrypt = $this->getCipherOptions($oldhash);
+            $newCrypt = $this->getCipherOptions($newhash);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;

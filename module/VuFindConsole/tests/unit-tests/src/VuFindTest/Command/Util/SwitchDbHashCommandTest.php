@@ -30,16 +30,14 @@
 namespace VuFindTest\Command\Util;
 
 use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Config\Writer;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Entity\UserCardEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\User;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
 
 /**
@@ -337,9 +335,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function decode(string $hash): string
     {
-        $cipher = new BlockCipher(
-            new Openssl(['algorithm' => $this->encryptionAlgorithm])
-        );
+        $cipher = new BlockCipher(['algorithm' => $this->encryptionAlgorithm]);
         $cipher->setKey('foo');
         return $cipher->decrypt($hash);
     }

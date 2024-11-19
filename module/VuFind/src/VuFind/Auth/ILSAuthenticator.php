@@ -30,8 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
@@ -181,7 +180,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
 
         // Check if OpenSSL error is caused by blowfish support
         try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+            $cipher = new BlockCipher(['algorithm' => $algo]);
             if ($algo == 'blowfish') {
                 trigger_error(
                     'Deprecated encryption algorithm (blowfish) detected',

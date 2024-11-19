@@ -31,9 +31,9 @@
 
 namespace VuFind\Session;
 
-use Laminas\Crypt\BlockCipher;
 use Laminas\Math\Rand;
 use VuFind\Cookie\CookieManager;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Table\PluginManager;
 
 use function func_get_args;
@@ -83,7 +83,7 @@ class SecureDelegator implements HandlerInterface
     ) {
         $this->handler = $handler;
         $this->cookieManager = $cookieManager;
-        $this->cipher = BlockCipher::factory('openssl');
+        $this->cipher = new BlockCipher();
     }
 
     /**
