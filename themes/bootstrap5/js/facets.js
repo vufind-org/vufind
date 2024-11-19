@@ -424,7 +424,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     registerCallbackOnApply: registerCallbackOnApply,
     registerCallbackWhenDeactivated: registerCallbackWhenDeactivated,
     toggleMultiFacetsSelection: toggleMultiFacetsSelection,
-    initFacetClickHandler: initFacetClickHandler
+    initFacetClickHandler: initFacetClickHandler,
+    initRangeSelection: initRangeSelection
   };
 });
 
@@ -516,10 +517,13 @@ VuFind.register('sideFacets', function SideFacets() {
           $facetContainer.find('.facet-load-indicator').remove();
         });
         VuFind.lightbox.bind($('.sidebar'));
-        VuFind.emit('VuFind.sidefacets.loaded');
         if (isMultiFacetsSelectionEnabled()) {
-          VuFind.multiFacetsSelection.initRangeSelection();
+          const sidebar = document.querySelector('.sidebar');
+          if (sidebar) {
+            VuFind.multiFacetsSelection.initRangeSelection(sidebar);
+          }
         }
+        VuFind.emit('VuFind.sidefacets.loaded');
       })
       .fail(function onGetSideFacetsFail() {
         $container.find('.facet-load-indicator').remove();
