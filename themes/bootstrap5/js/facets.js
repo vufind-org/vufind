@@ -5,7 +5,7 @@
  *
  * @type {Function} Function to check for multiFacetsSelectionEnabled
  */
-let isMultiFacetsSelectionEnabled = () => {
+const isMultiFacetsSelectionEnabled = () => {
   if (typeof multiFacetsSelectionEnabled === "undefined") {
     return false;
   }
@@ -29,13 +29,11 @@ VuFind.register('facetList', function FacetList() {
   function overrideHref(selector, overrideParams = {}) {
     $(selector).each(function overrideHrefEach() {
       const dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
-      let url = new URL(dummyDomain + $(this).attr('href'));
+      const url = new URL(dummyDomain + $(this).attr('href'));
       Object.entries(overrideParams).forEach(([key, value]) => {
         url.searchParams.set(key, value);
       });
-      url = url.href;
-      url = url.replaceAll(dummyDomain, '');
-      $(this).attr('href', url);
+      $(this).attr('href', url.href.replaceAll(dummyDomain, ''));
     });
   }
 
@@ -133,7 +131,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   const globalAddedParams = new URLSearchParams();
   const globalRemovedParams = new URLSearchParams();
   const initialParams = new URLSearchParams();
-  let rangeSelectorForms = [];
+  const rangeSelectorForms = [];
   let isMultiFacetsSelectionActivated = false;
   let callbackOnApply;
   let callbackWhenDeactivated;
@@ -160,9 +158,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       return value;
     }
     // Ensure that filter value is surrounded by quotes
-    let filterValue = value.substr(p + 1);
+    let filterValue = value.substring(p + 1);
     filterValue = (!filterValue.startsWith('"') ? '"' : '') + filterValue + (!filterValue.endsWith('"') ? '"' : '');
-    return value.substr(0, p) + ':' + filterValue;
+    return value.substring(0, p) + ':' + filterValue;
   }
 
   for (const [key, value] of (new URLSearchParams(window.location.search))) {
@@ -208,7 +206,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
   function processModifiedFacets() {
-    let elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
+    const elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
 
     for (const elem of elems) {
       const href = elem.getAttribute('href');
@@ -276,7 +274,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         facet.classList.toggle('active');
       }
 
-      let icon = elem.closest('a').querySelector('.icon');
+      const icon = elem.closest('a').querySelector('.icon');
       if (icon !== null) {
         const newCheckedState = icon.dataset.checked === 'false';
         let attrs = {};
@@ -289,7 +287,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function handleMultiSelectionClick(e) {
     e.preventDefault();
-    let elem = e.currentTarget;
+    const elem = e.currentTarget;
 
     // Switch data-multi-filters-modified to keep track of changed facets
     const currentAttrVal = elem.getAttribute('data-multi-filters-modified');
@@ -306,7 +304,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       isMultiFacetsSelectionActivated = enable;
     }
     document.querySelectorAll('.multi-facet-selection').forEach( el => el.classList.toggle('multi-facet-selection-active', isMultiFacetsSelectionActivated) );
-    let checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
+    const checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = isMultiFacetsSelectionActivated;
     }
@@ -423,7 +421,7 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function activateFacetBlocking(context) {
-    let finalContext = (typeof context === "undefined") ? $(document.body) : context;
+    const finalContext = (typeof context === "undefined") ? $(document.body) : context;
     finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').click(showLoadingOverlay);
   }
 
@@ -595,14 +593,14 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   function setup() {
     if (isMultiFacetsSelectionEnabled()) {
-      let elem = document.querySelector('.js-full-facet-list');
+      const elem = document.querySelector('.js-full-facet-list');
       if (elem) {
         VuFind.multiFacetsSelection.init(elem);
       }
     }
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
-      let button = $(this);
+      const button = $(this);
       const page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;
