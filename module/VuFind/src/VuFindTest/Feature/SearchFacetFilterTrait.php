@@ -53,7 +53,7 @@ trait SearchFacetFilterTrait
      * @var string
      */
     protected $activeFilterNodesSelector
-        = '.active-filters.hidden-xs .filters a, .active-filters.hidden-xs .filters div';
+        = '.active-filters.hidden-xs .filters > a, .active-filters.hidden-xs .filters > div';
 
     /**
      * CSS selector for finding the active filter values
@@ -240,7 +240,10 @@ trait SearchFacetFilterTrait
         $sidebar = $this->findCss($page, '.sidebar');
         $container = $this->findCss($sidebar, "#side-panel-$facet");
         if ($multiselection) {
-            $this->clickCss($sidebar, '.js-user-selection-multi-filters');
+            $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+            if (!$checkbox->getValue()) {
+                $checkbox->click();
+            }
         }
 
         if (null !== $from) {

@@ -1318,15 +1318,18 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
 
-        // Filter by date range:
+        // Filter by date range and checkbox filter:
+        $checkboxFilters = $this->findCss($sidebar, '.checkbox-filters');
+        if ($multiselection) {
+            $this->clickCss($sidebar, '.js-user-selection-multi-filters');
+            $this->clickCss($checkboxFilters, 'a.checkbox-filter');
+        } else {
+            $this->clickCss($checkboxFilters, 'a.checkbox-filter');
+            $this->waitForPageLoad($page);
+        }
         $this->applyRangeFacet($page, 'publishDate', '2000', '', $multiselection);
 
-        $this->assertFilterCount($page, 1);
-        $this->assertAppliedFilters($page, ['Year of Publication:2000 - *']);
-
-        // Apply a checkbox filter and verify that the date range filter still exists:
-        $checkboxFilters = $this->findCss($sidebar, '.checkbox-filters');
-        $this->clickCss($checkboxFilters, 'a.checkbox-filter');
+        // Verify that we have two filters:
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - *']);
 
         // Change date range filter and check results:
@@ -1340,6 +1343,28 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Remove dates in range filter and check results:
         $this->applyRangeFacet($page, 'publishDate', '', '', $multiselection);
         $this->assertAppliedFilters($page, [':Books']);
+
+        // Add date range filter again and check results:
+        $this->applyRangeFacet($page, 'publishDate', '2001', '2007', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
+
+        if ($multiselection) {
+            // Apply another facet and change date range at the same time:
+            $this->clickCss($sidebar, '.js-user-selection-multi-filters');
+            $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
+            $this->applyRangeFacet($page, 'publishDate', '2001', '2010', $multiselection);
+            $this->assertAppliedFilters(
+                $page,
+                [':Books', 'Institution:MyInstitution', 'Year of Publication:2001 - 2010']
+            );
+
+            // Remove all filters and check results:
+            $this->clickCss($sidebar, '.js-user-selection-multi-filters');
+            $this->clickCss($checkboxFilters, 'a.checkbox-filter');
+            $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
+            $this->applyRangeFacet($page, 'publishDate', '', '', true);
+            $this->assertNoFilters($page);
+        }
     }
 
     /**
