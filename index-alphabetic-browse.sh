@@ -40,9 +40,9 @@ fi
 set -e
 set -x
 
-cd "`dirname $0`/import"
+cd "$(dirname "$0")/import"
 SOLRMARC_CLASSPATH=$(echo solrmarc_core*.jar)
-if [[ `wc -w <<<"$SOLRMARC_CLASSPATH"` -gt 1 ]]
+if [[ $(wc -w <<<"$SOLRMARC_CLASSPATH") -gt 1 ]]
 then
   echo "Error: more than one solrmarc_core*.jar in import/; exiting."
   exit 1
@@ -53,26 +53,25 @@ CLASSPATH="browse-indexing.jar:${SOLRMARC_CLASSPATH}:${VUFIND_HOME}/import/lib/*
 # current index is stored in the last line of index.properties
 function locate_index
 {
-    local targetVar=$1
-    local indexDir=$2
+    local indexDir=$1
     # default value
     local subDir="index"
 
-    if [ -e $indexDir/index.properties ]
+    if [ -e "$indexDir/index.properties" ]
     then
         # read it into an array
-        readarray farr < $indexDir/index.properties
+        readarray farr < "$indexDir/index.properties"
         # get the last line
         indexline="${farr[${#farr[@]}-1]}"
         # parse the lastline to just get the filename
-        subDir=`echo $indexline | sed s/index=//`
+        subDir=${indexline#index=}
     fi
 
-    eval $targetVar="$indexDir/$subDir"
+    echo "$indexDir/$subDir"
 }
 
-locate_index "bib_index" "${SOLR_HOME}/biblio"
-locate_index "auth_index" "${SOLR_HOME}/authority"
+bib_index=$(locate_index "${SOLR_HOME}/biblio")
+auth_index=$(locate_index "${SOLR_HOME}/authority")
 index_dir="${SOLR_HOME}/alphabetical_browse"
 
 mkdir -p "$index_dir"
