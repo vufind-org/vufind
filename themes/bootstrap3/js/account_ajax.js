@@ -224,14 +224,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.ok > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '<span class="sr-only">' + VuFind.translate('account_normal_checkouts') + '</span>' + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" aria-label="' + status.ok + ' ' + VuFind.translate('account_normal_checkouts') + '" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
       }
       if (status.warn > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '<span class="sr-only">' + VuFind.translate('account_checkouts_due') + '</span>' + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" aria-label="' + status.warn + ' ' + VuFind.translate('account_checkouts_due') + '" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
         level = ICON_LEVELS.WARNING;
       }
       if (status.overdue > 0) {
-        html += '<span class="badge account-alert" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_overdue') + '">' + status.overdue + '<span class="sr-only">' + VuFind.translate('account_checkouts_overdue') + '</span>';
+        html += '<span class="badge account-alert" data-toggle="tooltip" aria-label="' + status.overdue + ' ' + VuFind.translate('account_checkouts_overdue') + '" title="' + VuFind.translate('account_checkouts_overdue') + '">' + status.overdue + '</span>';
         level = ICON_LEVELS.DANGER;
       }
       $element.html(html);
@@ -250,14 +250,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '<span class="sr-only">' + VuFind.translate('account_requests_available') + '</span>' + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" aria-label="' + status.available + ' ' + VuFind.translate('account_requests_available') + '" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '<span class="sr-only">' + VuFind.translate('account_requests_in_transit') + '</span>' + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" aria-label="' + status.in_transit + ' ' + VuFind.translate('account_requests_in_transit') + '" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
       if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '<span class="sr-only">' + VuFind.translate('account_requests_other') + '</span>' + '</span>';
+        html += '<span class="badge account-none" data-toggle="tooltip" aria-label="' + status.other + ' ' + VuFind.translate('account_requests_other') + '" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
       }
       if (html !== '') {
         $element.html(html);
@@ -279,14 +279,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '<span class="sr-only">' + VuFind.translate('account_requests_available') + '</span>' + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" aria-label="' + status.available + ' ' + VuFind.translate('account_requests_available') + '" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '<span class="sr-only">' + VuFind.translate('account_requests_in_transit') + '</span>' + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" aria-label="' + status.in_transit + ' ' + VuFind.translate('account_requests_in_transit') + '" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
       if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '<span class="sr-only">' + VuFind.translate('account_requests_other') + '</span>' + '</span>';
+        html += '<span class="badge account-none" data-toggle="tooltip" aria-label="' + status.other + ' ' + VuFind.translate('account_requests_other') + '" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
       }
       if (html !== '') {
         $element.html(html);
@@ -308,14 +308,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '<span class="sr-only">' + VuFind.translate('account_requests_available') + '</span>' + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" aria-label="' + status.available + ' ' + VuFind.translate('account_requests_available') + '" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '<span class="sr-only">' + VuFind.translate('account_requests_in_transit') + '</span>' + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" aria-label="' + status.in_transit + ' ' + VuFind.translate('account_requests_in_transit') + '" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
       if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '<span class="sr-only">' + VuFind.translate('account_requests_other') + '</span>' + '</span>';
+        html += '<span class="badge account-none" data-toggle="tooltip" aria-label="' + status.other + ' ' + VuFind.translate('account_requests_other') + '" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
       }
       if (html !== '') {
         $element.html(html);
