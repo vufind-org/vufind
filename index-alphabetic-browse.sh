@@ -87,12 +87,12 @@ function build_browse
 
     # Get the browse headings from Solr
     if [ "$skip_authority" = "1" ]; then
-        if ! output=$($JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "${browse}.tmp" 2>&1); then
+        if ! output=$($JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp "$CLASSPATH" org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "${browse}.tmp" 2>&1); then
             echo "ERROR: Failed to create browse headings for ${browse}. ${output}."
             exit 1
         fi
     else
-        if ! output=$($JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "$auth_index" "${browse}.tmp" 2>&1); then
+        if ! output=$($JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp "$CLASSPATH" org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "$auth_index" "${browse}.tmp" 2>&1); then
             echo "ERROR: Failed to create browse headings for ${browse}. ${output}."
             exit 1
         fi
@@ -105,13 +105,13 @@ function build_browse
     fi
 
     # Build the SQLite database
-    if ! output=$($JAVA -Dfile.encoding="UTF-8" -cp $CLASSPATH org.vufind.solr.indexing.CreateBrowseSQLite "sorted-${browse}.tmp" "${browse}_browse.db" 2>&1); then
+    if ! output=$($JAVA -Dfile.encoding="UTF-8" -cp "$CLASSPATH" org.vufind.solr.indexing.CreateBrowseSQLite "sorted-${browse}.tmp" "${browse}_browse.db" 2>&1); then
         echo "ERROR: Failed to build the SQLite database for ${browse}. ${output}."
         exit 1
     fi
 
     # Clear up temp files
-    if ! output=$(rm -f *.tmp 2>&1); then
+    if ! output=$(rm -f -- *.tmp 2>&1); then
         echo "ERROR: Failed to clear out temp files for ${browse}. ${output}."
         exit 1
     fi
@@ -124,7 +124,7 @@ function build_browse
 
     # Indicate that the new database is ready for use
     if ! output=$(touch "$index_dir/${browse}_browse.db-ready" 2>&1); then
-        echo "ERROR: Failed to mark the new ${browse} database as ready for use. ${error}."
+        echo "ERROR: Failed to mark the new ${browse} database as ready for use. ${output}."
         exit 1
     fi
 }
