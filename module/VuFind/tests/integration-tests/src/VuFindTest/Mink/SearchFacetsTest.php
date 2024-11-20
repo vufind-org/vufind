@@ -712,7 +712,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Click second level facet:
         $this->clickCss($page, $this->facetSecondLevelLinkSelector);
         // Check the active filter:
-        $this->assertAppliedFilter($page, 'level1a/level2a');
+        $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
         // Check that the applied facet is displayed properly:
         $this->findCss($page, $this->facetSecondLevelActiveLinkSelector);
     }
@@ -781,11 +781,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, $this->facetExpandSelector);
         $this->clickCss($page, $this->facetSecondLevelExcludeLinkSelector);
-        $this->assertEquals('hierarchy:', $this->findCssAndGetText($page, '.filters .filters-title'));
-        $this->assertEquals(
-            'Remove Filter level1a/level2a',
-            $this->findCssAndGetText($page, $this->activeFilterSelector)
-        );
+        $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
         $this->assertEquals(
             'Showing 1 - 7 results of 7',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))
@@ -949,48 +945,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Assert that the filter used by these tests is still applied.
-     *
-     * @param Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertFilterIsStillThere(Element $page): void
-    {
-        $this->assertEquals(
-            'Remove Filter weird_ids.mrc',
-            $this->findCssAndGetText($page, $this->activeFilterSelector)
-        );
-    }
-
-    /**
-     * Assert that the "reset filters" button is present.
-     *
-     * @param \Behat\Mink\Element\Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertResetFiltersButton($page)
-    {
-        $reset = $page->findAll('css', '.reset-filters-btn');
-        // The toggle bar has its own reset button, so we should have 2:
-        $this->assertCount(2, $reset);
-    }
-
-    /**
-     * Assert that the "reset filters" button is not present.
-     *
-     * @param Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertNoResetFiltersButton(Element $page): void
-    {
-        $reset = $page->findAll('css', '.reset-filters-btn');
-        $this->assertCount(0, $reset);
-    }
-
-    /**
      * Test retain current filters default behavior
      *
      * @return void
@@ -1043,6 +997,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFilterIsStillThere($page);
         // Re-click the search button...
         $this->clickCss($page, '#searchForm .btn.btn-primary');
+        $this->waitForPageLoad($page);
         // Confirm that filter is STILL applied
         $this->assertFilterIsStillThere($page);
     }
@@ -1321,5 +1276,109 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             'Showing 1 - 19 results',
             $this->findCssAndGetText($page, '.search-header .search-stats')
         );
+    }
+
+    /**
+     * Data provider for testRangeFacets
+     *
+     * @return array
+     */
+    public static function rangeFacetsProvider(): array
+    {
+        return [
+            [false],
+            [true]
+        ];
+    }
+
+    /**
+     * Test range facets
+     *
+     * @param bool $multiselection Use multi-facet selection?
+     *
+     * @dataProvider rangeFacetsProvider
+     *
+     * @return void
+     */
+    public function testRangeFacets(bool $multiselection): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => $multiselection
+                    ],
+                    'CheckboxFacets' => [
+                        'format:Book' => 'Books',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+
+        // Filter by date range:
+        $this->applyRangeFacet($page, 'publishDate', '2000', '', $multiselection);
+
+        $this->assertFilterCount($page, 1);
+        $this->assertAppliedFilters($page, ['Year of Publication:2000 - *']);
+
+        // Apply a checkbox filter and verify that the date range filter still exists:
+        $checkboxFilters = $this->findCss($sidebar, '.checkbox-filters');
+        $this->clickCss($checkboxFilters, 'a.checkbox-filter');
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - *']);
+
+        // Change date range filter and check results:
+        $this->applyRangeFacet($page, 'publishDate', null, '2001', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - 2001']);
+
+        // Change date range filter again and check results:
+        $this->applyRangeFacet($page, 'publishDate', '2001', '2007', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
+
+        // Remove dates in range filter and check results:
+        $this->applyRangeFacet($page, 'publishDate', '', '', $multiselection);
+        $this->assertAppliedFilters($page, [':Books']);
+    }
+
+
+    /**
+     * Assert that the filter used by these tests is still applied.
+     *
+     * @param Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertFilterIsStillThere(Element $page): void
+    {
+        $this->assertAppliedFilters($page, ['Library:weird_ids.mrc']);
+    }
+
+    /**
+     * Assert that the "reset filters" button is present.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertResetFiltersButton($page)
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        // The toggle bar has its own reset button, so we should have 2:
+        $this->assertCount(2, $reset);
+    }
+
+    /**
+     * Assert that the "reset filters" button is not present.
+     *
+     * @param Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoResetFiltersButton(Element $page): void
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        $this->assertCount(0, $reset);
     }
 }
