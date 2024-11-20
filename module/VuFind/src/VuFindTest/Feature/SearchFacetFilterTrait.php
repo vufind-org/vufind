@@ -34,6 +34,8 @@ namespace VuFindTest\Feature;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Element\NodeElement;
 
+use function count;
+
 /**
  * Trait for working with faceting and filtering of search results.
  *
@@ -112,8 +114,12 @@ trait SearchFacetFilterTrait
      *
      * @return void
      */
-    protected function assertAppliedFilter(Element $page, int $index, string $expectedType, string $expectedFilter): void
-    {
+    protected function assertAppliedFilter(
+        Element $page,
+        int $index,
+        string $expectedType,
+        string $expectedFilter
+    ): void {
         $appliedFilter = $this->findCss($page, $this->activeFilterNodesSelector, null, $index);
         if ($expectedType) {
             $this->assertEquals($expectedType . ':', $this->findCssAndGetText($appliedFilter, '.filters-title'));
@@ -221,6 +227,8 @@ trait SearchFacetFilterTrait
      * @param ?string $from           "From" value
      * @param ?string $to             "To" value
      * @param bool    $multiselection Use multi-facet selection?
+     *
+     * @return void
      */
     protected function applyRangeFacet(
         Element $page,

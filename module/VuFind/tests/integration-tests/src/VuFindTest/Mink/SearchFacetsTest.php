@@ -1287,7 +1287,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         return [
             [false],
-            [true]
+            [true],
         ];
     }
 
@@ -1306,7 +1306,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results_Settings' => [
-                        'multiFacetsSelection' => $multiselection
+                        'multiFacetsSelection' => $multiselection,
                     ],
                     'CheckboxFacets' => [
                         'format:Book' => 'Books',
@@ -1341,7 +1341,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->applyRangeFacet($page, 'publishDate', '', '', $multiselection);
         $this->assertAppliedFilters($page, [':Books']);
     }
-
 
     /**
      * Assert that the filter used by these tests is still applied.
