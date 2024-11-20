@@ -171,16 +171,16 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   // Make sure NOT to have a specific range filter parameter in the final URL
   function hideRangeFilterFromFinalUrl(rangeName) {
-    const paramStart = encodeURIComponent(rangeName + ':');
-    for (const [value] of initialParams.getAll('filter[]')) {
+    const paramStart = rangeName + ':';
+    for (const value of initialParams.getAll('filter[]')) {
       if (value.startsWith(paramStart)) {
-        globalRemovedParams.push(encodeURI('filter[]=' + value));
+        globalRemovedParams.append('filter[]', value);
         return;
       }
     }
-    for (const [value] of globalAddedParams.getAll('filter[]')) {
+    for (const value of globalAddedParams.getAll('filter[]')) {
       if (value.startsWith(paramStart)) {
-        globalAddedParams.remove('filter[]', value);
+        globalAddedParams.delete('filter[]', value);
       }
     }
   }
