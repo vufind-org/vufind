@@ -169,70 +169,45 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     initialParams.append(key, normalizeValue(key, value));
   }
 
-  // Make sure NOT to have a specific range filter parameter in the final URL
-  function hideRangeFilterFromFinalUrl(rangeName) {
-    const paramStart = rangeName + ':';
-    for (const value of initialParams.getAll('filter[]')) {
-      if (value.startsWith(paramStart)) {
-        globalRemovedParams.append('filter[]', value);
-        return;
-      }
-    }
-    for (const value of globalAddedParams.getAll('filter[]')) {
-      if (value.startsWith(paramStart)) {
-        globalAddedParams.delete('filter[]', value);
-      }
-    }
-  }
-
-  // For every date range selector, does a routine to deal with URL parameters
-  function handleRangeSelector() {
-    let addedRangeParams, rangeParams, allEmptyRangeParams;
-    const currentQueryParams = new URLSearchParams(window.location.search);
-
+  // Update query params for every date range selector
+  function processRangeSelector(queryParams) {
     for (const form of rangeSelectorForms) {
-      addedRangeParams = [];
-      rangeParams = [];
-      allEmptyRangeParams = true;
-      const dateInputs = form.querySelectorAll('.date-fields input');
-      for (const input of dateInputs) {
-        if (currentQueryParams.has(input.name)) {
-          // Update existing parameter
-          initialParams.set(input.name, input.value);
-        } else {
-          addedRangeParams.push([input.name, input.value]);
-        }
-        rangeParams.push(input.name);
-        if (input.value !== '') {
-          allEmptyRangeParams = false;
-        }
-      }
-
-      // Handle the range input hidden fields
       const rangeName = form.dataset.name;
       const rangeFilterField = form.dataset.filterField;
-      if (allEmptyRangeParams) {
-        // Only empty fields; remove the parameter
-        for (const [key, value] of addedRangeParams) {
-          globalRemovedParams.append(key, value);
+      let valuesExist = false;
+      const dateInputs = form.querySelectorAll('.date-fields input');
+      // Check if we have any non-empty inputs:
+      for (const input of dateInputs) {
+        if (input.value !== '') {
+          valuesExist = true;
+          break;
         }
-        hideRangeFilterFromFinalUrl(rangeName);
+      }
+      if (valuesExist) {
+        // Update query params:
+        for (const input of dateInputs) {
+          queryParams.set(input.name, input.value);
+        }
+        queryParams.set(rangeFilterField, rangeName);
       } else {
-        // Some values present; add values for the final URL
-        for (const [key, value] of addedRangeParams) {
-          globalAddedParams.append(key, value);
+        // Delete from query params:
+        for (const input of dateInputs) {
+          queryParams.delete(input.name);
         }
-        if (!currentQueryParams.has(rangeFilterField, rangeName)) {
-          globalAddedParams.append(rangeFilterField, rangeName);
-          globalRemovedParams.delete(rangeName);
-          hideRangeFilterFromFinalUrl(rangeName);
+        queryParams.delete(rangeFilterField, rangeName);
+      }
+      // Remove any filter[]=rangeName:... from query params:
+      const paramStart = rangeName + ':';
+      for (const value of queryParams.getAll('filter[]')) {
+        if (value.startsWith(paramStart)) {
+          queryParams.delete('filter[]', value);
         }
       }
     }
   }
 
   // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
-  function setModifiedFacets() {
+  function processModifiedFacets() {
     let elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
 
     for (const elem of elems) {
@@ -257,8 +232,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   // Compile current parameters and newly added / removed to return the URL to redirect to
   function getHrefWithNewParams() {
-    setModifiedFacets();
-    handleRangeSelector();
+    processModifiedFacets();
 
     const newParams = new URLSearchParams(initialParams);
     // Remove parameters:
@@ -268,6 +242,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     for (const [key, value] of globalAddedParams) {
       newParams.append(key, value);
     }
+    processRangeSelector(newParams);
+
     // Take base url from data attribute if present (standalone full facet list):
     const baseUrl = defaultContext.dataset.searchUrl || window.location.pathname;
     return baseUrl + '?' + newParams.toString();
