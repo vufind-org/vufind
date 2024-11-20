@@ -387,6 +387,6 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#limit_hierarchical_facet_str_mv option', null, 1);
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertAppliedFilter($page, 'level1a/level2a');
+        $this->assertAppliedFilter($page, 0, 'hierarchy', 'level1a/level2a');
     }
 }
