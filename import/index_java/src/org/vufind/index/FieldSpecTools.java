@@ -199,6 +199,8 @@ public class FieldSpecTools
      */
     public static Set<String> getAllAlphaSubfieldsUTF8Delimited(final Record record, String fieldSpec, String separatorWithEscapes)
     {
+        // getAllAlphaSubfields has a signature that's inconsistent with getAllSubfields (above); we need to
+        // construct a join modifier using the separator instead of directly providing the separator as a result.
         return org.solrmarc.index.SolrIndexer.instance().getAllAlphaSubfields(record, fieldSpec, "join(\"" + getUnescapedSeparator(separatorWithEscapes) + "\")");
     }
 }
