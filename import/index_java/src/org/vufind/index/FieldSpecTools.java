@@ -199,6 +199,6 @@ public class FieldSpecTools
      */
     public static Set<String> getAllAlphaSubfieldsUTF8Delimited(final Record record, String fieldSpec, String separatorWithEscapes)
     {
-        return org.solrmarc.index.SolrIndexer.instance().getAllAlphaSubfields(record, fieldSpec, getUnescapedSeparator(separatorWithEscapes));
+        return org.solrmarc.index.SolrIndexer.instance().getAllAlphaSubfields(record, fieldSpec, "join(\"" + getUnescapedSeparator(separatorWithEscapes) + "\")");
     }
 }
