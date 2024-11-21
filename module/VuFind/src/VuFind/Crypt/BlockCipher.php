@@ -422,8 +422,13 @@ class BlockCipher
      * @throws InvalidArgumentException
      * @return string
      */
-    protected function getLegacyPbkdf2(string $hash, string $password, string $salt, int $iterations, int $length): string
-    {
+    protected function getLegacyPbkdf2(
+        string $hash,
+        string $password,
+        string $salt,
+        int $iterations,
+        int $length
+    ): string {
         $num = ceil($length / $this->getHashSize($hash, true));
         $result = '';
         for ($block = 1; $block <= $num; $block++) {
@@ -481,7 +486,7 @@ class BlockCipher
 
     /**
      * Generate the encryption key and the HMAC key for the authentication
-
+     *
      * @param string $ciphertext Text to decrypt
      * @param string $salt       Salt
      * @param int    $keySize    Key size
