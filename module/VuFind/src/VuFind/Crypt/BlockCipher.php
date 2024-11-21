@@ -80,12 +80,12 @@ class BlockCipher
      * @var array
      */
     protected $encryptionAlgos = [
-        'aes'      => 'aes-256',
+        'aes' => 'aes-256',
         'blowfish' => 'bf',
-        'des'      => 'des',
+        'des' => 'des',
         'camellia' => 'camellia-256',
-        'cast5'    => 'cast5',
-        'seed'     => 'seed',
+        'cast5' => 'cast5',
+        'seed' => 'seed',
     ];
 
     /**
@@ -94,12 +94,12 @@ class BlockCipher
      * @var array
      */
     protected $blockSizes = [
-        'aes'      => 16,
+        'aes' => 16,
         'blowfish' => 8,
-        'des'      => 8,
+        'des' => 8,
         'camellia' => 16,
-        'cast5'    => 8,
-        'seed'     => 16,
+        'cast5' => 8,
+        'seed' => 16,
     ];
 
     /**
@@ -108,12 +108,12 @@ class BlockCipher
      * @var array
      */
     protected $keySizes = [
-        'aes'      => 32,
+        'aes' => 32,
         'blowfish' => 56,
-        'des'      => 8,
+        'des' => 8,
         'camellia' => 32,
-        'cast5'    => 16,
-        'seed'     => 16,
+        'cast5' => 16,
+        'seed' => 16,
     ];
 
     /**
@@ -189,9 +189,9 @@ class BlockCipher
      */
     protected function pkcs7Strip(string $string): string
     {
-        $end  = mb_substr($string, -1, null, '8bit');
+        $end = mb_substr($string, -1, null, '8bit');
         $last = ord($end);
-        $len  = mb_strlen($string, '8bit') - $last;
+        $len = mb_strlen($string, '8bit') - $last;
         if (mb_substr($string, $len, null, '8bit') === str_repeat($end, $last)) {
             return mb_substr($string, 0, $len, '8bit');
         }
@@ -281,7 +281,7 @@ class BlockCipher
 
         // padding
         $data = $this->pkcs7Pad($data, $this->getBlockSize());
-        $iv   = $this->getSalt();
+        $iv = $this->getSalt();
 
         $result = openssl_encrypt(
             $data,
@@ -532,8 +532,8 @@ class BlockCipher
 
         $keySize = $this->getKeySize();
 
-        $hmacSize   = $this->getHashSize($this->hash);
-        $hmac       = mb_substr($data, 0, $hmacSize, '8bit');
+        $hmacSize = $this->getHashSize($this->hash);
+        $hmac = mb_substr($data, 0, $hmacSize, '8bit');
         $ciphertext = base64_decode(mb_substr($data, $hmacSize, null, '8bit') ?: '');
         $iv = mb_substr($ciphertext, 0, $this->getSaltSize(), '8bit');
         $hmacNew = $this->getValidationHmac($ciphertext, $iv, $keySize);
