@@ -141,7 +141,7 @@ abstract class AbstractCssPreCompiler
     }
 
     /**
-     * Get all less files that might exist in a theme.
+     * Get all scss files that might exist in a theme.
      *
      * @param string $theme Theme to retrieve files from
      *
@@ -187,19 +187,19 @@ abstract class AbstractCssPreCompiler
      * Convert fake absolute paths to working relative paths.
      *
      * @param string $css  Generated CSS
-     * @param string $less Relative LESS filename
+     * @param string $scss Relative SCSS filename
      *
      * @return string
      *
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
-    protected function makeRelative($css, $less)
+    protected function makeRelative($css, $scss)
     {
-        // Figure out how deep the LESS file is nested -- this will
+        // Figure out how deep the scss file is nested -- this will
         // affect our relative path. Note: we don't actually need
         // to use $matches for anything, but some versions of PHP
         // seem to be unhappy if we omit the parameter.
-        $depth = preg_match_all('|/|', $less, $matches);
+        $depth = preg_match_all('|/|', $scss, $matches);
         $relPath = '../../../';
         for ($i = 0; $i < $depth; $i++) {
             $relPath .= '/../';
