@@ -48,14 +48,14 @@ class CASTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param ?Config $config Configuration to use (null for default)
+     * @param ?array $config Configuration to use (null for default)
      *
      * @return CAS
      */
-    public function getAuthObject(?Config $config = null): CAS
+    public function getAuthObject(?array $config = null): CAS
     {
         $obj = new CAS($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
-        $obj->setConfig($config ?? $this->getAuthConfig());
+        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
         return $obj;
     }
 
@@ -65,22 +65,19 @@ class CASTest extends \PHPUnit\Framework\TestCase
      * @param array $extraCasConfig Extra config parameters to include in [CAS] section
      * @param array $extraTopConfig Extra top-level config settings to include
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig(array $extraCasConfig = [], array $extraTopConfig = []): Config
+    public function getAuthConfig(array $extraCasConfig = [], array $extraTopConfig = []): array
     {
-        $casConfig = new Config(
-            [
-                'server' => 'localhost',
-                'port' => 1234,
-                'context' => 'foo',
-                'CACert' => 'bar',
-                'login' => 'http://cas/login',
-                'logout' => 'http://cas/logout',
-            ] + $extraCasConfig,
-            true
-        );
-        return new Config(['CAS' => $casConfig] + $extraTopConfig, true);
+        $casConfig = [
+            'server' => 'localhost',
+            'port' => 1234,
+            'context' => 'foo',
+            'CACert' => 'bar',
+            'login' => 'http://cas/login',
+            'logout' => 'http://cas/logout',
+        ] + $extraCasConfig;
+        return ['CAS' => $casConfig] + $extraTopConfig;
     }
 
     /**
@@ -114,7 +111,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
-        unset($config->CAS->$key);
+        unset($config['CAS'][$key]);
         $this->getAuthObject($config)->getConfig();
     }
 
@@ -156,7 +153,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Valid CAS/service_base_url or Site/url config parameters are required.');
         $cas = $this->getAuthObject();
-        $cas->setConfig($this->getAuthConfig());
+        $cas->setConfig(new Config($this->getAuthConfig()));
         $this->callMethod($cas, 'getServiceBaseUrl');
     }
 
@@ -169,7 +166,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     {
         $cas = $this->getAuthObject();
         $urls = ['http://foo', 'http://bar'];
-        $cas->setConfig($this->getAuthConfig(['service_base_url' => $urls]));
+        $cas->setConfig(new Config($this->getAuthConfig(['service_base_url' => $urls])));
         $this->assertEquals($urls, $this->callMethod($cas, 'getServiceBaseUrl'));
     }
 
@@ -199,7 +196,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     public function testBaseUrlConfigFallback(string $url, string $host): void
     {
         $cas = $this->getAuthObject();
-        $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);
+        $config = new Config($this->getAuthConfig([], ['Site' => ['url' => $url]]));
         $cas->setConfig($config);
         $this->assertEquals([$host], $this->callMethod($cas, 'getServiceBaseUrl'));
     }
@@ -215,7 +212,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Valid CAS/service_base_url or Site/url config parameters are required.');
         $cas = $this->getAuthObject();
         $url = 'not-a-url';
-        $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);
+        $config = new Config($this->getAuthConfig([], ['Site' => ['url' => $url]]));
         $cas->setConfig($config);
         $this->callMethod($cas, 'getServiceBaseUrl');
     }
