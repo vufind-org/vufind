@@ -52,7 +52,8 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
                 '0000183626-0', // this ID causes the Demo cover provider to return an image
                 true,
                 true,
-                'themes/root/images/demo-cover-2.jpg', 'Cover from vufind.org',
+                'themes/root/images/demo-cover-2.jpg',
+                'Cover from vufind.org',
             ],
             'image available, ajax w/o backlinks' => [
                 '0000183626-0', // this ID causes the Demo cover provider to return an image
@@ -148,8 +149,9 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
     ): void {
         // Update configurations:
         $coverimages = $includeBacklink ? 'Demo:true' : 'Demo';
+        $coverimagesBrowserCache = false;
         $this->changeConfigs(
-            ['config' => ['Content' => compact('coverimages', 'ajaxcovers', 'noCoverAvailableImage')]]
+            ['config' => ['Content' => compact('coverimages', 'coverimagesBrowserCache', 'ajaxcovers', 'noCoverAvailableImage')]]
         );
 
         // Load a page with the specified record:
@@ -158,7 +160,10 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($url);
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-
+        $session->wait(
+            $this->getDefaultTimeout(),
+            'document.querySelector("img.recordcover").complete && document.querySelector("img.recordcover").src'
+        );
         // Verify the expected backlink (or lack thereof):
         $backlinkSelector = 'p.cover-source';
         if ($expectedBacklink) {
@@ -182,6 +187,19 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Verify the expected image URL:
-        $this->assertStringEndsWith($expectedImage, $coverImage?->getAttribute('src'));
+        $imageSrc = $coverImage?->getAttribute('src');
+        $expectedImageParts = explode('?', $expectedImage);
+
+        // Verify path
+        $expectedPath = $expectedImageParts[0];
+        $this->assertStringContainsString($expectedPath, $imageSrc);
+
+        // Verify query except timestamp hash for deactivated browser cache
+        $imageSrcQuery = explode('&', explode('?', $imageSrc)[1] ?? '');
+        $imageSrcQuery = array_filter($imageSrcQuery, fn ($part) => !str_starts_with($part, 'hash'));
+        $expectedQuery = explode('&', $expectedImageParts[1] ?? '');
+        sort($expectedQuery);
+        sort($imageSrcQuery);
+        $this->assertEquals(implode('', $expectedQuery), (implode('', $imageSrcQuery)));
     }
 }

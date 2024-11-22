@@ -29,6 +29,7 @@
 
 namespace VuFind\Cover;
 
+use Laminas\Config\Config;
 use VuFind\Cover\Loader as CoverLoader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -49,29 +50,16 @@ class Router implements \Laminas\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base URL for dynamic cover images.
-     *
-     * @var string
-     */
-    protected $dynamicUrl;
-
-    /**
-     * Cover loader
-     *
-     * @var CoverLoader
-     */
-    protected $coverLoader;
-
-    /**
      * Constructor
      *
      * @param string      $url         Base URL for dynamic cover images.
      * @param CoverLoader $coverLoader Cover loader
      */
-    public function __construct($url, CoverLoader $coverLoader)
-    {
-        $this->dynamicUrl = $url;
-        $this->coverLoader = $coverLoader;
+    public function __construct(
+        protected string $dynamicUrl,
+        protected CoverLoader $coverLoader,
+        protected Config $config
+    ) {
     }
 
     /**
@@ -135,6 +123,11 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         // No thumbnail?  Return false:
         if (empty($thumb)) {
             return false;
+        }
+
+        if (!($this->config->coverimagesBrowserCache ?? true)) {
+            // Add timestamp hash to avoid browser cache
+            $thumb['hash'] = md5(time());
         }
 
         // Array? It's parameters to send to the cover generator:
