@@ -104,7 +104,7 @@
       </tr>
     <?php endforeach; ?>
     </table>
-    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results]])?>
   <?php endif; ?>
 </div>
 
