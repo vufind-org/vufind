@@ -47,9 +47,9 @@ VuFind.register('covers', function covers() {
         img.remove();
         source.remove();
         if (typeof response.data.html !== 'undefined') {
-          container.innerHTML = VuFind.updateCspNonce(response.data.html);
+          VuFind.setInnerHtml(container, VuFind.updateCspNonce(response.data.html));
         } else {
-          container.innerHTML = '';
+          VuFind.setInnerHtml(container, '');
         }
       }
       spinner.style.display = 'none';
