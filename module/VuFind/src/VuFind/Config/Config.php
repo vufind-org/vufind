@@ -61,16 +61,29 @@ class Config implements ArrayAccess
     /**
      * Get a property of the configuration (which may be a nested Config object)
      *
+     * @param string $key     Property name
+     * @param mixed  $default Default value to use if $key is unset
+     *
+     * @return mixed
+     */
+    public function get(string $key, mixed $default = null): mixed
+    {
+        if (!isset($this->data[$key])) {
+            return null;
+        }
+        return is_array($this->data[$key]) ? new Config($this->data[$key]) : $this->data[$key];
+    }
+
+    /**
+     * Get a property of the configuration (which may be a nested Config object)
+     *
      * @param string $key Property name
      *
      * @return mixed
      */
     public function __get(string $key): mixed
     {
-        if (!isset($this->data[$key])) {
-            return null;
-        }
-        return is_array($this->data[$key]) ? new Config($this->data[$key]) : $this->data[$key];
+        return $this->get($key);
     }
 
     /**
@@ -156,7 +169,7 @@ class Config implements ArrayAccess
      */
     public function offsetGet(mixed $offset): mixed
     {
-        return $this->__get($offset);
+        return $this->get($offset);
     }
 
     /**
