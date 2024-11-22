@@ -19,19 +19,24 @@
     $urlBase .= '&baseUriExtra=' . urlencode($this->baseUriExtra);
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
+  $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
+  $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
+  $this->headScript()->appendFile('facets.js');
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
-<?php if (count($this->sortOptions) > 1): ?>
-  <form class="form-inline">
 
-    <div class="full-facet-sort-options form-group" role="group" aria-labelledby="full-facet-sort-label">
-      <label id="full-facet-sort-label" class="control-label"><?=$this->translate('Sort') ?></label>
-      <div id="btn-group-sort" class="btn-group">
-        <?php foreach ($this->sortOptions as $key => $sort): ?>
-          <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => 1, 'facetsort' => $key, 'contains' => $contains])) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
-        <?php endforeach; ?>
+<div class="js-full-facet-list" data-search-url="<?=$this->escapeHtmlAttr($searchAction)?>">
+  <form class="form-inline full-facet-controls">
+    <?php if (count($this->sortOptions) > 1): ?>
+      <div class="full-facet-sort-options form-group" role="group" aria-labelledby="full-facet-sort-label">
+        <label id="full-facet-sort-label" class="control-label"><?=$this->translate('Sort') ?></label>
+        <div id="btn-group-sort" class="btn-group">
+          <?php foreach ($this->sortOptions as $key => $sort): ?>
+            <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => 1, 'facetsort' => $key, 'contains' => $contains])) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
+          <?php endforeach; ?>
+        </div>
       </div>
-    </div>
+    <?php endif; ?>
 
     <div class="facet-lightbox-filter form-group hidden" role="group" aria-labelledby="facet-lightbox-filter-label">
       <?php if ($this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
@@ -44,23 +49,23 @@
       <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
       <button type="submit" disabled style="display: none" aria-hidden="true"></button>
     </div>
-
   </form>
-<?php endif; ?>
+  <?php if ($this->multiFacetsSelection): ?>
+    <?=$this->render('Recommend/SideFacets/multiFacetsSelection.phtml') ?>
+  <?php endif; ?>
 
-<?php $this->headScript()->appendFile('facets.js'); ?>
-
-<div id="facet-info-result" class="lightbox-scroll full-facets">
-  <?php
-    // The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
-    $params = $this->delegateParams;
-    $params['urlBase'] = $urlBase;
-    $params['searchAction'] = $searchAction;
-    $params['inLightbox'] = $this->inLightbox;
-  ?>
-  <?=$this->render('search/facet-list-content.phtml', $params) ?>
+  <div id="facet-info-result" class="lightbox-scroll full-facets">
+    <?php
+      // The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
+      $params = $this->delegateParams;
+      $params['urlBase'] = $urlBase;
+      $params['searchAction'] = $searchAction;
+      $params['inLightbox'] = $this->inLightbox;
+    ?>
+    <?=$this->render('search/facet-list-content.phtml', $params) ?>
+  </div>
+  <button class="btn btn-default lightbox-only" data-bs-dismiss="modal"><?=$this->translate('close') ?></button>
 </div>
-<button class="btn btn-default lightbox-only" data-bs-dismiss="modal"><?=$this->translate('close') ?></button>
 
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.facetList.setup();', 'SET')?>
 <?php if ($this->inLightbox): ?>

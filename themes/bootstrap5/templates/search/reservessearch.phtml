@@ -36,6 +36,18 @@
     <input<?=$this->htmlAttributes($searchboxAttributes)?>>
     <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Find')?>">
   </form>
+  <?=
+    $this->context($this)->renderInContext(
+        'search/filters.phtml',
+        [
+          'params' => $this->params ?? null,
+          'urlQuery' => $this->results?->getUrlQuery(),
+          'filterList' => $this->params->getFilterList(true),
+          'searchClassId' => $this->searchClassId,
+          'checkboxFilters' => [],
+        ]
+    );
+  ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
 
   <div class="resulthead">
