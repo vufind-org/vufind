@@ -48,35 +48,29 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param ?Config $config Configuration to use (null for default)
+     * @param ?array $config Configuration to use (null for default)
      *
      * @return SIP2
      */
-    public function getAuthObject(?Config $config = null): SIP2
+    public function getAuthObject(?array $config = null): SIP2
     {
-        if (null === $config) {
-            $config = $this->getAuthConfig();
-        }
         $obj = new SIP2($this->createMock(ILSAuthenticator::class));
-        $obj->setConfig($config);
+        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
         return $obj;
     }
 
     /**
      * Get a working configuration for the LDAP object
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig(): Config
+    public function getAuthConfig(): array
     {
-        $config = new Config(
-            [
-                'host' => 'my.fake.host',
-                'port' => '6002',
-            ],
-            true
-        );
-        return new Config(['MultiAuth' => $config], true);
+        $config = [
+            'host' => 'my.fake.host',
+            'port' => '6002',
+        ];
+        return ['MultiAuth' => $config];
     }
 
     /**

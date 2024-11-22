@@ -87,7 +87,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetResults()
+    public function testGetResults(): void
     {
         $config = $this->buildConfig();
         $consortialVuFind = $this->buildConsortialVuFind($config);
@@ -112,7 +112,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMoreResultsUrl()
+    public function testGetMoreResultsUrl(): void
     {
         $config = $this->buildConfig();
         $consortialVuFind = $this->buildConsortialVuFind($config);
@@ -124,30 +124,29 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * Build an object representing an ExternalVuFind.ini configuration file
      *
-     * @return ConsortialVuFind
+     * @return array
      */
-    protected function buildConfig()
+    protected function buildConfig(): array
     {
-        $config = new Config([
+        return [
             'ReShare' => [
                 'api_base_url' => 'http://some.url/api',
                 'record_base_url' => 'https://some.url/Record',
                 'results_base_url' => 'https://some.url/Search/Results',
             ],
-        ], true);
-        return $config;
+        ];
     }
 
     /**
      * Build and pre-process a ConsortialVuFind object
      *
-     * @param Config $config The config object
+     * @param array $config The config array
      *
      * @return ConsortialVuFind
      */
-    protected function buildConsortialVuFind($config)
+    protected function buildConsortialVuFind(array $config): ConsortialVuFind
     {
-        $consortialVuFind = new ConsortialVuFind($config, $this->connector);
+        $consortialVuFind = new ConsortialVuFind(new Config($config), $this->connector);
         $consortialVuFind->setConfig('lookfor:3:ReShare');
 
         $queryResults = $this->buildQueryResults('civil war');
@@ -164,7 +163,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return Results The Results object
      */
-    protected function buildQueryResults($queryString, $facets = [])
+    protected function buildQueryResults(string $queryString, array $facets = []): Results
     {
         // Build query Params
         $queryParams = new Params(
