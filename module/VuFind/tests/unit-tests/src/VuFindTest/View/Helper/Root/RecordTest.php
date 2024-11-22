@@ -794,7 +794,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->getMockResolver());
         $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
         $record = new Record($this->createMock(TagsService::class), $config);
-        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
+        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader(), new Config([])));
         $record->setView($view);
         return $record($driver);
     }

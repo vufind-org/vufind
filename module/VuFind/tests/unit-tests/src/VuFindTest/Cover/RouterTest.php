@@ -74,7 +74,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRouter()
     {
-        return new Router('https://vufind.org/cover', $this->getCoverLoader());
+        return new Router('https://vufind.org/cover', $this->getCoverLoader(), new Config([]));
     }
 
     /**

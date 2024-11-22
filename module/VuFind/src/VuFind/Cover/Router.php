@@ -52,8 +52,9 @@ class Router implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string      $url         Base URL for dynamic cover images.
+     * @param string      $dynamicUrl  Base URL for dynamic cover images.
      * @param CoverLoader $coverLoader Cover loader
+     * @param Config      $config      Content config
      */
     public function __construct(
         protected string $dynamicUrl,

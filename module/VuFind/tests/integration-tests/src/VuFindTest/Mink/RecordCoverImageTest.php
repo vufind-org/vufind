@@ -151,7 +151,12 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         $coverimages = $includeBacklink ? 'Demo:true' : 'Demo';
         $coverimagesBrowserCache = false;
         $this->changeConfigs(
-            ['config' => ['Content' => compact('coverimages', 'coverimagesBrowserCache', 'ajaxcovers', 'noCoverAvailableImage')]]
+            ['config' => ['Content' => compact(
+                'coverimages',
+                'coverimagesBrowserCache',
+                'ajaxcovers',
+                'noCoverAvailableImage'
+            )]]
         );
 
         // Load a page with the specified record:
