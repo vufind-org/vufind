@@ -7,10 +7,10 @@
       $showFirstLast = $showFirstLast && $results->getOptions()->firstLastNavigationSupported();
       if ($results->getOptions()->loadResultsWithJsEnabled()) {
         $navAttrs->add('class', 'js-pagination');
+        if ($this->top) {
+          $navAttrs->add('class', 'js-pagination__top');
+        }
       }
-    }
-    if ($this->top) {
-      $navAttrs->add('class', 'js-pagination__top');
     }
   ?>
   <nav<?=$navAttrs?>>
