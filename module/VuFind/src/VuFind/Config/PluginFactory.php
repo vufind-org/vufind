@@ -126,7 +126,7 @@ class PluginFactory implements AbstractFactoryInterface
                         // merge the key[] values instead of overwriting them.
                         if (
                             is_array($config[$section][$key] ?? null)
-                            && is_array($child[$section][$key] ?? null)
+                            && is_array($child[$section][$key])
                             && $mergeArraySettings
                         ) {
                             $config[$section][$key] = array_merge(
