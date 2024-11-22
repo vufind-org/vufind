@@ -205,11 +205,11 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
             'Lists' => [
                 'label' => 'Your Lists',
                 'id' => 'acc-menu-lists-header',
+                'checkMethod' => 'checkUserlistMode',
                 'MenuItems' => [
                     [
                         'template' => 'myresearch/menu-mylists.phtml',
                         'icon' => 'user-list',
-                        'checkMethod' => 'checkUserlistMode',
                     ],
                     [
                         'name' => 'newlist',
@@ -219,7 +219,6 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
                             'id' => 'NEW',
                         ],
                         'icon' => 'ui-add',
-                        'checkMethod' => 'checkUserlistMode',
                     ],
                 ],
             ],

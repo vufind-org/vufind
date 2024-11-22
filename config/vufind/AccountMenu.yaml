@@ -106,10 +106,10 @@ Account:
 Lists:
   label: Your Lists
   id: acc-menu-lists-header
+  checkMethod: checkUserlistMode
   MenuItems:
     - template: myresearch/menu-mylists.phtml
       icon: user-list
-      checkMethod: checkUserlistMode
 
     - name: newlist
       label: Create a List
@@ -117,4 +117,3 @@ Lists:
       routeParams:
         id: NEW
       icon: ui-add
-      checkMethod: checkUserlistMode
