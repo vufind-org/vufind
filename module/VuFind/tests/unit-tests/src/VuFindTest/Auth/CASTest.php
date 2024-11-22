@@ -153,7 +153,6 @@ class CASTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Valid CAS/service_base_url or Site/url config parameters are required.');
         $cas = $this->getAuthObject();
-        $cas->setConfig(new Config($this->getAuthConfig()));
         $this->callMethod($cas, 'getServiceBaseUrl');
     }
 
@@ -164,9 +163,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
      */
     public function testWorkingBaseUrlConfig(): void
     {
-        $cas = $this->getAuthObject();
         $urls = ['http://foo', 'http://bar'];
-        $cas->setConfig(new Config($this->getAuthConfig(['service_base_url' => $urls])));
+        $cas = $this->getAuthObject($this->getAuthConfig(['service_base_url' => $urls]));
         $this->assertEquals($urls, $this->callMethod($cas, 'getServiceBaseUrl'));
     }
 
@@ -195,9 +193,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
      */
     public function testBaseUrlConfigFallback(string $url, string $host): void
     {
-        $cas = $this->getAuthObject();
-        $config = new Config($this->getAuthConfig([], ['Site' => ['url' => $url]]));
-        $cas->setConfig($config);
+        $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);
+        $cas = $this->getAuthObject($config);
         $this->assertEquals([$host], $this->callMethod($cas, 'getServiceBaseUrl'));
     }
 
@@ -210,10 +207,9 @@ class CASTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Valid CAS/service_base_url or Site/url config parameters are required.');
-        $cas = $this->getAuthObject();
         $url = 'not-a-url';
-        $config = new Config($this->getAuthConfig([], ['Site' => ['url' => $url]]));
-        $cas->setConfig($config);
+        $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);
+        $cas = $this->getAuthObject($config);
         $this->callMethod($cas, 'getServiceBaseUrl');
     }
 }
