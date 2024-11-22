@@ -34,8 +34,11 @@
 namespace VuFind\Config;
 
 use ArrayAccess;
+use Countable;
 use Exception;
+use Iterator;
 
+use function count;
 use function is_array;
 
 /**
@@ -47,7 +50,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Config implements ArrayAccess
+class Config implements ArrayAccess, Countable, Iterator
 {
     /**
      * Constructor
@@ -197,5 +200,65 @@ class Config implements ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         $this->__unset($offset);
+    }
+
+    /**
+     * Get count of members (Countable interface).
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->data);
+    }
+
+    /**
+     * Get current element (Iterator interface).
+     *
+     * @return mixed
+     */
+    public function current(): mixed
+    {
+        return current($this->data);
+    }
+
+    /**
+     * Get current key (Iterator interface).
+     *
+     * @return mixed
+     */
+    public function key(): mixed
+    {
+        return key($this->data);
+    }
+
+    /**
+     * Advance the pointer used by the Iterator interface.
+     *
+     * @return void
+     */
+    public function next(): void
+    {
+        next($this->data);
+    }
+
+    /**
+     * Rewind (Iterator interface).
+     *
+     * @return void
+     */
+    public function rewind(): void
+    {
+        reset($this->data);
+    }
+
+    /**
+     * Is the Iterator interface in a valid state?
+     *
+     * @return bool
+     */
+    public function valid(): bool
+    {
+        return isset($this->data[$this->key()]);
     }
 }
