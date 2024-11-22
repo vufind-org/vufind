@@ -1,9 +1,11 @@
 <div class="multi-filters-selection">
   <div>
-    <input id="js-user-selection-multi-filters" class="js-user-selection-multi-filters" type="checkbox">
-    <label for="js-user-selection-multi-filters"><?= $this->transEsc('Select multiple filters') ?></label>
+    <label>
+      <input class="js-user-selection-multi-filters" type="checkbox">
+      <?= $this->transEsc('Select multiple filters') ?>
+    </label>
   </div>
-  <div class="apply-filters hidden">
+  <div class="apply-filters">
     <button class="js-apply-multi-facets-selection btn btn-primary" type="submit"><?= $this->transEsc('Apply filters') ?></button>
   </div>
 </div>

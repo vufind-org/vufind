@@ -217,6 +217,11 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                     continue;
                 }
             }
+            if ($ipRangesExcept = $settings['ipRangesExcept'] ?? null) {
+                if ($this->ipUtils->isInRange($this->clientIp, (array)$ipRangesExcept)) {
+                    continue;
+                }
+            }
 
             if (!($filters = $settings['filters'] ?? null)) {
                 return $name;

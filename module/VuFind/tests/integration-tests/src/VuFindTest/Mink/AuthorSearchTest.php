@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use VuFindTest\Feature\SearchFacetFilterTrait;
+
 /**
  * Mink author search test class.
  *
@@ -40,6 +42,8 @@ namespace VuFindTest\Mink;
  */
 class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchFacetFilterTrait;
+
     /**
      * Test searching for a known corporate author
      *
@@ -48,7 +52,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testCorporateAuthorSearch(): void
     {
         $page = $this->performSearch('corporate', 'Author');
-        $facets = $this->findCssAndGetText($page, '#side-collapse-building a');
+        $facets = $this->getFacetTextByLinkSelector($page, '#side-collapse-building a');
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
         $this->assertStringContainsString('author_relators.mrc 10', $facets);
@@ -62,7 +66,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testPrimaryAuthorSearch(): void
     {
         $page = $this->performSearch('primary', 'Author');
-        $facets = $this->findCssAndGetText($page, '#side-collapse-building a');
+        $facets = $this->getFacetTextByLinkSelector($page, '#side-collapse-building a');
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
         $this->assertStringContainsString('author_relators.mrc 11', $facets);

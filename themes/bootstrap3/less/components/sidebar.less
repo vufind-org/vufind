@@ -143,6 +143,8 @@
 
 .checkbox-filters {
   padding-bottom: 0.5rem;
+  // For blocking overlay:
+  position: relative;
 }
 .checkbox-filter {
   display: flex;
@@ -185,13 +187,21 @@
   }
 }
 
-.full-facet-list { margin-top: 1rem; }
+.full-facets {
+  margin: 1rem 0;
+  border-top: 1px solid @list-group-border;
+  border-bottom: 1px solid @list-group-border;
+}
 .full-facet-list .active .fa.fa-times {
   float: right;
   margin-top: .25rem;
   margin-left: 0.5rem;
 }
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
+.full-facet-controls .form-group {
+  margin: 0;
+  padding: @padding-base-vertical 0;
+}
 
 .truncate-done {
   overflow: clip;
@@ -224,16 +234,32 @@ h3.facet-title {
 }
 
 .multi-filters-selection {
+  padding: 1em 0;
+  background: white;
+
+  label {
+    font-weight: bold;
+  }
+
+  .apply-filters {
+    margin-top: 1em;
+    display: none;
+  }
+}
+.multi-facet-selection-active .apply-filters {
+  display: block;
+}
+.sidebar .multi-filters-selection {
   position: sticky;
   top: 0;
-  z-index: 500;
   padding: 1em;
-  border-bottom: 1px solid #C1C1C1;
-  background: white;
+  z-index: 40;
+  border-bottom: 1px solid @list-group-border;
   box-shadow: 0 5px 5px -4px #000;
-  font-weight: bold;
 }
-.apply-filters {
-  height: 3.5em;
-  padding: 1em;
+.multi-facet-selection-active {
+  // Hide submit buttons of range forms when multi-facet selection is active:
+  .facet input[type="submit"] {
+    display: none;
+  }
 }
