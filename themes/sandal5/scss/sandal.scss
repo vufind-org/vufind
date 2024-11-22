@@ -266,3 +266,10 @@ a:hover .login-dropdown-caret {
     .exclude { order: 2; }
   }
 }
+
+@media (max-width: 1399px) {
+  .sidebar {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
