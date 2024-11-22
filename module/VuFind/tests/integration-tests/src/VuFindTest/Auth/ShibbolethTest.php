@@ -108,20 +108,20 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param ?Config $config             Configuration to use (null for default)
-     * @param ?array  $shibConfig         Configuration with IdP
-     * @param bool    $useHeaders         use HTTP headers instead of environment variables
-     * @param bool    $requiredAttributes required attributes
+     * @param ?array $config             Configuration to use (null for default)
+     * @param ?array $shibConfig         Configuration with IdP
+     * @param bool   $useHeaders         use HTTP headers instead of environment variables
+     * @param bool   $requiredAttributes required attributes
      *
      * @return Shibboleth
      */
     public function getAuthObject(
-        ?Config $config = null,
+        ?array $config = null,
         ?array $shibConfig = null,
         bool $useHeaders = false,
         bool $requiredAttributes = true
     ): Shibboleth {
-        $config ??= new Config($this->getAuthConfig($useHeaders, $requiredAttributes));
+        $config = new Config($config ?? $this->getAuthConfig($useHeaders, $requiredAttributes));
         $loader = ($shibConfig === null)
             ? new SingleIdPConfigurationLoader($config)
             : new MultiIdPConfigurationLoader($config, new Config($shibConfig));
@@ -259,7 +259,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
 
         $config = $this->getAuthConfig();
         unset($config['Shibboleth']['userattribute_value_1']);
-        $this->getAuthObject(new Config($config))->authenticate($this->getLoginRequest());
+        $this->getAuthObject($config)->authenticate($this->getLoginRequest());
     }
 
     /**
@@ -273,7 +273,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
 
         $config = $this->getAuthConfig();
         unset($config['Shibboleth']['username']);
-        $this->getAuthObject(new Config($config))->authenticate($this->getLoginRequest());
+        $this->getAuthObject($config)->authenticate($this->getLoginRequest());
     }
 
     /**
@@ -287,7 +287,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
 
         $config = $this->getAuthConfig();
         unset($config['Shibboleth']['login']);
-        $this->getAuthObject(new Config($config))->getSessionInitiator('http://target');
+        $this->getAuthObject($config)->getSessionInitiator('http://target');
     }
 
     /**
