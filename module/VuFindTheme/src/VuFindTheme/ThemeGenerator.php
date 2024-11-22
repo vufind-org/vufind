@@ -30,7 +30,7 @@
 
 namespace VuFindTheme;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;

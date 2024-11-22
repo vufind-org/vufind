@@ -87,7 +87,7 @@ class Backend extends AbstractBackend
     /**
      * Blender configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -108,16 +108,16 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param array                  $backends Actual backends
-     * @param \Laminas\Config\Config $config   Blender configuration
-     * @param array                  $mappings Mappings configuration
-     * @param EventManager           $events   Event manager
+     * @param array                 $backends Actual backends
+     * @param \VuFind\Config\Config $config   Blender configuration
+     * @param array                 $mappings Mappings configuration
+     * @param EventManager          $events   Event manager
      *
      * @return void
      */
     public function __construct(
         array $backends,
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         $mappings,
         EventManager $events
     ) {

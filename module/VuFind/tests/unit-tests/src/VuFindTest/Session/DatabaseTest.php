@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Session;
 
-use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Session\Database;
 

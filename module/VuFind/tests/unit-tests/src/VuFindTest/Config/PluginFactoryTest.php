@@ -72,7 +72,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $name Configuration to load
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getConfig($name)
     {

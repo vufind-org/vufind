@@ -29,7 +29,6 @@
 
 namespace VuFind\Config;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Feature\IniReaderTrait;
@@ -123,7 +122,7 @@ class PluginFactory implements AbstractFactoryInterface
                 } else {
                     foreach (array_keys($contents->toArray()) as $key) {
                         // If a key is defined as key[] in the config file the key
-                        // remains a Laminas\Config\Config object. If the current
+                        // remains a VuFind\Config\Config object. If the current
                         // section is not configured as an override section we try to
                         // merge the key[] values instead of overwriting them.
                         if (

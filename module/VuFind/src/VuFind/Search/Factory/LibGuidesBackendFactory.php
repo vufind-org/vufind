@@ -66,7 +66,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     /**
      * LibGuides configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $libGuidesConfig;
 

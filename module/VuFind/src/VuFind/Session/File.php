@@ -29,7 +29,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function function_exists;
 use function strlen;

@@ -52,7 +52,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     /**
      * Blender configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -80,8 +80,8 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config   Configuration
-     * @param array                  $mappings Mappings configuration
+     * @param \VuFind\Config\Config $config   Configuration
+     * @param array                 $mappings Mappings configuration
      */
     public function __construct($config = null, $mappings = [])
     {

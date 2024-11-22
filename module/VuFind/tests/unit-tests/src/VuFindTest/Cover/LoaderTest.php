@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Cover;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
 

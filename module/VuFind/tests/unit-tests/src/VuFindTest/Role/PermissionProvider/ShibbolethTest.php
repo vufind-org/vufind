@@ -106,7 +106,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
     ) {
         $request = new \Laminas\Http\PhpEnvironment\Request();
         $request->setServer(new \Laminas\Stdlib\Parameters($headers));
-        $shibboleth = new Shibboleth($request, new \Laminas\Config\Config($config));
+        $shibboleth = new Shibboleth($request, new \VuFind\Config\Config($config));
         $result = $shibboleth->getPermissions($options);
         $this->assertEquals($result, $expectedResult);
     }

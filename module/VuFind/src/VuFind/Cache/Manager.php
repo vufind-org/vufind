@@ -35,7 +35,7 @@ namespace VuFind\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function dirname;
 use function is_array;
@@ -152,7 +152,7 @@ class Manager
     ) {
         $this->factory = $factory;
 
-        // $config and $config->Cache are Laminas\Config\Config objects
+        // $config and $config->Cache are VuFind\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
         $this->defaults = $config->Cache?->toArray() ?? [];

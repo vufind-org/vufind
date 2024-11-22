@@ -266,7 +266,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
             },
             $connection,
             $emailAuth ?? $this->createMock(EmailAuthenticator::class),
-            new \Laminas\Config\Config($config)
+            new \VuFind\Config\Config($config)
         );
     }
 

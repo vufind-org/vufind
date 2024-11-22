@@ -494,7 +494,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
-            new \Laminas\Config\Config(
+            new \VuFind\Config\Config(
                 $options['configArray'] ?? [
                     'Site' => [
                         'institution' => 'My Institution',

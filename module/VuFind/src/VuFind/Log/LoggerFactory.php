@@ -29,13 +29,13 @@
 
 namespace VuFind\Log;
 
-use Laminas\Config\Config;
 use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 
 use function count;

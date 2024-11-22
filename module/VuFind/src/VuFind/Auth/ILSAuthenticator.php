@@ -29,9 +29,9 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
@@ -163,7 +163,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
             return null;
         }
 
-        $configAuth = $this->config->Authentication ?? new \Laminas\Config\Config([]);
+        $configAuth = $this->config->Authentication ?? new \VuFind\Config\Config([]);
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {

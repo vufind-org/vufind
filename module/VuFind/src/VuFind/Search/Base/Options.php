@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\Base;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function count;

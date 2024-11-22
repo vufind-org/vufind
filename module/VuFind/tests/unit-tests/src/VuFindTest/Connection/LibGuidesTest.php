@@ -30,9 +30,9 @@
 
 namespace VuFindTest\Connection;
 
-use Laminas\Config\Config;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
+use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
 /**

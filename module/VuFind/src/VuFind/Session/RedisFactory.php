@@ -83,11 +83,11 @@ class RedisFactory implements FactoryInterface
     /**
      * Given a configuration, build the client object.
      *
-     * @param \Laminas\Config\Config $config Session configuration
+     * @param \VuFind\Config\Config $config Session configuration
      *
      * @return \Credis_Client
      */
-    protected function getConnection(\Laminas\Config\Config $config)
+    protected function getConnection(\VuFind\Config\Config $config)
     {
         // Set defaults if nothing set in config file.
         $host = $config->redis_host ?? 'localhost';

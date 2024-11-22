@@ -87,9 +87,9 @@ class ObalkyKnihService implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration for service
+     * @param \VuFind\Config\Config $config Configuration for service
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         if (
             !isset($config->base_url) || count($config->base_url) < 1

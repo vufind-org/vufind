@@ -56,7 +56,7 @@ class CspHeaderGenerator implements
     /**
      * Configuration for generator from contensecuritypolicy.ini
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -77,7 +77,7 @@ class CspHeaderGenerator implements
     /**
      * CspHeaderGenerator constructor.
      *
-     * @param \Laminas\Config\Config          $config         Configuration
+     * @param \VuFind\Config\Config           $config         Configuration
      * @param \VuFind\Security\NonceGenerator $nonceGenerator Nonce generator
      */
     public function __construct($config, $nonceGenerator)

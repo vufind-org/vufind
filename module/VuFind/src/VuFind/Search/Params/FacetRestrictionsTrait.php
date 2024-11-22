@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\Params;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * Trait to add facet limiting settings to a Params object.

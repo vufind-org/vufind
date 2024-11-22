@@ -63,7 +63,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     /**
      * Primo configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $primoConfig;
 
