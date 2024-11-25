@@ -243,6 +243,28 @@ class BlockCipher
     }
 
     /**
+     * Set the encryption algorithm (cipher) and mode (optionally)
+     *
+     * @param string  $algo New algorithm
+     * @param ?string $mode New mode (null to keep current setting)
+     *
+     * @return static
+     * @throws InvalidArgumentException
+     */
+    protected function setAlgorithmAndMode(string $algo, string $mode = null): static
+    {
+        $openSslMethod = ($this->encryptionAlgos[$algo] ?? 'UNSUPPORTED') . '-' . ($mode ?? $this->mode);
+        if (!in_array($openSslMethod, openssl_get_cipher_methods(true))) {
+            throw new InvalidArgumentException("Unsupported algorithm/mode: $algo/$mode");
+        }
+        $this->algo = $algo;
+        if ($mode !== null) {
+            $this->mode = $mode;
+        }
+        return $this;
+    }
+
+    /**
      * Set the encryption algorithm (cipher)
      *
      * @param string $algo New algorithm
@@ -252,13 +274,7 @@ class BlockCipher
      */
     protected function setAlgorithm(string $algo): static
     {
-        if (!in_array($this->encryptionAlgos[$algo] . '-cbc', openssl_get_cipher_methods(true))) {
-            throw new InvalidArgumentException(
-                'Unsupported algorithm: ' . $algo
-            );
-        }
-        $this->algo = $algo;
-        return $this;
+        return $this->setAlgorithmAndMode($algo);
     }
 
     /**
@@ -453,9 +469,7 @@ class BlockCipher
      */
     public function encrypt(string $data): string
     {
-        // 0 (as integer), 0.0 (as float) & '0' (as string) will return false, though these should be allowed
-        // Must be a string, integer, or float in order to encrypt
-        if ($data === '') {
+        if ($data === '') { // don't use empty() because of "falsy" values
             throw new InvalidArgumentException('Cannot encrypt empty data');
         }
         if (empty($this->key)) {
@@ -485,7 +499,7 @@ class BlockCipher
     }
 
     /**
-     * Generate the encryption key and the HMAC key for the authentication
+     * Generate the encryption/decryption key and the HMAC key for the authentication
      *
      * @param string $ciphertext Text to decrypt
      * @param string $salt       Salt
@@ -495,8 +509,12 @@ class BlockCipher
      * @return string
      * @throws InvalidArgumentException
      */
-    protected function getValidationHmac(string $ciphertext, string $salt, int $keySize, bool $legacy = false): string
-    {
+    protected function generateKeyandReturnValidationHmac(
+        string $ciphertext,
+        string $salt,
+        int $keySize,
+        bool $legacy = false
+    ): string {
         $callback = $legacy ? [$this, 'getLegacyPbkdf2'] : 'hash_pbkdf2';
         $hash = $callback(
             $this->pbkdf2Hash,
@@ -536,11 +554,11 @@ class BlockCipher
         $hmac = mb_substr($data, 0, $hmacSize, '8bit');
         $ciphertext = base64_decode(mb_substr($data, $hmacSize, null, '8bit') ?: '');
         $iv = mb_substr($ciphertext, 0, $this->getSaltSize(), '8bit');
-        $hmacNew = $this->getValidationHmac($ciphertext, $iv, $keySize);
-        if (strcmp($hmacNew, $hmac) !== 0) {
+        $hmacNew = $this->generateKeyandReturnValidationHmac($ciphertext, $iv, $keySize);
+        if ($hmacNew !== $hmac) {
             // If authentication failed using new algorithm, fall back to legacy:
-            $hmacNew = $this->getValidationHmac($ciphertext, $iv, $keySize, true);
-            if (strcmp($hmacNew, $hmac) !== 0) {
+            $hmacNew = $this->generateKeyandReturnValidationHmac($ciphertext, $iv, $keySize, true);
+            if ($hmacNew !== $hmac) {
                 return false;
             }
         }

@@ -191,11 +191,16 @@ class SwitchDbHashCommand extends Command
             return 0;
         }
 
-        // Initialize Openssl first, so we can catch any illegal algorithms before
-        // making any changes:
+        // Initialize ciphers first, so we can catch any illegal algorithms before making any changes:
         try {
-            $oldCrypt = $this->getCipherOptions($oldhash);
-            $newCrypt = $this->getCipherOptions($newhash);
+            if ($oldhash != 'none') {
+                $oldcipher = new BlockCipher($this->getCipherOptions($oldhash));
+                $oldcipher->setKey($oldkey);
+            } else {
+                $oldcipher = null;
+            }
+            $newcipher = new BlockCipher($this->getCipherOptions($newhash));
+            $newcipher->setKey($newkey);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
@@ -215,16 +220,6 @@ class SwitchDbHashCommand extends Command
             $output->writeln("\tWrite failed!");
             return 1;
         }
-
-        // Set up ciphers for use below:
-        if ($oldhash != 'none') {
-            $oldcipher = new BlockCipher($oldCrypt);
-            $oldcipher->setKey($oldkey);
-        } else {
-            $oldcipher = null;
-        }
-        $newcipher = new BlockCipher($newCrypt);
-        $newcipher->setKey($newkey);
 
         // Now do the database rewrite:
         $users = $this->userService->getAllUsersWithCatUsernames();
