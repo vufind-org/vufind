@@ -136,6 +136,8 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         switch (strtolower($type)) {
             case 'mysql':
                 return 'mysqli';
+            case 'mariadb':
+                return 'mysqli';
             case 'oci8':
                 return 'Oracle';
             case 'pgsql':
