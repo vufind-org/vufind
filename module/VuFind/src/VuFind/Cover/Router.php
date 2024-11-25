@@ -29,7 +29,6 @@
 
 namespace VuFind\Cover;
 
-use Laminas\Config\Config;
 use VuFind\Cover\Loader as CoverLoader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -54,12 +53,12 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      *
      * @param string      $dynamicUrl  Base URL for dynamic cover images.
      * @param CoverLoader $coverLoader Cover loader
-     * @param Config      $config      Content config
+     * @param array       $config      Content config
      */
     public function __construct(
         protected string $dynamicUrl,
         protected CoverLoader $coverLoader,
-        protected Config $config
+        protected array $config = []
     ) {
     }
 
@@ -126,7 +125,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
 
-        if (!($this->config->coverimagesBrowserCache ?? true)) {
+        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
             // Add timestamp hash to avoid browser cache
             $thumb['hash'] = md5(time());
         }
