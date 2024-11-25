@@ -105,6 +105,212 @@ trait SearchFacetFilterTrait
     protected $facetSecondLevelExcludeLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.exclude';
 
     /**
+     * Expected hierarchical facet options by sort setting
+     *
+     * @var array
+     */
+    protected $expectedHierarchicalFacetOptions = [
+        'count' => [
+            [
+                'filter' => '0/level1a/',
+                'displayText' => 'Top Level, Sorted Last',
+                'children' => [
+                    [
+                        'filter' => '1/level1a/level2a/',
+                        'displayText' => 'level2a',
+                        'children' => [
+                            [
+                                'filter' => '2/level1a/level2a/level3a/',
+                                'displayText' => 'level3a',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2a/level3b/',
+                                'displayText' => 'level3b',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2a/level3d/',
+                                'displayText' => 'level3d',
+                            ],
+                        ],
+                    ],
+                    [
+                        'filter' => '1/level1a/level2b/',
+                        'displayText' => 'level2b',
+                        'children' => [
+                            [
+                                'filter' => '2/level1a/level2b/level3c/',
+                                'displayText' => 'level3c',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2b/level3e/',
+                                'displayText' => 'level3e',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'filter' => '0/level1z/',
+                'displayText' => 'Top Level, Sorted First',
+                'children' => [
+                    [
+                        'filter' => '1/level1z/level2y/',
+                        'displayText' => 'Second Level, Sorted Last',
+                        'children' => [
+                            [
+                                'filter' => '2/level1z/level2y/level3g/',
+                                'displayText' => 'level3g',
+                            ],
+                        ],
+                    ],
+                    [
+                        'filter' => '1/level1z/level2z/',
+                        'displayText' => 'Second Level, Sorted First',
+                        'children' => [
+                            [
+                                'filter' => '2/level1z/level2z/level3z/',
+                                'displayText' => 'level3z',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'top' => [
+            [
+                'filter' => '0/level1z/',
+                'displayText' => 'Top Level, Sorted First',
+                'children' => [
+                    [
+                        'filter' => '1/level1z/level2y/',
+                        'displayText' => 'Second Level, Sorted Last',
+                        'children' => [
+                            [
+                                'filter' => '2/level1z/level2y/level3g/',
+                                'displayText' => 'level3g',
+                            ],
+                        ],
+                    ],
+                    [
+                        'filter' => '1/level1z/level2z/',
+                        'displayText' => 'Second Level, Sorted First',
+                        'children' => [
+                            [
+                                'filter' => '2/level1z/level2z/level3z/',
+                                'displayText' => 'level3z',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'filter' => '0/level1a/',
+                'displayText' => 'Top Level, Sorted Last',
+                'children' => [
+                    [
+                        'filter' => '1/level1a/level2a/',
+                        'displayText' => 'level2a',
+                        'children' => [
+                            [
+                                'filter' => '2/level1a/level2a/level3a/',
+                                'displayText' => 'level3a',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2a/level3b/',
+                                'displayText' => 'level3b',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2a/level3d/',
+                                'displayText' => 'level3d',
+                            ],
+                        ],
+                    ],
+                    [
+                        'filter' => '1/level1a/level2b/',
+                        'displayText' => 'level2b',
+                        'children' => [
+                            [
+                                'filter' => '2/level1a/level2b/level3c/',
+                                'displayText' => 'level3c',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2b/level3e/',
+                                'displayText' => 'level3e',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'all' => [
+            [
+                'filter' => '0/level1z/',
+                'displayText' => 'Top Level, Sorted First',
+                'children' => [
+                    [
+                        'filter' => '1/level1z/level2z/',
+                        'displayText' => 'Second Level, Sorted First',
+                        'children' => [
+                            [
+                                'filter' => '2/level1z/level2z/level3z/',
+                                'displayText' => 'level3z',
+                            ],
+                        ],
+                    ],
+                    [
+                        'filter' => '1/level1z/level2y/',
+                        'displayText' => 'Second Level, Sorted Last',
+                        'children' => [
+                            [
+                                'filter' => '2/level1z/level2y/level3g/',
+                                'displayText' => 'level3g',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'filter' => '0/level1a/',
+                'displayText' => 'Top Level, Sorted Last',
+                'children' => [
+                    [
+                        'filter' => '1/level1a/level2a/',
+                        'displayText' => 'level2a',
+                        'children' => [
+                            [
+                                'filter' => '2/level1a/level2a/level3a/',
+                                'displayText' => 'level3a',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2a/level3b/',
+                                'displayText' => 'level3b',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2a/level3d/',
+                                'displayText' => 'level3d',
+                            ],
+                        ],
+                    ],
+                    [
+                        'filter' => '1/level1a/level2b/',
+                        'displayText' => 'level2b',
+                        'children' => [
+                            [
+                                'filter' => '2/level1a/level2b/level3c/',
+                                'displayText' => 'level3c',
+                            ],
+                            [
+                                'filter' => '2/level1a/level2b/level3e/',
+                                'displayText' => 'level3e',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ];
+
+    /**
      * Check that a filter is applied
      *
      * @param Element $page           Page
@@ -259,5 +465,131 @@ trait SearchFacetFilterTrait
             $this->clickCss($container, 'input[type="submit"]');
         }
         $this->waitForPageLoad($page);
+    }
+
+    /**
+     * Get expected <select> field options for a hierarchical facet
+     *
+     * @param string $sort Sort setting
+     *
+     * @return array
+     */
+    protected function getExpectedHierarchicalFacetOptions(string $sort): array
+    {
+        $result = [];
+        if (null === ($hierarchy = $this->expectedHierarchicalFacetOptions[$sort] ?? null)) {
+            throw new \Exception("Invalid sort '$sort'");
+        }
+        foreach ($this->flattenFacetHierarchy($hierarchy) as $current) {
+            [$level] = explode('/', $current['filter']);
+            $result['~hierarchical_facet_str_mv:"' . $current['filter'] . '"'] = str_repeat('&nbsp;', 4 * $level)
+                . $current['displayText'];
+        }
+        return $result;
+    }
+
+    /**
+     * Get expected facet tree contents as a list for a hierarchical facet
+     *
+     * @param string $sort Sort setting
+     *
+     * @return array
+     */
+    protected function getExpectedHierarchicalFacetTreeItems(string $sort): array
+    {
+        $result = [];
+        if (null === ($hierarchy = $this->expectedHierarchicalFacetOptions[$sort] ?? null)) {
+            throw new \Exception("Invalid sort '$sort'");
+        }
+        foreach ($this->flattenFacetHierarchy($hierarchy) as $current) {
+            $result[] = $current['displayText'];
+        }
+        return $result;
+    }
+
+    /**
+     * Get expected display text for a hierarchical facet filter
+     *
+     * @param string $sort  Sort setting
+     * @param int    $index Item index
+     *
+     * @return string
+     */
+    protected function getExpectedHierarchicalFacetFilterText(string $sort, int $index): string
+    {
+        if (null === ($hierarchy = $this->expectedHierarchicalFacetOptions[$sort] ?? null)) {
+            throw new \Exception("Invalid sort '$sort'");
+        }
+        $facetValues = array_values($this->flattenFacetHierarchy($hierarchy));
+        if (null === ($facetValue = $facetValues[$index] ?? null)) {
+            throw new \Exception("Facet index $index out of bounds");
+        }
+        $display = [$facetValue['displayText']];
+        [$level] = explode('/', $facetValue['filter']);
+        while ($level > 0) {
+            --$index;
+            if (null === ($facetValue = $facetValues[$index] ?? null)) {
+                throw new \Exception("Facet index $index out of bounds");
+            }
+            array_unshift($display, $facetValue['displayText']);
+            [$level] = explode('/', $facetValue['filter']);
+        }
+        return implode('/', $display);
+    }
+
+    /**
+     * Flatten a hierarchical facet list to a simple array
+     *
+     * @param array $facetList Facet list
+     *
+     * @return array Simple array of facets
+     */
+    protected function flattenFacetHierarchy($facetList)
+    {
+        $results = [];
+        foreach ($facetList as $facetItem) {
+            $children = !empty($facetItem['children'])
+                ? $facetItem['children']
+                : [];
+            unset($facetItem['children']);
+            $results[] = $facetItem;
+            if ($children) {
+                $results = array_merge(
+                    $results,
+                    $this->flattenFacetHierarchy($children)
+                );
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Return a displayed hierarchical facet as a list of items
+     *
+     * @param Element $page                  Mink page object
+     * @param string  $treeContainerSelector Tree container element selector (ul needs to be an immediate child of this)
+     *
+     * @return array
+     */
+    protected function getHierarchicalFacetTreeItems(Element $page, string $treeContainerSelector): array
+    {
+        return $this->processFacetLevel($this->findCss($page, $treeContainerSelector));
+    }
+
+    /**
+     * Recursive helper for getHierarchicalFacetTreeItems to return a facet level and its children
+     *
+     * @param Element $node Container element for the list
+     *
+     * @return array
+     */
+    protected function processFacetLevel(Element $node): array
+    {
+        $result = [];
+        foreach ($node->findAll('css', ':scope > ul > li a.text') as $item) {
+            $result[] = $item->getText();
+            $result = [...$result, ...$this->processFacetLevel($item)];
+        }
+        return $result;
     }
 }

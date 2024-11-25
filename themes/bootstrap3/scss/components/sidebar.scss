@@ -241,6 +241,10 @@ h3.facet-title {
     font-weight: bold;
   }
 
+  input[type="checkbox"] {
+    height: initial;
+  }
+
   .apply-filters {
     margin-top: 1em;
     display: none;

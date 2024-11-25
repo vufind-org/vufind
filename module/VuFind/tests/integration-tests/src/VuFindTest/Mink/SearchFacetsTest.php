@@ -800,60 +800,19 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         return [
             [
                 null,
-                [
-                    [
-                        'value' => 'Top Level, Sorted Last',
-                        'children' => [
-                            'level2a',
-                            'level2b',
-                        ],
-                    ],
-                    [
-                        'value' => 'Top Level, Sorted First',
-                        'children' => [
-                            'Second Level, Sorted Last',
-                            'Second Level, Sorted First',
-                        ],
-                    ],
-                ],
+                'count',
+            ],
+            [
+                'count',
+                'count',
             ],
             [
                 'top',
-                [
-                    [
-                        'value' => 'Top Level, Sorted First',
-                        'children' => [
-                            'Second Level, Sorted Last',
-                            'Second Level, Sorted First',
-                        ],
-                    ],
-                    [
-                        'value' => 'Top Level, Sorted Last',
-                        'children' => [
-                            'level2a',
-                            'level2b',
-                        ],
-                    ],
-                ],
+                'top',
             ],
             [
                 'all',
-                [
-                    [
-                        'value' => 'Top Level, Sorted First',
-                        'children' => [
-                            'Second Level, Sorted First',
-                            'Second Level, Sorted Last',
-                        ],
-                    ],
-                    [
-                        'value' => 'Top Level, Sorted Last',
-                        'children' => [
-                            'level2a',
-                            'level2b',
-                        ],
-                    ],
-                ],
+                'all',
             ],
         ];
     }
@@ -861,14 +820,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that hierarchical facet sort options work properly.
      *
-     * @param ?string $sort     Sort option
-     * @param array   $expected Expected facet values in order
+     * @param ?string $sort         Sort option
+     * @param string  $expectedSort Expected sort order of facet hierarchy
      *
      * @dataProvider hierarchicalFacetSortProvider
      *
      * @return void
      */
-    public function testHierarchicalFacetSort(?string $sort, array $expected): void
+    public function testHierarchicalFacetSort(?string $sort, string $expectedSort): void
     {
         $facetConfig = [
             'Results' => [
@@ -890,22 +849,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        foreach ($expected as $index => $facet) {
-            $topLi = $this->findCss($page, '#side-collapse-hierarchical_facet_str_mv ul.facet-tree > li', null, $index);
-            $this->assertEquals(
-                $facet['value'],
-                $this->findCssAndGetText($topLi, '.facet-value'),
-                "Hierarchical facet item $index"
-            );
-            foreach ($facet['children'] as $childIndex => $childFacet) {
-                $childLi = $this->findCss($topLi, 'ul > li.facet-tree__parent', null, $childIndex);
-                $this->assertEquals(
-                    $childFacet,
-                    $this->findCssAndGetText($childLi, '.facet-value'),
-                    "Hierarchical facet item $index child $childIndex"
-                );
-            }
-        }
+
+        $expected = $this->getExpectedHierarchicalFacetTreeItems($expectedSort);
+        $actual = $this->getHierarchicalFacetTreeItems($page, '#side-collapse-hierarchical_facet_str_mv');
+        $this->assertSame($expected, $actual);
     }
 
     /**
