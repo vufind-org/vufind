@@ -15,10 +15,12 @@
           'class' => 'icon-link__icon',
           'data-checked' => $current['selected'] ? 'true' : 'false',
       ]) ?>
-      <span class="icon-link__label"><?=$this->transEsc($current['desc']) ?></span>
+      <span class="text">
+        <span class="icon-link__label"><?=$this->transEsc($current['desc']) ?></span>
+      </span>
+      <?php if (!$current['selected']): ?>
+        <span class="badge avail-count"></span>
+      <?php endif; ?>
     </a>
-    <?php if (!$current['selected']): ?>
-      <span class="badge avail-count"></span>
-    <?php endif; ?>
   </div>
 <?php endforeach; ?>
