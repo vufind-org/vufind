@@ -177,7 +177,7 @@ class CspHeaderGenerator implements
         $reportToHeader->setFieldName('Report-To');
         $groupsText = [];
 
-        $reportTo = $this->config['ReportTo'];
+        $reportTo = $this->config['ReportTo'] ?? [];
         foreach ($reportTo['groups'] ?? [] as $groupName) {
             $configSectionName = 'ReportTo' . $groupName;
             $groupConfig = $this->config[$configSectionName] ?? false;
@@ -214,7 +214,7 @@ class CspHeaderGenerator implements
         $nelHeader->setFieldName('NEL');
         $nelData = [];
 
-        $nelConfig = $this->config['NetworkErrorLogging'];
+        $nelConfig = $this->config['NetworkErrorLogging'] ?? [];
         if ($reportTo = $nelConfig['report_to'] ?? null) {
             $nelData['report_to'] = $reportTo;
         } else {
