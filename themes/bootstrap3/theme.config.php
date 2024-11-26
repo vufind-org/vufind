@@ -47,6 +47,9 @@ return [
          *
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
+         *
+         * Strings are supported for backwards compatibility reasons. example:
+         * - 'example.js' => same as ['file' => 'example.js']
          */
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
