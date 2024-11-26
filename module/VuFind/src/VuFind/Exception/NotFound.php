@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Record Missing Exception
+ * "Not Found" Exception
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Exceptions
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -30,23 +30,23 @@
 namespace VuFind\Exception;
 
 /**
- * Record Missing Exception
+ * "Not Found" Exception
  *
  * @category VuFind
  * @package  Exceptions
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordMissing extends NotFound implements SeverityLevelInterface
+class NotFound extends \Exception implements HttpStatusInterface
 {
     /**
-     * Get the logging severity level for this exception.
+     * Get HTTP status associated with this exception.
      *
      * @return int
      */
-    public function getSeverityLevel()
+    public function getHttpStatus()
     {
-        return \Laminas\Log\Logger::DEBUG;
+        return 404;
     }
 }

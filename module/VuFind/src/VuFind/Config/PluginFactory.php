@@ -36,7 +36,7 @@ use VuFind\Config\Feature\IniReaderTrait;
 
 use function count;
 use function in_array;
-use function is_object;
+use function is_array;
 
 /**
  * VuFind Config Plugin Factory
@@ -70,16 +70,15 @@ class PluginFactory implements AbstractFactoryInterface
         // Retrieve and parse at least one configuration file, and possibly a whole
         // chain of them if the Parent_Config setting is used:
         do {
-            $configs[]
-                = new Config($this->getIniReader()->fromFile($filename), true);
+            $configs[] = $this->getIniReader()->fromFile($filename);
 
             $i = count($configs) - 1;
-            if (isset($configs[$i]->Parent_Config->path)) {
-                $filename = $configs[$i]->Parent_Config->path;
-            } elseif (isset($configs[$i]->Parent_Config->relative_path)) {
+            if (isset($configs[$i]['Parent_Config']['path'])) {
+                $filename = $configs[$i]['Parent_Config']['path'];
+            } elseif (isset($configs[$i]['Parent_Config']['relative_path'])) {
                 $filename = pathinfo($filename, PATHINFO_DIRNAME)
                     . DIRECTORY_SEPARATOR
-                    . $configs[$i]->Parent_Config->relative_path;
+                    . $configs[$i]['Parent_Config']['relative_path'];
             } else {
                 $filename = false;
             }
@@ -92,21 +91,20 @@ class PluginFactory implements AbstractFactoryInterface
         // Now we'll pull all the children down one at a time and override settings
         // as appropriate:
         while (null !== ($child = array_pop($configs))) {
-            $overrideSections = isset($child->Parent_Config->override_full_sections)
+            $overrideSections = isset($child['Parent_Config']['override_full_sections'])
                 ? explode(
                     ',',
                     str_replace(
                         ' ',
                         '',
-                        $child->Parent_Config->override_full_sections
+                        $child['Parent_Config']['override_full_sections']
                     )
                 )
                 : [];
             foreach ($child as $section => $contents) {
                 // Check if arrays in the current config file should be merged with
                 // preceding arrays from config files defined as Parent_Config.
-                $mergeArraySettings
-                    = !empty($child->Parent_Config->merge_array_settings);
+                $mergeArraySettings = !empty($child['Parent_Config']['merge_array_settings']);
 
                 // Omit Parent_Config from the returned configuration; it is only
                 // needed during loading, and its presence will cause problems in
@@ -117,34 +115,33 @@ class PluginFactory implements AbstractFactoryInterface
                 }
                 if (
                     in_array($section, $overrideSections)
-                    || !isset($config->$section)
+                    || !isset($config[$section])
                 ) {
-                    $config->$section = $child->$section;
+                    $config[$section] = $child[$section];
                 } else {
-                    foreach (array_keys($contents->toArray()) as $key) {
+                    foreach (array_keys($contents) as $key) {
                         // If a key is defined as key[] in the config file the key
                         // remains a Laminas\Config\Config object. If the current
                         // section is not configured as an override section we try to
                         // merge the key[] values instead of overwriting them.
                         if (
-                            is_object($config->$section->$key)
-                            && is_object($child->$section->$key)
+                            is_array($config[$section][$key] ?? null)
+                            && is_array($child[$section][$key])
                             && $mergeArraySettings
                         ) {
-                            $config->$section->$key = array_merge(
-                                $config->$section->$key->toArray(),
-                                $child->$section->$key->toArray()
+                            $config[$section][$key] = array_merge(
+                                $config[$section][$key],
+                                $child[$section][$key]
                             );
                         } else {
-                            $config->$section->$key = $child->$section->$key;
+                            $config[$section][$key] = $child[$section][$key];
                         }
                     }
                 }
             }
         }
 
-        $config->setReadOnly();
-        return $config;
+        return new Config($config);
     }
 
     /**
