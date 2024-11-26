@@ -34,14 +34,14 @@ class MultiIdPConfigurationLoader implements
     /**
      * Configured IdPs with entityId and overridden attribute mapping
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $config;
 
     /**
      * Configured IdPs with entityId and overridden attribute mapping
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $shibConfig;
 
@@ -55,8 +55,8 @@ class MultiIdPConfigurationLoader implements
         \VuFind\Config\Config $config,
         \VuFind\Config\Config $shibConfig
     ) {
-        $this->config = $config;
-        $this->shibConfig = $shibConfig;
+        $this->config = $config->toArray();
+        $this->shibConfig = $shibConfig->toArray();
     }
 
     /**
@@ -69,12 +69,12 @@ class MultiIdPConfigurationLoader implements
      */
     public function getConfiguration($entityId)
     {
-        $config = $this->config->Shibboleth->toArray();
+        $config = $this->config['Shibboleth'] ?? [];
         $idpConfig = null;
         $prefix = null;
         foreach ($this->shibConfig as $name => $configuration) {
             if ($entityId == trim($configuration['entityId'])) {
-                $idpConfig = $configuration->toArray();
+                $idpConfig = $configuration;
                 $prefix = $name;
                 break;
             }
