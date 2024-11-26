@@ -67,7 +67,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())
             ->method('findContainingTheme')
-            ->with($this->equalTo(['images/noCover2.gif']))
+            ->with($this->equalTo(['images/hidden-image.gif']))
             ->will($this->returnValue(false));
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
@@ -82,7 +82,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader();
         $this->assertEquals('image/gif', $loader->getContentType());
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('64', strlen($loader->getImage()));
     }
 
     /**
@@ -95,6 +95,34 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     public function testDefaultLoadingForImage()
     {
         $loader = $this->getLoader();
+        $this->assertEquals('64', strlen($loader->getImage()));
+        $this->assertEquals('image/gif', $loader->getContentType());
+    }
+
+    /**
+     * Test that requesting a content type causes configured default data to load.
+     *
+     * @return void
+     */
+    public function testConfiguredDefaultLoadingForContentType()
+    {
+        $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
+        $loader = $this->getLoader($cfg);
+        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertEquals('368', strlen($loader->getImage()));
+    }
+
+    /**
+     * Test that requesting an image causes configured default data to load.
+     * (same as above test, but with assertions in different order to
+     * force appropriate loading).
+     *
+     * @return void
+     */
+    public function testConfiguredDefaultLoadingForImage()
+    {
+        $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
+        $loader = $this->getLoader($cfg);
         $this->assertEquals('368', strlen($loader->getImage()));
         $this->assertEquals('image/gif', $loader->getContentType());
     }
@@ -113,7 +141,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         // We expect the loader to complain about the bad filename and load the default image:
         $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
         $loader->loadUnavailable();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('64', strlen($loader->getImage()));
     }
 
     /**
@@ -132,7 +160,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             . $this->testTheme . '/' . $badfile . "'";
         $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
         $loader->loadUnavailable();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('64', strlen($loader->getImage()));
     }
 
     /**
