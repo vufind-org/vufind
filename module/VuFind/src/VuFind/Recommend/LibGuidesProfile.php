@@ -69,7 +69,7 @@ class LibGuidesProfile implements
     /**
      * List of strategies enabled to find a matching LibGuides profile
      *
-     * @var int
+     * @var array
      */
     protected $strategies = [];
 
@@ -119,14 +119,14 @@ class LibGuidesProfile implements
         // Cache the data related to profiles for up to 10 minutes:
         $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
 
-        if ($profile = $config->Profile) {
-            $strategies = $profile->get('strategies', []);
+        if ($profile = $config->Profile->toArray()) {
+            $strategies = $profile['strategies'] ?? [];
             $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
 
-            $this->callNumberToAlias = $profile->call_numbers ? $profile->call_numbers->toArray() : [];
-            $this->aliasToAccountId = $profile->profile_aliases ? $profile->profile_aliases->toArray() : [];
-            $this->callNumberField = $profile->get('call_number_field', 'callnumber-first');
-            $this->callNumberLength = $profile->get('call_number_length', 3);
+            $this->callNumberToAlias = $profile['call_numbers'] ?? [];
+            $this->aliasToAccountId = $profile['profile_aliases'] ?? [];
+            $this->callNumberField = $profile['call_number_field'] ?? 'callnumber-first';
+            $this->callNumberLength = $profile['call_number_length'] ?? 3;
         }
     }
 
@@ -179,7 +179,7 @@ class LibGuidesProfile implements
     /**
      * Get terms related to the query.
      *
-     * @return array
+     * @return mixed
      */
     public function getResults()
     {

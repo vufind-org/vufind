@@ -83,9 +83,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         // Mock LibGuides connector
-        $this->connector = $this->getMockBuilder(LibGuides::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->connector = $this->createMock(LibGuides::class);
         $accountsFixture = $this->getFixture('libguides/api/accounts');
         $accounts = json_decode(substr($accountsFixture, strpos($accountsFixture, '[')));
         $this->connector->method('getAccounts')->willReturn($accounts);
@@ -231,9 +229,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
         $queryResults = new Results(
             $queryParams,
             $this->createStub(\VuFindSearch\Service::class),
-            $this->getMockBuilder(\VuFind\Record\Loader::class)
-                ->disableOriginalConstructor()
-                ->getMock(),
+            $this->createMock(\VuFind\Record\Loader::class),
             null,
             $facets
         );
