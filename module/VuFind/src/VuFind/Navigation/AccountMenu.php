@@ -193,7 +193,7 @@ class AccountMenu extends AbstractMenu
                     [
                         'name' => 'newlist',
                         'label' => 'Create a List',
-                        'route' => 'editlist',
+                        'route' => 'editList',
                         'routeParams' => [
                             'id' => 'NEW',
                         ],
