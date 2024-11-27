@@ -59,8 +59,8 @@ abstract class AbstractMenu implements NavigationInterface
         $menu = $this->config;
         if (!$menu) {
             $menu = $this->getDefaultMenu();
-        } elseif ($menu['MenuItems'] ?? false) {
-            // backward compatibility for outdated configurations
+        } elseif ($this instanceof AccountMenu && $menu['MenuItems']) {
+            // backward compatibility for outdated AccountMenu configurations
             $default = $this->getDefaultMenu();
             $default['Account']['MenuItems'] = $menu['MenuItems'];
             $menu = $default;

@@ -53,7 +53,7 @@ class AdminMenu extends AbstractMenuHelper
         return $this->getView()->render(
             'admin/menu.phtml',
             [
-                'items' => $this->getItems(),
+                'items' => $this->getMenu()['Admin']['MenuItems'],
             ]
         );
     }

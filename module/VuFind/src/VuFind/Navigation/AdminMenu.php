@@ -58,44 +58,48 @@ class AdminMenu extends AbstractMenu
      *
      * @return array
      */
-    protected function getDefaultItems(): array
+    protected function getDefaultMenu(): array
     {
         return [
-            [
-                'name' => 'home',
-                'label' => 'Home',
-                'route' => 'admin',
-            ],
-            [
-                'name' => 'socialstats',
-                'label' => 'Social Statistics',
-                'route' => 'admin/social',
-            ],
-            [
-                'name' => 'config',
-                'label' => 'Configuration',
-                'route' => 'admin/config',
-            ],
-            [
-                'name' => 'maintenance',
-                'label' => 'System Maintenance',
-                'route' => 'admin/maintenance',
-            ],
-            [
-                'name' => 'tags',
-                'label' => 'Tag Maintenance ',
-                'route' => 'admin/tags',
-            ],
-            [
-                'name' => 'feedback',
-                'label' => 'Feedback Management',
-                'route' => 'admin/feedback',
-            ],
-            [
-                'name' => 'overdrive',
-                'label' => 'od_admin_menu',
-                'route' => 'admin/overdrive',
-                'checkMethod' => 'checkShowOverdrive',
+            'Admin' => [
+                'MenuItems' => [
+                    [
+                        'name' => 'home',
+                        'label' => 'Home',
+                        'route' => 'admin',
+                    ],
+                    [
+                        'name' => 'socialstats',
+                        'label' => 'Social Statistics',
+                        'route' => 'admin/social',
+                    ],
+                    [
+                        'name' => 'config',
+                        'label' => 'Configuration',
+                        'route' => 'admin/config',
+                    ],
+                    [
+                        'name' => 'maintenance',
+                        'label' => 'System Maintenance',
+                        'route' => 'admin/maintenance',
+                    ],
+                    [
+                        'name' => 'tags',
+                        'label' => 'Tag Maintenance ',
+                        'route' => 'admin/tags',
+                    ],
+                    [
+                        'name' => 'feedback',
+                        'label' => 'Feedback Management',
+                        'route' => 'admin/feedback',
+                    ],
+                    [
+                        'name' => 'overdrive',
+                        'label' => 'od_admin_menu',
+                        'route' => 'admin/overdrive',
+                        'checkMethod' => 'checkShowOverdrive',
+                    ],
+                ],
             ],
         ];
     }
