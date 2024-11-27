@@ -30,9 +30,11 @@
 namespace VuFind\Controller;
 
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Crypt\HMAC;
 use VuFind\Log\LoggerAwareTrait;
-use VuFindHttp\HttpServiceAwareInterface;
-use VuFindHttp\HttpServiceAwareTrait;
+use VuFind\RateLimiter\RateLimiterManager;
+use VuFind\RateLimiter\Turnstile\Turnstile;
 
 /**
  * Controller Cloudflare Turnstile access checks.
@@ -44,13 +46,30 @@ use VuFindHttp\HttpServiceAwareTrait;
  * @link     https://vufind.org Main Page
  */
 class TurnstileController extends AbstractBase implements
-    HttpServiceAwareInterface,
     LoggerAwareInterface
 {
-    use HttpServiceAwareTrait;
     use LoggerAwareTrait;
 
     protected $hashKeys = ['siteKey', 'policyId', 'destination'];
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm                 Service locator
+     * @param Turnstile               $turnstile          Turnstile service
+     * @param RateLimiterManager      $rateLimiterManager Rate Limiter Manager instance
+     * @param array                   $config             Rate Limiter configuration
+     * @param HMAC                    $hmac               HMAC service
+     */
+    public function __construct(
+        ServiceLocatorInterface $sm,
+        protected Turnstile $turnstile,
+        protected RateLimiterManager $rateLimiterManager,
+        protected array $config,
+        protected HMAC $hmac
+    ) {
+        parent::__construct($sm);
+    }
 
     /**
      * Present the Turnstile challenge to the user
@@ -60,14 +79,10 @@ class TurnstileController extends AbstractBase implements
     public function challengeAction()
     {
         $context = json_decode(base64_decode($this->params()->fromQuery('context')), true);
-
-        $yamlReader = $this->getService(\VuFind\Config\YamlReader::class);
-        $config = $yamlReader->get('RateLimiter.yaml');
-        $context['siteKey'] = $config['Turnstile']['siteKey'];
-        $context['jsLibraryUrl'] = $config['Turnstile']['jsLibraryUrl'] ??
+        $context['siteKey'] = $this->config['Turnstile']['siteKey'];
+        $context['jsLibraryUrl'] = $this->config['Turnstile']['jsLibraryUrl'] ??
             'https://challenges.cloudflare.com/turnstile/v0/api.js';
-        $hmac = $this->getService(\VuFind\Crypt\HMAC::class);
-        $context['hash'] = $hmac->generate($this->hashKeys, $context);
+        $context['hash'] = $this->hmac->generate($this->hashKeys, $context);
 
         $this->layout()->searchbox = false;
         return $this->createViewModel($context);
@@ -85,44 +100,16 @@ class TurnstileController extends AbstractBase implements
         $destination = $this->params()->fromPost('destination');
         $priorHash = $this->params()->fromPost('hash');
 
-        $hmac = $this->getService(\VuFind\Crypt\HMAC::class);
-        $yamlReader = $this->getService(\VuFind\Config\YamlReader::class);
-        $config = $yamlReader->get('RateLimiter.yaml');
-        $siteKey = $config['Turnstile']['siteKey'];
-        $newHash = $hmac->generate($this->hashKeys, compact($this->hashKeys));
+        $siteKey = $this->config['Turnstile']['siteKey'];
+        $newHash = $this->hmac->generate($this->hashKeys, compact($this->hashKeys));
         if ($newHash != $priorHash) {
             throw new \Exception('Wrong hash value used in Turnstile verification.');
         }
 
-        // Call the Turnstile verify API to validate the token
-        $yamlReader = $this->getService(\VuFind\Config\YamlReader::class);
-        $config = $yamlReader->get('RateLimiter.yaml');
-        $secretKey = $config['Turnstile']['secretKey'];
-        $url = $config['Turnstile']['verifyUrl'] ??
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-        $body = [
-            'secret' => $secretKey,
-            'response' => $token,
-        ];
-        $response = $this->httpService->post(
-            $url,
-            json_encode($body),
-            'application/json'
-        );
-
-        if ($response->isOk()) {
-            $responseData = json_decode($response->getBody(), true);
-            $success = $responseData['success'];
-        } else {
-            // Unexpected error.  Treat as a positive result, since it's not the user's fault.
-            $this->logWarning('Verification process failed, allowing traffic: '
-                . $response->getStatusCode() . $response->getBody());
-            $success = true;
-        }
+        $success = $this->turnstile->validateToken($token, $policyId);
 
         // Save the Turnstile result for future requests
-        $rateLimiterManager = $this->getService(\VuFind\RateLimiter\RateLimiterManager::class);
-        $rateLimiterManager->setTurnstileResult(
+        $this->rateLimiterManager->setTurnstileResult(
             $policyId,
             $this->event->getRequest()->getServer('REMOTE_ADDR'),
             $success
