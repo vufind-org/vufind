@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Manager factory.
+ * HMAC factory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Plugin Manager factory.
+ * HMAC factory.
  *
  * @category VuFind
  * @package  Crypt
