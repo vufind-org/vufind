@@ -50,25 +50,55 @@ abstract class AbstractMenu implements NavigationInterface
     }
 
     /**
-     * Get available menu items
+     * Get all groups with items to display.
      *
      * @return array
      */
-    public function getItems(): array
+    public function getMenu(): array
     {
-        $items = array_filter(
-            $this->config['MenuItems'] ?? $this->getDefaultItems(),
+        $menu = $this->config;
+        if (!$menu) {
+            $menu = $this->getDefaultMenu();
+        } elseif ($menu['MenuItems'] ?? false) {
+            // backward compatibility for outdated configurations
+            $default = $this->getDefaultMenu();
+            $default['Account']['MenuItems'] = $menu['MenuItems'];
+            $menu = $default;
+        }
+
+        $availableGroups = [];
+        foreach ($this->filterAvailable($menu) as $group) {
+            // skip groups without items to display
+            if ($items = $this->filterAvailable($group['MenuItems'])) {
+                $group['MenuItems'] = $items;
+                $availableGroups[] = $group;
+            }
+        }
+
+        return $availableGroups;
+    }
+
+    /**
+     * Get available items from a given list.
+     *
+     * @param array $list Items to filter
+     *
+     * @return array
+     */
+    protected function filterAvailable(array $list): array
+    {
+        return array_filter(
+            $list,
             function ($item) {
                 return !isset($item['checkMethod']) || $this->{$item['checkMethod']}();
             }
         );
-        return $items;
     }
 
     /**
-     * Get default menu items
+     * Get default menu
      *
      * @return array
      */
-    abstract protected function getDefaultItems(): array;
+    abstract protected function getDefaultMenu(): array;
 }

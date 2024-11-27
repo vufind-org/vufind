@@ -178,17 +178,25 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnectorOptions()
     {
+        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST',
             'api_url' => $this->edsConfig->General->api_url
                 ?? $this->defaultApiUrl,
+            'is_guest' => !$auth->isGranted('access.EDSExtendedResults'),
         ];
         if (isset($this->edsConfig->General->auth_url)) {
             $options['auth_url'] = $this->edsConfig->General->auth_url;
         }
         if (isset($this->edsConfig->General->session_url)) {
             $options['session_url'] = $this->edsConfig->General->session_url;
+        }
+        if (!empty($this->edsConfig->EBSCO_Account->api_key)) {
+            $options['api_key'] = $this->edsConfig->EBSCO_Account->api_key;
+        }
+        if (!empty($this->edsConfig->EBSCO_Account->api_key_guest)) {
+            $options['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
         }
         return $options;
     }

@@ -53,13 +53,13 @@ abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get available menu items
+     * Get all groups with items to display.
      *
      * @return array
      */
-    public function getItems(): array
+    public function getMenu(): array
     {
-        return $this->menu->getItems();
+        return $this->menu->getMenu();
     }
 
     /**

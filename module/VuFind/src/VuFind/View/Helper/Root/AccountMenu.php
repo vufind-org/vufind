@@ -53,22 +53,26 @@ class AccountMenu extends AbstractMenuHelper
     }
 
     /**
-     * Render menu
+     * Render account menu
      *
      * @param ?string $activeItem The name of current active item (optional)
      * @param string  $idPrefix   Element ID prefix
      *
      * @return string
      */
-    public function render(string $activeItem = null, string $idPrefix = ''): string
+    public function render(?string $activeItem = null, string $idPrefix = ''): string
     {
         $contextHelper = $this->getView()->plugin('context');
+        $menu = $this->getMenu();
+
         return $contextHelper->renderInContext(
             'myresearch/menu.phtml',
             [
-                'items' => $this->getItems(),
+                'menu' => $menu,
                 'active' => $activeItem,
                 'idPrefix' => $idPrefix,
+                // set items for backward compatibility, might be removed in future releases
+                'items' => $menu['Account']['MenuItems'],
             ]
         );
     }

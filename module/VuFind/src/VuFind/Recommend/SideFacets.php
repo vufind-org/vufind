@@ -103,6 +103,13 @@ class SideFacets extends AbstractFacets
     protected $showDynamicCheckboxFacets = true;
 
     /**
+     * Should we display checkbox facet counts in results?
+     *
+     * @var bool
+     */
+    protected $showCheckboxFacetCounts = false;
+
+    /**
      * Settings controlling how lightbox is used for facet display.
      *
      * @var bool|string
@@ -220,6 +227,7 @@ class SideFacets extends AbstractFacets
         ) {
             $this->showDynamicCheckboxFacets = false;
         }
+        $this->showCheckboxFacetCounts = (bool)($config->Results_Settings->checkboxFacetCounts ?? false);
 
         // Show more settings:
         if (isset($config->Results_Settings->showMore)) {
@@ -277,6 +285,7 @@ class SideFacets extends AbstractFacets
         foreach ($checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
         }
+        $params->toggleCheckboxFacetCounts($this->showCheckboxFacetCounts);
     }
 
     /**
@@ -291,9 +300,8 @@ class SideFacets extends AbstractFacets
             $this->showDynamicCheckboxFacets
         );
         // Add counts if available:
-        $checkboxCounts = $this->results->getOptions()->displayCheckboxFacetCounts();
         foreach ($result as &$facet) {
-            $facet['count'] = $checkboxCounts ? $this->getCheckboxFacetCount($facet['filter']) : null;
+            $facet['count'] = $this->getCheckboxFacetCount($facet['filter']);
         }
         unset($facet);
         return $result;
@@ -512,6 +520,9 @@ class SideFacets extends AbstractFacets
      */
     public function getCheckboxFacetCount(string $facet): ?int
     {
+        if (!$this->showCheckboxFacetCounts) {
+            return null;
+        }
         $checkboxFacets = $this->results->getParams()->getCheckboxFacets();
         $delimitedFacets = $this->results->getParams()->getOptions()->getDelimitedFacets(true);
         foreach ($checkboxFacets as $checkboxFacet) {

@@ -54,6 +54,10 @@ Storage:
 #                       denotes 192.168.0.0-192.168.255.255), and IPv6 addresses are
 #                       also supported (unless PHP is compiled with IPv6 disabled).
 #
+# ipRangesExcept        The opposite of ipRanges: limit the policy to IP ranges that
+#                       are *not* in this list. For example, list local IP ranges to
+#                       exclude them from the policy.
+#
 # loggedIn              Whether to limit the policy to logged-in users (true) or
 #                       anonymous users (false). Default is null for no limit.
 #

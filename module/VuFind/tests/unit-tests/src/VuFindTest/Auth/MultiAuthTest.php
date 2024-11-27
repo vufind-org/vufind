@@ -48,35 +48,32 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param Config $config Configuration to use (null for default)
+     * @param ?array $config Configuration to use (null for default)
      *
      * @return MultiAuth
      */
-    public function getAuthObject(Config $config = null): MultiAuth
+    public function getAuthObject(?array $config = null): MultiAuth
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
         $manager = new \VuFind\Auth\PluginManager($container);
         $obj = $manager->get('MultiAuth');
         $obj->setPluginManager($manager);
-        $obj->setConfig($config ?? $this->getAuthConfig());
+        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
         return $obj;
     }
 
     /**
      * Get a working configuration for the auth object
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig(): Config
+    public function getAuthConfig(): array
     {
-        $config = new Config(
-            [
-                'method_order' => 'Database,ILS',
-            ],
-            true
-        );
-        return new Config(['MultiAuth' => $config], true);
+        $config = [
+            'method_order' => 'Database,ILS',
+        ];
+        return ['MultiAuth' => $config];
     }
 
     /**
@@ -92,7 +89,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
         );
 
         $config = $this->getAuthConfig();
-        unset($config->MultiAuth->method_order);
+        unset($config['MultiAuth']['method_order']);
         $this->getAuthObject($config)->getConfig();
     }
 
@@ -128,7 +125,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
         );
 
         $config = $this->getAuthConfig();
-        $config->MultiAuth->method_order = 'InappropriateService,Database';
+        $config['MultiAuth']['method_order'] = 'InappropriateService,Database';
 
         $request = $this->getLoginRequest();
         $this->getAuthObject($config)->authenticate($request);
@@ -150,7 +147,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
         );
 
         $config = $this->getAuthConfig();
-        $config->MultiAuth->method_order = $badClass . ',Database';
+        $config['MultiAuth']['method_order'] = $badClass . ',Database';
 
         $request = $this->getLoginRequest();
         $this->getAuthObject($config)->authenticate($request);

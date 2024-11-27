@@ -49,89 +49,63 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param ?Config $config Configuration to use (null for default)
+     * @param ?array $config Configuration to use (null for default)
      *
      * @return LDAP
      */
-    public function getAuthObject(?Config $config = null): LDAP
+    public function getAuthObject(?array $config = null): LDAP
     {
         $obj = new LDAP($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
-        $obj->setConfig($config ?? $this->getAuthConfig());
+        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
         return $obj;
     }
 
     /**
      * Get a working configuration for the LDAP object
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig(): Config
+    public function getAuthConfig(): array
     {
-        $ldapConfig = new Config(
-            [
-                'host' => 'localhost',
-                'port' => 1234,
-                'basedn' => 'basedn',
-                'username' => 'username',
-            ],
-            true
-        );
-        return new Config(['LDAP' => $ldapConfig], true);
+        $ldapConfig = [
+            'host' => 'localhost',
+            'port' => 1234,
+            'basedn' => 'basedn',
+            'username' => 'username',
+        ];
+        return ['LDAP' => $ldapConfig];
     }
 
     /**
-     * Verify that missing host causes failure.
+     * Data provider for testWithMissingConfiguration.
      *
      * @return void
      */
-    public function testWithMissingHost(): void
+    public static function configKeyProvider(): array
+    {
+        return [
+            'missing host' => ['host'],
+            'missing port' => ['port'],
+            'missing basedn' => ['basedn'],
+            'missing username' => ['username'],
+        ];
+    }
+
+    /**
+     * Verify that missing configuration causes failure.
+     *
+     * @param string $key Configuration key to exclude
+     *
+     * @return void
+     *
+     * @dataProvider configKeyProvider
+     */
+    public function testWithMissingConfiguration(string $key): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
-        unset($config->LDAP->host);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing port causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingPort(): void
-    {
-        $this->expectException(\VuFind\Exception\Auth::class);
-
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->port);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing baseDN causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingBaseDN(): void
-    {
-        $this->expectException(\VuFind\Exception\Auth::class);
-
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->basedn);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing UID causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingUid(): void
-    {
-        $this->expectException(\VuFind\Exception\Auth::class);
-
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->username);
+        unset($config['LDAP'][$key]);
         $this->getAuthObject($config)->getConfig();
     }
 
@@ -143,8 +117,8 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     public function testCaseNormalization(): void
     {
         $config = $this->getAuthConfig();
-        $config->LDAP->username = 'UPPER';
-        $config->LDAP->basedn = 'MixedCase';
+        $config['LDAP']['username'] = 'UPPER';
+        $config['LDAP']['basedn'] = 'MixedCase';
         $auth = $this->getAuthObject($config);
         // username should be lowercased:
         $this->assertEquals(
