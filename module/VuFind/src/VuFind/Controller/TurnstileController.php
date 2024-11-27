@@ -50,6 +50,8 @@ class TurnstileController extends AbstractBase implements
     use HttpServiceAwareTrait;
     use LoggerAwareTrait;
 
+    protected $hashKeys = ['siteKey', 'policyId', 'destination'];
+
     /**
      * Present the Turnstile challenge to the user
      *
@@ -64,6 +66,8 @@ class TurnstileController extends AbstractBase implements
         $context['siteKey'] = $config['Turnstile']['siteKey'];
         $context['jsLibraryUrl'] = $config['Turnstile']['jsLibraryUrl'] ??
             'https://challenges.cloudflare.com/turnstile/v0/api.js';
+        $hmac = $this->getService(\VuFind\Crypt\HMAC::class);
+        $context['hash'] = $hmac->generate($this->hashKeys, $context);
 
         $this->layout()->searchbox = false;
         return $this->createViewModel($context);
@@ -79,6 +83,16 @@ class TurnstileController extends AbstractBase implements
         $token = $this->params()->fromPost('token');
         $policyId = $this->params()->fromPost('policyId');
         $destination = $this->params()->fromPost('destination');
+        $priorHash = $this->params()->fromPost('hash');
+
+        $hmac = $this->getService(\VuFind\Crypt\HMAC::class);
+        $yamlReader = $this->getService(\VuFind\Config\YamlReader::class);
+        $config = $yamlReader->get('RateLimiter.yaml');
+        $siteKey = $config['Turnstile']['siteKey'];
+        $newHash = $hmac->generate($this->hashKeys, compact($this->hashKeys));
+        if ($newHash != $priorHash) {
+            throw new \Exception('Wrong hash value used in Turnstile verification.');
+        }
 
         // Call the Turnstile verify API to validate the token
         $yamlReader = $this->getService(\VuFind\Config\YamlReader::class);
