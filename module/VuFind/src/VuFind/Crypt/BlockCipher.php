@@ -509,7 +509,7 @@ class BlockCipher
      * @return string
      * @throws InvalidArgumentException
      */
-    protected function generateKeyandReturnValidationHmac(
+    protected function generateKeyAndReturnValidationHmac(
         string $ciphertext,
         string $salt,
         int $keySize,
@@ -554,10 +554,10 @@ class BlockCipher
         $hmac = mb_substr($data, 0, $hmacSize, '8bit');
         $ciphertext = base64_decode(mb_substr($data, $hmacSize, null, '8bit') ?: '');
         $iv = mb_substr($ciphertext, 0, $this->getSaltSize(), '8bit');
-        $hmacNew = $this->generateKeyandReturnValidationHmac($ciphertext, $iv, $keySize);
+        $hmacNew = $this->generateKeyAndReturnValidationHmac($ciphertext, $iv, $keySize);
         if ($hmacNew !== $hmac) {
             // If authentication failed using new algorithm, fall back to legacy:
-            $hmacNew = $this->generateKeyandReturnValidationHmac($ciphertext, $iv, $keySize, true);
+            $hmacNew = $this->generateKeyAndReturnValidationHmac($ciphertext, $iv, $keySize, true);
             if ($hmacNew !== $hmac) {
                 return false;
             }
