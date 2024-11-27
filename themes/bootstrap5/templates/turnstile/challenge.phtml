@@ -1,5 +1,5 @@
 <?php
-  $this->headScript()->appendFile('https://challenges.cloudflare.com/turnstile/v0/api.js', 'text/javascript', ['defer' => '', 'async' => '']);
+  $this->headScript()->appendFile($jsLibraryUrl, 'text/javascript', ['defer' => '', 'async' => '']);
   $js = <<<JS
       function turnstileChallengeEnded(token) {
           document.getElementById('turnstile_token').setAttribute('value', token);

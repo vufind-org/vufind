@@ -62,6 +62,8 @@ class TurnstileController extends AbstractBase implements
         $yamlReader = $this->getService(\VuFind\Config\YamlReader::class);
         $config = $yamlReader->get('RateLimiter.yaml');
         $context['siteKey'] = $config['Turnstile']['siteKey'];
+        $context['jsLibraryUrl'] = $config['Turnstile']['jsLibraryUrl'] ??
+            'https://challenges.cloudflare.com/turnstile/v0/api.js';
 
         $this->layout()->searchbox = false;
         return $this->createViewModel($context);

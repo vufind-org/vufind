@@ -157,5 +157,8 @@ Policies:
   # siteKey: 0x1234567890
   # secretKey: 0x1234567890
 
-  # Verify API URL.  Default is https://challenges.cloudflare.com/turnstile/v0/siteverify
+  # Verify API URL. Default is below.
   # verifyUrl: https://challenges.cloudflare.com/turnstile/v0/siteverify
+
+  # API Javascript file. Default is below.
+  # jsLibraryUrl: https://challenges.cloudflare.com/turnstile/v0/api.js
