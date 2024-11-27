@@ -460,6 +460,27 @@ class BlockCipher
     }
 
     /**
+     * Get a Pbkdf2 hash.
+     *
+     * @param string $salt    Salt
+     * @param int    $keySize Key size
+     * @param bool   $legacy  Use legacy pbkdf2 algorithm for compatibility with old data?
+     *
+     * @return string
+     */
+    protected function getPbKdf2(string $salt, int $keySize, bool $legacy = false): string
+    {
+        $callback = $legacy ? [$this, 'getLegacyPbkdf2'] : 'hash_pbkdf2';
+        return $callback(
+            $this->pbkdf2Hash,
+            $this->key,
+            $salt,
+            $this->keyIteration,
+            $keySize * 2
+        );
+    }
+
+    /**
      * Encrypt data (with HMAC authentication)
      *
      * @param string $data Data to encrypt
@@ -478,21 +499,15 @@ class BlockCipher
         $keySize = $this->getKeySize();
         $this->setSalt(random_bytes($this->getSaltSize()));
 
-        // generate the encryption key and the HMAC key for the authentication
-        $hash = hash_pbkdf2(
-            $this->pbkdf2Hash,
-            $this->key,
-            $this->getSalt(),
-            $this->keyIteration,
-            $keySize * 2
-        );
+        // generate the encryption key
+        $hash = $this->getPbKdf2($this->getSalt(), $keySize);
         // set the encryption key
         $this->setOpenSslKey(mb_substr($hash, 0, $keySize, '8bit'));
-        // set the key for HMAC
+        // create the key for HMAC validation
         $keyHmac = mb_substr($hash, $keySize, null, '8bit');
-        // encryption
+        // encrypt the data
         $ciphertext = $this->openSslEncrypt($data);
-        // HMAC
+        // generate the HMAC key for validation
         $hmac = hash_hmac($this->hash, $this->algo . $ciphertext, $keyHmac);
 
         return $hmac . base64_encode($ciphertext);
@@ -509,20 +524,14 @@ class BlockCipher
      * @return string
      * @throws InvalidArgumentException
      */
-    protected function generateKeyAndReturnValidationHmac(
+    protected function setOpenSslKeyAndGetValidationHmac(
         string $ciphertext,
         string $salt,
         int $keySize,
         bool $legacy = false
     ): string {
-        $callback = $legacy ? [$this, 'getLegacyPbkdf2'] : 'hash_pbkdf2';
-        $hash = $callback(
-            $this->pbkdf2Hash,
-            $this->key,
-            $salt,
-            $this->keyIteration,
-            $keySize * 2
-        );
+        // create the hash
+        $hash = $this->getPbKdf2($salt, $keySize, $legacy);
         // set the decryption key
         $this->setOpenSslKey(mb_substr($hash, 0, $keySize, '8bit'));
         // set the key for HMAC
@@ -554,10 +563,10 @@ class BlockCipher
         $hmac = mb_substr($data, 0, $hmacSize, '8bit');
         $ciphertext = base64_decode(mb_substr($data, $hmacSize, null, '8bit') ?: '');
         $iv = mb_substr($ciphertext, 0, $this->getSaltSize(), '8bit');
-        $hmacNew = $this->generateKeyAndReturnValidationHmac($ciphertext, $iv, $keySize);
+        $hmacNew = $this->setOpenSslKeyAndGetValidationHmac($ciphertext, $iv, $keySize);
         if ($hmacNew !== $hmac) {
             // If authentication failed using new algorithm, fall back to legacy:
-            $hmacNew = $this->generateKeyAndReturnValidationHmac($ciphertext, $iv, $keySize, true);
+            $hmacNew = $this->setOpenSslKeyAndGetValidationHmac($ciphertext, $iv, $keySize, true);
             if ($hmacNew !== $hmac) {
                 return false;
             }
