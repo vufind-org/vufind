@@ -67,11 +67,11 @@ abstract class AbstractMenu implements NavigationInterface
         }
 
         $availableGroups = [];
-        foreach ($this->filterAvailable($menu) as $group) {
+        foreach ($this->filterAvailable($menu) as $name => $group) {
             // skip groups without items to display
             if ($items = $this->filterAvailable($group['MenuItems'])) {
                 $group['MenuItems'] = $items;
-                $availableGroups[] = $group;
+                $availableGroups[$name] = $group;
             }
         }
 
