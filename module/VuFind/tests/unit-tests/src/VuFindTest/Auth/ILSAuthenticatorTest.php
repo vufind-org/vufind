@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Auth;
 
+use Closure;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
@@ -262,12 +263,16 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
             $connection = $this->getMockConnection();
         }
         return new ILSAuthenticator(
-            function () use ($manager) {
-                return $manager;
-            },
-            function (string $algo) {
-                return (new BlockCipher())->setAlgorithm($algo);
-            },
+            Closure::fromCallable(
+                function () use ($manager) {
+                    return $manager;
+                }
+            ),
+            Closure::fromCallable(
+                function (string $algo) {
+                    return (new BlockCipher())->setAlgorithm($algo);
+                }
+            ),
             $connection,
             $emailAuth ?? $this->createMock(EmailAuthenticator::class),
             new \Laminas\Config\Config($config)

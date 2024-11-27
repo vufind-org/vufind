@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Closure;
 use InvalidArgumentException;
 use Laminas\Config\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -64,19 +65,12 @@ use function count;
 class SwitchDbHashCommand extends Command
 {
     /**
-     * Callback to generate a BlockCipher object (must take two arguments: algorithm and key)
-     *
-     * @var callable
-     */
-    protected $cipherFactory;
-
-    /**
      * Constructor
      *
      * @param Config                   $config          VuFind configuration
      * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService UserCard database service
-     * @param callable                 $cipherFactory   Callback to generate a BlockCipher object (must
+     * @param Closure                  $cipherFactory   Callback to generate a BlockCipher object (must
      * take two arguments: algorithm and key)
      * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
@@ -86,11 +80,10 @@ class SwitchDbHashCommand extends Command
         protected Config $config,
         protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
-        callable $cipherFactory,
+        protected Closure $cipherFactory,
         ?string $name = null,
         protected ?PathResolver $pathResolver = null
     ) {
-        $this->cipherFactory = $cipherFactory;
         parent::__construct($name);
     }
 

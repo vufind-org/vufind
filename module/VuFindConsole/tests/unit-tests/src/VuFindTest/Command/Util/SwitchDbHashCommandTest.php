@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Command\Util;
 
+use Closure;
 use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -108,9 +109,11 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     new Config($config),
                     $userService ?? $this->getMockUserService(),
                     $cardService ?? $this->getMockCardService(),
-                    function ($algo, $key) {
-                        return (new BlockCipher())->setAlgorithm($algo)->setKey($key);
-                    },
+                    Closure::fromCallable(
+                        function ($algo, $key) {
+                            return (new BlockCipher())->setAlgorithm($algo)->setKey($key);
+                        }
+                    ),
                 ]
             )->onlyMethods(['getConfigWriter'])
             ->getMock();
