@@ -214,7 +214,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
                     [
                         'name' => 'newlist',
                         'label' => 'Create a List',
-                        'route' => 'editlist',
+                        'route' => 'editList',
                         'routeParams' => [
                             'id' => 'NEW',
                         ],
