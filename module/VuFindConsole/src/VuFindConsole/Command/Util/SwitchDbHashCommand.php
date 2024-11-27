@@ -64,11 +64,20 @@ use function count;
 class SwitchDbHashCommand extends Command
 {
     /**
+     * Callback to generate a BlockCipher object (must take two arguments: algorithm and key)
+     *
+     * @var callable
+     */
+    protected $cipherFactory;
+
+    /**
      * Constructor
      *
      * @param Config                   $config          VuFind configuration
      * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService UserCard database service
+     * @param callable                 $cipherFactory   Callback to generate a BlockCipher object (must
+     * take two arguments: algorithm and key)
      * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
      * @param ?PathResolver            $pathResolver    Config file path resolver
@@ -77,9 +86,11 @@ class SwitchDbHashCommand extends Command
         protected Config $config,
         protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
+        callable $cipherFactory,
         ?string $name = null,
         protected ?PathResolver $pathResolver = null
     ) {
+        $this->cipherFactory = $cipherFactory;
         parent::__construct($name);
     }
 
@@ -109,19 +120,6 @@ class SwitchDbHashCommand extends Command
     protected function getConfigWriter($path)
     {
         return new ConfigWriter($path);
-    }
-
-    /**
-     * Get cipher options for the specified algorithm (or return null if the
-     * algorithm is 'none').
-     *
-     * @param string $algorithm Encryption algorithm
-     *
-     * @return ?array
-     */
-    protected function getCipherOptions(string $algorithm): ?array
-    {
-        return ($algorithm == 'none') ? null : compact('algorithm');
     }
 
     /**
@@ -193,14 +191,8 @@ class SwitchDbHashCommand extends Command
 
         // Initialize ciphers first, so we can catch any illegal algorithms before making any changes:
         try {
-            if ($oldhash != 'none') {
-                $oldcipher = new BlockCipher($this->getCipherOptions($oldhash));
-                $oldcipher->setKey($oldkey);
-            } else {
-                $oldcipher = null;
-            }
-            $newcipher = new BlockCipher($this->getCipherOptions($newhash));
-            $newcipher->setKey($newkey);
+            $oldcipher = ($oldhash === 'none') ? null : ($this->cipherFactory)($oldhash, $oldkey);
+            $newcipher = ($this->cipherFactory)($newhash, $newkey);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;

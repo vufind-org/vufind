@@ -33,6 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardService;
 use VuFind\Db\Service\UserCardServiceInterface;
@@ -263,6 +264,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         return new ILSAuthenticator(
             function () use ($manager) {
                 return $manager;
+            },
+            function (string $algo) {
+                return (new BlockCipher())->setAlgorithm($algo);
             },
             $connection,
             $emailAuth ?? $this->createMock(EmailAuthenticator::class),

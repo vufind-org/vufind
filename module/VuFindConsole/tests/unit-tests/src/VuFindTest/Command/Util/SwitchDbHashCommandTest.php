@@ -108,6 +108,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     new Config($config),
                     $userService ?? $this->getMockUserService(),
                     $cardService ?? $this->getMockCardService(),
+                    function ($algo, $key) {
+                        return (new BlockCipher())->setAlgorithm($algo)->setKey($key);
+                    },
                 ]
             )->onlyMethods(['getConfigWriter'])
             ->getMock();

@@ -1119,7 +1119,7 @@ class UpgradeController extends AbstractBase
         // Test that blowfish is still working
         $blowfishIsWorking = true;
         try {
-            $newcipher = new BlockCipher(['algorithm' => 'blowfish']);
+            $newcipher = $this->serviceLocator->get(BlockCipher::class)->setAlgorithm('blowfish');
             $newcipher->setKey('akeyforatest');
             $newcipher->encrypt('youfoundtheeasteregg!');
         } catch (Exception $e) {

@@ -152,17 +152,27 @@ class BlockCipher
     protected $openSslKey = null;
 
     /**
+     * Should we use the legacy pbkdf2 algorithm by default?
+     *
+     * @var bool
+     */
+    protected $legacyPbkdf2 = true;
+
+    /**
      * Constructor
      *
-     * @param array $options Options (supported key: algorithm)
+     * @param array $options Options (supported keys: algorithm, legacyPbkdf2)
      */
-    public function __construct(protected array $options = [])
+    public function __construct(array $options = [])
     {
         if (!extension_loaded('openssl')) {
             throw new \RuntimeException('OpenSSL extension required!');
         }
         if (isset($options['algorithm'])) {
             $this->setAlgorithm($options['algorithm']);
+        }
+        if (isset($options['legacyPbkdf2'])) {
+            $this->legacyPbkdf2 = (bool)$options['legacyPbkdf2'];
         }
     }
 
@@ -272,7 +282,7 @@ class BlockCipher
      * @return static
      * @throws InvalidArgumentException
      */
-    protected function setAlgorithm(string $algo): static
+    public function setAlgorithm(string $algo): static
     {
         return $this->setAlgorithmAndMode($algo);
     }
@@ -464,13 +474,14 @@ class BlockCipher
      *
      * @param string $salt    Salt
      * @param int    $keySize Key size
-     * @param bool   $legacy  Use legacy pbkdf2 algorithm for compatibility with old data?
+     * @param ?bool  $legacy  Use legacy pbkdf2 algorithm for compatibility with old data?
+     * (pass null to use configured setting)
      *
      * @return string
      */
-    protected function getPbKdf2(string $salt, int $keySize, bool $legacy = false): string
+    protected function getPbKdf2(string $salt, int $keySize, ?bool $legacy = null): string
     {
-        $callback = $legacy ? [$this, 'getLegacyPbkdf2'] : 'hash_pbkdf2';
+        $callback = ($legacy ?? $this->legacyPbkdf2) ? [$this, 'getLegacyPbkdf2'] : 'hash_pbkdf2';
         return $callback(
             $this->pbkdf2Hash,
             $this->key,
@@ -519,7 +530,8 @@ class BlockCipher
      * @param string $ciphertext Text to decrypt
      * @param string $salt       Salt
      * @param int    $keySize    Key size
-     * @param bool   $legacy     Use legacy pbkdf2 algorithm for compatibility with old data?
+     * @param ?bool  $legacy     Use legacy pbkdf2 algorithm for compatibility with old data?
+     * (pass null to use configured setting)
      *
      * @return string
      * @throws InvalidArgumentException
@@ -528,7 +540,7 @@ class BlockCipher
         string $ciphertext,
         string $salt,
         int $keySize,
-        bool $legacy = false
+        ?bool $legacy = null
     ): string {
         // create the hash
         $hash = $this->getPbKdf2($salt, $keySize, $legacy);
@@ -565,8 +577,8 @@ class BlockCipher
         $iv = mb_substr($ciphertext, 0, $this->getSaltSize(), '8bit');
         $hmacNew = $this->setOpenSslKeyAndGetValidationHmac($ciphertext, $iv, $keySize);
         if ($hmacNew !== $hmac) {
-            // If authentication failed using new algorithm, fall back to legacy:
-            $hmacNew = $this->setOpenSslKeyAndGetValidationHmac($ciphertext, $iv, $keySize, true);
+            // If authentication failed using the configured legacy setting, try flipping it as a fallback:
+            $hmacNew = $this->setOpenSslKeyAndGetValidationHmac($ciphertext, $iv, $keySize, !$this->legacyPbkdf2);
             if ($hmacNew !== $hmac) {
                 return false;
             }

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for Util/SwitchDbHashCommand.
+ * BlockCipher factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,33 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Crypt
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindConsole\Command\Util;
+namespace VuFind\Crypt;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Crypt\BlockCipher;
-use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Service\UserServiceInterface;
 
 /**
- * Factory for Util/SwitchDbHashCommand.
+ * BlockCipher factory.
  *
  * @category VuFind
- * @package  Console
+ * @package  Crypt
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SwitchDbHashCommandFactory implements FactoryInterface
+class BlockCipherFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,18 +65,11 @@ class SwitchDbHashCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        return new $requestedName(
-            $config,
-            $serviceManager->get(UserServiceInterface::class),
-            $serviceManager->get(UserCardServiceInterface::class),
-            function ($algo, $key) use ($container) {
-                return $container->get(BlockCipher::class)->setAlgorithm($algo)->setKey($key);
-            },
-            null,
-            $container->get(\VuFind\Config\PathResolver::class),
-            ...($options ?? [])
-        );
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
+        $options = ['legacyPbkdf2' => $config['Security']['legacyPbkdf2'] ?? true];
+        return new $requestedName($options);
     }
 }

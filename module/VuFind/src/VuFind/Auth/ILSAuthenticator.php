@@ -60,6 +60,13 @@ class ILSAuthenticator implements DbServiceAwareInterface
     protected $authManagerCallback;
 
     /**
+     * BlockCipher object factory (takes algorithm as argument)
+     *
+     * @var callable
+     */
+    protected $cipherFactory;
+
+    /**
      * Authentication manager
      *
      * @var Manager
@@ -91,17 +98,20 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * Constructor
      *
      * @param callable            $authCB             Auth manager callback
+     * @param callable            $cipherFactory      BlockCipher object factory (takes algorithm as argument)
      * @param ILSConnection       $catalog            ILS connection
      * @param ?EmailAuthenticator $emailAuthenticator Email authenticator
      * @param ?Config             $config             Configuration from config.ini
      */
     public function __construct(
         callable $authCB,
+        callable $cipherFactory,
         protected ILSConnection $catalog,
         protected ?EmailAuthenticator $emailAuthenticator = null,
         protected ?Config $config = null
     ) {
         $this->authManagerCallback = $authCB;
+        $this->cipherFactory = $cipherFactory;
     }
 
     /**
@@ -180,7 +190,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
 
         // Check if OpenSSL error is caused by blowfish support
         try {
-            $cipher = new BlockCipher(['algorithm' => $algo]);
+            $cipher = ($this->cipherFactory)($algo);
             if ($algo == 'blowfish') {
                 trigger_error(
                     'Deprecated encryption algorithm (blowfish) detected',
