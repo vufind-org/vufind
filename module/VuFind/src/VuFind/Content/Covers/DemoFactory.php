@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Cover router factory.
+ * Demo cover loader factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Content
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\Cover;
+namespace VuFind\Content\Covers;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Cover router factory.
+ * Demo cover loader factory
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Content
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class RouterFactory implements FactoryInterface
+class DemoFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -59,6 +58,8 @@ class RouterFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -66,18 +67,11 @@ class RouterFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        // Try to get the base URL from the controller plugin; fail over to
-        // the view helper if that doesn't work.
-        try {
-            $base = $container->get('ControllerPluginManager')->get('url')
-                ->fromRoute('cover-show');
-        } catch (\Exception $e) {
-            $base = ($container->get('ViewRenderer')->plugin('url'))('cover-show');
-        }
-        $coverLoader = $container->get(\VuFind\Cover\Loader::class);
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray()['Content'] ?? [];
-        return new $requestedName($base, $coverLoader, $config);
+        $helpers = $container->get('ViewHelperManager');
+        $basePath = ($helpers->get('url'))('home');
+        $baseUrl = ($helpers->get('serverurl'))($basePath);
+        return new $requestedName($container->get(\VuFindTheme\ThemeInfo::class), $baseUrl);
     }
 }
