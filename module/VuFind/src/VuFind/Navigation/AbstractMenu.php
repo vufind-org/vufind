@@ -56,15 +56,7 @@ abstract class AbstractMenu implements NavigationInterface
      */
     public function getMenu(): array
     {
-        $menu = $this->config;
-        if (!$menu) {
-            $menu = $this->getDefaultMenu();
-        } elseif ($this instanceof AccountMenu && $menu['MenuItems']) {
-            // backward compatibility for outdated AccountMenu configurations
-            $default = $this->getDefaultMenu();
-            $default['Account']['MenuItems'] = $menu['MenuItems'];
-            $menu = $default;
-        }
+        $menu = $this->config ?: $this->getDefaultMenu();
 
         $availableGroups = [];
         foreach ($this->filterAvailable($menu) as $name => $group) {

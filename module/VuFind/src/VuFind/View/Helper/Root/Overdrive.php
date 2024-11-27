@@ -70,7 +70,7 @@ class Overdrive extends \Laminas\View\Helper\AbstractHelper
         if (null === $this->connector) {
             return false;
         }
-        return $this->connector->getContentActive();
+        return $this->connector->isContentActive();
     }
 
     /**

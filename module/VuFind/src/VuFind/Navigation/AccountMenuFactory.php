@@ -69,9 +69,7 @@ class AccountMenuFactory extends AbstractMenuFactory
             'Overdrive'
         );
         $connector = null;
-        $showMyContent = $config->Overdrive->showMyContent;
-        $showAdmin = $config->Overdrive->showOverdriveAdminMenu;
-        if ($showAdmin || $showMyContent != 'never') {
+        if ($config->Overdrive->showMyContent != 'never') {
             $connector = $container->get(
                 \VuFind\DigitalContent\OverdriveConnector::class
             );

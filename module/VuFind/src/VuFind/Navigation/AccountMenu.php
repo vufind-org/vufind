@@ -68,6 +68,12 @@ class AccountMenu extends AbstractMenu
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?OverdriveConnector $overdriveConnector,
     ) {
+        if (isset($config['MenuItems'])) {
+            // backward compatibility for outdated AccountMenu configurations
+            $default = $this->getDefaultMenu();
+            $default['Account']['MenuItems'] = $config['MenuItems'];
+            $config = $default;
+        }
         parent::__construct($config);
     }
 
@@ -286,7 +292,7 @@ class AccountMenu extends AbstractMenu
      */
     public function checkOverdrive(): bool
     {
-        return $this->overdriveConnector?->getContentActive() ?? false;
+        return $this->overdriveConnector?->isContentActive() ?? false;
     }
 
     /**

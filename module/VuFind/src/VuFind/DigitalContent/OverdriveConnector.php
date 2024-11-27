@@ -232,7 +232,7 @@ class OverdriveConnector implements
      *
      * @return bool
      */
-    public function getContentActive()
+    public function isContentActive()
     {
         $config = $this->getConfig();
         if ($config->showMyContent == 'always') {
@@ -240,7 +240,7 @@ class OverdriveConnector implements
         } elseif ($config->showMyContent == 'never') {
             return false;
         } else {
-            //assume that it is accessOnly
+            // assume that it is accessOnly
             $result = $this->getAccess();
 
             if (!$result->status && $result->code == 'od_account_noaccess') {
