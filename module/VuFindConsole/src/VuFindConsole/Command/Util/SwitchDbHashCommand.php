@@ -29,10 +29,9 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Closure;
+use InvalidArgumentException;
 use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Exception\InvalidArgumentException;
-use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,6 +40,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Entity\UserCardEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceInterface;
@@ -70,6 +70,8 @@ class SwitchDbHashCommand extends Command
      * @param Config                   $config          VuFind configuration
      * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService UserCard database service
+     * @param Closure                  $cipherFactory   Callback to generate a BlockCipher object (must
+     * take two arguments: algorithm and key)
      * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
      * @param ?PathResolver            $pathResolver    Config file path resolver
@@ -78,6 +80,7 @@ class SwitchDbHashCommand extends Command
         protected Config $config,
         protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
+        protected Closure $cipherFactory,
         ?string $name = null,
         protected ?PathResolver $pathResolver = null
     ) {
@@ -110,19 +113,6 @@ class SwitchDbHashCommand extends Command
     protected function getConfigWriter($path)
     {
         return new ConfigWriter($path);
-    }
-
-    /**
-     * Get an OpenSsl object for the specified algorithm (or return null if the
-     * algorithm is 'none').
-     *
-     * @param string $algorithm Encryption algorithm
-     *
-     * @return Openssl
-     */
-    protected function getOpenSsl($algorithm)
-    {
-        return ($algorithm == 'none') ? null : new Openssl(compact('algorithm'));
     }
 
     /**
@@ -192,11 +182,10 @@ class SwitchDbHashCommand extends Command
             return 0;
         }
 
-        // Initialize Openssl first, so we can catch any illegal algorithms before
-        // making any changes:
+        // Initialize ciphers first, so we can catch any illegal algorithms before making any changes:
         try {
-            $oldCrypt = $this->getOpenSsl($oldhash);
-            $newCrypt = $this->getOpenSsl($newhash);
+            $oldcipher = ($oldhash === 'none') ? null : ($this->cipherFactory)($oldhash, $oldkey);
+            $newcipher = ($this->cipherFactory)($newhash, $newkey);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
@@ -216,16 +205,6 @@ class SwitchDbHashCommand extends Command
             $output->writeln("\tWrite failed!");
             return 1;
         }
-
-        // Set up ciphers for use below:
-        if ($oldhash != 'none') {
-            $oldcipher = new BlockCipher($oldCrypt);
-            $oldcipher->setKey($oldkey);
-        } else {
-            $oldcipher = null;
-        }
-        $newcipher = new BlockCipher($newCrypt);
-        $newcipher->setKey($newkey);
 
         // Now do the database rewrite:
         $users = $this->userService->getAllUsersWithCatUsernames();

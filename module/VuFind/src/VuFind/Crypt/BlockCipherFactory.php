@@ -1,11 +1,11 @@
 <?php
 
 /**
- * HMAC factory.
+ * BlockCipher factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * HMAC factory.
+ * BlockCipher factory.
  *
  * @category VuFind
  * @package  Crypt
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HMACFactory implements FactoryInterface
+class BlockCipherFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,8 +68,8 @@ class HMACFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        return new $requestedName($config->Security->HMACkey);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
+        $options = ['legacyPbkdf2' => $config['Security']['legacyPbkdf2'] ?? true];
+        return new $requestedName($options);
     }
 }
