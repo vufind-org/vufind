@@ -187,7 +187,10 @@ header .container.navbar { margin-bottom: 0; }
   padding-top: 1rem;
 
   .record-checkbox,
-  .record-number { display: none; }
+  .record-number {
+    display: none;
+    height: fit-content;
+  }
 
   .title,
   .result-author,
