@@ -136,6 +136,7 @@ VuFind.register('lightbox', function Lightbox() {
     runScripts.each(function addScript(i2, script) {
       $(document).find('head').append(script);
     });
+    VuFind.emit('lightbox.rendered', {container: _modal});
   }
 
   var _xhr = false;
@@ -548,6 +549,7 @@ VuFind.register('lightbox', function Lightbox() {
         _modal.modal($.extend({ show: true }, _modalParams)).attr('aria-hidden', false);
         // Set keyboard focus
         setFocusToFirstNode();
+        VuFind.emit('lightbox.show', {container: _modal});
       } else {
         _modal.modal(cmd);
       }
