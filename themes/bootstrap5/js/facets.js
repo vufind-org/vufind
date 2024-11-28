@@ -430,8 +430,9 @@ VuFind.register('sideFacets', function SideFacets() {
     var facetList = [];
     var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filters [data-facet]');
     $facets.each(function addFacet() {
-      if (!$(this).data('loaded')) {
+      if (!$(this).data('initialized')) {
         facetList.push($(this).data('facet'));
+        $(this).data('initialized', 'true');
       }
     });
     if (facetList.length === 0) {
@@ -485,7 +486,7 @@ VuFind.register('sideFacets', function SideFacets() {
               activateFacetBlocking($facetContainer);
             }
           }
-          if (isMultiFacetsSelectionEnabled()) {
+          if (isMultiFacetsSelectionEnabled() && $facetContainer.length > 0) {
             VuFind.multiFacetsSelection.initFacetClickHandler($facetContainer.get()[0]);
           }
           $facetContainer.find('.facet-load-indicator').remove();
@@ -507,6 +508,13 @@ VuFind.register('sideFacets', function SideFacets() {
 
   function loadAjaxSideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
+  }
+
+  /**
+   * Load AJAX side facets with a tiny delay so that all non-collapsed items are available after initialization
+   */
+  function delayLoadAjaxSideFacets() {
+    setTimeout(loadAjaxSideFacets, 50);
   }
 
   function facetSessionStorage(e, data) {
@@ -551,13 +559,13 @@ VuFind.register('sideFacets', function SideFacets() {
     if (VuFind.getBootstrapMajorVersion() === 3) {
       $('.side-facets-container-ajax')
         .find('div.collapse[data-facet]:not(.in)')
-        .on('shown.bs.collapse', loadAjaxSideFacets);
+        .on('shown.bs.collapse', delayLoadAjaxSideFacets);
     } else {
       document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
-        collapseEl.addEventListener('shown.bs.collapse', loadAjaxSideFacets);
+        collapseEl.addEventListener('shown.bs.collapse', delayLoadAjaxSideFacets);
       });
     }
-    loadAjaxSideFacets();
+    delayLoadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
     $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
