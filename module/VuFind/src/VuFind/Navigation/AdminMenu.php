@@ -54,11 +54,11 @@ class AdminMenu extends AbstractMenu
     }
 
     /**
-     * Get default menu items
+     * Get default menu configuration
      *
      * @return array
      */
-    protected function getDefaultMenu(): array
+    public static function getDefaultMenuConfig(): array
     {
         return [
             'Admin' => [
