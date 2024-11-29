@@ -1000,6 +1000,6 @@ $cc-service-toggle-knob-icon-width: 1.7px !default;
     }
 
     .show--preferences #cc-main .cc--anim .pm{
-        transform: translateY(0 !important);
+        transform: translateY(0)!important;
     }
 }
