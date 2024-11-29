@@ -29,6 +29,13 @@
 
 namespace VuFindSearch\Backend\Primo\Response;
 
+use VuFindSearch\Exception\InvalidArgumentException;
+
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function sprintf;
+
 /**
  * Simple factory for record collection.
  *
@@ -48,6 +55,32 @@ class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordC
     protected function getDefaultRecordCollectionClass(): string
     {
         return RecordCollection::class;
+    }
+
+    /**
+     * Return record collection.
+     *
+     * @param array $response Deserialized JSON response
+     *
+     * @return RecordCollection
+     */
+    public function factory($response)
+    {
+        if (!is_array($response)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Unexpected type of value: Expected array, got %s',
+                    gettype($response)
+                )
+            );
+        }
+        $collection = new $this->collectionClass($response);
+        foreach ($response['documents'] ?? [] as $doc) {
+            $record = call_user_func($this->recordFactory, $doc);
+
+            $collection->add($record, false);
+        }
+        return $collection;
     }
 
     /**
