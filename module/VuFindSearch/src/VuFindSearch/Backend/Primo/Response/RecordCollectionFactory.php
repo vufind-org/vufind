@@ -76,7 +76,7 @@ class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordC
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['documents'] ?? [] as $doc) {
-            $record = call_user_func($this->recordFactory, $doc);
+            $record = ($this->recordFactory)($doc);
 
             $collection->add($record, false);
         }
