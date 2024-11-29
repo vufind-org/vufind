@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\Primo\Response;
 
 use VuFindSearch\Exception\InvalidArgumentException;
 
-use function call_user_func;
 use function gettype;
 use function is_array;
 use function sprintf;
