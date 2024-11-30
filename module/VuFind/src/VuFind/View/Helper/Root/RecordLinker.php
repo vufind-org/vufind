@@ -344,11 +344,16 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getRecordUrlParams(array $options = []): array
     {
-        if (!empty($options['excludeSearchId'])) {
-            return [];
+        $params = [];
+        if (
+            empty($options['excludeSearchId'])
+            && $sid = $this->results?->getSearchId() ?? $this->getView()->plugin('searchMemory')->getLastSearchId()
+        ) {
+            $params['sid'] = $sid;
         }
-        $sid = ($this->results ? $this->results->getSearchId() : null)
-            ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
-        return $sid ? compact('sid') : [];
+        if (empty($options['excludeSearchOrigin']) && isset($options['searchOrigin'])) {
+            $params += $options['searchOrigin']->getSearchUrlParamsArray();
+        }
+        return $params;
     }
 }

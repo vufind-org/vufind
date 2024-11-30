@@ -1,0 +1,16 @@
+<?php
+/** @var \Laminas\View\Renderer\PhpRenderer $this */
+/** @var \VuFind\Search\SearchOrigin\AbstractSearchOrigin|null $searchOrigin */
+if (isset($searchOrigin)) {
+  $link = $this->url($searchOrigin->getRouteName()) . '?' . http_build_query($searchOrigin->getOriginUrlParamsArray());
+  $fieldValue = $this->translate($searchOrigin->getDisplayName());
+    ?>
+    <nav class="container">
+      <p><a href="<?= $link ?>">
+        <?= $this->icon('fa-long-arrow-left', 'fa-long-arrow-left') ?>
+        <?= $this->transEsc($searchOrigin->getLinkTranslationKey(), ['%%field%%' => $fieldValue]) ?>
+      </a></p>
+    </nav>
+    <?php
+}
+?>
