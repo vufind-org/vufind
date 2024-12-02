@@ -64,6 +64,11 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->limit_options)) {
             $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
         }
+        if (isset($searchSettings->General->result_limit)) {
+            $this->resultLimit = min(intval($searchSettings->General->result_limit), 1000);
+        } else {
+            $this->resultLimit = 400;
+        }
 
         // Search handler setup:
         $this->defaultHandler = 'cql.serverChoice';
