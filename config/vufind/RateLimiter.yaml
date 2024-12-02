@@ -151,6 +151,7 @@ Policies:
 # These are the global settings for Turnstile. See also the turnstile config above:
 # - within each policy, to enable turnstile for that policy
 # - storage settings for the result cache
+# And see the required config in contentsecuritypolicy.ini if CSP is used.
 # Turnstile:
   # These two keys are required. See also values they can be set to for testing purposes:
   # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
