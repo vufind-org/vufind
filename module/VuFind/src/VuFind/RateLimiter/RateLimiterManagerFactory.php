@@ -94,7 +94,7 @@ class RateLimiterManagerFactory implements FactoryInterface
             $request->getServer('REMOTE_ADDR'),
             $authManager->getUserObject()?->getId(),
             Closure::fromCallable([$this, 'getRateLimiter']),
-            $this->createTurnstileCache($config),
+            $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class),
             $container->get(\VuFind\Net\IpAddressUtils::class)
         );
     }
@@ -211,23 +211,5 @@ class RateLimiterManagerFactory implements FactoryInterface
         }
 
         return new CredisStorage($redis, $options);
-    }
-
-    /**
-     * Create a cache for Turnstile results.
-     *
-     * @param array $config Rate limiter configuration
-     *
-     * @return ?StorageInterface
-     */
-    protected function createTurnstileCache(array $config): \Laminas\Cache\Storage\StorageInterface
-    {
-        $turnstileConfig = unserialize(serialize($config));
-        $storageOptions = $turnstileConfig['Storage']['options'] ?? [];
-        $storageOptions['namespace'] = $storageOptions['turnstileNamespace'] ?? 'Turnstile';
-        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
-        $cache = $cacheManager->getCache('object', $storageOptions['namespace']);
-        $cache->getOptions()->setTtl($storageOptions['turnstileTtl'] ?? 60 * 60 * 24);
-        return $cache;
     }
 }

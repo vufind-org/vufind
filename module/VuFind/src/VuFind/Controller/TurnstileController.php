@@ -106,14 +106,8 @@ class TurnstileController extends AbstractBase implements
             throw new \Exception('Wrong hash value used in Turnstile verification.');
         }
 
-        $success = $this->turnstile->validateToken($token, $policyId);
-
-        // Save the Turnstile result for future requests
-        $this->rateLimiterManager->setTurnstileResult(
-            $policyId,
-            $this->event->getRequest()->getServer('REMOTE_ADDR'),
-            $success
-        );
+        $ipAddress = $this->event->getRequest()->getServer('REMOTE_ADDR');
+        $this->turnstile->validateAndCacheResult($token, $policyId, $ipAddress);
 
         // Either way, return a http redirect to the referrer page.
         return $this->redirect()->toUrl($destination);

@@ -38,6 +38,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Net\IpAddressUtils;
+use VuFind\RateLimiter\Turnstile\Turnstile;
 
 use function in_array;
 use function is_bool;
@@ -73,19 +74,19 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     /**
      * Constructor
      *
-     * @param array            $config                     Rate limiter configuration
-     * @param string           $clientIp                   Client's IP address
-     * @param ?int             $userId                     User ID or null if not logged in
-     * @param Closure          $rateLimiterFactoryCallback Rate limiter factory callback
-     * @param StorageInterface $turnstileCache             A cache for Turnstile results
-     * @param IpAddressUtils   $ipUtils                    IP address utilities
+     * @param array          $config                     Rate limiter configuration
+     * @param string         $clientIp                   Client's IP address
+     * @param ?int           $userId                     User ID or null if not logged in
+     * @param Closure        $rateLimiterFactoryCallback Rate limiter factory callback
+     * @param Turnstile      $turnstile                  Turnstile service
+     * @param IpAddressUtils $ipUtils                    IP address utilities
      */
     public function __construct(
         protected array $config,
         protected string $clientIp,
         protected ?int $userId,
         protected Closure $rateLimiterFactoryCallback,
-        protected StorageInterface $turnstileCache,
+        protected Turnstile $turnstile,
         protected IpAddressUtils $ipUtils
     ) {
         $this->clientLogDetails = "ip:$clientIp";
@@ -185,7 +186,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 );
             }
             if (isset($turnstileLimit) && !$turnstileLimit->isAccepted()) {
-                $priorTurnstileResult = $this->checkPriorTurnstileResult($policyId, $this->clientIp);
+                $priorTurnstileResult = $this->turnstile->checkPriorTurnstileResult($policyId, $this->clientIp);
                 if (!$priorTurnstileResult) {
                     $result['allow'] = false;
                     $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
@@ -219,7 +220,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      *
      * @return ?string policy id or null if no match
      */
-    protected function getPolicyIdForEvent(MvcEvent $event): ?string
+    public function getPolicyIdForEvent(MvcEvent $event): ?string
     {
         if ($event->getRouteMatch()->getParams()['controller'] == 'Turnstile') {
             return null;
@@ -342,69 +343,5 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         $agent = $headers->get('User-Agent')->getFieldValue();
         $crawlerDetect = new \Jaybizzle\CrawlerDetect\CrawlerDetect();
         return $crawlerDetect->isCrawler($agent);
-    }
-
-    /**
-     * Check whether the RateLimiter policy for this event uses Turnstile.
-     *
-     * @param MvcEvent $event Request event
-     *
-     * @return bool
-     */
-    public function checkPolicyUsesTurnstile($event)
-    {
-        $policyId = $this->getPolicyIdForEvent($event);
-        if ($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false) {
-            return $policyId;
-        }
-        return false;
-    }
-
-    /**
-     * Check for a prior, cached result from Turnstile under this client IP and policy.
-     *
-     * @param string $policyId The policy ID
-     * @param string $clientIp The client IP
-     *
-     * @return ?bool Null if there is no prior result, or if Turnstile is disabled;
-     *               otherwise a boolean representing the Turnstile result.
-     */
-    protected function checkPriorTurnstileResult($policyId, $clientIp)
-    {
-        if (!($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false)) {
-            return null;
-        }
-        $cacheKey = $this->getTurnstileCacheKey($policyId, $clientIp);
-        return $this->turnstileCache->getItem($cacheKey);
-    }
-
-    /**
-     * Store a Turnstile result for this client IP and policy.
-     *
-     * @param string $policyId The policy ID
-     * @param string $clientIp The client IP
-     * @param bool   $success  The result to store
-     *
-     * @return void
-     */
-    public function setTurnstileResult($policyId, $clientIp, $success)
-    {
-        $cacheKey = $this->getTurnstileCacheKey($policyId, $clientIp);
-        $this->turnstileCache->setItem($cacheKey, $success);
-    }
-
-    /**
-     * Generate a key for the Turnstile cache.
-     *
-     * @param string $policyId The policy ID
-     * @param string $clientIp The client IP
-     *
-     * @return string The cache key
-     */
-    protected function getTurnstileCacheKey($policyId, $clientIp)
-    {
-        $key = $policyId . '--' . $clientIp;
-        $key = str_replace('.', '-', $key);
-        return $key;
     }
 }

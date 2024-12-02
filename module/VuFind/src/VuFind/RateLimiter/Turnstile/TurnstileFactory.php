@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Service\GetServiceTrait;
 
 /**
  * Turnstile service factory.
@@ -46,6 +47,8 @@ use Psr\Container\ContainerInterface;
  */
 class TurnstileFactory implements FactoryInterface
 {
+    use GetServiceTrait;
+
     /**
      * Create an object
      *
@@ -69,12 +72,32 @@ class TurnstileFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
+        $this->serviceLocator = $container;
+
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $config = $yamlReader->get('RateLimiter.yaml');
 
         return new $requestedName(
             $config,
-            $container->get(\VuFind\RateLimiter\RateLimiterManager::class),
+            $this->createTurnstileCache($config)
         );
+    }
+
+    /**
+     * Create a cache for Turnstile results.
+     *
+     * @param array $config Rate limiter configuration
+     *
+     * @return ?StorageInterface
+     */
+    protected function createTurnstileCache(array $config): \Laminas\Cache\Storage\StorageInterface
+    {
+        $turnstileConfig = unserialize(serialize($config));
+        $storageOptions = $turnstileConfig['Storage']['options'] ?? [];
+        $storageOptions['namespace'] = $storageOptions['turnstileNamespace'] ?? 'Turnstile';
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
+        $cache = $cacheManager->getCache('object', $storageOptions['namespace']);
+        $cache->getOptions()->setTtl($storageOptions['turnstileTtl'] ?? 60 * 60 * 24);
+        return $cache;
     }
 }
