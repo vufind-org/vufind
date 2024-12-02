@@ -89,7 +89,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
             $responseData = json_decode($response->getBody(), true);
             $success = $responseData['success'];
         } else {
-            // Unexpected error.  Treat as a positive result, since it's not the user's fault.
+            // Unexpected error. Treat as a positive result, since it's not the user's fault.
             $this->logWarning('Verification process failed, allowing traffic: '
                 . $response->getStatusCode() . $response->getBody());
             $success = true;

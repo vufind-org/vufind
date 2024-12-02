@@ -109,7 +109,7 @@ class TurnstileController extends AbstractBase implements
         $ipAddress = $this->event->getRequest()->getServer('REMOTE_ADDR');
         $this->turnstile->validateAndCacheResult($token, $policyId, $ipAddress);
 
-        // Either way, return a http redirect to the referrer page.
+        // Either way, return an http redirect to the referrer page.
         return $this->redirect()->toUrl($destination);
     }
 }
