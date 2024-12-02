@@ -186,6 +186,10 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
             . ($ajaxcovers ? ' ajax' : '')
             . (empty($noCoverAvailableImage) ? ' hidden' : '');
         $coverImage = $this->findCss($page, 'img.recordcover');
+        $session->wait(
+            $this->getDefaultTimeout(),
+            'document.querySelector("img.recordcover").classList = "' . $expectedClasses . '"'
+        );
         $this->assertEquals(
             $expectedClasses,
             $coverImage?->getAttribute('class')
