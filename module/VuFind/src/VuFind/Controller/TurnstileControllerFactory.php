@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Service\GetServiceTrait;
 
 /**
  * Turnstile controller factory.
@@ -46,8 +45,6 @@ use VuFind\Service\GetServiceTrait;
  */
 class TurnstileControllerFactory extends AbstractBaseFactory
 {
-    use GetServiceTrait;
-
     /**
      * Create an object
      *
@@ -70,8 +67,6 @@ class TurnstileControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $this->serviceLocator = $container;
-
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $config = $yamlReader->get('RateLimiter.yaml');
 
