@@ -136,8 +136,8 @@ class Factory implements FactoryInterface
                 'message_log_format' => $config['Mail']['message_log_format'] ?? null,
             ]
         );
-        if (!empty($config->Mail->override_from)) {
-            $class->setFromAddressOverride($config['Mail']['override_from'] ?? null);
+        if ($fromOverride = $config['Mail']['override_from'] ?? null) {
+            $class->setFromAddressOverride($fromOverride);
         }
         return $class;
     }

@@ -447,6 +447,7 @@ $config = [
             'VuFind\Cover\Layer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Cover\Loader' => 'VuFind\Cover\LoaderFactory',
             'VuFind\Cover\Router' => 'VuFind\Cover\RouterFactory',
+            'VuFind\Crypt\BlockCipher' => 'VuFind\Crypt\BlockCipherFactory',
             'VuFind\Crypt\HMAC' => 'VuFind\Crypt\HMACFactory',
             'VuFind\Crypt\PasswordHasher' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Crypt\SecretCalculator' => 'VuFind\Crypt\SecretCalculatorFactory',
@@ -622,6 +623,7 @@ $config = [
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
         ],
         'shared' => [
+            'VuFind\Crypt\BlockCipher' => false,
             'VuFind\Form\Form' => false,
             'VuFind\Http\CachingDownloader' => false,
         ],

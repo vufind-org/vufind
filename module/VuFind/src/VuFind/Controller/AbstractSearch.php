@@ -927,6 +927,7 @@ class AbstractSearch extends AbstractBase
             'key' => $sort,
             'urlBase' => $urlBase,
             'searchAction' => $searchAction,
+            'multiFacetsSelection' => (bool)($config->Results_Settings->multiFacetsSelection ?? false),
         ];
         $viewParams['delegateParams'] = $viewParams;
         $view = $this->createViewModel($viewParams);

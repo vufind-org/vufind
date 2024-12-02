@@ -29,11 +29,13 @@
 
 namespace VuFind\Auth;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
 
 /**
  * ILS Authenticator factory.
@@ -70,9 +72,17 @@ class ILSAuthenticatorFactory implements FactoryInterface
         }
         $service = new $requestedName(
             // Use a callback to retrieve authentication manager to break a circular reference:
-            function () use ($container) {
-                return $container->get(\VuFind\Auth\Manager::class);
-            },
+            Closure::fromCallable(
+                function () use ($container) {
+                    return $container->get(\VuFind\Auth\Manager::class);
+                }
+            ),
+            // Use a callback to build BlockCipher objects:
+            Closure::fromCallable(
+                function (string $algo) use ($container) {
+                    return $container->get(BlockCipher::class)->setAlgorithm($algo);
+                }
+            ),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\EmailAuthenticator::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config')
