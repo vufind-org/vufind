@@ -352,3 +352,12 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Labels */
+.record .label {
+  margin-bottom: 0.5rem;
+
+  &.label-retraction {
+    @extend .label-warning;
+  }
+}
