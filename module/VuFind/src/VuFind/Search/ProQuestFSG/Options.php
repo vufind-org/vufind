@@ -30,6 +30,8 @@
 
 namespace VuFind\Search\ProQuestFSG;
 
+use function intval;
+
 /**
  * ProQuest Federated Search Gateway Search Options
  *
