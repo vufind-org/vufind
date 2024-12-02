@@ -29,11 +29,13 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
@@ -73,6 +75,11 @@ class SwitchDbHashCommandFactory implements FactoryInterface
             $config,
             $serviceManager->get(UserServiceInterface::class),
             $serviceManager->get(UserCardServiceInterface::class),
+            Closure::fromCallable(
+                function ($algo, $key) use ($container) {
+                    return $container->get(BlockCipher::class)->setAlgorithm($algo)->setKey($key);
+                }
+            ),
             null,
             $container->get(\VuFind\Config\PathResolver::class),
             ...($options ?? [])

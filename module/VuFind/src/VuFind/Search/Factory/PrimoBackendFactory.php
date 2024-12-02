@@ -40,6 +40,8 @@ use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 use VuFindSearch\Backend\Primo\RestConnector;
 
+use function in_array;
+
 /**
  * Factory for Primo Central backends.
  *
@@ -87,6 +89,42 @@ class PrimoBackendFactory extends AbstractBackendFactory
      * @var string
      */
     protected $restConnectorClass = RestConnector::class;
+
+    /**
+     * CDI attribute mappings
+     *
+     * @var array
+     */
+    protected $attributeLabelTypeMappings = [
+        'review_article' => [
+            'display' => 'RecordAttribute::Review Article',
+            'type' => 'notice',
+        ],
+        'primary_source' => [
+            'display' => 'RecordAttribute::Primary Source',
+            'type' => 'notice',
+        ],
+        'preprint' => [
+            'display' => 'RecordAttribute::Preprint',
+            'type' => 'notice',
+        ],
+        'retracted_publication' => [
+            'display' => 'RecordAttribute::Retracted Publication',
+            'type' => 'warning',
+        ],
+        'retraction_notice' => [
+            'display' => 'RecordAttribute::Retraction Notice',
+            'type' => 'warning',
+        ],
+        'publication_with_addendum' => [
+            'display' => 'RecordAttribute::Publication with Addendum',
+            'type' => 'warning',
+        ],
+        'publication_with_corrigendum' => [
+            'display' => 'RecordAttribute::Publication with Corrigendum',
+            'type' => 'warning',
+        ],
+    ];
 
     /**
      * Create service
@@ -257,6 +295,13 @@ class PrimoBackendFactory extends AbstractBackendFactory
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);
+            if ($this->primoConfig->display_cdi_attributes ?? true) {
+                foreach ($this->attributeLabelTypeMappings as $key => $config) {
+                    if (in_array($key, $data['attributes'] ?? [])) {
+                        $driver->addLabel($config['display'], $config['type']);
+                    }
+                }
+            }
             return $driver;
         };
         return new RecordCollectionFactory($callback);

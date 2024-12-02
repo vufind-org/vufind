@@ -15,15 +15,17 @@
           'class' => 'icon-link__icon',
           'data-checked' => $current['selected'] ? 'true' : 'false',
       ]) ?>
-      <span class="icon-link__label"><?=$this->transEsc($current['desc']) ?></span>
+      <span class="text">
+        <span class="icon-link__label"><?=$this->transEsc($current['desc']) ?></span>
+      </span>
+      <?php if (!$current['selected']): ?>
+        <?php
+          // Note: we need to ensure the element exists (for deferred side facets) but is empty if count is not
+          // available:
+          $countEsc = isset($current['count']) ? $this->localizedNumber($current['count']) : '';
+        ?>
+        <span class="badge avail-count"><?=$countEsc?></span>
+      <?php endif; ?>
     </a>
-    <?php if (!$current['selected']): ?>
-      <?php
-        // Note: we need to ensure the element exists (for deferred side facets) but is empty if count is not
-        // available:
-        $countEsc = isset($current['count']) ? $this->localizedNumber($current['count']) : '';
-      ?>
-      <span class="badge avail-count"><?=$countEsc?></span>
-    <?php endif; ?>
   </div>
 <?php endforeach; ?>

@@ -248,15 +248,27 @@ class Backend extends AbstractBackend
 
         // Use special pcAvailability filter if it has been set:
         foreach ($options['filterList'] ?? [] as $i => $filter) {
-            if ('pcAvailability' === $filter['field']) {
-                $value = reset($filter['values']);
-                // Note that '' is treated as true for the simple case with no value
-                $options['pcAvailability'] = !in_array($value, [false, 0, '0', 'false'], true);
+            if (in_array($filter['field'], ['pcAvailability', 'cdiFulltext'])) {
+                $options[$filter['field']] = $this->getSpecialFilterBool($filter);
                 unset($options['filterList'][$i]);
                 break;
             }
         }
 
         return $options;
+    }
+
+    /**
+     * Get boolean value for a special filter
+     *
+     * @param array $filter Filter
+     *
+     * @return bool
+     */
+    protected function getSpecialFilterBool(array $filter): bool
+    {
+        $value = reset($filter['values']);
+        // Note that '' is treated as true for the simple case with no value
+        return !in_array($value, [false, 0, '0', 'false'], true);
     }
 }

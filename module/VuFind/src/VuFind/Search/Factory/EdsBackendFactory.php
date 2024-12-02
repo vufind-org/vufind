@@ -185,6 +185,7 @@ class EdsBackendFactory extends AbstractBackendFactory
             'api_url' => $this->edsConfig->General->api_url
                 ?? $this->defaultApiUrl,
             'is_guest' => !$auth->isGranted('access.EDSExtendedResults'),
+            'send_user_ip' => $this->edsConfig->AdditionalHeaders->send_user_ip ?? false,
         ];
         if (isset($this->edsConfig->General->auth_url)) {
             $options['auth_url'] = $this->edsConfig->General->auth_url;
@@ -197,6 +198,14 @@ class EdsBackendFactory extends AbstractBackendFactory
         }
         if (!empty($this->edsConfig->EBSCO_Account->api_key_guest)) {
             $options['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
+        }
+        if ($options['send_user_ip']) {
+            $options['ip_to_report'] = $this->getService(\VuFind\Net\UserIpReader::class)->getUserIp();
+            $options['report_vendor_version'] = \VuFind\Config\Version::getBuildVersion();
+            $server = $this->getService(\VuFind\Http\PhpEnvironment\Request::class)->getServer();
+            if (!empty($server['HTTP_USER_AGENT'])) {
+                $options['user_agent'] = $server['HTTP_USER_AGENT'];
+            }
         }
         return $options;
     }

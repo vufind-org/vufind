@@ -29,9 +29,8 @@
 
 namespace VuFind\Auth;
 
+use Closure;
 use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
@@ -52,13 +51,6 @@ use VuFind\ILS\Connection as ILSConnection;
 class ILSAuthenticator implements DbServiceAwareInterface
 {
     use DbServiceAwareTrait;
-
-    /**
-     * Callback for retrieving the authentication manager
-     *
-     * @var callable
-     */
-    protected $authManagerCallback;
 
     /**
      * Authentication manager
@@ -91,18 +83,19 @@ class ILSAuthenticator implements DbServiceAwareInterface
     /**
      * Constructor
      *
-     * @param callable            $authCB             Auth manager callback
-     * @param ILSConnection       $catalog            ILS connection
-     * @param ?EmailAuthenticator $emailAuthenticator Email authenticator
-     * @param ?Config             $config             Configuration from config.ini
+     * @param Closure             $authManagerCallback Auth manager callback
+     * @param Closure             $cipherFactory       BlockCipher object factory (takes algorithm as argument)
+     * @param ILSConnection       $catalog             ILS connection
+     * @param ?EmailAuthenticator $emailAuthenticator  Email authenticator
+     * @param ?Config             $config              Configuration from config.ini
      */
     public function __construct(
-        callable $authCB,
+        protected Closure $authManagerCallback,
+        protected Closure $cipherFactory,
         protected ILSConnection $catalog,
         protected ?EmailAuthenticator $emailAuthenticator = null,
         protected ?Config $config = null
     ) {
-        $this->authManagerCallback = $authCB;
     }
 
     /**
@@ -181,7 +174,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
 
         // Check if OpenSSL error is caused by blowfish support
         try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+            $cipher = ($this->cipherFactory)($algo);
             if ($algo == 'blowfish') {
                 trigger_error(
                     'Deprecated encryption algorithm (blowfish) detected',
