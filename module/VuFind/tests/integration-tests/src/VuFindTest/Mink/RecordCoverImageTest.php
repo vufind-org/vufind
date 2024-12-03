@@ -167,7 +167,7 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $session->wait(
             $this->getDefaultTimeout(),
-            'document.querySelector("img.recordcover").complete && document.querySelector("img.recordcover").src'
+            'document.querySelector("img.recordcover").dataset.loaded !== undefined'
         );
         // Verify the expected backlink (or lack thereof):
         $backlinkSelector = 'p.cover-source';
@@ -186,10 +186,6 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
             . ($ajaxcovers ? ' ajax' : '')
             . (empty($noCoverAvailableImage) ? ' hidden' : '');
         $coverImage = $this->findCss($page, 'img.recordcover');
-        $session->wait(
-            $this->getDefaultTimeout(),
-            'document.querySelector("img.recordcover").classList = "' . $expectedClasses . '"'
-        );
         $this->assertEquals(
             $expectedClasses,
             $coverImage?->getAttribute('class')
