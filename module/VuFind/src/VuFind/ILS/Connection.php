@@ -176,10 +176,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * Constructor
      *
      * @param \VuFind\Config\Config            $config        Configuration
-     *                                                        representing
-     *                                                        the [Catalog]
-     *                                                        section of
-     *                                                        config.ini
+     * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
      * @param \Laminas\Http\Request            $request       Request object
