@@ -52,7 +52,11 @@ trait CheckEnabledTrait
      */
     protected function checkEnabled()
     {
-        $configId = $this->searchClassId ?? $this->sourceId;
+        $configId = $this->searchClassId ?? $this->sourceId ?? null;
+        if (!$configId) {
+            return;
+        }
+        
         $config = $this->getConfig($configId);
         if (!($config['General']['enabled'] ?? false)) {
             throw new ForbiddenException($configId . ' is disabled');
