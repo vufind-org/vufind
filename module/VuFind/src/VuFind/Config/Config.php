@@ -72,7 +72,7 @@ class Config implements ArrayAccess, Countable, Iterator
     public function get(string $key, mixed $default = null): mixed
     {
         if (!isset($this->data[$key])) {
-            return null;
+            return $default;
         }
         return is_array($this->data[$key]) ? new Config($this->data[$key]) : $this->data[$key];
     }
