@@ -55,7 +55,7 @@ class CollectionsController extends AbstractBase implements
     /**
      * VuFind configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
     protected $config;
 
