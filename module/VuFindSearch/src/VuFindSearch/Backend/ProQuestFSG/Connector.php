@@ -63,8 +63,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     /**
      * Constructor
      *
-     * @param \Laminas\Http\Client $client  An HTTP client object
-     * @param array                $options Additional config settings
+     * @param \Laminas\Http\Client $client An HTTP client object
      */
     public function __construct(
         \Laminas\Http\Client $client
