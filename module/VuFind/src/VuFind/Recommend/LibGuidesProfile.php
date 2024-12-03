@@ -211,7 +211,7 @@ class LibGuidesProfile implements
      *
      * @param \VuFind\Search\Base\Results $results Search results object
      *
-     * @return array LibGuides account
+     * @return mixed LibGuides account object or false
      */
     protected function findBestMatchByCallNumber($results)
     {
@@ -269,7 +269,7 @@ class LibGuidesProfile implements
      *
      * @param \VuFind\Search\Base\Results $results Search results object
      *
-     * @return array LibGuides account
+     * @return mixed LibGuides account object or false
      */
     protected function findBestMatchBySubject($results)
     {

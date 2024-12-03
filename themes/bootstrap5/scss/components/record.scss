@@ -313,8 +313,10 @@
     margin-right: -0.6em;
     z-index: 2;
 
+    /* Display only half of the star and ensure that the remainder cannot be hovered over */
     .rating__icon--star {
       width: 0.5rem;
+      overflow: hidden;
     }
   }
 
@@ -351,4 +353,13 @@
   row-gap: 10px;
   align-items: center;
   justify-content: center;
+}
+
+/* Labels */
+.record .label {
+  margin-bottom: 0.5rem;
+
+  &.label-retraction {
+    @extend .label-warning;
+  }
 }

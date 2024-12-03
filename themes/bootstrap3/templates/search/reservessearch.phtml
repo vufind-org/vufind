@@ -25,7 +25,7 @@
         'aria-label' => $this->translate('search_terms'),
       ];
       if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $this->searchClassId)) {
-        $searchboxAttributes['placeholder'] = $placeholder;
+        $searchboxAttributes['placeholder'] = $this->translate($placeholder);
       }
       if ($this->searchbox()->autocompleteEnabled('SolrReserves')) {
         $searchboxAttributes['class'] = ' autocomplete form-control searcher:SolrReserves type:Reserves'

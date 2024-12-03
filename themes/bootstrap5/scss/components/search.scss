@@ -147,6 +147,7 @@ header .container.navbar { margin-bottom: 0; }
 .selection-controls-bar {
   gap: 0.25rem;
   align-items: center;
+  cursor: default;
 }
 .bulkActionButtons {
   margin-block: 1rem;
@@ -187,7 +188,22 @@ header .container.navbar { margin-bottom: 0; }
   padding-top: 1rem;
 
   .record-checkbox,
-  .record-number { display: none; }
+  .record-number {
+    display: none;
+  }
+
+  .record-checkbox {
+    padding: .4rem;
+    height: fit-content;
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+  }
+
+  .record-number {
+    padding-top: .2rem;
+  }
 
   .title,
   .result-author,
@@ -686,6 +702,10 @@ body.rtl {
 .selection-controls-bar {
   .clear-selection, label {
     padding: .25rem .4rem .15rem .4rem;
+  }
+
+  input[type="checkbox"] {
+    margin-right: .4rem;
   }
 }
 

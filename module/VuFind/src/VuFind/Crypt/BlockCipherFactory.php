@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ILS Authenticator factory.
+ * BlockCipher factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,32 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
+ * @package  Crypt
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Auth;
+namespace VuFind\Crypt;
 
-use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Crypt\BlockCipher;
 
 /**
- * ILS Authenticator factory.
+ * BlockCipher factory.
  *
  * @category VuFind
- * @package  Authentication
+ * @package  Crypt
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ILSAuthenticatorFactory implements FactoryInterface
+class BlockCipherFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -70,23 +68,8 @@ class ILSAuthenticatorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $service = new $requestedName(
-            // Use a callback to retrieve authentication manager to break a circular reference:
-            Closure::fromCallable(
-                function () use ($container) {
-                    return $container->get(\VuFind\Auth\Manager::class);
-                }
-            ),
-            // Use a callback to build BlockCipher objects:
-            Closure::fromCallable(
-                function (string $algo) use ($container) {
-                    return $container->get(BlockCipher::class)->setAlgorithm($algo);
-                }
-            ),
-            $container->get(\VuFind\ILS\Connection::class),
-            $container->get(\VuFind\Auth\EmailAuthenticator::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
-        );
-        return $service;
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
+        $options = ['legacyPbkdf2' => $config['Security']['legacyPbkdf2'] ?? true];
+        return new $requestedName($options);
     }
 }

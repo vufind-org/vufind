@@ -118,6 +118,34 @@ abstract class Base implements LoggerAwareInterface
     protected $isGuest = true;
 
     /**
+     * Indicator if additional headers should be sent
+     *
+     * @var bool
+     */
+    protected $sendUserIp = false;
+
+    /**
+     * Vendor (e.g. 10.1)
+     *
+     * @var ?string
+     */
+    protected $reportVendorVersion = null;
+
+    /**
+     * IpToReport (e.g. 123.123.123.13)
+     *
+     * @var ?string
+     */
+    protected $ipToReport = null;
+
+    /**
+     * UserAgent (e.g. 10.1)
+     *
+     * @var ?string
+     */
+    protected $userAgent = null;
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Client
@@ -157,6 +185,18 @@ abstract class Base implements LoggerAwareInterface
                         break;
                     case 'is_guest':
                         $this->isGuest = $value;
+                        break;
+                    case 'send_user_ip':
+                        $this->sendUserIp = $value;
+                        break;
+                    case 'report_vendor_version':
+                        $this->reportVendorVersion = $value;
+                        break;
+                    case 'ip_to_report':
+                        $this->ipToReport = $value;
+                        break;
+                    case 'user_agent':
+                        $this->userAgent = $value;
                         break;
                 }
             }
@@ -366,7 +406,7 @@ abstract class Base implements LoggerAwareInterface
         $url = $data['url'] . '?' . http_build_query($params);
 
         $this->debug('Autocomplete URL: ' . $url);
-        $response = $this->call($url, null, null, 'GET', null);
+        $response = $this->call($url, [], null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
     }
 
@@ -405,7 +445,7 @@ abstract class Base implements LoggerAwareInterface
             $authInfo['Options'] = $params;
         }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null, null, 'POST', $messageBody, '', false);
+        return $this->call($url, [], null, 'POST', $messageBody, '', false);
     }
 
     /**
@@ -461,7 +501,7 @@ abstract class Base implements LoggerAwareInterface
      */
     protected function call(
         $baseUrl,
-        $headerParams,
+        $headerParams = [],
         $params = [],
         $method = 'GET',
         $message = null,
@@ -473,27 +513,13 @@ abstract class Base implements LoggerAwareInterface
         $queryString = implode('&', $queryParameters);
         $this->debug("Querystring to use: $queryString ");
         // Build headers
-        $headers = [
-            'Accept' => $this->accept,
-            'Content-Type' => $this->contentType,
-            'Accept-Encoding' => 'gzip,deflate',
-        ];
+        $headers = $this->getRequestHeaders($headerParams);
+        // Debug some info about Guest Access & API Keys used
         $this->debug(
             'isGuest: ' . ($this->isGuest ? 'true' : 'false')
             . ' | APIKey: ' . ($this->apiKey ? substr($this->apiKey, 0, 10) : '-')
             . ' | APIKey Guest: ' . ($this->apiKeyGuest ? substr($this->apiKeyGuest, 0, 10) : '-')
         );
-        if (null != $headerParams) {
-            foreach ($headerParams as $key => $value) {
-                $headers[$key] = $value;
-            }
-        }
-        if (!empty($this->apiKey)) {
-            $headers['x-api-key'] = $this->apiKey;
-        }
-        if ($this->isGuest && !empty($this->apiKeyGuest)) {
-            $headers['x-api-key'] = $this->apiKeyGuest;
-        }
         $response = $this->httpRequest(
             $baseUrl,
             $method,
@@ -504,6 +530,41 @@ abstract class Base implements LoggerAwareInterface
             $cacheable
         );
         return $this->process($response);
+    }
+
+    /**
+     * Creat Header Array for Call Function
+     *
+     * @param array $headerParams An array (could be empty) of headers to build
+     *
+     * @return array Array of Headers to be used in call function
+     */
+    protected function getRequestHeaders(array $headerParams = []): array
+    {
+        $headers = [
+            'Accept' => $this->accept,
+            'Content-Type' => $this->contentType,
+            'Accept-Encoding' => 'gzip,deflate',
+        ];
+        foreach ($headerParams as $key => $value) {
+            $headers[$key] = $value;
+        }
+        if (!empty($this->apiKey)) {
+            $headers['x-api-key'] = $this->apiKey;
+        }
+        if ($this->isGuest && !empty($this->apiKeyGuest)) {
+            $headers['x-api-key'] = $this->apiKeyGuest;
+        }
+        if ($this->sendUserIp) {
+            $headers['x-eis-enduser-ip-address'] = $this->ipToReport ?? '-';
+            $headers['x-eis-enduser-user-agent'] = $this->userAgent ?? 'No user agent';
+            $headers['x-eis-vendor'] = 'VuFind';
+            if (!empty($this->reportVendorVersion)) {
+                $headers['x-eis-vendor-version'] = $this->reportVendorVersion;
+            }
+        }
+
+        return $headers;
     }
 
     /**

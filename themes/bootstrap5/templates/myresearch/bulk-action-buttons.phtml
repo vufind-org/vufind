@@ -75,15 +75,19 @@
   <ul class="selection-controls-bar">
     <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
       <li class="bulk-checkbox">
-        <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
-        <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
+        <label for="myresearchCheckAll">
+          <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
+          <?=$this->transEsc('select_all_on_page')?>
+        </label>
       </li>
     <?php endif; ?>
     <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
       <li class="bulk-checkbox">
         <div class="select-all-global hidden">
-          <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
-          <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>
+          <label for="myresearchCheckAllGlobal">
+            <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
+            <?=$this->transEsc('select_all')?>
+          </label>
         </div>
       </li>
     <?php endif; ?>
