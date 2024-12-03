@@ -74,7 +74,7 @@ trait CheckEnabledTrait
         $events = $this->getEventManager();
         $events->attach(
             MvcEvent::EVENT_DISPATCH,
-            fn() => $this->checkEnabled(),
+            fn () => $this->checkEnabled(),
             1000
         );
     }
