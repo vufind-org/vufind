@@ -80,8 +80,7 @@ class Mailer extends AbstractBase
      *
      * @param \VuFind\Config\Config $config  SMS configuration
      * @param array                 $options Additional options: defaultFrom
-     *                                       (optional) and mailer (must be
-     *                                       a \VuFind\Mailer\Mailer object)
+     * (optional) and mailer (must be a \VuFind\Mailer\Mailer object)
      */
     public function __construct(\VuFind\Config\Config $config, $options = [])
     {
