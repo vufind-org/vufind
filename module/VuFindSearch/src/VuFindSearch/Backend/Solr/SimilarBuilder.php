@@ -84,8 +84,7 @@ class SimilarBuilder implements SimilarBuilderInterface
      * Constructor.
      *
      * @param \VuFind\Config\Config $searchConfig Search config
-     * @param string                $uniqueKey    Solr field used to store unique
-     *                                            identifier
+     * @param string                $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
