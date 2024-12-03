@@ -31,6 +31,7 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Controller\Feature\CheckEnabledTrait;
 
 /**
  * ProQuest Federated Search Gateway Controller
@@ -44,6 +45,8 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  */
 class ProQuestFSGController extends AbstractSearch
 {
+    use CheckEnabledTrait;
+
     /**
      * Constructor
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ProQuest Federated Search Gateway Record Controller
+ * Check Enabled Trait
  *
  * PHP version 8
  *
@@ -21,54 +21,57 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller_Plugins
  * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Controller\Feature;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Controller\Feature\CheckEnabledTrait;
+use Laminas\Mvc\MvcEvent;
+use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
- * ProQuest Federated Search Gateway Record Controller
+ * Check Enabled Trait
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller_Plugins
  * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
-class ProQuestFSGrecordController extends AbstractRecord
+trait CheckEnabledTrait
 {
-    use CheckEnabledTrait;
-
     /**
-     * Constructor
+     * Check whether the controller is enabled
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @return void
+     *
+     * @throws ForbiddenException if the controller is not enabled
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    protected function checkEnabled()
     {
-        // Override some defaults:
-        $this->sourceId = 'ProQuestFSG';
-
-        // Call standard record controller initialization:
-        parent::__construct($sm);
+        $configId = $this->searchClassId ?? $this->sourceId;
+        $config = $this->getConfig($configId);
+        if (!($config['General']['enabled'] ?? false)) {
+            throw new ForbiddenException($configId . ' is disabled');
+        }
     }
 
     /**
-     * Is the result scroller active?
+     * Add to event listeners a check that the controller is enabled
      *
-     * @return bool
+     * @return void
      */
-    protected function resultScrollerActive()
+    protected function attachDefaultListeners()
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('ProQuestFSG');
-        return $config->Record->next_prev_navigation ?? false;
+        parent::attachDefaultListeners();
+        $events = $this->getEventManager();
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH,
+            fn () => $this->checkEnabled(),
+            1000
+        );
     }
 }
