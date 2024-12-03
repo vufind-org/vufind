@@ -156,7 +156,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
             return null;
         }
 
-        $configAuth = $this->config->Authentication ?? new \VuFind\Config\Config([]);
+        $configAuth = $this->config->Authentication ?? new Config([]);
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
