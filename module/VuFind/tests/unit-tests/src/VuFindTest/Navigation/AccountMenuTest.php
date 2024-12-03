@@ -37,8 +37,6 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\ILS\Connection;
 use VuFind\Navigation\AccountMenu;
 
-use function count;
-
 /**
  * Account menu tests.
  *
@@ -75,10 +73,8 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
             AccountMenu::getDefaultMenuConfig(),
             $this->getCheckMethods(false)
         )->getMenu();
-        $this->assertTrue(
-            count($menu['Account']['MenuItems']) === 1
-            && reset($menu['Account']['MenuItems'])['label'] === 'Profile'
-        );
+        $this->assertCount(1, $menu['Account']['MenuItems']);
+        $this->assertEquals('Profile', reset($menu['Account']['MenuItems'])['label']);
     }
 
     /**
@@ -89,7 +85,7 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
     public function testBackwardCompatibilityForOldConfigurations()
     {
         $menu = $this->getAccountMenu($this->getOldDefaultMenuConfig())->getMenu();
-        $this->assertTrue(count($menu['Account']['MenuItems']) === 12);
+        $this->assertCount(12, $menu['Account']['MenuItems']);
     }
 
     /**

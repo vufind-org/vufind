@@ -31,8 +31,6 @@ namespace VuFindTest\Navigation;
 
 use VuFind\Navigation\AdminMenu;
 
-use function count;
-
 /**
  * Admin menu tests.
  *
@@ -68,7 +66,7 @@ class AdminMenuTest extends \PHPUnit\Framework\TestCase
             AdminMenu::getDefaultMenuConfig(),
             $this->getCheckMethods(false)
         )->getMenu();
-        $this->assertTrue(count($menu['Admin']['MenuItems']) === 6);
+        $this->assertCount(6, $menu['Admin']['MenuItems']);
     }
 
     /**

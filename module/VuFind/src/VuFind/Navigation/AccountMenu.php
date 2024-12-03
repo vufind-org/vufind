@@ -70,7 +70,7 @@ class AccountMenu extends AbstractMenu
     ) {
         if (isset($config['MenuItems'])) {
             // backward compatibility for outdated AccountMenu configurations
-            $default = $this->getDefaultMenuConfig();
+            $default = static::getDefaultMenuConfig();
             $default['Account']['MenuItems'] = $config['MenuItems'];
             $config = $default;
         }
