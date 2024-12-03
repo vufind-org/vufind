@@ -42,12 +42,34 @@ public class CallNumberTools
 {
     /**
      * Extract the call number labels from a record
+     * @deprecated Please use getCallNumberLabels instead
      * @param record MARC record
      * @return Call number labels
      */
+    @Deprecated
     public List<String> getCallNumberLabel(final Record record) {
+        return getCallNumberLabels(record, "050a:082a:083a:090a");
+    }
 
-        return getCallNumberLabel(record, "050a:082a:083a:090a");
+    /**
+     * Extract the call number labels from a record
+     * @param record MARC record
+     * @return Call number labels
+     */
+    public List<String> getCallNumberLabels(final Record record) {
+        return getCallNumberLabels(record, "050a:082a:083a:090a");
+    }
+
+    /**
+     * Extract the call number labels from a record.
+     * @deprecated Please use getCallNumberLabels instead
+     * @param record MARC record
+     * @param fieldSpec taglist for call number fields
+     * @return Call number labels
+     */
+    @Deprecated
+    public List<String> getCallNumberLabel(final Record record, String fieldSpec) {
+        return getCallNumberLabels(record, fieldSpec);
     }
 
     /**
@@ -61,7 +83,7 @@ public class CallNumberTools
      * @param fieldSpec taglist for call number fields
      * @return Call number labels
      */
-    public List<String> getCallNumberLabel(final Record record, String fieldSpec) {
+    public List<String> getCallNumberLabels(final Record record, String fieldSpec) {
         Set<String> values = SolrIndexer.instance().getFieldList(record, fieldSpec);
         HashSet<String> result = new LinkedHashSet<String>();
         for (String cn: values) {
