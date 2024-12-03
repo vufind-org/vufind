@@ -47,13 +47,6 @@ use function strval;
 class Connector extends \VuFindSearch\Backend\SRU\Connector
 {
     /**
-     * Additional options
-     *
-     * @var array
-     */
-    protected $options;
-
-    /**
      * The version to specify in the URL
      *
      * @var string
@@ -74,14 +67,12 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param array                $options Additional config settings
      */
     public function __construct(
-        \Laminas\Http\Client $client,
-        array $options = []
+        \Laminas\Http\Client $client
     ) {
         parent::__construct(
             'https://fedsearch.proquest.com/search/sru',
             $client
         );
-        $this->options = $options;
     }
 
     /**
