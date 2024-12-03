@@ -231,8 +231,7 @@ class Server
      *
      * @param \VuFind\Config\Config $config  VuFind configuration
      * @param string                $baseURL The base URL for the OAI server
-     * @param array                 $params  The incoming OAI-PMH parameters (i.e.
-     *                                       $_GET)
+     * @param array                 $params  The incoming OAI-PMH parameters (i.e. $_GET)
      *
      * @return void
      */
