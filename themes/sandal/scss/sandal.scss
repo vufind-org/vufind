@@ -197,9 +197,7 @@ a:hover .login-dropdown-caret {
 
 /* --- Sidebar --- */
 .sidebar {
-  padding-top: 1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 1rem;
   font-size: $reduced-font-size;
   background-color: $light-gray;
 
@@ -270,7 +268,6 @@ a:hover .login-dropdown-caret {
 
 @media (max-width: 1399px) {
   .sidebar {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
   }
 }
