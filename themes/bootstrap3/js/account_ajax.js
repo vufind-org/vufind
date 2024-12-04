@@ -323,7 +323,7 @@ $(function registerAccountAjax() {
       }
       if (status.in_transit > 0) {
         html += '<span aria-hidden="true" class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>' +
-        '<span class="sr-only">' + VuFind.translate('account_requests_in_transit') + ': ' + status.in_transit  + ' , ' + '</span>';
+        '<span class="sr-only">' + VuFind.translate('account_requests_in_transit') + ': ' + status.in_transit + ' , ' + '</span>';
       }
       if (status.other > 0) {
         html += '<span aria-hidden="true" class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>' +
