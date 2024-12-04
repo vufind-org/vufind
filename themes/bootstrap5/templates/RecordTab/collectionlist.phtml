@@ -83,7 +83,7 @@
       <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
         <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
-        <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
+        <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $results]])?>
       </form>
     <?php else: ?>
       <h4><?=$this->transEsc($params->getDisplayQuery() || ($filterCount ?? 0) > 0 ? 'nohit_heading' : 'collection_empty')?></h4>

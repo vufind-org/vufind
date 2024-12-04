@@ -1,7 +1,10 @@
 .facet-group {
   display: block;
-  margin-bottom: 1rem;
   padding-left: 0;
+
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
 
   [data-toggle="collapse"] {
     cursor: pointer;
@@ -239,6 +242,10 @@ h3.facet-title {
 
   label {
     font-weight: bold;
+  }
+
+  input[type="checkbox"] {
+    height: initial;
   }
 
   .apply-filters {

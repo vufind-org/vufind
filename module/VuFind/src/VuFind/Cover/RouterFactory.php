@@ -77,6 +77,7 @@ class RouterFactory implements FactoryInterface
             $base = ($container->get('ViewRenderer')->plugin('url'))('cover-show');
         }
         $coverLoader = $container->get(\VuFind\Cover\Loader::class);
-        return new $requestedName($base, $coverLoader);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray()['Content'] ?? [];
+        return new $requestedName($base, $coverLoader, $config);
     }
 }
