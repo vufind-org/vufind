@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Feature\IniReaderTrait;
 
 use function defined;
 use function in_array;
@@ -51,8 +50,6 @@ use function strlen;
  */
 class PathResolverFactory implements FactoryInterface
 {
-    use IniReaderTrait;
-
     /**
      * Default base config file subdirectory under the base directory
      *
@@ -111,7 +108,7 @@ class PathResolverFactory implements FactoryInterface
             $systemConfigFile = $currentDir . '/DirLocations.ini';
             $systemConfig = new Config(
                 file_exists($systemConfigFile)
-                    ? $this->getIniReader()->fromFile($systemConfigFile)
+                    ? parse_ini_file($systemConfigFile, true)
                     : []
             );
 

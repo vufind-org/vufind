@@ -31,7 +31,6 @@ namespace VuFind\Config;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Feature\IniReaderTrait;
 
 use function count;
 use function in_array;
@@ -48,8 +47,6 @@ use function is_array;
  */
 class PluginFactory implements AbstractFactoryInterface
 {
-    use IniReaderTrait;
-
     /**
      * Load the specified configuration file.
      *
@@ -69,7 +66,7 @@ class PluginFactory implements AbstractFactoryInterface
         // Retrieve and parse at least one configuration file, and possibly a whole
         // chain of them if the Parent_Config setting is used:
         do {
-            $configs[] = $this->getIniReader()->fromFile($filename);
+            $configs[] = parse_ini_file($filename, true);
 
             $i = count($configs) - 1;
             if (isset($configs[$i]['Parent_Config']['path'])) {
