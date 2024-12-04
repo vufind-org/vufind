@@ -166,10 +166,11 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         $coverSelector = 'img.recordcover';
-        $session->wait(
+        $loaded = $session->wait(
             $this->getDefaultTimeout(),
             "document.querySelector('$coverSelector').dataset.loaded !== undefined"
         );
+        $this->assertTrue($loaded, 'Expected record image to be loaded.');
         // Verify the expected backlink (or lack thereof):
         $backlinkSelector = 'p.cover-source';
         if ($expectedBacklink) {

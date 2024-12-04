@@ -82,18 +82,25 @@ VuFind.register('covers', function covers() {
     );
   }
 
+  function checkImgSize(img) {
+    let width = img.getBoundingClientRect().width;
+    img.dataset.width = width.toString();
+    if (width < 2) {
+      img.classList.add('hidden');
+    }
+    img.dataset.loaded = 'true';
+  }
+
   function checkLoaded(container) {
     container.querySelectorAll('.recordcover').forEach(
       (img) => {
         if (img.dataset.loaded === undefined) {
           img.addEventListener('load', () => {
-            let width = img.getBoundingClientRect().width;
-            img.dataset.width = width.toString();
-            if (width < 2) {
-              img.classList.add('hidden');
-            }
-            img.dataset.loaded = 'true';
+            checkImgSize(img);
           });
+          if (img.complete && img.src) {
+            checkImgSize(img);
+          }
         }
       }
     );
