@@ -228,6 +228,29 @@ class OverdriveConnector implements
     }
 
     /**
+     * Is Overdrive content active?
+     *
+     * @return bool
+     */
+    public function isContentActive()
+    {
+        $config = $this->getConfig();
+        if ($config->showMyContent == 'always') {
+            return true;
+        } elseif ($config->showMyContent == 'never') {
+            return false;
+        } else {
+            // assume that it is accessOnly
+            $result = $this->getAccess();
+
+            if (!$result->status && $result->code == 'od_account_noaccess') {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    /**
      * Get Availability
      *
      * Retrieves the availability for a single resource from OverDrive API

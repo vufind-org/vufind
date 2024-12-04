@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Account menu view helper factory
+ * Account menu factory
  *
  * PHP version 8
  *
- * Copyright (C) Moravian library 2024.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @package  Navigation
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Navigation;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Account menu view helper factory
+ * Account menu factory
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @package  Navigation
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountMenuFactory implements FactoryInterface
+class AccountMenuFactory extends AbstractMenuFactory
 {
     /**
      * Create an object
@@ -65,11 +64,28 @@ class AccountMenuFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+        // Only load the connector if we need to show
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get(
+            'Overdrive'
+        );
+        $connector = null;
+        if ($config->Overdrive->showMyContent != 'never') {
+            $connector = $container->get(
+                \VuFind\DigitalContent\OverdriveConnector::class
+            );
         }
-        $menu = $container->get(\VuFind\Navigation\PluginManager::class)
-            ->get(\VuFind\Navigation\AccountMenu::class);
-        return new $requestedName($menu);
+
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                'AccountMenu.yaml',
+                $container->get(\VuFind\Config\AccountCapabilities::class),
+                $container->get(\VuFind\Auth\Manager::class),
+                $container->get(\VuFind\ILS\Connection::class),
+                $container->get(\VuFind\Auth\ILSAuthenticator::class),
+                $connector,
+            ]
+        );
     }
 }

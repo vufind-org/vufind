@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Account menu view helper
+ * Admin menu view helper
  *
  * PHP version 8
  *
- * Copyright (C) Moravian library 2024.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,38 +22,26 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\View\Helper\Root;
 
 /**
- * Account menu view helper
+ * Admin menu view helper
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Josef Moravec <josef.moravec@mzk.cz>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountMenu extends AbstractMenuHelper
+class AdminMenu extends AbstractMenuHelper
 {
     /**
-     * Create icon name for fines item
-     *
-     * @return string
-     */
-    public function finesIcon(): string
-    {
-        $icon = 'currency-'
-            . strtolower($this->getView()->plugin('config')->get('config')->Site->defaultCurrency ?? 'usd');
-        return $icon;
-    }
-
-    /**
-     * Render account menu
+     * Render menu
      *
      * @param ?string $activeItem The name of current active item (optional)
      * @param string  $idPrefix   Element ID prefix
@@ -62,17 +50,10 @@ class AccountMenu extends AbstractMenuHelper
      */
     public function render(?string $activeItem = null, string $idPrefix = ''): string
     {
-        $contextHelper = $this->getView()->plugin('context');
-        $menu = $this->getMenu();
-
-        return $contextHelper->renderInContext(
-            'myresearch/menu.phtml',
+        return $this->getView()->render(
+            'admin/menu.phtml',
             [
-                'menu' => $menu,
-                'active' => $activeItem,
-                'idPrefix' => $idPrefix,
-                // set items for backward compatibility, might be removed in future releases
-                'items' => $menu['Account']['MenuItems'],
+                'items' => $this->getMenu()['Admin']['MenuItems'],
             ]
         );
     }
