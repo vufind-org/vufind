@@ -188,11 +188,9 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
             . ($ajaxcovers ? ' ajax' : '')
             . (empty($noCoverAvailableImage) ? ' hidden' : '');
         $coverImage = $this->findCss($page, $coverSelector);
-        $width = $session->evaluateScript("document.querySelector('$coverSelector').dataset.width");
         $this->assertEquals(
             $expectedClasses,
-            $coverImage?->getAttribute('class'),
-            "Unexpected classes on image of width $width"
+            $coverImage?->getAttribute('class')
         );
 
         // Verify the expected image URL:

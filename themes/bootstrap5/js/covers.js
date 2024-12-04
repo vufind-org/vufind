@@ -83,9 +83,7 @@ VuFind.register('covers', function covers() {
   }
 
   function checkImgSize(img) {
-    let width = img.getBoundingClientRect().width;
-    img.dataset.width = width.toString();
-    if (width < 2) {
+    if (img.getBoundingClientRect().width < 2) {
       img.classList.add('hidden');
     }
     img.dataset.loaded = 'true';
