@@ -43,6 +43,13 @@ use VuFind\Config\Config;
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Config object to test
+     *
+     * @var ?Config
+     */
+    protected $config = null;
+
+    /**
      * Test configuration data
      *
      * @var array
@@ -58,38 +65,62 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Data provider for testBasicBehavior
+     * Standard setup method.
      *
-     * @return array[]
+     * @return void
      */
-    public static function basicBehaviorProvider(): array
+    public function setUp(): void
     {
-        return [
-            'toArray returns original array' =>
-                [fn ($test, $config) => $test->assertEquals(self::$configArray, $config->toArray())],
-            'undefined values do not exist' =>
-                [fn ($test, $config) => $test->assertFalse(isset($config->section3->doesNotExist))],
-            'object notation works for access' =>
-                [fn ($test, $config) => $test->assertEquals('value1', $config->section1->setting1)],
-            'array notation works for access' =>
-                [fn ($test, $config) => $test->assertEquals('value2', $config['section1']['setting2'])],
-            'nested arrays can be retrieved' =>
-                [fn ($test, $config) => $test->assertEquals(['foo', 'bar'], $config->section2->setting3->toArray())],
-        ];
+        $this->config = new Config(self::$configArray);
     }
 
     /**
-     * Test basic configuration behavior.
-     *
-     * @param callable $callback Callback to test a behavior (receives test object and config object as arguments)
+     * Test that toArray returns original array.
      *
      * @return void
-     *
-     * @dataProvider basicBehaviorProvider
      */
-    public function testBasicBehavior(callable $callback): void
+    public function testToArray(): void
     {
-        $config = new Config(self::$configArray);
-        $callback($this, $config);
+        $this->assertEquals(self::$configArray, $this->config->toArray());
+    }
+
+    /**
+     * Test that undefined values do not exist.
+     *
+     * @return void
+     */
+    public function testUnsetValue(): void
+    {
+        $this->assertFalse(isset($this->config->section3->doesNotExist));
+    }
+
+    /**
+     * Test that object notation works for access.
+     *
+     * @return void
+     */
+    public function testObjectNotation(): void
+    {
+        $this->assertEquals('value1', $this->config->section1->setting1);
+    }
+
+    /**
+     * Test that array notation works for access.
+     *
+     * @return void
+     */
+    public function testArrayNotation(): void
+    {
+        $this->assertEquals('value2', $this->config['section1']['setting2']);
+    }
+
+    /**
+     * Test that nested arrays can be retrieved.
+     *
+     * @return void
+     */
+    public function testNestedArray(): void
+    {
+        $this->assertEquals(['foo', 'bar'], $this->config->section2->setting3->toArray());
     }
 }
