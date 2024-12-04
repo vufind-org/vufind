@@ -87,7 +87,9 @@ VuFind.register('covers', function covers() {
       (img) => {
         if (img.dataset.loaded === undefined) {
           img.addEventListener('load', () => {
-            if (img.getBoundingClientRect().width < 2) {
+            let width = img.getBoundingClientRect().width;
+            img.dataset.width = width.toString();
+            if (width < 2) {
               img.classList.add('hidden');
             }
             img.dataset.loaded = 'true';
