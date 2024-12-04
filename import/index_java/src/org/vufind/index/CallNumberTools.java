@@ -41,14 +41,36 @@ import org.solrmarc.index.SolrIndexer;
 public class CallNumberTools
 {
     /**
-     * Extract the call number labels from a record
+     * Extract the first call number label from a record
      * @deprecated Please use getCallNumberLabels instead
      * @param record MARC record
-     * @return Call number labels
+     * @return Call number label
      */
     @Deprecated
-    public List<String> getCallNumberLabel(final Record record) {
-        return getCallNumberLabels(record, "050a:082a:083a:090a");
+    public String getCallNumberLabel(final Record record) {
+        return getCallNumberLabel(record, "090a:050a");
+    }
+
+    /**
+     * Extract the first call number label from a record.
+     * @deprecated Please use getCallNumberLabels instead
+     * @param record MARC record
+     * @param fieldSpec taglist for call number fields
+     * @return Call number label
+     */
+    @Deprecated
+    public String getCallNumberLabel(final Record record, String fieldSpec) {
+        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
+
+        if (val != null) {
+            int dotPos = val.indexOf(".");
+            if (dotPos > 0) {
+                val = val.substring(0, dotPos);
+            }
+            return val.toUpperCase();
+        } else {
+            return val;
+        }
     }
 
     /**
@@ -58,18 +80,6 @@ public class CallNumberTools
      */
     public List<String> getCallNumberLabels(final Record record) {
         return getCallNumberLabels(record, "050a:082a:083a:090a");
-    }
-
-    /**
-     * Extract the call number labels from a record.
-     * @deprecated Please use getCallNumberLabels instead
-     * @param record MARC record
-     * @param fieldSpec taglist for call number fields
-     * @return Call number labels
-     */
-    @Deprecated
-    public List<String> getCallNumberLabel(final Record record, String fieldSpec) {
-        return getCallNumberLabels(record, fieldSpec);
     }
 
     /**
