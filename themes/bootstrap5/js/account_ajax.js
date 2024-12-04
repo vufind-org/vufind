@@ -231,7 +231,7 @@ $(function registerAccountAjax() {
       }
       if (status.warn > 0) {
         html += '<span aria-hidden="true" class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>' +
-        '<span class="visually-hidden">' + VuFind.translate('account_checkouts_due') + ': ' + status.warn + + ' , ' + '</span>';
+        '<span class="visually-hidden">' + VuFind.translate('account_checkouts_due') + ': ' + status.warn + ' , ' + '</span>';
         level = ICON_LEVELS.WARNING;
       }
       if (status.overdue > 0) {
