@@ -73,10 +73,9 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
     {
         $routeMatch = $event->getRouteMatch();
         $controller = $routeMatch?->getParam('controller') ?? '??';
-        if ('AJAX' === $controller || 'Cover' === $controller || str_contains($controller, 'Api')) {
-            return false;
-        }
-        return true;
+        $skipOnControllerPattern = $this->config['Turnstile']['skipOnControllerPattern'] ?? '/AJAX|Cover|Api/';
+        $skip = preg_match($skipOnControllerPattern, $controller);
+        return !$skip;
     }
 
     /**
