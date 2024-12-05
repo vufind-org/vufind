@@ -18,6 +18,20 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
+    "autoload": {
+        "psr-4": {
+            "VuFind\\": "module/VuFind/src/VuFind",
+            "VuFindAdmin\\": "module/VuFindAdmin/src/VuFindAdmin",
+            "VuFindApi\\": "module/VuFindApi/src/VuFindApi",
+            "VuFindConsole\\": "module/VuFindConsole/src/VuFindConsole",
+            "VuFindDevTools\\": "module/VuFindDevTools/src/VuFindDevTools",
+            "VuFindSearch\\": "module/VuFindSearch/src/VuFindSearch",
+            "VuFindTheme\\": "module/VuFindTheme/src/VuFindTheme"
+        },
+        "psr-0": {
+            "minSO": "module/VuFind/src/VuFind/Search"
+        }
+    },
     "provide": {
         "ext-memcached": "*",
         "ext-oci8": "*",
@@ -53,7 +67,6 @@
         "laminas/laminas-form": "3.21.0",
         "laminas/laminas-http": "2.20.0",
         "laminas/laminas-i18n": "2.29.0",
-        "laminas/laminas-loader": "2.11.0",
         "laminas/laminas-log": "2.17.0",
         "laminas/laminas-modulemanager": "2.16.0",
         "laminas/laminas-mvc": "3.7.0",
