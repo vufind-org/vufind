@@ -5,11 +5,13 @@ VuFind.combinedSearch = (function CombinedSearch() {
     VuFind.loadHtml(container, url, '', function containerLoad(responseText) {
       if (!responseText || responseText.length === 0) {
         var element = typeof container === 'string' ? document.querySelector(container) : container;
-        element.style.display = "none";
-        let parent = element.parentNode;
-        while (parent && parent.classList.contains('js-hide-if-empty')) {
-          parent.style.display = "none";
-          parent = parent.parentNode;
+        if (element) {
+          element.style.display = "none";
+          let parent = element.parentNode;
+          while (parent && parent.classList.contains('js-hide-if-empty')) {
+            parent.style.display = "none";
+            parent = parent.parentNode;
+          }
         }
       } else {
         VuFind.initResultScripts(container);
