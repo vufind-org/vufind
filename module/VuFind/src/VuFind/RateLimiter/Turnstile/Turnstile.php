@@ -32,7 +32,6 @@ namespace VuFind\RateLimiter\Turnstile;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
-use VuFind\RateLimiter\RateLimiterManager;
 use VuFindHttp\HttpServiceAwareInterface;
 use VuFindHttp\HttpServiceAwareTrait;
 
@@ -91,7 +90,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
         } else {
             // Unexpected error. Treat as a positive result, since it's not the user's fault.
             $this->logWarning('Verification process failed, allowing traffic: '
-                . $response->getStatusCode() . $response->getBody());
+                . $response->getStatusCode() . ' ' . $response->getBody());
             $success = true;
         }
 
