@@ -435,7 +435,7 @@ class XCNCIP2 extends AbstractBase implements
             );
         }
         if (($handle = fopen($pickupLocationsFile, 'r')) !== false) {
-            while (($data = fgetcsv($handle)) !== false) {
+            while (($data = fgetcsv($handle, escape: '\\')) !== false) {
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
                     'locationID' => $agencyId,
