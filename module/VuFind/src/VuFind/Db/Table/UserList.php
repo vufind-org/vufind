@@ -76,7 +76,7 @@ class UserList extends Gateway implements DbServiceAwareInterface
         PluginManager $tm,
         $cfg,
         ?RowGateway $rowObj = null,
-        Container $session = null,
+        ?Container $session = null,
         $table = 'user_list'
     ) {
         $this->session = $session;

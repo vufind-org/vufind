@@ -87,11 +87,11 @@ class RecordDataFormatter extends AbstractHelper
      * Store a record driver object and return this object so that the appropriate
      * data can be rendered.
      *
-     * @param RecordDriver $driver Record driver object.
+     * @param ?RecordDriver $driver Record driver object.
      *
      * @return RecordDataFormatter
      */
-    public function __invoke(RecordDriver $driver = null): RecordDataFormatter
+    public function __invoke(?RecordDriver $driver = null): RecordDataFormatter
     {
         $this->driver = $driver;
         return $this;

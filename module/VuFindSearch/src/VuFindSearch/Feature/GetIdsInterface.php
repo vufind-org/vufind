@@ -58,6 +58,6 @@ interface GetIdsInterface
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     );
 }

@@ -199,9 +199,9 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      * @return MockObject&WebCrawlCommand
      */
     protected function getMockCommand(
-        Importer $importer = null,
-        Writer $solr = null,
-        Config $config = null,
+        ?Importer $importer = null,
+        ?Writer $solr = null,
+        ?Config $config = null,
         array $methods = ['downloadFile', 'removeTempFile', 'updateTransformCache']
     ): MockObject&WebCrawlCommand {
         return $this->getMockBuilder(WebCrawlCommand::class)

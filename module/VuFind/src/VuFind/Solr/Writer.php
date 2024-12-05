@@ -155,7 +155,7 @@ class Writer
         $backend,
         DocumentInterface $doc,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $this->write($backend, $doc, null, $handler, $params);
     }

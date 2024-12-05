@@ -307,11 +307,11 @@ class XCNCIP2 extends AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
-     * @param PathResolver           $pathResolver  Config file path resolver
+     * @param ?PathResolver          $pathResolver  Config file path resolver
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        PathResolver $pathResolver = null
+        ?PathResolver $pathResolver = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->pathResolver = $pathResolver;
@@ -922,8 +922,8 @@ class XCNCIP2 extends AbstractBase implements
      * consortial record.
      *
      * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     * @param array  $ids    The (consortial) source records for the record id
+     * @param ?array $patron Patron data
+     * @param ?array $ids    The (consortial) source records for the record id
      *
      * @throws DateException
      * @throws ILSException
@@ -935,8 +935,8 @@ class XCNCIP2 extends AbstractBase implements
      */
     public function getConsortialHoldings(
         $id,
-        array $patron = null,
-        array $ids = null
+        ?array $patron = null,
+        ?array $ids = null
     ) {
         $aggregateId = $id;
 
@@ -1020,7 +1020,7 @@ class XCNCIP2 extends AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -1031,7 +1031,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $ids = null;
         if (! $this->consortium) {

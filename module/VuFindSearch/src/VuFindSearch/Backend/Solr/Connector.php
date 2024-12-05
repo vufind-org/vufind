@@ -199,7 +199,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params
@@ -281,7 +281,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public function write(
         DocumentInterface $document,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";

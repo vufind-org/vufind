@@ -66,15 +66,14 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param ConnectorInterface               $connector Primo connector
-     * @param RecordCollectionFactoryInterface $factory   Record collection factory
-     * (null for default)
+     * @param ConnectorInterface                $connector Primo connector
+     * @param ?RecordCollectionFactoryInterface $factory   Record collection factory (null for default)
      *
      * @return void
      */
     public function __construct(
         ConnectorInterface $connector,
-        RecordCollectionFactoryInterface $factory = null
+        ?RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
@@ -96,7 +95,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
@@ -134,7 +133,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
         $onCampus = $onCampus ? $onCampus[0] : false;

@@ -126,8 +126,8 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      * @return AddUsingTemplateCommand
      */
     protected function getMockCommand(
-        ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null,
+        ?ExtendedIniNormalizer $normalizer = null,
+        ?ExtendedIniReader $reader = null,
         $languageDir = null,
         array $methods = ['addLineToFile']
     ) {

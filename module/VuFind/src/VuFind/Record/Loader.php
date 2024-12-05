@@ -88,16 +88,16 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param SearchService  $searchService  Search service
-     * @param RecordFactory  $recordFactory  Record loader
-     * @param Cache          $recordCache    Record Cache
-     * @param FallbackLoader $fallbackLoader Fallback record loader
+     * @param SearchService   $searchService  Search service
+     * @param RecordFactory   $recordFactory  Record loader
+     * @param ?Cache          $recordCache    Record Cache
+     * @param ?FallbackLoader $fallbackLoader Fallback record loader
      */
     public function __construct(
         SearchService $searchService,
         RecordFactory $recordFactory,
-        Cache $recordCache = null,
-        FallbackLoader $fallbackLoader = null
+        ?Cache $recordCache = null,
+        ?FallbackLoader $fallbackLoader = null
     ) {
         $this->searchService = $searchService;
         $this->recordFactory = $recordFactory;
@@ -121,7 +121,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $id,
         $source = DEFAULT_SEARCH_BACKEND,
         $tolerateMissing = false,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         if (null !== $id && '' !== $id) {
             $results = [];
@@ -204,7 +204,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $ids,
         $source = DEFAULT_SEARCH_BACKEND,
         $tolerateBackendExceptions = false,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $list = new Checklist($ids);
         $cachedRecords = [];

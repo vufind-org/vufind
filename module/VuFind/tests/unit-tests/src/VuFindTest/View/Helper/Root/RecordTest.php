@@ -772,7 +772,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     protected function getRecord(
         RecordDriver $driver,
         array|Config $config = [],
-        Context $context = null,
+        ?Context $context = null,
         bool|string $url = false,
         bool $serverurl = false,
         bool $setSearchTabExpectations = true
@@ -918,9 +918,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     protected function getCoverLoader(
         array $config = [],
-        \VuFind\Content\Covers\PluginManager $manager = null,
-        ThemeInfo $theme = null,
-        \VuFindHttp\HttpService $httpService = null,
+        ?\VuFind\Content\Covers\PluginManager $manager = null,
+        ?ThemeInfo $theme = null,
+        ?\VuFindHttp\HttpService $httpService = null,
         array|bool $mock = false
     ): Loader {
         $config = new Config($config);

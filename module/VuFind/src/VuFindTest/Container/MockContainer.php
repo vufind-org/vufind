@@ -52,7 +52,7 @@ class MockContainer implements ServiceLocatorInterface
      *
      * @return mixed
      */
-    public function build($name, array $options = null)
+    public function build($name, ?array $options = null)
     {
         return $this->createMock($name, $options ?? []);
     }

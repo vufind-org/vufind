@@ -54,7 +54,7 @@ trait MockSearchCommandTrait
      * @return Command
      */
     protected function getMockSearchCommand(
-        ParamBag $params = null,
+        ?ParamBag $params = null,
         $context = null,
         string $backendId = 'foo',
         $result = null

@@ -72,15 +72,14 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     /**
      * Constructor.
      *
-     * @param Connector                        $connector Summon connector
-     * @param RecordCollectionFactoryInterface $factory   Record collection factory
-     * (null for default)
+     * @param Connector                         $connector Summon connector
+     * @param ?RecordCollectionFactoryInterface $factory   Record collection factory (null for default)
      *
      * @return void
      */
     public function __construct(
         Connector $connector,
-        RecordCollectionFactoryInterface $factory = null
+        ?RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
@@ -103,7 +102,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
@@ -137,7 +136,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      * @return RecordCollectionInterface
      * @throws RecordMissingException
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $finalParams = $params ?: new ParamBag();
         // We normally look up by ID, but we occasionally need to use bookmarks:
@@ -167,7 +166,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return RecordCollectionInterface
      */
-    public function retrieveBatch($ids, ParamBag $params = null)
+    public function retrieveBatch($ids, ?ParamBag $params = null)
     {
         // Load 50 records at a time; this is the limit for Summon.
         $pageSize = 50;

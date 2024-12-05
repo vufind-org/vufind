@@ -330,11 +330,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock search results.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record to return
+     * @param ?\VuFind\RecordDriver\AbstractBase $record Record to return
      *
      * @return array
      */
-    protected function getMockSearchResultsSet(\VuFind\RecordDriver\AbstractBase $record = null): array
+    protected function getMockSearchResultsSet(?\VuFind\RecordDriver\AbstractBase $record = null): array
     {
         return [
             $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class),

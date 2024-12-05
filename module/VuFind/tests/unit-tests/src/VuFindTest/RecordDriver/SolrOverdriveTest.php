@@ -243,9 +243,9 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
      * @return SolrOverdrive
      */
     protected function getDriver(
-        Config $config = null,
-        Config $recordConfig = null,
-        OverdriveConnector $connector = null
+        ?Config $config = null,
+        ?Config $recordConfig = null,
+        ?OverdriveConnector $connector = null
     ): SolrOverdrive {
         return new SolrOverdrive(
             $config ?? new Config([]),

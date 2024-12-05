@@ -454,9 +454,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      * @return Results
      */
     protected function getResults(
-        Params $params = null,
-        SearchService $searchService = null,
-        Loader $loader = null
+        ?Params $params = null,
+        ?SearchService $searchService = null,
+        ?Loader $loader = null
     ): Results {
         return new Results(
             $params ?? $this->getParams(),
@@ -515,8 +515,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      * @return Params
      */
     protected function getParams(
-        Options $options = null,
-        PluginManager $mockConfig = null
+        ?Options $options = null,
+        ?PluginManager $mockConfig = null
     ): Params {
         $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(

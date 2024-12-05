@@ -53,6 +53,7 @@ $rules = [
     'no_useless_return' => true,
     'no_whitespace_in_blank_line' => true,
     'non_printable_character' => true,
+    'nullable_type_declaration_for_default_null_value' => true,
     'ordered_imports' => [
         'imports_order' => ['class', 'function', 'const'],
         'sort_algorithm' => 'alpha',

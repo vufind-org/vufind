@@ -67,7 +67,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function setUpLimitedSearch(
         string $limitParam,
-        string $options = null,
+        ?string $options = null,
         string $default = '20'
     ): Element {
         $config = ['default_limit' => $default, 'limit_options' => $options];

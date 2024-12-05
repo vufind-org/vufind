@@ -73,7 +73,7 @@ interface BackendInterface
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     );
 
     /**
@@ -84,5 +84,5 @@ interface BackendInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null);
+    public function retrieve($id, ?ParamBag $params = null);
 }

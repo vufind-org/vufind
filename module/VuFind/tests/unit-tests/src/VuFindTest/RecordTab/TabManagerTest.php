@@ -73,8 +73,8 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      * @return TabManager
      */
     protected function getTabManager(
-        PluginManager $pluginManager = null,
-        ConfigManager $configManager = null
+        ?PluginManager $pluginManager = null,
+        ?ConfigManager $configManager = null
     ) {
         $legacyConfig = [
             'vufind' => [

@@ -72,11 +72,11 @@ trait SolrSearchObjectTrait
     /**
      * Get Solr params.
      *
-     * @param Options $options Solr options to inject (null for default)
+     * @param ?Options $options Solr options to inject (null for default)
      *
      * @return Params
      */
-    public function getSolrParams(Options $options = null): Params
+    public function getSolrParams(?Options $options = null): Params
     {
         return new Params(
             $options ?? $this->getSolrOptions(),
@@ -87,11 +87,11 @@ trait SolrSearchObjectTrait
     /**
      * Get Solr results.
      *
-     * @param Params $params Solr parameters to inject (null for default)
+     * @param ?Params $params Solr parameters to inject (null for default)
      *
      * @return Results
      */
-    public function getSolrResults(Params $params = null): Results
+    public function getSolrResults(?Params $params = null): Results
     {
         return new Results(
             $params ?? $this->getSolrParams(),

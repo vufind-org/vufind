@@ -123,8 +123,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
      * @return Icon
      */
     protected function getIconHelper(
-        array $config = null,
-        StorageInterface $cache = null,
+        ?array $config = null,
+        ?StorageInterface $cache = null,
         array $plugins = [],
         $rtl = false
     ): Icon {

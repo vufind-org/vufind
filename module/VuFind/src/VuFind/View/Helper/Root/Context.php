@@ -113,7 +113,7 @@ class Context extends AbstractHelper
      *
      * @return Context
      */
-    public function __invoke(RendererInterface $view = null)
+    public function __invoke(?RendererInterface $view = null)
     {
         if (null !== $view) {
             $this->setView($view);

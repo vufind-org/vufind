@@ -162,7 +162,7 @@ class CsvReader
             throw new \Exception("Could not open $fn!");
         }
         $lineNo = $goodLines = 0;
-        while ($line = fgetcsv($fh, 0, $this->delimiter)) {
+        while ($line = fgetcsv($fh, 0, $this->delimiter, escape: '\\')) {
             $lineNo++;
 
             if (count($line) < count($this->template)) {

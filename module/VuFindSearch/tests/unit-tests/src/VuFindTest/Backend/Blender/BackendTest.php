@@ -1050,7 +1050,7 @@ class BackendTest extends TestCase
      */
     protected function getSearchParams(
         array $filters,
-        Query $query = null
+        ?Query $query = null
     ): ParamBag {
         return new ParamBag(
             [

@@ -338,9 +338,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     protected function getLoader(
         SearchService $service,
-        RecordFactory $factory = null,
-        Cache $recordCache = null,
-        FallbackLoader $fallbackLoader = null
+        ?RecordFactory $factory = null,
+        ?Cache $recordCache = null,
+        ?FallbackLoader $fallbackLoader = null
     ): Loader {
         if (null === $factory) {
             $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);

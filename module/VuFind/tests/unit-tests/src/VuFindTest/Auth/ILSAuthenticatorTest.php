@@ -251,9 +251,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @return ILSAuthenticator
      */
     protected function getAuthenticator(
-        Manager $manager = null,
-        ILSConnection $connection = null,
-        EmailAuthenticator $emailAuth = null,
+        ?Manager $manager = null,
+        ?ILSConnection $connection = null,
+        ?EmailAuthenticator $emailAuth = null,
         array $config = []
     ): ILSAuthenticator {
         if (null === $manager) {
