@@ -151,7 +151,8 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             $limit = $limiter->consume(1);
             if (
                 $limit->isAccepted() &&
-                ($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false)
+                ($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false) &&
+                $this->turnstile->isChallengeAllowed($event)
             ) {
                 $turnstileLimiter = ($this->rateLimiterFactoryCallback)(
                     $this->config,
@@ -192,8 +193,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 if (!$priorTurnstileResult) {
                     $result['allow'] = false;
                     $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
-                    $result['presentTurnstileChallenge'] =
-                        ($priorTurnstileResult === null) && $this->turnstile->isChallengeAllowed($event);
+                    $result['presentTurnstileChallenge'] = ($priorTurnstileResult === null);
                     return $result;
                 }
             }
