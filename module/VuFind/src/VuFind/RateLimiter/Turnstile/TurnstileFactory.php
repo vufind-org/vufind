@@ -92,8 +92,7 @@ class TurnstileFactory implements FactoryInterface
      */
     protected function createTurnstileCache(array $config): \Laminas\Cache\Storage\StorageInterface
     {
-        $turnstileConfig = unserialize(serialize($config));
-        $storageOptions = $turnstileConfig['Storage']['options'] ?? [];
+        $storageOptions = $config['Storage']['options'] ?? [];
         $storageOptions['namespace'] = $storageOptions['turnstileNamespace'] ?? 'Turnstile';
         $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
         $cache = $cacheManager->getCache('object', $storageOptions['namespace']);
