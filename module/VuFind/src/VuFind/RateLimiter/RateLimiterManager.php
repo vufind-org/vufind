@@ -192,7 +192,8 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 if (!$priorTurnstileResult) {
                     $result['allow'] = false;
                     $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
-                    $result['presentTurnstileChallenge'] = ($priorTurnstileResult === null);
+                    $result['presentTurnstileChallenge'] =
+                        ($priorTurnstileResult === null) && $this->turnstile->isChallengeAllowed($event);
                     return $result;
                 }
             }
