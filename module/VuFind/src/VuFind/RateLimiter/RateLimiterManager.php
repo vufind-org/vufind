@@ -149,7 +149,10 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             // We have a policy matching the route, so check rate limiter:
             $limiter = ($this->rateLimiterFactoryCallback)($this->config, $policyId, $this->clientIp, $this->userId);
             $limit = $limiter->consume(1);
-            if ($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false) {
+            if (
+                $limit->isAccepted() &&
+                ($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false)
+            ) {
                 $turnstileLimiter = ($this->rateLimiterFactoryCallback)(
                     $this->config,
                     $policyId,
