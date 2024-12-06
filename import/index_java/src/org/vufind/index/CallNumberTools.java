@@ -123,7 +123,7 @@ public class CallNumberTools
                 // NOTE: we could add other classifications like SuDoc here (and add related MARC fields to fieldSpec)
                 int dotPos = cnUp.indexOf(".");
                 if (dotPos < 0) {
-                    result.add(cnUp.trim());
+                    result.add(cnUp);
                     continue;
                 }
                 if (dotPos == 0) {
