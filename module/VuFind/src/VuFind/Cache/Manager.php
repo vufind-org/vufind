@@ -410,4 +410,24 @@ class Manager
             ],
         ];
     }
+
+    // other than Redis
+    /**
+     * Create an in-memory cache
+     *
+     * @param array $storageConfig See Storage in RateLimiter.yaml
+     *
+     * @return StorageInterface
+     */
+    public function createInMemoryCache(array $storageConfig): StorageInterface
+    {
+        $adapter = $storageConfig['adapter'] ?? 'memcached';
+        $options = $storageConfig['options'];
+        if ('memcached' === strtolower($adapter)) {
+            $options['servers'] ??= 'localhost:11211';
+        }
+        $settings = compact('adapter', 'options');
+        $laminasCache = $this->factory->createFromArrayConfiguration($settings);
+        return $laminasCache;
+    }
 }

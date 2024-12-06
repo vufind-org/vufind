@@ -150,9 +150,9 @@ class RateLimiterManagerFactory implements FactoryInterface
             return $this->createRedisCache($storageConfig);
         }
 
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
         if ('vufind' === $adapterLc) {
             // Use cache manager for "VuFind" cache (only for testing purposes):
-            $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
             $laminasCache = $cacheManager->getCache('object', $storageConfig['options']['namespace']);
             // Fake the capabilities to include static TTL support:
             $eventManager = $laminasCache->getEventManager();
@@ -170,17 +170,7 @@ class RateLimiterManagerFactory implements FactoryInterface
                 }
             );
         } else {
-            if ('memcached' === $adapterLc) {
-                $storageConfig['options']['servers'] ??= 'localhost:11211';
-            }
-
-            // Laminas cache:
-            $settings = [
-                'adapter' => $adapter,
-                'options' => $storageConfig['options'],
-            ];
-            $laminasCache = $this->getService(\Laminas\Cache\Service\StorageAdapterFactory::class)
-                ->createFromArrayConfiguration($settings);
+            $laminasCache = $cacheManager->createInMemoryCache($storageConfig);
         }
 
         return new CacheStorage(new CacheItemPoolDecorator($laminasCache));

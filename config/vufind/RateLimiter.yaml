@@ -40,11 +40,12 @@ Storage:
     #redis_version            : 6
     #redis_standalone         : true
 
-  # Namespace for Turnstile result cache (default is Turnstile)
-  # turnstileNamespace: Turnstile
+  turnstileOptions:
+    # Namespace for Turnstile result cache (default is Turnstile)
+    # namespace: Turnstile
 
-  # Time-to-live (seconds) for Turnstile result cache (default is 86400, i.e. 1 day)
-  # turnstileTtl: 86400
+    # Time-to-live (seconds) for Turnstile result cache (default is 86400, i.e. 1 day)
+    # ttl: 86400
 
 # Policies define the actual rate limiting settings. The request is checked against
 # the list of policies, and the first matching policy is used.
