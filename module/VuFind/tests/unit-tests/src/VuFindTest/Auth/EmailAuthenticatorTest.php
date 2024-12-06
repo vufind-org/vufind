@@ -30,7 +30,6 @@
 namespace VuFindTest\Auth;
 
 use DateTime;
-use Laminas\Config\Config;
 use Laminas\Http\Request;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Session\SessionManager;
@@ -39,6 +38,7 @@ use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;

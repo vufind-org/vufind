@@ -30,8 +30,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\View\Model\ViewModel;
+use VuFind\Config\Config;
 use VuFind\Exception\BadRequest;
 use VuFindSearch\ParamBag;
 

@@ -76,7 +76,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
-                        new \Laminas\Config\Config([])
+                        new \VuFind\Config\Config([])
                     ),
                 ]
             )->getMock();

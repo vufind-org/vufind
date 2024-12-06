@@ -58,7 +58,7 @@ class EITBackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 

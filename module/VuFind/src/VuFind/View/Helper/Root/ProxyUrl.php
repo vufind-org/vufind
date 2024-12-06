@@ -54,15 +54,15 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
-     * @param CacheAdapter           $cache  Cache for web service responses
+     * @param \VuFind\Config\Config $config VuFind configuration
+     * @param CacheAdapter          $cache  Cache for web service responses
      */
     public function __construct($config = null, CacheAdapter $cache = null)
     {

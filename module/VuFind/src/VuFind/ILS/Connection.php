@@ -90,7 +90,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * ILS configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -175,14 +175,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config           $config        Configuration
+     * @param \VuFind\Config\Config            $config        Configuration
      * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
      * @param \Laminas\Http\Request            $request       Request object
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \VuFind\ILS\Driver\PluginManager $driverManager,
         \VuFind\Config\PluginManager $configReader,
         \Laminas\Http\Request $request = null

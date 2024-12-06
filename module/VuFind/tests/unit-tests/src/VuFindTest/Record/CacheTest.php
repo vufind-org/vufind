@@ -31,8 +31,8 @@
 
 namespace VuFindTest\Record;
 
-use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\Record\Cache;

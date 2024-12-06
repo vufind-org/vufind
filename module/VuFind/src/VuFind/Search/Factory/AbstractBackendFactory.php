@@ -30,9 +30,9 @@
 namespace VuFind\Search\Factory;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
 use VuFind\Service\GetServiceTrait;
 
 /**

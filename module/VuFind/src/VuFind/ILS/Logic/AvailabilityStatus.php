@@ -190,9 +190,9 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     {
         switch ($this->availability) {
             case AvailabilityStatusInterface::STATUS_UNAVAILABLE:
-                return 'false';
+                return 'unavailable';
             case AvailabilityStatusInterface::STATUS_AVAILABLE:
-                return 'true';
+                return 'available';
             case AvailabilityStatusInterface::STATUS_UNKNOWN:
                 return 'unknown';
             default:

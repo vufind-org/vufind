@@ -30,7 +30,7 @@
 
 namespace VuFindTest\RecordDriver;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 

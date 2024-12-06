@@ -10,19 +10,28 @@
 $script = <<<JS
       $(document).ready(function copyToClipboard() {
         if (navigator.clipboard) {
+          function copySuccess() {
+            $("#copyFailureMessage{$buttonNumber}").addClass("hidden");
+            $("#copySuccessMessage{$buttonNumber}").removeClass("hidden");
+          }
+          function copyFailure() {
+            $("#copySuccessMessage{$buttonNumber}").addClass("hidden");
+            $("#copyFailureMessage{$buttonNumber}").removeClass("hidden");
+          }
           const button = $("#copyToClipboard{$buttonNumber}");
           button.removeClass('hidden');
           button.click(function copyToClipboard() {
-            navigator.clipboard.writeText($('{$selector}').text()).then(
-                function copySuccess() {
-                    $("#copyFailureMessage{$buttonNumber}").addClass("hidden");
-                    $("#copySuccessMessage{$buttonNumber}").removeClass("hidden");
-                },
-                function copyFailure() {
-                    $("#copySuccessMessage{$buttonNumber}").addClass("hidden");
-                    $("#copyFailureMessage{$buttonNumber}").removeClass("hidden");
-                }
-            );
+            const text = $('{$selector}').text();
+            if (typeof ClipboardItem === 'undefined') {
+              navigator.clipboard.writeText(text).then(copySuccess, copyFailure);
+              return;
+            }
+            const html = $('{$selector}').html();
+            const data = [ new ClipboardItem({
+              ['text/plain']: new Blob([text], {type: 'text/plain'}),
+              ['text/html']: new Blob([html], {type: 'text/html'})
+            })];
+            navigator.clipboard.write(data).then(copySuccess, copyFailure);
           });
         }
       });

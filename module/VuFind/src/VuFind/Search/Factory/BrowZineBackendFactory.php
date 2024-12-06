@@ -59,7 +59,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     /**
      * BrowZine configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $browzineConfig;
 

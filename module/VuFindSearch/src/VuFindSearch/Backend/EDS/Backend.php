@@ -32,8 +32,8 @@ namespace VuFindSearch\Backend\EDS;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Config\Config;
 use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;

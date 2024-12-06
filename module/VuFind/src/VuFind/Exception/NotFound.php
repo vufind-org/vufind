@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Trait for creating INI readers
+ * "Not Found" Exception
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2023.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,49 +21,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Config
+ * @package  Exceptions
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Config\Feature;
-
-use Laminas\Config\Reader\Ini as IniReader;
-
-use function chr;
+namespace VuFind\Exception;
 
 /**
- * Trait for creating INI readers
+ * "Not Found" Exception
  *
  * @category VuFind
- * @package  Config
+ * @package  Exceptions
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-trait IniReaderTrait
+class NotFound extends \Exception implements HttpStatusInterface
 {
     /**
-     * INI reader
+     * Get HTTP status associated with this exception.
      *
-     * @var IniReader
+     * @return int
      */
-    protected $iniReader = null;
-
-    /**
-     * Creates INI reader if it does not exist and returns it.
-     *
-     * @return IniReader
-     */
-    protected function getIniReader()
+    public function getHttpStatus()
     {
-        if (null == $this->iniReader) {
-            // Use ASCII 0 as a nest separator; otherwise some of our unusual key names
-            // (e.g. strings containing . characters) will get parsed in unexpected ways.
-            $this->iniReader = new IniReader();
-            $this->iniReader->setNestSeparator(chr(0));
-        }
-        return $this->iniReader;
+        return 404;
     }
 }

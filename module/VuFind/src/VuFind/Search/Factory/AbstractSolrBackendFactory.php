@@ -29,8 +29,8 @@
 
 namespace VuFind\Search\Factory;
 
-use Laminas\Config\Config;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;

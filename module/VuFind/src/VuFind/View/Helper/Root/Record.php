@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;

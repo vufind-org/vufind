@@ -207,7 +207,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         ];
         $results = $this->getMockResults();
         $results->getParams()->expects($this->any())->method('getRawFilters')
-            ->will($this->returnValue($filters));
+            ->willReturn($filters);
         $sf = $this->getSideFacets($configLoader, $results);
         $expected = [
             'date' => ['type' => 'date', 'values' => ['1900', '1905']],
@@ -286,7 +286,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
             ->with($this->equalTo([]), $this->equalTo(true))
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $params->expects($this->never())->method('addCheckboxFacet');
         $sf = $this->getSideFacets(null, $results);
         $this->assertEquals([], $sf->getCheckboxFacetSet());
@@ -308,16 +308,22 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             [],
             $this->once()
         );
-        $checkboxData = ['fake result'];
+        $checkboxData = [
+            [
+                'filter' => 'fake result:1',
+            ],
+        ];
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
             ->with($this->equalTo(['foo']), $this->equalTo(true))
-            ->will($this->returnValue($checkboxData));
+            ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
             ->with($this->equalTo('foo'), $this->equalTo('bar'));
         $sf = $this->getSideFacets($configLoader, $results, ':Checkboxes');
-        $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
+        $expected = $checkboxData;
+        $expected[0]['count'] = null;
+        $this->assertEquals($expected, $sf->getCheckboxFacetSet());
     }
 
     /**
@@ -336,17 +342,23 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             [],
             $this->once()
         );
-        $checkboxData = ['fake result'];
+        $checkboxData = [
+            [
+                'filter' => 'fake result:1',
+            ],
+        ];
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
             ->with($this->equalTo(['foo']), $this->equalTo(false))
-            ->will($this->returnValue($checkboxData));
+            ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
             ->with($this->equalTo('foo'), $this->equalTo('bar'));
         $settings = 'Results:Checkboxes:facets:false';
         $sf = $this->getSideFacets($configLoader, $results, $settings);
-        $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
+        $expected = $checkboxData;
+        $expected[0]['count'] = null;
+        $this->assertEquals($expected, $sf->getCheckboxFacetSet());
     }
 
     /**
@@ -390,10 +402,16 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
+        $options = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $params->expects($this->any())->method('getOptions')
+            ->willReturn($options);
+
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+            ->willReturn($params);
+        $results->expects($this->any())->method('getOptions')
+            ->willReturn($options);
         return $results;
     }
 
@@ -412,7 +430,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         return $params;
     }
 }

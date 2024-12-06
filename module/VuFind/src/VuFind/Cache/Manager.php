@@ -36,10 +36,10 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\Config\Config;
 
 use function dirname;
 use function is_array;
@@ -158,7 +158,7 @@ class Manager implements LoggerAwareInterface
     ) {
         $this->factory = $factory;
 
-        // $config and $config->Cache are Laminas\Config\Config objects
+        // $config and $config->Cache are VuFind\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
         $this->defaults = $config->Cache?->toArray() ?? [];
@@ -417,7 +417,6 @@ class Manager implements LoggerAwareInterface
         ];
     }
 
-    // other than Redis
     /**
      * Create an in-memory cache
      *

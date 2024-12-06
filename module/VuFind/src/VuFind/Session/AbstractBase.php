@@ -31,7 +31,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;

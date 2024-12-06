@@ -35,7 +35,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * Redis session handler

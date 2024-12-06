@@ -92,11 +92,11 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
      * Support method for construction of AbstractContent objects -- should we
      * hide this tab if it is empty?
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      *
      * @return bool
      */
-    protected function getHideSetting(\Laminas\Config\Config $config)
+    protected function getHideSetting(\VuFind\Config\Config $config)
     {
         $setting = $config->Content->hide_if_empty ?? false;
         if (

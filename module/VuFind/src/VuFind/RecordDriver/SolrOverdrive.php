@@ -32,8 +32,8 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
 use VuFind\DigitalContent\OverdriveConnector;
 
 use function in_array;

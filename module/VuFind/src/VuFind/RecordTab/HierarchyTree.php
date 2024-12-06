@@ -56,16 +56,16 @@ class HierarchyTree extends AbstractBase
     /**
      * Configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration
+     * @param \VuFind\Config\Config $config Configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }
@@ -73,7 +73,7 @@ class HierarchyTree extends AbstractBase
     /**
      * Get the VuFind configuration.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getConfig()
     {
