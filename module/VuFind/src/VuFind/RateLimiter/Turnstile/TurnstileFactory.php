@@ -29,6 +29,7 @@
 
 namespace VuFind\RateLimiter\Turnstile;
 
+use Exception;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -98,8 +99,9 @@ class TurnstileFactory implements FactoryInterface
         $storageConfig['options']['ttl'] = $storageConfig['turnstileOptions']['ttl'] ?? 60 * 60 * 24;
         $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
 
-        // FOR NOW -- must change to allow redis also
-        $storageConfig['adapter'] = 'memcached';
+        if ('redis' === strtolower($storageConfig['adapter'])) {
+            throw new Exception("Turnstile adapter does not support redis.");
+        }
 
         $cache = $cacheManager->createInMemoryCache($storageConfig);
         return $cache;

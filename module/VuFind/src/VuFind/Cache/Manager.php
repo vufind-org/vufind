@@ -34,8 +34,12 @@
 namespace VuFind\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
+use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
+use Laminas\Log\LoggerAwareInterface;
+use stdClass;
+use VuFind\Log\LoggerAwareTrait;
 
 use function dirname;
 use function is_array;
@@ -54,8 +58,10 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager
+class Manager implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Default configuration settings.
      *
@@ -422,6 +428,32 @@ class Manager
     public function createInMemoryCache(array $storageConfig): StorageInterface
     {
         $adapter = $storageConfig['adapter'] ?? 'memcached';
+
+        // Use cache manager for "VuFind" cache (only for testing purposes):
+        if ('vufind' === strtolower($adapter)) {
+            $this->logWarning('Using standard cache instead of in-memory cache -- for testing only!');
+            $laminasCache = $this->getCache('object', $storageConfig['options']['namespace']);
+            // Fake the capabilities to include static TTL support:
+            $eventManager = $laminasCache->getEventManager();
+            $eventManager->attach(
+                'getCapabilities.post',
+                function ($event) use ($laminasCache) {
+                    $oldCapacities = $event->getResult();
+                    $newCapacities = new Capabilities(
+                        $laminasCache,
+                        new stdClass(),
+                        ['staticTtl' => true],
+                        $oldCapacities
+                    );
+                    $event->setResult($newCapacities);
+                }
+            );
+            if ($ttl = ($storageConfig['options']['ttl'] ?? null)) {
+                $laminasCache->getOptions()->setTtl($ttl);
+            }
+            return $laminasCache;
+        }
+
         $options = $storageConfig['options'];
         if ('memcached' === strtolower($adapter)) {
             $options['servers'] ??= 'localhost:11211';

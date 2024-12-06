@@ -31,13 +31,11 @@ namespace VuFind\RateLimiter;
 
 use Closure;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
-use Laminas\Cache\Storage\Capabilities;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use stdClass;
 use Symfony\Component\RateLimiter\LimiterInterface;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
@@ -151,28 +149,7 @@ class RateLimiterManagerFactory implements FactoryInterface
         }
 
         $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
-        if ('vufind' === $adapterLc) {
-            // Use cache manager for "VuFind" cache (only for testing purposes):
-            $laminasCache = $cacheManager->getCache('object', $storageConfig['options']['namespace']);
-            // Fake the capabilities to include static TTL support:
-            $eventManager = $laminasCache->getEventManager();
-            $eventManager->attach(
-                'getCapabilities.post',
-                function ($event) use ($laminasCache) {
-                    $oldCapacities = $event->getResult();
-                    $newCapacities = new Capabilities(
-                        $laminasCache,
-                        new stdClass(),
-                        ['staticTtl' => true],
-                        $oldCapacities
-                    );
-                    $event->setResult($newCapacities);
-                }
-            );
-        } else {
-            $laminasCache = $cacheManager->createInMemoryCache($storageConfig);
-        }
-
+        $laminasCache = $cacheManager->createInMemoryCache($storageConfig);
         return new CacheStorage(new CacheItemPoolDecorator($laminasCache));
     }
 
