@@ -38,8 +38,8 @@ use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Log\LoggerAwareInterface;
 use stdClass;
-use VuFind\Log\LoggerAwareTrait;
 use VuFind\Config\Config;
+use VuFind\Log\LoggerAwareTrait;
 
 use function dirname;
 use function is_array;

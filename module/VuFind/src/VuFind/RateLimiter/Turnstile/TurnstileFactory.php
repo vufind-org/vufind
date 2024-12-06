@@ -100,7 +100,7 @@ class TurnstileFactory implements FactoryInterface
         $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
 
         if ('redis' === strtolower($storageConfig['adapter'])) {
-            throw new Exception("Turnstile adapter does not support redis.");
+            throw new Exception('Turnstile adapter does not support redis.');
         }
 
         $cache = $cacheManager->createInMemoryCache($storageConfig);
