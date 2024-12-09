@@ -32,6 +32,11 @@
             "minSO": "module/VuFind/src/VuFind/Search"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "VuFindTest\\": ["module/VuFind/src/VuFindTest", "module/VuFind/tests/unit-tests/src/VuFindTest"]
+        }
+    },
     "provide": {
         "ext-memcached": "*",
         "ext-oci8": "*",
