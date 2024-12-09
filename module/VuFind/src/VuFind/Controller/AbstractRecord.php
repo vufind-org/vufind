@@ -793,8 +793,8 @@ class AbstractRecord extends AbstractBase
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
-     * @param ParamBag $params Search backend parameters
-     * @param bool     $force  Set to true to force a reload of the record, even if
+     * @param ?ParamBag $params Search backend parameters
+     * @param bool      $force  Set to true to force a reload of the record, even if
      * already loaded (useful if loading a record using different parameters)
      *
      * @return AbstractRecordDriver

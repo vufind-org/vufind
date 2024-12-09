@@ -70,7 +70,7 @@ class HoldingsILS extends AbstractBase
      *
      * @param ?Connection $catalog       ILS connection to use to check for holdings before displaying the tab;
      * may be set to null if no check is needed.
-     * @param string|null $template      Holdings template to use
+     * @param ?string     $template      Holdings template to use
      * @param bool        $hideWhenEmpty Whether the holdings tab should be hidden when empty or not
      */
     public function __construct(

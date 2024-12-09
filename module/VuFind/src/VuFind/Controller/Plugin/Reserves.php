@@ -90,9 +90,9 @@ class Reserves extends AbstractPlugin
     /**
      * Get reserve info from the catalog or Solr reserves index.
      *
-     * @param string $course Course ID to use as limit (optional)
-     * @param string $inst   Instructor ID to use as limit (optional)
-     * @param string $dept   Department ID to use as limit (optional)
+     * @param ?string $course Course ID to use as limit (optional)
+     * @param ?string $inst   Instructor ID to use as limit (optional)
+     * @param ?string $dept   Department ID to use as limit (optional)
      *
      * @return array
      */
