@@ -967,7 +967,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Wait for page load (full page or any element) to complete
      *
      * @param Element $page    Page element
-     * @param int     $timeout Wait timeout (in ms)
+     * @param ?int    $timeout Wait timeout (in ms)
      *
      * @return void
      */
