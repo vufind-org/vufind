@@ -3,7 +3,7 @@
 /**
  * Make link view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind\View\Helper\Root;
+
+use function is_array;
 
 /**
  * Make link view helper

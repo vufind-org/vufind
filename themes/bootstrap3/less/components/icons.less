@@ -3,7 +3,7 @@
  * generated through the Icon view helper.
  */
 
-.icon-link {
+.icon-link:not(.dropdown-toggle) {
   display: inline-flex;
   gap: 0.25rem;
   vertical-align: middle;
@@ -71,6 +71,10 @@ span.icon-link .icon-link__label,
     max-height: 1.25em;
     fill: currentColor;
     vertical-align: text-bottom;
+}
+
+.icon--unicode:before {
+    content: attr(data-icon);
 }
 
 .show--closed,

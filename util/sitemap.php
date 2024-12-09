@@ -2,7 +2,7 @@
 /**
  * Command-line tool to generate sitemaps based on Solr index contents.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/search_engine_optimization Wiki
  */
- 
+
 // Manipulate command line to load correct route, then run the main index page:
 array_unshift($_SERVER['argv'], array_shift($_SERVER['argv']), 'util', 'sitemap');
 $_SERVER['argc'] += 2;

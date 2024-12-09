@@ -1,0 +1,100 @@
+<?php
+  $buttonId = $this->buttonId ?? 'confirm_' . $this->_invocation;
+  if (null === ($buttonClass = $this->buttonClass)) {
+    if ($this->buttonLink) {
+      $buttonClass = 'btn btn-link';
+    } else {
+      $buttonClass = 'btn btn-default';
+    }
+  }
+  if ($this->buttonIcon && $this->buttonLabel) {
+    $buttonClass .= ' icon-link';
+  }
+
+  $buttonAttrs = [
+    'id' => $buttonId,
+    'class' => "$buttonClass dropdown-toggle",
+    'data-toggle' => 'dropdown',
+    'aria-expanded' => 'false',
+    'aria-haspopup' => 'true',
+  ];
+  if ($link = $this->buttonLink) {
+    $buttonAttrs['href'] = $link;
+  } else {
+    $buttonAttrs['type'] = 'submit';
+  }
+  if ($name = $this->buttonName) {
+    $buttonAttrs['name'] = $name;
+  }
+  // Allow label with or without icon, or a raw html one:
+  if ($this->buttonIcon && $this->buttonLabel) {
+    $buttonLabelHtml = $this->icon($this->buttonIcon, 'icon-link__icon') . ' '
+      . '<span class="icon-link__label">' . $this->transEsc($this->buttonLabel) . '</span>';
+  } else {
+    $buttonLabelHtml = $this->buttonLabelHtml ?? $this->transEsc($this->buttonLabel);
+  }
+
+  $ulAttrs = [
+    'class' => 'right' === ($this->align ?? 'default') ? 'dropdown-menu dropdown-menu-right' : 'dropdown-menu',
+    'role' => 'menu',
+    'aria-labelledby' => $buttonId,
+  ];
+
+  $confirmAttrs = [
+    'class' => 'dropdown-item',
+    'href' => '#',
+  ];
+  if ($id = $this->confirmId) {
+    $confirmAttrs['id'] = $id;
+  }
+  if ($title = $this->confirmTitle) {
+    $confirmAttrs['title'] = $this->translate($title);
+  }
+  if ($class = $this->confirmClass) {
+    $confirmAttrs['class'] .= " $class";
+  }
+  if ($href = $this->confirmLink) {
+    $confirmAttrs['href'] = $href;
+  }
+  if ($this->clearAccountCache) {
+    $confirmAttrs['data-clear-account-cache'] = '';
+  }
+
+  $cancelAttrs = [
+    'class' => 'dropdown-item',
+    'href' => '#',
+  ];
+  if ($id = $this->cancelId) {
+    $cancelAttrs['id'] = $id;
+  }
+  if ($title = $this->cancelTitle) {
+    $cancelAttrs['title'] = $this->translate($title);
+  }
+  if ($class = $this->cancelClass) {
+    $cancelAttrs['class'] .= " $class";
+  }
+
+  if ($this->ignoreLightbox) {
+    $buttonAttrs['data-lightbox-ignore'] = '';
+    $confirmAttrs['data-lightbox-ignore'] = '';
+    $cancelAttrs['data-lightbox-ignore'] = '';
+  }
+?>
+<div class="btn-group">
+  <?php if ($this->buttonLink): ?>
+    <a<?=$this->htmlAttributes($buttonAttrs)?>><?=$buttonLabelHtml?></a>
+  <?php else: ?>
+    <button<?=$this->htmlAttributes($buttonAttrs)?>><?=$buttonLabelHtml?></button>
+  <?php endif; ?>
+  <ul<?=$this->htmlAttributes($ulAttrs)?>>
+    <?php if ($this->header): ?>
+      <li><span class="dropdown-header"><?=$this->transEsc($this->header)?></span></li>
+    <?php endif; ?>
+    <li>
+      <a<?=$this->htmlAttributes($confirmAttrs)?>><?=$this->confirmLabelHtml ?? $this->transEsc('confirm_dialog_yes')?></a>
+    </li>
+    <li>
+      <a<?=$this->htmlAttributes($cancelAttrs)?>><?=$this->cancelLabelHtml ?? $this->transEsc('confirm_dialog_no')?></a>
+    </li>
+  </ul>
+</div>

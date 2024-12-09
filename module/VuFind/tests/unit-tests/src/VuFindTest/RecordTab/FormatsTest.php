@@ -3,7 +3,7 @@
 /**
  * Formats Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -60,9 +60,9 @@ class FormatsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
-        return ['Not Enabed' => [false, false], 'Enabled' => [true, true]];
+        return ['Not Enabled' => [false, false], 'Enabled' => [true, true]];
     }
 
     /**

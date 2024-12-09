@@ -3,7 +3,7 @@
 /**
  * VuFind Sitemap
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,11 @@ namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
 
+use function call_user_func;
+use function in_array;
+use function is_callable;
+use function is_string;
+
 /**
  * Class for generating sitemaps
  *
@@ -42,13 +47,6 @@ use Laminas\Config\Config;
  */
 class Generator
 {
-    /**
-     * Base URL for site
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
     /**
      * Base URL for sitemap
      *
@@ -62,20 +60,6 @@ class Generator
      * @var array
      */
     protected $languages;
-
-    /**
-     * Sitemap configuration (sitemap.ini)
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Generator plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager;
 
     /**
      * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
@@ -129,22 +113,17 @@ class Generator
     /**
      * Constructor
      *
-     * @param string        $baseUrl VuFind base URL
-     * @param Config        $config  Sitemap configuration settings
-     * @param array         $locales Enabled locales
-     * @param PluginManager $pm      Generator plugin manager
+     * @param string        $baseUrl       VuFind base URL
+     * @param Config        $config        Sitemap configuration settings
+     * @param array         $locales       Enabled locales
+     * @param PluginManager $pluginManager Generator plugin manager
      */
     public function __construct(
-        $baseUrl,
-        Config $config,
+        protected $baseUrl,
+        protected Config $config,
         array $locales,
-        PluginManager $pm
+        protected PluginManager $pluginManager
     ) {
-        // Save incoming parameters:
-        $this->baseUrl = $baseUrl;
-        $this->config = $config;
-        $this->pluginManager = $pm;
-
         $this->languages = $this->getSitemapLanguages($locales);
 
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
@@ -241,7 +220,7 @@ class Generator
      */
     protected function getTime()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         return $time[1] + $time[0];
     }
 
@@ -298,7 +277,7 @@ class Generator
             $plugin = $this->getPlugin($pluginName);
             $sitemapName = $plugin->getSitemapName();
             $msgName = empty($sitemapName)
-                ? "core sitemap" : "sitemap '$sitemapName'";
+                ? 'core sitemap' : "sitemap '$sitemapName'";
             $this->verboseMsg(
                 "Generating $msgName with '$pluginName'"
             );
@@ -360,22 +339,28 @@ class Generator
 
             // Add a <sitemap /> group for a static sitemap file.
             // See sitemap.ini for more information on this option.
-            $baseSitemapFileName = $this->config->SitemapIndex->baseSitemapFileName
-                ?? '';
-            if ($baseSitemapFileName) {
-                $baseSitemapFileName .= '.xml';
-                $baseSitemapFilePath = $this->fileLocation . '/'
-                    . $baseSitemapFileName;
-                // Only add the <sitemap /> group if the file exists
-                // in the directory where the other sitemap files
-                // are saved, i.e. ['Sitemap']['fileLocation']
-                if (file_exists($baseSitemapFilePath)) {
-                    $smf->addUrl($baseUrl . '/' . $baseSitemapFileName);
+            $indexSettings = $this->config->SitemapIndex->toArray();
+            $baseSitemapFileNames = (array)($indexSettings['baseSitemapFileName'] ?? []);
+            foreach ($baseSitemapFileNames as $baseSitemapFileName) {
+                // Is the value already a fully-formed URL? If so, use it as-is; otherwise,
+                // turn it into a URL and validate that it exists.
+                if (str_contains($baseSitemapFileName, '://')) {
+                    $smf->addUrl($baseSitemapFileName);
                 } else {
-                    $this->warnings[] = "WARNING: Can't open file "
-                        . $baseSitemapFilePath . '. '
-                        . 'The sitemap index will be generated '
-                        . 'without this sitemap file.';
+                    $baseSitemapFileName .= '.xml';
+                    $baseSitemapFilePath = $this->fileLocation . '/'
+                        . $baseSitemapFileName;
+                    // Only add the <sitemap /> group if the file exists
+                    // in the directory where the other sitemap files
+                    // are saved, i.e. ['Sitemap']['fileLocation']
+                    if (file_exists($baseSitemapFilePath)) {
+                        $smf->addUrl($baseUrl . '/' . $baseSitemapFileName);
+                    } else {
+                        $this->warnings[] = "WARNING: Can't open file "
+                            . $baseSitemapFilePath . '. '
+                            . 'The sitemap index will be generated '
+                            . 'without this sitemap file.';
+                    }
                 }
             }
 

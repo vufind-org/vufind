@@ -3,7 +3,7 @@
 /**
  * CollectionSideFacets recommendation module Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -62,13 +62,11 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager                $configLoader config loader
-     * @param \VuFind\Search\Solr\Results                 $results      results
+     * @param \VuFind\Config\PluginManager $configLoader config loader
+     * @param \VuFind\Search\Solr\Results  $results      results
      * object
-     * @param string                                      $settings     settings
-     * @param \Laminas\Stdlib\Parameters                  $request      request
-     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical
-     * facet helper (true to build default, null to omit)
+     * @param string                       $settings     settings
+     * @param \Laminas\Stdlib\Parameters   $request      request
      *
      * @return SideFacets
      */
@@ -76,13 +74,9 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         $configLoader = null,
         $results = null,
         $settings = '',
-        $request = null,
-        $facetHelper = true
+        $request = null
     ) {
-        $sf = new CollectionSideFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
-            $facetHelper ? new \VuFind\Search\Solr\HierarchicalFacetHelper() : false
-        );
+        $sf = new CollectionSideFacets($configLoader ?? $this->getMockConfigPluginManager([]));
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),

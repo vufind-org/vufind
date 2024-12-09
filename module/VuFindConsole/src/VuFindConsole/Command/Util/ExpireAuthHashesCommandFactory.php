@@ -3,7 +3,7 @@
 /**
  * Factory for Util/ExpireAuthHashesCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -65,9 +65,9 @@ class ExpireAuthHashesCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $tableManager->get(\VuFind\Db\Table\AuthHash::class),
+            $serviceManager->get(\VuFind\Db\Service\AuthHashServiceInterface::class),
             ...($options ?? [])
         );
     }

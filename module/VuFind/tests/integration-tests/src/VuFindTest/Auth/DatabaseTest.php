@@ -3,7 +3,7 @@
 /**
  * Database authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -77,7 +77,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
             return;
         }
         $this->auth = new Database();
-        $this->auth->setDbTableManager($this->getLiveTableManager());
+        $this->auth->setDbServiceManager($this->getLiveDbServiceManager());
     }
 
     /**
@@ -294,8 +294,8 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testLogin()
     {
         $user = $this->auth->authenticate($this->getLoginRequest());
-        $this->assertEquals('testuser', $user->username);
-        $this->assertEquals('user@test.com', $user->email);
+        $this->assertEquals('testuser', $user->getUsername());
+        $this->assertEquals('user@test.com', $user->getEmail());
     }
 
     /**

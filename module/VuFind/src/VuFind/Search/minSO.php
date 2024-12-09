@@ -3,7 +3,7 @@
 /**
  * VuFind Minified Search Object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,7 +29,7 @@
 
 /**
  * This non-namespaced class exists to keep serialized search objects small by
- * using an abbreviated name.  Unfortunately, the name does not comply with coding
+ * using an abbreviated name. Unfortunately, the name does not comply with coding
  * standards, but we cannot easily change it due to legacy compatibility issues.
  *
  * @category VuFind

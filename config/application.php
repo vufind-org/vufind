@@ -3,7 +3,7 @@
 // Composer autoloading
 $autoloader = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoloader)) {
-    $loader = include $autoloader;
+    include $autoloader;
 }
 
 if (!class_exists(\Laminas\Loader\AutoloaderFactory::class)) {

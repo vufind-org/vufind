@@ -3,7 +3,7 @@
 /**
  * Mix-in for constructing the search service for tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -53,7 +53,7 @@ trait SearchServiceTrait
     {
         $shared = new \Laminas\EventManager\SharedEventManager();
         $shared->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_RESOLVE,
             [$bm, 'onResolve']
         );

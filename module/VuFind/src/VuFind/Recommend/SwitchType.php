@@ -3,7 +3,7 @@
 /**
  * SwitchType Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -104,7 +104,7 @@ class SwitchType implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -118,7 +118,7 @@ class SwitchType implements RecommendInterface
         $this->results = $results;
 
         // If the handler is null, we can't figure out a single handler, so this
-        // is probably an advanced search.  In that case, we shouldn't try to change
+        // is probably an advanced search. In that case, we shouldn't try to change
         // anything!  We should only show recommendations if we know what handler is
         // being used and can determine that it is not the same as the new handler
         // that we want to recommend.

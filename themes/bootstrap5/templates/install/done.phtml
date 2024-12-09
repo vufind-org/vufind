@@ -1,0 +1,14 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<p>Auto configuration has been successfully disabled.</p>
+
+<p>If you are concerned about security, you may want to change the permissions on
+the <strong><?=$this->escapeHtml($this->configDir)?></strong> directory to prevent the
+web server from writing changes to configurations in the future.</p>

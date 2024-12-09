@@ -3,7 +3,7 @@
 /**
  * Table Definition for user_card
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -60,5 +60,18 @@ class UserCard extends Gateway
         $table = 'user_card'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
+    }
+
+    /**
+     * Get user_card rows with insecure catalog passwords
+     *
+     * @return mixed
+     */
+    public function getInsecureRows()
+    {
+        $callback = function ($select) {
+            $select->where->isNotNull('cat_password');
+        };
+        return $this->select($callback);
     }
 }

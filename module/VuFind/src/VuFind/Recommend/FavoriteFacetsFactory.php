@@ -3,7 +3,7 @@
 /**
  * FavoriteFacets recommendation module factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -72,7 +72,6 @@ class FavoriteFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryIn
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class),
-            null,
             $capabilities->getTagSetting()
         );
     }

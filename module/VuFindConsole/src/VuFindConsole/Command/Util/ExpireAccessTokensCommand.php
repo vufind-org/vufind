@@ -3,7 +3,7 @@
 /**
  * Console command: expire access tokens.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  * Copyright (C) The National Library of Finland 2022.
@@ -31,6 +31,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
+
 /**
  * Console command: expire access tokens.
  *
@@ -41,6 +43,9 @@ namespace VuFindConsole\Command\Util;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/expire_access_tokens'
+)]
 class ExpireAccessTokensCommand extends AbstractExpireCommand
 {
     /**
@@ -56,11 +61,4 @@ class ExpireAccessTokensCommand extends AbstractExpireCommand
      * @var string
      */
     protected $rowLabel = 'access tokens';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/expire_access_tokens';
 }

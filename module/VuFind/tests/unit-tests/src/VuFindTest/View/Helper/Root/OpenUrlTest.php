@@ -3,7 +3,7 @@
 /**
  * OpenUrl Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -113,7 +113,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckExcludedRecordsRulesFalse()
     {
-        $fixture = $this->getJsonFixture("openurlrules/rule1.json");
+        $fixture = $this->getJsonFixture('openurlrules/rule1.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
         $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertTrue($openUrl->isActive());
@@ -127,7 +127,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckExcludedRecordsRulesTrue()
     {
-        $fixture = $this->getJsonFixture("openurlrules/rule2.json");
+        $fixture = $this->getJsonFixture('openurlrules/rule2.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
         $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertFalse($openUrl->isActive());
@@ -148,7 +148,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
             ['Article'],
             false
         );
-        $fixture = $this->getJsonFixture("openurlrules/rule5.json");
+        $fixture = $this->getJsonFixture('openurlrules/rule5.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
         $openUrl = $helper($driver, 'results');
         $this->assertFalse($openUrl->isActive());
@@ -162,7 +162,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckSupportedRecordsRulesFalse()
     {
-        $fixture = $this->getJsonFixture("openurlrules/rule3.json");
+        $fixture = $this->getJsonFixture('openurlrules/rule3.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
         $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertFalse($openUrl->isActive());
@@ -182,7 +182,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
             \VuFind\RecordDriver\SolrDefault::class,
             ['CrazyFormat']
         );
-        $fixture = $this->getJsonFixture("openurlrules/rule5.json");
+        $fixture = $this->getJsonFixture('openurlrules/rule5.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
         $openUrl = $helper($driver, 'results');
         $this->assertFalse($openUrl->isActive());
@@ -196,7 +196,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckSupportedRecordsRulesTrue()
     {
-        $fixture = $this->getJsonFixture("openurlrules/rule4.json");
+        $fixture = $this->getJsonFixture('openurlrules/rule4.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
         $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertTrue($openUrl->isActive());
@@ -222,7 +222,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
             $formats
         );
         $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule1.json"), $this->rulesConfig);
+            ->getOpenUrl($this->getJsonFixture('openurlrules/rule1.json'), $this->rulesConfig);
         $this->assertTrue($openUrl($defaultDriver, 'results')->isActive());
         $this->assertFalse($openUrl($marcDriver, 'results')->isActive());
     }

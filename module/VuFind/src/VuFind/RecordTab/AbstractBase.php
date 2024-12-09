@@ -3,7 +3,7 @@
 /**
  * Record tab abstract base class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -58,7 +58,7 @@ abstract class AbstractBase implements
     /**
      * Record driver associated with the tab
      *
-     * @var \VuFind\RecordDriver\AbstractBase
+     * @var ?\VuFind\RecordDriver\AbstractBase
      */
     protected $driver = null;
 

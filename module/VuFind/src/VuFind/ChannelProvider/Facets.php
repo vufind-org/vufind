@@ -3,7 +3,7 @@
 /**
  * Facet-driven channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -35,6 +35,8 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
 
 /**
  * Facet-driven channel provider.

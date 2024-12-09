@@ -3,7 +3,7 @@
 /**
  * Table Definition for auth_hash
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2019.
@@ -96,7 +96,7 @@ class AuthHash extends Gateway
      *
      * @param string $sessionId Session ID
      *
-     * @return \VuFind\Db\Row\AuthHash
+     * @return ?\VuFind\Db\Row\AuthHash
      */
     public function getLatestBySessionId($sessionId)
     {

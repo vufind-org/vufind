@@ -3,7 +3,7 @@
 /**
  * Unit tests for multiindex listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -201,7 +201,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo('VuFind\Search'),
+            $this->equalTo(\VuFindSearch\Service::class),
             $this->equalTo('pre'),
             $this->equalTo([$this->listener, 'onSearchPre'])
         );

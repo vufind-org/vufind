@@ -3,7 +3,7 @@
 /**
  * Holds Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2021.
@@ -35,6 +35,10 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Validator\CsrfInterface;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Controller for the user holds area.
@@ -95,8 +99,7 @@ class HoldsController extends AbstractBase
         // Process cancel requests if necessary:
         $cancelStatus = $catalog->checkFunction('cancelHolds', compact('patron'));
         $view = $this->createViewModel();
-        $view->cancelResults = $cancelStatus
-            ? $this->holds()->cancelHolds($catalog, $patron) : [];
+        $view->cancelResults = $cancelStatus ? $this->holds()->cancelHolds($catalog, $patron) : [];
         // If we need to confirm
         if (!is_array($view->cancelResults)) {
             return $view->cancelResults;
@@ -194,6 +197,13 @@ class HoldsController extends AbstractBase
      */
     public function editAction()
     {
+        $this->ilsExceptionResponse = $this->createViewModel(
+            [
+                'selectedIDS' => [],
+                'fields' => [],
+            ]
+        );
+
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -270,7 +280,7 @@ class HoldsController extends AbstractBase
                     $this->flashMessenger()->addErrorMessage($msg);
                 }
                 return $this->inLightbox()
-                    ? $this->getRefreshResponse()
+                    ? $this->getRefreshResponse(true)
                     : $this->redirect()->toRoute('holds-list');
             }
         }
@@ -456,7 +466,7 @@ class HoldsController extends AbstractBase
     {
         return new \Laminas\Session\Container(
             'hold_update',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
     }
 

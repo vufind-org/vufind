@@ -3,7 +3,7 @@
 /**
  * "Random items" channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016, 2022.
  *
@@ -34,6 +34,8 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RandomCommand;
+
+use function count;
 
 /**
  * "Random items" channel provider.
@@ -138,7 +140,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     public function getFromSearch(Results $results, $channelToken = null)
     {
         $params = $results->getParams();
-        if ("retain" !== $this->mode) {
+        if ('retain' !== $this->mode) {
             $randomParams = $this->paramManager->get($params->getSearchClassId());
         } else {
             $randomParams = clone $params;

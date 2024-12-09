@@ -3,7 +3,7 @@
 /**
  * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *

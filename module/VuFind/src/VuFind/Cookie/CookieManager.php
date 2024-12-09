@@ -3,7 +3,7 @@
 /**
  * Cookie Manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  * Copyright (C) The National Library of Finland 2020.
@@ -30,6 +30,8 @@
  */
 
 namespace VuFind\Cookie;
+
+use function is_array;
 
 /**
  * Cookie Manager
@@ -81,7 +83,7 @@ class CookieManager
     /**
      * The name of the session cookie
      *
-     * @var string
+     * @var ?string
      */
     protected $sessionName;
 
@@ -95,14 +97,14 @@ class CookieManager
     /**
      * Constructor
      *
-     * @param array  $cookies     Cookie array to manipulate (e.g. $_COOKIE)
-     * @param string $path        Cookie base path (default = /)
-     * @param string $domain      Cookie domain
-     * @param bool   $secure      Are cookies secure only? (default = false)
-     * @param string $sessionName Session cookie name (if null defaults to PHP
+     * @param array   $cookies     Cookie array to manipulate (e.g. $_COOKIE)
+     * @param string  $path        Cookie base path (default = /)
+     * @param string  $domain      Cookie domain
+     * @param bool    $secure      Are cookies secure only? (default = false)
+     * @param ?string $sessionName Session cookie name (if null defaults to PHP
      * settings)
-     * @param bool   $httpOnly    Are cookies HTTP only? (default = true)
-     * @param string $sameSite    Default SameSite attribute (defaut = 'Lax')
+     * @param bool    $httpOnly    Are cookies HTTP only? (default = true)
+     * @param string  $sameSite    Default SameSite attribute (default = 'Lax')
      */
     public function __construct(
         $cookies,
@@ -175,7 +177,7 @@ class CookieManager
     /**
      * Get the name of the cookie
      *
-     * @return mixed
+     * @return ?string
      */
     public function getSessionName()
     {

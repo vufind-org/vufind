@@ -3,7 +3,7 @@
 /**
  * TranslationEmpty view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -60,6 +60,9 @@ class TranslationEmptyTest extends \PHPUnit\Framework\TestCase
                         'foo' => 'bar',
                         'baz' => '',
                     ],
+                    'fallback' => [
+                        'nonexistent' => 'actually exists',
+                    ],
                 ]
             )
         );
@@ -67,5 +70,6 @@ class TranslationEmptyTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($translationEmpty('foo'));
         $this->assertTrue($translationEmpty('baz'));
         $this->assertTrue($translationEmpty('nonexistent'));
+        $this->assertFalse($translationEmpty('nonexistent', ['fallback']));
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Configuration File Path Resolver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2022.
@@ -157,6 +157,16 @@ class PathResolver
     }
 
     /**
+     * Get local config dir stack.
+     *
+     * @return array
+     */
+    public function getLocalConfigDirStack(): array
+    {
+        return $this->localConfigDirStack;
+    }
+
+    /**
      * Build a complete file path from a directory specification, optional
      * configuration file sub-directory and a filename.
      *
@@ -171,8 +181,7 @@ class PathResolver
         ?string $configSubdir,
         string $filename
     ): string {
-        return $directorySpec['directory']
-            . '/' . ($configSubdir ?? $directorySpec['defaultConfigSubdir'])
-            . "/$filename";
+        $configSubdir ??= $directorySpec['defaultConfigSubdir'];
+        return $directorySpec['directory'] . '/' . $configSubdir . '/' . $filename;
     }
 }

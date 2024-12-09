@@ -3,7 +3,7 @@
 /**
  * Generic base class for Solr + ILS commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *

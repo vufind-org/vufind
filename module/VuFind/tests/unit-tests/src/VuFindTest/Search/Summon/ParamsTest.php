@@ -3,7 +3,7 @@
 /**
  * Summon Search Object Parameters Test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Summon;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Summon\Options;
 use VuFind\Search\Summon\Params;

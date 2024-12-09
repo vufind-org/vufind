@@ -3,7 +3,7 @@
 /**
  * Record driver plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@ namespace VuFind\RecordDriver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
+use function is_callable;
+
 /**
  * Record driver plugin manager
  *
@@ -51,7 +53,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'browzine' => BrowZine::class,
         'eds' => EDS::class,
         'eit' => EIT::class,
+        'epf' => EPF::class,
         'libguides' => LibGuides::class,
+        'libguidesaz' => LibGuidesAZ::class,
         'missing' => Missing::class,
         'pazpar2' => Pazpar2::class,
         'primo' => Primo::class,
@@ -67,7 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrreserves' => SolrReserves::class,
         'solrweb' => SolrWeb::class,
         'summon' => Summon::class,
-        'worldcat' => WorldCat::class,
+        'worldcat2' => WorldCat2::class,
     ];
 
     /**
@@ -89,11 +93,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         BrowZine::class => InvokableFactory::class,
         EDS::class => NameBasedConfigFactory::class,
         EIT::class => NameBasedConfigFactory::class,
+        EPF::class => NameBasedConfigFactory::class,
         LibGuides::class => InvokableFactory::class,
+        LibGuidesAZ::class => InvokableFactory::class,
         Missing::class => AbstractBaseFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,
-        Search2Default::class => SolrDefaultFactory::class,
+        Search2Default::class => Search2DefaultFactory::class,
         SolrArchivesSpace::class => SolrDefaultFactory::class,
         SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrAuthMarc::class => SolrDefaultWithoutSearchServiceFactory::class,
@@ -104,7 +110,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SolrReserves::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrWeb::class => SolrWebFactory::class,
         Summon::class => SummonFactory::class,
-        WorldCat::class => NameBasedConfigFactory::class,
+        WorldCat2::class => NameBasedConfigFactory::class,
     ];
 
     /**
@@ -175,9 +181,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         );
         $recordType = $this->has($key) ? $key : $keyPrefix . $defaultKeySuffix;
 
+        // Extract highlighting details injected earlier by
+        // \VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory
+        $hl = $data['__highlight_details'] ?? [];
+        unset($data['__highlight_details']);
         // Build the object:
         $driver = $this->get($recordType);
         $driver->setRawData($data);
+        $driver->setHighlightDetails($hl);
         return $driver;
     }
 

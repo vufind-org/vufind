@@ -6,7 +6,7 @@
  * Note: This relies on PHP's Memcache extension
  * (see http://us.php.net/manual/en/book.memcache.php)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -34,6 +34,9 @@ namespace VuFind\Session;
 
 use Laminas\Config\Config;
 
+use function get_class;
+use function in_array;
+
 /**
  * Memcache session handler
  *
@@ -55,9 +58,8 @@ class Memcache extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config                 $config Session configuration ([Session] section
-     * of config.ini)
-     * @param ?\Memcache|?\Memcached $client Optional Memcache client object
+     * @param Config                    $config Session configuration ([Session] section of config.ini)
+     * @param \Memcache|\Memcached|null $client Optional Memcache client object
      */
     public function __construct(Config $config = null, object $client = null)
     {
@@ -68,9 +70,8 @@ class Memcache extends AbstractBase
     /**
      * Set up the connection to Memcache.
      *
-     * @param ?Config                $config Session configuration ([Session] section
-     * of config.ini)
-     * @param ?\Memcache|?\Memcached $client Optional Memcache client object
+     * @param ?Config                   $config Session configuration ([Session] section of config.ini)
+     * @param \Memcache|\Memcached|null $client Optional Memcache client object
      *
      * @return void
      */

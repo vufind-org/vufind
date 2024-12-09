@@ -1,0 +1,709 @@
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 05 Jul 2023 19:50:05 GMT
+Content-Type: application/json
+
+{
+    "resultCount": 152916,
+    "records": [
+        {
+            "authors": {
+                "primary": {
+                    "Frederic, Harold, 1931-": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Audio"
+            ],
+            "id": "5d28e433-d9ba-4b2f-ae7e-769441452d3a",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "John Crawford memorial history of Armstrong County, Pennsylvania ;",
+                    "number": "[v. 1]."
+                }
+            ],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865."
+                ],
+                [
+                    "Armstrong (Pa.)",
+                    "History",
+                    "Civil War, 1861-1865."
+                ]
+            ],
+            "title": "From Civil War to Civil War : a syntopic introduction to the American Civil War, 1861-1865 and the John Crawford memorial history series, 1991-1992 /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Frederic, Harold": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "0d2f5c31-e55c-44ca-a26a-9bde8b214cb0",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "John Crawford memorial history of Armstrong County, Pennsylvania."
+                }
+            ],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865."
+                ],
+                [
+                    "Armstrong County (Pa.)",
+                    "History",
+                    "19th century."
+                ]
+            ],
+            "title": "From Civil War to Civil War : a syntopic introduction to the American Civil War, 1861-1865 and the John Crawford memorial history series, 1991-1992 /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Brown, Rosellen": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "bc88824a-8d19-412b-aa11-6f225b231fe4",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "Contemporary American fiction."
+                }
+            ],
+            "subjects": [
+                [
+                    "Civil rights workers",
+                    "Mississippi",
+                    "Fiction."
+                ],
+                [
+                    "African Americans",
+                    "Mississippi",
+                    "Fiction."
+                ],
+                [
+                    "Mississippi",
+                    "Race relations",
+                    "Fiction."
+                ]
+            ],
+            "title": "Civil wars : a novel /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Cummings, Judy Dodge": {
+                        "role": [
+                            "aut"
+                        ]
+                    }
+                },
+                "secondary": {
+                    "Carbaugh, Samuel": {
+                        "role": [
+                            "ill"
+                        ]
+                    }
+                },
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "18d8a14f-fa0d-4193-a2f7-bf9c29338403",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "Inquire and investigate."
+                }
+            ],
+            "subjects": [
+                [
+                    "1861-1865"
+                ],
+                [
+                    "JUVENILE NONFICTION",
+                    "United States",
+                    "History",
+                    "General."
+                ],
+                [
+                    "JUVENILE NONFICTION",
+                    "People & Places",
+                    "United States",
+                    "General."
+                ],
+                [
+                    "JUVENILE NONFICTION",
+                    "People & Places",
+                    "United States",
+                    "Other."
+                ],
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Juvenile literature."
+                ],
+                [
+                    "États-Unis",
+                    "Histoire",
+                    "1861-1865 (Guerre de Sécession)",
+                    "Ouvrages pour la jeunesse."
+                ],
+                [
+                    "United States."
+                ],
+                [
+                    "Electronic books."
+                ],
+                [
+                    "History."
+                ],
+                [
+                    "Juvenile works."
+                ]
+            ],
+            "title": "The Civil War : the struggle that divided America /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": [],
+                "secondary": [],
+                "corporate": {
+                    "Dan Dalton Productions": [],
+                    "Mill Creek Entertainment": []
+                }
+            },
+            "formats": [
+                "Unknown"
+            ],
+            "id": "a2b6f843-0945-467c-8b30-6e10c80de9a9",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865."
+                ]
+            ],
+            "title": "The Civil War",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Sandler, Martin W.": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "d186e80d-e466-4c65-b8a0-ff3cf0827fcf",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Pictorial works",
+                    "Juvenile literature."
+                ],
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Juvenile literature."
+                ]
+            ],
+            "title": "Civil War /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Thorpe, Francis Newton, 1857-1926": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "74285bbe-1ba7-4207-a694-83553777d17f",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "History of North America;",
+                    "number": "v. 15."
+                }
+            ],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865."
+                ]
+            ],
+            "title": "The civil war : the national view /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": [],
+                "secondary": {
+                    "Konstam, Angus": []
+                },
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "afa637d6-d4ef-4882-bc09-482d9c3f8ab1",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Encyclopedias."
+                ],
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Pictorial works."
+                ]
+            ],
+            "title": "The Civil War : a visual encyclopedia /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Athearn, Robert G.": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "960e73dd-97ca-42a4-8746-b89099d0d306",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "American Heritage new illustrated history of the United States ;",
+                    "number": "v. 8."
+                }
+            ],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865."
+                ]
+            ],
+            "title": "The Civil War /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": [],
+                "secondary": {
+                    "Matloff, Maurice, 1915-1993": []
+                },
+                "corporate": {
+                    "United States. Department of the Army. Office of Military History": []
+                }
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "2dc7f16a-89a6-4770-a8b0-806cc7f07d43",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Campaigns."
+                ]
+            ],
+            "title": "The Civil War : a concise military history of the War between the States, 1861-1865 /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Caesar, Julius": []
+                },
+                "secondary": {
+                    "Gardner, Jane F.": []
+                },
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "b6e2c40f-820d-45dc-ad40-c30b5d065889",
+            "languages": [
+                "English",
+                "Latin"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "Rome",
+                    "History",
+                    "Civil War, 49-45 B.C."
+                ]
+            ],
+            "title": "The civil war /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Trent, William P. (William Peterfield), 1862-1939": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "40e6323f-694d-45a5-af43-8b7c3466d27b",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [],
+            "title": "War & civilization.",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": [],
+                "secondary": {
+                    "Eisenschiml, Otto, 1880-1963": [],
+                    "Newman, Ralph Geoffrey, 1911-1998": []
+                },
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "f861ed0b-8a11-409a-9ee8-4795e335140c",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Personal narratives."
+                ]
+            ],
+            "title": "The Civil War : the American Iliad, as told by those who lived it /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Paxson, Frederic Logan": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "bc36d267-20b1-4683-af70-bbb4e1f177ae",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865."
+                ]
+            ],
+            "title": "The Civil War.",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Appianus": {
+                        "role": [
+                            "aut"
+                        ]
+                    }
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "b554468f-b827-487d-a857-54aebaae6651",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [],
+            "title": "--Civil wars : bk. 1 /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": [],
+                "secondary": [],
+                "corporate": {
+                    "Dan Dalton Productions": [],
+                    "Simitar (Firm)": []
+                }
+            },
+            "formats": [
+                "Unknown"
+            ],
+            "id": "e196ef03-5dce-40e7-b83a-0a0f968d0066",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865."
+                ],
+                [
+                    "Documentary films."
+                ],
+                [
+                    "Historical films."
+                ]
+            ],
+            "title": "The Civil War [1861-1865] /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Ollhoff, Jim, 1959-": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "a4f89994-d1af-4ac7-8474-533659e7f698",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "African American history (ABDO Publishing Company)"
+                }
+            ],
+            "subjects": [
+                [
+                    "JUVENILE NONFICTION",
+                    "United States",
+                    "History",
+                    "Civil War Period (1850-1877)"
+                ],
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Juvenile literature."
+                ],
+                [
+                    "United States."
+                ],
+                [
+                    "Electronic books."
+                ]
+            ],
+            "title": "The Civil War /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "JULIUS CAESAR": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book Chapter"
+            ],
+            "id": "4dd5292d-250c-4180-80a5-d4506ecf6d4f",
+            "languages": [],
+            "series": [],
+            "subjects": [],
+            "title": "THE CIVIL WARS",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": {
+                    "Howse, Jennifer": []
+                },
+                "secondary": [],
+                "corporate": []
+            },
+            "formats": [
+                "Book"
+            ],
+            "id": "fc570739-045e-4215-96f6-d6eb34ba0817",
+            "languages": [
+                "English"
+            ],
+            "series": [
+                {
+                    "name": "African American history (Weigl Publishers)"
+                }
+            ],
+            "subjects": [
+                [
+                    "United States.",
+                    "Army",
+                    "African American troops",
+                    "History",
+                    "19th century",
+                    "Juvenile literature."
+                ],
+                [
+                    "African Americans",
+                    "History",
+                    "To 1863",
+                    "Juvenile literature."
+                ],
+                [
+                    "African Americans",
+                    "History",
+                    "1863-1877",
+                    "Juvenile literature."
+                ],
+                [
+                    "African American soldiers",
+                    "History",
+                    "19th century",
+                    "Juvenile literature."
+                ],
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "African Americans",
+                    "Juvenile literature."
+                ],
+                [
+                    "United States",
+                    "History",
+                    "Civil War, 1861-1865",
+                    "Participation, African American",
+                    "Juvenile literature."
+                ]
+            ],
+            "title": "Civil War /",
+            "urls": []
+        },
+        {
+            "authors": {
+                "primary": [],
+                "secondary": {
+                    "Trombley, Stephen": [],
+                    "Bulley, Tony": []
+                },
+                "corporate": {
+                    "Worldview Pictures Ltd": [],
+                    "Learning Channel (Firm)": [],
+                    "Cinquième (Firm)": []
+                }
+            },
+            "formats": [
+                "Unknown"
+            ],
+            "id": "9e668aba-6726-4af1-a621-6db81e1b207a",
+            "languages": [
+                "English"
+            ],
+            "series": [],
+            "subjects": [
+                [
+                    "War and civilization."
+                ],
+                [
+                    "War and society."
+                ],
+                [
+                    "Military art and science",
+                    "History."
+                ]
+            ],
+            "title": "War and civilization",
+            "urls": []
+        }
+    ],
+    "status": "OK"
+}

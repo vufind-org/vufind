@@ -3,7 +3,7 @@
 /**
  * HTTP Request class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Http\PhpEnvironment;
+
+use function is_array;
+use function is_string;
 
 /**
  * HTTP Request class
@@ -136,7 +139,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
             return false;
         }
         // Check for null in string:
-        if (strpos($param, "\x00") !== false) {
+        if (str_contains($param, "\x00")) {
             return false;
         }
         return true;

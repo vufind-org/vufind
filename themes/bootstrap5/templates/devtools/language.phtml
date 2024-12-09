@@ -1,0 +1,178 @@
+<?php
+  $pageTitle = 'Comparing Languages Against ' . $mainName;
+  $this->headTitle($pageTitle);
+
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+  . '<li class="active">' . $this->escapeHtml($pageTitle) . '</li>';
+
+  $uLangs = [];
+  foreach ($this->layout()->allLangs ?? [] as $c => $n) {
+    $uLangs[] = $c;
+  }
+
+  // Initialize flag -- did any languages get hidden due to missing configuration?
+  $hiddenLanguages = false;
+?>
+
+<h1><?=$this->escapeHtml($pageTitle)?></h1>
+
+Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings only'?><br>
+<a href="?main=<?=urlencode($mainCode)?>&amp;includeOptional=<?=$includeOptional ? 0 : 1?>">
+  <?=$includeOptional ? 'Exclude optional text domains' : 'Include optional text domains'?>
+</a>
+
+<table id="lang-summary" class="table table-striped">
+  <caption>Summarize status of translations in language files</caption>
+  <thead>
+    <tr>
+      <th scope="col">Language</th>
+      <th scope="col">Percent Translated</th>
+      <th scope="col">Missing Lines</th>
+      <th scope="col">Extra Lines</th>
+      <th scope="col">Extra Help Files</th>
+      <th scope="col">Duplicated Values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach ($summaryData as $row): ?>
+      <?php
+        $languageActive = in_array($row['lang'], $uLangs);
+        $hiddenLanguages = $hiddenLanguages || !$languageActive;
+      ?>
+      <tr class="<?=$this->escapeHtmlAttr($row['lang'])?> <?=$languageActive ? '' : 'hide'?>">
+        <td><?=$this->escapeHtml($row['langtitle'])?></td>
+        <td>
+          <div class="progress progress-border-<?=$this->escapeHtmlAttr($row['progresslevel'])?>">
+            <div class="progress-bar progress-bar-<?=$this->escapeHtmlAttr($row['progresslevel'])?>" role="progressbar" aria-valuenow="<?=$this->escapeHtmlAttr($row['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$row['percent']?>%;">
+              <?=$this->escapeHtml($row['percent'])?>% <span class="sr-only">Complete</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <?=$this->escapeHtml($row['missing']) ?>
+          <?php if ($row['missing'] > 0):?> <button class="btn-missing btn btn-default" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+        </td>
+        <td>
+          <?=$this->escapeHtml($row['extra']) ?>
+          <?php if ($row['extra'] > 0):?> <button class="btn-extra btn btn-default" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+        </td>
+        <td>
+          <?php if (($row['countfiles'] > 0) && (in_array($row['lang'], $uLangs))):?>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
+                <?=$this->escapeHtml($row['countfiles'])?> <span class="caret d-none"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
+              <?php foreach ($row['files'] as $k => $v): ?>
+                <li>
+                  <a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url('help', ['topic' => $this->escapeHtmlAttr(str_replace('.phtml', '', $v))]) . '?lng=' . $this->escapeHtmlAttr($row['lang'])?>">
+                    <?=$this->escapeHtml($v)?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php else: ?>
+            <?=$this->escapeHtml($row['countfiles'])?>
+          <?php endif; ?>
+        </td>
+        <td>
+          <?=count($row['dupes'])?>
+          <?php if (count($row['dupes']) > 0):?> <button class="btn-dupes btn btn-default" title="Duplicated Values: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
+
+<?php if ($hiddenLanguages): ?>
+  <div class="show-all" data-text="Show all languages"></div>
+<?php endif; ?>
+
+<h2>Directories</h2>
+<p>Languages in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirLang)?></em> as .ini files.</p>
+<p>Translation of Help in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
+
+<template id="template-copy-btn">
+  <div class="float-right"><?=$this->copyToClipboardButton('.translation-output'); ?></div>
+</template>
+
+<?php
+  $json = json_encode($details);
+  $script = <<<JS
+      function createDiffManager() {
+        var details = {$json};
+        function makeTextarea(opArray, lang) {
+          var arr = [];
+          for (var i = 0; i < opArray.length; i++) {
+            arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
+          }
+          return '<textarea readonly class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
+        }
+
+        function summarizeDupes(details) {
+          var html = '<table><tr><th scope="col">Value</th><th scope="col">Keys</th></tr>';
+          for (var key in details) {
+            html += '<tr><td>' + htmlEncode(key) + "</td><td>" + htmlEncode(details[key].join(", ")) + "</td></tr>";
+          }
+          html += '</table>';
+          return html;
+        }
+
+        function bindTextareaEvent() {
+          var copyBtn = document.getElementById("template-copy-btn").content.cloneNode(true);
+          $(".modal-body h2").after(copyBtn);
+          $('.translation-output').click(function(e) {
+            this.select();
+          });
+        }
+
+        function showExtra(lang, title) {
+          VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL1, lang));
+          bindTextareaEvent();
+          return false;
+        }
+        function showMissing(lang, title) {
+          VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL2, lang));
+          bindTextareaEvent();
+          return false;
+        }
+        function showDupes(lang, title) {
+          VuFind.lightbox.render('<h2>' + title + '</h2>' + summarizeDupes(details[lang].dupes));
+          return false;
+        }
+
+        return {
+          showDupes: showDupes,
+          showExtra: showExtra,
+          showMissing: showMissing
+        };
+      }
+      var diffManager = createDiffManager();
+
+      $('#lang-summary .btn-missing').click(function(e) {
+        var lang = $(this).data('langcode');
+        var title = $(this).attr('title');
+        return diffManager.showMissing(lang, title);
+      });
+      $('#lang-summary .btn-extra').click(function(e) {
+        var lang = $(this).data('langcode');
+        var title = $(this).attr('title');
+        return diffManager.showExtra(lang, title);
+      });
+      $('#lang-summary .btn-dupes').click(function(e) {
+        var lang = $(this).data('langcode');
+        var title = $(this).attr('title');
+        return diffManager.showDupes(lang, title);
+      });
+
+      $('.show-all').html('<button class="btn btn-default btn-light" type="button">' + $('.show-all:first').data('text') + '</button>');
+      $('.show-all button').click(function() {
+        $("#lang-summary tr").each(function() {
+          $(this).removeClass("hide");
+        });
+        $(this).remove();
+      });
+      JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

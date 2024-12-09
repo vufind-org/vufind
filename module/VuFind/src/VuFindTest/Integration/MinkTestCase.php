@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,12 +31,18 @@ namespace VuFindTest\Integration;
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
-use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
-use PHPUnit\Util\Test;
+use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+
+use function call_user_func;
+use function floatval;
+use function in_array;
+use function intval;
+use function is_string;
+use function strlen;
 
 /**
  * Abstract base class for PHPUnit test cases using Mink.
@@ -49,9 +55,9 @@ use VuFind\Config\Writer as ConfigWriter;
  */
 abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\RemoteCoverageTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
 
@@ -82,6 +88,98 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var PathResolver
      */
     protected $pathResolver;
+
+    /**
+     * Selector for an open button group dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $btnGroupDropdownMenuSelector = '.btn-group.open .dropdown-menu, .btn-group .dropdown-menu.show';
+
+    /**
+     * Selector for first item in a dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $firstOpenDropdownMenuItemSelector
+        = '.mainbody .open .dropdown-menu li:nth-child(2) a, .mainbody .dropdown-menu.show li:nth-child(2) a';
+
+    /**
+     * Selector for popover content
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $popoverContentSelector = '.popover-body, .popover-content';
+
+    /**
+     * Selector for an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalSelector = '#modal.in, #modal.show';
+
+    /**
+     * Selector for a button link in an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalButtonLinkSelector = '#modal.in a.btn, #modal.show a.btn';
+
+    /**
+     * Selector for a username field in open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalUsernameFieldSelector = '#modal.in [name="username"], #modal.show [name="username"]';
+
+    /**
+     * Selector for next page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pageNextSelector = 'a.page-next, .page-next a';
+
+    /**
+     * Selector for previous page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pagePrevSelector = 'a.page-prev, .page-prev a';
+
+    /**
+     * Selector for active record tab
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
+
+    /**
+     * Get name of the current test
+     *
+     * @return string
+     */
+    protected function getTestName(): string
+    {
+        return $this::class . '::' . $this->name();
+    }
 
     /**
      * Reconfigure VuFind for the current test.
@@ -134,7 +232,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeConfigFile($configName, $settings, $replace = false)
+    protected function changeConfigFile(string $configName, array $settings, bool $replace = false): void
     {
         $file = $configName . '.ini';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
@@ -149,12 +247,27 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
             $this->modifiedConfigs[] = $configName;
         }
+        $this->writeConfigFile($local, $settings, $replace);
+    }
+
+    /**
+     * Write settings to a file.
+     *
+     * @param string $path     Path of file to modify.
+     * @param array  $settings Settings to change.
+     * @param bool   $replace  Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
+     *
+     * @return void
+     */
+    protected function writeConfigFile(string $path, array $settings, bool $replace = false): void
+    {
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
-            file_put_contents($local, '');
+            file_put_contents($path, '');
         }
 
-        $writer = new ConfigWriter($local);
+        $writer = new ConfigWriter($path);
         foreach ($settings as $section => $contents) {
             foreach ($contents as $key => $value) {
                 $writer->set($section, $key, $value);
@@ -204,11 +317,21 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function snooze($secs = 1)
     {
-        $snoozeMultiplier = floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        $snoozeMultiplier = $this->getSnoozeMultiplier();
         if ($snoozeMultiplier <= 0) {
             $snoozeMultiplier = 1;
         }
         usleep(1000000 * $secs * $snoozeMultiplier);
+    }
+
+    /**
+     * Get the snooze multiplier.
+     *
+     * @return float
+     */
+    protected function getSnoozeMultiplier(): float
+    {
+        return floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
     }
 
     /**
@@ -259,6 +382,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
+            if ($coverageDir = $this->getRemoteCoverageDirectory()) {
+                $this->session->setRemoteCoverageConfig(
+                    $this->getTestName(),
+                    $coverageDir
+                );
+            }
             $this->session->start();
         }
         return $this->session;
@@ -291,6 +420,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $base = 'http://localhost/vufind';
         }
         return $base . $path;
+    }
+
+    /**
+     * Load the Search/Home page as a foundation for searching.
+     *
+     * @param ?Session $session Mink session (will be automatically established if not provided).
+     *
+     * @return Element
+     */
+    protected function getSearchHomePage(?Session $session = null): Element
+    {
+        $session ??= $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        return $session->getPage();
     }
 
     /**
@@ -377,7 +520,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('$selector').length > $index"
+            "document.querySelectorAll('$selector').length > $index"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -435,6 +578,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $elements = $page->findAll('css', $selector);
                 if (!isset($elements[$index])) {
+                    // Assert so that this method can be the only check in a test
+                    // without it being marked as risky with the message
+                    // "This test did not perform any assertions". Also makes this
+                    // check count as an assertion in test statistics.
+                    $this->assertNull(null);
                     return;
                 }
             } catch (\Exception $e) {
@@ -490,11 +638,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Set a value within an element selected via CSS; retry if set fails
      * due to browser bugs.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param string  $value    Value to set
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page        Page element
+     * @param string  $selector    CSS selector
+     * @param string  $value       Value to set
+     * @param int     $timeout     Wait timeout for CSS selection (in ms)
+     * @param int     $retries     Retry count for set loop
+     * @param bool    $verifyValue Whether to verify that the value was written
+     * @param bool    $reFocus     Whether to focus the element when done setting the value
      *
      * @return mixed
      */
@@ -503,38 +653,146 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $selector,
         $value,
         $timeout = null,
-        $retries = 6
+        $retries = 6,
+        $verifyValue = true,
+        $reFocus = false
     ) {
         $timeout ??= $this->getDefaultTimeout();
-        $field = $this->findCss($page, $selector, $timeout, 0);
-
-        $session = $this->getMinkSession();
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $('$selector:focusable').length > 0"
-        );
-        $results = $page->findAll('css', $selector);
-        $this->assertIsArray($results, "Selector not found: $selector");
-        $field = $results[0];
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
         for ($i = 1; $i <= $retries; $i++) {
-            $field->setValue($value);
+            try {
+                $field = $this->findCss($page, $selector, $timeout, 0);
+                $field->setValue($value);
+                // Did it work? If so, we're done and can leave....
+                if (
+                    !$verifyValue
+                    || $field->getValue() === $value
+                ) {
+                    if ($reFocus) {
+                        $field->focus();
+                    }
+                    return;
+                }
 
-            // Did it work? If so, we're done and can leave....
-            if ($field->getValue() === $value) {
-                return;
+                $this->logWarning(
+                    'RETRY setValue after failure in ' . $this->getTestName()
+                    . " (try $i)."
+                );
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY setValue after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
             }
-            $this->logWarning(
-                'RETRY setValue after failure in ' . get_class($this) . '::'
-                . $this->getName(false) . "(try $i)."
-            );
 
             $this->snooze();
         }
 
         throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
+    }
+
+    /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetText(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get value of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetValue(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetHtml(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $retries);
+    }
+
+    /**
+     * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element         $page     Page element
+     * @param string          $selector CSS selector
+     * @param string|callable $method   Node's method to call (string) or callable that gets the node as parameter
+     * @param int             $timeout  Wait timeout for CSS selection (in ms)
+     * @param int             $index    Index of the element (0-based)
+     * @param int             $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndCallMethod(
+        Element $page,
+        $selector,
+        $method,
+        $timeout = null,
+        $index = 0,
+        $retries = 6,
+    ) {
+        $timeout ??= $this->getDefaultTimeout();
+
+        for ($i = 1; $i <= $retries; $i++) {
+            try {
+                $element = $this->findCss($page, $selector, $timeout, $index);
+                return is_string($method) ? call_user_func([$element, $method]) : $method($element);
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY findCssAndGetText after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
+            }
+
+            $this->snooze();
+        }
+
+        throw new \Exception("Failed to call $method on '$selector' after $retries attempts.");
     }
 
     /**
@@ -574,6 +832,48 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Wait for a callback to return the expected value
      *
+     * @param mixed    $expected    Expected value
+     * @param callable $callback    Callback used to get the results
+     * @param callable $compareFunc Callback used to compare the results
+     * @param callable $assertion   Assertion to make
+     * @param int      $timeout     Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertWithTimeout(
+        $expected,
+        callable $callback,
+        callable $compareFunc,
+        callable $assertion,
+        int $timeout = null
+    ) {
+        $timeout ??= $this->getDefaultTimeout();
+        $result = null;
+        $startTime = microtime(true);
+        $exception = null;
+        while ((microtime(true) - $startTime) * 1000 <= $timeout) {
+            try {
+                $result = $callback();
+                if (call_user_func($compareFunc, $expected, $result)) {
+                    // Ignore any previous exception since the callback succeeded eventually:
+                    $exception = null;
+                    break;
+                }
+            } catch (\Exception $e) {
+                // Defer throwing the exception:
+                $exception = $e;
+            }
+            usleep(100000);
+        }
+        if ($exception) {
+            throw $exception;
+        }
+        call_user_func($assertion, $expected, $result);
+    }
+
+    /**
+     * Wait for a callback to return the expected value
+     *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
      * @param int      $timeout  Wait timeout (in ms)
@@ -585,17 +885,40 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         int $timeout = null
     ) {
-        $timeout ??= $this->getDefaultTimeout();
-        $result = null;
-        $startTime = microtime(true);
-        while ((microtime(true) - $startTime) * 1000 <= $timeout) {
-            $result = $callback();
-            if ($result === $expected) {
-                break;
-            }
-            usleep(100000);
-        }
-        $this->assertEquals($expected, $result);
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function ($expected, $result): bool {
+                return $expected === $result;
+            },
+            [$this, 'assertEquals'],
+            $timeout
+        );
+    }
+
+    /**
+     * Wait for a callback to return a string containing the expected value
+     *
+     * @param string   $expected Expected value
+     * @param callable $callback Callback
+     * @param int      $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertStringContainsStringWithTimeout(
+        string $expected,
+        callable $callback,
+        int $timeout = null
+    ) {
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function (string $expected, string $result): bool {
+                return str_contains($result, $expected);
+            },
+            [$this, 'assertStringContainsString'],
+            $timeout
+        );
     }
 
     /**
@@ -605,20 +928,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string $handler Search type (optional)
      * @param string $path    Path to use as search starting point (optional)
      *
-     * @return \Behat\Mink\Element\Element
+     * @return Element
      */
     protected function performSearch($query, $handler = null, $path = '/Search')
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->submitSearchForm($page, $query, $handler);
+        return $page;
+    }
+
+    /**
+     * Submit a search on the provided page.
+     *
+     * @param Element $page    Current page object
+     * @param string  $query   Search term(s)
+     * @param string  $handler Search type (optional)
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected function submitSearchForm(
+        Element $page,
+        string $query,
+        ?string $handler = null
+    ): void {
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         if ($handler) {
-            $this->findCss($page, '#searchForm_type')->setValue($handler);
+            $this->findCssAndSetValue($page, '#searchForm_type', $handler);
         }
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
-        return $page;
     }
 
     /**
@@ -637,7 +979,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
-        // Wait for any AJAX requests to complete:
+        // Wait for any AJAX requests to complete (and that jQuery is loaded):
         $session->wait(
             $timeout,
             "typeof $ !== 'undefined' && $.active === 0"
@@ -647,28 +989,30 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Wait for page load to complete again in case it was triggered by
         // lightbox refresh or similar:
         $session->wait($timeout, "document.readyState === 'complete'");
-        // Make sure any loading spinners are not visible:
+        // Make sure any loading spinners are not visible (and jQuery is still loaded):
         $session->wait(
             $timeout,
             "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
         );
-        // Make sure nothing is being animated:
-        $session->wait(
+        // Make sure nothing is being animated (and jQuery is still loaded):
+        $jqueryOk = $session->wait(
             $timeout,
             "typeof $ !== 'undefined' && $(':animated').length === 0"
         );
-        // Finally, make sure all jQuery ready handlers are done:
-        $session->evaluateScript(
-            <<<EOS
-                if (window.__documentIsReady !== true) {
-                    $(document).ready(function() { window.__documentIsReady = true; });
-                }
-                EOS
-        );
-        $session->wait(
-            $timeout,
-            "window.__documentIsReady === true"
-        );
+        if ($jqueryOk) {
+            // Finally, make sure all jQuery ready handlers are done:
+            $session->evaluateScript(
+                <<<EOS
+                    if (window.__documentIsReady !== true) {
+                        $(document).ready(function() { window.__documentIsReady = true; });
+                    }
+                    EOS
+            );
+            $session->wait(
+                $timeout,
+                'window.__documentIsReady === true'
+            );
+        }
     }
 
     /**
@@ -748,10 +1092,32 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function logWarning(string $consoleMsg, string $logMsg = ''): void
     {
-        echo PHP_EOL . $consoleMsg . PHP_EOL;
+        file_put_contents('php://stderr', PHP_EOL . $consoleMsg . PHP_EOL);
         if ($logMsg) {
             error_log($logMsg);
         }
+    }
+
+    /**
+     * Extract the first parameter of the first attribute matching the specified
+     * criteria.
+     *
+     * @param string $method    Method name to check for attributes
+     * @param string $attribute Attribute class name to look up
+     * @param mixed  $default   Default value to use if no match found
+     *
+     * @return mixed
+     * @throws ReflectionException
+     */
+    protected function getFirstMethodAttributeValue(
+        string $method,
+        string $attribute,
+        mixed $default = null
+    ): mixed {
+        $reflection = new \ReflectionObject($this);
+        $matches = $reflection->getMethod($method)->getAttributes($attribute);
+        $args = ($matches[0] ?? null)?->getArguments() ?? [];
+        return $args[0] ?? $default;
     }
 
     /**
@@ -766,19 +1132,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function validateHtml(?Element $page = null): void
     {
-        if (
-            (!$this->session && !$page)
-            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
-        ) {
-            return;
-        }
-        $annotations = Test::parseTestMethodAnnotations(
-            static::class,
-            $this->getName(false)
+        $validatorEnabled = $this->getFirstMethodAttributeValue(
+            $this->name(),
+            \VuFindTest\Attribute\HtmlValidation::class,
+            true
         );
         if (
-            ($annotations['method']['skip_html_validation'][0] ?? false)
-            || ($annotations['class']['skip_html_validation'][0] ?? false)
+            !$validatorEnabled
+            || (!$this->session && !$page)
+            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
         ) {
             return;
         }
@@ -881,7 +1243,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             . implode(PHP_EOL . PHP_EOL, $messages);
 
         if ($logFile) {
-            $method = get_class($this) . '::' . $this->getName(false);
+            $method = $this->getTestName();
             file_put_contents(
                 $logFile,
                 date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] [$method] "
@@ -916,6 +1278,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         // Create a pathResolver:
         $this->pathResolver = $this->getPathResolver();
+
+        // Change theme if requested:
+        if ($theme = (string)getenv('VUFIND_TEST_THEME')) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'Site' => [
+                            'theme' => $theme,
+                        ],
+                    ],
+                ]
+            );
+        }
     }
 
     /**
@@ -925,15 +1300,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     public function tearDown(): void
     {
-        // Take screenshot of failed test, if we have a screenshot directory set
-        // and we have run out of retries ($this->retriesLeft is set by the
-        // AutoRetryTrait):
+        // Take screenshot of failed test, if we have a screenshot directory set:
         if (
-            $this->hasFailed()
+            ($this->status()->isError() || $this->status()->isFailure())
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
-            $filename = $this->getName() . '-' . $this->retriesLeft . '-'
-                . hrtime(true);
+            $filename = $this->name() . '-' . hrtime(true);
 
             // Save HTML snapshot
             $snapshot = $this->getMinkSession()->getPage()->getOuterHtml();
@@ -957,7 +1329,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         }
 
         $htmlValidationException = null;
-        if (!$this->hasFailed()) {
+        if (!$this->status()->isFailure()) {
             try {
                 $this->validateHtml();
             } catch (\Exception $e) {

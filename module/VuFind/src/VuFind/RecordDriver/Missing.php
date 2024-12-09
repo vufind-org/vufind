@@ -4,7 +4,7 @@
  * Model for missing records -- used for saved favorites that have been deleted
  * from the index.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind\RecordDriver;
+
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Model for missing records -- used for saved favorites that have been deleted
@@ -70,13 +72,11 @@ class Missing extends DefaultRecord
         }
 
         // If available, load title from database:
-        $id = $this->getUniqueId();
-        if ($id) {
-            $table = $this->getDbTable('Resource');
-            $resource = $table
-                ->findResource($id, $this->getSourceIdentifier(), false);
-            if (!empty($resource) && !empty($resource->title)) {
-                return $resource->title;
+        if ($id = $this->getUniqueID()) {
+            $resourceService = $this->getDbService(ResourceServiceInterface::class);
+            $resource = $resourceService->getResourceByRecordId($id, $this->getSourceIdentifier());
+            if ($title = $resource?->getTitle()) {
+                return $title;
             }
         }
 

@@ -3,7 +3,7 @@
 /**
  * BrowZine DOI linker
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -32,6 +32,8 @@ namespace VuFind\DoiLinker;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
 use VuFindSearch\Service;
+
+use function in_array;
 
 /**
  * BrowZine DOI linker

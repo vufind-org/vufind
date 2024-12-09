@@ -1,0 +1,4 @@
+<div class="flash-message alert alert-info">
+    <?=$this->transEsc('shortlink_redirect', ['%%delay%%' => $this->redirectDelay])?>
+</div>
+<?php $this->headMeta()->prependHttpEquiv('refresh', $this->redirectDelay . '; URL=' . $this->redirectTarget); ?>

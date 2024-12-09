@@ -3,7 +3,7 @@
 /**
  * VuFind Action Helper - ILL Requests Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2014.
@@ -30,6 +30,8 @@
  */
 
 namespace VuFind\Controller\Plugin;
+
+use function in_array;
 
 /**
  * Action helper to perform ILL request related actions
@@ -113,7 +115,7 @@ class ILLRequests extends AbstractRequestBase
 
         if (!empty($details)) {
             // Confirm?
-            if ($params->fromPost('confirm') === "0") {
+            if ($params->fromPost('confirm') === '0') {
                 $url = $this->getController()->url()
                     ->fromRoute('myresearch-illrequests');
                 if ($params->fromPost('cancelAll') !== null) {
@@ -158,13 +160,24 @@ class ILLRequests extends AbstractRequestBase
             if ($cancelResults == false) {
                 $flashMsg->addMessage('ill_request_cancel_fail', 'error');
             } else {
+                $failed = 0;
+                foreach ($cancelResults['items'] ?? [] as $item) {
+                    if (!$item['success']) {
+                        ++$failed;
+                    }
+                }
+                if ($failed) {
+                    $flashMsg->addErrorMessage(
+                        ['msg' => 'ill_request_cancel_fail_items', 'tokens' => ['%%count%%' => $failed]]
+                    );
+                }
                 if ($cancelResults['count'] > 0) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'ill_request_cancel_success_items',
-                            ['%%count%%' => $cancelResults['count']]
-                        );
-                    $flashMsg->addMessage($msg, 'success');
+                    $flashMsg->addSuccessMessage(
+                        [
+                            'msg' => 'ill_request_cancel_success_items',
+                            'tokens' => ['%%count%%' => $cancelResults['count']],
+                        ]
+                    );
                 }
                 return $cancelResults;
             }

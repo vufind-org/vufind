@@ -3,7 +3,7 @@
 /**
  * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,6 +29,8 @@
 
 namespace VuFind\Log;
 
+use function get_class;
+
 /**
  * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *
@@ -41,6 +43,7 @@ namespace VuFind\Log;
 trait LoggerAwareTrait
 {
     use \Laminas\Log\LoggerAwareTrait;
+    use VarDumperTrait;
 
     /**
      * Log an error message.

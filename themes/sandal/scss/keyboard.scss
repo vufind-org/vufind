@@ -1,0 +1,25 @@
+.searchForm .keyboard-selection{
+  bottom: 2px;
+
+  button.dropdown-toggle {
+    color: $input-color;
+    background-color: white;
+
+    &:hover, &:focus {
+      color: $input-color;
+      background-color: $header-light;
+    }
+  }
+
+  .dropdown-menu .active a,
+  .dropdown-menu .active a:hover { background-color: $header-bg; }
+
+  .btn-primary{
+    height: 20px;
+  }
+}
+
+.keyboard-box {
+  top: 44px;
+  color: $input-color;
+}

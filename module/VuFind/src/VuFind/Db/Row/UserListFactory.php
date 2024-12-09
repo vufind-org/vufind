@@ -3,7 +3,7 @@
 /**
  * UserList row gateway factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -72,7 +72,7 @@ class UserListFactory extends RowGatewayFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$container->get(\VuFind\Tags::class), $session]
+            [$container->get(\VuFind\Tags\TagsService::class), $session]
         );
     }
 }

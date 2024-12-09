@@ -3,7 +3,7 @@
 /**
  * Make tag view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -29,6 +29,9 @@
  */
 
 namespace VuFind\View\Helper\Root;
+
+use function in_array;
+use function is_array;
 
 /**
  * Make tag view helper
@@ -296,7 +299,6 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * @param string $tagName Element tag name
      *
      * @return void
-     * @throws InvalidArgumentException
      */
     protected function verifyTagName(string $tagName)
     {
@@ -360,7 +362,6 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * @param array  $options  Additional options
      *
      * @return string
-     * @throws InvalidArgumentException
      */
     protected function compileTag(
         string $tagName,

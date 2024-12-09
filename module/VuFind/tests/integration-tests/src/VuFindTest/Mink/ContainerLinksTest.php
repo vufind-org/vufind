@@ -3,7 +3,7 @@
 /**
  * Mink test class for simple container links functionality (including collection routing).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2023.
  *
@@ -66,10 +66,14 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
     public function testDefaultContainerLinks(): void
     {
         $page = $this->performSearch('id:jnl1-1');
+        $url = $this->findCss($page, '.result-body a.container-link')->getAttribute('href');
         $this->assertMatchesRegularExpression(
-            '{.*/Search/Results\?lookfor=%22Arithmetic\+Facts%22&type=JournalTitle}',
-            $this->findCss($page, '.result-body div a', null, 1)->getAttribute('href')
+            '{.*/Search/Results}',
+            parse_url($url, PHP_URL_PATH)
         );
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+        $this->assertEquals('JournalTitle', $query['type']);
+        $this->assertEquals('"Arithmetic Facts"', $query['lookfor']);
     }
 
     /**
@@ -98,7 +102,7 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('id:jnl1-1');
         // Check parent link:
-        $parentLink = $this->findCss($page, '.result-body div a', null, 1);
+        $parentLink = $this->findCss($page, '.result-body a.container-link');
         $this->assertMatchesRegularExpression(
             '{.*/Record/jnl1\?checkRoute=1&sid=\d+}',
             $parentLink->getAttribute('href')

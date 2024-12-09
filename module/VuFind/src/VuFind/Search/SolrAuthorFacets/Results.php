@@ -3,7 +3,7 @@
 /**
  * AuthorFacets aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -30,6 +30,9 @@
 namespace VuFind\Search\SolrAuthorFacets;
 
 use VuFindSearch\Command\SearchCommand;
+
+use function array_slice;
+use function count;
 
 /**
  * AuthorFacets Search Results

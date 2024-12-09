@@ -3,7 +3,7 @@
 /**
  * Unit tests for Hide Facet Value Listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -144,7 +144,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo('VuFind\Search'),
+            $this->equalTo(\VuFindSearch\Service::class),
             $this->equalTo('post'),
             $this->equalTo([$listener, 'onSearchPost'])
         );

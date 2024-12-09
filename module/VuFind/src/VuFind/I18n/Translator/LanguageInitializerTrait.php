@@ -3,7 +3,7 @@
 /**
  * Logic for initializing a language within a translator used by VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -30,7 +30,10 @@
 namespace VuFind\I18n\Translator;
 
 use Laminas\I18n\Translator\TranslatorInterface;
+use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
+
+use function get_class;
 
 /**
  * Logic for initializing a language within a translator used by VuFind.
@@ -44,18 +47,46 @@ use VuFind\I18n\Locale\LocaleSettings;
 trait LanguageInitializerTrait
 {
     /**
+     * Path resolver.
+     *
+     * @var ?PathResolver
+     */
+    protected ?PathResolver $pathResolver = null;
+
+    /**
+     * Set path resolver.
+     *
+     * @param PathResolver $pathResolver Path resolver
+     *
+     * @return void
+     */
+    public function setPathResolver(PathResolver $pathResolver): void
+    {
+        $this->pathResolver = $pathResolver;
+    }
+
+    /**
      * Look up all text domains.
      *
      * @return array
      */
-    protected function getTextDomains()
+    protected function getTextDomains(): array
     {
         $base = APPLICATION_PATH;
-        $local = LOCAL_OVERRIDE_DIR;
         $languagePathParts = ["$base/languages"];
-        if (strlen($local) > 0) {
-            $languagePathParts[] = "$local/languages";
+        $localConfigDirStack = [];
+        if ($this->pathResolver === null) {
+            error_log(
+                'No PathResolver was set for the LanguageInitializerTrait used by class '
+                . get_class($this) . '.'
+            );
+        } else {
+            $localConfigDirStack = $this->pathResolver->getLocalConfigDirStack();
         }
+        $languagePathParts = array_merge($languagePathParts, array_map(
+            fn ($localConfigDir) => $localConfigDir['directory'] . '/languages',
+            $localConfigDirStack
+        ));
         $languagePathParts[] = "$base/themes/*/languages";
 
         $domains = [];

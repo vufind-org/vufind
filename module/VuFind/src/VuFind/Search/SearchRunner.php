@@ -3,7 +3,7 @@
 /**
  * VuFind Search Runner
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -34,6 +34,9 @@ use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
+
+use function is_array;
+use function is_callable;
 
 /**
  * VuFind Search Runner
@@ -177,7 +180,6 @@ class SearchRunner
      * @param EventManagerInterface $events Event manager
      *
      * @return void
-     * @todo   Deprecate `VuFind\Search' event namespace (2.2)
      */
     public function setEventManager(EventManagerInterface $events)
     {

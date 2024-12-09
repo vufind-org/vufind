@@ -3,7 +3,7 @@
 /**
  * Class Feedback
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -34,6 +34,8 @@ namespace VuFind\Db\Table;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Paginator\Paginator;
 use VuFind\Db\Row\RowGateway;
+
+use function intval;
 
 /**
  * Class Feedback

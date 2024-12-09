@@ -1,0 +1,195 @@
+<?php $access = $this->driver->getOverdriveAccess(); ?>
+<?php if ($access->code == 'od_account_noaccess'): ?>
+  <div class="hold">
+    <div class="alert alert-warning">
+      <?=$this->translate('od_code_contentnotavail')?>
+    </div>
+  </div>
+<?php elseif ($access->code == 'od_code_login_for_avail'): ?>
+  <p class='alert-info'><strong>
+      <?=$this->transEsc('od_code_login_for_avail')?>
+    </strong></p>
+<?php else:
+    $od_id = $this->driver->getOverdriveID();
+    $rec_id = $this->driver->getUniqueID();
+    $hold_url = $this->url('overdrive-hold');
+    $avail = $this->driver->getOverdriveAvailability();
+    $supportsPatronActions = $this->driver->supportsPatronActions();
+    $checkedOutResult = $this->driver->isCheckedOut();
+    $checkedOut = $checkedOutResult->data;
+    $copiesAvailable = $avail->data->copiesAvailable ?? 0;
+    $copiesOwned = $avail->data->copiesOwned ?? 0;
+    $urls = $this->driver->getURLs();
+    if (!$checkedOut):
+        $hold = $this->driver->isHeld();
+    endif; ?>
+
+  <div class="internetDetails">
+    <div class="odbrand pull-left media-left">
+      <img alt="OverDrive" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
+    </div>
+    <h3>
+      <?=$this->transEsc('Online Access')?>
+    </h3>
+    <div class="availability">
+      <p>
+        <?php if ($copiesAvailable > 0): ?>
+          <span class="text-success">
+            <?=$this->icon('status-available', 'icon-link__icon')?>
+          </span>
+        <?php else: ?>
+          <span class="text-danger">
+            <?=$this->icon('status-unavailable', 'icon-link__icon')?>
+          </span>
+        <?php endif; ?>
+
+        <?php if (($avail->data->availabilityType ?? 0) == 'AlwaysAvailable'): ?>
+          <?=$this->transEsc('od_unlimited')?>
+        <?php else: ?>
+          <?=$this->transEsc('od_copies_available', ['%%copies%%' => $copiesAvailable . '/' . $copiesOwned])?>
+        <?php endif; ?>
+
+        <?php if (($numHolds = $avail->data->numberOfHolds ?? 0) > 0): ?>
+          <?='; ' . $this->transEsc('od_waiting', ['holds' => $numHolds], null, true)?>
+        <?php endif; ?>
+      </p>
+
+      <?php if ((!$checkedOut || $checkedOutResult->isMagazine) && ($supportsPatronActions || isset($urls[0]['url']))): ?>
+        <?php if ($copiesAvailable > 0): ?>
+          <p>
+            <a class="btn btn-primary checkout" data-lightbox title="<?=$this->transEsc('request_place_text')?>"
+              href="<?=$supportsPatronActions ?
+                "$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=checkoutConfirm' :
+                $urls[0]['url']
+              ?>">
+              <?=$this->transEsc('od_but_checkout')?>
+            </a>
+          <p>
+        <?php endif; ?>
+      <?php endif; ?>
+      <?php if ((!$checkedOut && !$hold) && ($supportsPatronActions || isset($urls[0]['url']))): ?>
+        <?php if ($copiesAvailable == 0 && $copiesOwned > 0): ?>
+          <p>
+            <?php
+              $holdLink = $supportsPatronActions && count($urls) ?
+                "$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=holdConfirm' :
+                $urls[0]['url'] ?? null;
+            ?>
+            <?php if ($holdLink): ?>
+              <a class="btn btn-primary placehold" data-lightbox title="<?=$this->transEsc('request_place_texts')?>"
+                href="<?=$this->escapeHtmlAttr($holdLink)?>">
+                <?=$this->icon('place-hold', 'icon-link__icon')?>
+                <?=$this->transEsc('od_but_hold')?>
+              </a>
+            <?php endif; ?>
+          </p>
+        <?php endif; ?>
+      <?php endif; ?>
+
+      <?php
+        if ($checkedOut):
+            foreach ($checkedOut as $title): ?>
+          <div class="panel panel-info">
+            <?php if ($checkedOutResult->isMagazine):
+                $od_id = $title->reserveId; ?>
+              <div class="panel-heading">
+                <h3 class="panel-title">
+                  <?=$this->translate('Issue') . ': ' . $title->metadata->edition?>
+                </h3>
+              </div>
+            <?php endif; ?>
+
+            <div class="panel-body">
+              <?=$this->transEsc('od_is_checkedout', ['%%due_date%%' => $title->expires])?>
+            </div>
+            <div class="panel-footer">
+              <a class="btn btn-success getTitle" data-lightbox title="<?=$this->transEsc('od_but_gettitle')?>"
+                href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=getTitle'?>">
+                <?=$this->icon('overdrive-download', 'icon-link__icon')?>
+                <?=$this->transEsc('od_but_gettitle')?>
+              </a>
+
+              <?php if ($title->isReturnable): ?>
+                <a class="btn btn-warning returnTitle" data-lightbox title='{$this->transEsc("od_but_return")}'
+                  href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=returnTitleConfirm'?>">
+                  <?=$this->icon('overdrive-return', 'icon-link__icon')?>
+                  <?=$this->transEsc('od_but_return')?>
+                </a>
+              <?php endif; ?>
+            </div>
+          </div>
+        <?php endforeach; ?>
+
+      <?php elseif ($hold): ?>
+        <div class="panel panel-info">
+          <div class="panel-body">
+            <?=$this->transEsc('od_is_on_hold')?>
+            <?php if ($hold->holdReadyForCheckout): ?>
+              <br />
+              <?=$this->transEsc('od_hold_now_avail', ['%%expireDate%%' => $hold->holdExpires])?>
+            <?php else: ?>
+              <?=$this->transEsc('od_hold_queue', ['%%holdPosition%%' => $hold->holdListPosition, '%%numberOfHolds%%' => $hold->numberOfHolds])?>
+            <?php endif; ?>
+
+            <?php if ($hold->holdSuspension ?? 0): ?>
+              <br />
+              <?php if ($hold->holdSuspension->suspensionType == 'limited'): ?>
+                <?=$this->transEsc('od_hold_redelivery', ['%%days%%' => $hold->holdSuspension->numberOfDays])?>
+              <?php else: ?>
+                <?=$this->transEsc('od_hold_susp_indef')?>
+              <?php endif; ?>
+            <?php endif; ?>
+          </div>
+
+          <div class="panel-footer">
+            <?php if ($hold->holdReadyForCheckout): ?>
+              <a class="btn btn-primary checkout" data-lightbox title="<?=$this->transEsc('request_place_text')?>"
+                href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=checkoutConfirm'?>">
+                <?=$this->icon('overdrive-checkout', 'icon-link__icon')?>
+                <?=$this->transEsc('od_but_checkout')?>
+              </a>
+            <?php endif; ?>
+            <div class="btn-group">
+              <button class="btn btn-primary " type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                <?=$this->transEsc('od_but_edit_hold')?> <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a class="cancelhold" data-lightbox title="<?=$this->transEsc('od_but_cancel_hold')?>"
+                    href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=cancelHoldConfirm'?>">
+                    <?=$this->icon('overdrive-cancel-hold', 'icon-link__icon')?>
+                    <?=$this->transEsc('od_but_cancel_hold')?>
+                  </a>
+                </li>
+
+                <li><a class="editEmail" data-lightbox title="<?=$this->transEsc('edit_hold_email')?>"
+                    href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldEmailConfirm'?>">
+                    <?=$this->icon('overdrive-edit-hold', 'icon-link__icon')?>
+                    <?=$this->transEsc('od_edit_hold_email')?>
+                  </a>
+                </li>
+
+                <?php // user already has a hold suspension.  allow them to edit the suspension
+                      if ($hold->holdSuspension ?? 0): ?>
+                  <li><a class="edithold" data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
+                      href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldConfirm'?>">
+                      <?=$this->icon('overdrive-edit-hold-suspension', 'icon-link__icon')?>
+                      <?=$this->transEsc('od_but_edit_hold')?>
+                    </a>
+                  </li>
+                <?php else: ?>
+                  <li><a class="susphold" data-lightbox title="<?=$this->transEsc('od_susp_hold')?>"
+                      href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=suspHoldConfirm'?>">
+                      <?=$this->icon('overdrive-suspend-hold', 'icon-link__icon')?>
+                      <?=$this->transEsc('od_but_susp_hold')?>
+                    </a>
+                  </li>
+                <?php endif; ?>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+    </div>
+  </div>
+<?php endif; //end account issues check?>

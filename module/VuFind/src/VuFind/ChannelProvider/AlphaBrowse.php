@@ -3,7 +3,7 @@
 /**
  * Alphabrowse channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016, 2022.
  *
@@ -38,6 +38,9 @@ use VuFindSearch\Command\AlphabeticBrowseCommand;
 use VuFindSearch\Command\RetrieveBatchCommand;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
+
+use function count;
+use function is_object;
 
 /**
  * Alphabrowse channel provider.

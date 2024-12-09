@@ -3,7 +3,7 @@
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -45,7 +45,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
     /**
      * Mock record loader
      *
-     * @param \VuFind\Record\Loader
+     * @var \VuFind\Record\Loader
      */
     protected $loader;
 

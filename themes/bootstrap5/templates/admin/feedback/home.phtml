@@ -1,0 +1,179 @@
+<?php
+// Set page title.
+$this->headTitle($this->translate('VuFind Administration - Feedback Management'));
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->translate('Feedback Management')?></h2>
+
+  <?=$this->flashmessages()?>
+
+  <form class="form-feedback-list" action="<?=$this->url('admin/feedback')?>" method="get">
+    <div class="feedback-controls">
+      <label for="form_name">
+        <?=$this->translate('Form name')?>
+        <select name="form_name" id="form_name" class="form-control">
+          <option value="ALL"><?=$this->translate('All')?></option>
+          <?php foreach ($this->uniqueForms as $formName):?>
+            <option value="<?=$this->escapeHtmlAttr($formName)?>"<?php if ($formName === ($this->params['form_name'] ?? null)): ?> selected="selected"<?php endif;?>>
+              <?=$this->escapeHtml($formName) ?>
+            </option>
+          <?php endforeach;?>
+        </select>
+      </label>
+      <label for="site_url">
+        <?=$this->translate('Site URL')?>
+        <select name="site_url" id="site_url" class="form-control">
+          <option value="ALL"><?=$this->translate('All')?></option>
+          <?php foreach ($this->uniqueSites as $site):?>
+            <option value="<?=$this->escapeHtmlAttr($site)?>"<?php if ($site === ($this->params['site_url'] ?? null)): ?> selected="selected"<?php endif;?>>
+              <?=$this->escapeHtml($site) ?>
+            </option>
+          <?php endforeach;?>
+        </select>
+      </label>
+      <label for="status">
+        <?=$this->translate('Status')?>
+        <select name="status" id="status" class="form-control">
+          <option value="ALL"><?=$this->translate('All')?></option>
+          <?php foreach ($this->statuses as $status): ?>
+            <option value="<?=$this->escapeHtmlAttr($status)?>"<?php if ($status == ($this->params['status'] ?? null)): ?> selected="selected"<?php endif;?>>
+              <?=$this->transEsc('feedback_status_' . $status, [], $status)?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+
+      </label>
+      <label for="feedbacksubmit">
+        <input type="submit" id="feedbacksubmit" value="<?=$this->transEscAttr('Filter')?>" class="btn btn-primary">
+      </label>
+      <?php if (('ALL' !== ($this->params['form_name'] ?? 'ALL')) || ('ALL' !== ($this->params['site_url'] ?? 'ALL')) || ('ALL' !== ($this->params['status'] ?? 'ALL'))):?>
+        <a class = "btn btn-link" href="<?=$this->url('admin/feedback'); ?>"><?=$this->translate('clear_feedback_filter')?></a>
+      <?php endif;?>
+    </div>
+  </form>
+
+  <?php ob_start(); ?>
+    <input type="submit" name="deleteSelected" value="<?=$this->transEscAttr('delete_selected')?>" class="btn btn-default">
+    <input type="submit" name="deletePage" value="<?=$this->transEscAttr('delete_page')?>" class="btn btn-default">
+  <?php $deleteButtons = ob_get_clean(); ?>
+  <?php if (count($this->feedback) > 0):?>
+    <form action="<?=$this->url('admin/feedback', ['action' => 'Delete'])?>" method="post">
+      <input type="hidden" name="form_name" value="<?=$this->escapeHtmlAttr($this->params['form_name'] ?? '') ?>">
+      <input type="hidden" name="site_url" value="<?=$this->escapeHtmlAttr($this->params['site_url'] ?? '') ?>">
+      <input type="hidden" name="status" value="<?=$this->escapeHtmlAttr($this->params['status'] ?? '') ?>">
+      <?=$deleteButtons?>
+      <table class="table table-striped">
+        <tr>
+          <th><?=$this->transEsc('Form name')?></th>
+          <th><?=$this->transEsc('Site URL')?></th>
+          <th><?=$this->transEsc('Message')?></th>
+          <th><?=$this->transEsc('Additional data')?></th>
+          <th><?=$this->transEsc('Status')?></th>
+        </tr>
+        <?php foreach ($this->feedback as $feedbackItem): ?>
+          <?php
+            $feedbackEntity = $feedbackItem['feedback_entity'];
+            $data = $feedbackEntity->getFormData();
+          ?>
+          <tr>
+            <td>
+              <input id="checkbox_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" class="checkbox_ui">
+              <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>">
+              <?=$this->escapeHtml($feedbackEntity->getFormName())?>
+            </td>
+            <td><?=$this->escapeHtml($feedbackEntity->getSiteUrl())?></td>
+            <td>
+              <span id="shortMessage_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" class="collapse in message_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>"><?=$this->truncate($feedbackEntity->getMessage(), 100, '')?></span>
+              <?php if (strlen(($feedbackEntity->getMessage())) > 100): ?>
+                <span id="fullMessage_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" class="collapse fullMessage message_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>"><?=$feedbackEntity->getMessage()?></span>
+                <a id="toggleButton_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" data-bs-toggle="collapse" data-bs-target=".message_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" aria-controls="fullMessage_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" aria-expanded="false" >
+                  <?=$this->transEsc('more_ellipsis')?>
+                </a>
+              <?php endif; ?>
+            </td>
+            <td>
+              <?php if (!empty($data)): ?>
+                <a href="#" class="btn btn-default btn-info" data-bs-toggle="modal" data-bs-target="#feedback-<?=$feedbackEntity->getId()?>">
+                  <?=$this->transEsc('Show')?>
+                </a>
+                <div class="modal" id="feedback-<?=$feedbackEntity->getId()?>" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">
+                          <?=$this->icon('lightbox-close', ['aria-label' => $this->translate('Close')])?>
+                        </button>
+                        <h4 class="modal-title"><?=$this->transEsc('Additional data')?></h4>
+                      </div>
+                      <div class="modal-body">
+                        <?php foreach ($data as $key => $value): ?>
+                          <strong><?=$this->escapeHtml($key)?></strong>: <?=$this->escapeHtml($value)?><br>
+                        <?php endforeach; ?>
+                        <strong><?=$this->transEsc('Created')?></strong>:
+                        <?=$this->escapeHtml($feedbackEntity->getCreated()->format($this->config()->dateTimeFormat()))?>
+                        <?=$feedbackItem['user_name'] ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem['user_name']) . ' (' . $feedbackEntity->getUser()->getId() . ')') : ''?>
+                        <br>
+                        <strong><?=$this->transEsc('Updated')?></strong>:
+                        <?=$this->escapeHtml($feedbackEntity->getUpdated()->format($this->config()->dateTimeFormat()))?>
+                        <?=$feedbackItem['manager_name'] ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem['manager_name']) . ' (' . $feedbackEntity->getUpdatedBy() . ')') : ''?>
+                      </div>
+                    </div>
+                  </div>
+                <?php endif; ?>
+            </td>
+            <td>
+              <select class="form-control status_update" name="status_update">
+                <?php foreach ($this->statuses as $status): ?>
+                  <option value="<?=$this->escapeHtmlAttr($status)?>"<?=$status == $feedbackEntity->getStatus() ? ' selected="selected"' : ''?>>
+                    <?=$this->transEsc('feedback_status_' . $status, [], $status)?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
+      <?=$deleteButtons?>
+    </form>
+    <?=$this->paginationControl($this->feedback, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
+  <?php else:?>
+    <p><?=$this->translate('feedback_filter_empty')?></p>
+  <?php endif;?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render('admin/menu.phtml')?>
+</div>
+
+<?php
+$url = $this->url('admin/feedback', ['action' => 'UpdateStatus']);
+$formName = $this->escapeHtmlAttr($this->params['form_name'] ?? '');
+$siteUrl = $this->escapeHtmlAttr($this->params['site_url'] ?? '');
+$status = $this->escapeHtmlAttr($this->params['status'] ?? '');
+$js = <<<JS
+    $(document).ready(function() {
+        $('.status_update').change(function() {
+            const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+            const new_status = $(this).val();
+            const form = $('<form action="$url" method="post">' +
+                '<input type="hidden" name="id" value="' + id + '">' +
+                '<input type="hidden" name="new_status" value="' + new_status + '">' +
+                '<input type="hidden" name="form_name" value="$formName">' +
+                '<input type="hidden" name="site_url" value="$siteUrl">' +
+                '<input type="hidden" name="status" value="$status">' +
+                '</form>');
+            $('body').append(form);
+            form.submit();
+        });
+
+        $('.fullMessage').on('show.bs.collapse', function() {
+            const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+            $('#toggleButton_' + id).text(VuFind.translate('less_ellipsis'));
+        }).on('hide.bs.collapse', function() {
+            const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+            $('#toggleButton_' + id).text(VuFind.translate('more_ellipsis'));
+        });
+    });
+    JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');?>

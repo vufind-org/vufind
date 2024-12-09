@@ -1,0 +1,147 @@
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 05 Jul 2023 19:50:05 GMT
+Content-Type: application/json
+
+[
+    {
+        "id": 1234,
+        "email": "melvil@dewey.edu",
+        "uuid": "19193969-097a-4f4f-b17b-c2b402af24a7",
+        "login_fail_cnt": 1,
+        "first_name": "Melvil",
+        "last_name": "Dewey",
+        "title": "Humanities Librarian",
+        "nickname": "Mel",
+        "signature": "",
+        "created_by": 7890,
+        "created": "1814-03-21 15:57:20",
+        "updated": "1821-08-23 19:07:14",
+        "profile": {
+            "id": 4321,
+            "account_id": 1234,
+            "customer_id": 999,
+            "public_id": "c11cd6c1-9d3b-44c9-901a-526965b85dd7",
+            "box": {
+                "title": "Cataloging Librarian"
+            },
+            "pronouns": "he / him / his",
+            "image": {
+                "show": 1,
+                "file": "Melvil_Dewey.jpg",
+                "url": "//en.wikipedia.org/wiki/Melvil_Dewey#/media/File:Melvil_Dewey.jpg"
+            },
+            "en_page": 1,
+            "page": {
+                "working": "Masters Degree from Amherst College\n\nMy research interests include the decimal classificaiton system."
+            },
+            "widget_la": "<div id=\"libchat_1234567890\"></div><script src=\"https://answers.university.edu/load_chat.php?hash=1234567890\"></script>",
+            "widget_lc": "",
+            "widget_other": "",
+            "connect": {
+                "address": "Lake Placid Club.",
+                "website": "https://lakeplacid.com/",
+                "twitter": "http://twitter.com/lakeplacid",
+                "facebook": "https://www.facebook.com/lakeplacid",
+                "youtube": "",
+                "email": "melvil@dewey.edu",
+                "phone": "123-456-7890",
+                "instagram": "https://www.instagram.com/lakeplacid/"
+            },
+            "display": {
+                "disp_widget_la": "1",
+                "disp_connect_social": "1"
+            },
+            "created": "1814-07-16 17:48:14",
+            "updated": "1822-01-31 17:36:12",
+            "url": "https://libraryguides.lehigh.edu/prf.php?id=c11cd6c1-9d3b-44c9-901a-526965b85dd7"
+        },
+        "subjects": [
+            {
+                "id": 15478,
+                "name": "Decimal Classification",
+                "slug_id": 141520
+            },
+            {
+                "id": 15482,
+                "name": "Metric System",
+                "slug_id": 141521
+            },
+            {
+                "id": 1245,
+                "name": "Adirondack Mountains",
+                "slug_id": 141524
+            }
+        ]
+    },
+    {
+        "id": 5678,
+        "email": "eratosthenes@alexandria.org",
+        "uuid": "b8060255-9b47-46f1-bf25-5246cc4be924",
+        "login_fail_cnt": 0,
+        "first_name": "Eratosthenes",
+        "last_name": "of Cyrene",
+        "title": "",
+        "nickname": "",
+        "signature": "",
+        "created_by": 1249,
+        "created": "0245-03-24 14:57:08",
+        "updated": "0276-03-27 23:15:36",
+        "profile": {
+            "id": 892,
+            "account_id": 5678,
+            "customer_id": 999,
+            "public_id": "2e0a6a9d-2667-43fb-9cb6-57e3de1b23d8",
+            "box": {
+                "title": "Chief Librarian"
+            },
+            "pronouns": "",
+            "image": {
+                "show": 1,
+                "file": "Eratosthenes_profile.png",
+                "url": "//upload.wikimedia.org/wikipedia/commons/f/fa/Eratosthenes_profile.png"
+            },
+            "en_page": 1,
+            "page": null,
+            "widget_la": "",
+            "widget_lc": "",
+            "widget_other": "<p style=\"text-align: left;\">Eratosthenes of Cyrene (/ɛrəˈtɒsθəniːz/; Greek: Ἐρατοσθένης [eratostʰénɛːs]; c. 276 BC – c.195/194 BC) was a Greek polymath: a mathematician, geographer, poet, astronomer, and music theorist. He was a man of learning, becoming the chief librarian at the Library of Alexandria. His work is comparable to what is now known as the study of geography, and he introduced some of the terminology still used today.  (Credit: Wikipedia)</p>",
+            "connect": {
+                "email": "eratosthenes@alexandria.org",
+                "phone": "123-456-7890",
+                "address": "Alexandria, Greece"
+            },
+            "display": null,
+            "created": "0245-03-24 14:57:08",
+            "updated": "0276-03-27 23:15:36",
+            "url": "https://libraryguides.lehigh.edu/prf.php?id=2e0a6a9d-2667-43fb-9cb6-57e3de1b23d8"
+        },
+        "subjects": [
+            {
+                "id": 22865,
+                "name": "Mathematics",
+                "slug_id": 141526
+            },
+            {
+                "id": 1247,
+                "name": "Geography",
+                "slug_id": 141528
+            },
+            {
+                "id": 1250,
+                "name": "Poetry",
+                "slug_id": 141533
+            },
+            {
+                "id": 1254,
+                "name": "Astronomy",
+                "slug_id": 141543
+            },
+            {
+                "id": 22926,
+                "name": "Music Theory",
+                "slug_id": 141553
+            }
+        ]
+    }
+]

@@ -3,7 +3,7 @@
 /**
  * Tags aspect of the Search Multi-class (Options)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -76,7 +76,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->defaultSort = 'title';
         $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
-            'year DESC' => 'sort_year', 'year' => 'sort_year asc',
+            'year DESC' => 'sort_year', 'year' => 'sort_year_asc',
         ];
         // Load autocomplete preferences:
         $this->configureAutocomplete($searchSettings);
@@ -104,7 +104,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).

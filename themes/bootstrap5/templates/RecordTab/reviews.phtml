@@ -1,0 +1,38 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Reviews') . ': ' . $this->driver->getBreadcrumb());
+
+    // Grab review data:
+    $reviews = $this->tab->getContent();
+?>
+<?php if (count($reviews) > 0): ?>
+  <?php foreach ($reviews as $provider => $list): ?>
+    <?php foreach ($list as $review): ?>
+      <?php if (!empty($review['Summary'])): ?>
+        <p>
+          <?php if (isset($review['Rating'])): ?>
+            <img src="<?=$this->imageLink($review['Rating'] . '.gif')?>" alt="<?=$review['Rating']?>/5 Stars">
+          <?php endif; ?>
+          <strong><?=$review['Summary']?></strong>
+          <?php
+            if (isset($review['Date'])) {
+              $formatter = new \IntlDateFormatter(null, \IntlDateFormatter::MEDIUM, \IntlDateFormatter::NONE);
+              echo $formatter->format(strtotime($review['Date']));
+            }
+          ?>
+        </p>
+      <?php endif; ?>
+      <?php if (isset($review['Source'])): ?><strong><?=$this->transEsc('Review by')?> <?=$review['Source']?></strong><?php endif; ?>
+      <p class="summary">
+        <?=$review['Content'] ?? ''?>
+        <?php if (empty($review['Content']) && isset($review['ReviewURL'])): ?>
+          <a target="new" href="<?=$this->escapeHtmlAttr($review['ReviewURL'])?>"><?=$this->transEsc('Read the full review online...')?></a>
+        <?php endif; ?>
+      </p>
+      <?=$review['Copyright'] ?? ''?>
+      <hr>
+    <?php endforeach; ?>
+  <?php endforeach; ?>
+<?php else: ?>
+  <?=$this->transEsc('No reviews were found for this record')?>.
+<?php endif; ?>

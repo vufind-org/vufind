@@ -98,6 +98,8 @@
 # - SearchTypeIn      At least one of the search types must be in the given list
 # - AllSearchTypesIn  All of the search types must be in the given list
 # - SearchTypeNotIn   None of the search types must be in the given list
+# - SortIn            Sort order (exactly as it's sent to Solr) must be in the given list
+# - SortNotIn         Sort order (exactly as it's sent to Solr) must not be in the given list
 #
 # Example: Boost more recent material if any of the search fields is of type
 # "AllFields" or "Title" unless there's a search type specific boost:
@@ -112,6 +114,8 @@
 #       - NoDismaxParams:
 #         - bf
 #         - bq
+#       - SortIn:
+#         - score desc,id asc
 #
 #
 # Example: Boost material in English if any of the search fields is of type
@@ -210,6 +214,7 @@
 # [preg_replace, pattern, replacement] - Perform a regular expression replace
 #     using the preg_replace() PHP function.  If you use backreferences in your
 #     replacement phrase, be sure to escape dollar signs (i.e. \$1, not $1).
+# [prepend, text] - Prepend text to the beginning of the user's search string
 # [ucfirst] - Uppercase the first letter of each word in the string
 # [uppercase] - Convert string to uppercase
 #

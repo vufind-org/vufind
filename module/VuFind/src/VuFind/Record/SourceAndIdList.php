@@ -3,7 +3,7 @@
 /**
  * Record ID list (support class for Loader)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Record;
 
 use VuFind\RecordDriver\AbstractBase as Record;
+
+use function is_array;
 
 /**
  * Record ID list (support class for Loader)

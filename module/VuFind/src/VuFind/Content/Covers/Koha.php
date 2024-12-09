@@ -3,7 +3,7 @@
 /**
  * Koha cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Content\Covers;
+
+use function in_array;
 
 /**
  * Koha cover content loader.
@@ -87,7 +89,7 @@ class Koha extends \VuFind\Content\AbstractCover
         }
         $url = $this->url . '?';
         if (in_array($size, $this->thumbnailSizes)) {
-            $url .= "thumbnail=1&";
+            $url .= 'thumbnail=1&';
         }
         $url .= 'biblionumber=' . urlencode($ids['recordid']);
         return $url;

@@ -1,0 +1,86 @@
+.result-list-explain {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+
+  .js-result-list-explain {
+    display: flex;
+    max-width: 100px;
+
+    @media (min-width: $screen-xs-min) and (max-width: $screen-sm-max) {
+      max-width: 90px;
+    }
+
+    .bar-chart {
+      display: inline-block !important;
+    }
+  }
+}
+
+.result-list-explain,
+.result-list-explain:hover{
+  text-decoration: none;
+}
+
+.explain {
+  word-wrap: break-word;
+
+  .charts{
+    max-width: 800px;
+  }
+
+  .explain-column-container{
+    height: 160px;
+  }
+
+  table, th, td {
+    padding-top: 9px;
+  }
+
+  .percentage {
+    text-align: right;
+    padding-right: 9px;
+  }
+
+  .sum-rest {
+    border-top-width: 2px;
+    border-top-style: solid;
+  }
+
+  .explain-rest {
+    .percentage {
+      padding-left: 10px;
+    }
+  }
+
+  .field-name {
+    font-weight: bold;
+
+    .icon {
+      padding-left: 1px;
+      color: darkblue;
+      vertical-align: unset;
+    }
+  }
+
+  .exact-match {
+    color: black;
+  }
+
+  .inexact-match {
+    color: #436c71;
+  }
+
+  .unknown-match {
+    color: red;
+  }
+
+  .raw-explanation-btn {
+    margin: 1rem 0;
+  }
+
+  #raw-explanation {
+    margin-bottom: 1rem;
+  }
+}

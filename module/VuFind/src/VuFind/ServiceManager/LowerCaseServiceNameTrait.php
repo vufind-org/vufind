@@ -4,7 +4,7 @@
  * Trait for plugin managers that allows service names to be normalized to lowercase
  * (for backward compatibility with ServiceManager v2).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *

@@ -1,0 +1,35 @@
+<div class="tagList<?=$loggedin ? ' loggedin' : ''?>">
+  <?php if (count($tagList) > 0): ?>
+    <?php foreach ($tagList as $tag): ?>
+      <?php $is_me = isset($tag['is_me']) && null !== $tag['is_me'] ? $tag['is_me'] : false; ?>
+      <div class="tag<?=$is_me ? ' selected' : ''?>">
+        <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
+        <?php if ($loggedin): ?>
+          <form method="POST" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, $is_me ? 'DeleteTag' : 'AddTag')) ?>" class="tag-form">
+            <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>">
+            <button type="submit" class="badge tag-submit" data-tag="<?=$this->escapeHtmlAttr($tag['tag'])?>" data-selected="<?=$is_me ? 'true' : 'false' ?>"><?=$this->escapeHtml($tag['cnt']) ?>
+            <?php if ($is_me): ?>
+              <?=$this->icon('tag-remove', ['title' => $this->translate('delete_tag')]) ?>
+            <?php else: ?>
+              <?=$this->icon('tag-add', ['title' => $this->translate('Add Tag')]) ?>
+            <?php endif; ?>
+            </button>
+          </form>
+        <?php else: ?>
+          <span class="badge"><?=$this->escapeHtml($tag['cnt'])?></span>
+        <?php endif; ?>
+      </div>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
+  <?php endif; ?>
+</div>
+<?php
+$script = <<<JS
+    $('.tag-submit').click(function(e) {
+        ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));
+        return false;
+    });
+    JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

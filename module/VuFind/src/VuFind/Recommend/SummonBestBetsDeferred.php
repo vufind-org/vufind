@@ -3,7 +3,7 @@
 /**
  * SummonBestBetsDeferred Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -45,10 +45,12 @@ namespace VuFind\Recommend;
 class SummonBestBetsDeferred extends AbstractSummonRecommendDeferred
 {
     /**
-     * Constructor
+     * Store the configuration of the recommendation module.
+     *
+     * @return string Module name in call to AjaxHandler
      */
-    public function __construct()
+    protected function getAjaxModule()
     {
-        $this->module = 'SummonBestBets';
+        return 'SummonBestBets';
     }
 }

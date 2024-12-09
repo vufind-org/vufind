@@ -3,7 +3,7 @@
 /**
  * Abstract base class for generator commands relying on the service container.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *

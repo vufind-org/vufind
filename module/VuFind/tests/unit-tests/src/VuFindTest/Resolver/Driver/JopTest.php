@@ -3,7 +3,7 @@
 /**
  * Jop resolver driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2015.
  *
@@ -56,11 +56,11 @@ class JopTest extends \PHPUnit\Framework\TestCase
      */
     protected $openUrlConfig = [
         'OpenURL' => [
-            'url' => "http://services.d-nb.de/fize-service/gvr/full.xml",
-            'rfr_id' => "www.ub.uni-leipzig.de",
-            'resolver' => "jop",
-            'window_settings' => "toolbar=no,location=no,directories=no,buttons=no,status=no,"
-                . "menubar=no,scrollbars=yes,resizable=yes,width=550,height=600",
+            'url' => 'http://services.d-nb.de/fize-service/gvr/full.xml',
+            'rfr_id' => 'www.ub.uni-leipzig.de',
+            'resolver' => 'jop',
+            'window_settings' => 'toolbar=no,location=no,directories=no,buttons=no,status=no,'
+                . 'menubar=no,scrollbars=yes,resizable=yes,width=550,height=600',
             'show_in_results' => false,
             'show_in_record' => false,
             'show_in_holdings' => true,

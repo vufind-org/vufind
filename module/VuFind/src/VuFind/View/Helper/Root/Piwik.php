@@ -3,7 +3,7 @@
 /**
  * Piwik view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2014-2018.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\View\Helper\Root;
+
+use function is_array;
+use function strlen;
 
 /**
  * Piwik Web Analytics view helper
@@ -126,7 +129,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     public function __construct($url, $options, $customVars, $router, $request)
     {
         $this->url = $url;
-        if ($url && substr($url, -1) != '/') {
+        if ($url && !str_ends_with($url, '/')) {
             $this->url .= '/';
         }
         if (is_array($options)) {

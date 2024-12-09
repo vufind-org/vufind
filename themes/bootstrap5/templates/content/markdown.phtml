@@ -1,0 +1,19 @@
+<?php
+$content = $this->markdown($this->data);
+$frontMatter = [];
+$title = '';
+if ($content instanceof League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter) {
+  $frontMatter = $content->getFrontMatter();
+  $title = $frontMatter['title'] ?? '';
+}
+if ($title === '') {
+  $found = preg_match('/#+(.*)/', $this->data, $matches);
+  if ($found) {
+    $title = $matches[1];
+  }
+}
+if (!empty($title)) {
+  $this->headTitle($title);
+}
+?>
+<?=$content->getContent();

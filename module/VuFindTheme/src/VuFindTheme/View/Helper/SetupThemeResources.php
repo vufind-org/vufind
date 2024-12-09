@@ -3,7 +3,7 @@
 /**
  * View helper for loading theme-related resources.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFindTheme\View\Helper;
+
+use function in_array;
+use function is_array;
 
 /**
  * View helper for loading theme-related resources.
@@ -60,12 +63,18 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Set up items based on contents of theme resource container.
      *
+     * @param bool $partial Whether rendering an HTML snippet instead of a full page
+     *
      * @return void
      */
-    public function __invoke()
+    public function __invoke(bool $partial = false)
     {
-        $this->addMetaTags();
-        $this->addLinks();
+        // meta tags are illegal outside of <head>, so we don't want to render them
+        // in partial mode:
+        if (!$partial) {
+            $this->addMetaTags();
+        }
+        $this->addLinks($partial);
         $this->addScripts();
     }
 
@@ -93,9 +102,11 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Add links to header.
      *
+     * @param bool $partial Whether rendering an HTML snippet instead of a full page
+     *
      * @return void
      */
-    protected function addLinks()
+    protected function addLinks(bool $partial = false)
     {
         // Convenient shortcut to view helper:
         $headLink = $this->getView()->plugin('headLink');
@@ -103,30 +114,38 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $parts = $this->container->parseSetting($current);
-            // Special case for media with paretheses
-            // ie. (min-width: 768px)
-            if (count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
-                $parts[1] .= ':' . $parts[2];
-                array_splice($parts, 2, 1);
-            }
             $headLink()->forcePrependStylesheet(
-                trim($parts[0]),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
+                $current['file'],
+                empty($current['media']) ? 'all' : $current['media'],
+                $current['conditional'] ?? '',
+                $current['extras'] ?? []
             );
         }
 
-        // If we have a favicon, load it now:
-        $favicon = $this->container->getFavicon();
-        if (!empty($favicon)) {
+        // Insert link elements for favicons specified in the `favicons` property of theme.config.php.
+        // If `favicon` is a string then treat it as a single file path to an .ico icon.
+        // If `favicon` is an array then treat each item as an assoc array of html attributes and render
+        // a link element for each.
+        // Skip favicons in partial mode because they are illegal outside of <head>.
+        if (!$partial && ($favicon = $this->container->getFavicon())) {
             $imageLink = $this->getView()->plugin('imageLink');
-            $headLink(
-                [
-                    'href' => $imageLink($favicon),
-                    'type' => 'image/x-icon', 'rel' => 'shortcut icon',
-                ]
-            );
+            if (is_array($favicon)) {
+                foreach ($favicon as $attrs) {
+                    if (isset($attrs['href'])) {
+                        $attrs['href'] = $imageLink($attrs['href']);
+                    }
+                    $attrs['rel'] ??= 'icon';
+                    $headLink($attrs);
+                }
+            } else {
+                $headLink(
+                    [
+                        'href' => $imageLink($favicon),
+                        'type' => 'image/x-icon',
+                        'rel' => 'icon',
+                    ]
+                );
+            }
         }
     }
 

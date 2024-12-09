@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Authentication view helper
+ * AlphaBrowse view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\Url;
 
 /**
- * Authentication view helper
+ * AlphaBrowse view helper
  *
  * @category VuFind
  * @package  View_Helpers

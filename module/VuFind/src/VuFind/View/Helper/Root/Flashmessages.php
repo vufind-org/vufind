@@ -3,7 +3,7 @@
 /**
  * Flash message view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\AbstractHelper;
+
+use function is_array;
 
 /**
  * Flash message view helper
@@ -86,6 +88,9 @@ class Flashmessages extends AbstractHelper
      */
     public function __invoke()
     {
+        if (!empty($this->getView()->layout()->lightboxChild)) {
+            return '';
+        }
         $html = '';
         foreach ($this->namespaces as $ns) {
             $messages = array_merge(
@@ -128,7 +133,7 @@ class Flashmessages extends AbstractHelper
                         $default = $msg['default'] ?? null;
 
                         // Translate the message:
-                        $message = $translate($message, $tokens, $default);
+                        $message = $translate($message, $tokens, $default, $msg['icu'] ?? false);
                     }
                     // Escape the message unless requested not to:
                     if (!$msgHtml) {

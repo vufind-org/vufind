@@ -3,7 +3,7 @@
 /**
  * Summaries content loader plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *

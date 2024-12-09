@@ -3,7 +3,7 @@
 /**
  * Abstract Base FacetCache.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -30,6 +30,10 @@
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
+
+use function in_array;
 
 /**
  * Solr FacetCache Factory.
@@ -42,39 +46,24 @@ use VuFind\Cache\Manager as CacheManager;
  */
 abstract class FacetCache
 {
-    /**
-     * Cache manager
-     *
-     * @var CacheManager
-     */
-    protected $cacheManager;
-
-    /**
-     * Currently selected language
-     *
-     * @var string
-     */
-    protected $language;
-
-    /**
-     * Search results object.
-     *
-     * @var Results
-     */
-    protected $results;
+    use \VuFind\Log\VarDumperTrait;
 
     /**
      * Constructor
      *
-     * @param Results      $r        Search results object
-     * @param CacheManager $cm       Cache manager
-     * @param string       $language Active UI language
+     * @param Results                  $results                 Search results object
+     * @param CacheManager             $cacheManager            Cache manager
+     * @param string                   $language                Active UI language
+     * @param ?HierarchicalFacetHelper $hierarchicalFacetHelper Hierarchical facet helper
+     * @param ?ConfigManager           $configManager           Configuration manager
      */
-    public function __construct(Results $r, CacheManager $cm, $language = 'en')
-    {
-        $this->results = $r;
-        $this->cacheManager = $cm;
-        $this->language = $language;
+    public function __construct(
+        protected Results $results,
+        protected CacheManager $cacheManager,
+        protected $language = 'en',
+        protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null,
+        protected ?ConfigManager $configManager = null
+    ) {
     }
 
     /**
@@ -99,7 +88,7 @@ abstract class FacetCache
             // Factor operator settings into cache key:
             array_map([$params, 'getFacetOperator'], array_keys($facetConfig)),
         ];
-        return $this->language . md5(print_r($settings, true));
+        return $this->language . md5($this->varDump($settings));
     }
 
     /**
@@ -145,11 +134,31 @@ abstract class FacetCache
      */
     public function getList($context = 'Advanced')
     {
-        if (!in_array($context, ['Advanced', 'HomePage'])) {
+        if (!in_array($context, ['Advanced', 'HomePage', 'NewItems'])) {
             throw new \Exception('Invalid context: ' . $context);
         }
         // For now, all contexts are handled the same way.
-        return $this->getFacetResults('init' . $context . 'Facets');
+        $facetList = $this->getFacetResults('init' . $context . 'Facets');
+
+        // Temporary context-specific sort fix for Advanced and HomePage:
+        if (in_array($context, ['Advanced', 'HomePage']) && $this->hierarchicalFacetHelper && $this->configManager) {
+            $options = $this->results->getOptions();
+            $facetConfig = $this->configManager->get($this->results->getOptions()->getFacetsIni())->toArray();
+            $sortOptions = array_merge(
+                $options->getHierarchicalFacetSortSettings(),
+                $facetConfig[$context . '_Settings']['hierarchicalFacetSortOptions'] ?? []
+            );
+            $defaultSort = 'HomePage' === $context ? 'all' : 'top';
+            foreach ($options->getHierarchicalFacets() as $facet) {
+                if (!empty($facetList[$facet]['list'])) {
+                    $this->hierarchicalFacetHelper->sortFacetList(
+                        $facetList[$facet]['list'],
+                        $sortOptions[$facet] ?? $sortOptions['*'] ?? $defaultSort,
+                    );
+                }
+            }
+        }
+        return $facetList;
     }
 
     /**

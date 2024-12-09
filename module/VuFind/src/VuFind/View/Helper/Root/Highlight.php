@@ -3,7 +3,7 @@
 /**
  * Highlight view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function is_array;
+
 /**
  * Highlight view helper
  *
@@ -43,14 +45,14 @@ use Laminas\View\Helper\AbstractHelper;
 class Highlight extends AbstractHelper
 {
     /**
-     * Start tag for highlighitng
+     * Start tag for highlighting
      *
      * @var string
      */
     protected $startTag = '<span class="highlight">';
 
     /**
-     * End tag for highlighitng
+     * End tag for highlighting
      *
      * @var string
      */

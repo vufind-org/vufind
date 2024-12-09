@@ -3,7 +3,7 @@
 /**
  * OAuth2 authorization code entity implementation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -52,9 +52,9 @@ class AuthCodeEntity implements AuthCodeEntityInterface, \JsonSerializable
     /**
      * Serialize to a JSON string
      *
-     * @return string
+     * @return mixed
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $properties = [
             'identifier',

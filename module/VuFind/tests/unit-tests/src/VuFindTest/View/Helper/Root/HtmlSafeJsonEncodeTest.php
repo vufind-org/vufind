@@ -3,7 +3,7 @@
 /**
  * HtmlSafeJsonEncode View Helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -79,7 +79,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getJsonTests(): array
+    public static function getJsonTests(): array
     {
         return [
             'string with special characters'

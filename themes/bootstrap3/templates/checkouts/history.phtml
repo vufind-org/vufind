@@ -1,0 +1,171 @@
+<?php
+  // Set up page title:
+  $this->headTitle($this->translate('Loan History'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Loan History') . '</li>';
+
+  $this->headScript()->appendFile('checkouts.js');
+?>
+
+<?=$this->component('show-account-menu-button')?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Loan History')?></h2>
+  <?=$this->flashmessages()?>
+
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
+
+  <?php if (!empty($this->transactions)): ?>
+    <nav class="search-header hidden-print">
+      <?php if ($this->paginator): ?>
+        <div class="search-stats">
+          <?php
+            $abs = $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage());
+            $end = min($abs, $this->paginator->getTotalItemCount());
+            $transParams = [
+              '%%start%%' => $this->localizedNumber($this->paginator->getAbsoluteItemNumber(1)),
+              '%%end%%' => $this->localizedNumber($end),
+              '%%total%%' => $this->localizedNumber($this->paginator->getTotalItemCount()),
+            ];
+          ?>
+          <?=$this->translate('showing_items_of_html', $transParams); ?>
+        </div>
+      <?php endif; ?>
+      <?php if ($this->sortList): ?>
+        <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+      <?php endif; ?>
+    </nav>
+    <?php if ($purgeAllAllowed || $purgeSelectedAllowed): ?>
+      <form name="purge_history" method="post" action="<?=$this->url('checkouts-purgehistory')?>" id="purge_history" data-disable-on-submit>
+      <input type="hidden" id="submitType" name="purgeSelected" value="1">
+      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+      <?php if ($purgeSelectedAllowed || $purgeAllAllowed): ?>
+        <div class="toolbar">
+          <?php if ($purgeSelectedAllowed): ?>
+            <?=
+              $this->component(
+                  'confirm-button',
+                  [
+                      'buttonId' => 'purgeSelected',
+                      'buttonName' => 'purgeSelected',
+                      'buttonLabel' => 'loan_history_purge_selected',
+                      'header' => 'loan_history_confirm_purge_selected',
+                      'confirmId' => 'confirm_purge_selected_yes',
+                      'confirmTitle' => 'loan_history_confirm_purge_selected',
+                      'cancelClass' => 'confirm_purge_no',
+                  ]
+              )
+            ?>
+          <?php endif; ?>
+
+          <?php if ($purgeAllAllowed): ?>
+            <?=
+              $this->component(
+                  'confirm-button',
+                  [
+                      'buttonId' => 'purgeAll',
+                      'buttonName' => 'purgeAll',
+                      'buttonLabel' => 'loan_history_purge_all',
+                      'header' => 'loan_history_confirm_purge_all',
+                      'confirmId' => 'confirm_purge_all_yes',
+                      'confirmTitle' => 'loan_history_confirm_purge_all',
+                      'cancelClass' => 'confirm_purge_no',
+                  ]
+              )
+            ?>
+          <?php endif; ?>
+        </div>
+        <?php if ($purgeSelectedAllowed): ?>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
+              <?=$this->transEsc('select_all_on_page')?>
+            </label>
+          </div>
+        <?php endif; ?>
+      <?php endif; ?>
+    <?php endif; ?>
+
+    <ul class="record-list">
+      <?php $i = 0; ?>
+      <?php foreach ($this->transactions as $resource): ?>
+        <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+        <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
+          <?php if ($this->purgeSelectedAllowed): ?>
+            <div class="checkbox">
+              <?php if (isset($ilsDetails['row_id'])): ?>
+                <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
+                <label>
+                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>">
+                </label>
+              <?php else: ?>
+                <label> </label>
+              <?php endif; ?>
+            </div>
+          <?php endif; ?>
+          <?php
+            $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
+            $cover = $coverDetails['html'];
+            $thumbnail = false;
+            $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
+            if ($cover):
+              ob_start(); ?>
+              <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+                <?=$cover ?>
+              </div>
+              <?php $thumbnail = ob_get_contents();
+              ob_end_clean();
+            endif; ?>
+          <div class="media">
+            <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+              <?=$thumbnail ?>
+            <?php endif ?>
+            <div class="media-body">
+              <?=$this->record($resource)->renderTemplate('account-entry.phtml')?>
+              <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
+                <strong><?=$this->transEscWithPrefix('location_', $ilsDetails['institution_name'])?></strong>
+                <br>
+              <?php endif; ?>
+
+              <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
+                <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEscWithPrefix('location_', $ilsDetails['borrowingLocation'])?>
+                <br>
+              <?php endif; ?>
+
+              <?php if (!empty($ilsDetails['checkoutDate'])): ?>
+                <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutDate'])?><?php if (isset($ilsDetails['checkoutTime'])): ?> <span class="checkout-time"><?=$this->escapeHtml($ilsDetails['checkoutTime'])?></span><?php endif; ?><br>
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['returnDate'])): ?>
+                <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returnDate'])?><?php if (isset($ilsDetails['returnTime'])): ?> <span class="return-time"><?=$this->escapeHtml($ilsDetails['returnTime'])?></span><?php endif; ?><br>
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['dueDate'])): ?>
+                <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['dueDate'])?><?php if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><?php endif; ?>
+              <?php endif; ?>
+
+              <?php if (isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
+                <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
+              <?php endif; ?>
+            </div>
+            <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+              <?=$thumbnail ?>
+            <?php endif ?>
+          </div>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+
+    <?php if ($purgeAllAllowed || $purgeSelectedAllowed): ?>
+      </form>
+    <?php endif; ?>
+
+    <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params]) : ''?>
+  <?php else: ?>
+    <?=$this->transEsc('loan_history_empty')?>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render('historicloans')?>
+</div>

@@ -3,7 +3,7 @@
 /**
  * Development Tools Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -32,8 +32,13 @@ namespace VuFindDevTools\Controller;
 
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
+use VuFind\Role\PermissionManager;
+use VuFind\Role\PermissionProvider\PluginManager as PermissionProviderPluginManager;
+use VuFind\Role\PermissionProvider\SessionKey;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
+
+use function is_callable;
 
 /**
  * Development Tools Controller
@@ -59,8 +64,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         $command = new \VuFindSearch\Command\GetQueryBuilderCommand($id);
         try {
-            $this->serviceLocator->get(\VuFindSearch\Service::class)
-                ->invoke($command);
+            $this->getService(\VuFindSearch\Service::class)->invoke($command);
         } catch (\Exception $e) {
             return null;
         }
@@ -81,7 +85,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         }
         if (isset($view->min) && $view->min) {
             $view->results = $view->min->deminify(
-                $this->serviceLocator->get(ResultsManager::class)
+                $this->getService(ResultsManager::class)
             );
         }
         if (isset($view->results) && $view->results) {
@@ -115,7 +119,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     public function iconAction()
     {
-        $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
+        $config = $this->getService(\VuFindTheme\ThemeInfo::class)
             ->getMergedConfig('icons');
         $aliases = array_keys($config['aliases'] ?? []);
         sort($aliases);
@@ -131,12 +135,39 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         // Test languages with no local overrides and no fallback:
         $loader = new ExtendedIni([APPLICATION_PATH . '/languages']);
-        $langs = $this->serviceLocator->get(LocaleSettings::class)
+        $langs = $this->getService(LocaleSettings::class)
             ->getEnabledLocales();
         $helper = new LanguageHelper($loader, $langs);
         return $helper->getAllDetails(
             $this->params()->fromQuery('main', 'en'),
             (bool)$this->params()->fromQuery('includeOptional', 1)
         );
+    }
+
+    /**
+     * Permissions action
+     *
+     * @return array
+     */
+    public function permissionsAction()
+    {
+        // Handle demo session key setting/unsetting:
+        $set = $this->params()->fromQuery('setSessionKey');
+        $unset = $this->params()->fromQuery('unsetSessionKey');
+        if ($set || $unset) {
+            $provider = $this->getService(PermissionProviderPluginManager::class)->get(SessionKey::class);
+            $method = $set ? 'setSessionValue' : 'unsetSessionValue';
+            $provider->$method('demo_key');
+            return $this->redirect()->toRoute('devtools-permissions');
+        }
+
+        // Retrieve full permission list:
+        $manager = $this->getService(PermissionManager::class);
+        $permissions = [];
+        foreach ($manager->getAllConfiguredPermissions() as $permission) {
+            $permissions[$permission] = $manager->isAuthorized($permission);
+        }
+        ksort($permissions);
+        return compact('permissions');
     }
 }

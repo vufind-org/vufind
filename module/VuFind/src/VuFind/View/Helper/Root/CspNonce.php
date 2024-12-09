@@ -3,7 +3,7 @@
 /**
  * CSP nonce view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -61,6 +61,8 @@ class CspNonce extends \Laminas\View\Helper\AbstractHelper
      * Return the current nonce
      *
      * Result is a base64 encoded string that does not need escaping.
+     *
+     * @deprecated Use Csp::getNonce() instead
      *
      * @return string
      */

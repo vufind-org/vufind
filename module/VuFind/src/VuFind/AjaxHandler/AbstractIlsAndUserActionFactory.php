@@ -3,7 +3,7 @@
 /**
  * Factory for AbstractIlsAndUserAction AJAX handlers.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -70,7 +70,7 @@ class AbstractIlsAndUserActionFactory implements \Laminas\ServiceManager\Factory
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             ...($options ?: [])
         );
     }

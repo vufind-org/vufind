@@ -3,7 +3,7 @@
 /**
  * XSLT importer support methods for geographic indexing.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2019.
  *
@@ -29,6 +29,10 @@
 
 namespace VuFind\XSLT\Import;
 
+use function call_user_func;
+use function count;
+use function sprintf;
+
 /**
  * XSLT importer support methods for geographic indexing.
  *
@@ -41,7 +45,7 @@ namespace VuFind\XSLT\Import;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overrideable for testing purposes)
+     * Method for logging errors (overridable for testing purposes)
      *
      * @var callable
      */

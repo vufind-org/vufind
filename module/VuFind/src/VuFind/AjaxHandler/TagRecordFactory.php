@@ -3,7 +3,7 @@
 /**
  * Factory for TagRecord AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -71,8 +71,8 @@ class TagRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         }
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Tags::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn()
+            $container->get(\VuFind\Tags\TagsService::class),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject()
         );
     }
 }

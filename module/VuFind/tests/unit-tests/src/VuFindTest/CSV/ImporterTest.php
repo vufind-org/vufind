@@ -3,7 +3,7 @@
 /**
  * CSV Importer Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -32,6 +32,8 @@ namespace VuFindTest\CSV;
 use VuFind\CSV\Importer;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
+
+use function array_slice;
 
 /**
  * CSV Importer Test Class
@@ -116,6 +118,34 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     public function testImportInTestMode(): void
     {
         $this->runTestModeTest();
+    }
+
+    /**
+     * Test that importer injects dependencies into static callback classes
+     * when appropriate.
+     *
+     * @return void
+     */
+    public function testCallbackDependencyInjection(): void
+    {
+        // Before running the test, there will be no dependencies injected
+        // into the static callback container, and trying to call getConfig
+        // will throw an exception due to the missing dependency.
+        $errorMsg = '';
+        try {
+            \VuFind\XSLT\Import\VuFind::getConfig();
+        } catch (\Throwable $t) {
+            $errorMsg = $t->getMessage();
+        }
+        $this->assertEquals('Call to a member function get() on null', $errorMsg);
+        $this->runTestModeTest(
+            [
+                'ini' => 'test-injection.ini',
+            ]
+        );
+        // After running the test, dependencies will have been injected, so
+        // we can now call the same method without errors:
+        \VuFind\XSLT\Import\VuFind::getConfig();
     }
 
     /**

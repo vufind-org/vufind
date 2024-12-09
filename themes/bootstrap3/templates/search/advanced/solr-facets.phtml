@@ -1,0 +1,60 @@
+<?php if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
+  <fieldset class="solr-facets">
+    <legend><?=$this->transEsc('Limit To')?></legend>
+    <?php if (!empty($this->checkboxFacets)): ?>
+      <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+    <?php endif; ?>
+    <div class="solr-facet-container">
+      <?php foreach ($this->facetList as $field => $list): ?>
+        <div class="solr-adv-facet">
+          <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+          <select class="form-control" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+            <?php if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
+              <?php foreach ($list['list'] as $value): ?>
+                <?php $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>
+                <option value="<?=$this->escapeHtmlAttr($this->operatorToFieldPrefix($value['operator']) . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected']) ? ' selected="selected"' : ''?>><?=$display?></option>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <?php
+              // Sort the current facet list alphabetically and filter items to
+              // the top if they appear in the config; we'll use this data
+              // along with the foreach below to display facet options in the
+              // correct order.
+              $conf = $this->options->limitOrderOverride($field);
+              $conf = array_flip($conf);
+              $sorted = [];
+              $filtered = [];
+              $filterKeys = [];
+              foreach ($list['list'] as $i => $value) {
+                if (!empty($value['value'] && !empty($value['displayText']))) {
+                  if (isset($conf[$value['value']])) {
+                    $filtered[$i] = $value['displayText'];
+                    $filterKeys[$value['displayText']] = $conf[$value['value']];
+                  } else {
+                    $sorted[$i] = $value['displayText'];
+                  }
+                }
+              }
+              $this->sorter()->natsort($sorted);
+
+              // Order filtered items according to how they appear in the config.
+              uasort($filtered, function ($a, $b) use ($filterKeys) {
+                return $filterKeys[$a] <=> $filterKeys[$b];
+              });
+
+              // Combine filtered and sorted arrays so that the items in the config
+              // appear in order at the top and all other items appear afterwards
+              // sorted by natcasesort.
+              $sorted = $filtered + $sorted;
+              ?>
+              <?php foreach ($sorted as $i => $display): ?>
+                <?php $value = $list['list'][$i]; ?>
+                <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($display)?></option>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </select>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </fieldset>
+<?php endif; ?>

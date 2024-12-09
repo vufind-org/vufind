@@ -2,7 +2,7 @@
 /**
  * Command-line tool to commit the Solr index.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *

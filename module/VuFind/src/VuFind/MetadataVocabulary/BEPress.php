@@ -3,7 +3,7 @@
 /**
  * Metadata vocabulary implementation for BEPress
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Tübingen 2019.
  *

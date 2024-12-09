@@ -3,7 +3,7 @@
 /**
  * Hierarchy Driver Factory Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -55,7 +55,7 @@ class ConfigurationBasedFactory
      *
      * @return object
      *
-     * @throws Exception if options is populated
+     * @throws \Exception if options is populated
      */
     public function __invoke(
         ContainerInterface $container,

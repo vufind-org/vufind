@@ -3,7 +3,7 @@
 /**
  * Get the backend's unique search key field (currently only supported by Solr)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -30,6 +30,8 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+
+use function is_callable;
 
 /**
  * Get the backend's unique search key field (currently only supported by Solr)

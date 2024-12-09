@@ -3,7 +3,7 @@
 /**
  * Grid cover background layer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Cover\Layer;
+
+use function strlen;
 
 /**
  * Grid cover background layer
@@ -108,10 +110,10 @@ class GridBackground extends AbstractBackgroundLayer
             $settings->height,
             $this->getColor($im, $settings->baseColor)
         );
-        $halfWidth = $settings->width / 2;
-        $halfHeight = $settings->height / 2;
-        $boxWidth  = $settings->width / 8;
-        $boxHeight = $settings->height / 8;
+        $halfWidth = (int)($settings->width / 2);
+        $halfHeight = (int)($settings->height / 2);
+        $boxWidth  = (int)($settings->width / 8);
+        $boxHeight = (int)($settings->height / 8);
 
         $bc = str_split($pattern);
         for ($k = 0; $k < 4; $k++) {
@@ -120,7 +122,7 @@ class GridBackground extends AbstractBackgroundLayer
             $u = $k % 2 ? $boxWidth : -$boxWidth;
             $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
             for ($i = 0; $i < 16; $i++) {
-                if ($bc[$i] == "1") {
+                if ($bc[$i] == '1') {
                     imagefilledrectangle(
                         $im,
                         $x,

@@ -3,7 +3,7 @@
 /**
  * SOLR connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -34,6 +34,7 @@ namespace VuFindSearch\Backend\Solr;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
+use Laminas\Uri\Http;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -41,6 +42,12 @@ use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
+
+use function call_user_func_array;
+use function count;
+use function is_callable;
+use function sprintf;
+use function strlen;
 
 /**
  * SOLR connector.
@@ -96,6 +103,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @var string
      */
     protected $uniqueKey;
+
+    /**
+     * Url of the last request
+     *
+     * @var ?Http
+     */
+    protected $lastUrl = null;
 
     /**
      * Constructor
@@ -158,6 +172,26 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Get the last request url.
+     *
+     * @return ?Http
+     */
+    public function getLastUrl()
+    {
+        return $this->lastUrl;
+    }
+
+    /**
+     * Clears the last url
+     *
+     * @return void
+     */
+    public function resetLastUrl()
+    {
+        $this->lastUrl = null;
+    }
+
+    /**
      * Return document specified by id.
      *
      * @param string   $id     The document to retrieve from Solr
@@ -194,7 +228,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params, true);
+
+        try {
+            return $this->query($handler, $params, true);
+        } catch (RequestErrorException $e) {
+            // If Solr was unable to fetch the record, just act like we have no similar records:
+            if (str_contains($e->getMessage(), 'Could not fetch document with id')) {
+                return '{}';
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -333,8 +376,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function isRethrowableSolrException($ex)
     {
+        // Solr can return 404 when the instance hasn't completed startup, so allow that to be retried:
         return $ex instanceof TimeoutException
-            || $ex instanceof RequestErrorException;
+            || (($ex instanceof RequestErrorException) && $ex->getResponse()->getStatusCode() !== 404);
     }
 
     /**
@@ -445,6 +489,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())
         );
 
+        $this->lastUrl = $client->getUri();
+
         $time     = microtime(true);
         $response = $client->send();
         $time     = microtime(true) - $time;
@@ -459,6 +505,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         );
 
         if (!$response->isSuccess()) {
+            // Return a more detailed error message for a 400 error:
+            if ($response->getStatusCode() === 400) {
+                $json = json_decode($response->getBody(), true);
+                $msgParts = ['400', $response->getReasonPhrase()];
+                if ($msg = $json['error']['msg'] ?? '') {
+                    $msgParts[] = $msg;
+                }
+                throw new RequestErrorException(
+                    implode(' ', $msgParts),
+                    400,
+                    $response
+                );
+            }
             throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();

@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo record collection
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *

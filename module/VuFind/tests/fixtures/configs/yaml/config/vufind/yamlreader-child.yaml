@@ -2,6 +2,7 @@
 "@merge_sections":
   - [Other, Merged]
   - [Other, ParentOnly]
+  - [Other, Replaced]
 
 Overridden:
   Original: Not so original
@@ -12,6 +13,10 @@ Other:
     Child:
       - Foo
       - Baz
+  Replaced:
+    Original: Replaces parent
+    Boolean: false
+    ChildOnly: From child
   NonMerged:
     Original: Not so original either
 ChildOnly:

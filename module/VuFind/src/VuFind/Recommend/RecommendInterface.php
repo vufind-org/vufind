@@ -3,7 +3,7 @@
 /**
  * Search Recommendations Interface
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -37,8 +37,8 @@ namespace VuFind\Recommend;
  *
  * Note that every class implementing this interface needs to be accompanied by
  * a template file in the Recommend subdirectory of every theme's template
- * directory.  For example, \VuFind\Recommend\SideFacets needs a corresponding
- * Recommend/SideFacets.phtml template.  The template will be rendered as a
+ * directory. For example, \VuFind\Recommend\SideFacets needs a corresponding
+ * Recommend/SideFacets.phtml template. The template will be rendered as a
  * partial with two available variables: recommend (the recommendation object)
  * and results (the search results object).
  *
@@ -75,7 +75,7 @@ interface RecommendInterface
     public function init($params, $request);
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bibs total_record_count="1">
+	<bib>
+		<mms_id>1111</mms_id>
+		<record_format>marc21</record_format>
+		<linked_record_id/>
+		<title>Mattila : kyläkunta väylien varrella /</title>
+		<author>Mäkinen, Riitta.</author>
+		<isbn>952-91-0264-X</isbn>
+		<network_numbers>
+			<network_number>(FI-MELINDA)000185597</network_number>
+		</network_numbers>
+		<place_of_publication>Lempäälä :</place_of_publication>
+		<date_of_publication>1998</date_of_publication>
+		<publisher_const>Mattilan kyläyhdistys,</publisher_const>
+		<holdings link="http://localhost/v1/v1/bibs/1111/holdings"/>
+		<created_by>import</created_by>
+		<created_date>2019-12-08Z</created_date>
+		<last_modified_by>System</last_modified_by>
+		<last_modified_date>2021-02-03Z</last_modified_date>
+		<suppress_from_publishing>false</suppress_from_publishing>
+		<suppress_from_external_search>false</suppress_from_external_search>
+		<suppress_from_metadoor>false</suppress_from_metadoor>
+		<rank>89</rank>
+		<sync_with_oclc>NONE</sync_with_oclc>
+		<sync_with_libraries_australia>NONE</sync_with_libraries_australia>
+		<originating_system>ILS</originating_system>
+		<originating_system_id>374841-aabdb</originating_system_id>
+		<brief_level desc="01">01</brief_level>
+		<record>
+			<leader>01952cam a2200445 i 4500</leader>
+			<controlfield tag="001">1111</controlfield>
+			<controlfield tag="005">20210114135102.0</controlfield>
+			<controlfield tag="008">990324s1998    fi |||||||||||||||||fin| </controlfield>
+			<datafield ind1=" " ind2=" " tag="015">
+				<subfield code="a">fx610425</subfield>
+				<subfield code="2">skl</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="020">
+				<subfield code="a">952-91-0264-X</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="035">
+				<subfield code="a">(FI-MELINDA)000185597</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="040">
+				<subfield code="a">FI-NL</subfield>
+			</datafield>
+			<datafield ind1="0" ind2=" " tag="041">
+				<subfield code="a">fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="042">
+				<subfield code="a">finb</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="080">
+				<subfield code="a">908 Lempäälä</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="084">
+				<subfield code="a">92.843</subfield>
+				<subfield code="2">ykl</subfield>
+			</datafield>
+			<datafield ind1="0" ind2="0" tag="245">
+				<subfield code="a">Mattila :</subfield>
+				<subfield code="b">kyläkunta väylien varrella /</subfield>
+				<subfield code="c">toimittanut Riitta Mäkinen.</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="260">
+				<subfield code="a">Lempäälä :</subfield>
+				<subfield code="b">Mattilan kyläyhdistys,</subfield>
+				<subfield code="c">1998</subfield>
+				<subfield code="e">(Vammala :</subfield>
+				<subfield code="f">Vammalan kirjap.)</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="300">
+				<subfield code="a">192 s. :</subfield>
+				<subfield code="b">kuvitettu, karttoja ;</subfield>
+				<subfield code="c">26 cm</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="336">
+				<subfield code="a">text</subfield>
+				<subfield code="b">txt</subfield>
+				<subfield code="2">rdacontent</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="337">
+				<subfield code="a">oförmedlad</subfield>
+				<subfield code="b">n</subfield>
+				<subfield code="2">rdamedia</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="338">
+				<subfield code="a">volym</subfield>
+				<subfield code="b">nc</subfield>
+				<subfield code="2">rdacarrier</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">paikallishistoriat (historiikit)</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p1779</subfield>
+				<subfield code="2">yso/fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">kylät.</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p10998</subfield>
+				<subfield code="2">yso/fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">historia.</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p1780</subfield>
+				<subfield code="2">yso/fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">kotiseutukuvaukset.</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p9698</subfield>
+				<subfield code="2">yso/fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">lokalhistoriker.</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p1779</subfield>
+				<subfield code="2">yso/swe</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">byar.</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p10998</subfield>
+				<subfield code="2">yso/swe</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">historia.</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p1780</subfield>
+				<subfield code="2">yso/swe</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="650">
+				<subfield code="a">hembygdsskildringar.</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p9698</subfield>
+				<subfield code="2">yso/swe</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="651">
+				<subfield code="a">Mattila (Lempäälä)</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p111896</subfield>
+				<subfield code="2">yso/fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="651">
+				<subfield code="a">Mattila (Lempäälä)</subfield>
+				<subfield code="0">http://www.yso.fi/onto/yso/p111896</subfield>
+				<subfield code="2">yso/swe</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="655">
+				<subfield code="a">kotiseutukuvaukset.</subfield>
+				<subfield code="0">http://urn.fi/URN:NBN:fi:au:slm:s220</subfield>
+				<subfield code="2">slm/fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="655">
+				<subfield code="a">paikallishistoriat.</subfield>
+				<subfield code="0">http://urn.fi/URN:NBN:fi:au:slm:s1097</subfield>
+				<subfield code="2">slm/fin</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="655">
+				<subfield code="a">hembygdsskildringar.</subfield>
+				<subfield code="0">http://urn.fi/URN:NBN:fi:au:slm:s220</subfield>
+				<subfield code="2">slm/swe</subfield>
+			</datafield>
+			<datafield ind1=" " ind2="7" tag="655">
+				<subfield code="a">lokalhistoriker.</subfield>
+				<subfield code="0">http://urn.fi/URN:NBN:fi:au:slm:s1097</subfield>
+				<subfield code="2">slm/swe</subfield>
+			</datafield>
+			<datafield ind1="1" ind2=" " tag="700">
+				<subfield code="a">Mäkinen, Riitta.</subfield>
+			</datafield>
+			<datafield ind1="2" ind2=" " tag="710">
+				<subfield code="a">Mattilan kyläyhdistys.</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="AVE">
+				<subfield code="8">2221</subfield>
+				<subfield code="c">123456789</subfield>
+				<subfield code="e">Available</subfield>
+				<subfield code="m">Collection Name</subfield>
+				<subfield code="a">358FIN</subfield>
+				<subfield code="0">1111</subfield>
+				<subfield code="b">Central</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="AVE">
+				<subfield code="8">2222</subfield>
+				<subfield code="c">123456789</subfield>
+				<subfield code="e">Unavailable</subfield>
+				<subfield code="m">Other Collection</subfield>
+				<subfield code="a">358FIN</subfield>
+				<subfield code="0">1111</subfield>
+				<subfield code="b">Central</subfield>
+			</datafield>
+		</record>
+	</bib>
+</bibs>

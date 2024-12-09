@@ -3,7 +3,7 @@
 /**
  * Factory for ILS authentication module (and others with equivalent constructors).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *

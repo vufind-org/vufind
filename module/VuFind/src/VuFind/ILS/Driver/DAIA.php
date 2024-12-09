@@ -6,7 +6,7 @@
  * Based on the proof-of-concept-driver by Till Kinstler, GBV.
  * Relaunch of the daia driver developed by Oliver Goldschmidt.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Jochen Lienhard 2014.
  *
@@ -38,6 +38,11 @@ use DOMDocument;
 use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.

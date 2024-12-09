@@ -1,0 +1,357 @@
+.record h1 {
+  font-size: 24px;
+  line-height: 1.15;
+}
+.record .media-body h3 { margin-top: 0; } // Align title with top of image
+.recordcover { max-height: 300px; } // Keep the image from getting out of control
+.browzine .recordcover {
+  margin-top: 2px;
+  margin-bottom: 4px;
+  box-shadow: 1px 1px 3px rgba(47,52,64,.72);
+  max-height: 130px;
+  width: 105px;
+  height: auto;
+}
+
+.cover-source {
+  font-size: 14px;
+}
+
+.record__biblio-value a:not(.icon-link),
+.related__title {
+  display: inline-block;
+}
+.related__title .related__icon {
+  float: left;
+  margin-right: 0.25rem;
+  text-align: left;
+  line-height: 1.4;
+  background-position-x: left;
+
+  .rtl & {
+    margin-left: 0;
+    margin-right: 0.25rem;
+  }
+}
+
+.media-body h1 { margin-top: 0; }
+@media (max-width: 767px) {
+  .record .media-left,
+  .record .media-right { display: block; }
+  .record .media-body { // Add a gap between the thumbnail and the info
+    display: block;
+    width: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .record .media-body > table > tbody {
+    > tr {
+      display: block;
+      > th {
+        display: block;
+        padding-bottom: 0;
+      }
+      > td {
+        display: block;
+        border-top: none;
+        padding-top: 0;
+      }
+    }
+  }
+}
+
+// Comma-separate formatting
+.record .format::after { content: ", "; }
+.record .format.badge::after,
+.record .result-formats .format::after,
+.record .format:last-child::after { content: ""; }
+.record-previews { margin-top: .5rem; }
+
+/* ------ Nav ------ */
+.record-nav.nav { margin-bottom: 1rem; }
+.record-nav > li,
+.btn-bookbag-toggle { width: 100%; }
+.record-nav > li > a { padding: .5rem; }
+.record-nav > li > a,
+.btn-bookbag-toggle { text-align: center; }
+@media(min-width: 768px) {
+  .record-nav > li,
+  .btn-bookbag-toggle { width: auto; }
+  .record-nav > li > a { padding: $nav-link-padding; }
+  .record-nav > li > a,
+  .btn-bookbag-toggle { text-align: left; }
+}
+
+/* ------ Comments ------ */
+.comment-label,
+.comment-name { font-style: italic; }
+.comment { margin-bottom: 1rem; }
+.comment-name .delete { color: $state-danger-text; }
+@media (min-width: 768px) {
+  .comment-form,
+  .comment {
+    display: flex;
+    margin-bottom: 0;
+  }
+  .comment-label,
+  .comment-name {
+    min-width: 25%;
+    font-style: unset;
+  }
+  .comment-form {
+    .text-form {
+      width: 100%;
+    }
+    & > label {
+      flex: 0 0 auto;
+    }
+    textarea {
+      display: block;
+      width: 100%;
+      float: left;
+    }
+    .comment-rating {
+      float: left;
+      margin: 0.5rem;
+    }
+    .btn {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+/* ------ Tags ------ */
+.tag-record {
+  float: right;
+  margin: 2px 0 1rem 1rem;
+  padding: $padding-base-vertical $padding-base-horizontal;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  @media (max-width: $screen-sm-max) {
+    margin-left: 0.5rem;
+    padding: $padding-base-vertical calc(#{$padding-base-horizontal} / 2);
+  }
+}
+
+.tagList button {
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 4px;
+  font-size: 95%;
+  vertical-align: initial;
+}
+.tagList .tag .badge {
+  margin: 0;
+  padding: 3px 7px;
+  font-weight: normal;
+}
+.tagList {
+  .tag {
+    display: inline-block;
+    margin: 2px 1px 1px;
+    border: 1px solid $btn-default-border;
+    // Use bootstrap mixin to make tags look like buttons
+    @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $border-radius-base);
+    &.selected {
+      background-color: $btn-primary-bg;
+      border-color: $btn-primary-border;
+      a { color: #fff; }
+      .badge {
+        color: $gray-darker;
+        background-color: #fff;
+        &:hover { color: #a94442; }
+      }
+    }
+
+    .badge .fa { width: 12px; }
+    .icon--img { font-size: 0.625rem; }
+  }
+  button { border: 0; }
+  .tag-form { display: inline; }
+}
+.tagList.loggedin .tag:not(.selected) .badge:hover { background-color: $brand-success; }
+
+
+.staff-view .pace-car {
+  th,
+  td {
+    border: 0;
+    padding: 0;
+  }
+}
+.staff-view {
+  th { text-align: right; }
+  td span.term { font-weight: bold; }
+}
+.staff-view--marc {
+  .marc__tag {
+    width: 15%;
+  }
+  .marc__ind {
+    width: 5%;
+  }
+}
+
+.item-notes ul { padding-left: 2rem; }
+
+.subject-line:hover { color: #999; }
+.subject-line:hover a { color: $link-hover-color; }
+.subject-line a:hover ~ a {
+  color: #999;
+  text-decoration: none;
+}
+
+.marc-row-LEADER,
+.marc-row-006,
+.marc-row-007,
+.marc-row-008 {
+  white-space: pre-wrap;
+}
+
+/* ------ Relais ------ */
+.relaisLink { display: inline-block; }
+
+/* ------ Collection ------ */
+.collection-list-controls {
+  display: flex;
+  flex-flow: row wrap;
+
+  .collection-control {
+    white-space: nowrap;
+    margin: 0 0.5rem 0 0;
+  }
+}
+.collectionDetails .active-filters .filters {
+  padding: 0 0 5px 0;
+}
+.collection-list-results {
+  margin-top: 0.5rem;
+}
+
+/* ------ Tabs ------ */
+.tab-pane::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+.tab-pane .result {
+  margin-left: 0;
+}
+.holdings-tab .holdings-table {
+  table-layout: auto;
+
+  th, td {
+    min-width: 10vw;
+  }
+
+  .bound-with-records .direct-item {
+    font-weight: bold;
+  }
+}
+
+/* ------ OpenURL Links ------ */
+.openurls {
+  .openurl-notes {
+    display: block;
+    font-style: italic;
+  }
+  .openurl-authentication {
+    display: block;
+  }
+}
+
+/* ------ Star Rating ------ */
+.record .media-left .rating {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.rating-breakdown {
+  margin-bottom: 1rem;
+
+  .rating-breakdown-stars {
+    display: inline-block;
+  }
+
+  .rating-breakdown-percentage {
+    display: inline-block;
+    width: 3rem;
+    text-align: right;
+  }
+}
+
+.star-rating {
+  /* Use display:inline-flex to prevent whitespace issues. Alternatively, you can put all the children of .rating-group on a single line. */
+  display: inline-flex;
+
+  /* Make hover effect work properly in IE, reset width */
+  .rating__icon {
+    pointer-events: none;
+    width: initial;
+  }
+
+  /* Hide radio inputs, but keep them accessible by keyboard */
+  .rating__input {
+    position: absolute !important;
+    left: -9999px !important;
+  }
+
+  /* Set icon padding and size */
+  .rating__label {
+    cursor: pointer;
+    /* If you change the left/right padding, update the margin-right property of .rating__label--half as well. */
+    padding: 0 0.1em;
+    font-size: 1rem;
+  }
+
+  /* Add padding and positioning to half star labels */
+  .rating__label--half {
+    padding-right: 0;
+    margin-right: -0.6em;
+    z-index: 2;
+
+    /* Display only half of the star and ensure that the remainder cannot be hovered over */
+    .rating__icon--star {
+      width: 0.5rem;
+      overflow: hidden;
+    }
+  }
+
+  /* Set default star color */
+  .rating__icon--star {
+    color: $brand-warning;
+  }
+
+  /* If any input is checked, make its following siblings grey */
+  .rating__input:checked ~ .rating__label .rating__icon--star {
+    color: #ddd;
+  }
+
+  /* Make all stars highlight on rating group hover */
+  &:not(.readonly)
+  {
+    &:hover .rating__label .rating__icon--star,
+    &:hover .rating__label--half .rating__icon--star {
+      color: $brand-warning;
+    }
+    /* Make hovered input's following siblings grey on hover */
+    .rating__input:hover ~ .rating__label .rating__icon--star,
+    .rating__input:hover ~ .rating__label--half .rating__icon--star {
+      color: #ddd;
+    }
+  }
+}
+
+/* Pager */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.25rem;
+  row-gap: 10px;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,111 @@
+<?php
+  $form = $this->form;
+  $form->prepare();
+
+  $title = $form->getTitle();
+  $title = !empty($title)
+    ? $this->translate($title) : null;
+
+  $formUrl = $this->url('feedback-form', ['id' => $this->formId]);
+  $form->setAttribute('action', $formUrl);
+  $form->setAttribute('class', 'dynamic-form');
+  $form->setAttribute('method', 'post');
+
+  $help = $form->getHelp();
+  $helpPre = $helpPost = null;
+  $helpPre = isset($help['pre']) ? $form->getDisplayString($help['pre'], false) : null;
+  $helpPost = isset($help['post']) ? $form->getDisplayString($help['post'], false) : null;
+?>
+<?php if (!$this->inLightbox): ?><div class="feedback-content"><?php endif; ?>
+  <?php if ($title): ?>
+    <?php $this->headTitle($title); ?>
+    <?php $headTag = $this->inLightbox ? 'h2' : 'h1'; ?>
+    <<?=$headTag?>><?=$this->escapeHtml($title)?></<?=$headTag?>>
+  <?php endif; ?>
+  <?=$this->flashmessages()?>
+
+  <?= $this->form()->openTag($form); ?>
+  <?php if ($helpPre): ?>
+  <div class="form-group">
+    <div class="form-info pre">
+      <?=$helpPre?>
+    </div>
+  </div>
+  <?php endif ?>
+
+  <?php $currentGroup = null; ?>
+  <?php foreach ($form->getFormElementConfig() as $el): ?>
+    <?php
+    $formElement = $form->get($el['name']);
+
+    // Group form elements into field sets
+    $handleGroup = $group = null;
+    if (isset($el['group']) && !empty($el['group'])) {
+        $group = $el['group'];
+    }
+    if ($group && $currentGroup === null) {
+        $handleGroup = 'open';
+        $currentGroup = $group;
+    } elseif ($currentGroup && !$group) {
+        $handleGroup = 'close';
+        $currentGroup = null;
+    } elseif ($currentGroup !== $group) {
+        $handleGroup = 'openAndClose';
+        $currentGroup = $group;
+    }
+    $elementHelpPre = $elementHelpPost = '';
+    if ($elementHelp = $el['help'] ?? null) {
+      if (is_string($elementHelp)) {
+        $elementHelpPre = $elementHelp;
+      } else {
+        $elementHelpPre = $elementHelp['pre'] ?? '';
+        $elementHelpPost = $elementHelp['post'] ?? '';
+      }
+      $elementHelpPre = $form->getDisplayString($elementHelpPre);
+      $elementHelpPost = $form->getDisplayString($elementHelpPost);
+    }
+    ?>
+
+    <?php if (in_array($handleGroup, ['close', 'openAndClose'])): ?>
+      </div>
+    <?php endif ?>
+    <?php if (in_array($handleGroup, ['open', 'openAndClose'])): ?>
+      <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
+        <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($formElement->getAttribute('id')) . '"' : ''?>>
+      <?php else: ?>
+        <div class="field-set"<?= !empty($elementHelpPre) ? ' role="contentinfo" aria-label="' . $this->escapeHtmlAttr($elementHelpPre) . '"' : ''?>>
+      <?php endif ?>
+    <?php endif ?>
+
+    <div class="form-group <?= $el['type'] ?> group-<?=$this->escapeHtmlAttr($el['name'])?>">
+    <?php if (!empty($elementHelpPre)): ?>
+      <p class="info pre"><?=$elementHelpPre?></p>
+    <?php endif ?>
+    <?php if ($el['type'] !== 'submit'): ?>
+      <?php if ($el['label']): ?>
+        <?php
+          $required = $el['required'] ?? false;
+          $requireOne = $el['requireOne'] ?? false;
+        ?>
+        <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
+          <p id="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label radio-label<?=$required && !$requireOne ? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
+        <?php elseif ('hidden' !== $el['type']): ?>
+          <label for="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
+        <?php endif ?>
+      <?php endif ?>
+    <?php else: ?>
+      <?php if ($helpPost): ?>
+        <div class="form-info post">
+          <?=$helpPost?>
+        </div>
+      <?php endif ?>
+      <?=$this->captcha()->html($this->useCaptcha) ?>
+    <?php endif ?>
+    <?= $this->formRow($formElement) ?>
+    <?php if (!empty($elementHelpPost)): ?>
+      <p class="info post"><?=$elementHelpPost?></p>
+    <?php endif ?>
+    </div>
+  <?php endforeach ?>
+  <?= $this->form()->closeTag() ?>
+<?php if (!$this->inLightbox): ?></div><?php endif; ?>

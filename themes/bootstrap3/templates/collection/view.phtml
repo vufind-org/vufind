@@ -1,7 +1,7 @@
 <?php
   // Set up standard record scripts:
-  $this->headScript()->appendFile("record.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile('record.js');
+  $this->headScript()->appendFile('check_save_statuses.js');
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
@@ -13,8 +13,12 @@
 
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
-    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF', options: ['excludeSearchId' => true]), 'application/rdf+xml', 'RDF Representation');
   }
+
+  // Add canonical header link for SEO:
+  $canonicalUrl = $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
+  $this->headLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
 
   // Set flag for special cases relating to full-width hierarchy tree tab:
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
@@ -57,7 +61,7 @@
           <?php foreach ($this->tabs as $tab => $obj): ?>
             <?php
               $desc = $obj->getDescription();
-              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tabName = preg_replace("/\W/", '-', strtolower($tab));
               $tabClasses = [ 'record-tab', $tabName ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
@@ -66,11 +70,15 @@
                 $tabClasses[] = 'initiallyActive';
                 $activeTabObj = $obj;
               }
-              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
+              if (!$obj->isVisible()) {
+                $tabClasses[] = 'hidden';
+              }
+              if (!$obj->supportsAjax()) {
+                $tabClasses[] = 'noajax';
+              }
             ?>
-            <li class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-              <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
+            <li role="presentation" id="record-tab-<?=$this->escapeHtmlAttr($tabName)?>" class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+              <a role="tab" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-target=".tab-pane.<?=$this->escapeHtmlAttr($tabName)?>" data-lightbox-ignore>
                 <?=$this->transEsc($desc)?>
               </a>
             </li>
@@ -79,7 +87,7 @@
 
         <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
           <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
+            <div role="tabpanel" class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <?php endif; ?>
@@ -87,7 +95,7 @@
       </div>
     <?php endif; ?>
 
-    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 </div>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>

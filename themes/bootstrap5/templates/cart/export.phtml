@@ -1,0 +1,75 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Export Favorites'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+    . '<li><a href="' . $this->url('cart-home') . '">' . $this->transEsc('Cart') . '</a></li> '
+    . '<li class="active">' . $this->transEsc('Export Favorites') . '</li>';
+?>
+<h2><?=$this->transEsc('Export Favorites')?></h2>
+
+<?=$this->flashmessages()?>
+
+<?php if (!empty($this->exportOptions) && count($this->records) > 0): ?>
+  <form class="form-cart-export" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEscAttr('Export Items')?>">
+    <?php foreach ($this->records as $current): ?>
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
+    <?php endforeach; ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc('Title')?>:</label>
+      <?php if (count($this->records) > 1): ?>
+        <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
+          <?=count($this->records) . ' ' . $this->transEsc('items') ?>
+        </button>
+        <div id="itemhide" class="collapse in">
+          <ul>
+            <?php foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php else: ?>
+        <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
+      <?php endif; ?>
+    </div>
+    <div class="form-group">
+    <label for="format" class="control-label"><?=$this->transEsc('Format')?>:</label>
+      <select name="format" id="format" class="form-control">
+        <?php $firstOption = null; ?>
+        <?php foreach ($this->exportOptions as $exportOption): ?>
+          <?php
+            if ($firstOption == null) {
+              $firstOption = $exportOption;
+            }
+          ?>
+          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+    <div class="form-group">
+      <input class="export btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Export')?>"<?php if ($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<?php endif; ?>>
+    </div>
+  </form>
+<?php endif; ?>
+<?php
+  $script = <<<JS
+        $('button.btn.hidden').removeClass('hidden');
+        $('#itemhide').removeClass('in');
+        $('.export.btn').click(function exportButtonClick() {
+          if (typeof $('#format option:selected').attr('data-redirect') !== 'undefined') {
+            VuFind.modal('hide');
+          }
+        });
+        $('#format').change(function exportFormatChange(e) {
+          if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
+            $('.export.btn').removeAttr('data-lightbox-ignore');
+            $('form[name=exportForm]').removeAttr('target');
+          } else {
+            $('.export.btn').attr('data-lightbox-ignore', '1');
+            $('form[name=exportForm]').attr('target', this.selectedOptions[0].value + 'Main');
+          }
+        }).trigger('change');
+      JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

@@ -3,7 +3,7 @@
 /**
  * View helper to print an array formatted for HTML display.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Michigan State University 2023.
  *
@@ -31,6 +31,9 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function count;
+use function is_array;
+
 /**
  * View helper to print an array formatted for HTML display.
  *
@@ -56,13 +59,13 @@ class PrintArrayHtml extends AbstractHelper
     public function __invoke($entry, $indentLevel = 0, $indentFirst = true)
     {
         $makeTag = $this->getView()->plugin('makeTag');
-        $html = "";
+        $html = '';
         if (is_array($entry)) {
             $isList = $this->isArrayList($entry);
             $isFlat = $this->isArrayFlat($entry);
             foreach ($entry as $key => $value) {
                 if ($indentFirst || $key != array_key_first($entry)) {
-                    $html .= str_repeat("&ensp;", $indentLevel);
+                    $html .= str_repeat('&ensp;', $indentLevel);
                 }
                 $valueIsSingleKeyList = $this->isSingleKeyList($value);
 
@@ -76,19 +79,19 @@ class PrintArrayHtml extends AbstractHelper
                 }
                 if (!$isFlat && $isList && !$valueIsSingleKeyList) {
                     // Integer keyed arrays use a hyphen list unless they're flat
-                    $html .= "&ndash;&ensp;";
+                    $html .= '&ndash;&ensp;';
                 } elseif (!$isList) {
-                    $html .= $makeTag("span", $key . ":", ["class" => "term"])
+                    $html .= $makeTag('span', $key . ':', ['class' => 'term'])
                              . (
                                  (is_array($value) && !$valueIsSingleKeyList)
-                                 ? "<br>\n" : " "
+                                 ? "<br>\n" : ' '
                              );
                 }
 
                 $html .= $this->__invoke($value, $nextIndentLevel, $nextIndentFirst);
             }
         } else {
-            $html = $makeTag("span", $entry, ["class" => "detail"]) . "<br>\n";
+            $html = $makeTag('span', $entry, ['class' => 'detail']) . "<br>\n";
         }
         return $html;
     }

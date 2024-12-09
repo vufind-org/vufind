@@ -3,7 +3,7 @@
 /**
  * Facet Helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2014.
  *
@@ -23,19 +23,26 @@
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
 namespace VuFind\Search\Solr;
 
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\HasSorterTrait;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\Base\HierarchicalFacetHelperInterface;
+use VuFind\Search\Base\Options;
 use VuFind\Search\UrlQueryHelper;
+
+use function array_slice;
+use function count;
+use function strlen;
 
 /**
  * Functions for manipulating facets
@@ -43,6 +50,7 @@ use VuFind\Search\UrlQueryHelper;
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -55,8 +63,50 @@ class HierarchicalFacetHelper implements
     use HasSorterTrait;
 
     /**
+     * Internal constant for sorting by count
+     *
+     * @var int
+     */
+    protected const SORT_COUNT = 0;
+
+    /**
+     * Internal constant for sorting top level alphabetically and the rest by count
+     *
+     * @var int
+     */
+    protected const SORT_TOP = 1;
+
+    /**
+     * Internal constant for sorting all levels alphabetically
+     *
+     * @var int
+     */
+    protected const SORT_ALL = 2;
+
+    /**
+     * View renderer
+     *
+     * @var RendererInterface
+     */
+    protected $viewRenderer = null;
+
+    /**
+     * Set view renderer
+     *
+     * @param RendererInterface $renderer View renderer
+     *
+     * @return void
+     */
+    public function setViewRenderer(RendererInterface $renderer): void
+    {
+        $this->viewRenderer = $renderer;
+    }
+
+    /**
      * Helper method for building hierarchical facets:
-     * Sort a facet list according to the given sort order
+     * Sort a facet list according to the given sort order.
+     *
+     * Supports both flattened and hierarchical facet lists.
      *
      * @param array          $facetList Facet list returned from Solr
      * @param boolean|string $order     Sort order:
@@ -68,28 +118,13 @@ class HierarchicalFacetHelper implements
      */
     public function sortFacetList(&$facetList, $order = null)
     {
-        // We need a boolean flag indicating whether or not to sort only the top
-        // level of the hierarchy. If we received a string configuration option,
-        // we should set the flag accordingly (boolean values of $order are
-        // supported for backward compatibility).
-        $topLevel = $order ?? 'count';
-        if (is_string($topLevel)) {
-            switch (strtolower(trim($topLevel))) {
-                case 'top':
-                    $topLevel = true;
-                    break;
-                case 'all':
-                    $topLevel = false;
-                    break;
-                case '':
-                case 'count':
-                    // At present, we assume the incoming list is already sorted by
-                    // count, so no further action is needed. If in future we need
-                    // to support re-sorting an arbitrary list, rather than simply
-                    // operating on raw Solr values, we may need to implement logic.
-                    return;
-            }
-        }
+        // Map $order to a sort setting that's simple and fast to compare (boolean values of $order are
+        // supported for backward compatibility):
+        $sort = match ($order) {
+            true, 'top' => static::SORT_TOP,
+            false, 'all' => static::SORT_ALL,
+            default => static::SORT_COUNT,
+        };
 
         // Parse level from each facet value so that the sort function
         // can run faster
@@ -101,8 +136,11 @@ class HierarchicalFacetHelper implements
         }
         // Avoid problems having the reference set further below
         unset($facetItem);
-        $sortFunc = function ($a, $b) use ($topLevel) {
-            if ($a['level'] == $b['level'] && (!$topLevel || $a['level'] == 0)) {
+        $sortFunc = function ($a, $b) use ($sort) {
+            if (
+                $a['level'] == $b['level']
+                && ($sort === static::SORT_ALL || ($a['level'] == 0 && $sort === static::SORT_TOP))
+            ) {
                 $aText = $a['displayText'] == $a['value']
                     ? $this->formatDisplayText($a['displayText'])
                     : $a['displayText'];
@@ -116,6 +154,15 @@ class HierarchicalFacetHelper implements
                 : $a['level'] - $b['level'];
         };
         usort($facetList, $sortFunc);
+
+        // Sort children too if available:
+        foreach ($facetList as &$facetItem) {
+            if (!empty($facetItem['children'])) {
+                $this->sortFacetList($facetItem['children'], static::SORT_ALL === $sort ? 'all' : 'count');
+            }
+        }
+        // Unset reference:
+        unset($facetItem);
     }
 
     /**
@@ -378,5 +425,72 @@ class HierarchicalFacetHelper implements
             }
         }
         return $result;
+    }
+
+    /**
+     * Filter hierarchical facets
+     *
+     * @param string  $name    Facet name
+     * @param array   $facets  Facet list
+     * @param Options $options Options
+     *
+     * @return array
+     */
+    public function filterFacets($name, $facets, $options): array
+    {
+        $filters = $options->getHierarchicalFacetFilters($name);
+        $excludeFilters = $options->getHierarchicalExcludeFilters($name);
+
+        if (!$filters && !$excludeFilters) {
+            return $facets;
+        }
+
+        if ($filters) {
+            foreach ($facets as $key => &$facet) {
+                $value = $facet['value'];
+                [$level] = explode('/', $value);
+                $match = false;
+                $levelSpecified = false;
+                foreach ($filters as $filterItem) {
+                    [$filterLevel] = explode('/', $filterItem);
+                    if ($level === $filterLevel) {
+                        $levelSpecified = true;
+                    }
+                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                        $match = true;
+                    }
+                }
+                if (!$match && $levelSpecified) {
+                    unset($facets[$key]);
+                } elseif (!empty($facet['children'])) {
+                    $facet['children'] = $this->filterFacets(
+                        $name,
+                        $facet['children'],
+                        $options
+                    );
+                }
+            }
+        }
+
+        if ($excludeFilters) {
+            foreach ($facets as $key => &$facet) {
+                $value = $facet['value'];
+                foreach ($excludeFilters as $filterItem) {
+                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                        unset($facets[$key]);
+                        continue 2;
+                    }
+                }
+                if (!empty($facet['children'])) {
+                    $facet['children'] = $this->filterFacets(
+                        $name,
+                        $facet['children'],
+                        $options
+                    );
+                }
+            }
+        }
+
+        return array_values($facets);
     }
 }

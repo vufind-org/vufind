@@ -1,0 +1,3 @@
+<?php foreach ($this->driver->getLabels() as $label): ?>
+  <span class="label label-default label-<?=$this->escapeHtmlAttr($label['class'])?>"><?=$this->transEsc($label['label'])?></span>
+<?php endforeach; ?>

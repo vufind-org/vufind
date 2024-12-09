@@ -3,7 +3,7 @@
 /**
  * SOLR 4.x error listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -122,10 +122,10 @@ class ErrorListener extends AbstractErrorListener
     {
         if ($response->getHeaders()->has('content-type')) {
             $type = $response->getHeaders()->get('content-type')->getFieldValue();
-            if (strpos($type, 'application/json') === 0) {
+            if (str_starts_with($type, 'application/json')) {
                 return self::TYPE_JSON;
             }
-            if (strpos($type, 'application/xml') === 0) {
+            if (str_starts_with($type, 'application/xml')) {
                 return self::TYPE_XML;
             }
         }

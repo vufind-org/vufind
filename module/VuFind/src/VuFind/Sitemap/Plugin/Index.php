@@ -3,7 +3,7 @@
 /**
  * Index-based generator plugin
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -112,6 +112,8 @@ class Index extends AbstractGeneratorPlugin
     /**
      * Generate urls for the sitemap.
      *
+     * May yield a string per URL or an array that defines lastmod in addition to url.
+     *
      * @return \Generator
      */
     public function getUrls(): \Generator
@@ -135,13 +137,17 @@ class Index extends AbstractGeneratorPlugin
                     $this->countPerPage,
                     $this->filters
                 );
-                foreach ($result['ids'] as $item) {
+                foreach ($result['ids'] as $index => $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
+                    if (!str_contains($loc, 'http')) {
                         $loc = 'http://' . $loc;
                     }
                     $recordCount++;
-                    yield $loc;
+                    if (isset($result['lastmods'][$index])) {
+                        yield ['url' => $loc, 'lastmod' => $result['lastmods'][$index]];
+                    } else {
+                        yield $loc;
+                    }
                 }
                 $currentPage++;
                 $this->verboseMsg("Page $currentPage, $recordCount processed");

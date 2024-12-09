@@ -3,7 +3,7 @@
 /**
  * Table Definition for change_tracker
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -77,7 +77,7 @@ class ChangeTracker extends Gateway
      * @param string $core The Solr core holding the record.
      * @param string $id   The ID of the record being indexed.
      *
-     * @return \VuFind\Db\Row\ChangeTracker|null
+     * @return ?\VuFind\Db\Row\ChangeTracker
      */
     public function retrieve($core, $id)
     {

@@ -3,7 +3,7 @@
 /**
  * Redi resolver driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2015.
  *
@@ -56,9 +56,9 @@ class RediTest extends \PHPUnit\Framework\TestCase
      */
     protected $openUrlConfig = [
         'OpenURL' => [
-            'url' => "http://www.redi-bw.de/links/ubl",
-            'rfr_id' => "www.ub.uni-leipzig.de",
-            'resolver' => "redi",
+            'url' => 'http://www.redi-bw.de/links/ubl',
+            'rfr_id' => 'www.ub.uni-leipzig.de',
+            'resolver' => 'redi',
             'window_settings' => "toolbar=no,location=no,directories=no,buttons=no,status=no,menubar=no,'
                 . 'scrollbars=yes,resizable=yes,width=550,height=600",
             'show_in_results' => false,
@@ -82,32 +82,32 @@ class RediTest extends \PHPUnit\Framework\TestCase
 
         $testResult = [
             0 => [
-                'title' => "DOI:10.1007/s11606-014-2915-9",
+                'title' => 'DOI:10.1007/s11606-014-2915-9',
                 'href' => 'http://www-fr.redi-bw.de/links/?rl_site=ubl&rl_action=link&rl_link_target=citation'
                     . '&rl_link_name=doi'
                     . '&rl_citation=9443914d0e261c0c1f6a3fd8151213c1d4cec05f5d3053097da6fa5597bbb9d7',
                 'access' => 'unknown',
                 'coverage' => null,
-                'service_type' => "getDOI",
+                'service_type' => 'getDOI',
              ],
             1 => [
-                'title' => "Zum Volltext (via SpringerLink)",
+                'title' => 'Zum Volltext (via SpringerLink)',
                 'href' => 'http://www-fr.redi-bw.de/links/?rl_site=ubl&rl_action=link&rl_link_target=ezb'
                     . '&rl_link_name=0.article'
                     . '&rl_citation=9443914d0e261c0c1f6a3fd8151213c1d4cec05f5d3053097da6fa5597bbb9d7',
                 'access'        => 'limited',
-                'coverage' => "",
-                'service_type' => "getFullTxt",
+                'coverage' => '',
+                'service_type' => 'getFullTxt',
             ],
             2 => [
-                'title' => "Zur Zeitschriftenhomepage* (via www.ncbi.nlm.nih.gov)",
+                'title' => 'Zur Zeitschriftenhomepage* (via www.ncbi.nlm.nih.gov)',
                 'href' => 'http://www-fr.redi-bw.de/links/?rl_site=ubl&rl_action=link&rl_link_target=ezb'
                     . '&rl_link_name=1.article'
                     . '&rl_citation=9443914d0e261c0c1f6a3fd8151213c1d4cec05f5d3053097da6fa5597bbb9d7',
                 'access'        => 'open',
-                'coverage' => "*Es konnte nicht zuverlÃ¤ssig festgestellt werden, ob der gesuchte Aufsatz "
-                    . "in den Zeitraum fÃ¤llt, fÃ¼r den bei diesem Anbieter der Volltext verfÃ¼gbar ist.",
-                'service_type' => "getFullTxt",
+                'coverage' => '*Es konnte nicht zuverlÃ¤ssig festgestellt werden, ob der gesuchte Aufsatz '
+                    . 'in den Zeitraum fÃ¤llt, fÃ¼r den bei diesem Anbieter der Volltext verfÃ¼gbar ist.',
+                'service_type' => 'getFullTxt',
             ],
         ];
 

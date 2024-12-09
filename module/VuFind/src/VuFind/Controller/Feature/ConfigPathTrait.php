@@ -3,7 +3,7 @@
 /**
  * VuFind Action Feature Trait - Configuration file path methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -49,7 +49,7 @@ trait ConfigPathTrait
      */
     protected function getBaseConfigFilePath(string $filename): string
     {
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         return $resolver->getBaseConfigPath($filename);
     }
 
@@ -62,7 +62,7 @@ trait ConfigPathTrait
      */
     protected function getForcedLocalConfigPath(string $filename): string
     {
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         return $resolver->getLocalConfigPath($filename, null, true);
     }
 }

@@ -1,0 +1,13 @@
+; A parent local directory can be specified. When resolving paths to configuration
+; files this dir will also be searched if the file does not exist in the current dir.
+[Parent_Dir]
+; Path to the parent directory
+;path =
+; Whether the path is relative to this file (true) or absolute (false).
+; Defaults to false.
+;is_relative_path =
+
+; Configurations for this local directory
+[Local_Dir]
+; A custom config subdir can be configured. The default is config/vufind.
+;config_subdir =

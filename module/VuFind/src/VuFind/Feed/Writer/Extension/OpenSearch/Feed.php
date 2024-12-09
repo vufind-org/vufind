@@ -3,7 +3,7 @@
 /**
  * Laminas\Feed\Feed extension for Open Search
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Deutsches Archäologisches Institut 2015.
  *
@@ -34,13 +34,16 @@ use Laminas\Feed\Writer\Exception;
 use Laminas\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
 use Laminas\Stdlib\StringUtils;
 
+use function in_array;
+use function is_string;
+
 /**
  * Laminas\Feed\Feed extension for Open Search
  *
  * Note: There doesn't seem to be a generic base class for this functionality,
  * and creating a class with no parent blows up due to unexpected calls to
- * Itunes-related functionality.  To work around this, we are extending the
- * equivalent Itunes plugin.  This works fine, but perhaps in future there will
+ * Itunes-related functionality. To work around this, we are extending the
+ * equivalent Itunes plugin. This works fine, but perhaps in future there will
  * be a more elegant way to achieve the same effect.
  *
  * @category VuFind

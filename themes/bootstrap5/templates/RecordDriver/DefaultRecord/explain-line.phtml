@@ -1,0 +1,42 @@
+<tr>
+  <td class="percentage">
+    <?=$this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
+  </td>
+  <td>
+    <?php
+    if ($function !== null) {
+      echo $this->transEsc('explain_function_query_label') . ': ' . $function;
+    } else {
+      if (count($fieldName) > 1) {
+        echo $this->transEsc('Synonym') . ': [';
+      }
+
+      for ($i = 0; $i < count($fieldName); $i++) {
+        $name = $fieldName[$i];
+        $value = $fieldValue[$i] ?? '';
+        $exactMatch = $explainElement['exactMatch'][$i] ?? '';
+        if (!empty($name)) {
+          $description = $this->translate('IndexFieldDescription::' . $name);
+          $description = $name !== $description ? $description : '';
+        } else {
+          $description = '';
+        }
+        $exactMatchClass = ($exactMatch ?? 'unknown') . '-match';
+        echo '<span class="' . $exactMatchClass . '">"' . $this->escapeHtml($value) . '"</span> ' . $this->transEsc('in');
+        echo ' <span class="field-name" title="' . $this->escapeHtmlAttr($description) . '">';
+        echo  $this->escapeHtml($name) . (!empty($description) ? $this->icon('question-circle') : '');
+        echo '</span>';
+        echo ($i < count($fieldName) - 1) ? ', ' : '';
+      }
+    }
+
+    $modifier = isset($explainElement['fieldModifier'])
+      ? ', ' . $this->transEsc(
+          'explain_modifier',
+          ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)]
+      )
+      : '';
+    echo(count($fieldName) > 1 ? ']' : '') . $modifier
+    ?>
+  </td>
+</tr>

@@ -3,7 +3,7 @@
 /**
  * EuropeanaResultsDeferred Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_object;
+
 /**
  * EuropeanaResultsDeferred Recommendations Module
  *
@@ -42,97 +44,42 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class EuropeanaResultsDeferred implements RecommendInterface
+class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Raw configuration parameters
+     * Number of expected module parameters (from .ini config)
      *
-     * @var string
+     * @var int
      */
-    protected $rawParams;
+    protected $paramCount = 4;
 
     /**
-     * Current search query
+     * Initialize the lookFor query parameter. Called from init().
      *
-     * @var string
-     */
-    protected $lookfor;
-
-    /**
-     * Configuration parameters processed for submission via AJAX
-     *
-     * @var string
-     */
-    protected $processedParams;
-
-    /**
-     * Store the configuration of the recommendation module.
-     *
-     * @param string $settings Settings from searches.ini.
-     *
-     * @return void
-     */
-    public function setConfig($settings)
-    {
-        $this->rawParams = $settings;
-    }
-
-    /**
-     * Called before the Search Results object performs its main search
-     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
-     * This method is responsible for setting search parameters needed by the
-     * recommendation module and for reading any existing search parameters that may
-     * be needed.
-     *
-     * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param \VuFind\Search\Base\Params $params   Search parameter object
+     * @param \Laminas\Stdlib\Parameters $request  Parameter object representing user
      * request.
+     * @param array                      $settings Parameter array (passed by reference)
      *
      * @return void
      */
-    public function init($params, $request)
+    protected function initLookFor($params, $request, &$settings)
     {
-        // Parse out parameters:
-        $settings = explode(':', $this->rawParams);
-
-        // Make sure all elements of the params array are filled in, even if just
-        // with a blank string, so we can rebuild the parameters to pass through
-        // AJAX later on!
-        for ($i = 0; $i < 4; $i++) {
-            $settings[$i] ??= '';
-        }
-
         // Collect the best possible search term(s):
         $this->lookfor = $request->get('lookfor', '');
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }
         $this->lookfor = trim($this->lookfor);
-        $this->processedParams = implode(':', $settings);
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
+     * Store the configuration of the recommendation module.
      *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
+     * @return string Module name in call to AjaxHandler
      */
-    public function process($results)
+    protected function getAjaxModule()
     {
-        // No action needed
-    }
-
-    /**
-     * Get the URL parameters needed to make the AJAX recommendation request.
-     *
-     * @return string
-     */
-    public function getUrlParams()
-    {
-        return 'mod=EuropeanaResults&params=' . urlencode($this->processedParams)
-            . '&lookfor=' . urlencode($this->lookfor);
+        return 'EuropeanaResults';
     }
 }

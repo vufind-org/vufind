@@ -3,7 +3,7 @@
 /**
  * Highlight view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,14 +38,6 @@ namespace VuFind\View\Helper\Bootstrap3;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Highlight extends \VuFind\View\Helper\Root\Highlight
+class Highlight extends \VuFind\View\Helper\Bootstrap5\Highlight
 {
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->startTag = '<mark>';
-        $this->endTag = '</mark>';
-    }
 }

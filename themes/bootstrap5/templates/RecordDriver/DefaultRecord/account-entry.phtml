@@ -1,0 +1,37 @@
+<h2>
+  <?php
+    $ilsDetails = $driver->getExtraDetail('ils_details');
+    // If this is a non-missing Solr record, we should display a link:
+    if (is_a($driver, \VuFind\RecordDriver\SolrDefault::class) && !is_a($driver, \VuFind\RecordDriver\Missing::class)) {
+      $title = $driver->getTitle();
+      $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
+      echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))
+        . '" class="title">' . $title . '</a>';
+    } elseif (!empty($ilsDetails['title'])) {
+      // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
+      echo '<span class="title">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
+    } else {
+      // Last resort -- indicate that no title could be found.
+      echo $this->transEsc('Title not available');
+    }
+    $listAuthors = $driver->getPrimaryAuthors();
+  ?>
+  <?php if (!empty($listAuthors)): ?>
+    <span class="authors">
+      <?=$this->transEsc('by')?>:
+      <a href="<?=$this->record($driver)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
+    </span>
+  <?php endif; ?>
+</h2>
+<?php if (count($driver->getFormats()) > 0): ?>
+  <?=$this->record($driver)->getFormatList() ?>
+  <br>
+<?php endif; ?>
+<?php if (!empty($ilsDetails['volume'])): ?>
+  <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+  <br>
+<?php endif; ?>
+<?php if (!empty($ilsDetails['publication_year'])): ?>
+  <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+  <br>
+<?php endif; ?>

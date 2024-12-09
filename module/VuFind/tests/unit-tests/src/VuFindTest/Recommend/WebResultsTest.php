@@ -3,7 +3,7 @@
 /**
  * WebResults Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -49,13 +49,16 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $class = new \ReflectionClass('VuFind\Recommend\WebResults');
+        $class = new \ReflectionClass(WebResults::class);
         $method = $class->getMethod('getSearchClassId');
         $method->setAccessible(true);
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $obj = new WebResults($runner);
+        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $obj = new WebResults($runner, $configManager);
 
         $this->assertSame('SolrWeb', $method->invoke($obj));
     }

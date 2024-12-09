@@ -3,7 +3,7 @@
 /**
  * Related Records: Bookplates
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -71,7 +71,7 @@ class Bookplate implements RelatedInterface
     protected $fullUrlTemplate;
 
     /**
-     * URL temlate for thumbnail
+     * URL template for thumbnail
      */
     protected $thumbUrlTemplate;
 

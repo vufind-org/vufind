@@ -174,6 +174,7 @@ return [
             'ui-failure' => 'Fugue:exclamation.png',
             // 'ui-menu' => inherited from parent theme,
             'ui-remove' => 'Fugue:cross.png',
+            // 'ui-reset-search' => 'Alias:ui-remove',
             'ui-save' => 'Fugue:disk.png',
             'ui-success' => 'Fugue:accept.png',
             'user-checked-out' => 'Fugue:book.png',

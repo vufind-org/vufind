@@ -3,7 +3,7 @@
 /**
  * Factory for the authority SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -63,8 +63,7 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
      */
     protected function getCreateRecordCallback(): ?callable
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         return [$manager, 'getSolrAuthRecord'];
     }
 }

@@ -1,0 +1,93 @@
+<?php $this->headTitle($this->translate('Critical Issue: Replace blowfish encryption')) ?>
+
+<h2>Critical Issue: Replace blowfish encryption</h2>
+
+<div class="alert alert-danger">
+	<p>The <a href="https://en.wikipedia.org/wiki/Blowfish_(cipher)">Blowfish encryption algorithm</a> is vulnerable to certain attacks, particularly in contexts like HTTPS. <a href="https://wiki.openssl.org/index.php/OpenSSL_3.0#Providers">Versions of OpenSSL starting with 3.0 will no longer support blowfish by default</a>, which can break your VuFind installation. You can <a href="https://openlibraryfoundation.atlassian.net/browse/VUFIND-1563">read more about this issue on the VuFind JIRA ticket</a>.</p>
+</div>
+
+<h3>1. Enable blowfish</h3>
+
+<p>In order to resolve this problem, we will need to enable blowfish encryption so you can convert your encrypted data to a new method. <a href="#conversion">More information on converting below</a>.</p>
+
+<?php if ($this->blowfishIsWorking): ?>
+	<div class="alert alert-success">Blowfish is enabled on your system</div>
+<?php else: ?>
+	<div class="panel panel-danger">
+	  	<div class="panel-heading">
+	    	<p class="panel-title">Blowfish is not enabled on your system</p>
+		</div>
+
+		<div class="panel-body">
+
+			<p>Your system's version of OpenSSL may not configured to provide the Blowfish algorithm. You may need to <a href="https://wiki.openssl.org/index.php/OpenSSL_3.0#Providers">follow these steps to enable the legacy provider in OpenSSL</a>.
+
+			<ol>
+				<li>
+					<p><b>Identify the location of your OpenSSL configuration</b></p>
+
+					<pre id="find-openssl">php -i | grep "Openssl default config"</pre>
+					<?=$this->copyToClipboardButton('find-openssl') ?>
+				</li>
+
+				<li>
+					<p><b>Edit the OpenSSL config</b> (most likely /usr/lib/ssl/openssl.cnf) and find the Providers configuration. Under Ubuntu, you need to find a [providers_sect] section, and add the line:</p>
+
+					<pre>legacy = legacy_sect</pre>
+				</li>
+
+				<li>
+					<p><b>Find the section for the default provider</b> and make sure to uncomment <kbd>activate = 1</kbd> in that section</p>
+
+					<pre>
+[provider_sect]
+default = default_sect
+legacy = legacy_sect
+
+[default_sect]
+activate = 1</pre>
+				</li>
+
+				<li>
+					<p><b>Add a new section</b> somewhere below:</p>
+
+					<pre>
+[legacy_sect]
+activate = 1</pre>
+				</li>
+
+				<li><b>Restart Apache</b></li>
+
+				<li>Refresh this page or <a href="#conversion">move on to the conversion step below</a>.</li>
+			</ol>
+
+			<hr>
+
+			<p>Here is a complete example of the changes you will need to make to your OpenSSL configuration file.</p>
+
+			<pre>
+# /usr/lib/ssl/openssl.cnf or /etc/ssl/openssl.cnf
+
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+default = default_sect
+legacy = legacy_sect
+
+[default_sect]
+activate = 1
+
+[legacy_sect]
+activate = 1</pre>
+		</div>
+	</div>
+<?php endif; ?>
+
+<h3 id="conversion">2. Convert existing data to a new encryption method</h3>
+
+<p>You can use VuFind's CLI tool <kbd>switch_db_hash</kbd> to convert all passwords from blowfish to another encryption method. Below, you can find a pre-filled example command that will convert your encryption to <?=$this->escapeHtml($newAlgorithm)?> (the new recommended VuFind encryption method) with a random key. You can use <kbd>openssl_get_cipher_methods()</kbd> to see all encryption methods available on your system.</p>
+
+<pre id="example-cmd">php $VUFIND_HOME/public/index.php util switch_db_hash <?=$this->escapeHtml($newAlgorithm)?> "<?=$this->escapeHtml($exampleKey) ?>"</pre>
+
+<?=$this->copyToClipboardButton('#example-cmd') ?>

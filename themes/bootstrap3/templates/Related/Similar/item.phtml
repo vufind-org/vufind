@@ -1,0 +1,25 @@
+<?php
+    $attrs = ['class' => 'related__icon'];
+
+    $formats = $data->getFormats();
+    $format = $formats[0] ?? null;
+    $icon = $format
+    ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
+    : 'default';
+
+    if ($format) {
+    $attrs['title'] = $format;
+    }
+?>
+<a class="related__title" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+    <?=$this->icon('format-' . $icon, $attrs) ?>
+    <?=$this->escapeHtml($data->getTitle())?>
+</a>
+<?php $authors = $data->getPrimaryAuthors(); ?>
+<?php if (!empty($authors)): ?>
+    <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+<?php endif; ?>
+<?php $pubDates = $data->getPublicationDates(); ?>
+<?php if (!empty($pubDates)): ?>
+    <br><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+<?php endif; ?>

@@ -3,7 +3,7 @@
 /**
  * Factory for record drivers that uses the class name to look up config files.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *

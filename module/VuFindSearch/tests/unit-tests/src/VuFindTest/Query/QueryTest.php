@@ -3,7 +3,7 @@
 /**
  * Unit tests for Query class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -111,7 +111,7 @@ class QueryTest extends TestCase
     public function testMultipleReplacements()
     {
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
-        $q = new Query("color code");
+        $q = new Query('color code');
         $q->replaceTerm(
             'color code',
             '((color code) OR (color codes))',

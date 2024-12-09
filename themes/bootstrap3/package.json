@@ -1,0 +1,16 @@
+{
+  "name": "vufind-bootstrap3",
+  "description": "Dependencies for the bootstrap3 theme",
+  "scripts": {
+    "installBuildDeps": "npm install && node tools/copyDependencies.mjs --only-build-deps",
+    "updateDeps": "npm update && node tools/copyDependencies.mjs"
+  },
+  "dependencies": {
+    "autocomplete.js": "vufind-org/autocomplete.js#v2.1.10",
+    "chart.js": "^4.4.0",
+    "jquery": "^3.7.1",
+    "simple-keyboard": "^3.6.0",
+    "simple-keyboard-layouts": "^3.0.0",
+    "vanilla-cookieconsent": "3.0.0"
+  }
+}

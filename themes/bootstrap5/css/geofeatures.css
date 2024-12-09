@@ -1,0 +1,22 @@
+/* Active is selected cluster = BLUE */
+.marker-cluster-active {
+  background-color: rgba(181, 226, 255, 1);
+  color: #fff;
+}
+
+.marker-cluster-active div {
+  background-color: rgba(59, 136, 255, 0.6);
+  color: #fff;
+}
+
+/* Inactive is search result cluster - not selected = RED */
+.marker-cluster-inactive {
+  background-color: rgba(226, 140, 140, 1);
+  color:#fff;
+}
+      
+.marker-cluster-inactive div {
+  background-color: rgba(145, 10, 10, 0.6);
+  color:#fff;
+}
+

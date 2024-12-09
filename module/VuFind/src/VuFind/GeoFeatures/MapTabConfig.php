@@ -3,7 +3,7 @@
 /**
  * Map Tab Configuration Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -63,7 +63,6 @@ class MapTabConfig extends AbstractConfig
     public function getMapTabOptions()
     {
         $validFields = ['displayCoords', 'mapLabels', 'graticule', 'recordMap'];
-        $options = [];
         // Check geofeatures.ini
         $options = $this->getOptions('geofeatures', 'MapTab', $validFields);
         // Check legacy configuration

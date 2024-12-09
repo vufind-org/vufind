@@ -1,0 +1,5 @@
+<?php
+$previews = $this->driver->getPreviewLinks();
+if (isset($previews[0])): ?>
+    <a href="<?=$this->escapeHtmlAttr($previews[0])?>" target="_blank" class="btn btn-info btn-xs"><?=$this->transEsc('Preview')?></a>
+<?php endif; ?>

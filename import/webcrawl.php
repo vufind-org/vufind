@@ -2,7 +2,7 @@
 /**
  * Command-line tool to crawl website for special index.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2010.
  *

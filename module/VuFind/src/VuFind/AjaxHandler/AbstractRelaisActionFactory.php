@@ -3,7 +3,7 @@
 /**
  * Factory for AbstractRelaisAction AJAX handlers.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -69,11 +69,10 @@ class AbstractRelaisActionFactory implements \Laminas\ServiceManager\Factory\Fac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $user = $container->get(\VuFind\Auth\Manager::class)->isLoggedIn();
         return new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Connection\Relais::class),
-            $user ?: null
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject()
         );
     }
 }
