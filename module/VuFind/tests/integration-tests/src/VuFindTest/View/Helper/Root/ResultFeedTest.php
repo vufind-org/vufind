@@ -66,11 +66,10 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getPlugins()
+    protected function getPlugins(): array
     {
         $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
-        $currentPath->expects($this->any())->method('__invoke')
-            ->will($this->returnValue('/test/path'));
+        $currentPath->expects($this->any())->method('__invoke')->willReturn('/test/path');
 
         $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
             ->setConstructorArgs(
@@ -80,12 +79,10 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                     ),
                 ]
             )->getMock();
-        $recordLinker->expects($this->any())->method('getUrl')
-            ->will($this->returnValue('test/url'));
+        $recordLinker->expects($this->any())->method('getUrl')->willReturn('test/url');
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $serverUrl->expects($this->any())->method('__invoke')
-            ->will($this->returnValue('http://server/url'));
+        $serverUrl->expects($this->any())->method('__invoke')->willReturn('http://server/url');
 
         return compact('currentPath', 'recordLinker') + ['serverurl' => $serverUrl];
     }
@@ -95,7 +92,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRSS()
+    public function testRSS(): void
     {
         // Set up a request -- we'll sort by title to ensure a predictable order
         // for the result list (relevance or last_indexed may lead to unstable test
