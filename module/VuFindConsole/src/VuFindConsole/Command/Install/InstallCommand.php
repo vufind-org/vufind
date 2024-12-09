@@ -884,11 +884,13 @@ class InstallCommand extends Command
             return "Cannot write to $localComposer.";
         }
 
-        // Run Composer to update autoloader:
+        // Try to automatically run Composer to update autoloader; output warning if it fails:
         chdir($this->baseDir);
         if (false === exec('composer install', result_code: $composerResult) || $composerResult !== 0) {
-            return "Problem running composer to update autoload rules for module $module.\n"
-                . 'Please make sure the composer command is on your search path.';
+            $output->writeLn(
+                "<error>WARNING: Could not run composer to update autoload rules for module $module.\n"
+                . 'Please run "composer install" to ensure correct custom module loading.</error>'
+            );
         }
         return true;
     }
