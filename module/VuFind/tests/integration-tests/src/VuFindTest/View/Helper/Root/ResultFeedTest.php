@@ -73,7 +73,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
 
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
-        $record->method('getLinkDetails')->willReturn([]);
+        $record->method('getLinkDetails')->willReturn([['url' => 'http://driver-url']]);
 
         $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
             ->setConstructorArgs(
@@ -92,11 +92,27 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testRSS.
+     *
+     * @return array[]
+     */
+    public static function rssProvider(): array
+    {
+        return [
+            'default options' => [[], 'http://server/url'],
+            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], 'http://server/url'],
+            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], 'http://driver-url'],
+        ];
+    }
+
+    /**
      * Test feed generation
      *
      * @return void
+     *
+     * @dataProvider rssProvider
      */
-    public function testRSS(): void
+    public function testRSS(array $options = [], string $expectedLink = 'http://server/url'): void
     {
         // Set up a request -- we'll sort by title to ensure a predictable order
         // for the result list (relevance or last_indexed may lead to unstable test
@@ -110,7 +126,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);
 
-        $helper = new ResultFeed();
+        $helper = new ResultFeed($options);
         $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $translator = $this->getMockTranslator(
             [
@@ -153,6 +169,6 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             $items[1]->getTitle()
         );
         // Expect fake URL from fake serverUrl helper:
-        $this->assertEquals('http://server/url', $items[1]->getLink());
+        $this->assertEquals($expectedLink, $items[1]->getLink());
     }
 }

@@ -62,6 +62,15 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     protected $overrideTitle = null;
 
     /**
+     * Constructor
+     *
+     * @param array $options Options array (valid key = 'prioritizeRecordDriverLinks')
+     */
+    public function __construct(protected array $options = [])
+    {
+    }
+
+    /**
      * Set override title.
      *
      * @param string $title Title
@@ -310,8 +319,11 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      */
     protected function getLinkFromRecord(RecordDriver $record): string
     {
-        // Try multiple strategies to obtain a link:
-        $methodsToTry = ['getLinkFromRecordLinker', 'getLinkFromRecordDriverMethod'];
+        // Try multiple strategies to obtain a link; we'll change the order of
+        // strategies based on the configuration.
+        $methodsToTry = ($this->options['prioritizeRecordDriverLinks'] ?? false)
+            ? ['getLinkFromRecordDriverMethod', 'getLinkFromRecordLinker']
+            : ['getLinkFromRecordLinker', 'getLinkFromRecordDriverMethod'];
         foreach ($methodsToTry as $linkMethod) {
             $url = $this->$linkMethod($record);
             // If we found a link, return it now!
