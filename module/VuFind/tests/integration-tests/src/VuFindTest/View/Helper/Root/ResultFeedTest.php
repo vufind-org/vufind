@@ -152,5 +152,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             . 'the journal of the Institute for Rational-Emotive Therapy.',
             $items[1]->getTitle()
         );
+        // Expect fake URL from fake serverUrl helper:
+        $this->assertEquals('http://server/url', $items[1]->getLink());
     }
 }
