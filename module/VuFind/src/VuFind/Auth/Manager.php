@@ -29,9 +29,9 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
 use LmcRbacMvc\Identity\IdentityInterface;
+use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;

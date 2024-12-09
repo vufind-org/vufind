@@ -62,14 +62,14 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * WorldCat v2 configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $wcConfig;
 

@@ -229,14 +229,13 @@ class Server
     /**
      * Initialize settings
      *
-     * @param \Laminas\Config\Config $config  VuFind configuration
-     * @param string                 $baseURL The base URL for the OAI server
-     * @param array                  $params  The incoming OAI-PMH parameters (i.e.
-     * $_GET)
+     * @param \VuFind\Config\Config $config  VuFind configuration
+     * @param string                $baseURL The base URL for the OAI server
+     * @param array                 $params  The incoming OAI-PMH parameters (i.e. $_GET)
      *
      * @return void
      */
-    public function init(\Laminas\Config\Config $config, $baseURL, array $params)
+    public function init(\VuFind\Config\Config $config, $baseURL, array $params)
     {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
@@ -652,11 +651,11 @@ class Server
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\Laminas\Config\Config $config)
+    protected function initializeSettings(\VuFind\Config\Config $config)
     {
         // Override default repository name if configured:
         if (isset($config->OAI->repository_name)) {

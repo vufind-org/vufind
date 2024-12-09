@@ -124,6 +124,9 @@ class CombinedController extends AbstractSearch
                 'currentSearch' => $settings,
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
+            if (!empty($settings['view']->extraErrors)) {
+                $viewParams['extraErrors'] = $settings['view']->extraErrors;
+            }
             // Initialize theme resources:
             ($this->getViewRenderer()->plugin('setupThemeResources'))(true);
             // Render content:

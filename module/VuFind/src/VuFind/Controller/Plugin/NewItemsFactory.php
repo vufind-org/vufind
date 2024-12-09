@@ -70,7 +70,7 @@ class NewItemsFactory implements FactoryInterface
         }
         $search
             = $container->get(\VuFind\Config\PluginManager::class)->get('searches');
-        $config = $search->NewItem ?? new \Laminas\Config\Config([]);
+        $config = $search->NewItem ?? new \VuFind\Config\Config([]);
         return new $requestedName($config);
     }
 }

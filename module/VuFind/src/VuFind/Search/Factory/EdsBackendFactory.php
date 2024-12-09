@@ -58,7 +58,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     /**
      * EDS configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $edsConfig;
 

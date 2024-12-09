@@ -29,9 +29,9 @@
 
 namespace VuFind\Db\Table;
 
-use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container;
+use VuFind\Config\Config;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Row\User as UserRow;
 

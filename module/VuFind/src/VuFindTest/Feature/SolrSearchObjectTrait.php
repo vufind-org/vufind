@@ -53,7 +53,7 @@ trait SolrSearchObjectTrait
     {
         $manager = $this->createMock(\VuFind\Config\PluginManager::class);
         $manager->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Laminas\Config\Config([])));
+            ->will($this->returnValue(new \VuFind\Config\Config([])));
         return $manager;
     }
 

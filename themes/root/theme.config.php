@@ -6,6 +6,7 @@ return [
             'Laminas\View\Helper\HeadTitle' => 'VuFind\View\Helper\Root\HeadTitleFactory',
             'VuFind\View\Helper\Root\AccountCapabilities' => 'VuFind\View\Helper\Root\AccountCapabilitiesFactory',
             'VuFind\View\Helper\Root\AccountMenu' => 'VuFind\View\Helper\Root\AccountMenuFactory',
+            'VuFind\View\Helper\Root\AdminMenu' => 'VuFind\View\Helper\Root\AdminMenuFactory',
             'VuFind\View\Helper\Root\AddEllipsis' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\AddThis' => 'VuFind\View\Helper\Root\AddThisFactory',
             'VuFind\View\Helper\Root\AlphaBrowse' => 'VuFind\View\Helper\Root\AlphaBrowseFactory',
@@ -109,6 +110,7 @@ return [
         'aliases' => [
             'accountCapabilities' => 'VuFind\View\Helper\Root\AccountCapabilities',
             'accountMenu' => 'VuFind\View\Helper\Root\AccountMenu',
+            'adminMenu' => 'VuFind\View\Helper\Root\AdminMenu',
             'addEllipsis' => 'VuFind\View\Helper\Root\AddEllipsis',
             'addThis' => 'VuFind\View\Helper\Root\AddThis',
             'alphabrowse' => 'VuFind\View\Helper\Root\AlphaBrowse',

@@ -29,12 +29,12 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Helper\Url;
 use Laminas\View\Resolver\ResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager;
@@ -292,7 +292,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetPreviews(): void
     {
         $driver = $this->loadRecordFixture('testbug1.json');
-        $config = new \Laminas\Config\Config(['foo' => 'bar']);
+        $config = new \VuFind\Config\Config(['foo' => 'bar']);
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('apply')
             ->with($this->equalTo(compact('driver', 'config')))
@@ -792,7 +792,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $view->setHelperPluginManager($container);
         $view->expects($this->any())->method('resolver')
             ->willReturn($this->getMockResolver());
-        $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
+        $config = is_array($config) ? new \VuFind\Config\Config($config) : $config;
         $record = new Record($this->createMock(TagsService::class), $config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);

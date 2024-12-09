@@ -29,9 +29,9 @@
 
 namespace VuFind\ChannelProvider;
 
-use Laminas\Config\Config;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
+use VuFind\Config\Config;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;

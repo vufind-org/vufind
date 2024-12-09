@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Params;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function in_array;
 

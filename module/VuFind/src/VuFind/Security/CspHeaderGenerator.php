@@ -77,7 +77,7 @@ class CspHeaderGenerator implements
     /**
      * CspHeaderGenerator constructor.
      *
-     * @param \Laminas\Config\Config          $config         Configuration
+     * @param \VuFind\Config\Config           $config         Configuration
      * @param \VuFind\Security\NonceGenerator $nonceGenerator Nonce generator
      */
     public function __construct($config, $nonceGenerator)

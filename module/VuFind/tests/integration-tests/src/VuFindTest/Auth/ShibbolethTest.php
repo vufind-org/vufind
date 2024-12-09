@@ -29,12 +29,12 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Http\Headers;
 use Laminas\Http\Request;
 use VuFind\Auth\Shibboleth;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
+use VuFind\Config\Config;
 
 /**
  * Shibboleth authentication test class.

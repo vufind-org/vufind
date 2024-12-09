@@ -32,7 +32,6 @@ namespace VuFind\DigitalContent;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
 use Laminas\Http\Client;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
@@ -40,6 +39,7 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
+use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
@@ -225,6 +225,29 @@ class OverdriveConnector implements
         }
 
         return $result;
+    }
+
+    /**
+     * Is Overdrive content active?
+     *
+     * @return bool
+     */
+    public function isContentActive()
+    {
+        $config = $this->getConfig();
+        if ($config->showMyContent == 'always') {
+            return true;
+        } elseif ($config->showMyContent == 'never') {
+            return false;
+        } else {
+            // assume that it is accessOnly
+            $result = $this->getAccess();
+
+            if (!$result->status && $result->code == 'od_account_noaccess') {
+                return false;
+            }
+            return true;
+        }
     }
 
     /**

@@ -29,7 +29,7 @@
 
 namespace VuFindTest\RecordTab;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\RecordTab\Versions;
 
 /**
@@ -145,7 +145,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConfig()
     {
-        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+        $config = $this->getMockBuilder(\VuFind\Config\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         return $config;
