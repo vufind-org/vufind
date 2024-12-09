@@ -194,7 +194,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      * @param ?Importer $importer Importer object
      * @param ?Writer   $solr     Solr writer object
      * @param ?Config   $config   Configuration
-     * @param array    $methods  Methods to mock
+     * @param array     $methods  Methods to mock
      *
      * @return MockObject&WebCrawlCommand
      */
