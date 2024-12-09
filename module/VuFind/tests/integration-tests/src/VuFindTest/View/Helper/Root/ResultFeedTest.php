@@ -71,6 +71,10 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
         $currentPath->expects($this->any())->method('__invoke')->willReturn('/test/path');
 
+        $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
+        $record->method('__invoke')->willReturn($record);
+        $record->method('getLinkDetails')->willReturn([]);
+
         $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
             ->setConstructorArgs(
                 [
@@ -84,7 +88,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->any())->method('__invoke')->willReturn('http://server/url');
 
-        return compact('currentPath', 'recordLinker') + ['serverurl' => $serverUrl];
+        return compact('currentPath', 'record', 'recordLinker') + ['serverurl' => $serverUrl];
     }
 
     /**

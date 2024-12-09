@@ -285,10 +285,18 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         // First check for a getUrl() method, which is useful for web results, among other things.
         $url = $record->tryMethod('getUrl');
-        if (empty($url) || !is_string($url)) {
-            return null;
+        if (!empty($url) && is_string($url)) {
+            return $url;
         }
-        return $url;
+
+        // Next try picking the first usable value from getUrls() via the Record helper.
+        $recordHelper = $this->getView()->plugin('record');
+        foreach (($recordHelper)($record)->getLinkDetails() as $link) {
+            if (!empty($link['url'])) {
+                return $link['url'];
+            }
+        }
+        return null;
     }
 
     /**
