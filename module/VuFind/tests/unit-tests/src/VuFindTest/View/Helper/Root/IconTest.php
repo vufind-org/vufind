@@ -117,7 +117,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?array            $config  Icon helper configuration array
      * @param ?StorageInterface $cache   Cache storage adapter (null for BlackHole)
-     * @param ?array            $plugins Array of extra plugins for renderer
+     * @param array             $plugins Array of extra plugins for renderer
      * @param bool              $rtl     Are we in right-to-left mode?
      *
      * @return Icon
