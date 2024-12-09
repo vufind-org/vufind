@@ -65,7 +65,7 @@ interface BackendInterface
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
@@ -79,8 +79,8 @@ interface BackendInterface
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */

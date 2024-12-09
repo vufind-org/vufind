@@ -198,10 +198,10 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock command object
      *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param array                 $methods     Methods to mock
+     * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
+     * @param ?ExtendedIniReader     $reader      Reader for .ini files
+     * @param string                 $languageDir Base language file directory
+     * @param array                  $methods     Methods to mock
      *
      * @return CopyStringCommand
      */

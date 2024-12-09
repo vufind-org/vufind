@@ -127,7 +127,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -179,8 +179,8 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */

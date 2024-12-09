@@ -447,9 +447,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Results object
      *
-     * @param Params        $params        Params object
-     * @param SearchService $searchService Search service
-     * @param Loader        $loader        Record loader
+     * @param ?Params        $params        Params object
+     * @param ?SearchService $searchService Search service
+     * @param ?Loader        $loader        Record loader
      *
      * @return Results
      */
@@ -509,8 +509,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options       $options    Options object (null to create)
+     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
      *
      * @return Params
      */

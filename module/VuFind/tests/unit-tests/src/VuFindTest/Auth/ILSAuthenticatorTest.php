@@ -243,10 +243,10 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authenticator
      *
-     * @param Manager            $manager    Auth manager (null for default mock)
-     * @param ILSConnection      $connection ILS connection (null for default mock)
-     * @param EmailAuthenticator $emailAuth  Email authenticator (null for default mock)
-     * @param array              $config     Configuration (null for empty)
+     * @param ?Manager            $manager    Auth manager (null for default mock)
+     * @param ?ILSConnection      $connection ILS connection (null for default mock)
+     * @param ?EmailAuthenticator $emailAuth  Email authenticator (null for default mock)
+     * @param array               $config     Configuration (null for empty)
      *
      * @return ILSAuthenticator
      */

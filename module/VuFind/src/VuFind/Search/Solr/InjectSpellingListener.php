@@ -78,7 +78,7 @@ class InjectSpellingListener
      *
      * @param BackendInterface $backend      Backend
      * @param array            $dictionaries Spelling dictionaries to use.
-     * @param LoggerInterface  $logger       Logger
+     * @param ?LoggerInterface $logger       Logger
      *
      * @return void
      */

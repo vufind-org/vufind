@@ -97,8 +97,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options       $options    Options object (null to create)
+     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
      *
      * @return Params
      */

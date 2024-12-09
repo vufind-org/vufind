@@ -53,10 +53,10 @@ class DeepPagingException extends RuntimeException
     /**
      * Constructor.
      *
-     * @param string    $message   Exception message
-     * @param int       $code      Exception code
-     * @param int       $legalPage A legal page number for results
-     * @param Exception $prev      Previous exception
+     * @param string     $message   Exception message
+     * @param int        $code      Exception code
+     * @param int        $legalPage A legal page number for results
+     * @param ?Exception $prev      Previous exception
      *
      * @return void
      */

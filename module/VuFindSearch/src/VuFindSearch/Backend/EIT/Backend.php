@@ -63,8 +63,8 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param Connector                         $connector EIT connector
-     * @param ?RecordCollectionFactoryInterface $factory   Record collection factory (null for default)
+     * @param Connector                        $connector EIT connector
+     * @param RecordCollectionFactoryInterface $factory   Record collection factory
      *
      * @return void
      */
@@ -82,7 +82,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -106,8 +106,8 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */

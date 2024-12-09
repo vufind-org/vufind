@@ -198,7 +198,7 @@ class Backend extends AbstractBackend implements
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -232,7 +232,7 @@ class Backend extends AbstractBackend implements
      *
      * @param AbstractQuery $query  Search query
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -254,8 +254,8 @@ class Backend extends AbstractBackend implements
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -273,8 +273,8 @@ class Backend extends AbstractBackend implements
     /**
      * Retrieve a batch of documents.
      *
-     * @param array    $ids    Array of document identifiers
-     * @param ParamBag $params Search backend parameters
+     * @param array     $ids    Array of document identifiers
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -314,8 +314,8 @@ class Backend extends AbstractBackend implements
     /**
      * Return similar records.
      *
-     * @param string   $id     Id of record to compare with
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Id of record to compare with
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */

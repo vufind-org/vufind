@@ -59,9 +59,9 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Set up a search page with limits configured
      *
-     * @param string $limitParam Value of limit GET parameter
-     * @param string $options    limit_options setting for searches.ini
-     * @param string $default    default_limit setting for searches.ini
+     * @param string  $limitParam Value of limit GET parameter
+     * @param ?string $options    limit_options setting for searches.ini
+     * @param string  $default    default_limit setting for searches.ini
      *
      * @return Element
      */

@@ -140,7 +140,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock results manager.
      *
-     * @param Results $results Results object
+     * @param ?Results $results Results object
      *
      * @return PluginManager
      */
@@ -158,8 +158,8 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get command to test.
      *
-     * @param Loader        $loader  Record loader
-     * @param PluginManager $results Search results plugin manager
+     * @param ?Loader        $loader  Record loader
+     * @param ?PluginManager $results Search results plugin manager
      *
      * @return SuppressedCommand
      */

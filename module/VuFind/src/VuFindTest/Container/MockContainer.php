@@ -48,7 +48,7 @@ class MockContainer implements ServiceLocatorInterface
      * Alias for createMock(), needed to conform to ServiceLocatorInterface.
      *
      * @param string $name    Name of service to build
-     * @param array  $options Options
+     * @param ?array $options Options
      *
      * @return mixed
      */

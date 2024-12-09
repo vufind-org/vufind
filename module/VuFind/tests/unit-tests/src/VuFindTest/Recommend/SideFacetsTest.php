@@ -364,10 +364,10 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager $configLoader config loader
-     * @param Results                      $results      results object
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
+     * @param ?\VuFind\Config\PluginManager $configLoader config loader
+     * @param ?Results                      $results      results object
+     * @param string                        $settings     settings
+     * @param ?\Laminas\Stdlib\Parameters   $request      request
      *
      * @return SideFacets
      */

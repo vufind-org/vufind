@@ -836,7 +836,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param callable $callback    Callback used to get the results
      * @param callable $compareFunc Callback used to compare the results
      * @param callable $assertion   Assertion to make
-     * @param int      $timeout     Wait timeout (in ms)
+     * @param ?int     $timeout     Wait timeout (in ms)
      *
      * @return void
      */
@@ -876,7 +876,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */
@@ -901,7 +901,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param string   $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */

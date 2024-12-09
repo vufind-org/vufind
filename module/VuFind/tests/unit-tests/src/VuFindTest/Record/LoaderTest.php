@@ -329,10 +329,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Build a loader to test.
      *
-     * @param SearchService  $service        Search service
-     * @param RecordFactory  $factory        Record factory (optional)
-     * @param Cache          $recordCache    Record Cache
-     * @param FallbackLoader $fallbackLoader Fallback record loader
+     * @param SearchService   $service        Search service
+     * @param ?RecordFactory  $factory        Record factory (optional)
+     * @param ?Cache          $recordCache    Record Cache (optional)
+     * @param ?FallbackLoader $fallbackLoader Fallback record loader (optional)
      *
      * @return Loader
      */

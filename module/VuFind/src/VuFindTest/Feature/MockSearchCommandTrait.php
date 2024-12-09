@@ -46,10 +46,10 @@ trait MockSearchCommandTrait
     /**
      * Get a mock search command.
      *
-     * @param ParamBag $params    Parameters for command to return
-     * @param mixed    $context   Context for command to return
-     * @param string   $backendId Backend ID for command
-     * @param mixed    $result    Result to return
+     * @param ?ParamBag $params    Parameters for command to return
+     * @param mixed     $context   Context for command to return
+     * @param string    $backendId Backend ID for command
+     * @param mixed     $result    Result to return
      *
      * @return Command
      */
