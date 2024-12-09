@@ -6,7 +6,7 @@ $finder->in(__DIR__ . '/../config')
     ->in(__DIR__ . '/../public');
 
 $rules = [
-    '@PHP81Migration' => true,
+    '@PHP84Migration' => true,
     '@PHPUnit100Migration:risky' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
@@ -53,7 +53,6 @@ $rules = [
     'no_useless_return' => true,
     'no_whitespace_in_blank_line' => true,
     'non_printable_character' => true,
-    'nullable_type_declaration_for_default_null_value' => true,
     'ordered_imports' => [
         'imports_order' => ['class', 'function', 'const'],
         'sort_algorithm' => 'alpha',
