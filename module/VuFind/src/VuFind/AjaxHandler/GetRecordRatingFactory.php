@@ -3,7 +3,7 @@
 /**
  * Factory for GetRecordRating AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Ratings\RatingsService;
 
 /**
  * Factory for GetRecordRating AJAX handler.
@@ -71,7 +72,8 @@ class GetRecordRatingFactory implements \Laminas\ServiceManager\Factory\FactoryI
         }
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
-            $container->get('ViewRenderer')->plugin('record')
+            $container->get('ViewRenderer')->plugin('record'),
+            $container->get(RatingsService::class)
         );
     }
 }

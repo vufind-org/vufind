@@ -1,0 +1,96 @@
+<?php
+  $addThis = $this->addThis();
+  if (!empty($addThis)) {
+    $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
+  }
+?>
+<nav class="record-nav" aria-label="<?=$this->transEscAttr('ajaxview_label_tools'); ?>">
+  <ul class="action-toolbar">
+    <?php if (count($this->driver->getCitationFormats()) > 0): ?>
+      <li role="none">
+        <a class="cite-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" rel="nofollow">
+          <?=$this->icon('cite') ?>
+          <?=$this->transEsc('Cite this')?>
+        </a>
+      </li>
+    <?php endif; ?>
+
+    <?php if ($this->accountCapabilities()->getSmsSetting() !== 'disabled'): ?>
+      <li role="none">
+        <a class="sms-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'SMS'))?>" rel="nofollow">
+          <?=$this->icon('send-sms') ?>
+          <?=$this->transEsc('Text this')?>
+        </a>
+      </li>
+    <?php endif; ?>
+
+    <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+      <li role="none">
+        <a class="mail-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email'))?>" rel="nofollow">
+          <?=$this->icon('send-email') ?>
+          <?=$this->transEsc('Email this')?>
+        </a>
+      </li>
+    <?php endif; ?>
+
+    <li>
+      <a class="print-record toolbar-btn" href="<?=$this->url()->addQueryParameters(['print' => true])?>" rel="nofollow">
+        <?=$this->icon('print') ?>
+        <?=$this->transEsc('Print')?>
+      </a>
+    </li>
+
+    <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
+    <?php if (count($exportFormats) > 0): ?>
+      <li role="none" class="dropdown">
+        <a class="export-toggle toolbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options">
+          <?=$this->icon('export') ?>
+          <?=$this->transEsc('Export Record') ?>
+        </a>
+        <ul class="dropdown-menu" id="export-options" role="menu">
+          <?php foreach ($exportFormats as $exportFormat): ?>
+            <li role="none">
+              <a class="dropdown-item" <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem">
+                <?=$this->transEsc('export_to', ['%%target%%' => $this->translate($this->export()->getLabelForFormat($exportFormat))])?>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </li>
+    <?php endif; ?>
+
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <li role="none">
+        <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
+          <a class="save-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" rel="nofollow">
+            <?=$this->icon('user-favorites') ?>
+            <?=$this->transEsc('Add to favorites')?>
+          </a>
+        <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
+          <?=$block ?>
+        <?php endif; ?>
+      </li>
+    <?php endif; ?>
+    <?php if (!empty($addThis)): ?>
+      <li role="none">
+        <a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>">
+          <?=$this->icon('addthis-bookmark') ?>
+          <?=$this->transEsc('Bookmark')?>
+        </a>
+      </li>
+    <?php endif; ?>
+
+    <?php if ($this->cart()->isActive()): ?>
+      <li>
+        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
+      </li>
+    <?php endif; ?>
+
+    <li role="none">
+      <a class="permalink-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Permalink'))?>" rel="nofollow">
+        <?=$this->icon('external-link') ?>
+        <?=$this->transEsc('permanent_link')?>
+      </a>
+    </li>
+  </ul>
+</nav>

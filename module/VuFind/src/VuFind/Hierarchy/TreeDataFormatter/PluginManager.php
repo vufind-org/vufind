@@ -3,7 +3,7 @@
 /**
  * Hierarchy tree data formatter plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -47,7 +47,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'json' => Json::class,
-        'xml' => Xml::class,
     ];
 
     /**
@@ -57,7 +56,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Json::class => AbstractBaseFactory::class,
-        Xml::class => AbstractBaseFactory::class,
     ];
 
     /**

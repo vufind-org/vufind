@@ -3,7 +3,7 @@
 /**
  * Factory for SolrDefault-based record drivers that do not need a search service.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -46,6 +46,13 @@ use Psr\Container\ContainerInterface;
 class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
 {
     /**
+     * Configuration file to read search settings from
+     *
+     * @var string
+     */
+    protected $searchIni = 'searches';
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -68,7 +75,7 @@ class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('searches');
+            ->get($this->searchIni);
         $finalOptions = [null, $config];
         return parent::__invoke($container, $requestedName, $finalOptions);
     }

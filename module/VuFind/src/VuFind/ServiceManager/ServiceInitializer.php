@@ -3,7 +3,7 @@
 /**
  * VuFind Service Initializer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -87,6 +87,11 @@ class ServiceInitializer implements InitializerInterface
         if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
             $instance->setDbTableManager(
                 $sm->get(\VuFind\Db\Table\PluginManager::class)
+            );
+        }
+        if ($instance instanceof \VuFind\Db\Service\DbServiceAwareInterface) {
+            $instance->setDbServiceManager(
+                $sm->get(\VuFind\Db\Service\PluginManager::class)
             );
         }
         if ($instance instanceof \Laminas\Log\LoggerAwareInterface) {

@@ -3,7 +3,7 @@
 /**
  * Factory for email authenticator module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019.
  *
@@ -72,10 +72,10 @@ class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\Facto
             $container->get(\VuFind\Validator\CsrfInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
-            $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),
+            $container->get(\VuFind\Net\UserIpReader::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get(\VuFind\Db\Table\AuthHash::class)
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+                ->get(\VuFind\Db\Service\AuthHashServiceInterface::class)
         );
     }
 }

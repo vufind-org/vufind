@@ -3,7 +3,7 @@
 /**
  * IP address utility functions.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Net;
+
+use function count;
+use function defined;
 
 /**
  * IP address utility functions.
@@ -54,7 +57,7 @@ class IpAddressUtils
     {
         // The check for AF_INET6 allows fallback to IPv4 only if necessary.
         // Hopefully that's not necessary.
-        if (strpos($ip, ':') === false || !defined('AF_INET6')) {
+        if (!str_contains($ip, ':') || !defined('AF_INET6')) {
             // IPv4 address
 
             // Append parts until complete

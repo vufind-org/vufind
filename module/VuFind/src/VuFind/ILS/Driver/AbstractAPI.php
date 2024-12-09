@@ -3,7 +3,7 @@
 /**
  * Abstract Driver for API-based ILS drivers
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -29,10 +29,14 @@
 
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
+
+use function in_array;
+use function is_string;
 
 /**
  * Abstract Driver for API-based ILS drivers
@@ -87,8 +91,8 @@ abstract class AbstractAPI extends AbstractBase implements
         $this->debug(
             $method . ' request.' .
             ' URL: ' . $path . '.' .
-            ' Params: ' . print_r($logParams, true) . '.' .
-            ' Headers: ' . print_r($logHeaders, true)
+            ' Params: ' . $this->varDump($logParams) . '.' .
+            ' Headers: ' . $this->varDump($logHeaders)
         );
     }
 
@@ -113,6 +117,23 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
+     * Support method for makeRequest to process an unexpected status code. Can return true to trigger
+     * a retry of the API call or false to throw an exception.
+     *
+     * @param Response $response      HTTP response
+     * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
+    {
+        // No retries by default.
+        return false;
+    }
+
+    /**
      * Make requests
      *
      * @param string            $method              GET/POST/PUT/DELETE/etc
@@ -122,16 +143,22 @@ abstract class AbstractAPI extends AbstractBase implements
      * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
      * NOT cause an ILSException to be thrown. May be an array of integers, a regular
      * expression, or boolean true to allow all codes.
+     * @param string|array      $debugParams         Value to use in place of $params
+     * in debug messages (useful for concealing sensitive data, etc.)
+     * @param int               $attemptNumber       Counter to keep track of attempts
+     * (starts at 1 for the first attempt)
      *
      * @return \Laminas\Http\Response
      * @throws ILSException
      */
     public function makeRequest(
-        $method = "GET",
-        $path = "/",
+        $method = 'GET',
+        $path = '/',
         $params = [],
         $headers = [],
-        $allowedFailureCodes = []
+        $allowedFailureCodes = [],
+        $debugParams = null,
+        $attemptNumber = 1
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
@@ -145,7 +172,7 @@ abstract class AbstractAPI extends AbstractBase implements
         [$req_headers, $params] = $this->preRequest($req_headers, $params);
 
         if ($this->logger) {
-            $this->debugRequest($method, $path, $params, $req_headers);
+            $this->debugRequest($method, $path, $debugParams ?? $params, $req_headers);
         }
 
         // Add params
@@ -161,8 +188,8 @@ abstract class AbstractAPI extends AbstractBase implements
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError("Unexpected " . get_class($e) . ": " . (string)$e);
-            throw new ILSException("Error during send operation.");
+            $this->logError('Unexpected ' . $e::class . ': ' . (string)$e);
+            throw new ILSException('Error during send operation.');
         }
         $code = $response->getStatusCode();
         if (
@@ -170,30 +197,43 @@ abstract class AbstractAPI extends AbstractBase implements
             && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
         ) {
             $this->logError(
-                "Unexpected error response; code: $code, body: "
-                . $response->getBody()
+                "Unexpected error response (attempt #$attemptNumber"
+                . "); code: {$response->getStatusCode()}, body: {$response->getBody()}"
             );
-            throw new ILSException("Unexpected error code.");
+            if ($this->shouldRetryAfterUnexpectedStatusCode($response, $attemptNumber)) {
+                return $this->makeRequest(
+                    $method,
+                    $path,
+                    $params,
+                    $headers,
+                    $allowedFailureCodes,
+                    $debugParams,
+                    $attemptNumber + 1
+                );
+            } else {
+                throw new ILSException('Unexpected error code.');
+            }
         }
         if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {
             if (APPLICATION_ENV !== 'development') {
-                throw new \Exception(
-                    'SECURITY: json_log_file enabled outside of development mode'
+                $this->logError(
+                    'SECURITY: json_log_file enabled outside of development mode; disabling feature.'
                 );
+            } else {
+                $body = $response->getBody();
+                $jsonBody = @json_decode($body);
+                $json = file_exists($jsonLog)
+                    ? json_decode(file_get_contents($jsonLog)) : [];
+                $json[] = [
+                    'expectedMethod' => $method,
+                    'expectedPath' => $path,
+                    'expectedParams' => $params,
+                    'body' => $jsonBody ? $jsonBody : $body,
+                    'bodyType' => $jsonBody ? 'json' : 'string',
+                    'status' => $code,
+                ];
+                file_put_contents($jsonLog, json_encode($json));
             }
-            $body = $response->getBody();
-            $jsonBody = @json_decode($body);
-            $json = file_exists($jsonLog)
-                ? json_decode(file_get_contents($jsonLog)) : [];
-            $json[] = [
-                'expectedMethod' => $method,
-                'expectedPath' => $path,
-                'expectedParams' => $params,
-                'body' => $jsonBody ? $jsonBody : $body,
-                'bodyType' => $jsonBody ? 'json' : 'string',
-                'code' => $code,
-            ];
-            file_put_contents($jsonLog, json_encode($json));
         }
         return $response;
     }

@@ -3,7 +3,7 @@
 /**
  * "Results as feed" view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,10 @@ use Laminas\Feed\Writer\Writer as FeedWriter;
 use Laminas\View\Helper\AbstractHelper;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function is_array;
+use function is_string;
+use function strlen;
 
 /**
  * "Results as feed" view helper

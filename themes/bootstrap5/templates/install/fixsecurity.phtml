@@ -1,0 +1,23 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix Security') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<?=$this->flashmessages()?>
+
+<?php if (isset($this->confirmUserFix) && $this->confirmUserFix): ?>
+  <p>You have existing user data in your database containing non-encrypted passwords.</p>
+  <p>If you continue with enabling security, all of your passwords will be hashed and/or encrypted.</p>
+  <p><b>Please make a database backup before proceeding.</b></p>
+  <p><i>Do you still wish to proceed with enabling enhanced security in the database?</i></p>
+  <form method="post" action="<?=$this->url('install-fixsecurity')?>">
+    <input type="submit" name="fix-user-table" value="Yes" class="btn btn-primary">
+    <input type="submit" name="fix-user-table" value="No" class="btn btn-default">
+  </form>
+<?php else: ?>
+  <p>No security problems found.</p>
+<?php endif; ?>

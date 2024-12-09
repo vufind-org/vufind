@@ -3,7 +3,7 @@
 /**
  * Factory for the reserves SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -61,8 +61,7 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
      */
     protected function getCreateRecordCallback(): ?callable
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         return function ($data) use ($manager) {
             $driver = $manager->get('SolrReserves');
             $driver->setRawData($data);

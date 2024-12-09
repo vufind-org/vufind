@@ -3,7 +3,7 @@
 /**
  * EDS API Querybuilder
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -63,18 +63,20 @@ class QueryBuilder
     /**
      * Construct EdsApi search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
         $queries = $this->abstractQueryToArray($query);
 
         // Send back results
-        $params = new ParamBag(['query' => $queries]);
-        return $params;
+        return new ParamBag(['query' => $queries]);
     }
 
     /**

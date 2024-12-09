@@ -1,0 +1,5 @@
+<?php foreach ($this->driver->getFormats() as $format): ?>
+  <?php if ($translated = $this->transEsc($format)): ?>
+    <span class="format <?=$this->record($this->driver)->getFormatClass($format) ?>"><?=$translated ?></span>
+  <?php endif; ?>
+<?php endforeach; ?>

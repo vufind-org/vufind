@@ -4,7 +4,7 @@
  * Class for treating a set of cookies as an object (inspired by
  * \Laminas\Session\Container).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind\Cookie;
+
+use function strlen;
 
 /**
  * Class for treating a set of cookies as an object (inspired by
@@ -77,7 +79,7 @@ class Container
     {
         $retVal = [];
         foreach ($this->manager->getCookies() as $key => $value) {
-            if (substr($key, 0, strlen($this->groupName)) == $this->groupName) {
+            if (str_starts_with($key, $this->groupName)) {
                 $retVal[substr($key, strlen($this->groupName))] = $value;
             }
         }

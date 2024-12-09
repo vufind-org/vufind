@@ -1,0 +1,304 @@
+.search {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.list-group-item.title { color: $dark-gray; }
+.bulkActionButtons {
+  margin-bottom: 0;
+  label {
+    font-weight: 500;
+    color: $mid-gray;
+  }
+  .clear-selection {
+    font-weight: 500;
+  }
+}
+.search-header.search-header { padding: 0; } // Duplicate to increase specificity
+.search-stats > h2 { margin: 0; } // No results padding
+
+.author-facets { font-size: $reduced-font-size; }
+
+.result {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding: 1rem;
+  padding-right: 0;
+  border-bottom: 1px solid $moon-gray;
+
+  .media-left { padding-left: 0; }
+  .media-right { padding-right: 0; }
+  .record-cover img { border: 1px solid $gray-lighter; }
+  .record-number {
+    font-size: $reduced-font-size;
+    font-weight: bold;
+    color: $gray;
+  }
+
+  .title { font-size: 1rem; }
+  .callnumAndLocation {
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+    font-size: $reduced-font-size;
+  }
+  .format,
+  .label {
+    display: inline-block;
+    padding: 4px .75rem;
+  }
+}
+@media (min-width: 768px) {
+  .result {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+  }
+}
+
+.grid-result {
+  padding-bottom: 1rem;
+  padding-right: 1rem;
+  text-align: center;
+
+  .title { font-size: $reduced-font-size; }
+}
+
+.result.checked,
+.grid-result.checked {
+  color: $search-row-selected-color;
+  background-color: $search-row-selected-bg;
+  border-color: $white;
+  a {
+    color: $search-row-selected-color;
+    text-decoration: underline;
+  }
+  .format,
+  .label {
+    color: $brand-primary;
+    background-color: #fff;
+  }
+  .record-number { color: $search-row-selected-color; }
+  .alert { background-color: $search-row-selected-color; }
+  .alert a { color: $search-row-selected-color; }
+}
+
+.search-header {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+#searchForm_lookfor,
+#searchForm_type { margin-bottom: 4px; }
+
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  border-color: $sidebar-active-bg;
+  background-color: $sidebar-active-bg;
+}
+
+.searchHomeContent {
+  @include full-width();
+  @include clearfix();
+  position: relative;
+  padding: 1rem;
+  padding-bottom: 2rem;
+  color: #fff;
+  font-weight: 500;
+  background-color: $header-bg;
+  background-image: url('../../sandal/images/forest.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+  box-shadow: 0 .5rem 2rem rgba(0,0,0,.1);
+  .btn-link,
+  .nav-tabs a {
+    color: $white;
+    text-shadow: 0 1px 0 $black;
+  }
+  @media (min-width: 768px) {
+    height: 300px;
+    padding: 7rem calc(50vw - 50%); // Align searchbox with container
+  }
+}
+.searchHomeContent::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  padding: .25rem .5rem;
+  padding-left: 1rem;
+  font-size: $font-size-min;
+  color: #fff;
+  background-color: rgba(0,0,0,.3);
+  content: "Photo by Paul Gilmore on Unsplash";
+  @media (min-width: 768px) {
+    left: auto;
+    right: calc(50% - 50vw + .5rem);
+    width: auto;
+    padding-left: .5rem;
+  }
+}
+.template-dir-search.template-name-home .breadcrumbs { border: 0; }
+.home-facet h2 { margin-top: 1rem; }
+
+.search { border: 0; }
+#searchForm {
+  .keyboard-selection {
+    button.dropdown-toggle:hover,
+    button.dropdown-toggle:focus,
+    &.open > button.dropdown-toggle {
+      color: white;
+      background-color: $header-bg;
+      border-color: $header-bg;
+    }
+
+    &:not(.open) {
+      .activated:not(:hover){
+        background: $header-light;
+      }
+    }
+
+    .dropdown-menu .active a,
+    .dropdown-menu .active a:hover {
+      background-color: $header-bg;
+    }
+
+    .btn-primary {
+      height: 22px;
+    }
+  }
+}
+
+.keyboard-box {
+  color: $input-color;
+}
+
+.nav.searchbox {
+  padding: .5rem 0 1rem 0;
+  margin: 0;
+}
+.navbar-form {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.nav.searchbox,
+#searchForm {
+  position: relative;
+  width: 100%;
+
+  .nav-tabs {
+    white-space: nowrap;
+    margin-bottom: 1rem;
+    border-bottom: none;
+  }
+  .nav-tabs a,
+  .nav-tabs a:hover {
+    border: 0;
+    border-bottom: 3px solid transparent;
+  }
+  .nav-tabs a {
+    height: calc(#{$search-tab-height} + .5rem);
+    line-height: calc(#{$search-tab-height} + .5rem);
+    padding: 0 1rem;
+    border-radius: 0;
+    background-color: transparent;
+  }
+  .nav-tabs a:hover {
+    border-color: $white-50;
+    background-color: transparent;
+  }
+  .nav-tabs .active a {
+    color: #fff;
+    border-color: $white;
+  }
+}
+@media (min-width: 768px) {
+  #searchForm_lookfor,
+  #searchForm_type { margin-bottom: 0; }
+  .nav.searchbox .nav-tabs a,
+  #searchForm .nav-tabs a {
+    height: $search-tab-height;
+    padding-bottom: 3px;
+    line-height: $search-tab-height;
+  }
+}
+
+/* ------ Advanced ------ */
+.solr-adv-facet { padding-right: 1rem; }
+.solr-adv-facet:last-child { padding-right: 0; }
+.adv_search_links { margin-bottom: 0; }
+.adv_search_links a { text-decoration: underline; }
+
+/* ------ Combined ------ */
+#content > [name="bulkActionForm"] .bulkActionButtons {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.template-dir-combined.template-name-results {
+    .bulkActionButtons {
+        max-width: 1170px;
+        margin: auto;
+    }
+    .main .container {
+        width: 100%;
+    }
+}
+
+/* ------ CURRENT FILTERS ------ */
+.active-filters {
+  button {
+    background: $list-group-active-bg;
+  }
+  .dropdown {
+    .filters-term {
+      color: #000;
+    }
+    a:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+.main .active-filters .reset-filters-btn {
+  border: 1px solid $header-bg;
+  background-color: $header-bg;
+  &:hover {
+    color: $header-bg;
+  }
+}
+
+.active-filters .reset-filters-btn {
+  font-weight: bold;
+  color: #fff;
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgba(255,255,255,0.3);
+  }
+}
+.active-filters .filters .filter-value,
+.search-filter-dropdown .btn,
+.search-filter-dropdown .btn:focus {
+  color: $dark-gray;
+  background-color: $header-light;
+}
+.active-filters .filters .filter-value {
+  border-radius: 2px;
+}
+.active-filters .search-filter-remove {
+  color: $mid-gray;
+}
+.search-filter-dropdown .btn::after {
+  display: inline-block;
+}
+.search-filter-dropdown .btn:active {
+  box-shadow: none;
+  background-color: $light-silver;
+}
+
+#searchForm-reset {
+  color: #000;
+}

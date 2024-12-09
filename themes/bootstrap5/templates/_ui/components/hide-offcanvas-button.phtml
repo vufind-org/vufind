@@ -1,0 +1,8 @@
+<?php
+    $side = $this->config()->offcanvasSide();
+?>
+<button class="close-offcanvas btn btn-link" data-toggle="vufind-offcanvas">
+    <?='right' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-hide-left' : 'offcanvas-hide-right') : ''?>
+    <span class="btn-link__label"><?=$this->transEsc('navigate_back') ?></span>
+    <?='left' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-hide-right' : 'offcanvas-hide-left') : ''?>
+</button>

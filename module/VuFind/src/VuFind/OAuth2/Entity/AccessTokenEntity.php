@@ -3,7 +3,7 @@
 /**
  * OAuth2 access token entity implementation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -52,9 +52,9 @@ class AccessTokenEntity implements AccessTokenEntityInterface, \JsonSerializable
     /**
      * Serialize to a JSON string
      *
-     * @return string
+     * @return mixed
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $properties = [
             'identifier',

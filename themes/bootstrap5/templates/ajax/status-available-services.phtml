@@ -1,0 +1,23 @@
+<?php
+// defaultServiceStatusMessage for multiple status and as fallback for missing translations
+$defaultServiceStatusMessage = 'HoldingStatus::services_available_html';
+
+// generate serviceStatusMessage
+$serviceStatusMessage =
+    count($services) == 1
+        ? $this->transEsc('HoldingStatus::service_available_' . $services[0], [], $defaultServiceStatusMessage)
+        : $defaultServiceStatusMessage;
+
+// build the translated serviceList for usage in defaultServiceStatusMessage
+$that = $this;
+$translator = function ($in) use ($that) {
+    return '<span class="service_' . $in . '">' . $that->transEsc('HoldingStatus::service_' . $in, [], $in) . '</span>';
+};
+$serviceList = implode('', array_map($translator, $services));
+
+?>
+<span class="label label-success services-<?=implode('-', $services)?>">
+  <?=$serviceStatusMessage === $defaultServiceStatusMessage
+      ? $this->translate($serviceStatusMessage, ['%%list%%' => $serviceList])
+      : '<span class="service_' . $services[0] . '">' . $serviceStatusMessage . '</span>' ?>
+</span>

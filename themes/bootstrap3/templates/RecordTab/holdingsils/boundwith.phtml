@@ -1,0 +1,22 @@
+<div class="bound-with-records">
+  <h4>
+    <?=
+      $this->transEsc(
+          $callNumberCount < 2 ? 'bound_with_heading_one_callnumber' : 'bound_with_heading_multiple_callnumbers',
+          ['%%callnumber%%' => $this->escapeHtml($callNumber)]
+      )
+    ?>
+  </h4>
+  <?php if ($this->translate('bound_with_intro', [], '')): ?>
+    <p><?=$this->translate('bound_with_intro', ['%%title%%' => $this->escapeHtml($this->truncate($driver->getTitle(), 50))])?></p>
+  <?php endif; ?>
+  <ul>
+    <?php foreach ($boundWithRecords as $record): ?>
+      <li class="<?=($record['bibId'] == $driver->getUniqueId()) ? 'direct-item' : 'bound-with-item'?>">
+        <a href="<?=$this->escapeHtmlAttr($record['bibId'])?>">
+          <?=$this->escapeHtml($this->truncate($record['title'] ?? $this->translate('Title not available'), 85)) ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+</div>

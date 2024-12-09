@@ -3,7 +3,7 @@
 /**
  * Abstract FacetCache Factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -35,6 +35,9 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
+
+use function count;
 
 /**
  * Abstract FacetCache Factory.
@@ -89,6 +92,8 @@ class FacetCacheFactory implements FactoryInterface
         $results = $this->getResults($container, $requestedNamespace);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $language = $container->get(LocaleSettings::class)->getUserLocale();
-        return new $requestedName($results, $cacheManager, $language);
+        $hierarchicalFacetHelper = $container->get(HierarchicalFacetHelper::class);
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        return new $requestedName($results, $cacheManager, $language, $hierarchicalFacetHelper, $configManager);
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Factory for a second Solr backend
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
  *
@@ -59,8 +59,7 @@ class Search2BackendFactory extends SolrDefaultBackendFactory
      */
     protected function getCreateRecordCallback(): ?callable
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         return [$manager, 'getSearch2Record'];
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Mixed List aspect of the Search Multi-class (Params)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Search\MixedList;
+
+use function count;
 
 /**
  * Search Mixed List Parameters

@@ -1,0 +1,52 @@
+<?php
+    $previews = isset($this->config->Content->previews)
+        ? explode(',', $this->config->Content->previews) : [];
+    if (!empty($previews)) {
+        $idClasses = $this->record($this->driver)->getPreviewIds();
+        // If we found at least one identifier, we can build the placeholder HTML:
+        $html = '';
+        if (!empty($idClasses)) {
+            // Convert to string:
+            $idClasses = implode(' ', $idClasses);
+
+            // Loop through previews and build appropriate HTML:
+            foreach ($previews as $current) {
+                switch (trim(strtolower($current))) {
+                case 'google':
+                    $name = 'Google Books';
+                    $divClass = 'googlePreviewDiv';
+                    $linkClass = 'previewGBS';
+                    $icon = 'https://www.google.com/intl/' . $this->layout()->userLang . '/googlebooks/images/gbs_preview_button1.png';
+                    break;
+                case 'openlibrary':
+                    $name = 'Open Library';
+                    $divClass = 'olPreviewDiv';
+                    $linkClass = 'previewOL';
+                    $icon = $this->imageLink('preview_ol.gif');
+                    break;
+                case 'hathitrust':
+                    $name = 'HathiTrust';
+                    $divClass = 'hathiPreviewDiv';
+                    $linkClass = 'previewHT';
+                    $icon = $this->imageLink('preview_ht.gif');
+                    break;
+                default:
+                    $name = $divClass = $linkClass = $icon = false;
+                    break;
+                }
+                if ($name) {
+                    $title = $this->transEsc('Preview from') . ' ' . $name;
+                    $html .= '<div class="' . $divClass . '">'
+                        . '<a title="' . $title . '" class="hidden ' . $linkClass . ' ' . $idClasses . '" target="_blank">'
+                        . '<img src="' . $icon . '" alt="' . $this->transEsc('Preview') . '">'
+                        . '</a>'
+                        . '</div>';
+                }
+            }
+
+            // javascript included in previewdata template
+            if (!empty($html)) {
+                echo $html;
+            }
+        }
+    }

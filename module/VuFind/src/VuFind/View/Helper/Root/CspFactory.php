@@ -3,7 +3,7 @@
 /**
  * CSP helper factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -68,6 +68,7 @@ class CspFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get('Response'));
+        $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
+        return new $requestedName($container->get('Response'), $nonceGenerator->getNonce());
     }
 }

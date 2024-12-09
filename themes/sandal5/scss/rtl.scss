@@ -1,0 +1,14 @@
+body.rtl {
+  .result {
+    .media-body {
+      padding-left: 0;
+      padding-right: .5rem;
+    }
+
+    .result-body,
+    .result-links {
+      float: right;
+      text-align: right;
+    }
+  }
+}

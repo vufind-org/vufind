@@ -3,7 +3,7 @@
 /**
  * FacetCloud Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind\Recommend;
+
+use function is_callable;
 
 /**
  * FacetCloud Recommendations Module
@@ -57,7 +59,7 @@ class FacetCloud extends ExpandFacets
         // "..." when more facets are available than are currently being displayed,
         // although this comes at the cost of not being able to display the last
         // entry in the list -- otherwise we might show "..." when we've exactly
-        // reached (but not exceeded) the facet limit.  If we can't get a facet
+        // reached (but not exceeded) the facet limit. If we can't get a facet
         // limit, we will set an arbitrary high number so that all available values
         // will display and "..." will never display.
         return isset($settings['limit']) ? $settings['limit'] - 1 : 100000;

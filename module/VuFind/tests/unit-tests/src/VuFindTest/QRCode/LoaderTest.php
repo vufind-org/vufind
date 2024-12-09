@@ -3,7 +3,7 @@
 /**
  * QR Code Loader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,8 @@ namespace VuFindTest\QRCode;
 use Laminas\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
+
+use function strlen;
 
 /**
  * QR Code Loader Test Class

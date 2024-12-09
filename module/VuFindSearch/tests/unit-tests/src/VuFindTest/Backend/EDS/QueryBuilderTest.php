@@ -3,7 +3,7 @@
 /**
  * Unit tests for EDS query builder
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *

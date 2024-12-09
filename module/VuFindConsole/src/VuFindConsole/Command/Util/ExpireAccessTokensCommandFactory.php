@@ -3,7 +3,7 @@
 /**
  * Factory for Util/ExpireAccessTokensCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  * Copyright (C) The National Library of Finland 2022.
@@ -68,9 +68,9 @@ class ExpireAccessTokensCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $tableManager->get(\VuFind\Db\Table\AccessToken::class),
+            $serviceManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
             ...($options ?? [])
         );
     }

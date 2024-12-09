@@ -3,7 +3,7 @@
 /**
  * Lightweight caching downloader aware marker trait.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -49,6 +49,21 @@ trait CachingDownloaderAwareTrait
     protected $downloaderCacheId = 'downloader';
 
     /**
+     * Cache Options Section. This can be overridden by child classes to declare
+     * a section in config.ini which will be parsed to override default settings.
+     * Note that the prefix "Cache_" will be prepended on this string.
+     *
+     * @var string
+     */
+    protected $cacheOptionsSection = null;
+
+    /**
+     * Cache Options file. This can be overridden by child classes to declare
+     * which .ini file contains the $cacheOptionsSection above.
+     */
+    protected $cacheOptionsFile = null;
+
+    /**
      * Caching downloader
      *
      * @var CachingDownloader
@@ -65,6 +80,10 @@ trait CachingDownloaderAwareTrait
     public function setCachingDownloader(CachingDownloader $cachingDownloader)
     {
         $this->cachingDownloader = $cachingDownloader;
-        $this->cachingDownloader->setUpCache($this->downloaderCacheId);
+        $this->cachingDownloader->setUpCache(
+            $this->downloaderCacheId,
+            $this->cacheOptionsSection,
+            $this->cacheOptionsFile
+        );
     }
 }

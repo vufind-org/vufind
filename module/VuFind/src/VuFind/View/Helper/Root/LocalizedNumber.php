@@ -3,7 +3,7 @@
 /**
  * Localization based number formatting
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) snowflake productions gmbh 2014.
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Class NumberFormat
- * allows localization based formating of numbers in view
+ * allows localization based formatting of numbers in view
  *
  * @category VuFind
  * @package  View_Helpers

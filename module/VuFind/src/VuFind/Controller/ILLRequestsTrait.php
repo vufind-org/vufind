@@ -3,7 +3,7 @@
 /**
  * ILL trait (for subclasses of AbstractRecord)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Controller;
+
+use function in_array;
+use function is_array;
 
 /**
  * ILL trait (for subclasses of AbstractRecord)
@@ -93,7 +96,7 @@ trait ILLRequestsTrait
         // Send various values to the view so we can build the form:
 
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : [];
+            ? explode(':', $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
         if (null !== $this->params()->fromPost('placeILLRequest')) {
@@ -137,9 +140,8 @@ trait ILLRequestsTrait
         // Find and format the default required date:
         $defaultRequiredDate = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequiredDate
-            = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequiredDate);
+        $defaultRequiredDate = $this->getService(\VuFind\Date\Converter::class)
+            ->convertToDisplayDate('U', $defaultRequiredDate);
 
         // Get pickup libraries
         $pickupLibraries = $catalog->getILLPickUpLibraries(
@@ -163,7 +165,7 @@ trait ILLRequestsTrait
 
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
-            ? $this->getUser()->home_library : '';
+            ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility:
         $helpText = $helpTextHtml = $checkRequests['helpText'];
 

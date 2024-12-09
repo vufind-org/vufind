@@ -3,7 +3,7 @@
 /**
  * Relais: Order an item.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -54,7 +54,7 @@ class RelaisOrder extends AbstractRelaisAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $oclcNumber = $params->fromQuery('oclcNumber');
 
-        $lin = $this->user['cat_username'] ?? null;
+        $lin = $this->user?->getCatUsername();
 
         // Authenticate
         $authorizationId = $this->relais->authenticatePatron($lin);
@@ -68,7 +68,7 @@ class RelaisOrder extends AbstractRelaisAction
         // Place order
         $result = $this->relais
             ->placeRequest($oclcNumber, $authorizationId, $lin);
-        if (strpos($result, 'error') !== false) {
+        if (str_contains($result, 'error')) {
             return $this->formatResponse($result, self::STATUS_HTTP_ERROR);
         }
         return $this->formatResponse(compact('result'));

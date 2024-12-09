@@ -3,7 +3,7 @@
 /**
  * Base formatter for API responses
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -28,6 +28,10 @@
  */
 
 namespace VuFindApi\Formatter;
+
+use function count;
+use function is_array;
+use function is_bool;
 
 /**
  * Base formatter for API responses

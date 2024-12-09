@@ -3,7 +3,7 @@
 /**
  * Solr spelling listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -102,12 +102,12 @@ class InjectSpellingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_POST,
             [$this, 'onSearchPost']
         );
@@ -206,7 +206,7 @@ class InjectSpellingListener
                 $spellcheck->mergeWith($collection->getSpellcheck());
             } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
                 // Don't let exceptions cause the whole search to fail
-                if ($this->logger instanceof \VuFind\Log\Logger) {
+                if ($this->logger instanceof \VuFind\Log\ExtendedLoggerInterface) {
                     $this->logger->logException(
                         $e,
                         new \Laminas\Stdlib\Parameters()

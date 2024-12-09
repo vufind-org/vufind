@@ -1,9 +1,10 @@
 <?php
 
 /**
- * WorldCat Search Parameters
+ * WorldCat Search Parameters (legacy -- retained only for compatibility
+ * with stored searches, which will be redirected to WorldCat v2)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -29,10 +30,9 @@
 
 namespace VuFind\Search\WorldCat;
 
-use VuFindSearch\ParamBag;
-
 /**
- * WorldCat Search Parameters
+ * WorldCat Search Parameters (legacy -- retained only for compatibility
+ * with stored searches, which will be redirected to WorldCat v2)
  *
  * @category VuFind
  * @package  Search_WorldCat
@@ -42,19 +42,4 @@ use VuFindSearch\ParamBag;
  */
 class Params extends \VuFind\Search\Base\Params
 {
-    /**
-     * Create search backend parameters for advanced features.
-     *
-     * @return ParamBag
-     */
-    public function getBackendParameters()
-    {
-        $backendParams = new ParamBag();
-
-        // Sort
-        $sort = $this->getSort();
-        $backendParams->set('sortKeys', empty($sort) ? 'relevance' : $sort);
-
-        return $backendParams;
-    }
 }

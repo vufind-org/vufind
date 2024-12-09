@@ -1,5 +1,25 @@
 #modal { background-color: rgba(0,0,0,.2); }
 
+#modal .modal-dialog {
+  width: 100%;
+  margin-inline: auto;
+  margin-block: 1rem;
+  padding-inline: 1rem;
+}
+@media (min-width: 768px) {
+  #modal .modal-dialog {
+    width: fit-content;
+/* #SCSS>
+    max-width: #{'min(1200px, calc(100vw - 200px))'};
+<#SCSS */
+/* #LESS> */
+    max-width: ~"min(1200px, calc(100vw - 200px))";
+/* <#LESS */
+    min-width: 600px;
+    padding: 0;
+  }
+}
+
 #modal .modal-content > .close {
   position: absolute;
   top: 0;

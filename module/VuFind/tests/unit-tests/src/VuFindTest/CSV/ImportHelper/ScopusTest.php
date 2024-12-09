@@ -3,7 +3,7 @@
 /**
  * Scopus CSV Import helper test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -49,14 +49,14 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
      */
     public function testNameSplittingDefaultBehavior(): void
     {
-        $input = "Rai, P., Bajgai, Y., Rabgyal, J., Katwal, T.B., Delmond, A.R.";
+        $input = 'Rai, P., Bajgai, Y., Rabgyal, J., Katwal, T.B., Delmond, A.R.';
         $this->assertEquals(
             [
-                "Rai, P.",
-                "Bajgai, Y.",
-                "Rabgyal, J.",
-                "Katwal, T.B.",
-                "Delmond, A.R.",
+                'Rai, P.',
+                'Bajgai, Y.',
+                'Rabgyal, J.',
+                'Katwal, T.B.',
+                'Delmond, A.R.',
             ],
             Scopus::splitNames($input)
         );
@@ -69,11 +69,11 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
      */
     public function testNameSplittingWithHyphenatedInitials(): void
     {
-        $input = "Bellone, R., Failloux, A.-B.";
+        $input = 'Bellone, R., Failloux, A.-B.';
         $this->assertEquals(
             [
-                "Bellone, R.",
-                "Failloux, A.-B.",
+                'Bellone, R.',
+                'Failloux, A.-B.',
             ],
             Scopus::splitNames($input)
         );
@@ -86,14 +86,14 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
      */
     public function testNameSplittingWithMissingInitials(): void
     {
-        $input = "Khan, M.Q., Yaseen, Zahid, H., Numan, M., da Silva Vaz, I.";
+        $input = 'Khan, M.Q., Yaseen, Zahid, H., Numan, M., da Silva Vaz, I.';
         $this->assertEquals(
             [
-                "Khan, M.Q.",
-                "Yaseen",
-                "Zahid, H.",
-                "Numan, M.",
-                "da Silva Vaz, I.",
+                'Khan, M.Q.',
+                'Yaseen',
+                'Zahid, H.',
+                'Numan, M.',
+                'da Silva Vaz, I.',
             ],
             Scopus::splitNames($input)
         );
@@ -106,10 +106,10 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
      */
     public function testNameSplittingWithFirstOnlyFlag(): void
     {
-        $input = "Rai, P., Bajgai, Y., Rabgyal, J., Katwal, T.B., Delmond, A.R.";
+        $input = 'Rai, P., Bajgai, Y., Rabgyal, J., Katwal, T.B., Delmond, A.R.';
         $this->assertEquals(
             [
-                "Rai, P.",
+                'Rai, P.',
             ],
             Scopus::splitNames($input, 1)
         );

@@ -2,7 +2,7 @@
 /**
  * Command-line tool to clear unwanted entries from search history database table.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

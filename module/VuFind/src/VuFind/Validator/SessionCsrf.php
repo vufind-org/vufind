@@ -3,7 +3,7 @@
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Validator;
+
+use function array_slice;
+use function count;
 
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.

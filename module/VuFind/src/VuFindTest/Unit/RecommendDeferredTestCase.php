@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit deferred recommendation module test cases.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

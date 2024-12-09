@@ -3,7 +3,7 @@
 /**
  * Abstract console command: build CSS with precompiler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -80,7 +80,6 @@ abstract class AbstractCssBuilderCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription($this->format . ' compiler')
             ->setHelp('Compiles CSS files from ' . $this->format . '.')
             ->addArgument(
                 'themes',

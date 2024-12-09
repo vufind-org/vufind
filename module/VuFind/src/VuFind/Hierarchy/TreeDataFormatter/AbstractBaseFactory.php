@@ -3,7 +3,7 @@
 /**
  * Class AbstractBaseFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -69,7 +69,8 @@ class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $treeDataFormatter = new $requestedName();
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $treeDataFormatter = new $requestedName($config->Hierarchy->validateHierarchySequences ?? true);
         $treeDataFormatter->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $treeDataFormatter;
     }

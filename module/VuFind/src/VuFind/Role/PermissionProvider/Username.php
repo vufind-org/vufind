@@ -3,7 +3,7 @@
 /**
  * Username permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Role\PermissionProvider;
 
 use LmcRbacMvc\Service\AuthorizationService;
+
+use function in_array;
 
 /**
  * Username permission provider for VuFind.

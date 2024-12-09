@@ -3,7 +3,7 @@
 /**
  * Search backend search response interface file.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -116,6 +116,17 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @return string
      */
     public function getSourceIdentifier();
+
+    /**
+     * Sets the result set identifier for the record.
+     *
+     * This method assigns a UUID or a unique string identifier to the result set.
+     *
+     * @param string $uuid A valid UUID or unique identifier to be assigned to the result set.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid);
 
     /**
      * Add a record to the collection.

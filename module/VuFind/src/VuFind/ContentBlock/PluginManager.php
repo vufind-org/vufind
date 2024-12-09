@@ -3,7 +3,7 @@
 /**
  * Content block plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -51,6 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'channels' => Channels::class,
         'facetlist' => FacetList::class,
         'ilsstatusmonitor' => IlsStatusMonitor::class,
+        'recommend' => Recommend::class,
         'templatebased' => TemplateBased::class,
     ];
 
@@ -63,6 +64,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Channels::class => ChannelsFactory::class,
         FacetList::class => FacetListFactory::class,
         IlsStatusMonitor::class => InvokableFactory::class,
+        Recommend::class => RecommendFactory::class,
         TemplateBased::class => TemplateBasedFactory::class,
     ];
 

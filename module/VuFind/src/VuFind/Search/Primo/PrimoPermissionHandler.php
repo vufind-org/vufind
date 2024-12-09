@@ -3,7 +3,7 @@
 /**
  * Primo Permission Handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -30,6 +30,9 @@
 namespace VuFind\Search\Primo;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+
+use function in_array;
+use function is_array;
 
 /**
  * Primo Permission Handler.

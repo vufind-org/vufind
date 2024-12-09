@@ -3,7 +3,7 @@
 /**
  * Content Security Policy view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -43,20 +43,13 @@ use Laminas\Http\Response;
 class Csp extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Response object
-     *
-     * @var Response
-     */
-    protected $response;
-
-    /**
      * Constructor
      *
-     * @param Response $response HTTP Response, if any
+     * @param ?Response $response HTTP Response, if any
+     * @param string    $nonce    CSP nonce
      */
-    public function __construct(?Response $response)
+    public function __construct(protected ?Response $response, protected string $nonce)
     {
-        $this->response = $response;
     }
 
     /**
@@ -64,7 +57,7 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
      *
      * @return void
      */
-    public function disablePolicy()
+    public function disablePolicy(): void
     {
         if (null === $this->response) {
             return;
@@ -85,5 +78,17 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
                 }
             }
         }
+    }
+
+    /**
+     * Return the current nonce
+     *
+     * Result is a base64 encoded string that does not need escaping.
+     *
+     * @return string
+     */
+    public function getNonce(): string
+    {
+        return $this->nonce;
     }
 }

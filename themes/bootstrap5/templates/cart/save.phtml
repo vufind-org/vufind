@@ -1,0 +1,69 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('bulk_save_cart'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ') .
+        '<li class="active">' . $this->transEsc('bulk_save_cart') . '</li>';
+?>
+<h2><?=$this->transEsc('bulk_save_cart')?></h2>
+
+<?=$this->flashmessages()?>
+
+<?php if (count($this->records) > 0): ?>
+  <form class="form-cart-save" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
+    <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc('Title')?>:</label>
+      <?php if (count($this->records) > 1): ?>
+        <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
+          <?=count($this->records) . ' ' . $this->transEsc('items') ?>
+        </button>
+        <div id="itemhide" class="collapse in">
+          <ul>
+            <?php foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php else: ?>
+        <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
+      <?php endif; ?>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
+      <select id="save_list" name="list" class="form-control">
+        <?php if (count($this->lists) > 0): ?>
+          <?php foreach ($this->lists as $list): ?>
+            <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+              <?=$this->escapeHtml($list->getTitle())?><?php if ($list->isPublic()):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
+            </option>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <option value=""><?=$this->transEsc('default_list_title') ?></option>
+        <?php endif; ?>
+      </select>
+      <button type="submit" id="make-list" name="newList" class="btn btn-link"><?=$this->transEsc('or create a new list'); ?></button>
+    </div>
+
+    <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
+      <div class="form-group">
+        <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+        <input id="add_mytags" type="text" name="mytags" value="" class="form-control">
+        <span class="help-block"><?=$this->transEsc('add_tag_note') ?></span>
+      </div>
+    <?php endif; ?>
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Save') ?>">
+    </div>
+  </form>
+<?php endif; ?>
+
+<?php
+  $script = <<<JS
+      $('button.btn.hidden').removeClass('hidden');
+      $('#itemhide').removeClass('in');
+      JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

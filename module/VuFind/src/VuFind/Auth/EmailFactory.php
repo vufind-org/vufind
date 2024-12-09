@@ -3,7 +3,7 @@
 /**
  * Factory for Email authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019.
  *
@@ -68,7 +68,8 @@ class EmailFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(EmailAuthenticator::class)
+            $container->get(EmailAuthenticator::class),
+            $container->get(ILSAuthenticator::class)
         );
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Specification builder for record driver data formatting view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -91,6 +91,18 @@ class SpecBuilder
     }
 
     /**
+     * Remove a previously set generic spec line.
+     *
+     * @param string $key Label associated with this spec line
+     *
+     * @return void
+     */
+    public function removeLine($key)
+    {
+        unset($this->spec[$key]);
+    }
+
+    /**
      * Construct a multi-function template spec line.
      *
      * @param string   $key        Label to associate with this spec line
@@ -104,6 +116,20 @@ class SpecBuilder
     {
         $options['multiFunction'] = $callback;
         $this->setLine($key, $dataMethod, 'Multi', $options);
+    }
+
+    /**
+     * Construct a combine alt template spec line.
+     *
+     * @param string $key        Label to associate with this spec line
+     * @param string $dataMethod Method of data retrieval for rendering element
+     * @param array  $options    Additional options
+     *
+     * @return void
+     */
+    public function setCombineAltLine($key, $dataMethod, $options = [])
+    {
+        $this->setLine($key, $dataMethod, 'CombineAlt', $options);
     }
 
     /**

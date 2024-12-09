@@ -3,7 +3,7 @@
 /**
  * Class Sorter
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -30,6 +30,8 @@
 declare(strict_types=1);
 
 namespace VuFind\I18n;
+
+use function sprintf;
 
 /**
  * Class Sorter

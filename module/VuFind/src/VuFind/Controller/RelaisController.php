@@ -3,7 +3,7 @@
 /**
  * Relais Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Controller;
+
+use function is_array;
 
 /**
  * Relais Controller
@@ -73,7 +75,7 @@ class RelaisController extends AbstractBase
 
     /**
      * Given patron data from the catalogLogin() method, return the appropriate
-     * identifer for use with Relais.
+     * identifier for use with Relais.
      *
      * @param array $patron Patron details
      *

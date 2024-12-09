@@ -3,7 +3,7 @@
 /**
  * CitationBuilder Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -376,15 +376,15 @@ class CitationTest extends \PHPUnit\Framework\TestCase
             $cb = $citation($driver);
 
             // Normalize whitespace:
-            $apa = trim(preg_replace("/\s+/", " ", $cb->getCitation('APA')));
+            $apa = trim(preg_replace("/\s+/", ' ', $cb->getCitation('APA')));
             $this->assertEquals($current['apa'], $apa);
 
             // Normalize whitespace:
-            $mla = trim(preg_replace("/\s+/", " ", $cb->getCitation('MLA')));
+            $mla = trim(preg_replace("/\s+/", ' ', $cb->getCitation('MLA')));
             $this->assertEquals($current['mla'], $mla);
 
             // Normalize whitespace:
-            $chicago = trim(preg_replace("/\s+/", " ", $cb->getCitation('Chicago')));
+            $chicago = trim(preg_replace("/\s+/", ' ', $cb->getCitation('Chicago')));
             $this->assertEquals($current['chicago'], $chicago);
         }
 

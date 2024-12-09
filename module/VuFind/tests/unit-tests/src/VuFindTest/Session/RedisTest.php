@@ -3,7 +3,7 @@
 /**
  * Redis Session Handler Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -132,7 +132,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     protected function getHandler($client, $config = null)
     {
         $handler = new Redis($client, $config);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }

@@ -3,7 +3,7 @@
 /**
  * CachingDownloader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -78,7 +78,6 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 
         $storage->expects($this->once())->method('hasItem')->with($testCacheKey)->willReturn(false);
         $storage->expects($this->once())->method('addItem')->with($testCacheKey, $testBody);
-        $storage->expects($this->once())->method('getItem')->with($testCacheKey)->willReturn($testBody);
 
         $cacheManagerMock = $container->createMock(\VuFind\Cache\Manager::class);
         $cacheManagerMock
@@ -92,8 +91,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->with('downloader-default')
             ->willReturn($storage);
 
+        // configManager
+        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+
         // downloader
-        $downloader = new CachingDownloader($cacheManagerMock);
+        $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock);
         $downloader->setHttpService($service);
 
         $body = $downloader->download(
@@ -123,7 +125,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $service->expects($this->once())
             ->method('get')
             ->with($testUrl)
-            ->willThrowException(new \Exception("Download failed (404): " . $testUrl));
+            ->willThrowException(new \Exception('Download failed (404): ' . $testUrl));
 
         // cacheManager
         $storage = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)
@@ -142,8 +144,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->with('downloader-default')
             ->willReturn($storage);
 
+        // configManager
+        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+
         // downloader
-        $downloader = new CachingDownloader($cacheManagerMock);
+        $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock);
         $downloader->setHttpService($service);
 
         $downloader->download(

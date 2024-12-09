@@ -3,7 +3,7 @@
 /**
  * Map tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@
 namespace VuFind\RecordTab;
 
 use VuFind\Config\PathResolver;
+
+use function count;
 
 /**
  * Map tab

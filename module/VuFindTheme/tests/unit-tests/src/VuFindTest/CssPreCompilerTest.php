@@ -3,7 +3,7 @@
 /**
  * CssPreCompilerTest Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -52,7 +52,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     /**
      * Our brave test subject
      *
-     * @var $extCompiler
+     * @var object
      */
     protected $compiler;
 
@@ -78,12 +78,12 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     protected static function makeFakeThemeStructure($ext)
     {
         $temp = sys_get_temp_dir();
-        $testDest = $temp . "/vufind_${ext}_comp_test/";
+        $testDest = $temp . "/vufind_{$ext}_comp_test/";
         // Create directory structure, recursively
-        mkdir($testDest . "themes/child/$ext", 0777, true);
-        mkdir($testDest . 'themes/empty', 0777, true);
-        mkdir($testDest . 'themes/parent/css', 0777, true);
-        mkdir($testDest . "themes/parent/$ext/relative", 0777, true);
+        mkdir($testDest . "themes/child/$ext", 0o777, true);
+        mkdir($testDest . 'themes/empty', 0o777, true);
+        mkdir($testDest . 'themes/parent/css', 0o777, true);
+        mkdir($testDest . "themes/parent/$ext/relative", 0o777, true);
         file_put_contents(
             $testDest . 'themes/empty/theme.config.php',
             '<?php return array("extends"=>false);'

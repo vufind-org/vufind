@@ -3,7 +3,7 @@
 /**
  * Logger Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFindTest\Log;
 
 use VuFind\Log\Logger;
+
+use function count;
 
 /**
  * Logger Test Class
@@ -65,22 +67,22 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                 . 'Host = localhost:80, Request URI = /foo/bar)';
             return $a[1] === 'Exception : test'
                 && $a[2] === $expectedA2
-                && false !== strpos($a[3], $a[2])
-                && false !== strpos($a[3], 'Backtrace:')
-                && false !== strpos($a[3], 'line')
-                && false !== strpos($a[3], 'class =')
-                && false !== strpos($a[3], 'function =')
-                && false !== strpos($a[4], $expectedContext)
-                && false !== strpos($a[4], 'Backtrace:')
-                && false !== strpos($a[4], 'line')
-                && false !== strpos($a[4], 'class =')
-                && false !== strpos($a[4], 'function =')
-                && false !== strpos($a[5], $expectedContext)
-                && false !== strpos($a[5], 'Backtrace:')
-                && false !== strpos($a[5], 'line')
-                && false !== strpos($a[5], 'args:')
-                && false !== strpos($a[5], 'class =')
-                && false !== strpos($a[5], 'function =')
+                && str_contains($a[3], $a[2])
+                && str_contains($a[3], 'Backtrace:')
+                && str_contains($a[3], 'line')
+                && str_contains($a[3], 'class =')
+                && str_contains($a[3], 'function =')
+                && str_contains($a[4], $expectedContext)
+                && str_contains($a[4], 'Backtrace:')
+                && str_contains($a[4], 'line')
+                && str_contains($a[4], 'class =')
+                && str_contains($a[4], 'function =')
+                && str_contains($a[5], $expectedContext)
+                && str_contains($a[5], 'Backtrace:')
+                && str_contains($a[5], 'line')
+                && str_contains($a[5], 'args:')
+                && str_contains($a[5], 'class =')
+                && str_contains($a[5], 'function =')
                 && count($a) == 5;
         };
         $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)

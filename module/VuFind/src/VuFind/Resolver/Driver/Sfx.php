@@ -3,7 +3,7 @@
 /**
  * SFX Link Resolver Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -100,7 +100,7 @@ class Sfx extends AbstractBase
             return $records;
         }
 
-        $root = $xml->xpath("//ctx_obj_targets");
+        $root = $xml->xpath('//ctx_obj_targets');
         $xml = $root[0];
         foreach ($xml->children() as $target) {
             $record = [];

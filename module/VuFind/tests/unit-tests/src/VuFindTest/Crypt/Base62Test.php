@@ -3,7 +3,7 @@
 /**
  * Base62 Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -79,7 +79,7 @@ class Base62Test extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function exampleProvider()
+    public static function exampleProvider()
     {
         // format: base 10 number, base 62 number
         return [

@@ -13,7 +13,7 @@ VuFind.register('channels', function Channels() {
     }
     var $cont = $(
       '<div class="dropdown">' +
-        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
           VuFind.icon("ui-dots-menu") +
         '</button>' +
       '</div>'
@@ -34,36 +34,30 @@ VuFind.register('channels', function Channels() {
     $(elem).siblings('.channel-title').append($cont);
   }
 
-  var currentPopover = false;
+  var currentPopoverRecord = false;
   function isCurrentPopoverRecord(record) {
-    return record && currentPopover
-      && record.data('record-id') === currentPopover.data('record-id');
+    return record && currentPopoverRecord
+      && record.data('record-id') === currentPopoverRecord.data('record-id')
+      && record.data('record-source') === currentPopoverRecord.data('record-source')
+      && record.data('channel-id') === currentPopoverRecord.data('channel-id');
   }
   function switchPopover(record) {
     // Hide the old popover:
-    if (currentPopover) {
-      currentPopover.popover('hide');
+    if (currentPopoverRecord) {
+      currentPopoverRecord.popover('hide');
     }
     // Special case: if the new popover is the same as the old one, reset the
     // current popover status so that the next click will open it again (toggle)
     if (isCurrentPopoverRecord(record)) {
-      currentPopover = false;
+      currentPopoverRecord = false;
     } else {
       // Default case: set the currentPopover to the new incoming value:
-      currentPopover = record;
+      currentPopoverRecord = record;
     }
     // currentPopover has now been updated; show it if appropriate:
-    if (currentPopover) {
-      currentPopover.popover('show');
+    if (currentPopoverRecord) {
+      currentPopoverRecord.popover('show');
     }
-  }
-  function redrawPopover(record, html) {
-    // Only update the popover if the context hasn't changed since the
-    // AJAX call was triggered.
-    if (isCurrentPopoverRecord(record)) {
-      record.data('bs.popover').tip().find('.popover-content').html(html);
-    }
-    record.data('bs.popover').options.content = html;
   }
 
   // Truncate lines to height with ellipses
@@ -102,16 +96,21 @@ VuFind.register('channels', function Channels() {
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
-    $(op).find('.channel-record').unbind('click').click(function channelRecord(event) {
+
+    $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
       var record = $(event.delegateTarget);
-      if (!record.data("popover-loaded")) {
+      if (!record.data('popover-loaded')) {
+        record.data('popover-loaded', true);
+        switchPopover(false);
         record.popover({
-          content: VuFind.translate('loading_ellipsis'),
+          content: VuFind.loading(),
           html: true,
           placement: 'bottom',
-          trigger: 'focus',
-          container: '#' + record.closest('.channel').attr('id')
+          trigger: 'manual',
+          container: '#' + record.closest('.channel').attr('id'),
+          sanitize: false
         });
+        record.popover('show');
         $.ajax({
           url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
           type: 'POST',
@@ -119,20 +118,25 @@ VuFind.register('channels', function Channels() {
         })
           .done(function channelPopoverDone(data) {
             var newContent = '<div class="btn-group btn-group-justified">'
-            + '<a href="' + VuFind.path + '/Channels/Record?'
+              + '<a href="' + VuFind.path + '/Channels/Record?'
               + 'id=' + encodeURIComponent(record.attr('data-record-id'))
               + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-            + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-            + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-            + '</div>'
-            + data;
-            redrawPopover(record, newContent);
-            record.data("popover-loaded", true);
+              + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
+              + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+              + '</div>'
+              + data;
+
+            record.data('bs.popover').tip().find('.popover-content').html(newContent);
+            record.data('bs.popover').options.content = newContent;
+
+            switchPopover(record);
           });
+      } else {
+        switchPopover(record);
       }
-      switchPopover(record);
       return false;
     });
+
     // Channel add buttons
     addLinkButtons(op);
     $('.channel-add-menu[data-group="' + op.dataset.group + '"].hidden')
@@ -181,8 +185,8 @@ VuFind.register('channels', function Channels() {
 
   bindChannelAddMenu = function bindChannelAddMenuFunc(iteration, channel) {
     var scope = $(channel).parent(".channel-wrapper");
-    $(scope).find('.channel-add-menu .dropdown-menu a').click(selectAddedChannel);
-    $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
+    $(scope).find('.channel-add-menu .dropdown-menu a').on("click", selectAddedChannel);
+    $(scope).find('.channel-add-menu .add-btn').on("click", function addChannels(e) {
       var links = $(e.target).closest('.channel-add-menu').find('.dropdown-menu a');
       for (var i = 0; i < links.length && i < 2; i++) {
         links[i].click();
@@ -196,6 +200,16 @@ VuFind.register('channels', function Channels() {
     $(document).on("hidden.bs.popover", function deselectPopover(e) {
       if (isCurrentPopoverRecord($(e.target))) {
         switchPopover(false);
+      }
+    });
+    document.addEventListener('mouseup', function onMouseUp(e) {
+      // Close any current popover if clicked outside of a popover and a record that triggers one:
+      const popover = document.querySelector('.channel-wrapper .channel .popover');
+      if (popover && !popover.contains(e.target)) {
+        const intersectingRecords = Array.from(document.querySelectorAll('.channel-wrapper .channel .channel-record')).filter(r => r.contains(e.target));
+        if (intersectingRecords.length === 0) {
+          switchPopover(false);
+        }
       }
     });
   }

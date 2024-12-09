@@ -1,9 +1,9 @@
 <?php
 
 /**
- * TemplateBased ContentBlack Test Class
+ * TemplateBased ContentBlock Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\ContentBlock;
 
 /**
- * TemplateBased ContentBlack Test Class
+ * TemplateBased ContentBlock Test Class
  *
  * @category VuFind
  * @package  Tests

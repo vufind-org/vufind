@@ -3,7 +3,7 @@
 /**
  * Config Upgrade Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
+
+use function in_array;
 
 /**
  * Config Upgrade Test Class
@@ -60,7 +62,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return Upgrade
      */
-    protected function getUpgrader($version)
+    protected function getUpgrader(string $version): Upgrade
     {
         $oldDir = realpath($this->getFixtureDir() . 'configs/' . $version);
         $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
@@ -76,7 +78,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function checkVersion($version)
+    protected function checkVersion(string $version): array
     {
         $upgrader = $this->getUpgrader($version);
         $upgrader->run();
@@ -102,15 +104,15 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             . 'For usage tracking, please configure Google Analytics or Matomo.',
         ];
         if ((float)$version < 1.3) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the default theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the default theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         } elseif ((float)$version < 2.4) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the blueprint theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the blueprint theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         }
         $this->assertEquals($expectedWarnings, $warnings);
 
@@ -202,7 +204,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade11()
+    public function testUpgrade11(): void
     {
         $this->checkVersion('1.1');
     }
@@ -212,7 +214,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade12()
+    public function testUpgrade12(): void
     {
         $this->checkVersion('1.2');
     }
@@ -222,7 +224,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade13()
+    public function testUpgrade13(): void
     {
         $this->checkVersion('1.3');
     }
@@ -232,7 +234,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade14()
+    public function testUpgrade14(): void
     {
         $this->checkVersion('1.4');
     }
@@ -242,7 +244,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultGenerator()
+    public function testDefaultGenerator(): void
     {
         // We expect the upgrader to switch default values:
         $upgrader = $this->getUpgrader('defaultgenerator');
@@ -264,11 +266,27 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test spellchecker changes.
+     *
+     * @return void
+     */
+    public function testSpelling(): void
+    {
+        $upgrader = $this->getUpgrader('spelling');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure spellcheck 'simple' is replaced by 'dictionaries'
+        $this->assertFalse(isset($results['config.ini']['Spelling']['simple']));
+        $this->assertTrue(isset($results['config.ini']['Spelling']['dictionaries']));
+    }
+
+    /**
      * Test Syndetics upgrade.
      *
      * @return void
      */
-    public function testSyndetics()
+    public function testSyndetics(): void
     {
         // Test upgrading an SSL URL
         $upgrader = $this->getUpgrader('syndeticsurlssl');
@@ -294,7 +312,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGooglePreviewUpgrade()
+    public function testGooglePreviewUpgrade(): void
     {
         $upgrader = $this->getUpgrader('googlepreview');
         $upgrader->run();
@@ -306,44 +324,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test removal of xID settings
-     *
-     * @return void
-     */
-    public function testXidDeprecation()
-    {
-        $upgrader = $this->getUpgrader('xid');
-        $upgrader->run();
-        $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            ['Similar'],
-            $results['config.ini']['Record']['related']
-        );
-        $this->assertEquals(
-            ['WorldCatSimilar'],
-            $results['WorldCat.ini']['Record']['related']
-        );
-        $this->assertEquals(['apiKey' => 'foo'], $results['config.ini']['WorldCat']);
-        $expectedWarnings = [
-            'The [WorldCat] id setting is no longer used and has been removed.',
-            'The [WorldCat] xISBN_token setting is no longer used and has been removed.',
-            'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
-            'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
-            'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
-            'The Editions related record module is no longer supported due to OCLC\'s xID '
-            . 'API shutdown. It has been removed from your settings.',
-            'The WorldCatEditions related record module is no longer supported due to OCLC\'s '
-            . 'xID API shutdown. It has been removed from your settings.',
-        ];
-        $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
-    }
-
-    /**
      * Test permission upgrade
      *
      * @return void
      */
-    public function testPermissionUpgrade()
+    public function testPermissionUpgrade(): void
     {
         $upgrader = $this->getUpgrader('permissions');
         $upgrader->run();
@@ -411,7 +396,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGoogleWarnings()
+    public function testGoogleWarnings(): void
     {
         $upgrader = $this->getUpgrader('googlewarnings');
         $upgrader->run();
@@ -449,37 +434,17 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWorldCatWarnings()
+    public function testWorldCatWarnings(): void
     {
         $upgrader = $this->getUpgrader('worldcatwarnings');
         $upgrader->run();
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
             in_array(
-                'The [WorldCat] LimitCodes setting never had any effect and has been'
-                . ' removed.',
+                'The [WorldCat] section of config.ini has been removed following'
+                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
                 $warnings
             )
-        );
-    }
-
-    /**
-     * Test WorldCat-specific upgrades.
-     *
-     * @return void
-     */
-    public function testWorldCatUpgrades()
-    {
-        $upgrader = $this->getUpgrader('worldcatupgrades');
-        $upgrader->run();
-        $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            'Author',
-            $results['WorldCat.ini']['Basic_Searches']['srw.au']
-        );
-        $this->assertEquals(
-            'adv_search_author',
-            $results['WorldCat.ini']['Advanced_Searches']['srw.au']
         );
     }
 
@@ -488,7 +453,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMeaningfulLineDetection()
+    public function testMeaningfulLineDetection(): void
     {
         $upgrader = $this->getUpgrader('1.4');
         $meaningless = realpath(
@@ -514,11 +479,49 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction(): void
+    {
+        $upgrader = $this->getUpgrader('comments');
+        $config = $this->getFixtureDir() . 'configs/comments/config.ini';
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $this->callMethod($upgrader, 'extractComments', [$config])
+        );
+    }
+
+    /**
      * Test Primo upgrade.
      *
      * @return void
      */
-    public function testPrimoUpgrade()
+    public function testPrimoUpgrade(): void
     {
         $upgrader = $this->getUpgrader('primo');
         $upgrader->run();
@@ -535,7 +538,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAmazonCoverWarning()
+    public function testAmazonCoverWarning(): void
     {
         $upgrader = $this->getUpgrader('amazoncover');
         $upgrader->run();
@@ -554,7 +557,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAmazonReviewWarning()
+    public function testAmazonReviewWarning(): void
     {
         $upgrader = $this->getUpgrader('amazonreview');
         $upgrader->run();
@@ -573,7 +576,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReCaptcha()
+    public function testReCaptcha(): void
     {
         $upgrader = $this->getUpgrader('recaptcha');
         $upgrader->run();
@@ -583,5 +586,37 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('private', $captcha['recaptcha_secretKey']);
         $this->assertEquals('theme', $captcha['recaptcha_theme']);
         $this->assertEquals(['recaptcha'], $captcha['types']);
+    }
+
+    /**
+     * Data provider for testMailRequireLoginMigration().
+     *
+     * @return array[]
+     */
+    public static function mailRequireLoginProvider(): array
+    {
+        return [
+            'false' => ['email-require-login-false', 'enabled'],
+            'true' => ['email-require-login-true', 'require_login'],
+        ];
+    }
+
+    /**
+     * Test migration of [Mail] require_login setting.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated setting
+     *
+     * @return void
+     *
+     * @dataProvider mailRequireLoginProvider
+     */
+    public function testMailRequireLoginMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->getUpgrader($fixture);
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['Mail']['require_login']));
+        $this->assertEquals($expected, $results['config.ini']['Mail']['email_action']);
     }
 }

@@ -4,7 +4,7 @@
  * Content View Helper to resolve translated pages.
  * This is basically a wrapper around the PageLocator.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *

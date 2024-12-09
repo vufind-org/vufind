@@ -3,7 +3,7 @@
 /**
  * Factory for GetItemStatus AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -74,7 +74,8 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer'),
-            $container->get(\VuFind\ILS\Logic\Holds::class)
+            $container->get(\VuFind\ILS\Logic\Holds::class),
+            $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class)
         );
         $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $handler;

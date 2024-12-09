@@ -1,0 +1,101 @@
+<?php
+  // Set up standard record scripts:
+  $this->headScript()->appendFile('record.js');
+  $this->headScript()->appendFile('check_save_statuses.js');
+  // Activate Syndetics Plus if necessary:
+  if ($this->syndeticsPlus()->isActive()) {
+    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  }
+  // Add any extra scripts the tabs require:
+  foreach ($this->tabsExtraScripts as $script) {
+    $this->headScript()->appendFile($script);
+  }
+
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF', options: ['excludeSearchId' => true]), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Add canonical header link for SEO:
+  $canonicalUrl = $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
+  $this->headLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
+
+  // Set flag for special cases relating to full-width hierarchy tree tab:
+  $tree = (strtolower($this->activeTab) == 'hierarchytree');
+
+  // Set up breadcrumbs:
+  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
+  if (!empty($lastSearch)) {
+      $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+  } else {
+      $this->layout()->breadcrumbs = '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> ';
+  }
+  $this->layout()->breadcrumbs .= '<li class="active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/searchbox.phtml',
+      [
+        'ignoreHiddenFiltersInRequest' => true,
+      ]
+  );
+?>
+
+<?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+  <?=$this->render('record/prev-next.phtml'); ?>
+<?php endif; ?>
+
+<?=$this->record($this->driver)->getToolbar()?>
+
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?> solo"<?php endif; ?>>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getCollectionMetadata()?>
+
+    <?php if (count($this->tabs) > 0): ?>
+      <a id="tabnav"></a>
+      <div class="record-tabs">
+        <ul class="nav nav-tabs" role="tablist">
+          <?php foreach ($this->tabs as $tab => $obj): ?>
+            <?php
+              $desc = $obj->getDescription();
+              $tabName = preg_replace("/\W/", '-', strtolower($tab));
+              $tabClasses = [ 'record-tab', $tabName ];
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                  $tabClasses[] = 'active';
+                }
+                $tabClasses[] = 'initiallyActive';
+                $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) {
+                $tabClasses[] = 'hidden';
+              }
+              if (!$obj->supportsAjax()) {
+                $tabClasses[] = 'noajax';
+              }
+            ?>
+            <li role="presentation" id="record-tab-<?=$this->escapeHtmlAttr($tabName)?>" class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+              <a role="tab" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-bs-target=".tab-pane.<?=$this->escapeHtmlAttr($tabName)?>" data-lightbox-ignore>
+                <?=$this->transEsc($desc)?>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+
+        <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
+          <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+            <div role="tabpanel" class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
+              <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+            </div>
+          <?php endif; ?>
+        </div>
+      </div>
+    <?php endif; ?>
+
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
+  </div>
+</div>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>

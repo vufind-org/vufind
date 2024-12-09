@@ -3,7 +3,7 @@
 /**
  * Abstract record collection (implements some shared low-level functionality).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,10 @@
  */
 
 namespace VuFindSearch\Response;
+
+use function array_slice;
+use function count;
+use function in_array;
 
 /**
  * Abstract record collection (implements some shared low-level functionality).
@@ -186,6 +190,23 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Sets the result set identifier for all records in the collection.
+     *
+     * This method assigns a given UUID to each record in the collection by calling
+     * the `setResultSetIdentifier` method on each record.
+     *
+     * @param string $uuid A valid UUID to be assigned to each record in the collection.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid)
+    {
+        foreach ($this->records as $record) {
+            $record->setResultSetIdentifier($uuid);
+        }
+    }
+
+    /**
      * Add a record to the collection.
      *
      * @param RecordInterface $record        Record to add
@@ -247,8 +268,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->records[$this->pointer];
     }
@@ -278,8 +298,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->pointer + $this->getOffset();
     }

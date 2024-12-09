@@ -3,7 +3,7 @@
 /**
  * Hierarchy Tree Data Source (abstract base)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -111,6 +111,19 @@ abstract class AbstractBase implements \Laminas\Log\LoggerAwareInterface
     {
         return $this->recordRoute;
     }
+
+    /**
+     * Get JSON for the specified hierarchy ID.
+     *
+     * Build the JSON file from the Solr fields
+     *
+     * @param string $id      Hierarchy ID.
+     * @param array  $options Additional options for JSON generation. (Currently one
+     * option is supported: 'refresh' may be set to true to bypass caching).
+     *
+     * @return string
+     */
+    abstract public function getJSON($id, $options = []);
 
     /**
      * Get XML for the specified hierarchy ID.

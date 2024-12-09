@@ -1,0 +1,19 @@
+<?php
+  $tabConfig = is_object($this->params)
+    ? $this->searchTabs()->getTabConfigForParams($this->params) : [];
+?>
+<?php if (count($tabConfig) > 0): ?>
+  <div class="alert alert-info">
+    <?=$this->transEsc('nohit_change_tab', ['%%activeTab%%' => $this->translate($this->recommend->getActiveTab($tabConfig)['label'])])?>
+    <ul>
+    <?php $inactiveTabs = $this->recommend->getInactiveTabs($tabConfig); ?>
+    <?php foreach ($inactiveTabs as $tab): ?>
+      <li>
+        <?php if (!$tab['selected']): ?><a href="<?=$this->escapeHtmlAttr($tab['url'])?>"><?php endif; ?>
+          <?=$this->transEsc($tab['label']); ?>
+        <?php if (!$tab['selected']): ?></a><?php endif; ?>
+      </li>
+    <?php endforeach; ?>
+    </ul>
+  </div>
+<?php endif; ?>

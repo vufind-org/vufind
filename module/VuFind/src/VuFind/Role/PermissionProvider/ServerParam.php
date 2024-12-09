@@ -3,7 +3,7 @@
 /**
  * ServerParam permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -32,6 +32,9 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
+
+use function count;
+use function in_array;
 
 /**
  * ServerParam permission provider for VuFind.
@@ -102,10 +105,10 @@ class ServerParam implements
         foreach ((array)$options as $option) {
             $this->debug("getPermissions: option '{$option}'");
             if (!$this->checkServerParam($option)) {
-                $this->debug("getPermissions: result = false");
+                $this->debug('getPermissions: result = false');
                 return [];
             }
-            $this->debug("getPermissions: result = true");
+            $this->debug('getPermissions: result = true');
         }
         return ['guest', 'loggedin'];
     }

@@ -3,7 +3,7 @@
 /**
  * Return random records command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2021.
@@ -35,6 +35,8 @@ use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\QueryInterface;
+
+use function in_array;
 
 /**
  * Return random records command.

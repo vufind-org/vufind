@@ -3,7 +3,7 @@
 /**
  * ParentTemplate view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -101,6 +101,23 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
             "{$this->fixturePath}/parent/templates/everything.phtml",
             $helper('everything.phtml')
         );
+    }
+
+    /**
+     * Test stack rewinding bug (VUFIND-1604)
+     *
+     * @return void
+     */
+    public function testRepeatCalls()
+    {
+        $helper = $this->getHelper(['parent', 'child']);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->assertEquals(
+                "{$this->fixturePath}/parent/templates/foo/bar/child.phtml",
+                $helper('foo/bar/child.phtml')
+            );
+        }
     }
 
     /**

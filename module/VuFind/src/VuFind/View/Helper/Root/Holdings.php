@@ -3,7 +3,7 @@
 /**
  * View helper to support ILS holdings display
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\View\Helper\Root;
+
+use function strlen;
 
 /**
  * View helper to support ILS holdings display
@@ -70,6 +72,7 @@ class Holdings extends \Laminas\View\Helper\AbstractHelper
         $catalogConfig = $this->config['Catalog'] ?? [];
         $showEmptyBarcodes
             = (bool)($catalogConfig['display_items_without_barcodes'] ?? true);
-        return $showEmptyBarcodes || strlen($holding['barcode'] ?? '') > 0;
+        return $holding['availability']->isVisibleInHoldings()
+            && ($showEmptyBarcodes || strlen($holding['barcode'] ?? '') > 0);
     }
 }

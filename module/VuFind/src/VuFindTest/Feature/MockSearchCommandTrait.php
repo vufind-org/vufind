@@ -3,7 +3,7 @@
 /**
  * Trait for tests requiring mock search Command objects
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *

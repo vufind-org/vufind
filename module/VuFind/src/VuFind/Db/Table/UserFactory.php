@@ -3,7 +3,7 @@
 /**
  * User table gateway factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -64,17 +64,7 @@ class UserFactory extends GatewayFactory
         $requestedName,
         array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $session = null;
-        if (
-            isset($config->Authentication->privacy)
-            && $config->Authentication->privacy
-        ) {
-            $sessionManager = $container
-                ->get(\Laminas\Session\SessionManager::class);
-            $session = new \Laminas\Session\Container('Account', $sessionManager);
-        }
-        return parent::__invoke($container, $requestedName, [$config, $session]);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        return parent::__invoke($container, $requestedName, [$config]);
     }
 }

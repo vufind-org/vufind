@@ -3,7 +3,7 @@
 /**
  * Laminas\Feed\Renderer\Entry extension for Dublin Core
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

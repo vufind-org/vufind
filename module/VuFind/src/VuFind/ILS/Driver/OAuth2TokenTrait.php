@@ -3,7 +3,7 @@
 /**
  * Trait OAuth2TokenTraitTest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2021.
  *
@@ -98,7 +98,7 @@ trait OAuth2TokenTrait
         }
 
         if ($response->getStatusCode() != 200) {
-            $errorMessage = 'Error while getting OAuth2 access token (status code '
+            $errorMessage = "Error while getting OAuth2 access token from '$tokenEndpoint' (status code "
                 . $response->getStatusCode() . '): ' . $response->getBody();
             $this->logError($errorMessage);
             throw new AuthTokenException(
@@ -112,7 +112,7 @@ trait OAuth2TokenTrait
             || empty($tokenData['access_token'])
         ) {
             $this->logError(
-                'Did not receive OAuth2 token, response: '
+                "Did not receive OAuth2 token from '$tokenEndpoint', response: "
                 . $response->getBody()
             );
             throw new AuthTokenException(

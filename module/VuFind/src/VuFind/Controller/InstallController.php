@@ -3,7 +3,7 @@
 /**
  * Install Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -32,7 +32,19 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
+
+use function count;
+use function defined;
+use function dirname;
+use function function_exists;
+use function in_array;
+use function is_callable;
+use function sprintf;
+use function strlen;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -105,7 +117,8 @@ class InstallController extends AbstractBase
     {
         $config = $this->getForcedLocalConfigPath('config.ini');
         if (!file_exists($config)) {
-            return copy($this->getBaseConfigFilePath('config.ini'), $config);
+            // Suppress errors so we don't cause a fatal error if copy is disallowed.
+            return @copy($this->getBaseConfigFilePath('config.ini'), $config);
         }
         return true;        // report success if file already exists
     }
@@ -136,6 +149,29 @@ class InstallController extends AbstractBase
     }
 
     /**
+     * Extract the Solr base URL from the SolrMarc configuration file,
+     * so a custom Solr port configured in install.php can be applied to
+     * the initial config.ini file.
+     *
+     * Return null if no custom Solr URL can be found.
+     *
+     * @return ?string
+     */
+    protected function getSolrUrlFromImportConfig()
+    {
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
+        $importConfig = $resolver->getLocalConfigPath('import.properties', 'import');
+        if (file_exists($importConfig)) {
+            $props = file_get_contents($importConfig);
+            preg_match('|solr.hosturl\s*=\s*(https?://\w+:\d+/\w+)|', $props, $matches);
+            if (!empty($matches[1])) {
+                return $matches[1];
+            }
+        }
+        return null;
+    }
+
+    /**
      * Display repair instructions for basic configuration problems.
      *
      * @return mixed
@@ -149,9 +185,15 @@ class InstallController extends AbstractBase
                 throw new \Exception('Cannot copy file into position.');
             }
             $writer = new ConfigWriter($config);
+            // Choose secure defaults when creating initial config.ini:
+            $this->fixSecurityConfiguration($config, $writer);
+            // Set appropriate URLs:
             $serverUrl = $this->getViewRenderer()->plugin('serverurl');
             $path = $this->url()->fromRoute('home');
             $writer->set('Site', 'url', rtrim($serverUrl($path), '/'));
+            if ($solrUrl = $this->getSolrUrlFromImportConfig()) {
+                $writer->set('Index', 'url', $solrUrl);
+            }
             if (!$writer->save()) {
                 throw new \Exception('Cannot write config to disk.');
             }
@@ -175,7 +217,7 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        $cache = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+        $cache = $this->getService(\VuFind\Cache\Manager::class);
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
@@ -190,7 +232,7 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        $cache = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+        $cache = $this->getService(\VuFind\Cache\Manager::class);
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
@@ -209,8 +251,7 @@ class InstallController extends AbstractBase
     {
         try {
             // Try to read the tags table just to see if we can connect to the DB:
-            $tags = $this->getTable('Tags');
-            $tags->getByText('test', false);
+            $this->getDbService(TagServiceInterface::class)->getTagsByText('test');
             $status = true;
         } catch (\Exception $e) {
             $status = false;
@@ -269,9 +310,9 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = "VuFind requires PHP version " . $this->getMinimalPhpVersion()
-                . " or newer; you are running " . phpversion()
-                . ".  Please upgrade.";
+            $msg = 'VuFind requires PHP version ' . $this->getMinimalPhpVersion()
+                . ' or newer; you are running ' . phpversion()
+                . '. Please upgrade.';
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -279,11 +320,11 @@ class InstallController extends AbstractBase
         // Is the mbstring library missing?
         if (!function_exists('mb_substr')) {
             $msg
-                = "Your PHP installation appears to be missing the mbstring plug-in."
-                . " For better language support, it is recommended that you add"
-                . " this. For details on how to do this, see "
-                . "https://vufind.org/wiki/installation "
-                . "and look at the PHP installation instructions for your platform.";
+                = 'Your PHP installation appears to be missing the mbstring plug-in.'
+                . ' For better language support, it is recommended that you add'
+                . ' this. For details on how to do this, see '
+                . 'https://vufind.org/wiki/installation '
+                . 'and look at the PHP installation instructions for your platform.';
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -291,11 +332,11 @@ class InstallController extends AbstractBase
         // Is the GD library missing?
         if (!is_callable('imagecreatefromstring')) {
             $msg
-                = "Your PHP installation appears to be missing the GD plug-in. "
-                . "For better graphics support, it is recommended that you add this."
-                . " For details on how to do this, see "
-                . "https://vufind.org/wiki/installation "
-                . "and look at the PHP installation instructions for your platform.";
+                = 'Your PHP installation appears to be missing the GD plug-in. '
+                . 'For better graphics support, it is recommended that you add this.'
+                . ' For details on how to do this, see '
+                . 'https://vufind.org/wiki/installation '
+                . 'and look at the PHP installation instructions for your platform.';
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -303,11 +344,11 @@ class InstallController extends AbstractBase
         // Is the openssl library missing?
         if (!function_exists('openssl_encrypt')) {
             $msg
-                = "Your PHP installation appears to be missing the openssl plug-in."
-                . " For better security support, it is recommended that you add"
-                . " this. For details on how to do this, see "
-                . "https://vufind.org/wiki/installation "
-                . "and look at the PHP installation instructions for your platform.";
+                = 'Your PHP installation appears to be missing the openssl plug-in.'
+                . ' For better security support, it is recommended that you add'
+                . ' this. For details on how to do this, see '
+                . 'https://vufind.org/wiki/installation '
+                . 'and look at the PHP installation instructions for your platform.';
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -315,10 +356,10 @@ class InstallController extends AbstractBase
         // Is the XSL library missing?
         if (!class_exists('XSLTProcessor')) {
             $msg
-                = "Your PHP installation appears to be missing the XSL plug-in."
-                . " For details on how to do this, see "
-                . "https://vufind.org/wiki/installation "
-                . "and look at the PHP installation instructions for your platform.";
+                = 'Your PHP installation appears to be missing the XSL plug-in.'
+                . ' For details on how to do this, see '
+                . 'https://vufind.org/wiki/installation '
+                . 'and look at the PHP installation instructions for your platform.';
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -326,10 +367,10 @@ class InstallController extends AbstractBase
         // Is the sodium extension missing?
         if (!defined('SODIUM_LIBRARY_VERSION')) {
             $msg
-                = "Your PHP installation appears to be missing the sodium plug-in."
-                . " For details on how to do this, see "
-                . "https://vufind.org/wiki/installation "
-                . "and look at the PHP installation instructions for your platform.";
+                = 'Your PHP installation appears to be missing the sodium plug-in.'
+                . ' For details on how to do this, see '
+                . 'https://vufind.org/wiki/installation '
+                . 'and look at the PHP installation instructions for your platform.';
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -360,7 +401,7 @@ class InstallController extends AbstractBase
         } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
                 ->addMessage('Database user must be alphanumeric.', 'error');
-        } elseif ($skip || $this->formWasSubmitted('submit')) {
+        } elseif ($skip || $this->formWasSubmitted()) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
@@ -371,21 +412,23 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.', 'error');
             } else {
                 // Connect to database:
-                $connection = $view->driver . '://' . $view->dbrootuser . ':'
-                    . $this->params()->fromPost('dbrootpass') . '@'
-                    . $view->dbhost;
                 try {
-                    $dbName = ($view->driver == 'pgsql')
-                        ? 'template1' : $view->driver;
-                    $db = $this->serviceLocator
-                        ->get(\VuFind\Db\AdapterFactory::class)
-                        ->getAdapterFromConnectionString("{$connection}/{$dbName}");
+                    $dbName = ($view->driver == 'pgsql') ? 'template1' : $view->driver;
+                    $connectionParams = [
+                        'driver' => $view->driver,
+                        'hostname' => $view->dbhost,
+                        'username' => $view->dbrootuser,
+                        'password' => $this->params()->fromPost('dbrootpass'),
+                    ];
+                    $db = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                        $connectionParams + ['database' => $dbName]
+                    );
                 } catch (\Exception $e) {
                     $this->flashMessenger()
                         ->addMessage(
                             'Problem initializing database adapter; '
                             . 'check for missing ' . $view->driver
-                            . ' library .  Details: ' . $e->getMessage(),
+                            . ' library. Details: ' . $e->getMessage(),
                             'error'
                         );
                     return $view;
@@ -415,10 +458,8 @@ class InstallController extends AbstractBase
                         foreach ($preCommands as $query) {
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
-                        $dbFactory = $this->serviceLocator
-                            ->get(\VuFind\Db\AdapterFactory::class);
-                        $db = $dbFactory->getAdapterFromConnectionString(
-                            $connection . '/' . $view->dbname
+                        $db = $this->getService(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
+                            $connectionParams + ['database' => $view->dbname]
                         );
                         $statements = explode(';', $sql);
                         foreach ($statements as $current) {
@@ -466,21 +507,21 @@ class InstallController extends AbstractBase
         $create = 'CREATE DATABASE ' . $view->dbname;
         // Special case: PostgreSQL:
         if ($view->driver == 'pgsql') {
-            $escape = "ALTER DATABASE " . $view->dbname
+            $escape = 'ALTER DATABASE ' . $view->dbname
                 . " SET bytea_output='escape'";
-            $cuser = "CREATE USER " . $view->dbuser
+            $cuser = 'CREATE USER ' . $view->dbuser
                 . " WITH PASSWORD {$escapedPass}";
-            $grant = "GRANT ALL PRIVILEGES ON DATABASE "
+            $grant = 'GRANT ALL PRIVILEGES ON DATABASE '
                 . "{$view->dbname} TO {$view->dbuser} ";
             return [$create, $escape, $cuser, $grant];
         }
         // Default: MySQL:
         $user = "CREATE USER '{$view->dbuser}'@'{$view->vufindhost}' "
             . "IDENTIFIED BY {$escapedPass}";
-        $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
+        $grant = 'GRANT SELECT,INSERT,UPDATE,DELETE ON '
             . $view->dbname
             . ".* TO '{$view->dbuser}'@'{$view->vufindhost}' "
-            . "WITH GRANT OPTION";
+            . 'WITH GRANT OPTION';
         $use = "USE {$view->dbname}";
         return [$create, $user, $grant, 'FLUSH PRIVILEGES', $use];
     }
@@ -497,9 +538,9 @@ class InstallController extends AbstractBase
     {
         // Special case: PostgreSQL:
         if ($view->driver == 'pgsql') {
-            $grantTables = "GRANT ALL PRIVILEGES ON ALL TABLES IN "
+            $grantTables = 'GRANT ALL PRIVILEGES ON ALL TABLES IN '
                 . "SCHEMA public TO {$view->dbuser} ";
-            $grantSequences = "GRANT ALL PRIVILEGES ON ALL SEQUENCES"
+            $grantSequences = 'GRANT ALL PRIVILEGES ON ALL SEQUENCES'
                 . " IN SCHEMA public TO {$view->dbuser} ";
             return [$grantTables, $grantSequences];
         }
@@ -535,7 +576,11 @@ class InstallController extends AbstractBase
         if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
-            $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
+            try {
+                $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
+            } catch (\Exception $e) {
+                $status = false;
+            }
         }
         return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }
@@ -583,9 +628,9 @@ class InstallController extends AbstractBase
             while ($line = readdir($dir)) {
                 if (
                     stristr($line, '.php') && !in_array($line, $excludeList)
-                    && substr($line, 0, 8) !== 'Abstract'
-                    && substr($line, -11) !== 'Factory.php'
-                    && substr($line, -9) !== 'Trait.php'
+                    && !str_starts_with($line, 'Abstract')
+                    && !str_ends_with($line, 'Factory.php')
+                    && !str_ends_with($line, 'Trait.php')
                 ) {
                     $drivers[] = str_replace('.php', '', $line);
                 }
@@ -610,7 +655,7 @@ class InstallController extends AbstractBase
     protected function testSearchService()
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
+        $searchService = $this->getService(\VuFindSearch\Service::class);
         $command = new RetrieveCommand('Solr', '1');
         $searchService->invoke($command)->getResult();
     }
@@ -646,7 +691,7 @@ class InstallController extends AbstractBase
             try {
                 $this->testSearchService();
 
-                // If we got this far, the fix worked.  Let's write it to disk!
+                // If we got this far, the fix worked. Let's write it to disk!
                 $writer = new ConfigWriter($configFile);
                 $writer->set('Index', 'url', $newUrl);
                 if (!$writer->save()) {
@@ -667,7 +712,7 @@ class InstallController extends AbstractBase
             $this->getRequest()->getServer()->get('HTTP_HOST'),
             $config->Index->url
         );
-        $view->core = $config->Index->default_core ?? "biblio";
+        $view->core = $config->Index->default_core ?? 'biblio';
         $view->configFile = $configFile;
         return $view;
     }
@@ -679,15 +724,20 @@ class InstallController extends AbstractBase
      */
     protected function checkSecurity()
     {
+        try {
+            $secureDb = $this->hasSecureDatabase();
+        } catch (\Throwable $e) {
+            $secureDb = false;
+        }
         return [
             'title' => 'Security',
-            'status' => $this->hasSecureDatabase(),
+            'status' => $secureDb,
             'fix' => 'fixsecurity',
         ];
     }
 
     /**
-     * Support method for fixsecurityAction().  Returns true if the configuration
+     * Support method for fixsecurityAction(). Returns true if the configuration
      * was modified, false otherwise.
      *
      * @param \Laminas\Config\Config $config Existing VuFind configuration
@@ -734,8 +784,17 @@ class InstallController extends AbstractBase
         }
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
-        $rows = $this->getTable('user')->getInsecureRows();
-        if (count($rows) == 0 || $userConfirmation == 'Yes') {
+        try {
+            $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+            $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
+        } catch (\Throwable $e) {
+            $this->flashMessenger()->addMessage(
+                'Cannot connect to database; please configure database before fixing security.',
+                'error'
+            );
+            return $this->redirect()->toRoute('install-home');
+        }
+        if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
 
@@ -771,23 +830,33 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
-        $rows = $this->getTable('user')->getInsecureRows();
-        if (count($rows) > 0) {
-            // If we got this far, the user POSTed their confirmation -- go ahead
-            // with the fix:
+        $ilsAuthenticator = $this->getService(\VuFind\Auth\ILSAuthenticator::class);
+        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+        if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
-            foreach ($rows as $row) {
-                if ($row->password != '') {
-                    $row->pass_hash = $bcrypt->create($row->password);
-                    $row->password = '';
+            foreach ($userRows as $row) {
+                if ($row->getRawPassword() != '') {
+                    $row->setPasswordHash($bcrypt->create($row->getRawPassword()));
+                    $row->setRawPassword('');
                 }
-                if ($row->cat_password) {
-                    $row->saveCredentials($row->cat_username, $row->cat_password);
+                if ($rawPassword = $row->getRawCatPassword()) {
+                    $ilsAuthenticator->saveUserCatalogCredentials($row, $row->getCatUsername(), $rawPassword);
                 } else {
                     $row->save();
                 }
             }
-            $msg = count($rows) . ' user row(s) encrypted.';
+            $msg = count($userRows) . ' user row(s) encrypted.';
+            $this->flashMessenger()->addMessage($msg, 'info');
+        }
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $cardRows = $cardService->getInsecureRows();
+        if (count($cardRows) > 0) {
+            foreach ($cardRows as $row) {
+                $row->setCatPassEnc($ilsAuthenticator->encrypt($row->getRawCatPassword()));
+                $row->setRawCatPassword(null);
+                $cardService->persistEntity($row);
+            }
+            $msg = count($cardRows) . ' user_card row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
         }
         return $this->redirect()->toRoute('install-home');
@@ -802,7 +871,7 @@ class InstallController extends AbstractBase
     {
         // Try to retrieve an SSL URL; if we're misconfigured, it will fail.
         try {
-            $this->serviceLocator->get(\VuFindHttp\HttpService::class)
+            $this->getService(\VuFindHttp\HttpService::class)
                 ->get('https://google.com');
             $status = true;
         } catch (\VuFindHttp\Exception\RuntimeException $e) {
@@ -907,7 +976,7 @@ class InstallController extends AbstractBase
         $methods = get_class_methods($this);
         $checks = [];
         foreach ($methods as $method) {
-            if (substr($method, 0, 5) == 'check') {
+            if (str_starts_with($method, 'check')) {
                 $checks[] = $this->$method();
             }
         }

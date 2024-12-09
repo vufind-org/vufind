@@ -1,0 +1,77 @@
+<?php
+  $this->layout()->sideFacetsInstanceCounter = ($this->layout()->sideFacetsInstanceCounter ?? 0) + 1;
+  $this->headScript()->appendFile('facets.js');
+
+  // Save results/options to $this so they are available to sub-templates:
+  $this->results = $results = $this->recommend->getResults();
+  $this->options = $options = $results->getOptions();
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $forceUncollapsedFacets = [];
+
+  // Make sure facets with active selections are not collapsed:
+  $filterList = $results->getParams()->getFilterList(true);
+  foreach ($filterList as $field => $filters) {
+    foreach ($filters as $filter) {
+      $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
+      if ($index !== false) {
+        unset($collapsedFacets[$index]); // Open if we have a match
+        $forceUncollapsedFacets[] = $filter['field'];
+      }
+    }
+  }
+?>
+<?=$this->component('hide-offcanvas-button')?>
+<?php
+  $checkboxFilters = $this->recommend->getCheckboxFacetSet();
+  $hasVisibleCheckboxes = false;
+  if (count($checkboxFilters) > 0) {
+    foreach ($checkboxFilters as $current) {
+      if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
+        $hasVisibleCheckboxes = true;
+        break;
+      }
+    }
+  }
+?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+  <?php if ($this->multiFacetsSelection && $this->layout()->sideFacetsInstanceCounter === 1): ?>
+    <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
+  <?php endif; ?>
+  <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
+<?php endif; ?>
+<?php if ($hasVisibleCheckboxes): ?>
+  <?php // checkboxFilter class remains only for back-compatibility: ?>
+  <div class="checkbox-filters checkboxFilter">
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+  </div>
+<?php endif; ?>
+<?= $this->sideFacetExtraControls ?? '' ?>
+<?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
+<?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
+  <?php foreach ($sideFacetSet as $title => $cluster): ?>
+    <?php $collapsed = in_array($title, $collapsedFacets); ?>
+    <?php // Data-title attribute is for analytics use.  Do not remove. ?>
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>" data-title="<?=$this->escapeHtmlAttr($cluster['label']) ?>">
+      <h3 class="facet-title">
+        <button class="title<?php if ($collapsed): ?> collapsed<?php endif ?>" data-bs-toggle="collapse" data-bs-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+          <span class="facet-title"><?=$this->transEsc($cluster['label'])?></span>
+          <?=$this->icon('collapse', 'facet-title-icon') ?>
+        </button>
+      </h3>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+        <?=
+          $this->context($this)->renderInContext(
+              'Recommend/SideFacets/facet.phtml',
+              [
+                  'facet' => $title,
+                  'cluster' => $cluster,
+                  'collapsedFacets' => $collapsedFacets,
+              ]
+          );
+        ?>
+      </div>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'registerSideFacetTruncation();', 'SET');?>

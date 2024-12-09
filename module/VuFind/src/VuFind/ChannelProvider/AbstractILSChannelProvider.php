@@ -3,7 +3,7 @@
 /**
  * Abstract base class for channel providers relying on the ILS.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018, 2022.
  *
@@ -33,6 +33,8 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RetrieveBatchCommand;
+
+use function count;
 
 /**
  * Abstract base class for channel providers relying on the ILS.

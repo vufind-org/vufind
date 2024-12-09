@@ -3,7 +3,7 @@
 /**
  * EDS API Results
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  * Copyright (C) EBSCO Industries 2013
@@ -88,7 +88,7 @@ class Results extends \VuFind\Search\Base\Results
             $dateFacets = $this->getParams()->getDateFacetSettings();
             if (!empty($dateFacets)) {
                 foreach ($dateFacets as $dateFacet) {
-                    $this->responseFacets[$dateFacet] = [""];
+                    $this->responseFacets[$dateFacet] = [''];
                 }
             }
 

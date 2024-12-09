@@ -3,7 +3,7 @@
 /**
  * Unit tests for terms information.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@ namespace VuFindTest\Backend\Solr\Json\Response;
 
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
+
+use function get_class;
 
 /**
  * Unit tests for terms information.

@@ -1,0 +1,93 @@
+<?php
+  $this->layout()->sideFacetsInstanceCounter = ($this->layout()->sideFacetsInstanceCounter ?? 0) + 1;
+  $this->headScript()->appendFile('facets.js');
+
+  $results = $this->recommend->getResults();
+  $activeFacets = $this->recommend->getActiveFacets();
+  $rangeFacets = $this->recommend->getAllRangeFacets();
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $forceUncollapsedFacets = [];
+
+  // Make sure facets with active selections are not collapsed:
+  $filterList = $results->getParams()->getFilterList(true);
+  foreach ($filterList as $field => $filters) {
+    foreach ($filters as $filter) {
+      $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
+      if ($index !== false) {
+        unset($collapsedFacets[$index]); // Open if we have a match
+        $forceUncollapsedFacets[] = $filter['field'];
+      }
+    }
+  }
+
+  foreach ($activeFacets as $field => $facetName) {
+    if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
+      $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      break;
+    }
+  }
+?>
+<?php
+  $checkboxFilters = $this->recommend->getCheckboxFacetSet();
+  $hasVisibleCheckboxes = false;
+  if (count($checkboxFilters) > 0) {
+    foreach ($checkboxFilters as $current) {
+      if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
+        $hasVisibleCheckboxes = true;
+        break;
+      }
+    }
+  }
+?>
+<?=$this->component('hide-offcanvas-button')?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+  <?php if ($this->multiFacetsSelection && $this->layout()->sideFacetsInstanceCounter === 1): ?>
+    <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
+  <?php endif; ?>
+  <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
+  <?php
+    // We need to pass the current URL query to the Javascript; we use substr() to
+    // strip off the leading ? character. The "suppress query" option is used for
+    // special search types like course reserves / new items. The AJAX handler needs
+    // the real Solr query in order to process facets correctly, so we need to
+    // unsuppress it here.
+    $querySuppressed = $results->getUrlQuery()->isQuerySuppressed();
+    $urlQuery = substr($results->getUrlQuery()->setSuppressQuery(false)->getParams(false), 1);
+    $results->getUrlQuery()->setSuppressQuery($querySuppressed); // restore original config
+    // We also need to inform the helper about any special parameters used in place
+    // of the suppressed query:
+    $extraUrlFields = $results->getUrlQuery()->getParamsWithConfiguredDefaults();
+  ?>
+  <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex)?>" data-query="<?=$this->escapeHtmlAttr($urlQuery)?>" data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>" data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
+<?php endif; ?>
+<?php if ($hasVisibleCheckboxes): ?>
+  <?php // checkboxFilter class remains only for back-compatibility: ?>
+  <div class="checkbox-filters checkboxFilter">
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+  </div>
+<?php endif; ?>
+<?= $this->sideFacetExtraControls ?? '' ?>
+<?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
+<?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
+  <?php foreach ($activeFacets as $field => $facetName): ?>
+    <?php $collapsed = in_array($field, $collapsedFacets); ?>
+    <?php // Data-title attribute is for analytics use.  Do not remove. ?>
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>" data-title="<?=$this->escapeHtmlAttr($facetName) ?>">
+      <button class="title<?php if ($collapsed): ?> collapsed<?php endif ?>" data-bs-toggle="collapse" data-bs-target="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
+        <span class="facet-title"><?=$this->transEsc($facetName)?></span>
+        <?=$this->icon('collapse', 'facet-title-icon') ?>
+      </button>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+        <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
+        <div class="facet-load-indicator hidden">
+          <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
+        </div>
+      </div>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
+  </div>
+<?php endif; ?>

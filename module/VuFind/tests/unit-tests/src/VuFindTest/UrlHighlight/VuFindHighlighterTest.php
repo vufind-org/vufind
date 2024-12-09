@@ -3,7 +3,7 @@
 /**
  * VuFindHighlighter Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -107,7 +107,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array[]
      */
-    public function getHighlightDataProvider(): array
+    public static function getHighlightDataProvider(): array
     {
         return [
             'http' => [

@@ -6,7 +6,7 @@
  * Note: This trait is for view helpers only. It expects $this->getView() method to
  * be available.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  * Copyright (C) The National Library of Finland 2020.
@@ -36,6 +36,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Resolver\ResolverInterface;
+
+use function sprintf;
 
 /**
  * Trait for view helpers that render a template based on a class name.

@@ -3,7 +3,7 @@
 /**
  * Unit tests for FilterFieldConversionListener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -57,7 +57,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
         $listener = new FilterFieldConversionListener(['foo' => 'bar']);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo('VuFind\Search'),
+            $this->equalTo(\VuFindSearch\Service::class),
             $this->equalTo('pre'),
             $this->equalTo([$listener, 'onSearchPre'])
         );
@@ -78,7 +78,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
                     'foo:value',
                     'baz:"foo:value"',
                     'foofoo:value',
-                    "foo\\:value",
+                    'foo\\:value',
                     'baz:value OR foo:value',
                     '(foo:value)',
                 ],
@@ -103,7 +103,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
             'bar:value',
             'boo:"foo:value"',
             'foofoo:value',
-            "foo\\:value",
+            'foo\\:value',
             'boo:value OR bar:value',
             '(bar:value)',
         ];

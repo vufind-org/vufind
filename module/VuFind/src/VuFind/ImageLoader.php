@@ -3,7 +3,7 @@
 /**
  * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind;
+
+use function array_key_exists;
 
 /**
  * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
@@ -86,10 +88,10 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
      * @var array
      */
     protected $allowedFileExtensions = [
-        "gif" => "image/gif",
-        "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
-        "png" => "image/png",
-        "tiff" => "image/tiff", "tif" => "image/tiff",
+        'gif' => 'image/gif',
+        'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'tiff' => 'image/tiff', 'tif' => 'image/tiff',
     ];
 
     /**

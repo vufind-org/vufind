@@ -3,7 +3,7 @@
 /**
  * Class MarkdownTest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -33,7 +33,7 @@ use League\CommonMark\GithubFlavoredMarkdownConverter;
 use VuFind\View\Helper\Root\Markdown;
 
 /**
- * MArkdown Test Class
+ * Markdown Test Class
  *
  * @category VuFind
  * @package  Tests

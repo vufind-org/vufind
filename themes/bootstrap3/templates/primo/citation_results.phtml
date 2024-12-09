@@ -1,0 +1,49 @@
+<?php
+  // Set up details:
+  $title = $this->translate($this->pageTitle, ['%%title%%' => $this->driver->getBreadcrumb()]);
+  $this->slot('head-title')->set($title);
+  $this->slot('search-heading')->set('');
+  $this->slot('empty-message')->set(
+      $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $title])
+  );
+
+  // Override search results:
+  $this->slot('search-controls')->set(
+      $this->render('search/controls/limit.phtml')
+      . ' ' . $this->render('search/controls/view.phtml')
+  );
+
+  // Call the standard search template:
+  echo $this->render('search/results.phtml');
+
+  // Override searchbox:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/no-input-searchbox.phtml',
+      [
+        'searchType' => 'basic',
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'selectedShards' => $this->params->getSelectedShards(),
+      ]
+  ) . $this->context($this)->renderInContext(
+      'search/filters.phtml',
+      [
+        'params' => $this->params,
+        'urlQuery' => $this->results->getUrlQuery(),
+        'filterList' => $this->params->getFilterList(true),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'searchType' => $this->params->getSearchType(),
+      ]
+  );
+
+  // Override breadcrumbs:
+  $titleLink = $this->translate(
+      $this->pageTitleLink,
+      [
+          '%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)),
+          '%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb()),
+      ]
+  );
+
+  $this->layout()->breadcrumbs = '<li class="active">' . $titleLink . '</li>';

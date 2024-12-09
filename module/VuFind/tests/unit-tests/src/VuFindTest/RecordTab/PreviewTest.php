@@ -3,7 +3,7 @@
 /**
  * Preview Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -59,7 +59,7 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Active' => [false, false], 'InActive' => [true, true]];
     }

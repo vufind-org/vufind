@@ -3,7 +3,7 @@
 /**
  * SOLR Terms component.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,7 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use ArrayObject;
 use IteratorAggregate;
+use Traversable;
 
 /**
  * SOLR Terms component.
@@ -72,9 +73,9 @@ class Terms implements IteratorAggregate
     /**
      * Return aggregated iterator.
      *
-     * @return ArrayIterator
+     * @return Traversable
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
         return $this->terms->getIterator();
     }

@@ -3,7 +3,7 @@
 /**
  * Default Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -78,7 +78,7 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
     public function homeAction()
     {
         // Load different configurations depending on whether we're logged in or not:
-        if ($this->authManager->isLoggedIn()) {
+        if ($this->authManager->getIdentity()) {
             $controller = $this->config->Site->defaultLoggedInModule ?? 'MyResearch';
             $actionConfig = 'defaultLoggedInAction';
         } else {

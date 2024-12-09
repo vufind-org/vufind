@@ -3,7 +3,7 @@
 /**
  * Unit tests for simple JSON-based record collection factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -67,6 +67,6 @@ class RecordCollectionFactoryTest extends TestCase
         $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
 
         $fact = new RecordCollectionFactory();
-        $coll = $fact->factory('garbage');
+        $fact->factory('garbage');
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Solr aspect of the Search Multi-class (Options)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Solr;
 
+use function count;
+use function is_object;
+
 /**
  * Solr Search Options
  *
@@ -40,6 +43,7 @@ namespace VuFind\Search\Solr;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
@@ -85,8 +89,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $searchSettings->General->default_limit;
         }
         if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions
-                = explode(",", $searchSettings->General->limit_options);
+            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
         }
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
@@ -111,10 +114,6 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($searchSettings->General->default_handler)) {
             $this->defaultHandler = $searchSettings->General->default_handler;
-        }
-        if (isset($searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $searchSettings->General->retain_filters_by_default;
         }
         if (isset($searchSettings->General->default_filters)) {
             $this->defaultFilters = $searchSettings->General->default_filters
@@ -147,7 +146,7 @@ class Options extends \VuFind\Search\Base\Options
             }
         } else {
             $this->sortOptions = ['relevance' => 'sort_relevance',
-                'year' => 'sort_year', 'year asc' => 'sort_year asc',
+                'year' => 'sort_year', 'year asc' => 'sort_year_asc',
                 'callnumber-sort' => 'sort_callnumber', 'author' => 'sort_author',
                 'title' => 'sort_title'];
         }
@@ -191,11 +190,12 @@ class Options extends \VuFind\Search\Base\Options
             $this->hierarchicalFacets
                 = $facetSettings->SpecialFacets->hierarchical->toArray();
         }
-
         if (isset($facetSettings->SpecialFacets->hierarchicalFacetSeparators)) {
             $this->hierarchicalFacetSeparators = $facetSettings->SpecialFacets
                 ->hierarchicalFacetSeparators->toArray();
         }
+        $this->hierarchicalFacetSortSettings
+            = $facetSettings?->SpecialFacets?->hierarchicalFacetSortOptions?->toArray() ?? [];
 
         // Load Spelling preferences
         $config = $configLoader->get($this->mainIni);
@@ -208,7 +208,7 @@ class Options extends \VuFind\Search\Base\Options
             isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
-            $this->firstlastNavigation = true;
+            $this->recordPageFirstLastNavigation = true;
         }
 
         // Turn on highlighting if the user has requested highlighting or snippet

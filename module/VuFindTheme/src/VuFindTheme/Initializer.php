@@ -3,7 +3,7 @@
 /**
  * VuFind Theme Initializer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -131,7 +131,7 @@ class Initializer
             $this->serviceManager = $eventOrContainer;
         } else {
             throw new \Exception(
-                'Illegal type for $eventOrContainer: ' . get_class($eventOrContainer)
+                'Illegal type for $eventOrContainer: ' . $eventOrContainer::class
             );
         }
 
@@ -148,7 +148,7 @@ class Initializer
     }
 
     /**
-     * Initialize the theme.  This needs to be triggered as part of the dispatch
+     * Initialize the theme. This needs to be triggered as part of the dispatch
      * event.
      *
      * @throws \Exception
@@ -168,7 +168,7 @@ class Initializer
         );
 
         // Determine theme options:
-        $this->sendThemeOptionsToView();
+        $this->sendThemeOptionsToView($currentTheme);
 
         // Make sure the current theme is set correctly in the tools object:
         $error = null;
@@ -201,6 +201,21 @@ class Initializer
      */
     protected function pickTheme(?Request $request)
     {
+        // The admin theme should always be picked if
+        // - the Admin module is enabled AND
+        // - an admin theme is set AND
+        // - an admin route is requested (route configuration has an
+        //   'admin_route' => true default parameter).
+        if (
+            isset($this->event)
+            && ($routeMatch = $this->event->getRouteMatch())
+            && $routeMatch->getParam('admin_route')
+            && ($this->config->admin_enabled ?? false)
+            && ($adminTheme = ($this->config->admin_theme ?? false))
+        ) {
+            return $adminTheme;
+        }
+
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
         if (PHP_SAPI == 'cli') {
@@ -260,26 +275,30 @@ class Initializer
     /**
      * Make the theme options available to the view.
      *
+     * @param string $currentTheme Active theme
+     *
      * @return void
      */
-    protected function sendThemeOptionsToView()
+    protected function sendThemeOptionsToView($currentTheme)
     {
         // Get access to the view model:
         if (PHP_SAPI !== 'cli') {
             $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
             // Send down the view options:
-            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions($currentTheme));
         }
     }
 
     /**
-     * Return an array of information about user-selectable themes.  Each entry in
+     * Return an array of information about user-selectable themes. Each entry in
      * the array is an associative array with 'name', 'desc' and 'selected' keys.
+     *
+     * @param string $currentTheme Active theme
      *
      * @return array
      */
-    protected function getThemeOptions()
+    protected function getThemeOptions($currentTheme)
     {
         $options = [];
         if (isset($this->config->selectable_themes)) {
@@ -292,7 +311,7 @@ class Initializer
                 if (!empty($name)) {
                     $options[] = [
                         'name' => $name, 'desc' => $desc,
-                        'selected' => ($this->cookieManager->get('ui') == $name),
+                        'selected' => ($currentTheme == $name),
                     ];
                 }
             }
@@ -335,14 +354,6 @@ class Initializer
         // Set generator if necessary:
         if (isset($this->config->generator)) {
             $resources->setGenerator($this->config->generator);
-        }
-
-        $lessActive = false;
-        // Find LESS activity
-        foreach ($themes as $key => $currentThemeInfo) {
-            if (isset($currentThemeInfo['less']['active'])) {
-                $lessActive = $currentThemeInfo['less']['active'];
-            }
         }
 
         // Determine doctype and apply it:
@@ -435,7 +446,7 @@ class Initializer
                 // note of it:
                 $logger = $this->serviceManager->get(\VuFind\Log\Logger::class);
                 $logger->debug(
-                    'Problem loading cache: ' . get_class($e) . ' exception: '
+                    'Problem loading cache: ' . $e::class . ' exception: '
                     . $e->getMessage()
                 );
             }

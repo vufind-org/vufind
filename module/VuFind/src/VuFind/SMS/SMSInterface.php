@@ -3,7 +3,7 @@
 /**
  * Interface for SMS classes.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -48,7 +48,7 @@ interface SMSInterface
     public function getValidationType();
 
     /**
-     * Get a list of carriers supported by the module.  Returned as an array of
+     * Get a list of carriers supported by the module. Returned as an array of
      * associative arrays indexed by carrier ID and containing "name" and "domain"
      * keys.
      *

@@ -6,7 +6,7 @@
  * Note that most tests using TranslatableString are in
  * VuFindTest\View\Helper\Root\TranslateTest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020.
  *

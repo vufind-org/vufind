@@ -1,0 +1,31 @@
+<?php if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
+  <fieldset class="summon-facets">
+    <legend><?=$this->transEsc('Limit To')?></legend>
+    <?php if (!empty($this->checkboxFacets)): ?>
+      <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+    <?php endif; ?>
+    <?php foreach ($this->facetList as $field => $list): ?>
+      <div class="facet-fieldset">
+        <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+        <select class="form-control" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+          <?php
+            // Sort the current facet list alphabetically; we'll use this data
+            // along with the foreach below to display facet options in the
+            // correct order.
+            $sorted = [];
+            foreach ($list['list'] as $i => $value) {
+              $sorted[$i] = $value['displayText'];
+            }
+            $this->sorter()->natsort($sorted);
+          ?>
+          <?php foreach ($sorted as $i => $display): ?>
+            <?php $value = $list['list'][$i]; ?>
+            <option value="<?=$this->escapeHtmlAttr($this->operatorToFieldPrefix($value['operator']) . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($display)?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    <?php endforeach; ?>
+  </fieldset>
+<?php endif; ?>
+<?=$this->render('search/advanced/limit.phtml')?>
+<?=$this->render('search/advanced/ranges.phtml')?>

@@ -3,7 +3,7 @@
 /**
  * Syndetics Summaries content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -113,7 +113,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $summaries[] = $sourceInfo['div'];
                 } else {
                     // Get the marc field for summaries. (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld520");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
                     foreach ($nodes as $node) {
                         $summaries[] = preg_replace(
                             '/<a>|<a [^>]*>|<\/a>/',

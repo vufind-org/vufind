@@ -3,7 +3,7 @@
 /**
  * Memcache Session Handler Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -347,7 +347,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     protected function getHandler($config = null, $client = null)
     {
         $handler = new Memcache($config, $client);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }

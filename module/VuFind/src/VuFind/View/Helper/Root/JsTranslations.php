@@ -3,7 +3,7 @@
 /**
  * JsTranslations helper for passing translation text to Javascript
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -82,7 +82,7 @@ class JsTranslations extends AbstractJsStrings
     protected function mapValue($translation, string $key): string
     {
         $translateFunc
-            = substr($key, -5) === '_html' || substr($key, -10) === '_unescaped'
+            = str_ends_with($key, '_html') || str_ends_with($key, '_unescaped')
             ? $this->translate : $this->transEsc;
 
         // $translation could be a string or an array of parameters; this code

@@ -1,0 +1,11 @@
+<?php if (null === ($side = $this->config()->offcanvasSide())): ?>
+    <a class="search-filter-toggle" href="#<?=$this->escapeHtmlAttr($this->targetId)?>" title="<?=$this->transEscAttr($this->title ?? 'sidebar_expand') ?>">
+        <?=$this->transEsc($this->linkText) ?>
+    </a>
+<?php else: ?>
+    <a class="search-filter-toggle icon-link" href="#<?=$this->escapeHtmlAttr($this->targetId)?>" data-toggle="vufind-offcanvas" title="<?=$this->transEscAttr($this->title ?? 'sidebar_expand')?>">
+        <?='left' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-show-right' : 'offcanvas-show-left', 'icon-link__icon') : ''?>
+        <span class="icon-link__label"><?=$this->transEsc($this->linkText) ?></span>
+        <?='right' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-show-left' : 'offcanvas-show-right', 'icon-link__icon') : ''?>
+    </a>
+<?php endif; ?>

@@ -1,0 +1,78 @@
+<h2><?=$this->transEsc('Similar Items')?></h2>
+<?php $similarRecords = $this->tab->getResults(); ?>
+<?php if (count($similarRecords)): ?>
+  <?php $perPage = 4 ?>
+  <div id="similar-items-carousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- Indicators -->
+    <div class="carousel-indicators">
+      <?php for ($i = 0; $i < count($similarRecords) / $perPage; $i++): ?>
+        <button type="button"<?=0 === $i ? ' class="active"' : ''?> data-bs-target="#similar-items-carousel" data-bs-slide-to="<?=$i ?>" aria-label="<?=$this->transEscAttr('page_num', ['%%page%%' => $i + 1])?>"></button>
+      <?php endfor; ?>
+    </div>
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <?php foreach ($similarRecords as $index => $data): ?>
+            <a class="hover-overlay record-cover-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+              <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
+              <div class="content">
+                <?php
+                  $formats = $data->getFormats();
+                  $format = $formats[0] ?? null;
+                  $icon = $format
+                    ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
+                    : 'default';
+                ?>
+                <?=$this->icon('format-' . $icon, $format ? ['title' => $format] : []) ?>
+                <b><?=$this->escapeHtml($data->getTitle())?></b>
+                <?php $authors = $data->getPrimaryAuthors(); ?>
+                <?php if (!empty($authors)): ?>
+                  <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+                <?php endif; ?>
+                <?php $pubDates = $data->getPublicationDates(); ?>
+                <?php if (!empty($pubDates)): ?>
+                  <br><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+                <?php endif; ?>
+              </div>
+            </a>
+          <?php if (($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
+      </div>
+      <div class="carousel-item">
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#similar-items-carousel" data-bs-slide="prev">
+      <?=$this->icon('page-prev') ?>
+      <span class="visually-hidden"><?=$this->transEscAttr('Prev') ?></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#similar-items-carousel" data-bs-slide="next">
+      <span class="visually-hidden"><?=$this->transEscAttr('Next') ?></span>
+      <?=$this->icon('page-next') ?>
+    </button>
+  </div>
+<?php else: ?>
+  <p><?=$this->transEsc('Cannot find similar records')?></p>
+<?php endif; ?>
+<?php
+  $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : '';
+  $script .= <<<JS
+      var normalizeHeightCount = $('#similar-items-carousel img').length;
+      function normalizeHeights() {
+        if (--normalizeHeightCount > 0) return;
+        var tallest = 0;
+        var items = $('#similar-items-carousel .hover-overlay');
+        items.each(function() { //add heights to array
+          if (tallest < $(this).height()) {
+            tallest = $(this).height();
+          }
+        });
+        items.css('min-height', (tallest+25) + 'px');
+      }
+      $('#similar-items-carousel img').on('load', normalizeHeights);
+      JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

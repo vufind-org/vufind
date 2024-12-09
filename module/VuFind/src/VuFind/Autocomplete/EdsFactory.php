@@ -3,7 +3,7 @@
 /**
  * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *

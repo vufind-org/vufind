@@ -3,7 +3,7 @@
 /**
  * Class HierarchicalFacetHelperFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -72,6 +72,7 @@ class HierarchicalFacetHelperFactory implements
         }
         $helper = new $requestedName();
         $helper->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        $helper->setViewRenderer($container->get('ViewRenderer'));
         return $helper;
     }
 }

@@ -3,7 +3,7 @@
 /**
  * OAI-PMH server unit test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\OAI;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\OAI\Server;
 
 /**
@@ -47,28 +48,23 @@ class ServerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyInput()
+    public function testEmptyInput(): void
     {
         $server = $this->getServer();
         $this->assertTrue(
-            false !== strpos($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
+            str_contains($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
         );
     }
 
     /**
      * Get a server object.
      *
-     * @param array  $config  Server configuration
-     * @param string $baseURL Server base URL
-     * @param array  $params  Incoming query parameters
+     * @param array $config Server configuration
      *
      * @return Server
      */
-    protected function getServer(
-        $config = [],
-        $baseURL = 'http://foo',
-        $params = []
-    ) {
+    protected function getServer($config = []): Server
+    {
         // Force an email into the configuration if missing; this is required by the
         // server.
         if (!isset($config['Site']['email'])) {
@@ -78,7 +74,8 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $server = new Server(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
-            $this->getMockTableManager()
+            $this->getMockChangeTracker(),
+            $this->getMockResumptionService()
         );
         $server->setRecordFormatter($this->getMockRecordFormatter());
         return $server;
@@ -89,11 +86,9 @@ class ServerTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Results\PluginManager
      */
-    protected function getMockResultsManager()
+    protected function getMockResultsManager(): MockObject&\VuFind\Search\Results\PluginManager
     {
-        return $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\VuFind\Search\Results\PluginManager::class);
     }
 
     /**
@@ -101,34 +96,38 @@ class ServerTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Record\Loader
      */
-    protected function getMockRecordLoader()
+    protected function getMockRecordLoader(): MockObject&\VuFind\Record\Loader
     {
-        return $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\VuFind\Record\Loader::class);
     }
 
     /**
-     * Get a mock table manager
+     * Get a mock change tracker service
      *
-     * @return \VuFind\Db\Table\PluginManager
+     * @return MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
      */
-    protected function getMockTableManager()
+    protected function getMockChangeTracker(): MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
     {
-        return $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\VuFind\Db\Service\ChangeTrackerServiceInterface::class);
     }
 
     /**
      * Get a mock record formatter
      *
-     * @return \VuFindApi\Formatter\RecordFormatter
+     * @return MockObject&\VuFindApi\Formatter\RecordFormatter
      */
-    protected function getMockRecordFormatter()
+    protected function getMockRecordFormatter(): MockObject&\VuFindApi\Formatter\RecordFormatter
     {
-        return $this->getMockBuilder(\VuFindApi\Formatter\RecordFormatter::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\VuFindApi\Formatter\RecordFormatter::class);
+    }
+
+    /**
+     * Get a mock resumption Service
+     *
+     * @return MockObject&\VuFind\Db\Service\OaiResumptionService
+     */
+    protected function getMockResumptionService(): MockObject&\VuFind\Db\Service\OaiResumptionService
+    {
+        return $this->createMock(\VuFind\Db\Service\OaiResumptionService::class);
     }
 }

@@ -3,7 +3,7 @@
 /**
  * VuFind Config Plugin Factory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,9 +30,13 @@
 namespace VuFind\Config;
 
 use Laminas\Config\Config;
-use Laminas\Config\Reader\Ini as IniReader;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\IniReaderTrait;
+
+use function count;
+use function in_array;
+use function is_object;
 
 /**
  * VuFind Config Plugin Factory
@@ -45,24 +49,7 @@ use Psr\Container\ContainerInterface;
  */
 class PluginFactory implements AbstractFactoryInterface
 {
-    /**
-     * INI file reader
-     *
-     * @var IniReader
-     */
-    protected $iniReader;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        // Use ASCII 0 as a nest separator; otherwise some of the unusual key names
-        // we have (i.e. in WorldCat.ini search options) will get parsed in
-        // unexpected ways.
-        $this->iniReader = new IniReader();
-        $this->iniReader->setNestSeparator(chr(0));
-    }
+    use IniReaderTrait;
 
     /**
      * Load the specified configuration file.
@@ -84,7 +71,7 @@ class PluginFactory implements AbstractFactoryInterface
         // chain of them if the Parent_Config setting is used:
         do {
             $configs[]
-                = new Config($this->iniReader->fromFile($filename), true);
+                = new Config($this->getIniReader()->fromFile($filename), true);
 
             $i = count($configs) - 1;
             if (isset($configs[$i]->Parent_Config->path)) {

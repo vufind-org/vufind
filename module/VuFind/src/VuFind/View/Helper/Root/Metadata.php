@@ -3,7 +3,7 @@
 /**
  * Metadata view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Tübingen 2019.
  *
@@ -102,7 +102,7 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
      * Generate all metatags for RecordDriver and add to page
      *
      * Decide which Plugins to load for the given RecordDriver
-     * dependant on configuration. (only by class name,
+     * dependent on configuration. (only by class name,
      * namespace will not be considered)
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver

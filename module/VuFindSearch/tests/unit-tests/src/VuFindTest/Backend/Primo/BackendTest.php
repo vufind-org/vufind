@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -207,7 +207,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getPcAvailabilityData(): array
+    public static function getPcAvailabilityData(): array
     {
         return [
             [
@@ -264,7 +264,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $params = new ParamBag(
             [
                 'filterList' => [
-                    'pcAvailability' => [
+                    [
+                        'field' => 'pcAvailability',
                         'values' => [
                             $value,
                         ],

@@ -3,7 +3,7 @@
 /**
  * Unit tests for ParamBag.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -111,5 +111,45 @@ class ParamBagTest extends TestCase
         $this->assertCount(1, $bag);
         $bag->set('xyzzy', 'baz');
         $this->assertCount(2, $bag);
+    }
+
+    /**
+     * Test deduplication
+     *
+     * @return void
+     */
+    public function testDeduplication()
+    {
+        $bag = new ParamBag();
+        $bag->add('foo', 'bar');
+        $bag->add('foo', 'bar');
+        $bag->add('foo', ['bar', 'bar', 'bar']);
+        $this->assertEquals(['bar'], $bag->get('foo'));
+        $bag->add('foo', ['bar', 'baz', 'bar', 'baz']);
+        $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
+        // Associative arrays are not deduplicated:
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'haz']);
+        $this->assertEquals(['bar' => ['baz', 'baz', 'haz']], $bag->get('fooz'));
+    }
+
+    /**
+     * Test disabling deduplication
+     *
+     * @return void
+     */
+    public function testDisabledDeduplication()
+    {
+        $bag = new ParamBag();
+        $bag->add('foo', 'bar', false);
+        $bag->add('foo', 'bar', false);
+        $bag->add('foo', ['bar', 'bar', 'bar'], false);
+        $this->assertEquals(['bar', 'bar', 'bar', 'bar', 'bar'], $bag->get('foo'));
+        $bag->add('foo', ['bar', 'baz', 'bar', 'baz'], false);
+        $this->assertEquals(['bar', 'bar', 'bar', 'bar', 'bar', 'bar', 'baz', 'bar', 'baz'], $bag->get('foo'));
+        // Now deduplicate everything:
+        $bag->add('foo', 'bar');
+        $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
     }
 }

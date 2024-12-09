@@ -1,0 +1,272 @@
+/* #LESS>
+@import "../../bootstrap3/less/bootstrap";
+@import "colors";
+@import "variables";
+<#LESS */
+/* #SCSS> */
+@import "colors", "variables", "../../bootstrap5/scss/bootstrap";
+/* <#SCSS */
+
+@import "common";
+@import "search";
+@import "rtl";
+
+html {
+  font-size: $font-size-base;
+  overflow-x: hidden;
+}
+body {
+  font-size: 1rem;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
+  color: $near-black;
+}
+
+/* -- Layout --- */
+.main .container { background-color: $white; }
+.mainbody {
+  padding-top: 1rem;
+  // If an h2 is the first element in mainbody, avoid excessive space due to the padding:
+  & > h2:first-child {
+    margin-top: 0;
+  }
+}
+
+/* --- Header --- */
+.navbar {
+  border-radius: 0;
+  --bs-navbar-color: white;
+  --bs-emphasis-color-rgb: white;
+}
+.banner {
+  width: auto;
+  color: $white;
+
+  a { color: #fff; }
+  .dropdown-menu {
+    color: $black;
+  }
+}
+.banner .navbar-right { margin-top: calc((#{$banner-height-sm} - 50px) / 2); } // Put right nav in the middle
+.banner .navbar-brand {
+  width: calc((170 / 65) * #{$banner-height-sm});
+  height: $banner-height-sm;
+  display: inline-block;
+}
+@media (min-width: 768px) {
+  .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
+  .banner .navbar-brand {
+    width: calc((170 / 65) * #{$banner-height});
+    height: $banner-height;
+  }
+}
+
+header {
+  background-color: $header-bg;
+  color: $white;
+
+  .navbar-nav { margin-top: 0; }
+  a,
+  .nav a,
+  .btn-link,
+  button.dropdown-toggle {
+    color: $white;
+    background-color: transparent;
+  }
+  .btn-primary {
+    color: $black;
+    background-color: $header-light;
+  }
+  .btn-primary:hover {
+    color: $black;
+    background-color: $header-light;
+    border-color: $black;
+  }
+  .nav.navbar-nav > li > a,
+  .nav.navbar-nav button.dropdown-toggle {
+    &:hover,
+    &:focus {
+      color: $black;
+      background-color: $header-light;
+      outline: dotted 1px #000;
+    }
+  }
+  .navbar-toggle {
+    margin: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: $reduced-font-size;
+  }
+  .dropdown-menu a { color: $black; }
+  .dropdown-menu a:not(.active):hover {
+    background-color: $header-light;
+    color: $black;
+  }
+  .dropdown-menu .active a,
+  .dropdown-menu .active a:hover { background-color: $header-bg; }
+
+  .navbar-brand {
+    width: 200px;
+    height: 100%;
+    margin-top: 5px;
+    @include background-image('vufind_logo_dark.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    &,
+    &:active,
+    &:hover,
+    &:focus { color: transparent; }
+    &.lang-ar { @include background-image('vufind_logo_ar_dark.png'); }
+  }
+}
+
+#account-icon {
+  &.notification-level-1, &.notification-level-2, &.notification-level-3 {
+    margin-left: -.25rem;
+    margin-top: -0.5rem;
+    margin-bottom: -.5rem;
+    padding: 0.5rem;
+    background-color: $header-light;
+    border-radius: 100%;
+  }
+}
+#login-dropdown .login-dropdown-caret:hover,
+a:hover .login-dropdown-caret {
+  color: #222;
+}
+#login-dropdown .login-dropdown-caret[aria-expanded="true"] {
+  color: #fff;
+  background-color: $header-bg;
+}
+
+.breadcrumbs {
+  border-bottom: 1px solid $header-light;
+  background-color: $header-light;
+}
+.breadcrumb {
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: $reduced-font-size;
+  color: $gray;
+  background-color: transparent;
+  border-radius: 0;
+}
+.breadcrumb a { color: $link-color; }
+.breadcrumb .active { color: $black; }
+.breadcrumb .active a { color: #37474F; } /* Material Blue Grey 800 */
+.breadcrumb .active a:hover { color: $link-color-hover; } /* Material Blue Grey 900 */
+.breadcrumb > li+li::before {
+  font-weight: 900;
+  color: #fff;
+}
+
+/* --- Cart --- */
+#cartSummary strong { font-weight: inherit; }
+
+/* --- Channels --- */
+.channel-title { margin-top: 1rem; }
+.channel,
+.channel-title.no-results { margin-bottom: 2rem; }
+
+/* --- MyResearch --- */
+.myresearch-menu a:hover { background-color: $white; }
+.myresearch-menu a.active:hover {
+  color: $white;
+  background-color: $brand-primary;
+}
+
+/* --- Record --- */
+.record-nav {
+  display: table;
+  margin-left: auto;
+  margin-top: 1rem;
+  margin-right: auto;
+}
+.info-col h3 {
+  margin-top: 0;
+  font-weight: 500;
+}
+.record .sidebar { margin-top: 1rem; }
+.comment-list { margin-top: .5rem; }
+.comment { margin-bottom: .5rem; }
+.comment .delete { font-size: $reduced-font-size; }
+.comment-form .btn-primary { margin-top: .25rem; }
+.tagList .tag .fa-close { margin: 0; }
+
+/* --- Sidebar --- */
+.sidebar {
+  padding: 1rem;
+  font-size: $reduced-font-size;
+  background-color: $light-gray;
+
+  h1,h2,h3,h4 { margin-top: 0; }
+
+  .facet-group {
+    background-color: $sidebar-item-bg;
+    color: $sidebar-item-color;
+  }
+  /* Collapsed arrows */
+  .facet-group .title {
+    background-color: $sidebar-title-bg;
+    color: $sidebar-title-color;
+
+    .icon--font,
+    .icon--svg {
+      color: $sidebar-title-icon-color;
+    }
+  }
+
+  a.facet:hover,
+  .facet.checkbox:hover { background-color: $sidebar-item-hover-bg; }
+
+  .facet.active,
+  .facet.active:hover,
+  .active-filters .facet,
+  .active-filters .facet:hover {
+    border-color: $sidebar-active-bg;
+    background-color: $sidebar-active-bg;
+    color: $sidebar-active-color;
+
+    .badge {
+      color: $sidebar-active-bg;
+      background-color: $white;
+    }
+  }
+
+  .more-btn, .less-btn {
+    border: 0;
+    border-bottom: 1px solid $list-group-border;
+    border-radius: 0;
+  }
+
+  .btn {
+    font-size: $reduced-font-size;
+  }
+}
+
+.facet .badge {
+  flex-shrink: 0;
+  max-height: 19px;
+  line-height: .8;
+  background-color: $sidebar-item-badge;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .sidebar .facet {
+    flex-flow: wrap;
+
+    .text { width: 100%; }
+    .badge {
+      flex-grow: 1;
+      order: 1;
+    }
+    .exclude { order: 2; }
+  }
+}
+
+@media (max-width: 1399px) {
+  .sidebar {
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+  }
+}

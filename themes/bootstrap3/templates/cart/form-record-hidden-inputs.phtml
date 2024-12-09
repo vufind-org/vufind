@@ -1,0 +1,21 @@
+<?php
+  $recordId = $this->driver?->getUniqueId() ?? $this->recordId ?? false;
+  $recordSource = $this->driver?->getSourceIdentifier() ?? $this->recordSource ?? DEFAULT_SEARCH_BACKEND;
+?>
+<?php if ($recordId): ?>
+  <input type="hidden" name="recordId" value="<?=$this->escapeHtmlAttr($recordId)?>">
+  <input type="hidden" name="recordSource" value="<?=$this->escapeHtmlAttr($recordSource)?>">
+  <?php return; ?>
+<?php endif; ?>
+
+<?php
+  if (!isset($this->recordIds)) {
+    $this->recordIds = array_map(
+        fn ($record) => $record->getSourceIdentifier() . '|' . $record->getUniqueId(),
+        $this->records ?? []
+    );
+  }
+?>
+<?php foreach ($this->recordIds as $current): ?>
+  <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current)?>">
+<?php endforeach; ?>

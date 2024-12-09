@@ -3,7 +3,7 @@
 /**
  * Model for ArchivesSpace records in Solr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *

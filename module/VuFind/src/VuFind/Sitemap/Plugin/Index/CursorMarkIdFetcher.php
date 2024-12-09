@@ -3,7 +3,7 @@
 /**
  * Plugin to get IDs for a sitemap from a backend using cursor marks (if supported).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021, 2022.
  *
@@ -135,6 +135,7 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
                 'rows' => $countPerPage,
                 'sort' => $key . ' asc',
                 'cursorMark' => $cursorMark,
+                'fl' => 'last_indexed',
             ]
         );
         // Apply filters:
@@ -151,10 +152,12 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
 
         $results = $this->searchService->invoke($command)->getResult();
         $ids = [];
+        $lastmods = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);
+            $lastmods[] = $doc->get('last_indexed');
         }
         $nextOffset = $results->getCursorMark();
-        return compact('ids', 'nextOffset');
+        return compact('ids', 'nextOffset', 'lastmods');
     }
 }

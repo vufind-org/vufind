@@ -1,0 +1,132 @@
+# Rate limiter configuration. Rate limiter can be used to enforce limits for requests
+# e.g. in a given time window. If a limit is exceeded, an error with HTTP status
+# 429 Too Many Requests is sent.
+
+# General settings
+General:
+  # enabled has three possible settings:
+  #   false        Rate limiter is disabled (default)
+  #   true         Rate limiter is enabled
+  #   report_only  Requests that exceed limits are reported but not prevented
+  #                (see also the policy-specific reportOnly setting below)
+  #enabled: false
+  # Enable verbose debug logging (default is false):
+  #verbose: true
+
+# Storage defines how rate limiter data is stored. It is recommended to use a quick
+# storage option. Only storage adapters that support TTL can be used. This usually
+# means either memcached or redis.
+# See https://docs.laminas.dev/laminas-cache/storage/adapter/ for
+# documentation on options for the memcached adapter.
+# Note that Redis uses Credis, not the Laminas cache adapter.
+Storage:
+  adapter: memcached
+  options:
+    # Namespace to use with the storage (default is RateLimiter):
+    #namespace: RateLimiter
+
+    # ----- Memcached settings -----
+    # Comma-separated list of servers for Memcached adapter (defaults below):
+    #servers: "localhost:11211"
+
+    # ----- Redis settings -----
+    # Redis server settings (defaults are listed below):
+    #redis_host               : localhost
+    #redis_port               : 6379
+    #redis_connection_timeout : 0.5
+    #redis_db                 : 0
+    #redis_user               : null        (optional)
+    #redis_auth               : null
+    #redis_version            : 6
+    #redis_standalone         : true
+
+# Policies define the actual rate limiting settings. The request is checked against
+# the list of policies, and the first matching policy is used.
+# Keys under "Policies" are used as rate limiter IDs.
+#
+# Each rate limiter has the following settings:
+#
+# preferIPAddress       Use IP address as client ID even for logged-in users
+#
+# ipRanges              IP address ranges. Accepts a list with either single IP
+#                       addresses or ranges with a minus character without blanks as
+#                       separator. Also partial addresses can be used (e.g. 192.168
+#                       denotes 192.168.0.0-192.168.255.255), and IPv6 addresses are
+#                       also supported (unless PHP is compiled with IPv6 disabled).
+#
+# loggedIn              Whether to limit the policy to logged-in users (true) or
+#                       anonymous users (false). Default is null for no limit.
+#
+# crawler               Whether to limit the policy to bots or crawlers (true) or
+#                       normal users (false). Default is null for no limit.
+#
+# filters               An array of request filters that control the requests that
+#                       the policy applies to. Filters can include the following
+#                       fields:
+#
+#                         controller   The controller handling the request
+#                         action       The action in the controller
+#                         name         Matched route name
+#                         params       POST request or query parameters
+#                         query        Query string parameters
+#                         post         POST request parameters
+#
+# rateLimiterSettings   Rate Limiter settings.
+#                       See https://symfony.com/doc/current/rate_limiter.html#rate-limiting-policies
+#                       for more information and policy settings.
+#                       For a limiter using the token bucket algorithm, the following
+#                       settings could be used to e.g. allow 500 requests initially,
+#                       and add 100 more to the bucket every 10 minutes:
+#
+#                         policy: token_bucket
+#                         limit: 500
+#                         rate: { interval: '10 minutes', amount: 100 }
+#
+# addHeaders            Whether to add X-RateLimit-* headers (default is false)
+#
+# reportOnly            If set to true, will not enforce the policy even if the main
+#                       "enabled" setting is true (default is false)
+
+# The policies below are are just examples, and the limits and rates chosen do not
+# represent meaningful choices for any particular instance.
+Policies:
+  # A policy that allows 200 searches initially and increases the limit by 100 every
+  # 15 minutes:
+  search:
+    filters:
+      - controller: Search
+        action: Results
+      - controller: AJAX
+        action: JSON
+        params:
+          method: getSearchResults
+    rateLimiterSettings:
+      policy: token_bucket
+      limit: 200
+      rate: { interval: '15 minutes', amount: 100 }
+
+  # A strict policy that allows 100 searches (via the API) initially and increases
+  # the limit by 50 every 15 minutes:
+  apiSearch:
+    filters:
+      - controller: SearchApi
+        action: Search
+        ipRanges:
+          - "127.0.0.1"
+          - "192.168.1.1-192.168.127.255"
+    rateLimiterSettings:
+      policy: token_bucket
+      # Allow 100 requests
+      limit: 100
+      # Increase the limit by 50 every 15 minutes
+      rate: { interval: '15 minutes', amount: 50 }
+    addHeaders: true
+
+  # A catch-all policy that allows 2000 requests (per IP address) initially and
+  # increases the limit by 400 every 10 minutes:
+  general:
+    preferIPAddress: true
+    rateLimiterSettings:
+      policy: token_bucket
+      limit: 2000
+      rate: { interval: '10 minutes', amount: 400 }

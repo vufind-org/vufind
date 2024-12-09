@@ -3,7 +3,7 @@
 /**
  * LocaleDetectorFactory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -35,6 +35,8 @@ use VuFind\I18n\Locale\LocaleDetectorCookieStrategy;
 use VuFind\I18n\Locale\LocaleDetectorFactory;
 use VuFind\I18n\Locale\LocaleDetectorParamStrategy;
 use VuFind\I18n\Locale\LocaleSettings;
+
+use function func_get_args;
 
 /**
  * LocaleDetectorFactory Test Class

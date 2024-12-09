@@ -3,7 +3,7 @@
 /**
  * Language command: copy string.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Language;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,15 +44,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'language/copystring',
+    description: 'String copier'
+)]
 class CopyStringCommand extends AbstractCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'language/copystring';
-
     /**
      * Configure the command.
      *
@@ -61,7 +59,6 @@ class CopyStringCommand extends AbstractCommand
     {
         $note = "(may include 'textdomain::' prefix)";
         $this
-            ->setDescription('String copier')
             ->setHelp('Copies one language string to another.')
             ->addArgument(
                 'source',
@@ -97,11 +94,11 @@ class CopyStringCommand extends AbstractCommand
      */
     protected function addLineToFile($filename, $key, $value)
     {
-        $fHandle = fopen($filename, "a");
+        $fHandle = fopen($filename, 'a');
         if (!$fHandle) {
             throw new \Exception('Cannot open ' . $filename . ' for writing.');
         }
-        fputs($fHandle, "\n$key = \"" . $value . "\"\n");
+        fwrite($fHandle, "\n$key = \"" . $value . "\"\n");
         fclose($fHandle);
     }
 

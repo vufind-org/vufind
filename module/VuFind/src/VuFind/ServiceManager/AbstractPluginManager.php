@@ -3,7 +3,7 @@
 /**
  * VuFind Plugin Manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -82,7 +82,7 @@ abstract class AbstractPluginManager extends Base
         $expectedInterface = $this->getExpectedInterface();
         if (!$plugin instanceof $expectedInterface) {
             throw new InvalidServiceException(
-                'Plugin ' . get_class($plugin) . ' does not belong to '
+                'Plugin ' . $plugin::class . ' does not belong to '
                 . $expectedInterface
             );
         }

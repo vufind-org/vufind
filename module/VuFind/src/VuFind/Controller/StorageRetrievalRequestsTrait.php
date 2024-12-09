@@ -3,7 +3,7 @@
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Controller;
+
+use function in_array;
+use function is_array;
 
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
@@ -94,7 +97,7 @@ trait StorageRetrievalRequestsTrait
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : [];
+            ? explode(':', $checkRequests['extraFields']) : [];
 
         // Check that there are pick up locations to choose from if the field is
         // required:
@@ -156,9 +159,8 @@ trait StorageRetrievalRequestsTrait
         // Find and format the default required date:
         $defaultRequiredDate = $this->storageRetrievalRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequiredDate
-            = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequiredDate);
+        $defaultRequiredDate = $this->getService(\VuFind\Date\Converter::class)
+            ->convertToDisplayDate('U', $defaultRequiredDate);
         try {
             $defaultPickup
                 = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
@@ -168,7 +170,7 @@ trait StorageRetrievalRequestsTrait
 
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
-            ? $this->getUser()->home_library : '';
+            ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility:
         $helpText = $helpTextHtml = $checkRequests['helpText'];
 

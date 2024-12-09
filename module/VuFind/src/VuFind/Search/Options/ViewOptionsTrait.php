@@ -4,7 +4,7 @@
  * Trait for setting up view options. Designed to be included in a subclass of
  * \VuFind\Search\Base\Options.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *

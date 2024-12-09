@@ -28,14 +28,13 @@ done
 shift $(($OPTIND - 1))
 
 #####################################################
-# Make sure we have the expected number of arguments
+# Print usage when called with no argument
 #####################################################
 E_BADARGS=65
-EXPECTED_ARGS=1
 
-if [ $# -ne $EXPECTED_ARGS ]
+if [ $# -eq 0 ]
 then
-  echo "    Usage: `basename $0` [-p ./path/to/import.properties] ./path/to/marc.mrc"
+  echo "    Usage: `basename $0` [-p ./path/to/import.properties] ./path/to/marc.mrc ..."
   exit $E_BADARGS
 fi
 
@@ -129,11 +128,15 @@ then
 fi
 
 #####################################################
-# Normalize target file path to absolute path
+# Normalize file paths to absolute paths
 #####################################################
-MARC_PATH=`dirname $1`
-MARC_PATH=`cd $MARC_PATH && pwd`
-MARC_FILE=`basename $1`
+NORMALIZED_PATHS=""
+for f in $*; do
+  MARC_PATH=`dirname $f`
+  MARC_PATH=`cd $MARC_PATH && pwd`
+  MARC_FILE=`basename $f`
+  NORMALIZED_PATHS="${NORMALIZED_PATHS} $MARC_PATH/$MARC_FILE"
+done
 
 #####################################################
 # Set up SolrJ symlinks for performance (searching
@@ -158,8 +161,8 @@ fi
 # Execute Importer
 #####################################################
 
-RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dlog4j.configuration=file://$LOG4J_CONFIG $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $SOLRJ_DIR -lib_local "$VUFIND_HOME/import/lib_local\;$VUFIND_HOME/solr/vendor/modules/analysis-extras/lib" $MARC_PATH/$MARC_FILE"
-echo "Now Importing $1 ..."
+RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dlog4j.configuration=file://$LOG4J_CONFIG $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $SOLRJ_DIR -lib_local "$VUFIND_HOME/import/lib_local\;$VUFIND_HOME/solr/vendor/modules/analysis-extras/lib" $NORMALIZED_PATHS"
+echo "Now Importing $NORMALIZED_PATHS ..."
 # solrmarc writes log messages to stderr, write RUN_CMD to the same place
 echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2
 exec $RUN_CMD

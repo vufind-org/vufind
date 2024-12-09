@@ -3,7 +3,7 @@
 /**
  * EBSCO EDS API Search Model
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Serials Solutions 2011.
  *
@@ -28,6 +28,11 @@
  */
 
 namespace VuFindSearch\Backend\EDS;
+
+use function array_key_exists;
+use function count;
+use function intval;
+use function strlen;
 
 /**
  * EBSCO EDS API Search Model
@@ -61,6 +66,13 @@ class SearchRequestModel
      * @var array
      */
     protected $facetFilters = [];
+
+    /**
+     * Array mapping a facet field to the AND/OR operator to use with it
+     *
+     * @var array
+     */
+    protected $facetOperators = [];
 
     /**
      * Sort option to apply
@@ -177,19 +189,17 @@ class SearchRequestModel
         foreach ($parameters as $key => $values) {
             switch ($key) {
                 case 'filters':
-                    $cnt = 1;
                     foreach ($values as $filter) {
-                        if (substr($filter, 0, 6) == 'LIMIT|') {
+                        if (str_starts_with($filter, 'LIMIT|')) {
                             $this->addLimiter(substr($filter, 6));
-                        } elseif (substr($filter, 0, 7) == 'EXPAND:') {
+                        } elseif (str_starts_with($filter, 'EXPAND:')) {
                             $this->addExpander(substr($filter, 7));
-                        } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
+                        } elseif (str_starts_with($filter, 'SEARCHMODE:')) {
                             $this->searchMode = substr($filter, 11, null);
-                        } elseif (substr($filter, 0, 15) == 'PublicationDate') {
+                        } elseif (str_starts_with($filter, 'PublicationDate')) {
                             $this->addLimiter($this->formatDateLimiter($filter));
                         } else {
-                            $this->addFilter("$cnt,$filter");
-                            $cnt++;
+                            $this->addFilter($filter);
                         }
                     }
                     break;
@@ -219,7 +229,7 @@ class SearchRequestModel
     public function convertToQueryStringParameterArray()
     {
         $qs = [];
-        if (isset($this->query) && 0 < sizeof($this->query)) {
+        if (isset($this->query) && 0 < count($this->query)) {
             $formatQuery = function ($json) {
                 $query = json_decode($json, true);
                 $queryString = empty($query['bool'])
@@ -233,19 +243,30 @@ class SearchRequestModel
             $qs['query-x'] = array_map($formatQuery, $this->query);
         }
 
-        if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
-            $formatFilter = function ($raw) {
-                [$field, $value] = explode(':', $raw, 2);
-                return $field . ':' . static::escapeSpecialCharacters($value);
-            };
-            $qs['facetfilter'] = array_map($formatFilter, $this->facetFilters);
+        if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
+            $filterId = 1;
+            $qs['facetfilter'] = [];
+            foreach ($this->facetFilters as $field => $values) {
+                $values = array_map(fn ($value) => static::escapeSpecialCharacters($value), $values);
+                $operator = $this->facetOperators[$field];
+                if ('OR' == $operator) {
+                    $valuesString = implode(',', array_map(fn ($value) => "{$field}:{$value}", $values));
+                    $qs['facetfilter'][] = "{$filterId},{$valuesString}";
+                    $filterId++;
+                } else {
+                    foreach ($values as $value) {
+                        $qs['facetfilter'][] = "{$filterId},{$field}:{$value}";
+                        $filterId++;
+                    }
+                }
+            }
         }
 
-        if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
+        if (isset($this->limiters) && 0 < count($this->limiters)) {
             $qs['limiter'] = $this->limiters;
         }
 
-        if (isset($this->actions) && 0 < sizeof($this->actions)) {
+        if (isset($this->actions) && 0 < count($this->actions)) {
             $qs['action-x'] = $this->actions;
         }
 
@@ -261,8 +282,8 @@ class SearchRequestModel
             $qs['searchmode'] = $this->searchMode;
         }
 
-        if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
-            $qs['expander'] = implode(",", $this->expanders);
+        if (isset($this->expanders) && 0 < count($this->expanders)) {
+            $qs['expander'] = implode(',', $this->expanders);
         }
 
         if (isset($this->view)) {
@@ -294,7 +315,7 @@ class SearchRequestModel
         $json->SearchCriteria = new \stdClass();
         $json->RetrievalCriteria = new \stdClass();
         $json->Actions = null;
-        if (isset($this->query) && 0 < sizeof($this->query)) {
+        if (isset($this->query) && 0 < count($this->query)) {
             $json->SearchCriteria->Queries = [];
             foreach ($this->query as $queryJson) {
                 $query = json_decode($queryJson, true);
@@ -310,33 +331,48 @@ class SearchRequestModel
             }
         }
 
-        if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
+        if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
             $json->SearchCriteria->FacetFilters = [];
-            foreach ($this->facetFilters as $currentFilter) {
-                [$id, $filter] = explode(',', $currentFilter, 2);
-                [$field, $value] = explode(':', $filter, 2);
-                $filterObj = new \stdClass();
-                $filterObj->FilterId = $id;
-                $valueObj = new \stdClass();
-                $valueObj->Id = $field;
-                $valueObj->Value = $value;
-                $filterObj->FacetValues = [$valueObj];
-                $json->SearchCriteria->FacetFilters[] = $filterObj;
+            $id = 1;
+            foreach ($this->facetFilters as $field => $values) {
+                if ('OR' == $this->facetOperators[$field]) {
+                    $filterObj = new \stdClass();
+                    $filterObj->FilterId = $id++;
+                    $filterObj->FacetValues = [];
+                    foreach ($values as $value) {
+                        $valueObj = new \stdClass();
+                        $valueObj->Id = $field;
+                        $valueObj->Value = $value;
+                        $filterObj->FacetValues[] = $valueObj;
+                    }
+                    $json->SearchCriteria->FacetFilters[] = $filterObj;
+                } else {
+                    foreach ($values as $value) {
+                        $filterObj = new \stdClass();
+                        $filterObj->FilterId = $id++;
+                        $valueObj = new \stdClass();
+                        $valueObj->Id = $field;
+                        $valueObj->Value = $value;
+                        $filterObj->FacetValues = [$valueObj];
+                        $json->SearchCriteria->FacetFilters[] = $filterObj;
+                    }
+                }
             }
         }
 
-        if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
+        if (isset($this->limiters) && 0 < count($this->limiters)) {
             $json->SearchCriteria->Limiters = [];
-            foreach ($this->limiters as $limiter) {
-                [$id, $values] = explode(':', $limiter, 2);
+            foreach ($this->limiters as $field => $values) {
+                // All EDS limiter values are combined as 'OR'.
+                // There is no alternate 'AND' syntax as with filters.
                 $limiterObj = new \stdClass();
-                $limiterObj->Id = $id;
-                $limiterObj->Values = explode(',', $values);
+                $limiterObj->Id = $field;
+                $limiterObj->Values = $values;
                 $json->SearchCriteria->Limiters[] = $limiterObj;
             }
         }
 
-        if (isset($this->actions) && 0 < sizeof($this->actions)) {
+        if (isset($this->actions) && 0 < count($this->actions)) {
             $json->Actions = $this->actions;
         }
 
@@ -350,7 +386,7 @@ class SearchRequestModel
             $json->SearchCriteria->SearchMode = $this->searchMode;
         }
 
-        if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
+        if (isset($this->expanders) && 0 < count($this->expanders)) {
             $json->SearchCriteria->Expanders = $this->expanders;
         }
 
@@ -373,21 +409,6 @@ class SearchRequestModel
     }
 
     /**
-     * Verify whether or not a string ends with certain characters
-     *
-     * @param string $valueToCheck    Value to check the ending characters of
-     * @param string $valueToCheckFor Characters to check for
-     *
-     * @return bool
-     */
-    protected static function endsWith(
-        string $valueToCheck,
-        string $valueToCheckFor
-    ): bool {
-        return substr($valueToCheck, -strlen($valueToCheckFor)) === $valueToCheckFor;
-    }
-
-    /**
      * Determines whether or not a querystring parameter is indexed
      *
      * @param string $value parameter key to check
@@ -396,8 +417,8 @@ class SearchRequestModel
      */
     public static function isParameterIndexed($value)
     {
-        //Indexed parameter names end with '-x'
-        return static::endsWith($value, '-x');
+        // Indexed parameter names end with '-x'
+        return str_ends_with($value, '-x');
     }
 
     /**
@@ -447,7 +468,11 @@ class SearchRequestModel
      */
     public function addLimiter($limiter)
     {
-        $this->limiters[] = $limiter;
+        [$field, $value] = explode(':', $limiter);
+        if (!array_key_exists($field, $this->limiters)) {
+            $this->limiters[$field] = [];
+        }
+        $this->limiters[$field][] = $value;
     }
 
     /**
@@ -471,7 +496,23 @@ class SearchRequestModel
      */
     public function addfilter($facetFilter)
     {
-        $this->facetFilters[] = $facetFilter;
+        $filterComponents = explode(':', $facetFilter, 3);
+        if (count($filterComponents) < 3) {
+            [$field, $value] = $filterComponents;
+            // Default to AND, since it's already the default in EDS.ini.
+            $operator = 'AND';
+        } else {
+            [$field, $operator, $value] = $filterComponents;
+        }
+        if (str_starts_with($field, '~')) {
+            $field = substr($field, 1);
+            $operator = 'OR';
+        }
+        if (!array_key_exists($field, $this->facetFilters)) {
+            $this->facetFilters[$field] = [];
+        }
+        $this->facetFilters[$field][] = $value;
+        $this->facetOperators[$field] = $operator;
     }
 
     /**
@@ -483,7 +524,7 @@ class SearchRequestModel
      */
     public static function escapeSpecialCharacters($value)
     {
-        return addcslashes($value, ":,");
+        return addcslashes($value, ':,');
     }
 
     /**
@@ -495,7 +536,7 @@ class SearchRequestModel
      */
     public static function escapeSpecialCharactersForActions($value)
     {
-        return addcslashes($value, ":,()");
+        return addcslashes($value, ':,()');
     }
 
     /**

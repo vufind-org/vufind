@@ -3,7 +3,7 @@
 /**
  * Generator tools.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -34,6 +34,13 @@ use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
+
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
+use function strlen;
 
 /**
  * Generator tools.
@@ -92,7 +99,7 @@ class GeneratorTools
         $handle = opendir($moduleDir);
         $results = [];
         while ($line = readdir($handle)) {
-            if (substr($line, 0, 6) === 'VuFind' && strlen($line) > 6) {
+            if (str_starts_with($line, 'VuFind') && strlen($line) > 6) {
                 $results[] = $line;
             }
         }
@@ -283,7 +290,7 @@ class GeneratorTools
             $parent = $interface;
             $interfaces = [];
         }
-        $configPath = $this->getConfigPathForClass(get_class($pm));
+        $configPath = $this->getConfigPathForClass($pm::class);
 
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
@@ -390,7 +397,7 @@ class GeneratorTools
             $configPath = ['controller_plugins'];
         } elseif ($pm = $this->getPluginManagerContainingClass($container, $class)) {
             $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
-            $pmKey = $apmFactory->getConfigKey(get_class($pm));
+            $pmKey = $apmFactory->getConfigKey($pm::class);
             $factory = $this->getFactoryFromContainer($pm, $class);
             $configPath = ['vufind', 'plugin_managers', $pmKey];
             $delegators = $this->getDelegatorsFromContainer($pm, $class);
@@ -507,7 +514,7 @@ class GeneratorTools
     ) {
         $factories = $this->getAllFactoriesFromContainer($container);
         foreach (array_keys($factories) as $service) {
-            if (substr($service, -13) == 'PluginManager') {
+            if (str_ends_with($service, 'PluginManager')) {
                 $pm = $container->get($service);
                 if (null !== $this->getFactoryFromContainer($pm, $class)) {
                     return $pm;
@@ -665,7 +672,7 @@ class GeneratorTools
         }
         $className = $classNames[0];
         // Figure out fully qualified name for purposes of createSubclassInModule():
-        $fqClassName = (substr($className, 0, 1) != '\\')
+        $fqClassName = (!str_starts_with($className, '\\'))
             ? "$ns\\$className" : $className;
         $newClass = $this->generateLocalClassName($fqClassName, $module);
         $body = preg_replace(

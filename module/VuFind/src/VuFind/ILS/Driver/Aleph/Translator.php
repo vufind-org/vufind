@@ -3,7 +3,7 @@
 /**
  * Translator support class for Aleph ILS driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) UB/FU Berlin
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\ILS\Driver\Aleph;
+
+use function call_user_func_array;
+use function get_class;
 
 /**
  * Aleph Translator Class
@@ -78,15 +81,15 @@ class Translator
         $this->charset = $configArray['util']['charset'];
         $this->table15 = $this->parsetable(
             $configArray['util']['tab15'],
-            get_class($this) . "::tab15Callback"
+            get_class($this) . '::tab15Callback'
         );
         $this->table40 = $this->parsetable(
             $configArray['util']['tab40'],
-            get_class($this) . "::tab40Callback"
+            get_class($this) . '::tab40Callback'
         );
         $this->table_sub_library = $this->parsetable(
             $configArray['util']['tab_sub_library'],
-            get_class($this) . "::tabSubLibraryCallback"
+            get_class($this) . '::tabSubLibraryCallback'
         );
     }
 
@@ -101,19 +104,19 @@ class Translator
     public function parsetable($file, $callback)
     {
         $result = [];
-        $file_handle = fopen($file, "r, ccs=UTF-8");
-        $rgxp = "";
+        $file_handle = fopen($file, 'r, ccs=UTF-8');
+        $rgxp = '';
         while (!feof($file_handle)) {
             $line = fgets($file_handle);
-            $line = chop($line);
-            if (preg_match("/!!/", $line)) {
-                $line = chop($line);
+            $line = rtrim($line);
+            if (preg_match('/!!/', $line)) {
+                $line = rtrim($line);
                 $rgxp = static::regexp($line);
             }
-            if (preg_match("/!.*/", $line) || $rgxp == "" || $line == "") {
+            if (preg_match('/!.*/', $line) || $rgxp == '' || $line == '') {
             } else {
                 $line = str_pad($line, 80);
-                $matches = "";
+                $matches = '';
                 if (preg_match($rgxp, $line, $matches)) {
                     call_user_func_array(
                         $callback,
@@ -136,10 +139,10 @@ class Translator
      */
     public function tab40Translate($collection, $sublib)
     {
-        $findme = $collection . "|" . $sublib;
+        $findme = $collection . '|' . $sublib;
         $desc = $this->table40[$findme];
         if ($desc == null) {
-            $findme = $collection . "|";
+            $findme = $collection . '|';
             $desc = $this->table40[$findme];
         }
         return $desc;
@@ -170,15 +173,15 @@ class Translator
     {
         $tab15 = $this->tabSubLibraryTranslate($slc);
         if ($tab15 == null) {
-            echo "tab15 is null!<br>";
+            echo 'tab15 is null!<br>';
         }
-        $findme = $tab15["tab15"] . "|" . $isc . "|" . $ipsc;
+        $findme = $tab15['tab15'] . '|' . $isc . '|' . $ipsc;
         $result = $this->table15[$findme] ?? null;
         if ($result == null) {
-            $findme = $tab15["tab15"] . "||" . $ipsc;
+            $findme = $tab15['tab15'] . '||' . $ipsc;
             $result = $this->table15[$findme];
         }
-        $result["sub_lib_desc"] = $tab15["desc"];
+        $result['sub_lib_desc'] = $tab15['desc'];
         return $result;
     }
 
@@ -195,18 +198,18 @@ class Translator
     {
         $lib = $matches[1];
         $no1 = $matches[2];
-        if ($no1 == "##") {
-            $no1 = "";
+        if ($no1 == '##') {
+            $no1 = '';
         }
         $no2 = $matches[3];
-        if ($no2 == "##") {
-            $no2 = "";
+        if ($no2 == '##') {
+            $no2 = '';
         }
         $desc = iconv($charset, 'UTF-8', $matches[5]);
-        $key = trim($lib) . "|" . trim($no1) . "|" . trim($no2);
+        $key = trim($lib) . '|' . trim($no1) . '|' . trim($no2);
         $tab15[trim($key)] = [
-            "desc" => trim($desc), "loan" => $matches[6], "request" => $matches[8],
-            "opac" => $matches[10],
+            'desc' => trim($desc), 'loan' => $matches[6], 'request' => $matches[8],
+            'opac' => $matches[10],
         ];
     }
 
@@ -223,10 +226,10 @@ class Translator
     {
         $code = trim($matches[1]);
         $sub = trim($matches[2]);
-        $sub = trim(preg_replace("/#/", "", $sub));
+        $sub = trim(preg_replace('/#/', '', $sub));
         $desc = trim(iconv($charset, 'UTF-8', $matches[4]));
-        $key = $code . "|" . $sub;
-        $tab40[trim($key)] = [ "desc" => $desc ];
+        $key = $code . '|' . $sub;
+        $tab40[trim($key)] = [ 'desc' => $desc ];
     }
 
     /**
@@ -246,7 +249,7 @@ class Translator
         $sublib = trim($matches[1]);
         $desc = trim(iconv($charset, 'UTF-8', $matches[5]));
         $tab = trim($matches[6]);
-        $tab_sub_library[$sublib] = [ "desc" => $desc, "tab15" => $tab ];
+        $tab_sub_library[$sublib] = [ 'desc' => $desc, 'tab15' => $tab ];
     }
 
     /**
@@ -258,10 +261,10 @@ class Translator
      */
     public static function regexp($string)
     {
-        $string = preg_replace("/\\-/", ")\\s(", $string);
-        $string = preg_replace("/!/", ".", $string);
-        $string = preg_replace("/[<>]/", "", $string);
-        $string = "/(" . $string . ")/";
+        $string = preg_replace('/\\-/', ')\\s(', $string);
+        $string = preg_replace('/!/', '.', $string);
+        $string = preg_replace('/[<>]/', '', $string);
+        $string = '/(' . $string . ')/';
         return $string;
     }
 }

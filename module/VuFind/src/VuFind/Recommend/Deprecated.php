@@ -4,7 +4,7 @@
  * Deprecated Recommendations Module - used to replace legacy modules that no
  * longer function due to, for example, external APIs that have been shut down.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -71,7 +71,7 @@ class Deprecated implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *

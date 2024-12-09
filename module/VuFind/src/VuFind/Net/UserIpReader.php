@@ -3,7 +3,7 @@
 /**
  * Service to retrieve user IP address.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Net;
 
 use Laminas\Stdlib\Parameters;
+
+use function count;
 
 /**
  * Service to retrieve user IP address.

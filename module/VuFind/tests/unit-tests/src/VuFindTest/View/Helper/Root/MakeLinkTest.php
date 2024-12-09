@@ -3,7 +3,7 @@
 /**
  * MakeLink view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -42,7 +42,7 @@ use VuFind\View\Helper\Root\MakeLink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTest
+class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
      * Get MakeLink helper with mock view

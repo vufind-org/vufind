@@ -4,7 +4,7 @@
  * VuFind Action Feature Trait - Catch ILS exceptions from actions with an OnDispatch
  * handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -30,6 +30,7 @@
 
 namespace VuFind\Controller\Feature;
 
+use Laminas\Mvc\Exception\DomainException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -45,12 +46,21 @@ use VuFind\Exception\ILS as ILSException;
 trait CatchIlsExceptionsTrait
 {
     /**
+     * Optional custom exception response
+     *
+     * If set, this is returned on exception instead of a default ViewModel
+     *
+     * @var mixed
+     */
+    protected $ilsExceptionResponse = null;
+
+    /**
      * Execute the request
      *
      * @param \Laminas\Mvc\MvcEvent $event Event
      *
      * @return mixed
-     * @throws Exception\DomainException
+     * @throws DomainException
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $event)
     {
@@ -71,7 +81,9 @@ trait CatchIlsExceptionsTrait
             if ('development' == APPLICATION_ENV) {
                 $this->flashMessenger()->addErrorMessage($exception->getMessage());
             }
-            return $this->createViewModel();
+            $actionResponse = $this->ilsExceptionResponse ?? $this->createViewModel();
+            $event->setResult($actionResponse);
+            return $actionResponse;
         }
     }
 }

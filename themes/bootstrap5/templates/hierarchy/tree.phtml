@@ -1,0 +1,93 @@
+<?php
+  $treeAttrs = $this->htmlAttributes([
+    'class' => 'hierarchy-tree js-hierarchy-tree',
+    'data-selected-id' => $selectedID,
+    'data-hierarchy-id' => $hierarchyID,
+    'data-source' => $driver->getSourceIdentifier(),
+    'data-context' => $context,
+    'data-preview-element' => $options['previewElement'] ?? '',
+  ]);
+  if ($options['lightbox'] ?? false) {
+    $treeAttrs->add('data-lightbox', null);
+  }
+  if ($options['fullHierarchy'] ?? false) {
+    $treeAttrs->add('data-full-hierarchy', null);
+  }
+
+  // Function for rendering a tree level. Optimized to avoid extra objects or
+  // template calls and defined as array to avoid interfering with the plugin __call
+  // magic.
+  $this->renderTreeLevel = [function ($nodes, $context, $hierarchyID, $driver, $selectedID, $parentNodeId = '') {
+    $nodeId = 0;
+    $icons = [
+      'hierarchy-collection' => $this->icon('hierarchy-collection'),
+      'hierarchy-record' => $this->icon('hierarchy-record'),
+      'hierarchy-expand' => $this->icon('hierarchy-expand', 'hierarchy-tree__expand'),
+      'hierarchy-collapse' => $this->icon('hierarchy-collapse', 'hierarchy-tree__collapse'),
+    ];
+    $escape = $this->plugin('escapeHtml');
+    // Use escapeHtml for performance (this data shouldn't contain anything that escapeHtmlAttr would be useful with)
+    $escapeAttr = $escape;
+    $truncate = $this->plugin('truncate');
+    foreach ($nodes as $node) {
+      $hasChildren = !empty($node->children);
+      $liClasses = [];
+      if ($hasChildren) {
+        $liClasses[] = 'hierarchy-tree__parent';
+      }
+      if ('collection' === $node->type) {
+        $liClasses[] = 'hierarchy-tree__collection';
+        $icon = 'hierarchy-collection';
+      } else {
+        $liClasses[] = 'hierarchy-tree__record';
+        $icon = 'hierarchy-record';
+      }
+      if ($selectedID === $node->id) {
+        $liClasses[] = 'hierarchy-tree__selected';
+      }
+
+      // Render the item first so that we can use it in two alternative cases:
+      $itemHtml = '<span class="hierarchy-tree__item-container">'
+        . $icons[$icon]
+        . ' <a class="js-record-link"'
+        . ' href="' . $escapeAttr($node->href) . '"'
+        . ' title="' . $escapeAttr($node->title) . '"'
+        . ' data-lightbox-ignore'
+        . ' data-record-id="' . $escapeAttr($node->id) . '"'
+        . '>'
+        . $truncate($node->title, 100)
+        . '</a></span>';
+
+      if ($hasChildren) {
+        echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>';
+        ++$nodeId;
+        $childUlIdEsc = $escapeAttr('hierarchy_' . $context . '_' . $parentNodeId . '_' . $nodeId);
+        echo '<button class="hierarchy-tree__toggle-expanded js-toggle-expanded"'
+          . ' aria-expanded="' . ($node->hasSelectedChild ? 'true' : 'false') . '"'
+          . ' aria-controls="' . $childUlIdEsc . '"'
+          // Use node title as button label so that a screen reader can read it as
+          // "Expanded <text>" or "Collapsed <text>":
+          . ' aria-label="' . $escapeAttr($node->title) . '"'
+          . ' data-toggle-aria-expanded'
+          . ' data-default-expanded="' . ($node->hasSelectedChild ? 'true' : 'false') . '"'
+          . '>'
+          . $icons['hierarchy-expand']
+          . $icons['hierarchy-collapse']
+          . '</button>';
+
+        echo " $itemHtml ";
+        echo '<ul id="' . $childUlIdEsc . '" class="hierarchy-tree__children">';
+        ($this->renderTreeLevel[0])($node->children, $context, $hierarchyID, $driver, $selectedID, "{$parentNodeId}_$nodeId");
+        echo '</ul></li>';
+      } else {
+        echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>'
+          . '<button class="hierarchy-tree__toggle-expanded" disabled aria-label="' . $escape($node->title) . '"></button> '
+          . $itemHtml;
+        echo '</li>';
+      }
+    }
+  }];
+?>
+<ul<?=$treeAttrs?>>
+  <?php ($this->renderTreeLevel[0])($nodes, $context, $hierarchyID, $driver, $selectedID); ?>
+</ul>

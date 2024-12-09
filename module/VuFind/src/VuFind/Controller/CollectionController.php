@@ -3,7 +3,7 @@
 /**
  * Collection Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -105,9 +105,7 @@ class CollectionController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

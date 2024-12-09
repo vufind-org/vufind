@@ -3,7 +3,7 @@
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,10 @@
  */
 
 namespace VuFind\Controller;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Holds trait (for subclasses of AbstractRecord)
@@ -98,7 +102,7 @@ trait HoldsTrait
             $gatheredDetails
         ) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
-            ? explode(":", $checkHolds['extraHoldFields']) : [];
+            ? explode(':', $checkHolds['extraHoldFields']) : [];
 
         $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
             && !empty($requestGroups)
@@ -223,7 +227,7 @@ trait HoldsTrait
         }
 
         // Set default start date to today:
-        $dateConverter = $this->serviceLocator->get(\VuFind\Date\Converter::class);
+        $dateConverter = $this->getService(\VuFind\Date\Converter::class);
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
@@ -254,7 +258,7 @@ trait HoldsTrait
 
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
-            ? $this->getUser()->home_library : '';
+            ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility:
         $helpText = $helpTextHtml = $checkHolds['helpText'];
 

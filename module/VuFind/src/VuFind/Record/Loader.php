@@ -3,7 +3,7 @@
 /**
  * Record loader
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2015.
@@ -39,6 +39,9 @@ use VuFindSearch\Command\RetrieveBatchCommand;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
+
+use function count;
+use function is_object;
 
 /**
  * Record loader
@@ -144,6 +147,9 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                 && $this->recordCache->isFallback($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
+                if (!empty($results)) {
+                    $results[0]->setExtraDetail('cached_record', true);
+                }
             }
 
             if (!empty($results)) {
@@ -188,7 +194,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * @param string   $source                    Record source
      * @param bool     $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
+     * subscriptions
      * @param ParamBag $params                    Search backend parameters
      *
      * @throws \Exception
@@ -203,7 +209,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $list = new Checklist($ids);
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
-            // Try to load records from cache if source is cachable
+            // Try to load records from cache if source is cacheable
             $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
             // Check which records could not be loaded from the record cache
             foreach ($cachedRecords as $cachedRecord) {
@@ -267,7 +273,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
             $list->hasUnchecked() && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
-            // Try to load missing records from cache if source is cachable
+            // Try to load missing records from cache if source is cacheable
             $cachedRecords = $this->recordCache
                 ->lookupBatch($list->getUnchecked(), $source);
         }
@@ -304,13 +310,13 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * requested order.
      *
      * @param array      $ids                       Array of associative arrays with
-     * id/source keys or strings in source|id format.  In associative array formats,
+     * id/source keys or strings in source|id format. In associative array formats,
      * there is also an optional "extra_fields" key which can be used to pass in data
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.
      * @param bool       $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
+     * subscriptions
      * @param ParamBag[] $params                    Associative array of search
      * backend parameters keyed with source key
      *

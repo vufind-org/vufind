@@ -1,0 +1,17 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('permanent_link'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
+    . '<li class="active">' . $this->transEsc('permanent_link') . '</li>';
+
+  // Collect permalink data:
+  $link = $this->serverUrl() . $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
+?>
+<h2><?=$this->transEsc('permanent_link') ?></h2>
+<p>
+  <pre id="permalink"><?=$this->escapeHtml($link)?></pre>
+</p>
+<?=$this->copyToClipboardButton('#permalink');?>

@@ -1,7 +1,10 @@
 .facet-group {
   display: block;
-  margin-bottom: 1rem;
   padding-left: 0;
+
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
 
   [data-toggle="collapse"] {
     cursor: pointer;
@@ -9,12 +12,21 @@
 
   .collapse,
   .collapsing,
-  & > .facet {
+  &.full-facet-list .facet {
     position: relative;
     border-left: 1px solid @list-group-border;
     border-right: 1px solid @list-group-border;
   }
-  & > .facet:first-child { border-top: 1px solid @list-group-border; }
+  &.full-facet-list :first-child .facet { border-top: 1px solid @list-group-border; }
+}
+
+.facet__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  .facet__list__item .facet {
+    display: flex;
+  }
 }
 
 .facet,
@@ -31,7 +43,7 @@
   display: flex;
   align-items: center;
 
-  .text, .hierarchical-facet-anchor {
+  .text {
     display: flex;
     gap: 0.25rem;
     align-items: center;
@@ -48,7 +60,12 @@
   .exclude {
     flex-shrink: 0;
     text-align: center;
-    padding-left: 0.5rem;
+    margin-left: 0.5rem;
+
+    body.rtl & {
+      padding-left: 0;
+      padding-right: 0.5rem;
+    }
   }
 }
 .facet-group .facet,
@@ -86,9 +103,32 @@
   color: #fff;
   background-color: #000;
 }
+.facet .text {
+  overflow: hidden;
+}
+
+.multi-facet-selection {
+  .facet {
+    .exclude {
+      border: 2px dotted transparent;
+    }
+    .exclude.selected {
+      border: 2px dotted @list-group-active-bg;
+    }
+    .exclude {
+      .icon {
+        width: 1.5em;
+        height: 1.5em;
+      }
+    }
+  }
+}
 
 .top-facets-contents {
+  display: block;
   margin: 2px 0;
+  padding: 0;
+  list-style: none;
 }
 .top-facets .facet,
 .top-facets > strong {
@@ -104,8 +144,10 @@
   border: 1px solid @list-group-border;
 }
 
-.checkboxFilter {
+.checkbox-filters {
   padding-bottom: 0.5rem;
+  // For blocking overlay:
+  position: relative;
 }
 .checkbox-filter {
   display: flex;
@@ -147,13 +189,21 @@
   }
 }
 
-.full-facet-list { margin-top: 1rem; }
+.full-facets {
+  margin: 1rem 0;
+  border-top: 1px solid @list-group-border;
+  border-bottom: 1px solid @list-group-border;
+}
 .full-facet-list .active .fa.fa-times {
   float: right;
   margin-top: .25rem;
   margin-left: 0.5rem;
 }
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
+.full-facet-controls .form-group {
+  margin: 0;
+  padding: @padding-base-vertical 0;
+}
 
 .truncate-done {
   overflow: clip;
@@ -176,7 +226,46 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
   .date-from { padding-right: .25rem; }
   .date-to   { padding-left:  .25rem; }
 }
+h3.facet-title {
+  font-size: @font-size-base;
+  margin: 0;
+}
 @media (min-width: 768px) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
+}
+
+.multi-filters-selection {
+  padding: 1em 0;
+  background: white;
+
+  label {
+    font-weight: bold;
+  }
+
+  input[type="checkbox"] {
+    height: initial;
+  }
+
+  .apply-filters {
+    margin-top: 1em;
+    display: none;
+  }
+}
+.multi-facet-selection-active .apply-filters {
+  display: block;
+}
+.sidebar .multi-filters-selection {
+  position: sticky;
+  top: 0;
+  padding: 1em;
+  z-index: 40;
+  border-bottom: 1px solid @list-group-border;
+  box-shadow: 0 5px 5px -4px #000;
+}
+.multi-facet-selection-active {
+  // Hide submit buttons of range forms when multi-facet selection is active:
+  .facet input[type="submit"] {
+    display: none;
+  }
 }

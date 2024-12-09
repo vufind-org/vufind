@@ -3,7 +3,7 @@
 /**
  * MultiIndex listener class file.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -33,6 +33,9 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * MultiIndex listener class file.
@@ -105,7 +108,7 @@ class MultiIndexListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );

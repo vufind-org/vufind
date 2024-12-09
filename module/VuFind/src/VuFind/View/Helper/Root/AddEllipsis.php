@@ -3,7 +3,7 @@
 /**
  * "Add ellipsis" view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+
+use function strlen;
 
 /**
  * "Add ellipsis" view helper
@@ -82,7 +84,7 @@ class AddEllipsis extends AbstractHelper
 
             // If the first five characters don't match chances are something was cut
             // from the front:
-            if (substr($dehighlighted, 0, 5) != substr($fullString, 0, 5)) {
+            if (strncmp($dehighlighted, $fullString, 5) !== 0) {
                 $highlighted = '...' . $highlighted;
             }
 

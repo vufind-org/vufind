@@ -3,7 +3,7 @@
 /**
  * Syndetics excerpt content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -113,7 +113,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $excerpt[$i]['Content'] = $sourceInfo['div'];
                 } else {
                     // Get the marc field for excerpts (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld520");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
                     if (!$nodes->length) {
                         // Skip excerpts with missing text
                         continue;
@@ -122,7 +122,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         = html_entity_decode($xmldoc2->saveXML($nodes->item(0)));
 
                     // Get the marc field for copyright (997)
-                    $nodes = $xmldoc->GetElementsbyTagName("Fld997");
+                    $nodes = $xmldoc->GetElementsbyTagName('Fld997');
                     if ($nodes->length) {
                         $excerpt[$i]['Copyright'] = html_entity_decode(
                             $xmldoc2->saveXML($nodes->item(0))

@@ -3,7 +3,7 @@
 /**
  * MapSelection Configuration Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -61,7 +61,6 @@ class MapSelectionConfig extends AbstractConfig
     public function getMapSelectionOptions()
     {
         $validFields = ['default_coordinates', 'height'];
-        $options = [];
         // Check geofeatures.ini
         $options = $this->getOptions('geofeatures', 'MapSelection', $validFields);
 

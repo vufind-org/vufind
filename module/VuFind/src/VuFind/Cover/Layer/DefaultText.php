@@ -3,7 +3,7 @@
 /**
  * Default cover text layer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Cover\Layer;
+
+use function count;
 
 /**
  * Default cover text layer

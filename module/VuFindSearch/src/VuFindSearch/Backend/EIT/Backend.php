@@ -3,7 +3,7 @@
 /**
  * EIT backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -97,7 +97,7 @@ class Backend extends AbstractBackend
         }
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params, $offset, $limit);
-        $this->log('debug', print_r($response, true));
+        $this->debug('Response: ' . $this->varDump($response));
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
