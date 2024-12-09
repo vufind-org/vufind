@@ -312,6 +312,8 @@ class Initializer
                 $name = trim($subparts[0]);
                 $desc = isset($subparts[1]) ? trim($subparts[1]) : '';
                 $desc = empty($desc) ? $name : $desc;
+                // Easiest and most accurate way to pick a selected theme is to check
+                // if the name matches the current value of the ui cookie:
                 $selected = $this->cookieManager->get('ui') === $name;
                 $foundSelected = $foundSelected || $selected;
                 if (!empty($name)) {
