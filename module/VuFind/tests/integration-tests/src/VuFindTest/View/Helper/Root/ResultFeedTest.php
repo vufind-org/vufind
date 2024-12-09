@@ -98,10 +98,12 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      */
     public static function rssProvider(): array
     {
+        $routeLink = 'http://server/url';
+        $driverLink = 'http://driver-url';
         return [
-            'default options' => [[], 'http://server/url'],
-            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], 'http://server/url'],
-            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], 'http://driver-url'],
+            'default options' => [[], $routeLink],
+            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink],
+            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink],
         ];
     }
 
@@ -168,7 +170,6 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             . 'the journal of the Institute for Rational-Emotive Therapy.',
             $items[1]->getTitle()
         );
-        // Expect fake URL from fake serverUrl helper:
         $this->assertEquals($expectedLink, $items[1]->getLink());
     }
 }
