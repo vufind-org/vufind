@@ -110,11 +110,14 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     /**
      * Test feed generation
      *
+     * @param array  $options      Options to pass to the ResultFeed object.
+     * @param string $expectedLink The link URL we expect to find in the first result in the feed.
+     *
      * @return void
      *
      * @dataProvider rssProvider
      */
-    public function testRSS(array $options = [], string $expectedLink = 'http://server/url'): void
+    public function testRSS(array $options, string $expectedLink): void
     {
         // Set up a request -- we'll sort by title to ensure a predictable order
         // for the result list (relevance or last_indexed may lead to unstable test
