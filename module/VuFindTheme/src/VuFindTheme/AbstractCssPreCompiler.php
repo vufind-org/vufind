@@ -80,9 +80,9 @@ abstract class AbstractCssPreCompiler
     /**
      * Constructor
      *
-     * @param OutputInterface $output Output interface for logging (optional)
+     * @param ?OutputInterface $output Output interface for logging (optional)
      */
-    public function __construct(OutputInterface $output = null)
+    public function __construct(?OutputInterface $output = null)
     {
         $this->basePath = realpath(__DIR__ . '/../../../../');
         $this->tempPath = sys_get_temp_dir();

@@ -66,7 +66,7 @@ class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInter
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');

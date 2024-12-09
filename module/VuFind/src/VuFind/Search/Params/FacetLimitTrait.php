@@ -70,11 +70,11 @@ trait FacetLimitTrait
     /**
      * Initialize facet limit from a Config object.
      *
-     * @param Config $config Configuration
+     * @param ?Config $config Configuration
      *
      * @return void
      */
-    protected function initFacetLimitsFromConfig(Config $config = null)
+    protected function initFacetLimitsFromConfig(?Config $config = null)
     {
         if (is_numeric($config->facet_limit ?? null)) {
             $this->setFacetLimit($config->facet_limit);

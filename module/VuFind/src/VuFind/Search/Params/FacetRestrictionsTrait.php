@@ -60,11 +60,11 @@ trait FacetRestrictionsTrait
     /**
      * Initialize facet prefix and matches from a Config object.
      *
-     * @param Config $config Configuration
+     * @param ?Config $config Configuration
      *
      * @return void
      */
-    protected function initFacetRestrictionsFromConfig(Config $config = null)
+    protected function initFacetRestrictionsFromConfig(?Config $config = null)
     {
         foreach ($config->facet_prefix_by_field ?? [] as $k => $v) {
             $this->facetPrefixByField[$k] = $v;

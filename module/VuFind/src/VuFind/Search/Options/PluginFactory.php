@@ -65,7 +65,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $class = $this->getClassName($requestedName);
         return new $class($container->get(\VuFind\Config\PluginManager::class));

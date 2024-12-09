@@ -1310,11 +1310,11 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Configure autocomplete preferences from an .ini file.
      *
-     * @param Config $searchSettings Object representation of .ini file
+     * @param ?Config $searchSettings Object representation of .ini file
      *
      * @return void
      */
-    protected function configureAutocomplete(Config $searchSettings = null)
+    protected function configureAutocomplete(?Config $searchSettings = null)
     {
         // Only change settings from current values if they are defined in .ini:
         $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled

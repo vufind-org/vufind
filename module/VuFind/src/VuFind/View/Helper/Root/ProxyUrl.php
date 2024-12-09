@@ -62,9 +62,9 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
      * Constructor
      *
      * @param \VuFind\Config\Config $config VuFind configuration
-     * @param CacheAdapter          $cache  Cache for web service responses
+     * @param ?CacheAdapter         $cache  Cache for web service responses
      */
-    public function __construct($config = null, CacheAdapter $cache = null)
+    public function __construct($config = null, ?CacheAdapter $cache = null)
     {
         $this->config = $config;
         $this->setCacheStorage($cache);
