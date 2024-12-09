@@ -48,7 +48,7 @@ interface RandomInterface
      *
      * @param AbstractQuery $query  Search query
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */

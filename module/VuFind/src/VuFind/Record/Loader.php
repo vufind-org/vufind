@@ -108,11 +108,11 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
     /**
      * Given an ID and record source, load the requested record object.
      *
-     * @param string   $id              Record ID
-     * @param string   $source          Record source
-     * @param bool     $tolerateMissing Should we load a "Missing" placeholder
+     * @param string    $id              Record ID
+     * @param string    $source          Record source
+     * @param bool      $tolerateMissing Should we load a "Missing" placeholder
      * instead of throwing an exception if the record cannot be found?
-     * @param ParamBag $params          Search backend parameters
+     * @param ?ParamBag $params          Search backend parameters
      *
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
@@ -190,12 +190,12 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * Given an array of IDs and a record source, load a batch of records for
      * that source.
      *
-     * @param array    $ids                       Record IDs
-     * @param string   $source                    Record source
-     * @param bool     $tolerateBackendExceptions Whether to tolerate backend
+     * @param array     $ids                       Record IDs
+     * @param string    $source                    Record source
+     * @param bool      $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
      * subscriptions
-     * @param ParamBag $params                    Search backend parameters
+     * @param ?ParamBag $params                    Search backend parameters
      *
      * @throws \Exception
      * @return array
