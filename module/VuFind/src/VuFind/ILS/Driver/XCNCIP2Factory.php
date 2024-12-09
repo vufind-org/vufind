@@ -62,7 +62,7 @@ class XCNCIP2Factory extends DriverWithDateConverterFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return parent::__invoke(
             $container,

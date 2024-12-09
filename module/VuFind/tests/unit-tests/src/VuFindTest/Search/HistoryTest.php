@@ -155,16 +155,16 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Get object for testing.
      *
-     * @param SearchServiceInterface $searchService  Search service
-     * @param ResultsManager         $resultsManager Results manager
-     * @param \VuFind\Config\Config  $config         Configuration
+     * @param ?SearchServiceInterface $searchService  Search service
+     * @param ?ResultsManager         $resultsManager Results manager
+     * @param ?\VuFind\Config\Config  $config         Configuration
      *
      * @return History
      */
     protected function getHistory(
-        SearchServiceInterface $searchService = null,
-        ResultsManager $resultsManager = null,
-        \VuFind\Config\Config $config = null
+        ?SearchServiceInterface $searchService = null,
+        ?ResultsManager $resultsManager = null,
+        ?\VuFind\Config\Config $config = null
     ): History {
         return new History(
             $searchService ?? $this->createMock(SearchServiceInterface::class),

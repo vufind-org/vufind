@@ -169,13 +169,13 @@ class HierarchyTree extends AbstractBase
     /**
      * Render a hierarchy tree
      *
-     * @param string  $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $id      Hierarchy ID (omit to use active tree)
      * @param ?string $context Context for use by renderer or null for default
      * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree(string $id = null, ?string $context = null, array $options = [])
+    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
     {
         $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();

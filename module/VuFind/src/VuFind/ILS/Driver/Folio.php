@@ -883,14 +883,14 @@ class Folio extends AbstractAPI implements
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
-     * @param array  $patron  Patron login information from $this->patronLogin
+     * @param ?array $patron  Patron login information from $this->patronLogin
      * @param array  $options Extra options (not currently used)
      *
      * @return array An array of associative holding arrays
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($bibId, array $patron = null, array $options = [])
+    public function getHolding($bibId, ?array $patron = null, array $options = [])
     {
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;

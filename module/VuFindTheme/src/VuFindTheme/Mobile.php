@@ -65,9 +65,9 @@ class Mobile
     /**
      * Constructor
      *
-     * @param uagent_info $detector Detector object to wrap (null to create one)
+     * @param ?uagent_info $detector Detector object to wrap (null to create one)
      */
-    public function __construct(uagent_info $detector = null)
+    public function __construct(?uagent_info $detector = null)
     {
         $this->detector = $detector ?? new uagent_info();
     }

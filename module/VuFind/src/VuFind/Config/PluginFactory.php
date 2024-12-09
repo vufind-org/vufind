@@ -170,7 +170,7 @@ class PluginFactory implements AbstractFactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $pathResolver = $container->get(PathResolver::class);
         return $this->loadConfigFile(

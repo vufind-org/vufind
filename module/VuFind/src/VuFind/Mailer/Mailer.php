@@ -178,14 +178,14 @@ class Mailer implements
     /**
      * Constructs an {@see Email} body from given text and html content.
      *
-     * @param string|null $text Mail content used for plain text part
-     * @param string|null $html Mail content used for html part
+     * @param ?string $text Mail content used for plain text part
+     * @param ?string $html Mail content used for html part
      *
      * @return Email
      */
     public function buildMultipartBody(
-        string $text = null,
-        string $html = null
+        ?string $text = null,
+        ?string $html = null
     ): Email {
         $email = $this->getNewMessage();
         if (null !== $text) {

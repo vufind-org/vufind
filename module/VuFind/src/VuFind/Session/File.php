@@ -55,10 +55,10 @@ class File extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param ?Config $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(?Config $config = null)
     {
         parent::__construct($config);
 

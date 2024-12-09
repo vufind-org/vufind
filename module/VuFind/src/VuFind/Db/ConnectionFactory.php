@@ -77,13 +77,13 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     /**
      * Constructor
      *
-     * @param Config              $config    VuFind configuration (provided when used
+     * @param ?Config             $config    VuFind configuration (provided when used
      * as service; omitted when used as factory)
      * @param ?ContainerInterface $container Service container (provided when used
      * as service; omitted when used as factory)
      */
     public function __construct(
-        Config $config = null,
+        ?Config $config = null,
         protected ?ContainerInterface $container = null
     ) {
         $this->config = $config ?: new Config([]);
@@ -106,7 +106,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');

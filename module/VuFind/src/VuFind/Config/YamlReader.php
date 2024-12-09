@@ -61,14 +61,14 @@ class YamlReader
     /**
      * Cache manager
      *
-     * @var \VuFind\Cache\Manager
+     * @var ?\VuFind\Cache\Manager
      */
     protected $cacheManager;
 
     /**
      * Config file path resolver
      *
-     * @var PathResolver
+     * @var ?PathResolver
      */
     protected $pathResolver;
 
@@ -82,13 +82,13 @@ class YamlReader
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
-     * @param PathResolver          $pathResolver Config file path resolver
+     * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param ?PathResolver          $pathResolver Config file path resolver
      * (optional; defaults to \VuFind\Config\Locator)
      */
     public function __construct(
-        \VuFind\Cache\Manager $cacheManager = null,
-        PathResolver $pathResolver = null
+        ?\VuFind\Cache\Manager $cacheManager = null,
+        ?PathResolver $pathResolver = null
     ) {
         $this->cacheManager = $cacheManager;
         $this->pathResolver = $pathResolver;

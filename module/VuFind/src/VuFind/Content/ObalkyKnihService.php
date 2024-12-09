@@ -116,11 +116,11 @@ class ObalkyKnihService implements
     /**
      * Get an HTTP client
      *
-     * @param string $url URL for client to use
+     * @param ?string $url URL for client to use
      *
      * @return \Laminas\Http\Client
      */
-    protected function getHttpClient(string $url = null)
+    protected function getHttpClient(?string $url = null)
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
