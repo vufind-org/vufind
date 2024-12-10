@@ -56,13 +56,6 @@ class Mobile
     protected $detector;
 
     /**
-     * Are mobile themes enabled?
-     *
-     * @var bool
-     */
-    protected $enabled = false;
-
-    /**
      * Constructor
      *
      * @param ?uagent_info $detector Detector object to wrap (null to create one)
