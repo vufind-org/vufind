@@ -85,8 +85,8 @@ class TurnstileController extends AbstractBase implements
     {
         $context = json_decode(base64_decode($this->params()->fromQuery('context')), true);
         $context['siteKey'] = $this->config['Turnstile']['siteKey'];
-        $context['jsLibraryUrl'] = $this->config['Turnstile']['jsLibraryUrl'] ??
-            'https://challenges.cloudflare.com/turnstile/v0/api.js';
+        $context['jsLibraryUrl'] = $this->config['Turnstile']['jsLibraryUrl']
+            ?? 'https://challenges.cloudflare.com/turnstile/v0/api.js';
         $context['hash'] = $this->hmac->generate($this->hashKeys, $context);
 
         $this->layout()->searchbox = false;
