@@ -43,17 +43,32 @@ use VuFindTheme\Mobile;
 class ThemeMobileTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Data provider for testDetection.
+     *
+     * @return array[]
+     */
+    public static function detectionProvider(): array
+    {
+        return [
+            'mobile detected' => [true],
+            'mobile not detected' => [false],
+        ];
+    }
+
+    /**
      * Test detection wrapping.
      *
+     * @param bool $active Result of mobile detection
+     *
      * @return void
+     *
+     * @dataProvider detectionProvider
      */
-    public function testDetection()
+    public function testDetection(bool $active): void
     {
-        $detector = $this->getMockBuilder(\uagent_info::class)
-            ->onlyMethods(['DetectMobileLong'])
-            ->getMock();
-        $detector->expects($this->once())->method('DetectMobileLong')->willReturn(true);
+        $detector = $this->createMock(\uagent_info::class);
+        $detector->expects($this->once())->method('DetectMobileLong')->willReturn($active);
         $mobile = new Mobile($detector);
-        $this->assertTrue($mobile->detect());
+        $this->assertEquals($active, $mobile->detect());
     }
 }
