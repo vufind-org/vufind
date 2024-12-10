@@ -50,6 +50,7 @@ class ProQuestFSG extends DefaultRecord
         MarcBasicTrait::getNewerTitles insteadof MarcAdvancedTrait;
         MarcBasicTrait::getPreviousTitles insteadof MarcAdvancedTrait;
         MarcBasicTrait::getShortTitle as marcGetShortTitle;
+        MarcBasicTrait::getTitle as marcGetTitle;
     }
 
     /**
@@ -82,5 +83,15 @@ class ProQuestFSG extends DefaultRecord
     public function getShortTitle()
     {
         return strip_tags($this->marcGetShortTitle());
+    }
+
+    /**
+     * Get the full title of the record.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return strip_tags($this->marcGetTitle());
     }
 }
