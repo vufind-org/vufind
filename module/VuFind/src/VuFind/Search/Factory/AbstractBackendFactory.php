@@ -80,7 +80,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
     protected function createHttpClient(
         ?int $timeout = null,
         array $options = [],
-        string $url = null
+        ?string $url = null
     ): \Laminas\Http\Client {
         $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($url);
         if (null !== $timeout) {

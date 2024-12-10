@@ -239,13 +239,13 @@ class Aleph extends AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
-     * @param \VuFind\Cache\Manager  $cacheManager  Cache manager (optional)
-     * @param TranslatorInterface    $translator    Translator (optional)
+     * @param ?\VuFind\Cache\Manager $cacheManager  Cache manager (optional)
+     * @param ?TranslatorInterface   $translator    Translator (optional)
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        \VuFind\Cache\Manager $cacheManager = null,
-        TranslatorInterface $translator = null
+        ?\VuFind\Cache\Manager $cacheManager = null,
+        ?TranslatorInterface $translator = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->cacheManager = $cacheManager;
@@ -690,7 +690,7 @@ class Aleph extends AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -701,7 +701,7 @@ class Aleph extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
         [$bib, $sys_no] = $this->parseId($id);

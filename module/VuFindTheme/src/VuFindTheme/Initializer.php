@@ -54,6 +54,13 @@ class Initializer
     protected $config;
 
     /**
+     * Map of theme aliases to theme names (null if uninitialized)
+     *
+     * @var ?array
+     */
+    protected $themeMap =  null;
+
+    /**
      * Laminas MVC Event
      *
      * @var MvcEvent
@@ -192,6 +199,32 @@ class Initializer
     }
 
     /**
+     * Get a map of theme aliases to theme names.
+     *
+     * @return array
+     */
+    protected function getThemeAliasMap(): array
+    {
+        if ($this->themeMap === null) {
+            // Set up special-case 'standard' and 'mobile' aliases:
+            $this->themeMap = ['standard' => $this->config->theme];
+            if ($this->mobile->enabled()) {
+                $this->themeMap['mobile'] = $this->config->mobile_theme;
+            }
+
+            // Parse the alternate theme settings for additional options:
+            $parts = explode(',', $this->config->alternate_themes ?? '');
+            foreach ($parts as $part) {
+                $subparts = explode(':', $part);
+                if (!empty($subparts[1])) {
+                    $this->themeMap[trim($subparts[0])] = $subparts[1];
+                }
+            }
+        }
+        return $this->themeMap;
+    }
+
+    /**
      * Support method for init() -- figure out which theme option is active.
      *
      * @param Request $request Request object (for obtaining user parameters);
@@ -217,59 +250,29 @@ class Initializer
         }
 
         // Load standard configuration options:
-        $standardTheme = $this->config->theme;
+        $themes = $this->getThemeAliasMap();
         if (PHP_SAPI == 'cli') {
-            return $standardTheme;
+            return $themes['standard'];
         }
-        $mobileTheme = $this->mobile->enabled()
-            ? $this->config->mobile_theme : false;
 
         // Find out if the user has a saved preference in the POST, URL or cookies:
         $selectedUI = null;
         if (isset($request)) {
-            $selectedUI = $request->getPost()->get(
-                'ui',
-                $request->getQuery()->get(
-                    'ui',
-                    $request->getCookie()->ui ?? null
-                )
-            );
+            $selectedUI = $request->getPost()->get('ui')
+                ?? $request->getQuery()->get('ui')
+                ?? $request->getCookie()->ui
+                ?? null;
         }
         if (empty($selectedUI)) {
-            $selectedUI = ($mobileTheme && $this->mobile->detect())
+            $selectedUI = (isset($themes['mobile']) && $this->mobile->detect())
                 ? 'mobile' : 'standard';
         }
 
         // Save the current setting to a cookie so it persists:
         $this->cookieManager->set('ui', $selectedUI);
 
-        // Do we have a valid mobile selection?
-        if ($mobileTheme && $selectedUI == 'mobile') {
-            return $mobileTheme;
-        }
-
-        // Do we have a non-standard selection?
-        if (
-            $selectedUI != 'standard'
-            && isset($this->config->alternate_themes)
-        ) {
-            // Check the alternate theme settings for a match:
-            $parts = explode(',', $this->config->alternate_themes);
-            foreach ($parts as $part) {
-                $subparts = explode(':', $part);
-                if (
-                    (trim($subparts[0]) == trim($selectedUI))
-                    && isset($subparts[1]) && !empty($subparts[1])
-                ) {
-                    return $subparts[1];
-                }
-            }
-        }
-
-        // If we got this far, we either have a standard option or the user chose
-        // an invalid non-standard option; either way, we need to default to the
-        // standard theme:
-        return $standardTheme;
+        // Pick the selected theme (fall back to standard if unrecognized):
+        return $themes[$selectedUI] ?? $themes['standard'];
     }
 
     /**
@@ -303,16 +306,30 @@ class Initializer
         $options = [];
         if (isset($this->config->selectable_themes)) {
             $parts = explode(',', $this->config->selectable_themes);
+            $foundSelected = false;
+            $uiCookie = $this->cookieManager->get('ui');
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
                 $name = trim($subparts[0]);
                 $desc = isset($subparts[1]) ? trim($subparts[1]) : '';
                 $desc = empty($desc) ? $name : $desc;
+                // Easiest and most accurate way to pick a selected theme is to check
+                // if the name matches the current value of the ui cookie:
+                $selected = $uiCookie === $name;
+                $foundSelected = $foundSelected || $selected;
                 if (!empty($name)) {
-                    $options[] = [
-                        'name' => $name, 'desc' => $desc,
-                        'selected' => ($currentTheme == $name),
-                    ];
+                    $options[] = compact('name', 'desc', 'selected');
+                }
+            }
+            // If we have some options, but none are selected, we need to figure
+            // out which option matches the provided theme.
+            if (!empty($options) && !$foundSelected) {
+                $aliasMap = $this->getThemeAliasMap();
+                foreach ($options as $i => $currentOptions) {
+                    if ($aliasMap[$currentOptions['name']] === $currentTheme) {
+                        $options[$i]['selected'] = true;
+                        break;
+                    }
                 }
             }
         }

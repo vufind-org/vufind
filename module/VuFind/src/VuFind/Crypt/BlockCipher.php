@@ -261,7 +261,7 @@ class BlockCipher
      * @return static
      * @throws InvalidArgumentException
      */
-    protected function setAlgorithmAndMode(string $algo, string $mode = null): static
+    protected function setAlgorithmAndMode(string $algo, ?string $mode = null): static
     {
         $openSslMethod = ($this->encryptionAlgos[$algo] ?? 'UNSUPPORTED') . '-' . ($mode ?? $this->mode);
         if (!in_array($openSslMethod, openssl_get_cipher_methods(true))) {

@@ -63,12 +63,14 @@ class ResultFeedFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $helper = new $requestedName();
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('searches');
+        $settings = ['prioritizeRecordDriverLinks' => $config->RSS->prioritizeRecordDriverLinks ?? false];
+        $helper = new $requestedName($settings);
         $helper->registerExtensions($container);
         return $helper;
     }

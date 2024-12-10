@@ -74,10 +74,10 @@ abstract class AbstractBase implements HandlerInterface
     /**
      * Constructor
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param ?Config $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(?Config $config = null)
     {
         if (isset($config->lifetime)) {
             $this->lifetime = $config->lifetime;

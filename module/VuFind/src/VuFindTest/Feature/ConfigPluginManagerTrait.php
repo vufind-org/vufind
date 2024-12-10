@@ -64,8 +64,8 @@ trait ConfigPluginManagerTrait
     protected function getMockConfigPluginManager(
         array $configs,
         array $default = [],
-        InvocationOrder $getExpect = null,
-        InvocationOrder $hasExpect = null
+        ?InvocationOrder $getExpect = null,
+        ?InvocationOrder $hasExpect = null
     ): PluginManager {
         $manager = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()

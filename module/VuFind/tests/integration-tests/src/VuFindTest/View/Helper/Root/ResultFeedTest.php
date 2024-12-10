@@ -66,11 +66,14 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getPlugins()
+    protected function getPlugins(): array
     {
         $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
-        $currentPath->expects($this->any())->method('__invoke')
-            ->will($this->returnValue('/test/path'));
+        $currentPath->expects($this->any())->method('__invoke')->willReturn('/test/path');
+
+        $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
+        $record->method('__invoke')->willReturn($record);
+        $record->method('getLinkDetails')->willReturn([['url' => 'http://driver-url']]);
 
         $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
             ->setConstructorArgs(
@@ -80,22 +83,41 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                     ),
                 ]
             )->getMock();
-        $recordLinker->expects($this->any())->method('getUrl')
-            ->will($this->returnValue('test/url'));
+        $recordLinker->expects($this->any())->method('getUrl')->willReturn('test/url');
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $serverUrl->expects($this->any())->method('__invoke')
-            ->will($this->returnValue('http://server/url'));
+        $serverUrl->expects($this->any())->method('__invoke')->willReturn('http://server/url');
 
-        return compact('currentPath', 'recordLinker') + ['serverurl' => $serverUrl];
+        return compact('currentPath', 'record', 'recordLinker') + ['serverurl' => $serverUrl];
+    }
+
+    /**
+     * Data provider for testRSS.
+     *
+     * @return array[]
+     */
+    public static function rssProvider(): array
+    {
+        $routeLink = 'http://server/url';
+        $driverLink = 'http://driver-url';
+        return [
+            'default options' => [[], $routeLink],
+            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink],
+            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink],
+        ];
     }
 
     /**
      * Test feed generation
      *
+     * @param array  $options      Options to pass to the ResultFeed object.
+     * @param string $expectedLink The link URL we expect to find in the first result in the feed.
+     *
      * @return void
+     *
+     * @dataProvider rssProvider
      */
-    public function testRSS()
+    public function testRSS(array $options, string $expectedLink): void
     {
         // Set up a request -- we'll sort by title to ensure a predictable order
         // for the result list (relevance or last_indexed may lead to unstable test
@@ -109,7 +131,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);
 
-        $helper = new ResultFeed();
+        $helper = new ResultFeed($options);
         $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $translator = $this->getMockTranslator(
             [
@@ -151,5 +173,6 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             . 'the journal of the Institute for Rational-Emotive Therapy.',
             $items[1]->getTitle()
         );
+        $this->assertEquals($expectedLink, $items[1]->getLink());
     }
 }

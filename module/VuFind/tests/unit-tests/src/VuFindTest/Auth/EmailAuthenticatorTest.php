@@ -73,13 +73,13 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @throws NoPreviousThrowableException
      */
     protected function getEmailAuthenticator(
-        SessionManager $sessionManager = null,
-        CsrfInterface $csrf = null,
-        Mailer $mailer = null,
-        PhpRenderer $renderer = null,
-        UserIpReader $userIpReader = null,
+        ?SessionManager $sessionManager = null,
+        ?CsrfInterface $csrf = null,
+        ?Mailer $mailer = null,
+        ?PhpRenderer $renderer = null,
+        ?UserIpReader $userIpReader = null,
         array $config = [],
-        AuthHashServiceInterface $authHashService = null
+        ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
             $sessionManager ?? $this->createMock(SessionManager::class),

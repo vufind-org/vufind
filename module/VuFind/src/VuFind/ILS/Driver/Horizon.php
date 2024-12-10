@@ -343,7 +343,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -354,7 +354,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $sqlArray = $this->getHoldingSql($id);
         $sql = $this->buildSqlFromArray($sqlArray);

@@ -62,7 +62,7 @@ class AccountMenuFactory extends AbstractMenuFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         // Only load the connector if we need to show
         $config = $container->get(\VuFind\Config\PluginManager::class)->get(

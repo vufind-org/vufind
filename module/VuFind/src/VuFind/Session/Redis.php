@@ -70,10 +70,10 @@ class Redis extends AbstractBase
      * Constructor
      *
      * @param \Credis_Client $connection Redis connection object
-     * @param Config         $config     Session configuration ([Session] section of
+     * @param ?Config        $config     Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(\Credis_Client $connection, Config $config = null)
+    public function __construct(\Credis_Client $connection, ?Config $config = null)
     {
         parent::__construct($config);
         $this->redisVersion = (int)($config->redis_version ?? 3);

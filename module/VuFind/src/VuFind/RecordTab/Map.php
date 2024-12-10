@@ -84,23 +84,23 @@ class Map extends AbstractBase
     /**
      * Configuration file path resolver
      *
-     * @var PathResolver
+     * @var ?PathResolver
      */
     protected $pathResolver;
 
     /**
      * Constructor
      *
-     * @param bool         $mapTabDisplay  Display Map
-     * @param array        $basemapOptions basemap settings
-     * @param array        $mapTabOptions  MapTab settings
-     * @param PathResolver $pathResolver   Config file path resolver
+     * @param bool          $mapTabDisplay  Display Map
+     * @param array         $basemapOptions basemap settings
+     * @param array         $mapTabOptions  MapTab settings
+     * @param ?PathResolver $pathResolver   Config file path resolver
      */
     public function __construct(
         $mapTabDisplay = false,
         $basemapOptions = [],
         $mapTabOptions = [],
-        PathResolver $pathResolver = null
+        ?PathResolver $pathResolver = null
     ) {
         if ($mapTabDisplay) {
             $this->mapTabDisplay = $mapTabDisplay;
