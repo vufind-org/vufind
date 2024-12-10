@@ -307,6 +307,7 @@ class Initializer
         if (isset($this->config->selectable_themes)) {
             $parts = explode(',', $this->config->selectable_themes);
             $foundSelected = false;
+            $uiCookie = $this->cookieManager->get('ui');
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
                 $name = trim($subparts[0]);
@@ -314,7 +315,7 @@ class Initializer
                 $desc = empty($desc) ? $name : $desc;
                 // Easiest and most accurate way to pick a selected theme is to check
                 // if the name matches the current value of the ui cookie:
-                $selected = $this->cookieManager->get('ui') === $name;
+                $selected = $uiCookie === $name;
                 $foundSelected = $foundSelected || $selected;
                 if (!empty($name)) {
                     $options[] = compact('name', 'desc', 'selected');
