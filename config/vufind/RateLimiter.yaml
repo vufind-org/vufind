@@ -160,15 +160,15 @@ Policies:
 # Turnstile:
   # These two keys are required. See also values they can be set to for testing purposes:
   # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
-  # siteKey: 0x1234567890
-  # secretKey: 0x1234567890
+  #siteKey: 0x1234567890
+  #secretKey: 0x1234567890
 
   # Skip Turnstile and allow the request if the controller matches a regex.
   # In these cases a challenge can't practically be displayed. Default is below.
-  # skipOnControllerPattern: "/AJAX|Cover|Api/"
+  #skipOnControllerPattern: "/AJAX|Cover|Api/"
 
   # Verify API URL. Default is below.
-  # verifyUrl: https://challenges.cloudflare.com/turnstile/v0/siteverify
+  #verifyUrl: https://challenges.cloudflare.com/turnstile/v0/siteverify
 
   # API Javascript file. Default is below.
-  # jsLibraryUrl: https://challenges.cloudflare.com/turnstile/v0/api.js
+  #jsLibraryUrl: https://challenges.cloudflare.com/turnstile/v0/api.js
