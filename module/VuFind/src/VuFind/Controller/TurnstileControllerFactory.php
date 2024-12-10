@@ -50,7 +50,7 @@ class TurnstileControllerFactory extends AbstractBaseFactory
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
-     * @param ?array         $options       Extra options (optional)
+     * @param ?array             $options       Extra options (optional)
      *
      * @return object
      *
