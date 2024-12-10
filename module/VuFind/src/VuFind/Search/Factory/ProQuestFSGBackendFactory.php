@@ -79,7 +79,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
         $this->config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
