@@ -72,6 +72,11 @@ class Results extends \VuFind\Search\Base\Results
     protected function performSearch()
     {
         $query  = $this->getParams()->getQuery();
+        $allTerms = $query->getAllTerms();
+        if (!strlen($allTerms)) {
+            $this->storeErrorResponse('empty_search_disallowed');
+            return;
+        }
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord();
         $params = $this->getParams()->getBackendParameters();
@@ -89,6 +94,22 @@ class Results extends \VuFind\Search\Base\Results
         $this->results = $collection->getRecords();
         $this->responseFacets = $collection->getFacets();
         $this->simplifiedResponseFacets = $this->simplifyFacets($this->responseFacets);
+    }
+
+    /**
+     * Store an empty response with an error message instead of performing a search.
+     *
+     * @param string|array $error Error message(s) to display to user.
+     *
+     * @return void
+     */
+    protected function storeErrorResponse(string|array $error): void
+    {
+        $this->resultTotal = 0;
+        $this->results = [];
+        $this->simplifiedResponseFacets = [];
+        $this->responseFacets = [];
+        $this->errors = (array)$error;
     }
 
     /**
