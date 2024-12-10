@@ -208,7 +208,7 @@ class Initializer
         if ($this->themeMap === null) {
             // Set up special-case 'standard' and 'mobile' aliases:
             $this->themeMap = ['standard' => $this->config->theme];
-            if ($this->mobile->enabled() && isset($this->config->mobile_theme)) {
+            if ($this->mobile->enabled()) {
                 $this->themeMap['mobile'] = $this->config->mobile_theme;
             }
 
