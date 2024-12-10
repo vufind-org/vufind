@@ -191,6 +191,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                         'class' => 'right',
                     ],
                 ],
+                'max_autocompleted_cells' => 10000,
             ],
             'example' => [
                 'example' => 'example',
