@@ -50,6 +50,11 @@ class TurnstileController extends AbstractBase implements
 {
     use LoggerAwareTrait;
 
+    /**
+     * Request properties to be securely hashed, to avoid manipulation
+     *
+     * @var array
+     */
     protected $hashKeys = ['siteKey', 'policyId', 'destination'];
 
     /**
