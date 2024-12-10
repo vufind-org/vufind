@@ -84,26 +84,4 @@ class Mobile
         // class of devices.
         return $this->detector->DetectMobileLong();
     }
-
-    /**
-     * Function to set enabled status of mobile themes.
-     *
-     * @param bool $enabled Are mobile themes enabled?
-     *
-     * @return void
-     */
-    public function enable($enabled = true)
-    {
-        $this->enabled = $enabled;
-    }
-
-    /**
-     * Function to check whether mobile theme is configured.
-     *
-     * @return bool
-     */
-    public function enabled()
-    {
-        return $this->enabled;
-    }
 }

@@ -34,6 +34,7 @@ use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
+use VuFind\Cookie\CookieManager;
 
 /**
  * VuFind Theme Initializer
@@ -70,28 +71,28 @@ class Initializer
     /**
      * Top-level service container
      *
-     * @var \Psr\Container\ContainerInterface
+     * @var ContainerInterface
      */
     protected $serviceManager;
 
     /**
      * Theme tools object
      *
-     * @var \VuFindTheme\ThemeInfo
+     * @var ThemeInfo
      */
     protected $tools;
 
     /**
      * Mobile interface detector
      *
-     * @var \VuFindTheme\Mobile
+     * @var Mobile
      */
     protected $mobile;
 
     /**
      * Cookie manager
      *
-     * @var \VuFind\Cookie\CookieManager
+     * @var CookieManager
      */
     protected $cookieManager;
 
@@ -143,15 +144,13 @@ class Initializer
         }
 
         // Get the cookie manager from the service manager:
-        $this->cookieManager = $this->serviceManager
-            ->get(\VuFind\Cookie\CookieManager::class);
+        $this->cookieManager = $this->serviceManager->get(CookieManager::class);
 
         // Get base directory from tools object:
-        $this->tools = $this->serviceManager->get(\VuFindTheme\ThemeInfo::class);
+        $this->tools = $this->serviceManager->get(ThemeInfo::class);
 
         // Set up mobile device detector:
-        $this->mobile = $this->serviceManager->get(\VuFindTheme\Mobile::class);
-        $this->mobile->enable(isset($this->config->mobile_theme));
+        $this->mobile = $this->serviceManager->get(Mobile::class);
     }
 
     /**
@@ -208,7 +207,7 @@ class Initializer
         if ($this->themeMap === null) {
             // Set up special-case 'standard' and 'mobile' aliases:
             $this->themeMap = ['standard' => $this->config->theme];
-            if ($this->mobile->enabled()) {
+            if (isset($this->config->mobile_theme)) {
                 $this->themeMap['mobile'] = $this->config->mobile_theme;
             }
 
@@ -365,8 +364,7 @@ class Initializer
         $templatePathStack = [];
 
         // Grab the resource manager for tracking CSS, JS, etc.:
-        $resources = $this->serviceManager
-            ->get(\VuFindTheme\ResourceContainer::class);
+        $resources = $this->serviceManager->get(ResourceContainer::class);
 
         // Set generator if necessary:
         if (isset($this->config->generator)) {

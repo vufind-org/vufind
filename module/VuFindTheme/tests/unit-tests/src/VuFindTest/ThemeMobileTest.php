@@ -43,24 +43,6 @@ use VuFindTheme\Mobile;
 class ThemeMobileTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test namespace stripping.
-     *
-     * @return void
-     */
-    public function testEnable()
-    {
-        $mobile = new Mobile();
-        // default behavior
-        $this->assertFalse($mobile->enabled());
-        // turn on
-        $mobile->enable();
-        $this->assertTrue($mobile->enabled());
-        // turn off
-        $mobile->enable(false);
-        $this->assertFalse($mobile->enabled());
-    }
-
-    /**
      * Test detection wrapping.
      *
      * @return void
@@ -70,8 +52,7 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
         $detector = $this->getMockBuilder(\uagent_info::class)
             ->onlyMethods(['DetectMobileLong'])
             ->getMock();
-        $detector->expects($this->once())
-            ->method('DetectMobileLong')->will($this->returnValue(true));
+        $detector->expects($this->once())->method('DetectMobileLong')->willReturn(true);
         $mobile = new Mobile($detector);
         $this->assertTrue($mobile->detect());
     }
