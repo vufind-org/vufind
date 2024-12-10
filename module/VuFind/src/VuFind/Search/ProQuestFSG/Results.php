@@ -141,6 +141,9 @@ class Results extends \VuFind\Search\Base\Results
     {
         $simpleFacets = [];
         foreach ($rawFacets as $label => $rawFacet) {
+            // Sort by hit count, descending
+            usort($rawFacet, fn ($a, $b) => ($a['count'] ?? 0) < ($b['count'] ?? 0));
+
             $simpleFacet = [];
             foreach ($rawFacet as $rawFacetValue) {
                 $facetName = "{$rawFacetValue['code']}|{$rawFacetValue['name']}";
