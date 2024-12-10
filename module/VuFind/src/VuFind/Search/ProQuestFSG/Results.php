@@ -31,6 +31,8 @@ namespace VuFind\Search\ProQuestFSG;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function strlen;
+
 /**
  * ProQuest Federated Search Gateway Search Parameters
  *
