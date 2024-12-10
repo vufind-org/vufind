@@ -328,12 +328,64 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testCallNoDisplay().
+     *
+     * @return array[]
+     */
+    public static function callNoDisplayProvider(): array
+    {
+        return [
+            'first' => ['first', 'Test1 A1234'],
+            'all' => ['all', 'Test1 A1234, Test2 B1234'],
+            'msg' => ['msg', 'Multiple Call Numbers'],
+        ];
+    }
+
+    /**
+     * Test call number display
+     *
+     * @param string $mode           Call number mode to configure
+     * @param string $expectedCallNo Expected call number output
+     *
+     * @return void
+     *
+     * @dataProvider callNoDisplayProvider
+     */
+    public function testCallNoDisplay(string $mode, string $expectedCallNo): void
+    {
+        $items = [
+            ['callnumber' => 'A1234', 'callnumber_prefix' => 'Test1'],
+            ['callnumber' => 'B1234', 'callnumber_prefix' => 'Test2'],
+        ];
+        $demoSettings = [
+            'Records' => [
+                'services' => [],
+            ],
+            'Failure_Probabilities' => [
+                'getStatuses' => 0,
+            ],
+            'StaticHoldings' => ['testsample1' => json_encode($items)],
+        ];
+
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(false, 'msg', multipleCallNos: $mode),
+                'Demo' => $demoSettings,
+            ]
+        );
+
+        $page = $this->goToSearchResults();
+        $this->assertEquals($expectedCallNo, $this->findCssAndGetText($page, '.callnumAndLocation .callnumber'));
+    }
+
+    /**
      * Get config.ini override settings for testing ILS functions.
      *
      * @param bool   $fullStatus         Whether to show full item status in results
      * @param string $multipleLocations  Setting to use for multiple locations
      * @param bool   $loadBatchWise      If status should be loaded batch wise
      * @param bool   $loadObservableOnly If status of only observable records should be loaded
+     * @param string $multipleCallNos    Setting to use for multiple call numbers
      *
      * @return array
      */
@@ -341,7 +393,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         bool $fullStatus,
         string $multipleLocations,
         bool $loadBatchWise = true,
-        bool $loadObservableOnly = true
+        bool $loadObservableOnly = true,
+        string $multipleCallNos = 'first'
     ): array {
         return [
             'Catalog' => [
@@ -349,6 +402,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             ],
             'Item_Status' => [
                 'show_full_status' => $fullStatus,
+                'multiple_call_nos' => $multipleCallNos,
                 'multiple_locations' => $multipleLocations,
                 'load_batch_wise' => $loadBatchWise,
                 'load_observable_only' => $loadObservableOnly,
