@@ -42,7 +42,7 @@ Storage:
 
   turnstileOptions:
     # Namespace for Turnstile result cache (default is Turnstile)
-    # namespace: Turnstile
+    #namespace: Turnstile
 
     # Time-to-live (seconds) for Turnstile result cache (default is 86400, i.e. 1 day)
     # ttl: 86400
