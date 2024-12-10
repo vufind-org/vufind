@@ -143,12 +143,8 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
      */
     protected function buildHttpService($returnData): HttpService
     {
-        $httpService = $this->getMockBuilder(HttpService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $response = $this->getMockBuilder(Response::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $httpService = $this->createMock(HttpService::class);
+        $response = $this->createMock(Response::class);
         $response->method('isOk')->willReturn(true);
         $response->method('getBody')->willReturn(json_encode($returnData));
         $httpService->method('post')->willReturn($response);
