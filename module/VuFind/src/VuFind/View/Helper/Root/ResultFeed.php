@@ -290,7 +290,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      *
      * @return ?string
      */
-    protected function getLinkFromRecordDriverMethod(RecordDriver $record): ?string
+    protected function getLinkFromRecordDriver(RecordDriver $record): ?string
     {
         // First check for a getUrl() method, which is useful for web results, among other things.
         $url = $record->tryMethod('getUrl');
@@ -317,13 +317,13 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      * @throws \Exception
      * @return string
      */
-    protected function getLinkFromRecord(RecordDriver $record): string
+    protected function getLinkForRecord(RecordDriver $record): string
     {
         // Try multiple strategies to obtain a link; we'll change the order of
         // strategies based on the configuration.
         $methodsToTry = ($this->options['prioritizeRecordDriverLinks'] ?? false)
-            ? ['getLinkFromRecordDriverMethod', 'getLinkFromRecordLinker']
-            : ['getLinkFromRecordLinker', 'getLinkFromRecordDriverMethod'];
+            ? ['getLinkFromRecordDriver', 'getLinkFromRecordLinker']
+            : ['getLinkFromRecordLinker', 'getLinkFromRecordDriver'];
         foreach ($methodsToTry as $linkMethod) {
             $url = $this->$linkMethod($record);
             // If we found a link, return it now!
@@ -353,7 +353,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $entry->setTitle(
             empty($title) ? $this->translate('Title not available') : $title
         );
-        $entry->setLink($this->getLinkFromRecord($record));
+        $entry->setLink($this->getLinkForRecord($record));
         $date = $this->getDateModified($record);
         if (!empty($date)) {
             $entry->setDateModified($date);
