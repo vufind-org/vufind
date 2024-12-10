@@ -151,7 +151,7 @@ class Importer
      */
     protected function throwMissingClassException(string $class): void
     {
-        $parts = explode('\\', $class);
+        $parts = explode('\\', ltrim($class, '\\'));
         $namespace = count($parts) > 1 ? array_shift($parts) : null;
         $localModules = ($localModulesEnv = getenv('VUFIND_LOCAL_MODULES'))
             ? array_map('trim', explode(',', $localModulesEnv)) : [];
