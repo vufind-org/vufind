@@ -29,10 +29,10 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Http\Request;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\SIP2;
+use VuFind\Config\Config;
 
 /**
  * SIP2 authentication test class.

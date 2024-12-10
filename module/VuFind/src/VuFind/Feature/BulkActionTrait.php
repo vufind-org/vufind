@@ -46,21 +46,21 @@ trait BulkActionTrait
     /**
      * Config
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $bulkActionConfig;
 
     /**
      * Export Config
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $bulkActionExportConfig;
 
     /**
      * Get Config.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getBulkActionConfig()
     {
@@ -73,7 +73,7 @@ trait BulkActionTrait
     /**
      * Get Export Config.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getBulkActionExportConfig()
     {

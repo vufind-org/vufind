@@ -124,6 +124,10 @@
 </div>
 <?php /* End Listing Options */ ?>
 
+<?php foreach($this->extraErrors ?? [] as $error): ?>
+  <div class="alert alert-danger"><?=$this->transEsc($error)?></div>
+<?php endforeach; ?>
+
 <?php if ($recordTotal < 1): ?>
   <p class="alert alert-danger">
     <?=$this->slot('empty-message')->get($this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])); ?>

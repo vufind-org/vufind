@@ -210,7 +210,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // back to count one last time...
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
-        $expectedLinkText = 'Weird IDs';
+        $expectedLinkText = 'Weird IDs 9 results 9';
         $weirdIDs = $this->findAndAssertLink(
             $page->findById('modal'),
             $expectedLinkText
@@ -1235,10 +1235,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public static function checkboxFacetsProvider(): array
     {
         return [
-            [false, false],
-            [false, true],
-            [true, false],
-            [true, true],
+            'non-deferred, no counts' => [false, false],
+            'non-deferred, with counts' => [false, true],
+            'deferred, no counts' => [true, false],
+            'deferred, with counts' => [true, true],
         ];
     }
 
@@ -1280,7 +1280,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $filter = $this->findCss($page, '.checkbox-filter');
         $this->assertNotNull($filter);
         $this->assertEquals('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
-        $this->assertEquals($counts ? '9' : '', $this->findCssAndGetText($filter->getParent(), '.avail-count'));
+        $this->assertEqualsWithTimeout(
+            $counts ? '9' : '',
+            function () use ($filter) {
+                return $this->findCssAndGetText($filter->getParent(), '.avail-count');
+            }
+        );
 
         // illustrated:Illustrated is only a checkbox facet:
         $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);

@@ -31,7 +31,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
@@ -74,10 +74,10 @@ abstract class AbstractBase implements HandlerInterface
     /**
      * Constructor
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param ?Config $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(?Config $config = null)
     {
         if (isset($config->lifetime)) {
             $this->lifetime = $config->lifetime;

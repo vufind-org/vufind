@@ -56,7 +56,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     /**
      * VuFind OpenURL configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -91,10 +91,10 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Context                $context       Context helper
-     * @param array                  $openUrlRules  VuFind OpenURL rules
-     * @param PluginManager          $pluginManager Resolver plugin manager
-     * @param \Laminas\Config\Config $config        VuFind OpenURL config
+     * @param Context               $context       Context helper
+     * @param array                 $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager         $pluginManager Resolver plugin manager
+     * @param \VuFind\Config\Config $config        VuFind OpenURL config
      */
     public function __construct(
         Context $context,

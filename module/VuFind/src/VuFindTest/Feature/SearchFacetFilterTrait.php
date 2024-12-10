@@ -586,7 +586,7 @@ trait SearchFacetFilterTrait
     protected function processFacetLevel(Element $node): array
     {
         $result = [];
-        foreach ($node->findAll('css', ':scope > ul > li a.text') as $item) {
+        foreach ($node->findAll('css', ':scope > ul > li a .text') as $item) {
             $result[] = $item->getText();
             $result = [...$result, ...$this->processFacetLevel($item)];
         }

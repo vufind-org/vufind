@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Factory;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Search\Base\HideFacetValueListener;
 use VuFindSearch\Backend\BackendInterface;
 

@@ -13,4 +13,5 @@
         $this->slot('search-heading')->append(' (' . implode(', ', $headingParts) . ')');
     }
     $this->slot('empty-message')->set($this->transEsc('course_reserves_empty_list'));
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('search-reserves') . '">' . $this->transEsc('Search For Items on Reserve') . '</a>';
     echo $this->render('search/results.phtml');

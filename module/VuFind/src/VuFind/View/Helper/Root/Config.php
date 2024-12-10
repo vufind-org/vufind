@@ -78,7 +78,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $config Name of configuration
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function get($config)
     {

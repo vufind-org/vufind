@@ -29,7 +29,7 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function in_array;
 

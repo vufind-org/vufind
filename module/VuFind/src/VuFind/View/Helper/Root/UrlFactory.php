@@ -64,7 +64,7 @@ class UrlFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $request = $container->get('Request');
         if (!($request instanceof \Laminas\Http\PhpEnvironment\Request)) {

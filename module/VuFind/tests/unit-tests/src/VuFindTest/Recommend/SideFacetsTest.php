@@ -364,18 +364,18 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager $configLoader config loader
-     * @param Results                      $results      results object
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
+     * @param ?\VuFind\Config\PluginManager $configLoader config loader
+     * @param ?Results                      $results      results object
+     * @param string                        $settings     settings
+     * @param ?\Laminas\Stdlib\Parameters   $request      request
      *
      * @return SideFacets
      */
     protected function getSideFacets(
-        \VuFind\Config\PluginManager $configLoader = null,
-        Results $results = null,
+        ?\VuFind\Config\PluginManager $configLoader = null,
+        ?Results $results = null,
         string $settings = '',
-        \Laminas\Stdlib\Parameters $request = null
+        ?\Laminas\Stdlib\Parameters $request = null
     ): SideFacets {
         if (null === $results) {
             $results = $this->getMockResults();
@@ -393,11 +393,11 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock results object.
      *
-     * @param Params $params Params to include in container.
+     * @param ?Params $params Params to include in container.
      *
      * @return Results
      */
-    protected function getMockResults(Params $params = null): Results
+    protected function getMockResults(?Params $params = null): Results
     {
         if (null === $params) {
             $params = $this->getMockParams();
@@ -418,11 +418,11 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock params object.
      *
-     * @param \VuFindSearch\Query\Query $query Query to include in container.
+     * @param ?\VuFindSearch\Query\Query $query Query to include in container.
      *
      * @return Params
      */
-    protected function getMockParams(\VuFindSearch\Query\Query $query = null): Params
+    protected function getMockParams(?\VuFindSearch\Query\Query $query = null): Params
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
