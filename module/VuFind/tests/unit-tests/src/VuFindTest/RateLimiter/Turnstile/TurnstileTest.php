@@ -35,9 +35,6 @@ use Laminas\Router\Http\RouteMatch;
 use VuFind\RateLimiter\Turnstile\Turnstile;
 use VuFindHttp\HttpService;
 
-// use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-// use VuFind\Recommend\Databases;
-
 /**
  * Turnstile Test Class
  *
