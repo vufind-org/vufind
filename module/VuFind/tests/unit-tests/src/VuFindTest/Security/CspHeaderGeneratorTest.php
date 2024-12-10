@@ -186,7 +186,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
      */
     protected function buildGenerator($configData)
     {
-        $config = new \Laminas\Config\Config($configData);
+        $config = new \VuFind\Config\Config($configData);
         $generator = new CspHeaderGenerator($config, $this->nonceGenerator);
         return $generator;
     }

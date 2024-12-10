@@ -155,12 +155,12 @@ class SideFacets extends AbstractFacets
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
+     * @param ?HierarchicalFacetHelper     $facetHelper  Helper for handling
      * hierarchical facets
      */
     public function __construct(
         \VuFind\Config\PluginManager $configLoader,
-        HierarchicalFacetHelper $facetHelper = null
+        ?HierarchicalFacetHelper $facetHelper = null
     ) {
         parent::__construct($configLoader);
         $this->hierarchicalFacetHelper = $facetHelper;

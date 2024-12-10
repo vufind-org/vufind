@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use VuFind\Auth\CAS;
+use VuFind\Config\Config;
 
 /**
  * CAS authentication test class.

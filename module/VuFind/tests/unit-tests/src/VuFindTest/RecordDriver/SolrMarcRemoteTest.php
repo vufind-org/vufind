@@ -30,8 +30,8 @@
 namespace VuFindTest\RecordDriver;
 
 use Exception;
-use Laminas\Config\Config;
 use Laminas\Http\Response;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\SolrMarcRemote;
 use VuFindHttp\HttpServiceInterface;
 

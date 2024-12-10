@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -37,11 +39,14 @@ use Behat\Mink\Element\Element;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
+
     /**
      * Get config.ini override settings for testing feedback.
      *
@@ -52,10 +57,20 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         return [
             'Mail' => [
                 'testOnly' => '1',
+                'message_log' => $this->getEmailLogPath(),
+                'message_log_format' => $this->getEmailLogFormat(),
             ],
             'Feedback' => [
                 'tab_enabled' => '1',
                 'recipient_email' => 'fake@fake.com',
+                'blocked_senders' => [
+                    '@blockeddomain.com',
+                    '/^bar@bad/',
+                ],
+                'ignored_senders' => [
+                    '@ignoreddomain.com',
+                    '/^bar@spam/',
+                ],
             ],
         ];
     }
@@ -103,18 +118,58 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testFeedbackForm
+     *
+     * @return array
+     */
+    public static function feedbackFormProvider(): array
+    {
+        return [
+            ['test@test.com', true, true],
+            ['foobar@spam.com', true, true],
+            ['test@blockeddomain.com', false, false],
+            ['bar@bad.com', false, false],
+            ['test@ignoreddomain.com', true, false],
+            ['bar@spam.com', true, false],
+        ];
+    }
+
+    /**
      * Test that feedback form can be successfully populated and submitted.
+     *
+     * @param string $sender        Sender email address
+     * @param bool   $expectSuccess Expect successful send?
+     * @param bool   $expectEmail   Expect email to be received?
+     *
+     * @dataProvider feedbackFormProvider
      *
      * @return void
      */
-    public function testFeedbackForm(): void
+    public function testFeedbackForm(string $sender, bool $expectSuccess, bool $expectEmail): void
     {
+        $this->resetEmailLog();
         $page = $this->setupPage();
-        $this->fillInAndSubmitFeedbackForm($page);
-        $this->assertEquals(
-            'Thank you for your feedback.',
-            $this->findCssAndGetText($page, '#modal .alert-success')
-        );
+        $this->fillInAndSubmitFeedbackForm($page, $sender);
+        if ($expectSuccess) {
+            $this->assertEquals(
+                'Thank you for your feedback.',
+                $this->findCssAndGetText($page, '#modal .alert-success')
+            );
+        } else {
+            $this->assertEquals(
+                'Could not process your feedback. Please try again later.',
+                $this->findCssAndGetText($page, '#modal .alert-danger')
+            );
+        }
+        if ($expectEmail) {
+            $this->assertStringContainsString(
+                'Comments',
+                $this->getLoggedEmail()->getBody()->getBody()
+            );
+        } else {
+            $this->expectExceptionMessage('No serialized email message data found');
+            $this->getLoggedEmail();
+        }
     }
 
     /**

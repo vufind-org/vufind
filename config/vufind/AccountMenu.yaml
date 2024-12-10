@@ -18,7 +18,7 @@
 #   - icon: icon used for the item, has to be defined in theme config
 #   - iconMethod: method to dynamically create the icon name; ignored when
 #     icon is explicitly set.
-#   - checkMethod: the name of an AccountMenu view helper method to perform
+#   - checkMethod: the name of an AccountMenu navigation plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
 #   - status: whether to show status label, defaults to false
 

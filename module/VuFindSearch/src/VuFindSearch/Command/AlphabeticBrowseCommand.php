@@ -96,7 +96,7 @@ class AlphabeticBrowseCommand extends CallMethodCommand
         string $from,
         int $page,
         int $limit = 20,
-        ParamBag $params = null,
+        ?ParamBag $params = null,
         int $offsetDelta = 0
     ) {
         $this->source = $source;

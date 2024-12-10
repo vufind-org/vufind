@@ -30,9 +30,9 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
+use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 

@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -94,7 +94,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      * Constructor
      *
      * @param TagsService $tagsService Tags service
-     * @param Config      $config      Configuration from config.ini
+     * @param ?Config     $config      Configuration from config.ini
      */
     public function __construct(protected TagsService $tagsService, protected ?Config $config = null)
     {

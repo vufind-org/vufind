@@ -313,8 +313,10 @@
     margin-right: -0.6em;
     z-index: 2;
 
+    /* Display only half of the star and ensure that the remainder cannot be hovered over */
     .rating__icon--star {
       width: 0.5rem;
+      overflow: hidden;
     }
   }
 
