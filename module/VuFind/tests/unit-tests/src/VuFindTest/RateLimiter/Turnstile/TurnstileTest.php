@@ -96,7 +96,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
                 $this->assertEquals($result, $validationResult);
             }
 
-            $priorResult = $turnstile->checkPriorTurnstileResult($policyId, $clientIp);
+            $priorResult = $turnstile->checkPriorResult($policyId, $clientIp);
             $this->assertEquals($result, $priorResult);
         }
     }

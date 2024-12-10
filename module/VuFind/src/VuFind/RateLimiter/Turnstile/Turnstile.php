@@ -126,7 +126,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
     public function validateAndCacheResult($token, $policyId, $clientIp)
     {
         $success = $this->validateToken($token);
-        $this->setTurnstileResult($policyId, $clientIp, $success);
+        $this->setResult($policyId, $clientIp, $success);
         return $success;
     }
 
@@ -139,12 +139,12 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      * @return ?bool Null if there is no prior result, or if Turnstile is disabled;
      *               otherwise a boolean representing the Turnstile result.
      */
-    public function checkPriorTurnstileResult($policyId, $clientIp)
+    public function checkPriorResult($policyId, $clientIp)
     {
         if (!($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false)) {
             return null;
         }
-        $cacheKey = $this->getTurnstileCacheKey($policyId, $clientIp);
+        $cacheKey = $this->getCacheKey($policyId, $clientIp);
         return $this->turnstileCache->getItem($cacheKey);
     }
 
@@ -157,9 +157,9 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function setTurnstileResult($policyId, $clientIp, $success)
+    protected function setResult($policyId, $clientIp, $success)
     {
-        $cacheKey = $this->getTurnstileCacheKey($policyId, $clientIp);
+        $cacheKey = $this->getCacheKey($policyId, $clientIp);
         $this->turnstileCache->setItem($cacheKey, $success);
     }
 
@@ -171,7 +171,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return string The cache key
      */
-    protected function getTurnstileCacheKey($policyId, $clientIp)
+    protected function getCacheKey($policyId, $clientIp)
     {
         $key = $policyId . '--' . $clientIp;
         $key = str_replace('.', '-', $key);
