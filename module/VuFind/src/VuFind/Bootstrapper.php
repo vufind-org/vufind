@@ -417,8 +417,11 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function presentTurnstileChallenge($rateLimiterManager, $event, $response)
-    {
+    protected function presentTurnstileChallenge(
+        RateLimiterManager $rateLimiterManager,
+        MvcEvent $event,
+        \Laminas\Stdlib\ResponseInterface $response
+    ): void {
         // Although the challenge could be displayed at the current URL, redirecting
         // to a simple URL (combined with a policy that blocks the referrer URL) may
         // hide search or result data from being accessible to Turnstile.
