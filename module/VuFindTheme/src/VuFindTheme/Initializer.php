@@ -236,7 +236,7 @@ class Initializer
      *
      * @return string
      */
-    protected function getSelectedUI(array $themes, ?Request $request)
+    protected function getSelectedUI(array $themes, ?Request $request): string
     {
         // The admin theme should always be picked if
         // - the Admin module is enabled AND
