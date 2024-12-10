@@ -428,7 +428,9 @@ class Manager implements LoggerAwareInterface
     {
         $adapter = $storageConfig['adapter'] ?? 'memcached';
 
-        // Use cache manager for "VuFind" cache (only for testing purposes):
+        // The 'vufind' adapter uses a standard file-based cache to simulate an in-memory cache.
+        // This is intended for TESTING PURPOSES ONLY, since it allows us to test related functionality
+        // without setting up a real in-memory data store. It should not be used for any other purpose.
         if ('vufind' === strtolower($adapter)) {
             $this->logWarning('Using standard cache instead of in-memory cache -- for testing only!');
             $laminasCache = $this->getCache('object', $storageConfig['options']['namespace']);
