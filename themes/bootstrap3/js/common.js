@@ -1,5 +1,5 @@
 /*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, displayILSPasswordRecoveryLink, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
