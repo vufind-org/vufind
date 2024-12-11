@@ -200,8 +200,8 @@ class Manager implements
      */
     public function supportsRecovery($authMethod = null)
     {
-            return ($this->config->Authentication->recover_password ?? false)
-                && $this->getAuth($authMethod)->supportsPasswordRecovery();
+        return ($this->config->Authentication->recover_password ?? false)
+            && $this->getAuth($authMethod)->supportsPasswordRecovery();
     }
 
     /**

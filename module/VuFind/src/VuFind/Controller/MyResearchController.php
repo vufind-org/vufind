@@ -1794,7 +1794,7 @@ class MyResearchController extends AbstractBase
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
                                 . $user->getVerifyHash() . '&auth_method=' . $method
-                                . $target
+                                . $target,
                         ]
                     );
                     $this->getService(Mailer::class)->send(

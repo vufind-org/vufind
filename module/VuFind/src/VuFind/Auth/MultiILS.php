@@ -125,7 +125,6 @@ class MultiILS extends ILS
         parent::setCatalog($connection);
     }
 
-
     /**
      * Test to see if the target ILS supports password Recovery
      *
