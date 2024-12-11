@@ -127,6 +127,12 @@ class MultiILS extends ILS
 
 
     /**
+     * Test to see if the target ILS supports password Recovery
+     *
+     * @param string $target The ILS we are checking
+     *
+     * @return bool
+     *
      * @throws \Exception
      */
     public function supportsPasswordRecovery($target = null)
@@ -134,9 +140,9 @@ class MultiILS extends ILS
         $catalog = $this->getCatalog();
         $driver = $catalog->getDriver();
         $targetDriver = $driver;
-        if($target != null)
+        if ($target != null) {
             $targetDriver = $driver->getDriverFromTarget($target);
-        return $targetDriver->supportsMethod('recoverPassword',[]) ?? false;
-
+        }
+        return $targetDriver->supportsMethod('recoverPassword', []) ?? false;
     }
 }

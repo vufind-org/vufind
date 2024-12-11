@@ -306,12 +306,16 @@ class MultiBackend extends AbstractMultiDriver
         return $this->config['Login']['drivers'] ?? [];
     }
 
+
     /**
-     * Get driver from target
+     * Retrieve the name of the ILS when provided the alias
      *
+     * @param $target string the alias of the driver
      *
+     * @return mixed
      */
-    public function getDriverFromTarget($target){
+    public function getDriverFromTarget($target)
+    {
         return $this->getDriver($target);
     }
 
