@@ -30,7 +30,7 @@
 <?php
     $recovery = [];
     foreach ($account->getLoginTargets() as $target) {
-        $recovery[$target] = $account->multiSupportsPasswordRecovery($target) ? $this->url('myresearch-recover') . "?auth_method=" . $account->getAuthMethod() . "&target=" . $target : false;
+        $recovery[$target] = $account->multiSupportsPasswordRecovery($target) ? $this->url('myresearch-recover') . '?auth_method=' . $account->getAuthMethod() . '&target=' . $target : false;
     }
 
     $recovery = json_encode($recovery);
