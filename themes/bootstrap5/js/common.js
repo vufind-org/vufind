@@ -791,11 +791,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).trigger("change");
 }
 
-/**
- * Initialize ILS password recovery link
- * @param {object} links Object containing identifier and url for link href
- * @param {string} idPrefix Prepend selector with idPrefix
- */
 function displayILSPasswordRecoveryLink(links, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
   $(searchPrefix + 'target').on('change', function onChangeLoginTargetLink() {
