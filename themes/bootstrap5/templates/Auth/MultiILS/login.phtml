@@ -29,7 +29,7 @@
 
 <?php
     $recovery = [];
-    foreach ($account->getLoginTargets() as $target){
+    foreach ($account->getLoginTargets() as $target) {
         $recovery[$target] = $account->multiSupportsPasswordRecovery($target) ? $this->url('myresearch-recover') . "?auth_method=" . $account->getAuthMethod() . "&target=" . $target : false;
     }
 
