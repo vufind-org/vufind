@@ -172,7 +172,7 @@ class Initializer
         $themes = $this->getThemeAliasMap();
         $selectedUI = $this->getSelectedUI(
             $themes,
-            isset($this->event) ? $this->event->getRequest() : null
+            $this->event?->getRequest()
         );
         $currentTheme = $themes[$selectedUI];
 
