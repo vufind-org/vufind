@@ -29,9 +29,9 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
 use LmcRbacMvc\Identity\IdentityInterface;
+use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -200,8 +200,21 @@ class Manager implements
      */
     public function supportsRecovery($authMethod = null)
     {
+            return ($this->config->Authentication->recover_password ?? false)
+                && $this->getAuth($authMethod)->supportsPasswordRecovery();
+    }
+
+    /**
+     * Multi-ILS Only, Does the target Auth Method support password Recovery?
+     *
+     * @param $target string the target to check against
+     *
+     * @return bool
+     */
+    public function multiSupportsPasswordRecovery($target)
+    {
         return ($this->config->Authentication->recover_password ?? false)
-            && $this->getAuth($authMethod)->supportsPasswordRecovery();
+            && $this->getAuth()->supportsPasswordRecovery($target);
     }
 
     /**

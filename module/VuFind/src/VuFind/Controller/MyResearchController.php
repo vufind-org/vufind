@@ -42,6 +42,7 @@ use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -184,35 +185,6 @@ class MyResearchController extends AbstractBase
             $msg = 'authentication_error_loggedout';
         }
         $this->flashMessenger()->addMessage($msg, 'error');
-    }
-
-    /**
-     * Store a referer (if appropriate) to keep post-login redirect pointing
-     * to an appropriate location. This is used when the user clicks the
-     * log in link from an arbitrary page or when a password is mistyped;
-     * separate logic is used for storing followup information when VuFind
-     * forces the user to log in from another context.
-     *
-     * @param bool  $allowCurrentUrl Whether the current URL is valid for followup
-     * @param array $extras          Extra data for the followup
-     *
-     * @return void
-     */
-    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true, array $extras = [])
-    {
-        // lbreferer is the stored current url of the lightbox
-        // which overrides the url from the server request when present
-        $refer = $this->getRequest()->getQuery()->get(
-            'lbreferer',
-            $this->getRequest()->getServer()->get('HTTP_REFERER', null)
-        );
-        $normReferer = $this->normalizeUrlForComparison($refer);
-        $myUserReset = $this->getServerUrl('myresearch-verify');
-        $murNorm = $this->normalizeUrlForComparison($myUserReset);
-        if (str_starts_with($normReferer, $murNorm)) {
-            return;
-        }
-        parent::setFollowupUrlToReferer($allowCurrentUrl, $extras);
     }
 
     /**
@@ -966,7 +938,7 @@ class MyResearchController extends AbstractBase
      * @param UserEntityInterface               $user   Logged-in user
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver for favorite
      * @param int                               $listID List being edited (null
-     *                                                  if editing all favorites)
+     * if editing all favorites)
      *
      * @return object
      */
@@ -1209,9 +1181,9 @@ class MyResearchController extends AbstractBase
             // If the user is in the process of saving a record, send them back
             // to the save screen; otherwise, send them back to the list they
             // just edited.
-            $recordId = $this->params()->fromQuery('recordId');
-            $recordSource
-                = $this->params()->fromQuery('recordSource', DEFAULT_SEARCH_BACKEND);
+            $recordId = $this->params()->fromQuery('recordId') ?? $this->params()->fromPost('recordId');
+            $recordSource = $this->params()->fromQuery('recordSource')
+                ?? $this->params()->fromPost('recordSource', DEFAULT_SEARCH_BACKEND);
             if (!empty($recordId)) {
                 $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId,
@@ -1225,19 +1197,12 @@ class MyResearchController extends AbstractBase
 
             // Similarly, if the user is in the process of bulk-saving records,
             // send them back to the appropriate place in the cart.
-            $bulkIds = $this->params()->fromPost(
-                'ids',
-                $this->params()->fromQuery('ids', [])
-            );
+            $bulkIds = $this->params()->fromPost('ids') ?? $this->params()->fromQuery('ids', []);
             if (!empty($bulkIds)) {
-                $params = [];
-                foreach ($bulkIds as $id) {
-                    $params[] = urlencode('ids[]') . '=' . urlencode($id);
-                }
-                $saveUrl = $this->url()->fromRoute('cart-save');
-                $saveUrl .= (!str_contains($saveUrl, '?')) ? '?' : '&';
-                return $this->redirect()
-                    ->toUrl($saveUrl . implode('&', $params));
+                // Add final id of the list to request post so cartcontroller saveaction
+                // can properly load the list
+                $this->getRequest()->getPost()->set('list', $finalId);
+                return $this->forwardTo('Cart', 'Save');
             }
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
@@ -1269,7 +1234,7 @@ class MyResearchController extends AbstractBase
 
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
-        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        $id = $this->params()->fromRoute('id') ?? $this->params()->fromQuery('id') ?? $this->params()->fromPost('id');
         $newList = ($id == 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in
         // a fresh object; if it's an existing list, we can just fetch from the database.
@@ -1284,10 +1249,8 @@ class MyResearchController extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted()) {
-            if ($redirect = $this->processEditList($user, $list)) {
-                return $redirect;
-            }
+        if ($this->formWasSubmitted() && $redirect = $this->processEditList($user, $list)) {
+            return $redirect;
         }
 
         $listTags = null;
@@ -1302,6 +1265,10 @@ class MyResearchController extends AbstractBase
                 'list' => $list,
                 'newList' => $newList,
                 'listTags' => $listTags,
+                'recordIds' => $this->params()->fromQuery('ids') ?? $this->params()->fromPost('ids', []),
+                'recordId' => $this->params()->fromQuery('recordId') ?? $this->params()->fromPost('recordId', false),
+                'recordSource' => $this->params()->fromQuery('recordSource')
+                    ?? $this->params()->fromPost('recordSource', DEFAULT_SEARCH_BACKEND),
             ]
         );
     }
@@ -1317,8 +1284,8 @@ class MyResearchController extends AbstractBase
         if ($this->params()->fromQuery('reverify')) {
             $change = false;
             // Case 1: new user:
-            $user = $this->getDbService(UserServiceInterface::class)
-                ->getUserByUsername($this->getUserVerificationContainer()->user);
+            $username = $this->getUserVerificationContainer()->user;
+            $user = $username ? $this->getDbService(UserServiceInterface::class)->getUserByUsername($username) : null;
             // Case 2: pending email change:
             if (!$user) {
                 $user = $this->getUser();
@@ -1816,6 +1783,9 @@ class MyResearchController extends AbstractBase
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     $method = $this->getAuthManager()->getAuthMethod();
+                    // If target exists create query string to include it as part of reset url
+                    $target = $this->getRequest()->getQuery('target') ? '&target='
+                        . $this->getRequest()->getQuery('target') : null;
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/recover-password.phtml',
@@ -1823,12 +1793,13 @@ class MyResearchController extends AbstractBase
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
-                                . $user->getVerifyHash() . '&auth_method=' . $method,
+                                . $user->getVerifyHash() . '&auth_method=' . $method
+                                . $target
                         ]
                     );
                     $this->getService(Mailer::class)->send(
                         $user->getEmail(),
-                        $config->Site->email,
+                        $this->getEmailSenderAddress($config),
                         $this->translate('recovery_email_subject'),
                         $message
                     );
@@ -1889,7 +1860,7 @@ class MyResearchController extends AbstractBase
         // address; if they have a pending address change, use that.
         $this->getService(Mailer::class)->send(
             $user->getEmail(),
-            $config->Site->email,
+            $this->getEmailSenderAddress($config),
             $this->translate('change_notification_email_subject'),
             $message
         );
@@ -1900,7 +1871,7 @@ class MyResearchController extends AbstractBase
      *
      * @param ?UserEntityInterface $user   User object we're recovering
      * @param bool                 $change Is the user changing their email (true)
-     *                                     or setting up a new account (false).
+     * or setting up a new account (false).
      *
      * @return void (sends email or adds error message)
      */
@@ -1939,7 +1910,7 @@ class MyResearchController extends AbstractBase
                     $to = ($pending = $user->getPendingEmail()) ? $pending : $user->getEmail();
                     $this->getService(Mailer::class)->send(
                         $to,
-                        $config->Site->email,
+                        $this->getEmailSenderAddress($config),
                         $this->translate('verification_email_subject'),
                         $message
                     );
@@ -1988,6 +1959,7 @@ class MyResearchController extends AbstractBase
                     $view->auth_method = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
                     $view->username = $user->getUsername();
+                    $view->target = $this->getRequest()->getQuery('target') ?? null;
                     $view->useCaptcha = $this->captcha()->active('changePassword');
                     $view->passwordPolicy = $this->getAuthManager()
                         ->getPasswordPolicy();
@@ -2128,7 +2100,7 @@ class MyResearchController extends AbstractBase
         if ($followUp = $this->followup()->retrieve('url')) {
             //This exists because the followupURL gets set to Verify which returns
             //an error message due to trying to check the hash a second time
-            $followUpUrl = strstr($followUp, 'Verify', true) . 'Home';
+            $followUpUrl = str_contains($followUp, 'Verify') ? $this->url()->fromRoute('home') : $followUp;
             $this->followup()->clear('url');
             $this->followup()->store([], $followUpUrl);
         }
@@ -2293,9 +2265,9 @@ class MyResearchController extends AbstractBase
                 $this->params()->fromPost('auth_method')
             )
         );
+
         if (!empty($method)) {
-            $this->getAuthManager()->setAuthMethod($method);
-        }
+        }    $this->getAuthManager()->setAuthMethod($method);
     }
 
     /**

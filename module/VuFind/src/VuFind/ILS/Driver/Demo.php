@@ -202,13 +202,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param callable               $sessionFactory Factory function returning
      * SessionContainer object for fake data to simulate consistency and reduce Solr
      * hits
-     * @param HttpRequest            $request        HTTP request object (optional)
+     * @param ?HttpRequest           $request        HTTP request object (optional)
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
         SearchService $ss,
         $sessionFactory,
-        HttpRequest $request = null
+        ?HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
@@ -252,6 +252,23 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $this->defaultPickUpLocation = false;
         }
         $this->checkIntermittentFailure();
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver. Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        return is_callable([$this, $method]);
     }
 
     /**
@@ -467,11 +484,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     set id
      * @param string $number set number for multiple items
-     * @param array  $patron Patron data
+     * @param ?array $patron Patron data
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number, array $patron = null)
+    protected function getRandomHolding($id, $number, ?array $patron = null)
     {
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
@@ -723,14 +740,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * record.
      *
      * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param ?array $patron Patron data
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getSimulatedStatus($id, array $patron = null)
+    protected function getSimulatedStatus($id, ?array $patron = null)
     {
         $id = (string)$id;
 
@@ -872,7 +889,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $this->checkIntermittentFailure();
 

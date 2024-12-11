@@ -1683,7 +1683,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Recover user's password with a token from getPasswordRecoveryToken
+     * Recover user's password
      *
      * @param array $params Required params such as cat_username, token and new
      * password

@@ -34,6 +34,7 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ILS\Connection;
 use VuFind\ILS\Driver\MultiBackend;
 
 use function in_array;
@@ -122,5 +123,20 @@ class MultiILS extends ILS
             );
         }
         parent::setCatalog($connection);
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function supportsPasswordRecovery($target = null)
+    {
+        $catalog = $this->getCatalog();
+        $driver = $catalog->getDriver();
+        $targetDriver = $driver;
+        if($target != null)
+            $targetDriver = $driver->getDriverFromTarget($target);
+        return $targetDriver->supportsMethod('recoverPassword',[]) ?? false;
+
     }
 }

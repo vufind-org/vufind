@@ -29,9 +29,8 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
+use Closure;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
@@ -52,13 +51,6 @@ use VuFind\ILS\Connection as ILSConnection;
 class ILSAuthenticator implements DbServiceAwareInterface
 {
     use DbServiceAwareTrait;
-
-    /**
-     * Callback for retrieving the authentication manager
-     *
-     * @var callable
-     */
-    protected $authManagerCallback;
 
     /**
      * Authentication manager
@@ -91,18 +83,19 @@ class ILSAuthenticator implements DbServiceAwareInterface
     /**
      * Constructor
      *
-     * @param callable            $authCB             Auth manager callback
-     * @param ILSConnection       $catalog            ILS connection
-     * @param ?EmailAuthenticator $emailAuthenticator Email authenticator
-     * @param ?Config             $config             Configuration from config.ini
+     * @param Closure             $authManagerCallback Auth manager callback
+     * @param Closure             $cipherFactory       BlockCipher object factory (takes algorithm as argument)
+     * @param ILSConnection       $catalog             ILS connection
+     * @param ?EmailAuthenticator $emailAuthenticator  Email authenticator
+     * @param ?Config             $config              Configuration from config.ini
      */
     public function __construct(
-        callable $authCB,
+        protected Closure $authManagerCallback,
+        protected Closure $cipherFactory,
         protected ILSConnection $catalog,
         protected ?EmailAuthenticator $emailAuthenticator = null,
         protected ?Config $config = null
     ) {
-        $this->authManagerCallback = $authCB;
     }
 
     /**
@@ -163,7 +156,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
             return null;
         }
 
-        $configAuth = $this->config->Authentication ?? new \Laminas\Config\Config([]);
+        $configAuth = $this->config->Authentication ?? new Config([]);
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
@@ -181,7 +174,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
 
         // Check if OpenSSL error is caused by blowfish support
         try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+            $cipher = ($this->cipherFactory)($algo);
             if ($algo == 'blowfish') {
                 trigger_error(
                     'Deprecated encryption algorithm (blowfish) detected',
@@ -309,12 +302,12 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * fails, clear the user's stored credentials so they can enter new, corrected
      * ones.
      *
-     * @param $user_name - the username/barcode for ILS password reset
+     * @param $userName - the username/barcode for ILS password reset
      *
      * @return array|bool Returns associative array of patron data on success,
      * false on failure.
      */
-    public function storedCatalogLogin($user_name = null)
+    public function storedCatalogLogin($userName = null)
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
@@ -337,19 +330,19 @@ class ILSAuthenticator implements DbServiceAwareInterface
                 $this->ilsAccount[$username] = $patron;
                 return $patron;
             }
-        } elseif (!empty($user_name)) {
-            if (isset($this->ilsAccount[$user_name])) {
-                return $this->ilsAccount[$user_name];
+        } elseif (!empty($userName)) {
+            if (isset($this->ilsAccount[$userName])) {
+                return $this->ilsAccount[$userName];
             }
-            $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($user_name);
+            $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($userName);
             if (empty($user)) {
                 return false;
             }
-            $patron = $this->catalog->patronLogin($user_name, $this->getCatPasswordForUser($user));
+            $patron = $this->catalog->patronLogin($userName, $this->getCatPasswordForUser($user));
             if (empty($patron)) {
                 $user->setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null);
             } else {
-                $this->ilsAccount[$user_name] = $patron;
+                $this->ilsAccount[$userName] = $patron;
                 return $patron;
             }
         }
