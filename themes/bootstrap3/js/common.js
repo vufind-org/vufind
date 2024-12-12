@@ -16,23 +16,6 @@ var VuFind = (function VuFind() {
   var _iconsCache = {};
 
   /**
-   * HTMLElement creator function 
-   * @param {string} tagName Valid HTMLElement tag
-   * @param {object} attrs Object containing key values of attrs for new element
-   * @param {Array|NodeList} children Extra attributes to be added for element
-   *
-   * @returns {Element}
-   */
-  function el(tagName, attrs = {}, children = []) {
-    const newElement = document.createElement(tagName);
-    for (const [key, value] of Object.entries(attrs)) {
-      newElement.setAttribute(key, value);
-    }
-    newElement.append(...children);
-    return newElement;
-  }
-
-  /**
    * Convert given string into a node list.
    * @param {string} htmlString String to convert into nodes
    * @returns {NodeList} Given string as a node list
@@ -285,13 +268,15 @@ var VuFind = (function VuFind() {
    * @returns {HTMLSpanElement}
    */
   var spinnerElement = function spinnerElement(extraClass = '') {
-    const className = `loading-spinner ${extraClass}`.trim();
     const spinnerIcon = icon('spinner', {}, true);
-    return el('span', {class: className}, [spinnerIcon]);
+    const spinnerSpan = document.createElement('span');
+    spinnerSpan.className = `loading-spinner ${extraClass}`.trim();
+    spinnerSpan.append(spinnerIcon);
+    return spinnerSpan;
   };
 
   /**
-   * Return a spinner html element
+   * Return a spinner html element with loading text
    * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
    * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
    * @returns {HTMLSpanElement}
@@ -347,9 +332,10 @@ var VuFind = (function VuFind() {
    * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
-    const tmpDiv = el('div', {}, stringToNodes(html));
+    const tmpDiv = document.createElement('div');
+    tmpDiv.append(...stringToNodes(html));
     const scripts = [];
-    // Cloning scripts wont work as they pass internal executed state.
+    // Cloning scripts wont work as they pass internal executed state so save them for later
     tmpDiv.querySelectorAll('script').forEach(script => {
       const type = script.getAttribute('type');
       if (!type || 'text/javascript' === type) {
@@ -367,7 +353,7 @@ var VuFind = (function VuFind() {
     // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
     Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
 
-    // Append any scripts previously cached to ensure they are called properly
+    // Append any scripts:
     scripts.forEach(script => {
       const newScript = document.createElement('script');
       newScript.append(...script.childNodes);
@@ -564,8 +550,7 @@ var VuFind = (function VuFind() {
     setElementContents: setElementContents,
     getBootstrapMajorVersion: getBootstrapMajorVersion,
     disableTransitions: disableTransitions,
-    restoreTransitions: restoreTransitions,
-    el: el
+    restoreTransitions: restoreTransitions
   };
 })();
 
