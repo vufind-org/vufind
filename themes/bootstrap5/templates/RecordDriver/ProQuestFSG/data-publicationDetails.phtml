@@ -1,0 +1,14 @@
+<?php foreach ($data as $field): ?>
+  <div>
+    <span<?=$this->schemaOrg()->getAttributes(['property' => 'publisher', 'typeof' => 'Organization'])?> class="format">
+      <?php $pubName = $field->getName(); ?>
+      <?php if (!empty($pubName)): ?>
+        <span<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->escapeHtml($pubName)?></span>
+      <?php endif; ?>
+    </span>
+    <?php $pubDate = $field->getDate(); ?>
+    <?php if (!empty($pubDate)): ?>
+      <span<?=$this->schemaOrg()->getAttributes(['property' => 'datePublished'])?> class="format"><?=$this->escapeHtml($pubDate)?></span>
+    <?php endif; ?>
+  </div>
+<?php endforeach; ?>

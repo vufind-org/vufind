@@ -94,4 +94,26 @@ class ProQuestFSG extends DefaultRecord
     {
         return strip_tags($this->marcGetTitle());
     }
+
+    /**
+     * Get the title of the item that contains this record (i.e. MARC 773s of a
+     * journal).
+     *
+     * @return string
+     */
+    public function getContainerTitle()
+    {
+        return $this->getFirstFieldValue('773', ['t']);
+    }
+
+    /**
+     * Get a full, free-form reference to the context of the item that contains this
+     * record (i.e. volume, year, issue, pages).
+     *
+     * @return string
+     */
+    public function getContainerReference()
+    {
+        return $this->getFirstFieldValue('773', ['g']);
+    }
 }
