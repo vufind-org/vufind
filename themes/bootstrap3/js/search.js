@@ -288,17 +288,11 @@ VuFind.register('search', function search() {
     recordList.classList.add('loading');
     const history = recordList.dataset.history;
 
-    const loadingOverlay = VuFind.el(
-      'div',
-      {
-        class: 'loading-overlay',
-        'aria-live': 'polite',
-        'role': 'status'
-      },
-      [
-        VuFind.loadingElement(),
-      ]
-    );
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.classList = 'loading-overlay';
+    loadingOverlay.setAttribute('aria-live', 'polite');
+    loadingOverlay.setAttribute('role', 'status');
+    loadingOverlay.append(VuFind.loadingElement());
     recordList.prepend(loadingOverlay);
     scrollToResults();
     const searchStats = document.querySelector(searchStatsSelector);

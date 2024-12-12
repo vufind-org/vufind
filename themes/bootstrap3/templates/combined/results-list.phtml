@@ -54,8 +54,10 @@
           count = count.toLocaleString();
           const spanText = document.createTextNode();
           spanText.textContent = '(' + count + ')';
-          const recordTotalSpan = VuFind.el('span', {class: 'record-total'}, [spanText]);
-          link.append(recordTotalSpan);
+          const totalSpan = document.createElement('span');
+          totalSpan.className = 'record-total';
+          totalSpan.append(spanText);
+          link.append(totalSpan);
           link.style.display = "inline";
           combinedJumpLinks.style.visibility = "inherit";
         }
