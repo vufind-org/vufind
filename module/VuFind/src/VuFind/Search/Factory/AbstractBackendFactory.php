@@ -30,9 +30,9 @@
 namespace VuFind\Search\Factory;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
 use VuFind\Service\GetServiceTrait;
 
 /**
@@ -80,7 +80,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
     protected function createHttpClient(
         ?int $timeout = null,
         array $options = [],
-        string $url = null
+        ?string $url = null
     ): \Laminas\Http\Client {
         $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($url);
         if (null !== $timeout) {

@@ -69,14 +69,14 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param string $test   Name of test fixture to load
-     * @param array  $config Driver configuration (null to use default)
+     * @param ?string $test   Name of test fixture to load
+     * @param ?array  $config Driver configuration (null to use default)
      *
      * @return EDS
      */
-    protected function getDriver(string $test = null, array $config = null): EDS
+    protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
-        $record = new EDS(null, new \Laminas\Config\Config($config ?? $this->defaultDriverConfig));
+        $record = new EDS(null, new \VuFind\Config\Config($config ?? $this->defaultDriverConfig));
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);

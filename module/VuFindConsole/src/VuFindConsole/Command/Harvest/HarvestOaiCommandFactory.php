@@ -88,7 +88,7 @@ class HarvestOaiCommandFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName(
             $container->get(\VuFindHttp\HttpService::class)->createClient(),

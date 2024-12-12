@@ -153,31 +153,32 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field   Facet field name.
-     * @param string $value   Facet value.
-     * @param string $default Default field name (null for default behavior).
+     * @param string $field               Facet field name.
+     * @param string $value               Facet value.
+     * @param string $default             Default field name (null for default behavior).
+     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
-     * @return string         Human-readable description of field.
+     * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null)
+    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
     {
         // The default use of "Other" for undefined facets doesn't work well with
         // checkbox facets -- we'll use field names as the default within the Summon
         // search object.
-        return parent::getFacetLabel($field, $value, $default ?: $field);
+        return parent::getFacetLabel($field, $value, $default ?: $field, $allowCheckboxFacets);
     }
 
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $include        List of checkbox filters to return (null for all)
-     * @param bool  $includeDynamic Should we include dynamically-generated
+     * @param ?array $include        List of checkbox filters to return (null for all)
+     * @param bool   $includeDynamic Should we include dynamically-generated
      * checkboxes that are not part of the include list above?
      *
      * @return array
      */
     public function getCheckboxFacets(
-        array $include = null,
+        ?array $include = null,
         bool $includeDynamic = true
     ) {
         // Grab checkbox facet details using the standard method:

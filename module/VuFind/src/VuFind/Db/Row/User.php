@@ -91,7 +91,7 @@ class User extends RowGateway implements
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
@@ -115,13 +115,13 @@ class User extends RowGateway implements
     /**
      * Configuration setter
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      *
      * @return void
      *
      * @deprecated
      */
-    public function setConfig(\Laminas\Config\Config $config)
+    public function setConfig(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

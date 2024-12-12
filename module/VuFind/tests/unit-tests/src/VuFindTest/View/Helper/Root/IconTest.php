@@ -115,16 +115,16 @@ class IconTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an Icon helper
      *
-     * @param array            $config  Icon helper configuration array
-     * @param StorageInterface $cache   Cache storage adapter (null for BlackHole)
-     * @param array            $plugins Array of extra plugins for renderer
-     * @param bool             $rtl     Are we in right-to-left mode?
+     * @param ?array            $config  Icon helper configuration array
+     * @param ?StorageInterface $cache   Cache storage adapter (null for BlackHole)
+     * @param array             $plugins Array of extra plugins for renderer
+     * @param bool              $rtl     Are we in right-to-left mode?
      *
      * @return Icon
      */
     protected function getIconHelper(
-        array $config = null,
-        StorageInterface $cache = null,
+        ?array $config = null,
+        ?StorageInterface $cache = null,
         array $plugins = [],
         $rtl = false
     ): Icon {

@@ -883,14 +883,14 @@ class Folio extends AbstractAPI implements
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
-     * @param array  $patron  Patron login information from $this->patronLogin
+     * @param ?array $patron  Patron login information from $this->patronLogin
      * @param array  $options Extra options (not currently used)
      *
      * @return array An array of associative holding arrays
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($bibId, array $patron = null, array $options = [])
+    public function getHolding($bibId, ?array $patron = null, array $options = [])
     {
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
@@ -2155,22 +2155,24 @@ class Folio extends AbstractAPI implements
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        // Check outstanding loans
-        $currentLoan = $this->getCurrentLoan($data['item_id']);
-        if (!$currentLoan || $this->isHoldableByCurrentLoan($currentLoan)) {
-            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($id)->id, $patron['id']);
-            return [
-                // If we got this far, it's valid if we can't obtain allowed service point
-                // data, or if the allowed service point data is non-empty:
-                'valid' => null === $allowed || !empty($allowed),
-                'status' => 'request_place_text',
-            ];
-        } else {
+        // First check outstanding loans:
+        $currentLoan = empty($data['item_id'])
+            ? null
+            : $this->getCurrentLoan($data['item_id']);
+        if ($currentLoan && !$this->isHoldableByCurrentLoan($currentLoan)) {
             return [
                 'valid' => false,
                 'status' => 'hold_error_current_loan_patron_group',
             ];
         }
+
+        $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($id)->id, $patron['id']);
+        return [
+            // If we got this far, it's valid if we can't obtain allowed service point
+            // data, or if the allowed service point data is non-empty:
+            'valid' => null === $allowed || !empty($allowed),
+            'status' => 'request_place_text',
+        ];
     }
 
     /**

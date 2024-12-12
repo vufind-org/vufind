@@ -52,7 +52,7 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+        $config = $this->getMockBuilder(\VuFind\Config\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $obj = new SimilarItemsCarousel($search, $config);
@@ -70,7 +70,7 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+        $config = $this->getMockBuilder(\VuFind\Config\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $rci = $this->getMockBuilder(

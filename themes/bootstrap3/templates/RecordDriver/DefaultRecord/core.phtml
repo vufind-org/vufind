@@ -51,6 +51,7 @@
         <?=$this->transEsc('cached_record_warning')?>
       </div>
     <?php endif; ?>
+    <?=$this->record($this->driver)->getLabelList() ?>
 
     <?php foreach ($this->driver->tryMethod('getFullTitlesAltScript', [], []) as $altTitle): ?>
       <div class="title-alt">

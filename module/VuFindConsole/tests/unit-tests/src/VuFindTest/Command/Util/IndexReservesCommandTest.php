@@ -135,12 +135,12 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get command to test.
      *
-     * @param Writer     $solr Solr writer
-     * @param Connection $ils  ILS connection
+     * @param ?Writer     $solr Solr writer
+     * @param ?Connection $ils  ILS connection
      *
      * @return IndexReservesCommand
      */
-    protected function getCommand(Writer $solr = null, Connection $ils = null)
+    protected function getCommand(?Writer $solr = null, ?Connection $ils = null)
     {
         return new IndexReservesCommand(
             $solr ?? $this->getMockSolrWriter(),

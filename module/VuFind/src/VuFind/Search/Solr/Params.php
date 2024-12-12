@@ -146,12 +146,12 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
-     * @param HierarchicalFacetHelper      $facetHelper  Hierarchical facet helper
+     * @param ?HierarchicalFacetHelper     $facetHelper  Hierarchical facet helper
      */
     public function __construct(
         $options,
         \VuFind\Config\PluginManager $configLoader,
-        HierarchicalFacetHelper $facetHelper = null
+        ?HierarchicalFacetHelper $facetHelper = null
     ) {
         parent::__construct($options, $configLoader);
         $this->facetHelper = $facetHelper;
@@ -272,7 +272,7 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         // Add checkbox facets for checkbox counts:
-        if ($this->checkboxFacets && $this->getOptions()->displayCheckboxFacetCounts()) {
+        if ($this->checkboxFacets && $this->fetchCheckboxFacetCounts) {
             foreach (array_keys($this->checkboxFacets) as $facetField) {
                 // Ignore custom filters using a virtual field:
                 if ($facetField === $this->customFilterFieldName) {
@@ -726,14 +726,14 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $include        List of checkbox filters to return (null for all)
-     * @param bool  $includeDynamic Should we include dynamically-generated
+     * @param ?array $include        List of checkbox filters to return (null for all)
+     * @param bool   $includeDynamic Should we include dynamically-generated
      * checkboxes that are not part of the include list above?
      *
      * @return array
      */
     public function getCheckboxFacets(
-        array $include = null,
+        ?array $include = null,
         bool $includeDynamic = true
     ) {
         // Grab checkbox facet details using the standard method:

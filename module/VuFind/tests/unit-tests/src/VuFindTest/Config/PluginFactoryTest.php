@@ -72,7 +72,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $name Configuration to load
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getConfig($name)
     {
@@ -206,7 +206,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testReadOnlyConfig()
     {
-        $this->expectException(\Laminas\Config\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Config is immutable; cannot set z to bad');
 
         $config = $this->getConfig('unit-test-parent');
         $config->Section1->z = 'bad';

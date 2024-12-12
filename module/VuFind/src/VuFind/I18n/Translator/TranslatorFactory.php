@@ -73,7 +73,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ) {
         $this->setPathResolver($container->get(PathResolver::class));
         $translator = $callback();
