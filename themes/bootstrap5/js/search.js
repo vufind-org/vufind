@@ -266,8 +266,7 @@ VuFind.register('search', function search() {
     errorMsg.classList = 'alert alert-danger';
     errorMsg.textContent = error;
     const recordList = document.querySelector(jsRecordListSelector);
-    recordList.textContent = '';
-    recordList.append(errorMsg);
+    recordList.replaceChildren(errorMsg);
   }
 
   /**
@@ -289,11 +288,17 @@ VuFind.register('search', function search() {
     recordList.classList.add('loading');
     const history = recordList.dataset.history;
 
-    const loadingOverlay = document.createElement('div');
-    loadingOverlay.classList = 'loading-overlay';
-    loadingOverlay.setAttribute('aria-live', 'polite');
-    loadingOverlay.setAttribute('role', 'status');
-    VuFind.setInnerHtml(loadingOverlay, VuFind.loading());
+    const loadingOverlay = VuFind.el(
+      'div',
+      {
+        class: 'loading-overlay',
+        'aria-live': 'polite',
+        'role': 'status'
+      },
+      [
+        VuFind.loadingElement(),
+      ]
+    );
     recordList.prepend(loadingOverlay);
     scrollToResults();
     const searchStats = document.querySelector(searchStatsSelector);

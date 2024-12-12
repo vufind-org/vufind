@@ -47,18 +47,14 @@
   $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
   $countsJs = <<<JS
       function updateJumpLink_$classId() {
-        let count = $recordTotal;
-        count = count.toLocaleString();
-
-        const template = document.createElement('template');
-        const recordTotalSpan = document.createElement('span');
-        recordTotalSpan.classList.add('record-total');
-        recordTotalSpan.textContent = '(' + count + ')';
-        template.append(recordTotalSpan);
-
         const combinedJumpLinks = document.querySelector('.combined-jump-links');
         const link = combinedJumpLinks?.querySelector('.$classId');
         if (link) {
+          let count = $recordTotal;
+          count = count.toLocaleString();
+          const spanText = document.createTextNode();
+          spanText.textContent = '(' + count + ')';
+          const recordTotalSpan = VuFind.el('span', {class: 'record-total'}, [spanText]);
           link.append(recordTotalSpan);
           link.style.display = "inline";
           combinedJumpLinks.style.visibility = "inherit";
