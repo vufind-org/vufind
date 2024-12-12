@@ -116,4 +116,14 @@ class ProQuestFSG extends DefaultRecord
     {
         return $this->getFirstFieldValue('773', ['g']);
     }
+
+    /**
+     * Get the item's source.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->getFirstFieldValue('786', ['t']);
+    }
 }
