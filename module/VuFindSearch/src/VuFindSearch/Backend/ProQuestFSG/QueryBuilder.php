@@ -157,6 +157,6 @@ class QueryBuilder
             return $query->getString();
         }
         $lookfor = str_replace('"', '', $query->getString());
-        return "({$index} all \"{$lookfor}\")";
+        return "({$index} = \"{$lookfor}\")";
     }
 }
