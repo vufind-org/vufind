@@ -36,6 +36,7 @@ use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -444,17 +445,8 @@ class Server
         $headerOnly = false,
         $set = ''
     ) {
-        // Get the XML (and display an error if it is unsupported):
-        if ($format === false) {
-            $xml = '';      // no metadata if in header-only mode!
-        } elseif ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
-            $xml = $this->getVuFindMetadata($record);   // special case
-        } else {
-            $xml = $record
-                ->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
-            if ($xml === false) {
-                return false;
-            }
+        if ($format !== false) {
+            $xml = $this->getRecordAsXML($record, $format);
         }
 
         // Headers should be returned only if the metadata format matching
@@ -492,12 +484,28 @@ class Server
         );
 
         // Inject metadata if necessary:
-        if (!$headerOnly && !empty($xml)) {
+        if (!$headerOnly) {
             $metadata = $recXml->addChild('metadata');
             SimpleXML::appendElement($metadata, $xml);
         }
 
         return true;
+    }
+
+    /**
+     * Get record as a metadata presentation
+     *
+     * @param AbstractRecordDriver $record A record driver object
+     * @param string               $format Metadata format to obtain
+     *
+     * @return string|bool String on success or false if error occurs
+     */
+    protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
+    {
+        if ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
+            return $this->getVuFindMetadata($record);   // special case
+        }
+        return $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
     }
 
     /**
