@@ -445,6 +445,7 @@ class Server
         $headerOnly = false,
         $set = ''
     ) {
+        // no metadata if in header-only mode!
         if ($format !== false) {
             $xml = $this->getRecordAsXML($record, $format);
         }
