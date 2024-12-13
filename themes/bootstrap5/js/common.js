@@ -16,6 +16,24 @@ var VuFind = (function VuFind() {
   var _iconsCache = {};
 
   /**
+   * Element creator function
+   * @param {string} tagName Element tag name
+   * @param {string} className Element class
+   * @param {object} attrs Additional attrs as key => value
+   * @param {Array|NodeList} children Child nodes to be added
+   * @returns {Element} Created Element
+   */
+  function el(tagName, className = '', attrs = {}, children = []) {
+    const newElement = document.createElement(tagName);
+    newElement.className = className;
+    for (const [key, value] of Object.entries(attrs)) {
+      newElement.setAttribute(key, value);
+    }
+    newElement.append(...children);
+    return newElement;
+  }
+
+  /**
    * Convert given string into a node list.
    * @param {string} htmlString String to convert into nodes
    * @returns {NodeList} Given string as a node list
@@ -269,8 +287,7 @@ var VuFind = (function VuFind() {
    */
   var spinnerElement = function spinnerElement(extraClass = '') {
     const spinnerIcon = icon('spinner', {}, true);
-    const spinnerSpan = document.createElement('span');
-    spinnerSpan.className = `loading-spinner ${extraClass}`.trim();
+    const spinnerSpan = el('span', `loading-spinner ${extraClass}`.trim());
     spinnerSpan.append(spinnerIcon);
     return spinnerSpan;
   };
@@ -331,8 +348,7 @@ var VuFind = (function VuFind() {
    * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
-    const tmpDiv = document.createElement('div');
-    tmpDiv.append(...stringToNodes(html));
+    const tmpDiv = el('div', '', {}, stringToNodes(html));
     const scripts = [];
     // Cloning scripts wont work as they pass internal executed state so save them for later
     tmpDiv.querySelectorAll('script').forEach(script => {
@@ -523,6 +539,7 @@ var VuFind = (function VuFind() {
     addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
+    el: el,
     emit: emit,
     listen: listen,
     unlisten: unlisten,
