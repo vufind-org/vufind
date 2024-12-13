@@ -29,14 +29,10 @@
 
 namespace VuFind\Validator;
 
-use Laminas\Validator\Csrf;
-use Laminas\Validator\Translator\TranslatorAwareInterface;
-use Laminas\Validator\Translator\TranslatorInterface;
-use Laminas\Validator\ValidatorInterface;
+use Laminas\Session\Validator\Csrf;
 
 use function array_slice;
 use function count;
-use function is_callable;
 
 /**
  * Decorator for Laminas\Validator\Csrf with token counting/clearing functions added.
@@ -47,7 +43,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SessionCsrf implements CsrfInterface, ValidatorInterface, TranslatorAwareInterface
+class SessionCsrf implements CsrfInterface
 {
     /**
      * Laminas CSRF class.
@@ -112,96 +108,11 @@ class SessionCsrf implements CsrfInterface, ValidatorInterface, TranslatorAwareI
     }
 
     /**
-     * Sets translator to use in helper
+     * Returns true if the CSRF token is valid.
      *
-     * @param TranslatorInterface $translator [optional] translator.
-     * Default is null, which sets no translator.
-     * @param string              $textDomain [optional] text domain
-     * Default is null, which skips setTranslatorTextDomain
-     *
-     * @return self
-     */
-    public function setTranslator(?TranslatorInterface $translator = null, $textDomain = null)
-    {
-        return $this->csrf->setTranslator($translator, $textDomain);
-    }
-
-    /**
-     * Returns translator used in object
-     *
-     * @return TranslatorInterface|null
-     */
-    public function getTranslator()
-    {
-        return $this->csrf->getTranslator();
-    }
-
-    /**
-     * Checks if the object has a translator
+     * @param mixed $value Token to validate
      *
      * @return bool
-     */
-    public function hasTranslator()
-    {
-        return $this->csrf->hasTranslator();
-    }
-
-    /**
-     * Sets whether translator is enabled and should be used
-     *
-     * @param bool $enabled [optional] whether translator should be used.
-     * Default is true.
-     *
-     * @return self
-     */
-    public function setTranslatorEnabled($enabled = true)
-    {
-        return $this->csrf->setTranslatorEnabled($enabled);
-    }
-
-    /**
-     * Returns whether translator is enabled and should be used
-     *
-     * @return bool
-     */
-    public function isTranslatorEnabled()
-    {
-        return $this->csrf->isTranslatorEnabled();
-    }
-
-    /**
-     * Set translation text domain
-     *
-     * @param string $textDomain New text domain
-     *
-     * @return TranslatorAwareInterface
-     */
-    public function setTranslatorTextDomain($textDomain = 'default')
-    {
-        return $this->csrf->setTranslatorTextDomain($textDomain);
-    }
-
-    /**
-     * Return the translation text domain
-     *
-     * @return string
-     */
-    public function getTranslatorTextDomain()
-    {
-        return $this->csrf->getTranslatorTextDomain();
-    }
-
-    /**
-     * Returns true if and only if $value meets the validation requirements
-     *
-     * If $value fails validation, then this method returns false, and
-     * getMessages() will return an array of messages that explain why the
-     * validation failed.
-     *
-     * @param mixed $value Value to validate
-     *
-     * @return bool
-     * @throws Exception\RuntimeException If validation of $value is impossible.
      */
     public function isValid($value)
     {
@@ -221,22 +132,5 @@ class SessionCsrf implements CsrfInterface, ValidatorInterface, TranslatorAwareI
     public function getMessages()
     {
         return $this->csrf->getMessages();
-    }
-
-    /**
-     * Proxy all other calls to the CSRF object.
-     *
-     * @param string $method Method being called
-     * @param array  $args   Argument list
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    public function __call(string $method, array $args = []): mixed
-    {
-        if (is_callable([$this->csrf, 'method'])) {
-            return ($this->csrf->$method)(...$args);
-        }
-        throw new \Exception("Undefined method: $method");
     }
 }
