@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Decorator for Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Decorator for Laminas CSRF validator to add token counting/clearing functions.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function array_slice;
 use function count;
 
 /**
- * Decorator for Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Decorator for Laminas CSRF validator to add token counting/clearing functions.
  *
  * @category VuFind
  * @package  Solr
