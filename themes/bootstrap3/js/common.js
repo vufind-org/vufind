@@ -283,9 +283,8 @@ var VuFind = (function VuFind() {
    */
   var loadingElement = function loadingElement(text = null, extraClass = '') {
     const spinnerSpan = spinnerElement(extraClass);
-    const spinnerText = document.createTextNode();
     const translated = translate(text === null ? 'loading_ellipsis' : text);
-    spinnerText.textContent = ` ${translated}`;
+    const spinnerText = document.createTextNode(` ${translated}`);
     spinnerSpan.appendChild(spinnerText);
     return spinnerSpan;
   };
@@ -444,7 +443,7 @@ var VuFind = (function VuFind() {
           // Replace the QRCode template with the image:
           const templateEl = holder.querySelector('.qrCodeImgTag');
           if (templateEl) {
-            templateEl.parentElement.replaceChildren(...templateEl.childNodes);
+            setInnerHtml(templateEl.parentElement, templateEl.innerHTML);
           }
         }
       });
