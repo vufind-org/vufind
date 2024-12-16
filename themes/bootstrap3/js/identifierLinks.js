@@ -1,5 +1,5 @@
 /*global VuFind, unwrapJQuery */
-VuFind.register('doi', function Doi() {
+VuFind.register('identifierLinks', function identifierLinks() {
   function embedDoiLinks(el) {
     var queryParams = new URLSearchParams();
     var elements = el.classList.contains('doiLink') ? [el] : el.querySelectorAll('.doiLink');
