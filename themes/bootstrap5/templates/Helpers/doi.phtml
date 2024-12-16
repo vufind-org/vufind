@@ -10,5 +10,5 @@
         $attribs['data-issn'] = $issn;
     }
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'doi.js', 'SET');?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'identifierLinks.js', 'SET');?>
 <span <?=$this->htmlAttributes($attribs)?>></span>
