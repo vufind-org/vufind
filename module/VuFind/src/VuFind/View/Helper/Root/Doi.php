@@ -102,7 +102,7 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
         // Build parameters needed to display the control:
         $doi = $this->recordDriver->tryMethod('getCleanDOI');
         $isbn = $this->recordDriver->tryMethod('getCleanISBN');
-        $issn = $this->recordDriver->tryMethod('getCleanISBN');
+        $issn = $this->recordDriver->tryMethod('getCleanISSN');
         $instance = $this->counter++;
         $params = compact('doi', 'isbn', 'issn', 'instance');
 
