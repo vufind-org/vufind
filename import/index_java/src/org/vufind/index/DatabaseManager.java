@@ -168,7 +168,7 @@ public class DatabaseManager
         String extraParams = "";
         String prefix = "invalid";
         if (platform.equals("mysql")) {
-            classname = "com.mysql.jdbc.Driver";
+            classname = "com.mysql.cj.jdbc.Driver";
             prefix = "mysql";
             String useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false) ? "true" : "false";
             extraParams = "?useSSL=" + useSsl;
