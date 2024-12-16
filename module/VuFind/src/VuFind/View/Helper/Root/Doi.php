@@ -92,12 +92,9 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     /**
      * Public method to render the OpenURL template
      *
-     * @param bool $imagebased Indicates if an image based link
-     * should be displayed or not (null for system default)
-     *
      * @return string
      */
-    public function renderTemplate($imagebased = null)
+    public function renderTemplate()
     {
         // Build parameters needed to display the control:
         $doi = $this->recordDriver->tryMethod('getCleanDOI');
