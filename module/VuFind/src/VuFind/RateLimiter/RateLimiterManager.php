@@ -59,7 +59,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     /**
      * Turnstile service
      *
-     * @var Turnstile
+     * @var ?Turnstile
      */
     protected $turnstile = null;
 
