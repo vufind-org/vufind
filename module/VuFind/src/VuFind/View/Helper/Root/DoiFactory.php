@@ -71,7 +71,7 @@ class DoiFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $helpers = $container->get('ViewHelperManager');
         // DOI config section is supported as a fallback for back-compatibility:
-        $idConfig = $config->IdentifierLinks ?? $config->DOI ?? null;
+        $idConfig = $config?->IdentifierLinks?->toArray() ?? $config?->DOI?->toArray() ?? [];
         return new $requestedName($helpers->get('context'), $idConfig);
     }
 }

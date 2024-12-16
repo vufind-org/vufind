@@ -68,9 +68,9 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
      * Constructor
      *
      * @param Context $context Context helper
-     * @param ?Config $config  VuFind OpenURL config
+     * @param array   $config  Identifier-based linking configuration settings
      */
-    public function __construct(protected Context $context, protected ?Config $config = null)
+    public function __construct(protected Context $context, protected array $config = [])
     {
     }
 
@@ -127,14 +127,14 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     protected function checkContext()
     {
         // Doesn't matter the target area if no resolver is specified:
-        if (empty($this->config->resolver)) {
+        if (empty($this->config['resolver'])) {
             return false;
         }
 
         // If a setting exists, return that:
         $key = 'show_in_' . $this->area;
-        if (isset($this->config->$key)) {
-            return $this->config->$key;
+        if (isset($this->config[$key])) {
+            return $this->config[$key];
         }
 
         // If we got this far, use the defaults -- true for results, false for
