@@ -40,6 +40,13 @@ Storage:
     #redis_version            : 6
     #redis_standalone         : true
 
+  turnstileOptions:
+    # Namespace for Turnstile result cache (default is Turnstile)
+    #namespace: Turnstile
+
+    # Time-to-live (seconds) for Turnstile result cache (default is 86400, i.e. 1 day)
+    #ttl: 86400
+
 # Policies define the actual rate limiting settings. The request is checked against
 # the list of policies, and the first matching policy is used.
 # Keys under "Policies" are used as rate limiter IDs.
@@ -85,6 +92,14 @@ Storage:
 #                         policy: token_bucket
 #                         limit: 500
 #                         rate: { interval: '10 minutes', amount: 100 }
+#
+# turnstileRateLimiterSettings Defined like rateLimiterSettings, but when the limit is
+#                              reached, a Turnstile challenge is used instead of simply
+#                              returning a 429. The challenge result is cached. 
+#                              Failing the challenge results in standard 429 behavior.
+#                              Passing the challenge bypasses this check, but note the
+#                              rateLimiterSettings quota is still separately applied.
+#                              Default (not defined) means don't use Turnstile.
 #
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
 #
@@ -134,3 +149,26 @@ Policies:
       policy: token_bucket
       limit: 2000
       rate: { interval: '10 minutes', amount: 400 }
+
+# Cloudflare Turnstile is a cloud-based "CAPTCHA alternative" to detect bots.
+# https://developers.cloudflare.com/turnstile/
+# See also [Captcha] settings in config.ini for actual CAPTCHAs.
+# These are the global settings for Turnstile. See also the turnstile config above:
+# - within each policy, to enable turnstile for that policy
+# - storage settings for the result cache
+# And see the required config in contentsecuritypolicy.ini if CSP is used.
+#Turnstile:
+  # These two keys are required. See also values they can be set to for testing purposes:
+  # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+  #siteKey: 0x1234567890
+  #secretKey: 0x1234567890
+
+  # Skip Turnstile and allow the request if the controller matches a regex.
+  # In these cases a challenge can't practically be displayed. Default is below.
+  #skipOnControllerPattern: "/AJAX|Cover|Api/"
+
+  # Verify API URL. Default is below.
+  #verifyUrl: https://challenges.cloudflare.com/turnstile/v0/siteverify
+
+  # API Javascript file. Default is below.
+  #jsLibraryUrl: https://challenges.cloudflare.com/turnstile/v0/api.js

@@ -34,6 +34,7 @@ use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
+use VuFind\Cookie\CookieManager;
 
 /**
  * VuFind Theme Initializer
@@ -70,28 +71,28 @@ class Initializer
     /**
      * Top-level service container
      *
-     * @var \Psr\Container\ContainerInterface
+     * @var ContainerInterface
      */
     protected $serviceManager;
 
     /**
      * Theme tools object
      *
-     * @var \VuFindTheme\ThemeInfo
+     * @var ThemeInfo
      */
     protected $tools;
 
     /**
      * Mobile interface detector
      *
-     * @var \VuFindTheme\Mobile
+     * @var Mobile
      */
     protected $mobile;
 
     /**
      * Cookie manager
      *
-     * @var \VuFind\Cookie\CookieManager
+     * @var CookieManager
      */
     protected $cookieManager;
 
@@ -143,15 +144,13 @@ class Initializer
         }
 
         // Get the cookie manager from the service manager:
-        $this->cookieManager = $this->serviceManager
-            ->get(\VuFind\Cookie\CookieManager::class);
+        $this->cookieManager = $this->serviceManager->get(CookieManager::class);
 
         // Get base directory from tools object:
-        $this->tools = $this->serviceManager->get(\VuFindTheme\ThemeInfo::class);
+        $this->tools = $this->serviceManager->get(ThemeInfo::class);
 
         // Set up mobile device detector:
-        $this->mobile = $this->serviceManager->get(\VuFindTheme\Mobile::class);
-        $this->mobile->enable(isset($this->config->mobile_theme));
+        $this->mobile = $this->serviceManager->get(Mobile::class);
     }
 
     /**
@@ -169,13 +168,16 @@ class Initializer
         }
         self::$themeInitialized = true;
 
-        // Determine the current theme:
-        $currentTheme = $this->pickTheme(
-            isset($this->event) ? $this->event->getRequest() : null
+        // Determine the user-selected or default UI option, and the theme associated with it:
+        $themes = $this->getThemeAliasMap();
+        $selectedUI = $this->getSelectedUI(
+            $themes,
+            $this->event?->getRequest()
         );
+        $currentTheme = $themes[$selectedUI];
 
         // Determine theme options:
-        $this->sendThemeOptionsToView($currentTheme);
+        $this->sendThemeOptionsToView($selectedUI, $currentTheme);
 
         // Make sure the current theme is set correctly in the tools object:
         $error = null;
@@ -208,7 +210,7 @@ class Initializer
         if ($this->themeMap === null) {
             // Set up special-case 'standard' and 'mobile' aliases:
             $this->themeMap = ['standard' => $this->config->theme];
-            if ($this->mobile->enabled()) {
+            if (isset($this->config->mobile_theme)) {
                 $this->themeMap['mobile'] = $this->config->mobile_theme;
             }
 
@@ -227,12 +229,14 @@ class Initializer
     /**
      * Support method for init() -- figure out which theme option is active.
      *
+     * @param array   $themes  Data on all available themes (must include at
+     * minimum a 'standard' key)
      * @param Request $request Request object (for obtaining user parameters);
      * set to null if no request context is available.
      *
      * @return string
      */
-    protected function pickTheme(?Request $request)
+    protected function getSelectedUI(array $themes, ?Request $request): string
     {
         // The admin theme should always be picked if
         // - the Admin module is enabled AND
@@ -250,7 +254,6 @@ class Initializer
         }
 
         // Load standard configuration options:
-        $themes = $this->getThemeAliasMap();
         if (PHP_SAPI == 'cli') {
             return $themes['standard'];
         }
@@ -272,24 +275,25 @@ class Initializer
         $this->cookieManager->set('ui', $selectedUI);
 
         // Pick the selected theme (fall back to standard if unrecognized):
-        return $themes[$selectedUI] ?? $themes['standard'];
+        return isset($themes[$selectedUI]) ? $selectedUI : 'standard';
     }
 
     /**
      * Make the theme options available to the view.
      *
+     * @param string $selectedUI   Current UI setting
      * @param string $currentTheme Active theme
      *
      * @return void
      */
-    protected function sendThemeOptionsToView($currentTheme)
+    protected function sendThemeOptionsToView(string $selectedUI, string $currentTheme): void
     {
         // Get access to the view model:
         if (PHP_SAPI !== 'cli') {
             $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
             // Send down the view options:
-            $viewModel->setVariable('themeOptions', $this->getThemeOptions($currentTheme));
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions($selectedUI, $currentTheme));
         }
     }
 
@@ -297,17 +301,17 @@ class Initializer
      * Return an array of information about user-selectable themes. Each entry in
      * the array is an associative array with 'name', 'desc' and 'selected' keys.
      *
+     * @param string $selectedUI   Current UI setting
      * @param string $currentTheme Active theme
      *
      * @return array
      */
-    protected function getThemeOptions($currentTheme)
+    protected function getThemeOptions(string $selectedUI, string $currentTheme): array
     {
         $options = [];
         if (isset($this->config->selectable_themes)) {
             $parts = explode(',', $this->config->selectable_themes);
             $foundSelected = false;
-            $uiCookie = $this->cookieManager->get('ui');
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
                 $name = trim($subparts[0]);
@@ -315,7 +319,7 @@ class Initializer
                 $desc = empty($desc) ? $name : $desc;
                 // Easiest and most accurate way to pick a selected theme is to check
                 // if the name matches the current value of the ui cookie:
-                $selected = $uiCookie === $name;
+                $selected = $selectedUI === $name;
                 $foundSelected = $foundSelected || $selected;
                 if (!empty($name)) {
                     $options[] = compact('name', 'desc', 'selected');
@@ -365,8 +369,7 @@ class Initializer
         $templatePathStack = [];
 
         // Grab the resource manager for tracking CSS, JS, etc.:
-        $resources = $this->serviceManager
-            ->get(\VuFindTheme\ResourceContainer::class);
+        $resources = $this->serviceManager->get(ResourceContainer::class);
 
         // Set generator if necessary:
         if (isset($this->config->generator)) {

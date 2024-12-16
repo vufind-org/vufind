@@ -31,13 +31,11 @@ namespace VuFind\RateLimiter;
 
 use Closure;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
-use Laminas\Cache\Storage\Capabilities;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use stdClass;
 use Symfony\Component\RateLimiter\LimiterInterface;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
@@ -94,6 +92,7 @@ class RateLimiterManagerFactory implements FactoryInterface
             $request->getServer('REMOTE_ADDR'),
             $authManager->getUserObject()?->getId(),
             Closure::fromCallable([$this, 'getRateLimiter']),
+            $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class),
             $container->get(\VuFind\Net\IpAddressUtils::class)
         );
     }
@@ -101,10 +100,11 @@ class RateLimiterManagerFactory implements FactoryInterface
     /**
      * Get rate limiter
      *
-     * @param array   $config   Rate limiter configuration
-     * @param string  $policyId Policy ID
-     * @param string  $clientIp Client's IP address
-     * @param ?string $userId   User ID or null if not logged in
+     * @param array   $config        Rate limiter configuration
+     * @param string  $policyId      Policy ID
+     * @param string  $clientIp      Client's IP address
+     * @param ?string $userId        User ID or null if not logged in
+     * @param string  $configSection Section of $config to get the rate limiter settings
      *
      * @return LimiterInterface
      */
@@ -112,32 +112,35 @@ class RateLimiterManagerFactory implements FactoryInterface
         array $config,
         string $policyId,
         string $clientIp,
-        ?string $userId
+        ?string $userId,
+        string $configSection = 'rateLimiterSettings'
     ): LimiterInterface {
         $policy = $config['Policies'][$policyId] ?? [];
-        $rateLimiterConfig = $policy['rateLimiterSettings'] ?? [];
+        $rateLimiterConfig = $policy[$configSection] ?? [];
         $rateLimiterConfig['id'] = $policyId;
         if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {
             $clientId = "u:$userId";
         } else {
             $clientId = "ip:$clientIp";
         }
-        $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config));
+        $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config, $configSection));
         return $factory->create($clientId);
     }
 
     /**
      * Create cache for the rate limiter
      *
-     * @param array $config Rate limiter configuration
+     * @param array  $config          Rate limiter configuration
+     * @param string $namespaceSuffix Qualifier for the namespace
      *
      * @return ?StorageInterface
      */
-    protected function createCache(array $config): StorageInterface
+    protected function createCache(array $config, string $namespaceSuffix): StorageInterface
     {
         $storageConfig = $config['Storage'] ?? [];
         $adapter = $storageConfig['adapter'] ?? 'memcached';
         $storageConfig['options']['namespace'] ??= 'RateLimiter';
+        $storageConfig['options']['namespace'] .= '-' . $namespaceSuffix;
 
         // Handle Redis cache separately:
         $adapterLc = strtolower($adapter);
@@ -145,39 +148,8 @@ class RateLimiterManagerFactory implements FactoryInterface
             return $this->createRedisCache($storageConfig);
         }
 
-        if ('vufind' === $adapterLc) {
-            // Use cache manager for "VuFind" cache (only for testing purposes):
-            $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
-            $laminasCache = $cacheManager->getCache('object', $storageConfig['options']['namespace']);
-            // Fake the capabilities to include static TTL support:
-            $eventManager = $laminasCache->getEventManager();
-            $eventManager->attach(
-                'getCapabilities.post',
-                function ($event) use ($laminasCache) {
-                    $oldCapacities = $event->getResult();
-                    $newCapacities = new Capabilities(
-                        $laminasCache,
-                        new stdClass(),
-                        ['staticTtl' => true],
-                        $oldCapacities
-                    );
-                    $event->setResult($newCapacities);
-                }
-            );
-        } else {
-            if ('memcached' === $adapterLc) {
-                $storageConfig['options']['servers'] ??= 'localhost:11211';
-            }
-
-            // Laminas cache:
-            $settings = [
-                'adapter' => $adapter,
-                'options' => $storageConfig['options'],
-            ];
-            $laminasCache = $this->getService(\Laminas\Cache\Service\StorageAdapterFactory::class)
-                ->createFromArrayConfiguration($settings);
-        }
-
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
+        $laminasCache = $cacheManager->createInMemoryCache($storageConfig);
         return new CacheStorage(new CacheItemPoolDecorator($laminasCache));
     }
 

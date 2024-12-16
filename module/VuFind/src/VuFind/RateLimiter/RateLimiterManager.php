@@ -37,6 +37,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Net\IpAddressUtils;
+use VuFind\RateLimiter\Turnstile\Turnstile;
 
 use function in_array;
 use function is_bool;
@@ -76,6 +77,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      * @param string         $clientIp                   Client's IP address
      * @param ?int           $userId                     User ID or null if not logged in
      * @param Closure        $rateLimiterFactoryCallback Rate limiter factory callback
+     * @param Turnstile      $turnstile                  Turnstile service
      * @param IpAddressUtils $ipUtils                    IP address utilities
      */
     public function __construct(
@@ -83,6 +85,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         protected string $clientIp,
         protected ?int $userId,
         protected Closure $rateLimiterFactoryCallback,
+        protected Turnstile $turnstile,
         protected IpAddressUtils $ipUtils
     ) {
         $this->clientLogDetails = "ip:$clientIp";
@@ -146,6 +149,20 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             // We have a policy matching the route, so check rate limiter:
             $limiter = ($this->rateLimiterFactoryCallback)($this->config, $policyId, $this->clientIp, $this->userId);
             $limit = $limiter->consume(1);
+            if (
+                $limit->isAccepted() &&
+                ($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false) &&
+                $this->turnstile->isChallengeAllowed($event)
+            ) {
+                $turnstileLimiter = ($this->rateLimiterFactoryCallback)(
+                    $this->config,
+                    $policyId,
+                    $this->clientIp,
+                    $this->userId,
+                    'turnstileRateLimiterSettings'
+                );
+                $turnstileLimit = $turnstileLimiter->consume(1);
+            }
             $result = [
                 'allow' => true,
                 'requestsRemaining' => $limit->getRemainingTokens(),
@@ -170,6 +187,15 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                         'X-RateLimit-Limit' => $result['requestLimit'],
                     ]
                 );
+            }
+            if (isset($turnstileLimit) && !$turnstileLimit->isAccepted()) {
+                $priorTurnstileResult = $this->turnstile->checkPriorResult($policyId, $this->clientIp);
+                if (!$priorTurnstileResult) {
+                    $result['allow'] = false;
+                    $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
+                    $result['presentTurnstileChallenge'] = ($priorTurnstileResult === null);
+                    return $result;
+                }
             }
             if ($limit->isAccepted()) {
                 return $result;
@@ -197,8 +223,11 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      *
      * @return ?string policy id or null if no match
      */
-    protected function getPolicyIdForEvent(MvcEvent $event): ?string
+    public function getPolicyIdForEvent(MvcEvent $event): ?string
     {
+        if ($event->getRouteMatch()->getParams()['controller'] == 'Turnstile') {
+            return null;
+        }
         $isCrawler = null;
         foreach ($this->config['Policies'] ?? [] as $name => $settings) {
             if (null !== ($loggedIn = $settings['loggedIn'] ?? null)) {
