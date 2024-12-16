@@ -124,8 +124,7 @@ class DoiLookup extends AbstractBase
     public function handleRequest(Params $params)
     {
         $response = [];
-        $rawIds = (array)$params->fromQuery('id', []);
-        $ids = array_map(fn ($id) => json_decode($id, true), $rawIds);
+        $ids = json_decode($params->getController()->getRequest()->getContent(), true);
         foreach ($this->resolvers as $resolver) {
             if ($this->pluginManager->has($resolver)) {
                 $next = $this->pluginManager->get($resolver)->getLinks($ids);

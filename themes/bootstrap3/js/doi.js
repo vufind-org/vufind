@@ -3,9 +3,10 @@ VuFind.register('doi', function Doi() {
   function embedDoiLinks(el) {
     var queryParams = new URLSearchParams();
     var elements = el.classList.contains('doiLink') ? [el] : el.querySelectorAll('.doiLink');
+    var postBody = {};
     elements.forEach(function extractIdentifierData(doiLinkEl) {
       var currentInstance = doiLinkEl.dataset.instance;
-      if (!queryParams.has(`id[${currentInstance}]`)) {
+      if (typeof postBody[currentInstance] === "undefined") {
         let currentIdentifiers = {};
         ["doi", "issn", "isbn"].forEach(identifier => {
           if (typeof doiLinkEl.dataset[identifier] !== "undefined") {
@@ -13,16 +14,16 @@ VuFind.register('doi', function Doi() {
           }
         });
         if (Object.keys(currentIdentifiers).length > 0) {
-          queryParams.set(`id[${currentInstance}]`, JSON.stringify(currentIdentifiers));
+          postBody[currentInstance] = currentIdentifiers;
         }
       }
     });
-    if (queryParams.toString().length === 0) {
+    if (Object.keys(postBody).length === 0) {
       return;
     }
     queryParams.set("method", "doiLookup");
     var url = VuFind.path + '/AJAX/JSON?' + queryParams.toString();
-    fetch(url, { method: "GET" })
+    fetch(url, { method: "POST", body: JSON.stringify(postBody) })
       .then(function embedDoiLinksDone(rawResponse) {
         elements.forEach(function populateDoiLinks(doiEl) {
           var currentInstance = doiEl.dataset.instance;
