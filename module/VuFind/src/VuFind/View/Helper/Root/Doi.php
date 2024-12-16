@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\Config;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * DOI view helper
@@ -76,17 +77,29 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     /**
      * Set up context for helper
      *
-     * @param \VuFind\RecordDriver $driver The current record driver
-     * @param string               $area   DOI context ('results', 'record'
-     *  or 'holdings'
+     * @param RecordDriver $driver The current record driver
+     * @param string       $area   DOI context ('results', 'record' or 'holdings')
      *
-     * @return object
+     * @return static
      */
     public function __invoke($driver, $area)
     {
         $this->recordDriver = $driver;
         $this->area = $area;
         return $this;
+    }
+
+    /**
+     * Get all available identifiers.
+     *
+     * @return array
+     */
+    protected function getIdentifiers(): array
+    {
+        $doi = $this->recordDriver->tryMethod('getCleanDOI');
+        $isbn = $this->recordDriver->tryMethod('getCleanISBN');
+        $issn = $this->recordDriver->tryMethod('getCleanISSN');
+        return compact('doi', 'isbn', 'issn');
     }
 
     /**
@@ -97,11 +110,8 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     public function renderTemplate()
     {
         // Build parameters needed to display the control:
-        $doi = $this->recordDriver->tryMethod('getCleanDOI');
-        $isbn = $this->recordDriver->tryMethod('getCleanISBN');
-        $issn = $this->recordDriver->tryMethod('getCleanISSN');
         $instance = $this->counter++;
-        $params = compact('doi', 'isbn', 'issn', 'instance');
+        $params = $this->getIdentifiers() + compact('instance');
 
         // Render the subtemplate:
         return ($this->context)($this->getView())
@@ -139,7 +149,14 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
      */
     public function isActive()
     {
-        $doi = $this->recordDriver->tryMethod('getCleanDOI');
-        return !empty($doi) && $this->checkContext();
+        $ids = $this->getIdentifiers();
+        $hasId = false;
+        foreach ($ids as $id) {
+            if ($id !== null) {
+                $hasId = true;
+                break;
+            }
+        }
+        return $hasId && $this->checkContext();
     }
 }
