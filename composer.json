@@ -84,7 +84,7 @@
         "laminas/laminas-session": "2.21.0",
         "laminas/laminas-stdlib": "3.19.0",
         "laminas/laminas-text": "2.11.0",
-        "laminas/laminas-validator": "2.55.0",
+        "laminas/laminas-validator": "2.64.2",
         "laminas/laminas-view": "2.27.0",
         "league/commonmark": "2.6.0",
         "league/oauth2-client": "^2.7",

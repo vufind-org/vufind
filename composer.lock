@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a11b1b8757fba47cad77f6aeffb4bfa",
+    "content-hash": "707506f308fdbe34c207f2313bd5addf",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -4397,22 +4397,22 @@
         },
         {
             "name": "laminas/laminas-validator",
-            "version": "2.55.0",
+            "version": "2.64.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-validator.git",
-                "reference": "dc3f2609d41b1e21bc24e3e147d7dd284e8a1556"
+                "reference": "771e504760448ac7af660710237ceb93be602e08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-validator/zipball/dc3f2609d41b1e21bc24e3e147d7dd284e8a1556",
-                "reference": "dc3f2609d41b1e21bc24e3e147d7dd284e8a1556",
+                "url": "https://api.github.com/repos/laminas/laminas-validator/zipball/771e504760448ac7af660710237ceb93be602e08",
+                "reference": "771e504760448ac7af660710237ceb93be602e08",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-servicemanager": "^3.21.0",
-                "laminas/laminas-stdlib": "^3.13",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "laminas/laminas-stdlib": "^3.19",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
                 "psr/http-message": "^1.0.1 || ^2.0.0"
             },
             "conflict": {
@@ -4477,7 +4477,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-06-12T15:00:19+00:00"
+            "time": "2024-11-26T21:29:17+00:00"
         },
         {
             "name": "laminas/laminas-view",
