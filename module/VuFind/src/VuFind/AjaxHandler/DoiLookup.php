@@ -101,16 +101,18 @@ class DoiLookup extends AbstractBase
         RendererInterface $viewRenderer,
         array $config
     ) {
+        // DOI config section is supported as a fallback for back-compatibility:
+        $idConfig = $config['IdentifierLinks'] ?? $config['DOI'] ?? [];
         $this->pluginManager = $pluginManager;
         $this->resolvers
-            = array_map('trim', explode(',', $config['DOI']['resolver'] ?? ''));
+            = array_map('trim', explode(',', $idConfig['resolver'] ?? ''));
         // Behavior to use when multiple resolvers to find results for the same
         // DOI (may be 'first' -- use first match, or 'merge' -- use all
         // results):
         $this->multiMode
-            = trim(strtolower($config['DOI']['multi_resolver_mode'] ?? 'first'));
-        $this->proxyIcons = !empty($config['DOI']['proxy_icons']);
-        $this->openInNewWindow = !empty($config['DOI']['new_window']);
+            = trim(strtolower($idConfig['multi_resolver_mode'] ?? 'first'));
+        $this->proxyIcons = !empty($idConfig['proxy_icons']);
+        $this->openInNewWindow = !empty($idConfig['new_window']);
         $this->viewRenderer = $viewRenderer;
     }
 
