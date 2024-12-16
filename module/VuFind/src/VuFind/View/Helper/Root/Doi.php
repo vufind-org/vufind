@@ -65,6 +65,13 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     protected $counter = 0;
 
     /**
+     * Supported identifier types
+     *
+     * @var string[]
+     */
+    protected $supportedIdentifiers = ['doi', 'isbn', 'issn'];
+
+    /**
      * Constructor
      *
      * @param Context $context Context helper
@@ -72,6 +79,9 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
      */
     public function __construct(protected Context $context, protected array $config = [])
     {
+        if (!empty($config['supportedIdentifiers'])) {
+            $this->supportedIdentifiers = $config['supportedIdentifiers'];
+        }
     }
 
     /**
@@ -96,10 +106,17 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getIdentifiers(): array
     {
-        $doi = $this->recordDriver->tryMethod('getCleanDOI');
-        $isbn = $this->recordDriver->tryMethod('getCleanISBN');
-        $issn = $this->recordDriver->tryMethod('getCleanISSN');
-        return compact('doi', 'isbn', 'issn');
+        $ids = [];
+        if (in_array('doi', $this->supportedIdentifiers)) {
+            $ids['doi'] = $this->recordDriver->tryMethod('getCleanDOI');
+        }
+        if (in_array('isbn', $this->supportedIdentifiers)) {
+            $ids['isbn'] = $this->recordDriver->tryMethod('getCleanISBN');
+        }
+        if (in_array('issn', $this->supportedIdentifiers)) {
+            $ids['issn'] = $this->recordDriver->tryMethod('getCleanISSN');
+        }
+        return $ids;
     }
 
     /**
