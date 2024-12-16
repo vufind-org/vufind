@@ -4,13 +4,13 @@
   Why does this look less than beautiful? Because we expect you to change it! See the <a href="https://vufind.org/wiki/development:architecture:user_interface">User Interface Customization</a> page in the wiki for details.
 </p>
 
-<nav aria-label="Theme Config view helper demo" class="navbar navbar-default clearfix">
+<nav aria-label="Theme Config view helper demo" class="navbar navbar-dark bg-dark mb-4">
   <div class="container-fluid">
     <span class="navbar-text">
       Some helpful links:
     </span>
 
-    <ul class="nav navbar-nav">
+    <ul class="navbar-nav me-auto">
       <?php foreach ($this->themeConfig(['home-content', 'links']) as $label => $route): ?>
         <?php
           try {
@@ -28,7 +28,7 @@
       <?php endforeach; ?>
     </ul>
 
-    <ul class="nav navbar-nav navbar-right flip">
+    <ul class="navbar-nav navbar-right flip">
       <?php foreach ($this->themeConfig(['header-nav']) as $section => $links): ?>
         <?php
           $currentItems = [];
@@ -46,9 +46,10 @@
             continue;
           }
         ?>
-        <li class="theme dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <?=$this->transEsc($section)?> <b class="caret"></b>
+        <li class="nav-item dropdown">
+          <a href="#" class="dropdown-toggle icon-link nav-link" data-bs-toggle="dropdown">
+            <span class="icon-link__label"><?=$this->transEsc($section)?></span>
+            <?=$this->icon('caret-down', 'icon-link__icon')?>
           </a>
           <ul class="dropdown-menu">
             <?php foreach ($currentItems as $url => $label): ?>

@@ -10,8 +10,7 @@
 <h2><?=$this->translate('add_to_favorites_html', ['%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb())]) ?></h2>
 <form class="form-record-save" method="post" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save')) ?>" name="saveRecord" data-lightbox-onclose="VuFind.saveStatuses.refresh">
   <input type="hidden" name="submitButton" value="1">
-  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
-  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>
   <?php if (!empty($this->containingLists)): ?>
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:
     <?php foreach ($this->containingLists as $i => $list): ?>
@@ -41,7 +40,7 @@
       <?php endif; ?>
       </select>
     <?php endif; ?>
-    <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', ['id' => 'NEW'])?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getSourceIdentifier())?>"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></a>
+    <button type="submit" name="newList" value="1" class="btn btn-link" id="make-list"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></button>
   </div>
 
   <?php if ($showLists): ?>

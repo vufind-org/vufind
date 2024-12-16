@@ -17,13 +17,12 @@ return [
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - media: e.g. 'print'
-         * - conditional: e.g. '!IE'
          * - extras: array of additional attributes
          *
          * Strings are supported for backwards compatibility reasons. examples:
          * - 'example.css' => same as ['file' => 'example.css']
-         * - 'example.css:print:!IE' => same as
-         *   ['file' => 'example.css', 'media' => 'print', 'conditional' => '!IE']
+         * - 'example.css:print' => same as
+         *   ['file' => 'example.css', 'media' => 'print']
          */
         ['file' => 'compiled.css'],
         ['file' => 'print.css', 'media' => 'print'],
@@ -43,17 +42,14 @@ return [
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - position: 'header' (default) or 'footer'
-         * - conditional: e.g. 'lt IE 10'
          * - disabled: if set to true in a child theme, the matching file will be
          *   removed if it was included by a parent theme.
          *
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for backwards compatibility reasons. example:
          * - 'example.js' => same as ['file' => 'example.js']
-         * - 'example.js:lt IE 10' => same as
-         *   ['file' => 'example.js', 'conditional' => 'lt IE 10']
          */
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/popper.min.js', 'priority' => 120],
@@ -64,12 +60,14 @@ return [
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'config.js', 'priority' => 320],
         ['file' => 'lightbox.js', 'priority' => 330],
-        ['file' => 'searchbox_controls.js', 'priority' => 340],
-        ['file' => 'truncate.js', 'priority' => 350],
-        ['file' => 'trigger_print.js', 'priority' => 360],
-        ['file' => 'observer_manager.js', 'priority' => 370],
-        ['file' => 'openurl.js', 'priority' => 380],
-        ['file' => 'list_item_selection.js', 'priority' => 390],
+        ['file' => 'cookie.js', 'priority' => 340],
+        ['file' => 'searchbox_controls.js', 'priority' => 350],
+        ['file' => 'truncate.js', 'priority' => 360],
+        ['file' => 'trigger_print.js', 'priority' => 370],
+        ['file' => 'observer_manager.js', 'priority' => 380],
+        ['file' => 'openurl.js', 'priority' => 390],
+        ['file' => 'list_item_selection.js', 'priority' => 400],
+        ['file' => 'covers.js', 'priority' => 410],
         ['file' => 'bs3-compat.js', 'priority' => 1000],
     ],
     /**
@@ -317,6 +315,7 @@ return [
             'status-pending' => 'FontAwesome:clock-o',
             'status-ready' => 'FontAwesome:bell',
             'status-unavailable' => 'FontAwesome:times',
+            'status-uncertain' => 'FontAwesome:circle',
             'status-unknown' => 'FontAwesome:circle',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',
@@ -358,8 +357,8 @@ return [
      * Html elements can be made sticky which means that they don't leave the screen on scrolling.
      * You can make an element sticky by adding an array with the css selector to stickyElements.
      * Warning! The order of the entries in the config will be used to order the elements while they are sticky.
-     * If you want to hide some child elements of sticky elements you can add array with their css selectors
-     * to hiddenStickyElements.
+     * If you want to add extra classes to some child elements of sticky elements you can add an array with their
+     * css selectors and the classes to stickyChildrenClasses. The default class is "hidden".
      * You can also add "min-width" and "max-width" to the configs so that the effect only applies on specific
      * screen sizes.
      * Examples:
@@ -374,9 +373,9 @@ return [
         // Breadcrumbs on non-mobile screens
         //["selector" => ".breadcrumbs", "min-width" => 768]
     ],
-    'hiddenStickyElements' => [
+    'stickyChildrenClasses' => [
         // Hide search tab selection on mobile screens
-        //["selector" => ".searchForm > .nav.nav-tabs", "max-width" => 767]
+        //["selector" => ".searchForm > .nav.nav-tabs", "class" => "hidden", "max-width" => 767]
     ],
     'doctype' => 'HTML5',
 ];

@@ -30,4 +30,5 @@ themes/bootstrap5/scss/vendor/bootstrap
 local/DirLocations.ini
 local/config/vufind/*.ini
 local/config/vufind/*.json
+local/config/vufind/*.key
 local/config/vufind/*.yaml

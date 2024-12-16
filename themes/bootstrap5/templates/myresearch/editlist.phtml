@@ -17,8 +17,9 @@
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
 
-<form class="form-edit-list" method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>">
-  <input type="hidden" name="id" value="<?=empty($listId = $this->list->getId()) ? 'NEW' : $this->escapeHtmlAttr($listId) ?>">
+<form class="form-edit-list" method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>" action="<?=$this->url('editList'); ?>">
+  <input type="hidden" name="id" value="<?=$this->newList || empty($listId = $this->list->getId()) ? 'NEW' : $this->escapeHtmlAttr($listId) ?>">
+  <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>
   <div class="form-group">
     <label class="control-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
     <input id="list_title" class="form-control" type="text" name="title" value="<?=$this->escapeHtmlAttr($this->list->getTitle())?>">

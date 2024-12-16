@@ -127,6 +127,11 @@ class ParamBagTest extends TestCase
         $this->assertEquals(['bar'], $bag->get('foo'));
         $bag->add('foo', ['bar', 'baz', 'bar', 'baz']);
         $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
+        // Associative arrays are not deduplicated:
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'haz']);
+        $this->assertEquals(['bar' => ['baz', 'baz', 'haz']], $bag->get('fooz'));
     }
 
     /**

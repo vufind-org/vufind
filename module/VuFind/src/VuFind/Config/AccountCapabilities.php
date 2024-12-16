@@ -30,7 +30,6 @@
 
 namespace VuFind\Config;
 
-use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
 
 use function in_array;

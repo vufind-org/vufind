@@ -200,7 +200,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Run the standard suite of question mark tests, accounting for differences
-     * between stanard Lucene, basic Dismax and eDismax handlers.
+     * between standard Lucene, basic Dismax and eDismax handlers.
      *
      * @param array  $builderParams Parameters for QueryBuilder constructor
      * @param string $handler       Search handler: dismax|edismax|standard
@@ -982,5 +982,42 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ['((*:* NOT (q1 OR q2)) OR (q3 AND q4))'],
             $response->get('q')
         );
+    }
+
+    /**
+     * Test dismax munge.
+     *
+     * @return void
+     */
+    public function testDismaxMunge()
+    {
+        // Set up an array of expected inputs and outputs:
+        $tests = [
+            ['title - sub', 'title sub'],        // normalization of freestanding hyphen
+            ['test + test', 'test and test'],    // freestanding plus with munge
+            ['test+test', 'test+test'],          // non-freestanding plus
+            ['test~0.9', 'test0.9'],             // munge for removing char
+            ['test~10', 'test 10'],              // more specific munge followed by normalization
+            ['TEST', 'test'],                    // lc munge
+        ];
+        $specs = [
+            'test' => [
+                'DismaxFields' => ['foo'],
+                'DismaxMunge' => [
+                    ['preg_replace', '/\s[\+]\s/', ' and '],
+                    ['preg_replace', '/~1/', ' + 1'],
+                    ['preg_replace', '/~/', ''],
+                    ['lowercase'],
+                ],
+            ],
+        ];
+        $qb = new QueryBuilder($specs);
+        foreach ($tests as $test) {
+            [$input, $output] = $test;
+            $q = new Query($input, 'test');
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
+        }
     }
 }

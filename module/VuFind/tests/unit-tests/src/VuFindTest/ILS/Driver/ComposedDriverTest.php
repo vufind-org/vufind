@@ -29,7 +29,7 @@
 
 namespace VuFindTest\ILS\Driver;
 
-use Laminas\Config\Exception\RuntimeException;
+use RuntimeException;
 use VuFind\ILS\Driver\ComposedDriver;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 

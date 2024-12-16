@@ -41,6 +41,7 @@ use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
+use function is_string;
 use function strlen;
 
 /**
@@ -231,7 +232,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeConfigFile($configName, $settings, $replace = false)
+    protected function changeConfigFile(string $configName, array $settings, bool $replace = false): void
     {
         $file = $configName . '.ini';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
@@ -246,12 +247,27 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
             $this->modifiedConfigs[] = $configName;
         }
+        $this->writeConfigFile($local, $settings, $replace);
+    }
+
+    /**
+     * Write settings to a file.
+     *
+     * @param string $path     Path of file to modify.
+     * @param array  $settings Settings to change.
+     * @param bool   $replace  Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
+     *
+     * @return void
+     */
+    protected function writeConfigFile(string $path, array $settings, bool $replace = false): void
+    {
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
-            file_put_contents($local, '');
+            file_put_contents($path, '');
         }
 
-        $writer = new ConfigWriter($local);
+        $writer = new ConfigWriter($path);
         foreach ($settings as $section => $contents) {
             foreach ($contents as $key => $value) {
                 $writer->set($section, $key, $value);
@@ -628,6 +644,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param int     $timeout     Wait timeout for CSS selection (in ms)
      * @param int     $retries     Retry count for set loop
      * @param bool    $verifyValue Whether to verify that the value was written
+     * @param bool    $reFocus     Whether to focus the element when done setting the value
      *
      * @return mixed
      */
@@ -637,7 +654,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $value,
         $timeout = null,
         $retries = 6,
-        $verifyValue = true
+        $verifyValue = true,
+        $reFocus = false
     ) {
         $timeout ??= $this->getDefaultTimeout();
 
@@ -647,14 +665,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $field = $this->findCss($page, $selector, $timeout, 0);
                 $field->setValue($value);
-                if (!$verifyValue) {
+                // Did it work? If so, we're done and can leave....
+                if (
+                    !$verifyValue
+                    || $field->getValue() === $value
+                ) {
+                    if ($reFocus) {
+                        $field->focus();
+                    }
                     return;
                 }
 
-                // Did it work? If so, we're done and can leave....
-                if ($field->getValue() === $value) {
-                    return;
-                }
                 $this->logWarning(
                     'RETRY setValue after failure in ' . $this->getTestName()
                     . " (try $i)."
@@ -738,12 +759,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param string  $method   Method to call
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element         $page     Page element
+     * @param string          $selector CSS selector
+     * @param string|callable $method   Node's method to call (string) or callable that gets the node as parameter
+     * @param int             $timeout  Wait timeout for CSS selection (in ms)
+     * @param int             $index    Index of the element (0-based)
+     * @param int             $retries  Retry count for set loop
      *
      * @return string
      */
@@ -760,7 +781,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         for ($i = 1; $i <= $retries; $i++) {
             try {
                 $element = $this->findCss($page, $selector, $timeout, $index);
-                return call_user_func([$element, $method]);
+                return is_string($method) ? call_user_func([$element, $method]) : $method($element);
             } catch (\Exception $e) {
                 $this->logWarning(
                     'RETRY findCssAndGetText after exception in ' . $this->getTestName()
@@ -815,7 +836,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param callable $callback    Callback used to get the results
      * @param callable $compareFunc Callback used to compare the results
      * @param callable $assertion   Assertion to make
-     * @param int      $timeout     Wait timeout (in ms)
+     * @param ?int     $timeout     Wait timeout (in ms)
      *
      * @return void
      */
@@ -824,7 +845,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         callable $compareFunc,
         callable $assertion,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
         $result = null;
@@ -855,14 +876,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */
     protected function assertEqualsWithTimeout(
         $expected,
         callable $callback,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $this->assertWithTimeout(
             $expected,
@@ -880,14 +901,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param string   $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */
     protected function assertStringContainsStringWithTimeout(
         string $expected,
         callable $callback,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $this->assertWithTimeout(
             $expected,
@@ -946,13 +967,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Wait for page load (full page or any element) to complete
      *
      * @param Element $page    Page element
-     * @param int     $timeout Wait timeout (in ms)
+     * @param ?int    $timeout Wait timeout (in ms)
      *
      * @return void
      */
     protected function waitForPageLoad(
         Element $page,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();

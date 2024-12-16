@@ -29,8 +29,8 @@
 
 namespace VuFindConsole\Command\Generate;
 
-use Laminas\Config\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
+use VuFind\Config\Config;
 use VuFindTheme\ThemeGenerator;
 
 /**

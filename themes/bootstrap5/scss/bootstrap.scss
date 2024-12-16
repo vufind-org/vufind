@@ -101,7 +101,9 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 
 html { font-size: 14px; } // Root font size from Bootstrap, allows consistent use of rem units
 a,
-label { cursor: pointer; }
+label,
+select,
+input[type="checkbox"] { cursor: pointer; }
 .alert.alert-info a { text-decoration: underline; }
 .alert-default {
     border-color: $well-border;
@@ -219,17 +221,17 @@ h3 { font-size: 16px; }
   left: 0;
 }
 
-.sticky {
-  .sticky-hidden {
-    display: none !important;
-  }
-}
-
 footer {
   @extend .container;
   padding: 1rem;
 }
 @media (min-width: 768px) {
+  @media (max-width: 991px) {
+    .container {
+      max-width: initial;
+      width: 100%;
+    }
+  }
   .footer-container {
     display: flex;
     width: 100%;
@@ -242,11 +244,15 @@ footer {
   .mainbody.left,
   .sidebar.left {
     float: left;
+  }
+  .mainbody.left {
     padding-right: 1rem;
   }
   .mainbody.right,
   .sidebar.right {
     float: right;
+  }
+  .mainbody.right {
     padding-left: 1rem;
   }
   .mainbody.solo {
@@ -510,6 +516,9 @@ ul.list-group {
     vertical-align: middle;
   }
 }
+.fines-total {
+  font-weight: bold;
+}
 
 /* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
@@ -740,4 +749,9 @@ div.holding-notes {
 /* --- Rating --- */
 .rating__icon--star {
   width: 0.5rem;
+}
+
+/* --- Confirm --- */
+.confirmDialog form {
+  margin-right: 0.5rem;
 }

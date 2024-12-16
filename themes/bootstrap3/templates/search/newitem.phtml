@@ -5,6 +5,9 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('New Items') . '</li>';
 
+    // Load advanced search Javascript to activate the clear button:
+    $this->headScript()->appendFile('advanced_search.js');
+
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
 ?>
@@ -21,7 +24,7 @@
     <div class="btn-group" data-toggle="buttons">
       <?php foreach ($this->ranges as $key => $range): ?>
         <label class="btn btn-primary<?php if ($key == 0): ?> active<?php endif ?>">
-          <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?=($key == 0) ? ' checked="checked"' : ''?>>
+          <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?=($key == 0) ? ' checked="checked" data-checked-by-default="true"' : ''?>>
           <?=$this->transEsc('past_days', ['range' => $this->escapeHtml($range)], null, true)?>
         </label>
       <?php endforeach; ?>
@@ -38,5 +41,8 @@
       </select>
     </div>
   <?php endif; ?>
-  <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
+  <div class="adv-submit">
+    <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">
+    <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
+  </div>
 </form>

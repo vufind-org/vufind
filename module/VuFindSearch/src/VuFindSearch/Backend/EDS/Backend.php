@@ -32,8 +32,9 @@ namespace VuFindSearch\Backend\EDS;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Config\Config;
+use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
@@ -54,6 +55,8 @@ use function in_array;
  */
 class Backend extends AbstractBackend
 {
+    use SecretTrait;
+
     /**
      * Client user to make the actually requests to the EdsApi
      *
@@ -153,7 +156,7 @@ class Backend extends AbstractBackend
      * @param RecordCollectionFactoryInterface $factory Record collection factory
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
-     * @param Config                           $config  Object representing EDS.ini
+     * @param ?Config                          $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(
@@ -161,7 +164,7 @@ class Backend extends AbstractBackend
         RecordCollectionFactoryInterface $factory,
         CacheAdapter $cache,
         SessionContainer $session,
-        Config $config = null,
+        ?Config $config = null,
         $isGuest = true
     ) {
         // Save dependencies/incoming parameters:
@@ -173,7 +176,7 @@ class Backend extends AbstractBackend
 
         // Extract key values from configuration:
         $this->userName = $config->EBSCO_Account->user_name ?? null;
-        $this->password = $config->EBSCO_Account->password ?? null;
+        $this->password = $this->getSecretFromConfig($config->EBSCO_Account, 'password');
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
@@ -188,7 +191,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      **/
@@ -196,7 +199,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         // process EDS API communication tokens.
         $authenticationToken = $this->getAuthenticationToken();
@@ -289,12 +292,12 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
@@ -644,7 +647,7 @@ class Backend extends AbstractBackend
      * Obtain the session to use with the EDS API from cache if it exists. If not,
      * then generate a new one.
      *
-     * @param bool   $isGuest Whether or not this sesssion will be a guest session
+     * @param bool   $isGuest Whether or not this session will be a guest session
      * @param string $profile Authentication to use for generating a new session
      * if necessary
      *
@@ -757,7 +760,7 @@ class Backend extends AbstractBackend
     /**
      * Set the EBSCO backend type. Backend/EDS is used for both EDS and EPF.
      *
-     * @param str $backendType 'EDS' or 'EPF'
+     * @param string $backendType 'EDS' or 'EPF'
      *
      * @return void
      */

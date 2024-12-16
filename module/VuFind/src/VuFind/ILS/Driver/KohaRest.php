@@ -424,7 +424,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBiblio($id, $patron, $options);
     }
@@ -1030,7 +1030,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -2104,14 +2104,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $result = $this->makeRequest($requestParams);
         if (404 == $result['code']) {
-            return [];
+            return $results;
         }
         if (200 != $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
 
         if (empty($result['data']['item_availabilities'])) {
-            return [];
+            return $results;
         }
 
         // Return total number of results for pagination (with fallback for older

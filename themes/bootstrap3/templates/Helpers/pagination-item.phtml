@@ -1,12 +1,13 @@
 <?php
+  $results = $this->params['results'] ?? null;
   $liAttrs = $this->htmlAttributes([
     'class' => array_merge(['page-item'], $this->liClasses ?? []),
   ]);
   $aAttrs = $this->htmlAttributes([
     'class' => 'page-link',
     'aria-label' => $this->label,
-    'href' => null !== $this->results
-      ? $this->results->getUrlQuery()->setPage($this->page)->getParams(false)
+    'href' => null !== $results
+      ? $results->getUrlQuery()->setPage($this->page)->getParams(false)
       : $this->currentPath() . '?' . http_build_query(array_merge($this->params ?? [], ['page' => $this->page])),
   ]);
   if ($this->page === $this->current) {

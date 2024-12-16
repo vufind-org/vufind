@@ -77,7 +77,7 @@ class Loader extends \VuFind\ImageLoader
     /**
      * VuFind configuration settings
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -189,7 +189,7 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config  $config      VuFind configuration
+     * @param \VuFind\Config\Config   $config      VuFind configuration
      * @param ApiManager              $manager     Plugin manager for API handlers
      * @param \VuFindTheme\ThemeInfo  $theme       VuFind theme tools
      * @param \VuFindHttp\HttpService $httpService HTTP client factory

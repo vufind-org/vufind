@@ -30,8 +30,6 @@
 namespace VuFindTest\Auth;
 
 use DateTime;
-use Laminas\Config\Config;
-use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Session\SessionManager;
@@ -40,9 +38,11 @@ use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;
+use VuFind\Net\UserIpReader;
 use VuFind\Validator\CsrfInterface;
 
 /**
@@ -63,7 +63,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @param ?CsrfInterface            $csrf            CSRF validator
      * @param ?Mailer                   $mailer          Mailer service
      * @param ?PhpRenderer              $renderer        View renderer
-     * @param ?RemoteAddress            $remoteAddress   Remote address details
+     * @param ?userIpReader             $userIpReader    User IP reader
      * @param array                     $config          Configuration settings
      * @param ?AuthHashServiceInterface $authHashService AuthHash database service
      *
@@ -73,20 +73,20 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @throws NoPreviousThrowableException
      */
     protected function getEmailAuthenticator(
-        SessionManager $sessionManager = null,
-        CsrfInterface $csrf = null,
-        Mailer $mailer = null,
-        PhpRenderer $renderer = null,
-        RemoteAddress $remoteAddress = null,
+        ?SessionManager $sessionManager = null,
+        ?CsrfInterface $csrf = null,
+        ?Mailer $mailer = null,
+        ?PhpRenderer $renderer = null,
+        ?UserIpReader $userIpReader = null,
         array $config = [],
-        AuthHashServiceInterface $authHashService = null
+        ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
             $sessionManager ?? $this->createMock(SessionManager::class),
             $csrf ?? $this->createMock(CsrfInterface::class),
             $mailer ?? $this->createMock(Mailer::class),
             $renderer ?? $this->createMock(PhpRenderer::class),
-            $remoteAddress ?? $this->createMock(RemoteAddress::class),
+            $userIpReader ?? $this->createMock(UserIpReader::class),
             new Config($config),
             $authHashService ?? $this->createMock(AuthHashServiceInterface::class)
         );
@@ -186,14 +186,14 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $renderer->expects($this->once())->method('render')
             ->with('Email/login-link.phtml', $this->callback($checkViewParams))
             ->willReturn('foo-message');
-        $remoteAddress = $this->createMock(RemoteAddress::class);
-        $remoteAddress->expects($this->once())->method('getIpAddress')->willReturn('foo-ip');
+        $userIpReader = $this->createMock(userIpReader::class);
+        $userIpReader->expects($this->once())->method('getUserIp')->willReturn('foo-ip');
         $authenticator = $this->getEmailAuthenticator(
             sessionManager: $sessionManager,
             csrf: $csrf,
             mailer: $mailer,
             renderer: $renderer,
-            remoteAddress: $remoteAddress,
+            userIpReader: $userIpReader,
             config: ['Site' => ['title' => 'foo-site-title', 'email' => 'from@example.com']],
             authHashService: $authHashService
         );

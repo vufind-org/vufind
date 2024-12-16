@@ -289,19 +289,19 @@ class TagsService implements DbTableAwareInterface
     /**
      * Get all resources associated with the provided tag query.
      *
-     * @param string $q      Search query
-     * @param string $source Record source (optional limiter)
-     * @param string $sort   Resource field to sort on (optional)
-     * @param int    $offset Offset for results
-     * @param ?int   $limit  Limit for results (null for none)
-     * @param bool   $fuzzy  Are we doing an exact (false) or fuzzy (true) search?
+     * @param string  $q      Search query
+     * @param ?string $source Record source (optional limiter)
+     * @param ?string $sort   Resource field to sort on (optional)
+     * @param int     $offset Offset for results
+     * @param ?int    $limit  Limit for results (null for none)
+     * @param bool    $fuzzy  Are we doing an exact (false) or fuzzy (true) search?
      *
      * @return array
      */
     public function getResourcesMatchingTagQuery(
         string $q,
-        string $source = null,
-        string $sort = null,
+        ?string $source = null,
+        ?string $sort = null,
         int $offset = 0,
         ?int $limit = null,
         bool $fuzzy = true

@@ -219,10 +219,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      * Get current hidden filters as a string suitable for search URLs
      *
      * @param string $searchClassId            Active search class
-     * @param bool   $ignoreHiddenFilterMemory Whether to ignore hidden filters in
-     * search memory
-     * @param string $prepend                  String to prepend to the hidden
-     * filters if they're not empty
+     * @param bool   $ignoreHiddenFilterMemory Whether to ignore hidden filters in search memory
+     * @param string $prepend                  String to prepend to the hidden filters if they're not empty
      *
      * @return string
      */
@@ -263,7 +261,10 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 $this->cachedHiddenFilterParams[$searchClassId] = '';
             }
         }
-        return $prepend . $this->cachedHiddenFilterParams[$searchClassId];
+        if ('' !== ($filters = $this->cachedHiddenFilterParams[$searchClassId])) {
+            return $prepend . $filters;
+        }
+        return '';
     }
 
     /**

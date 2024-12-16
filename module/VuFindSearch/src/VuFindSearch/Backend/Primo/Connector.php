@@ -315,7 +315,7 @@ class Connector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
             // pcAvailability = false
             // By setting this value to true, also matches, which
             // are NOT available via Holdingsfile are returned
-            // (yes, right, set this to true - thats ExLibris Logic)
+            // (yes, right, set this to true - that's ExLibris Logic)
             if ($args['pcAvailability']) {
                 $qs[] = 'pcAvailability=true';
             }
