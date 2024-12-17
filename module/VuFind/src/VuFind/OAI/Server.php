@@ -446,17 +446,17 @@ class Server
         $set = ''
     ) {
         if ($format === false) {
+            // If no format was requested, report success without doing anything:
             return true;
         }
 
-        $result = $this->getRecordAsXML($record, $format);
-        $xml = $result['xml'];
+        $xml = $this->getRecordAsXML($record, $format);
 
-        // Headers should be returned only if the metadata format matching
-        // the supplied metadataPrefix is available.
-        // If RecordDriver returns nothing, skip this record.
-        if (empty($xml)) {
-            return $result['default_return'];
+        // If returned XML is false, an error was encountered during the process
+        // of generating the XML file. Return false for calling functions, so the
+        // error can be processed properly.
+        if (!$xml) {
+            return $xml !== false;
         }
 
         // Check for sets:
@@ -501,21 +501,14 @@ class Server
      * @param AbstractRecordDriver $record A record driver object
      * @param string               $format Metadata format to obtain
      *
-     * @return array [xml => record as xml or false on error, default_return => true or false]
+     * @return string|false String or false if an error occured
      */
-    protected function getRecordAsXML(AbstractRecordDriver $record, string $format): array
+    protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
     {
         if ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
-            return [
-                'xml' =>  $this->getVuFindMetadata($record),
-                'default_return' => true,
-            ];
+            return $this->getVuFindMetadata($record);
         }
-        $result = $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
-        return [
-            'xml' => $result,
-            'default_return' => false,
-        ];
+        return $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
     }
 
     /**
