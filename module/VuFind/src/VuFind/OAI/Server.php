@@ -445,16 +445,18 @@ class Server
         $headerOnly = false,
         $set = ''
     ) {
-        // no metadata if in header-only mode!
-        if ($format !== false) {
-            $xml = $this->getRecordAsXML($record, $format);
+        if ($format === false) {
+            return true;
         }
+
+        $result = $this->getRecordAsXML($record, $format);
+        $xml = $result['xml'];
 
         // Headers should be returned only if the metadata format matching
         // the supplied metadataPrefix is available.
         // If RecordDriver returns nothing, skip this record.
         if (empty($xml)) {
-            return true;
+            return $result['default_return'];
         }
 
         // Check for sets:
@@ -499,14 +501,21 @@ class Server
      * @param AbstractRecordDriver $record A record driver object
      * @param string               $format Metadata format to obtain
      *
-     * @return string|bool String on success or false if error occurs
+     * @return array [xml => record as xml or false on error, default_return => true for not displaying as error]
      */
-    protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
+    protected function getRecordAsXML(AbstractRecordDriver $record, string $format): array
     {
         if ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
-            return $this->getVuFindMetadata($record);   // special case
+            return [
+                'xml' =>  $this->getVuFindMetadata($record),
+                'default_return' => true,
+            ];
         }
-        return $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
+        $result = $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
+        return [
+            'xml' => $result,
+            'default_return' => false,
+        ];
     }
 
     /**
