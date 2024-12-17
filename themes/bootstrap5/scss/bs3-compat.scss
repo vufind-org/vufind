@@ -344,8 +344,19 @@ h6, .h6 {
   display: none !important;
 }
 
-#modal .modal-content > .close {
+#modal .modal-dialog .modal-content > .close {
   border: 0;
+
+  @media (max-width: 767px) {
+    font-size: 1.5rem;
+    background-color: var(--#{$prefix}modal-bg);
+    top: 0.5rem;
+    right: 0.5rem;
+
+    body.rtl & {
+      left: 0.5rem;
+    }
+  }
 }
 
 .fade.show {
