@@ -141,7 +141,7 @@ legend {
     outline: dotted 1px $text-color;
   }
 }
-.btn.btn-more {
+.btn.more-btn:not(.facet) {
   background-color: revert;
   &:hover {
     background-color: revert;
