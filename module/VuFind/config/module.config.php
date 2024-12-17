@@ -543,7 +543,7 @@ $config = [
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
         'delegators' => [
-            'Laminas\I18n\Translator\TranslatorInterface' => [
+            'Laminas\Mvc\I18n\Translator' => [
                 'VuFind\I18n\Translator\TranslatorFactory',
             ],
             'SlmLocale\Locale\Detector' => [
