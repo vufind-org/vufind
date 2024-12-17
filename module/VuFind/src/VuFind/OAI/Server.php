@@ -452,9 +452,11 @@ class Server
 
         $xml = $this->getRecordAsXML($record, $format);
 
+        // Headers should be returned only if the metadata format matching
+        // the supplied metadataPrefix is available.
+        // If returned XML is empty, return true to simply skip this record.
         // If returned XML is false, an error was encountered during the process
-        // of generating the XML file. Return false for calling functions, so the
-        // error can be processed properly.
+        // of generating the XML file.
         if (!$xml) {
             return $xml !== false;
         }
@@ -506,7 +508,8 @@ class Server
     protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
     {
         if ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
-            return $this->getVuFindMetadata($record);
+            // Return empty string instead of false for BC.
+            return $this->getVuFindMetadata($record) ?: '';
         }
         return $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
     }
