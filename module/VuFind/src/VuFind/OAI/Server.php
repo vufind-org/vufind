@@ -501,7 +501,7 @@ class Server
      * @param AbstractRecordDriver $record A record driver object
      * @param string               $format Metadata format to obtain
      *
-     * @return array [xml => record as xml or false on error, default_return => true for not displaying as error]
+     * @return array [xml => record as xml or false on error, default_return => true or false]
      */
     protected function getRecordAsXML(AbstractRecordDriver $record, string $format): array
     {
