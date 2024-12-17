@@ -30,7 +30,7 @@
 
 namespace VuFindTest\Recommend;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFind\Connection\ExternalVuFind;
 use VuFind\Recommend\ConsortialVuFind;

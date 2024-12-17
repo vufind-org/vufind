@@ -31,10 +31,10 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Renderer\RendererInterface;
 use Symfony\Component\Mime\Address;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;

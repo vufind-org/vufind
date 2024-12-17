@@ -132,7 +132,7 @@ class Form extends \Laminas\Form\Form implements
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
      * @param HandlerManager      $handlerManager    Handler plugin manager
-     * @param array               $config            VuFind main configuration
+     * @param ?array              $config            VuFind main configuration
      * (optional)
      *
      * @throws \Exception
@@ -141,7 +141,7 @@ class Form extends \Laminas\Form\Form implements
         YamlReader $yamlReader,
         HelperPluginManager $viewHelperManager,
         HandlerManager $handlerManager,
-        array $config = null
+        ?array $config = null
     ) {
         parent::__construct();
 

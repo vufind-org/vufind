@@ -403,7 +403,7 @@ class ComposedDriver extends AbstractMultiDriver
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
@@ -412,7 +412,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->combineArraysOfAssociativeArrays(
             'getHolding',

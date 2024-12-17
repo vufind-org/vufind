@@ -50,7 +50,7 @@ interface GetIdsInterface
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
@@ -58,6 +58,6 @@ interface GetIdsInterface
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     );
 }

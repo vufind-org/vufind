@@ -1,4 +1,4 @@
-/*global userIsLoggedIn, VuFind */
+/*global bootstrap, userIsLoggedIn, VuFind */
 VuFind.register('account', function Account() {
   // Retrieved statuses
   var LOADING = -1 * Math.PI; // waiting for request
@@ -84,7 +84,7 @@ VuFind.register('account', function Account() {
         accountIconEl.dataset.toggle = 'tooltip';
         accountIconEl.dataset.placement = 'bottom';
         accountIconEl.title = VuFind.translate('account_has_alerts');
-        $(accountIconEl).tooltip();
+        bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
       } else {
         $(accountIconEl).tooltip('destroy');
       }

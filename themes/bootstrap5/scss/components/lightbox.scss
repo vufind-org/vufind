@@ -5,6 +5,10 @@
   margin-inline: auto;
   margin-block: 1rem;
   padding-inline: 1rem;
+
+  #lightbox-title {
+    margin-right: 1.5rem;
+  }
 }
 @media (min-width: 768px) {
   #modal .modal-dialog {
@@ -17,6 +21,10 @@
 <#LESS */
     min-width: 600px;
     padding: 0;
+
+    #lightbox-title {
+      margin-right: inherit;
+    }
   }
 }
 
@@ -31,6 +39,10 @@
   body.rtl & {
     left: 0;
     right: auto;
+  }
+
+  &:hover {
+    outline: dotted 1px $text-color;
   }
 }
 #modal .close svg {
@@ -52,10 +64,12 @@
       left: -1.75em;
       right: auto;
     }
+    &:hover {
+      background-color: #000;
+    }
   }
 }
 
-#modal .modal-content > .close:hover { background-color: #000; }
 #modal .modal-body h1,
 #modal .modal-body h2 {
   margin-top: 0.3rem;

@@ -64,14 +64,14 @@ class ContentCafeFactory implements \Laminas\ServiceManager\Factory\FactoryInter
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $finalConfig = $config->Contentcafe ?? new \Laminas\Config\Config([]);
+        $finalConfig = $config->Contentcafe ?? new \VuFind\Config\Config([]);
         return new $requestedName($finalConfig);
     }
 }

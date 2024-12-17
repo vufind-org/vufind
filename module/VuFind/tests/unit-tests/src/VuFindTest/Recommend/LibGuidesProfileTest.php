@@ -31,8 +31,8 @@
 namespace VuFindTest\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Config;
 use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFind\Connection\LibGuides;
 use VuFind\Recommend\LibGuidesProfile;

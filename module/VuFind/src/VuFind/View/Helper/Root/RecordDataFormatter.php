@@ -69,14 +69,14 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Config.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param ?\Laminas\Config\Config $config Config
+     * @param ?\VuFind\Config\Config $config Config
      */
     public function __construct($config = null)
     {
@@ -87,11 +87,11 @@ class RecordDataFormatter extends AbstractHelper
      * Store a record driver object and return this object so that the appropriate
      * data can be rendered.
      *
-     * @param RecordDriver $driver Record driver object.
+     * @param ?RecordDriver $driver Record driver object.
      *
      * @return RecordDataFormatter
      */
-    public function __invoke(RecordDriver $driver = null): RecordDataFormatter
+    public function __invoke(?RecordDriver $driver = null): RecordDataFormatter
     {
         $this->driver = $driver;
         return $this;

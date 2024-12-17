@@ -30,7 +30,7 @@
 
 namespace VuFindTheme;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -59,10 +59,10 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     /**
      * Constructor
      *
-     * @param ThemeInfo    $info         Theme info object
-     * @param PathResolver $pathResolver Config file path resolver
+     * @param ThemeInfo     $info         Theme info object
+     * @param ?PathResolver $pathResolver Config file path resolver
      */
-    public function __construct(ThemeInfo $info, PathResolver $pathResolver = null)
+    public function __construct(ThemeInfo $info, ?PathResolver $pathResolver = null)
     {
         parent::__construct($info);
         $this->pathResolver = $pathResolver;

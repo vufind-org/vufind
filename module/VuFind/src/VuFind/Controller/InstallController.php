@@ -740,8 +740,8 @@ class InstallController extends AbstractBase
      * Support method for fixsecurityAction(). Returns true if the configuration
      * was modified, false otherwise.
      *
-     * @param \Laminas\Config\Config $config Existing VuFind configuration
-     * @param ConfigWriter           $writer Config writer
+     * @param \VuFind\Config\Config $config Existing VuFind configuration
+     * @param ConfigWriter          $writer Config writer
      *
      * @return bool
      */

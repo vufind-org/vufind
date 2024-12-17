@@ -70,7 +70,7 @@ class AutocompleteCommand extends CallMethodCommand
         string $backendId,
         string $query,
         string $domain,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $this->query = $query;
         $this->domain = $domain;

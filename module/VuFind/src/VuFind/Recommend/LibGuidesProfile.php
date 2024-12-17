@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
 use function intval;

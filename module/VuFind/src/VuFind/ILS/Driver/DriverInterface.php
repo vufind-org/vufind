@@ -112,7 +112,7 @@ interface DriverInterface
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null, array $options = []);
+    public function getHolding($id, ?array $patron = null, array $options = []);
 
     /**
      * Get Purchase History
