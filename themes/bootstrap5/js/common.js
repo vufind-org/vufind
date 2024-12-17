@@ -33,17 +33,6 @@ var VuFind = (function VuFind() {
     return newElement;
   }
 
-  /**
-   * Convert given string into a node list.
-   * @param {string} htmlString String to convert into nodes
-   * @returns {NodeList} Given string as a node list
-   */
-  function stringToNodes(htmlString) {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlString;
-    return tempDiv.childNodes;
-  }
-
   // Event controls
 
   let listeners = {};
@@ -348,7 +337,8 @@ var VuFind = (function VuFind() {
    * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
-    const tmpDiv = el('div', '', {}, stringToNodes(html));
+    const tmpDiv = document.createElement('div');
+    tmpDiv.innerHTML = html;
     const scripts = [];
     // Cloning scripts wont work as they pass internal executed state so save them for later
     tmpDiv.querySelectorAll('script').forEach(script => {
