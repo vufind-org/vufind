@@ -49,7 +49,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      */
     public function testFormatting()
     {
-        // test en_US
+        // test default currency in en_US locale
         $smf = new SafeMoneyFormat(
             new \VuFind\Service\CurrencyFormatter(null, 'en_US'),
             new \Laminas\View\Helper\EscapeHtml()
