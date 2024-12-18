@@ -66,18 +66,18 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     /**
      * Create a mock plugin.
      *
-     * @param mixed  $value    Value to return in response to DOI request.
+     * @param mixed  $value    Value to return in response to identifier request.
      * @param string $times    How many times do we expect this method to be called?
-     * @param string $doi      What DOI does this handler return data for?
-     * @param array  $expected What is the expected DOI request?
+     * @param int    $key      Which key is matched in the response?
+     * @param array  $expected What is the expected identifier link request?
      *
      * @return IdentifierLinkerInterface
      */
     protected function getMockPlugin(
-        $value,
-        $times = 'once',
-        $doi = 'bar',
-        $expected = ['bar']
+        mixed $value,
+        string $times = 'once',
+        int $key = 0,
+        array $expected = [['doi' => 'bar']]
     ) {
         $mockPlugin = $this->container
             ->createMock(IdentifierLinkerInterface::class, ['getLinks']);
@@ -85,7 +85,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ->with($this->equalTo($expected))
             ->willReturn(
                 [
-                    $doi => [
+                    $key => [
                         [
                             'link' => 'http://' . $value,
                             'label' => $value,
@@ -118,11 +118,11 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      * After setupConfig() and setupPluginManager() have been called, run the
      * standard default test.
      *
-     * @param array $requested DOI(s) to test request with
+     * @param array $requested Identifier(s) to test request with
      *
      * @return array
      */
-    protected function getHandlerResults($requested = ['bar'])
+    protected function getHandlerResults($requested = [['doi' => 'bar']])
     {
         $plugins = [
             'serverurl' => function ($path) {
@@ -149,7 +149,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 
         $factory = new IdentifierLinksLookupFactory();
         $handler = $factory($this->container, IdentifierLinksLookup::class);
-        $params = $this->getParamsHelper(['doi' => $requested]);
+        $params = $this->getParamsHelper(content: json_encode($requested));
         return $handler->handleRequest($params);
     }
 
@@ -162,23 +162,23 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         return [
             [
-                ['DOI' => ['resolver' => 'foo']],
+                ['IdentifierLinks' => ['resolver' => 'foo']],
                 false,
                 'remote-icon',
             ],
             [
-                ['DOI' => ['resolver' => 'foo', 'new_window' => true]],
+                ['IdentifierLinks' => ['resolver' => 'foo', 'new_window' => true]],
                 true,
                 'remote-icon',
             ],
             [
-                ['DOI' => ['resolver' => 'foo', 'proxy_icons' => true]],
+                ['IdentifierLinks' => ['resolver' => 'foo', 'proxy_icons' => true]],
                 false,
                 'http://localhost/cover-show?proxy=remote-icon',
             ],
             [
                 [
-                    'DOI' => [
+                    'IdentifierLinks' => [
                         'resolver' => 'foo',
                         'new_window' => true,
                         'proxy_icons' => true,
@@ -191,7 +191,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Test a single DOI lookup.
+     * Test a single identifier link lookup.
      *
      * @param array  $config     Configuration
      * @param bool   $newWindow  Expected "new window" setting
@@ -218,7 +218,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->assertEquals(
             [
                 [
-                    'bar' => [
+                    0 => [
                         [
                             'link' => 'http://baz',
                             'label' => 'baz',
@@ -234,14 +234,14 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Test a DOI lookup in two handlers, with "first" mode turned on by default.
+     * Test an identifier link lookup in two handlers, with "first" mode turned on by default.
      *
      * @return void
      */
     public function testFirstDefaultLookup()
     {
         // Set up config manager:
-        $this->setupConfig(['DOI' => ['resolver' => 'foo,foo2']]);
+        $this->setupConfig(['IdentifierLinks' => ['resolver' => 'foo,foo2']]);
 
         // Set up plugin manager:
         $this->setupPluginManager(
@@ -255,7 +255,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->assertEquals(
             [
                 [
-                    'bar' => [
+                    0 => [
                         [
                             'link' => 'http://baz',
                             'label' => 'baz',
@@ -271,7 +271,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Test a DOI lookup in two handlers, with "first" mode turned on explicitly.
+     * Test an identifier link lookup in two handlers, with "first" mode turned on explicitly.
      *
      * @return void
      */
@@ -279,7 +279,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         // Set up config manager:
         $this->setupConfig(
-            ['DOI' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'first']]
+            ['IdentifierLinks' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'first']]
         );
 
         // Set up plugin manager:
@@ -294,7 +294,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->assertEquals(
             [
                 [
-                    'bar' => [
+                    0 => [
                         [
                             'link' => 'http://baz',
                             'label' => 'baz',
@@ -310,7 +310,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Test a DOI lookup in two handlers, with "first" mode turned on explicitly,
+     * Test an identifier link lookup in two handlers, with "first" mode turned on explicitly,
      * where each handler returns results for a different DOI.
      *
      * @return void
@@ -319,18 +319,18 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         // Set up config manager:
         $this->setupConfig(
-            ['DOI' => ['resolver' => 'foo,foo2,foo3', 'multi_resolver_mode' => 'first']]
+            ['IdentifierLinks' => ['resolver' => 'foo,foo2,foo3', 'multi_resolver_mode' => 'first']]
         );
 
         // Set up plugin manager:
-        $request = ['bar', 'bar2'];
+        $request = [['doi' => 'bar'], ['doi' => 'bar2']];
         $this->setupPluginManager(
             [
-                'foo' => $this->getMockPlugin('baz', 'once', 'bar', $request),
-                'foo2' => $this->getMockPlugin('baz2', 'once', 'bar2', $request),
+                'foo' => $this->getMockPlugin('baz', 'once', 0, $request),
+                'foo2' => $this->getMockPlugin('baz2', 'once', 1, $request),
                 // The previous handlers will satisfy the request, so this one will
                 // never be called; included to verify short-circuit behavior:
-                'foo3' => $this->getMockPlugin('baz', 'never', 'bar', $request),
+                'foo3' => $this->getMockPlugin('baz', 'never', 0, $request),
             ]
         );
 
@@ -338,7 +338,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->assertEquals(
             [
                 [
-                    'bar' => [
+                    0 => [
                         [
                             'link' => 'http://baz',
                             'label' => 'baz',
@@ -347,7 +347,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
                             'localIcon' => '(local-icon)',
                         ],
                     ],
-                    'bar2' => [
+                    1 => [
                         [
                             'link' => 'http://baz2',
                             'label' => 'baz2',
@@ -363,7 +363,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Test a DOI lookup in two handlers, with "merge" mode turned on.
+     * Test an identifier link lookup in two handlers, with "merge" mode turned on.
      *
      * @return void
      */
@@ -371,7 +371,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         // Set up config manager:
         $this->setupConfig(
-            ['DOI' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'merge']]
+            ['IdentifierLinks' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'merge']]
         );
 
         // Set up plugin manager:
@@ -385,7 +385,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->assertEquals(
             [
                 [
-                    'bar' => [
+                    0 => [
                         [
                             'link' => 'http://baz',
                             'label' => 'baz',
