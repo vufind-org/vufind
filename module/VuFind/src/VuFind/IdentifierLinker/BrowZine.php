@@ -111,28 +111,31 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     }
 
     /**
-     * Given an array of DOIs, perform a lookup and return an associative array
-     * of arrays, keyed by DOI. Each array contains one or more associative arrays
-     * with required 'link' (URL to related resource) and 'label' (display text)
-     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of
-     * configured icon in theme) key.
+     * Given an array of identifier arrays, perform a lookup and return an associative array
+     * of arrays, matching the keys of the input array. Each output array contains one or more
+     * associative arrays with required 'link' (URL to related resource) and 'label' (display text)
+     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of configured icon in
+     * theme) key.
      *
-     * @param array $doiArray DOIs to look up
+     * @param array[] $idArray Identifiers to look up
      *
      * @return array
      */
-    public function getLinks(array $doiArray)
+    public function getLinks(array $idArray): array
     {
         $response = [];
         $localIcons = !empty($this->config['local_icons']);
-        foreach ($doiArray as $doi) {
-            $command = new LookupDoiCommand('BrowZine', $doi);
+        foreach ($idArray as $idKey => $ids) {
+            if (!isset($ids['doi'])) {
+                continue;
+            }
+            $command = new LookupDoiCommand('BrowZine', $ids['doi']);
             $result = $this->searchService->invoke($command)->getResult();
             $data = $result['data'] ?? null;
-            foreach ($this->getDoiServices() as $key => $config) {
-                if ($this->arrayKeyAvailable($key, $data)) {
+            foreach ($this->getDoiServices() as $serviceKey => $config) {
+                if ($this->arrayKeyAvailable($serviceKey, $data)) {
                     $result = [
-                        'link' => $data[$key],
+                        'link' => $data[$serviceKey],
                         'label' => $this->translate($config['linkText']),
                         'data' => $data,
                     ];
@@ -141,7 +144,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
                     } else {
                         $result['localIcon'] = $config['localIcon'];
                     }
-                    $response[$doi][] = $result;
+                    $response[$idKey][] = $result;
                 }
             }
         }

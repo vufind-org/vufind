@@ -60,7 +60,7 @@ class Demo implements IdentifierLinkerInterface
      *
      * @return array
      */
-    public function getLinks(array $idArray)
+    public function getLinks(array $idArray): array
     {
         $response = [];
         $supportedIdTypes = ['doi', 'isbn', 'issn'];

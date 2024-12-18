@@ -41,15 +41,15 @@ namespace VuFind\IdentifierLinker;
 interface IdentifierLinkerInterface
 {
     /**
-     * Given an array of DOIs, perform a lookup and return an associative array
-     * of arrays, keyed by DOI. Each array contains one or more associative arrays
-     * with required 'link' (URL to related resource) and 'label' (display text)
-     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of
-     * configured icon in theme) key.
+     * Given an array of identifier arrays, perform a lookup and return an associative array
+     * of arrays, matching the keys of the input array. Each output array contains one or more
+     * associative arrays with required 'link' (URL to related resource) and 'label' (display text)
+     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of configured icon in
+     * theme) key.
      *
-     * @param array $doiArray DOIs to look up
+     * @param array[] $idArray Identifiers to look up
      *
      * @return array
      */
-    public function getLinks(array $doiArray);
+    public function getLinks(array $idArray): array;
 }

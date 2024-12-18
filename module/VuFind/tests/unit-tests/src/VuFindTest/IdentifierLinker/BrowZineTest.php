@@ -72,13 +72,11 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConnector($doi, $response)
     {
-        $connector = $this->getMockBuilder(Connector::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $connector = $this->createMock(Connector::class);
         $connector->expects($this->once())
             ->method('lookupDoi')
             ->with($this->equalTo($doi))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         return $connector;
     }
 
@@ -94,7 +92,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             [
                 'config' => [],
                 'response' => [
-                    '10.1155/2020/8690540' => [
+                    0 => [
                         [
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
@@ -113,7 +111,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             [
                 'config' => ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
                 'response' => [
-                    '10.1155/2020/8690540' => [
+                    0 => [
                         [
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
@@ -126,7 +124,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             [
                 'config' => ['filterType' => 'include', 'filter' => ['browzineWebLink']],
                 'response' => [
-                    '10.1155/2020/8690540' => [
+                    0 => [
                         [
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
@@ -138,14 +136,15 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
+        $doi = '10.1155/2020/8690540';
+        $ids = [['doi' => $doi]];
         foreach ($testData as $data) {
-            $dois = array_keys($data['response']);
-            $connector = $this->getMockConnector($dois[0], $rawData);
+            $connector = $this->getMockConnector($doi, $rawData);
             $ss = $this->getSearchService($this->getBackendManager($connector));
             $browzine = new BrowZine($ss, $data['config']);
             $this->assertEquals(
                 $data['response'],
-                $browzine->getLinks($dois)
+                $browzine->getLinks($ids)
             );
         }
     }
