@@ -59,7 +59,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
     public static function getRecordContextProvider(): array
     {
         return [
-            'no configuration' => [[], []],
+            'no configuration' => [[], [], ['record']],
             'one provider' => [
                 [
                     'source.Solr' => [
@@ -67,6 +67,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 ['bar'],
+                ['record'],
             ],
             'two providers, including config' => [
                 [
@@ -78,6 +79,26 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 ['bar', 'baz-extraConfig'],
+                ['record'],
+            ],
+            'override section' => [
+                [
+                    'source.Solr' => [
+                        'record' => ['bar'],
+                        'recordTab' => ['override'],
+                    ],
+                ],
+                ['override'],
+                ['recordTab', 'record'],
+            ],
+            'proper section fallback' => [
+                [
+                    'source.Solr' => [
+                        'record' => ['bar'],
+                    ],
+                ],
+                ['bar'],
+                ['recordTab', 'record'],
             ],
         ];
     }
@@ -87,18 +108,19 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config              Configuration
      * @param array $expectedChannelData The channel data we expect to retrieve
+     * @param array $sections            Config sections to look at for provider settings
      *
      * @return void
      *
      * @dataProvider getRecordContextProvider
      */
-    public function testGetRecordContext(array $config, array $expectedChannelData): void
+    public function testGetRecordContext(array $config, array $expectedChannelData, array $sections): void
     {
         $mockRecord = $this->createMock(DefaultRecord::class);
         $recordLoader = $this->getMockRecordLoader();
         $recordLoader->expects($this->once())->method('load')->with('foo', 'Solr')->willReturn($mockRecord);
         $loader = $this->getChannelLoader($config, $recordLoader);
-        $context = $loader->getRecordContext('foo');
+        $context = $loader->getRecordContext('foo', configSections: $sections);
         $this->assertEquals(['driver', 'channels', 'token'], array_keys($context));
         $this->assertEquals($mockRecord, $context['driver']);
         $this->assertEquals($expectedChannelData, $context['channels']);
