@@ -379,7 +379,7 @@ class Server
      *
      * @param object $record A record driver object
      *
-     * @return string
+     * @return string|false String on success and false if an error occurred
      */
     protected function getVuFindMetadata($record)
     {
