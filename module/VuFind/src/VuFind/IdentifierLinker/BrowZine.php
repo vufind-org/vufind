@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\IdentifierLinker;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
@@ -44,7 +44,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
+class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

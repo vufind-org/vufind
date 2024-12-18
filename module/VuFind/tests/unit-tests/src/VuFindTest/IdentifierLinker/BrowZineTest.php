@@ -27,9 +27,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\DoiLinker;
+namespace VuFindTest\IdentifierLinker;
 
-use VuFind\DoiLinker\BrowZine;
+use VuFind\IdentifierLinker\BrowZine;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
 

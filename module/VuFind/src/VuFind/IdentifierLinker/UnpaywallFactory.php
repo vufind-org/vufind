@@ -1,11 +1,11 @@
 <?php
 
 /**
- * BrowZine DOI linker factory
+ * Unpaywall DOI linker factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Moravian library 2019
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,12 +22,12 @@
  *
  * @category VuFind
  * @package  DOI
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\IdentifierLinker;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -39,11 +39,11 @@ use Psr\Container\ContainerInterface;
  *
  * @category VuFind
  * @package  DOI
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
-class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -69,13 +69,8 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $search = $container->get(\VuFindSearch\Service::class);
-        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('BrowZine');
-        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
-        $doiServices = isset($fullConfig->DOIServices)
-            ? $fullConfig->DOIServices->toArray()
-            : [];
-        return new $requestedName($search, $config, $doiServices);
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config')->DOI;
+        return new $requestedName($config);
     }
 }

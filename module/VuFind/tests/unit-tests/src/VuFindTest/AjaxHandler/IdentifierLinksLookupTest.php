@@ -32,8 +32,8 @@ namespace VuFindTest\AjaxHandler;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\AjaxHandler\IdentifierLinksLookup;
 use VuFind\AjaxHandler\IdentifierLinksLookupFactory;
-use VuFind\DoiLinker\DoiLinkerInterface;
-use VuFind\DoiLinker\PluginManager;
+use VuFind\IdentifierLinker\IdentifierLinkerInterface;
+use VuFind\IdentifierLinker\PluginManager;
 
 /**
  * IdentifierLinksLookup test class.
@@ -71,7 +71,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      * @param string $doi      What DOI does this handler return data for?
      * @param array  $expected What is the expected DOI request?
      *
-     * @return DoiLinkerInterface
+     * @return IdentifierLinkerInterface
      */
     protected function getMockPlugin(
         $value,
@@ -80,7 +80,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $expected = ['bar']
     ) {
         $mockPlugin = $this->container
-            ->createMock(DoiLinkerInterface::class, ['getLinks']);
+            ->createMock(IdentifierLinkerInterface::class, ['getLinks']);
         $mockPlugin->expects($this->$times())->method('getLinks')
             ->with($this->equalTo($expected))
             ->willReturn(

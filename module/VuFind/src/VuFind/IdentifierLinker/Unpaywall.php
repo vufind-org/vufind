@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\IdentifierLinker;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
@@ -42,7 +42,7 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
 class Unpaywall implements
-    DoiLinkerInterface,
+    IdentifierLinkerInterface,
     TranslatorAwareInterface,
     HttpServiceAwareInterface
 {

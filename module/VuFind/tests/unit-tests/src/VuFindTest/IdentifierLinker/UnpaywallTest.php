@@ -27,11 +27,11 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\DoiLinker;
+namespace VuFindTest\IdentifierLinker;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-use VuFind\DoiLinker\Unpaywall;
+use VuFind\IdentifierLinker\Unpaywall;
 
 /**
  * Unpaywall Test Class

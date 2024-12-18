@@ -31,7 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
-use VuFind\DoiLinker\PluginManager;
+use VuFind\IdentifierLinker\PluginManager;
 
 use function count;
 

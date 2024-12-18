@@ -72,7 +72,7 @@ class IdentifierLinksLookupFactory implements \Laminas\ServiceManager\Factory\Fa
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config')->toArray();
         return new $requestedName(
-            $container->get(\VuFind\DoiLinker\PluginManager::class),
+            $container->get(\VuFind\IdentifierLinker\PluginManager::class),
             $container->get('ViewRenderer'),
             $config
         );
