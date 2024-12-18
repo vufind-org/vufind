@@ -1,16 +1,16 @@
 /*global VuFind, unwrapJQuery */
 VuFind.register('identifierLinks', function identifierLinks() {
-  function embedDoiLinks(el) {
+  function embedIdentifierLinks(el) {
     var queryParams = new URLSearchParams();
-    var elements = el.classList.contains('doiLink') ? [el] : el.querySelectorAll('.doiLink');
+    var elements = el.classList.contains('identifierLink') ? [el] : el.querySelectorAll('.identifierLink');
     var postBody = {};
-    elements.forEach(function extractIdentifierData(doiLinkEl) {
-      var currentInstance = doiLinkEl.dataset.instance;
+    elements.forEach(function extractIdentifierData(identifierLinkEl) {
+      var currentInstance = identifierLinkEl.dataset.instance;
       if (typeof postBody[currentInstance] === "undefined") {
         let currentIdentifiers = {};
         ["doi", "issn", "isbn"].forEach(identifier => {
-          if (typeof doiLinkEl.dataset[identifier] !== "undefined") {
-            currentIdentifiers[identifier] = doiLinkEl.dataset[identifier];
+          if (typeof identifierLinkEl.dataset[identifier] !== "undefined") {
+            currentIdentifiers[identifier] = identifierLinkEl.dataset[identifier];
           }
         });
         if (Object.keys(currentIdentifiers).length > 0) {
@@ -24,12 +24,12 @@ VuFind.register('identifierLinks', function identifierLinks() {
     queryParams.set("method", "doiLookup");
     var url = VuFind.path + '/AJAX/JSON?' + queryParams.toString();
     fetch(url, { method: "POST", body: JSON.stringify(postBody) })
-      .then(function embedDoiLinksDone(rawResponse) {
-        elements.forEach(function populateDoiLinks(doiEl) {
-          var currentInstance = doiEl.dataset.instance;
+      .then(function embedIdentifierLinksDone(rawResponse) {
+        elements.forEach(function populateIdentifierLinks(identifierEl) {
+          var currentInstance = identifierEl.dataset.instance;
           rawResponse.json().then(response => {
             if ("undefined" !== typeof response.data[currentInstance]) {
-              doiEl.innerHTML = "";
+              identifierEl.textContent = "";
               for (var i = 0; i < response.data[currentInstance].length; i++) {
                 var newLink = document.createElement('a');
                 newLink.classList.add('icon-link');
@@ -37,12 +37,12 @@ VuFind.register('identifierLinks', function identifierLinks() {
                 if (typeof response.data[currentInstance][i].icon !== 'undefined') {
                   var icon = document.createElement('img');
                   icon.setAttribute('src', response.data[currentInstance][i].icon);
-                  icon.classList.add("doi-icon");
+                  icon.classList.add("identifier-link-icon");
                   icon.classList.add("icon-link__icon");
                   newLink.appendChild(icon);
                 } else if (typeof response.data[currentInstance][i].localIcon !== 'undefined') {
                   var localIconWrapper = document.createElement('span');
-                  localIconWrapper.innerHTML = response.data[currentInstance][i].localIcon;
+                  VuFind.setInnerHtml(localIconWrapper, response.data[currentInstance][i].localIcon);
                   var localIcon = localIconWrapper.firstChild;
                   if (localIcon) {
                     localIcon.classList.add('icon-link__icon');
@@ -57,8 +57,8 @@ VuFind.register('identifierLinks', function identifierLinks() {
                 newSpan.classList.add('icon-link__label');
                 newSpan.appendChild(document.createTextNode(response.data[currentInstance][i].label));
                 newLink.appendChild(newSpan);
-                doiEl.appendChild(newLink);
-                doiEl.appendChild(document.createElement('br'));
+                identifierEl.appendChild(newLink);
+                identifierEl.appendChild(document.createElement('br'));
               }
             }
           });
@@ -67,7 +67,7 @@ VuFind.register('identifierLinks', function identifierLinks() {
   }
 
   function updateContainer(params) {
-    embedDoiLinks(params.container);
+    embedIdentifierLinks(params.container);
   }
 
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
@@ -76,18 +76,18 @@ VuFind.register('identifierLinks', function identifierLinks() {
     var container = unwrapJQuery(_container || document.body);
     // assign action to the openUrlWindow link class
     if (VuFind.isPrinting()) {
-      embedDoiLinks(container);
+      embedIdentifierLinks(container);
     } else {
       VuFind.observerManager.createIntersectionObserver(
-        'doiLinks',
-        embedDoiLinks,
-        Array.from(container.querySelectorAll('.doiLink'))
+        'identifierLinks',
+        embedIdentifierLinks,
+        Array.from(container.querySelectorAll('.identifierLink'))
       );
     }
     VuFind.listen('results-init', updateContainer);
   }
   return {
     init: init,
-    embedDoiLinks: embedDoiLinks
+    embedIdentifierLinks: embedIdentifierLinks
   };
 });
