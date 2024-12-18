@@ -233,6 +233,7 @@ class ChannelLoader
         $driver = $this->recordLoader->load($recordId, $source);
 
         // Load appropriate channel objects:
+        $providers = [];
         foreach ($configSections as $section) {
             $providers = $this->getChannelProviders($source, $section, $activeChannel);
             if (!empty($providers)) {
