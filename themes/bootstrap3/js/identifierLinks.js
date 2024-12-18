@@ -21,7 +21,7 @@ VuFind.register('identifierLinks', function identifierLinks() {
     if (Object.keys(postBody).length === 0) {
       return;
     }
-    queryParams.set("method", "doiLookup");
+    queryParams.set("method", "identifierLinksLookup");
     var url = VuFind.path + '/AJAX/JSON?' + queryParams.toString();
     fetch(url, { method: "POST", body: JSON.stringify(postBody) })
       .then(function embedIdentifierLinksDone(rawResponse) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DoiLookup test class.
+ * IdentifierLinksLookup test class.
  *
  * PHP version 8
  *
@@ -30,13 +30,13 @@
 namespace VuFindTest\AjaxHandler;
 
 use Laminas\View\Renderer\PhpRenderer;
-use VuFind\AjaxHandler\DoiLookup;
-use VuFind\AjaxHandler\DoiLookupFactory;
+use VuFind\AjaxHandler\IdentifierLinksLookup;
+use VuFind\AjaxHandler\IdentifierLinksLookupFactory;
 use VuFind\DoiLinker\DoiLinkerInterface;
 use VuFind\DoiLinker\PluginManager;
 
 /**
- * DoiLookup test class.
+ * IdentifierLinksLookup test class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use VuFind\DoiLinker\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
+class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
 
@@ -83,19 +83,17 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ->createMock(DoiLinkerInterface::class, ['getLinks']);
         $mockPlugin->expects($this->$times())->method('getLinks')
             ->with($this->equalTo($expected))
-            ->will(
-                $this->returnValue(
-                    [
-                        $doi => [
-                            [
-                                'link' => 'http://' . $value,
-                                'label' => $value,
-                                'icon' => 'remote-icon',
-                                'localIcon' => 'local-icon',
-                            ],
+            ->willReturn(
+                [
+                    $doi => [
+                        [
+                            'link' => 'http://' . $value,
+                            'label' => $value,
+                            'icon' => 'remote-icon',
+                            'localIcon' => 'local-icon',
                         ],
-                    ]
-                )
+                    ],
+                ]
             );
         return $mockPlugin;
     }
@@ -149,8 +147,8 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 
         $this->container->set('ViewRenderer', $mockRenderer);
 
-        $factory = new DoiLookupFactory();
-        $handler = $factory($this->container, DoiLookup::class);
+        $factory = new IdentifierLinksLookupFactory();
+        $handler = $factory($this->container, IdentifierLinksLookup::class);
         $params = $this->getParamsHelper(['doi' => $requested]);
         return $handler->handleRequest($params);
     }

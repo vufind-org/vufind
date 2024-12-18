@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler to look up DOI data.
+ * AJAX handler to look up identifier-based link data.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\DoiLinker\PluginManager;
 use function count;
 
 /**
- * AJAX handler to look up DOI data.
+ * AJAX handler to look up identifier-based link data.
  *
  * @category VuFind
  * @package  AJAX
@@ -44,7 +44,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiLookup extends AbstractBase
+class IdentifierLinksLookup extends AbstractBase
 {
     /**
      * DOI Linker Plugin Manager

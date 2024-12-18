@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for DoiLookup AJAX handler.
+ * Factory for IdentifierLinksLookup AJAX handler.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for DoiLookup AJAX handler.
+ * Factory for IdentifierLinksLookup AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -43,7 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class IdentifierLinksLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
