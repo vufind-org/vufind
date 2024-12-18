@@ -79,7 +79,7 @@ VuFind.register('account', function Account() {
     }
     const accountIconEl = document.querySelector('#account-icon');
     if (accountIconEl) {
-      accountIconEl.innerHTML = VuFind.icon(..._accountIcons[accountStatus]);
+      VuFind.setInnerHtml(accountIconEl, VuFind.icon(..._accountIcons[accountStatus]));
       if (accountStatus > ICON_LEVELS.NONE) {
         accountIconEl.dataset.bsToggle = 'tooltip';
         accountIconEl.dataset.bsPlacement = 'bottom';
@@ -202,6 +202,13 @@ VuFind.register('account', function Account() {
 
 $(function registerAccountAjax() {
 
+  var renderStatusBadge = (titleKey, count, className = "") => {
+    return count > 0
+      ? `<span aria-hidden="true" class="badge ${className}" data-toggle="tooltip" title="${VuFind.translate(titleKey)}">${count}</span>
+          <span class="visually-hidden">${VuFind.translate(titleKey)}: ${count} , </span>`
+      : "";
+  };
+
   VuFind.account.register("fines", {
     selector: ".fines-status",
     ajaxMethod: "getUserFines",
@@ -225,14 +232,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.ok > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
+        html += renderStatusBadge('account_normal_checkouts', status.ok, 'account-info');
       }
       if (status.warn > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
+        html += renderStatusBadge('account_checkouts_due', status.warn, 'account-warning');
         level = ICON_LEVELS.WARNING;
       }
       if (status.overdue > 0) {
-        html += '<span class="badge account-alert" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_overdue') + '">' + status.overdue + '</span>';
+        html += renderStatusBadge('account_checkouts_overdue', status.overdue, 'account-alert');
         level = ICON_LEVELS.DANGER;
       }
       $element.html(html);
@@ -251,14 +258,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
+        html += renderStatusBadge('account_requests_available', status.available, 'account-info');
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+        html += renderStatusBadge('account_requests_in_transit', status.in_transit, 'account-warning');
       }
       if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+        html += renderStatusBadge('account_requests_other', status.other, 'account-none');
       }
       if (html !== '') {
         $element.html(html);
@@ -280,14 +287,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
+        html += renderStatusBadge('account_requests_available', status.available, 'account-info');
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+        html += renderStatusBadge('account_requests_in_transit', status.in_transit, 'account-warning');
       }
       if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+        html += renderStatusBadge('account_requests_other', status.other, 'account-none');
       }
       if (html !== '') {
         $element.html(html);
@@ -309,14 +316,14 @@ $(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
+        html += renderStatusBadge('account_requests_available', status.available, 'account-info');
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+        html += renderStatusBadge('account_requests_in_transit', status.in_transit, 'account-warning');
       }
       if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+        html += renderStatusBadge('account_requests_other', status.other, 'account-none');
       }
       if (html !== '') {
         $element.html(html);
