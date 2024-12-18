@@ -214,10 +214,11 @@ class ChannelLoader
     /**
      * Generates channels for a record.
      *
-     * @param string $recordId      Record ID to load
-     * @param string $token         Channel token (optional, used for AJAX fetching)
-     * @param string $activeChannel Channel being requested (optional, used w/ token)
-     * @param string $source        Search backend to use
+     * @param string $recordId       Record ID to load
+     * @param string $token          Channel token (optional, used for AJAX fetching)
+     * @param string $activeChannel  Channel being requested (optional, used w/ token)
+     * @param string $source         Search backend to use
+     * @param array  $configSections Prioritized list of configuration sections to check
      *
      * @return array
      */
@@ -225,13 +226,19 @@ class ChannelLoader
         $recordId,
         $token = null,
         $activeChannel = null,
-        $source = DEFAULT_SEARCH_BACKEND
+        $source = DEFAULT_SEARCH_BACKEND,
+        array $configSections = ['record']
     ) {
         // Load record:
         $driver = $this->recordLoader->load($recordId, $source);
 
         // Load appropriate channel objects:
-        $providers = $this->getChannelProviders($source, 'record', $activeChannel);
+        foreach ($configSections as $section) {
+            $providers = $this->getChannelProviders($source, $section, $activeChannel);
+            if (!empty($providers)) {
+                break;
+            }
+        }
 
         // Collect details:
         $channels = [];
