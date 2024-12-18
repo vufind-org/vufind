@@ -47,21 +47,14 @@ use function count;
 class IdentifierLinksLookup extends AbstractBase
 {
     /**
-     * DOI Linker Plugin Manager
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager;
-
-    /**
-     * DOI resolver configuration value, exploded into an array of options
+     * Identifier link resolver configuration value, exploded into an array of options
      *
      * @var string[]
      */
     protected $resolvers;
 
     /**
-     * Behavior to use when multiple resolvers find results for the same DOI (may
+     * Behavior to use when multiple resolvers find results for the same identifier set (may
      * be 'first' -- use first match, or 'merge' -- use all results)
      *
      * @var string
@@ -83,37 +76,28 @@ class IdentifierLinksLookup extends AbstractBase
     protected $openInNewWindow = false;
 
     /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $viewRenderer = null;
-
-    /**
      * Constructor
      *
-     * @param PluginManager     $pluginManager DOI Linker Plugin Manager
+     * @param PluginManager     $pluginManager Identifier Linker Plugin Manager
      * @param RendererInterface $viewRenderer  View renderer
      * @param array             $config        Main configuration
      */
     public function __construct(
-        PluginManager $pluginManager,
-        RendererInterface $viewRenderer,
+        protected PluginManager $pluginManager,
+        protected RendererInterface $viewRenderer,
         array $config
     ) {
         // DOI config section is supported as a fallback for back-compatibility:
         $idConfig = $config['IdentifierLinks'] ?? $config['DOI'] ?? [];
-        $this->pluginManager = $pluginManager;
         $this->resolvers
             = array_map('trim', explode(',', $idConfig['resolver'] ?? ''));
         // Behavior to use when multiple resolvers to find results for the same
-        // DOI (may be 'first' -- use first match, or 'merge' -- use all
+        // identifier set (may be 'first' -- use first match, or 'merge' -- use all
         // results):
         $this->multiMode
             = trim(strtolower($idConfig['multi_resolver_mode'] ?? 'first'));
         $this->proxyIcons = !empty($idConfig['proxy_icons']);
         $this->openInNewWindow = !empty($idConfig['new_window']);
-        $this->viewRenderer = $viewRenderer;
     }
 
     /**
@@ -156,36 +140,36 @@ class IdentifierLinksLookup extends AbstractBase
     }
 
     /**
-     * Proxify external DOI icon links and render local icons
+     * Proxify external icon links and render local icons
      *
-     * @param array $dois DOIs
+     * @param array $data Identifier plugin data
      *
      * @return array
      */
-    protected function processIconLinks(array $dois): array
+    protected function processIconLinks(array $data): array
     {
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
         $iconHelper = $this->viewRenderer->plugin('icon');
 
-        foreach ($dois as &$doiLinks) {
-            foreach ($doiLinks as &$doi) {
-                if ($this->proxyIcons && !empty($doi['icon'])) {
-                    $doi['icon'] = $serverHelper(
+        foreach ($data as &$links) {
+            foreach ($links as &$link) {
+                if ($this->proxyIcons && !empty($link['icon'])) {
+                    $link['icon'] = $serverHelper(
                         $urlHelper(
                             'cover-show',
                             [],
-                            ['query' => ['proxy' => $doi['icon']]]
+                            ['query' => ['proxy' => $link['icon']]]
                         )
                     );
                 }
-                if (!empty($doi['localIcon'])) {
-                    $doi['localIcon'] = $iconHelper($doi['localIcon']);
+                if (!empty($link['localIcon'])) {
+                    $link['localIcon'] = $iconHelper($link['localIcon']);
                 }
             }
-            unset($doi);
+            unset($link);
         }
-        unset($doiLinks);
-        return $dois;
+        unset($links);
+        return $data;
     }
 }
