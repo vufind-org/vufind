@@ -129,14 +129,14 @@ JS;
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-label="Modal in case we have extra information" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <button type="button" class="close" data-dismiss="modal">
+          <button type="button" class="close" data-bs-dismiss="modal">
             <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
           <div class="modal-body"><?=$this->icon('spinner') . $this->transEsc('Loading') ?>...</div>
         </div>
       </div>
     </div>
-    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
+    <div class="offcanvas-overlay" data-bs-toggle="offcanvas"></div>
     <?=$this->googleTagManager()->getBodyCode()?>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
