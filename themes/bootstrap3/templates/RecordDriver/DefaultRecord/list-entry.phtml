@@ -160,20 +160,20 @@
              */
             $openUrl = $this->openUrl($this->driver, 'results');
             $openUrlActive = $openUrl->isActive();
-            $doi = $this->doi($this->driver, 'results');
-            $doiActive = $doi->isActive();
+            $identifierLinker = $this->identifierLinker($this->driver, 'results');
+            $identifierLinkerActive = $identifierLinker->isActive();
             // Account for replace_other_urls setting
             $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
           ?>
-          <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
+          <?php if ($openUrlActive || $identifierLinkerActive || !empty($urls)): ?>
             <?php if ($openUrlActive): ?>
               <br>
               <?=$openUrl->renderTemplate()?>
             <?php endif;?>
 
-            <?php if ($doiActive): ?>
+            <?php if ($identifierLinkerActive): ?>
               <br>
-              <?=$doi->renderTemplate()?>
+              <?=$identifierLinker->renderTemplate()?>
             <?php endif; ?>
 
             <?php $urls = is_array($urls) ? $urls : []; ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI helper factory.
+ * IdentifierLinker helper factory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * DOI helper factory.
+ * IdentifierLinker helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiFactory implements FactoryInterface
+class IdentifierLinkerFactory implements FactoryInterface
 {
     /**
      * Create an object

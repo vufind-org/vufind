@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI view helper
+ * IdentifierLinker view helper
  *
  * PHP version 8
  *
@@ -29,11 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\Config;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
+use function in_array;
+
 /**
- * DOI view helper
+ * IdentifierLinker view helper
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +42,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Doi extends \Laminas\View\Helper\AbstractHelper
+class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Current RecordDriver
@@ -88,7 +89,7 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
      * Set up context for helper
      *
      * @param RecordDriver $driver The current record driver
-     * @param string       $area   DOI context ('results', 'record' or 'holdings')
+     * @param string       $area   Display context ('results', 'record' or 'holdings')
      *
      * @return static
      */
@@ -136,7 +137,7 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Does the configuration indicate that we should display DOI links in
+     * Does the configuration indicate that we should display identifier links in
      * the specified context?
      *
      * @return bool
