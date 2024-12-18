@@ -403,12 +403,13 @@ footer {
     }
 
     .icon-link__label {
+      display: inline-flex;
       flex: 1 1 0%;
     }
   }
 
   .status {
-    display: flex;
+    display: inline-flex;
     gap: 2px;
     flex: none;
     .badge {

@@ -64,7 +64,7 @@
     ?>
     <?=$this->render('search/facet-list-content.phtml', $params) ?>
   </div>
-  <button class="btn btn-default lightbox-only" data-bs-dismiss="modal"><?=$this->translate('close') ?></button>
+  <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 </div>
 
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.facetList.setup();', 'SET')?>

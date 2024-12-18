@@ -15,6 +15,24 @@ var VuFind = (function VuFind() {
   var _elementBase;
   var _iconsCache = {};
 
+  /**
+   * Element creator function
+   * @param {string} tagName Element tag name
+   * @param {string} className Element class
+   * @param {object} attrs Additional attrs as key => value
+   * @param {Array|NodeList} children Child nodes to be added
+   * @returns {Element} Created Element
+   */
+  function el(tagName, className = '', attrs = {}, children = []) {
+    const newElement = document.createElement(tagName);
+    newElement.className = className;
+    for (const [key, value] of Object.entries(attrs)) {
+      newElement.setAttribute(key, value);
+    }
+    newElement.append(...children);
+    return newElement;
+  }
+
   // Event controls
 
   let listeners = {};
@@ -252,6 +270,32 @@ var VuFind = (function VuFind() {
   };
 
   /**
+   * Return a spinner html element
+   * @param {string} extraClass Extra class string to add for spinner wrapper
+   * @returns {HTMLSpanElement}
+   */
+  var spinnerElement = function spinnerElement(extraClass = '') {
+    const spinnerIcon = icon('spinner', {}, true);
+    const spinnerSpan = el('span', `loading-spinner ${extraClass}`.trim());
+    spinnerSpan.append(spinnerIcon);
+    return spinnerSpan;
+  };
+
+  /**
+   * Return a spinner html element with loading text
+   * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
+   * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
+   * @returns {HTMLSpanElement}
+   */
+  var loadingElement = function loadingElement(text = null, extraClass = '') {
+    const spinnerSpan = spinnerElement(extraClass);
+    const translated = translate(text === null ? 'loading_ellipsis' : text);
+    const spinnerText = document.createTextNode(` ${translated}`);
+    spinnerSpan.appendChild(spinnerText);
+    return spinnerSpan;
+  };
+
+  /**
    * Reload the page without causing trouble with POST parameters while keeping hash
    */
   var refreshPage = function refreshPage(forceGet) {
@@ -293,46 +337,36 @@ var VuFind = (function VuFind() {
    * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
-    // Extract any scripts from the HTML and add them separately so that they are executed properly:
-    const scripts = [];
     const tmpDiv = document.createElement('div');
     tmpDiv.innerHTML = html;
-    tmpDiv.querySelectorAll('script').forEach((el) => {
-      const type = el.getAttribute('type');
+    const scripts = [];
+    // Cloning scripts wont work as they pass internal executed state so save them for later
+    tmpDiv.querySelectorAll('script').forEach(script => {
+      const type = script.getAttribute('type');
       if (!type || 'text/javascript' === type) {
-        scripts.push(el.cloneNode(true));
-        el.remove();
+        scripts.push(script.cloneNode(true));
+        script.remove();
       }
     });
 
-    let newElm = elm;
     if (property === 'innerHTML') {
-      elm.innerHTML = tmpDiv.innerHTML;
+      elm.replaceChildren(...tmpDiv.childNodes);
     } else if (property === 'outerHTML') {
-      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
-      const nextElm = elm.nextElementSibling;
-      const parentElm = elm.parentElement ? elm.parentElement : null;
-      elm.outerHTML = tmpDiv.innerHTML;
-      // Try to find a new reference, leave as is if not possible:
-      if (nextElm) {
-        newElm = nextElm.previousElementSibling;
-      } else if (parentElm) {
-        newElm = parentElm.lastElementChild;
-      }
+      elm.replaceWith(...tmpDiv.childNodes);
     }
 
     // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
-    Object.entries(attrs).forEach(([attr, value]) => newElm.setAttribute(attr, value));
+    Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
 
     // Append any scripts:
-    scripts.forEach((script) => {
-      const scriptEl = document.createElement('script');
-      scriptEl.innerHTML = script.innerHTML;
-      scriptEl.setAttribute('nonce', getCspNonce());
+    scripts.forEach(script => {
+      const newScript = document.createElement('script');
+      newScript.append(...script.childNodes);
       if (script.src) {
-        scriptEl.src = script.src;
+        newScript.src = script.src;
       }
-      newElm.appendChild(scriptEl);
+      newScript.setAttribute('nonce', getCspNonce());
+      elm.appendChild(newScript);
     });
   }
 
@@ -415,7 +449,7 @@ var VuFind = (function VuFind() {
           // Replace the QRCode template with the image:
           const templateEl = holder.querySelector('.qrCodeImgTag');
           if (templateEl) {
-            templateEl.parentNode.innerHTML = templateEl.innerHTML;
+            setInnerHtml(templateEl.parentElement, templateEl.innerHTML);
           }
         }
       });
@@ -495,6 +529,7 @@ var VuFind = (function VuFind() {
     addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
+    el: el,
     emit: emit,
     listen: listen,
     unlisten: unlisten,
@@ -506,8 +541,10 @@ var VuFind = (function VuFind() {
     register: register,
     setCspNonce: setCspNonce,
     spinner: spinner,
+    spinnerElement: spinnerElement,
     loadHtml: loadHtml,
     loading: loading,
+    loadingElement: loadingElement,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,

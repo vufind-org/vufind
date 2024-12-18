@@ -31,7 +31,6 @@ namespace VuFindTest\Auth;
 
 use DateTime;
 use Laminas\Http\Request;
-use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Event\NoPreviousThrowableException;
@@ -44,6 +43,7 @@ use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
 use VuFind\Validator\CsrfInterface;
+use VuFindTest\Feature\TranslatorTrait;
 
 /**
  * Email Authenticator Manager Test Class
@@ -56,6 +56,8 @@ use VuFind\Validator\CsrfInterface;
  */
 class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
 {
+    use TranslatorTrait;
+
     /**
      * Get an EmailAuthenticator to test.
      *
@@ -90,13 +92,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
             new Config($config),
             $authHashService ?? $this->createMock(AuthHashServiceInterface::class)
         );
-        $mockTranslator = $this->createMock(TranslatorInterface::class);
-        $mockTranslator->method('translate')->willReturnCallback(
-            function ($str) {
-                return $str;
-            }
-        );
-        $authenticator->setTranslator($mockTranslator);
+        $authenticator->setTranslator($this->getMockTranslator([]));
         return $authenticator;
     }
 

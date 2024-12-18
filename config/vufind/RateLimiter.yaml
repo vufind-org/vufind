@@ -158,6 +158,8 @@ Policies:
 # - storage settings for the result cache
 # And see the required config in contentsecuritypolicy.ini if CSP is used.
 #Turnstile:
+  #enabled: false
+
   # These two keys are required. See also values they can be set to for testing purposes:
   # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
   #siteKey: 0x1234567890

@@ -36,6 +36,7 @@ use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -378,7 +379,7 @@ class Server
      *
      * @param object $record A record driver object
      *
-     * @return string
+     * @return string|false String on success and false if an error occurred
      */
     protected function getVuFindMetadata($record)
     {
@@ -444,24 +445,20 @@ class Server
         $headerOnly = false,
         $set = ''
     ) {
-        // Get the XML (and display an error if it is unsupported):
         if ($format === false) {
-            $xml = '';      // no metadata if in header-only mode!
-        } elseif ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
-            $xml = $this->getVuFindMetadata($record);   // special case
-        } else {
-            $xml = $record
-                ->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
-            if ($xml === false) {
-                return false;
-            }
+            // If no format was requested, report success without doing anything:
+            return true;
         }
+
+        $xml = $this->getRecordAsXML($record, $format);
 
         // Headers should be returned only if the metadata format matching
         // the supplied metadataPrefix is available.
-        // If RecordDriver returns nothing, skip this record.
-        if (empty($xml)) {
-            return true;
+        // If returned XML is empty, return true to simply skip this record.
+        // If returned XML is false, an error was encountered during the process
+        // of generating the XML file.
+        if (!$xml) {
+            return $xml !== false;
         }
 
         // Check for sets:
@@ -492,12 +489,28 @@ class Server
         );
 
         // Inject metadata if necessary:
-        if (!$headerOnly && !empty($xml)) {
+        if (!$headerOnly) {
             $metadata = $recXml->addChild('metadata');
             SimpleXML::appendElement($metadata, $xml);
         }
 
         return true;
+    }
+
+    /**
+     * Get record as a metadata presentation
+     *
+     * @param AbstractRecordDriver $record A record driver object
+     * @param string               $format Metadata format to obtain
+     *
+     * @return string|false String or false if an error occured
+     */
+    protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
+    {
+        if ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
+            return $this->getVuFindMetadata($record);
+        }
+        return $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
     }
 
     /**

@@ -87,14 +87,23 @@ class RateLimiterManagerFactory implements FactoryInterface
         $authManager = $container->get(\VuFind\Auth\Manager::class);
         $request = $container->get('Request');
 
-        return new $requestedName(
+        $rateLimiterManager = new $requestedName(
             $config,
             $request->getServer('REMOTE_ADDR'),
             $authManager->getUserObject()?->getId(),
             Closure::fromCallable([$this, 'getRateLimiter']),
-            $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class),
             $container->get(\VuFind\Net\IpAddressUtils::class)
         );
+
+        if (
+            ($config['Turnstile']['enabled'] ?? false)
+            && (strtolower($config['Storage']['adapter']) != 'redis')
+        ) {
+            $turnstile = $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class);
+            $rateLimiterManager->setTurnstile($turnstile);
+        }
+
+        return $rateLimiterManager;
     }
 
     /**
