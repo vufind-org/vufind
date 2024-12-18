@@ -508,8 +508,7 @@ class Server
     protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
     {
         if ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
-            // Return empty string instead of false for BC.
-            return $this->getVuFindMetadata($record) ?: '';
+            return $this->getVuFindMetadata($record);
         }
         return $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
     }
