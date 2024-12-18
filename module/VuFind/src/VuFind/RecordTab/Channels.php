@@ -43,11 +43,19 @@ use VuFind\ChannelProvider\ChannelLoader;
 class Channels extends AbstractBase
 {
     /**
+     * Config sections in channels.ini to use for loading channel settings.
+     *
+     * @var array
+     */
+    protected array $configSections = ['recordTab', 'record'];
+
+    /**
      * Constructor
      *
-     * @param ChannelLoader $loader Channel loader
+     * @param ChannelLoader $loader  Channel loader
+     * @param array         $options Config settings
      */
-    public function __construct(protected ChannelLoader $loader)
+    public function __construct(protected ChannelLoader $loader, protected array $options = [])
     {
     }
 
@@ -58,7 +66,7 @@ class Channels extends AbstractBase
      */
     public function getDescription()
     {
-        return 'Channels';
+        return $this->options['label'] ?? 'Channels';
     }
 
     /**
@@ -82,12 +90,13 @@ class Channels extends AbstractBase
         $request = $this->getRequest() ?: null;
         $query = $request?->getQuery();
         $driver = $this->getRecordDriver();
-        return $this->loader->getRecordContext(
+        $context = ['displaySearchBox' => $this->options['include_channels_search_box'] ?? false];
+        return $context + $this->loader->getRecordContext(
             $driver->getUniqueID(),
             $query?->get('channelToken'),
             $query?->get('channelProvider'),
             $driver->getSearchBackendIdentifier(),
-            ['recordTab', 'record']
+            $this->configSections
         );
     }
 }
