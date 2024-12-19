@@ -124,7 +124,7 @@ class CollectionList extends AbstractBase
      */
     public function isActive()
     {
-        return parent::isActive() && $this->getRecordDriver()->tryMethod('getHierarchyTrees');
+        return parent::isActive() && $this->getRecordDriver()->tryMethod('isCollection');
     }
 
     /**
