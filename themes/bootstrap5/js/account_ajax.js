@@ -68,10 +68,23 @@ VuFind.register('account', function Account() {
           $element.removeClass('hidden');
           if (status === LOADING) {
             $element.html(VuFind.spinner());
-          } else {
-            var moduleStatus = _submodules[sub].render($element, _statuses[sub], ICON_LEVELS);
+          } else if (Object.prototype.hasOwnProperty.call(_submodules[sub], 'render')) {
+            // Render using render function:
+            let moduleStatus = _submodules[sub].render($element, _statuses[sub], ICON_LEVELS);
             if (moduleStatus > accountStatus) {
               accountStatus = moduleStatus;
+            }
+          } else {
+            // Render with default method:
+            const subStatus = _statuses[sub];
+            if (subStatus.html !== '') {
+              $element.html(subStatus.html);
+            } else {
+              $element.addClass("hidden");
+            }
+            $('[data-toggle="tooltip"],[data-bs-toggle="tooltip"]', $element).tooltip();
+            if (subStatus.level > accountStatus) {
+              accountStatus = subStatus.level;
             }
           }
         }
@@ -201,25 +214,9 @@ VuFind.register('account', function Account() {
 });
 
 $(function registerAccountAjax() {
-
-  var renderStatusBadge = (titleKey, count, className = "") => {
-    return count > 0
-      ? `<span aria-hidden="true" class="badge ${className}" data-toggle="tooltip" title="${VuFind.translate(titleKey)}">${count}</span>
-          <span class="visually-hidden">${VuFind.translate(titleKey)}: ${count} , </span>`
-      : "";
-  };
-
   VuFind.account.register("fines", {
     selector: ".fines-status",
     ajaxMethod: "getUserFines",
-    render: function render($element, status, ICON_LEVELS) {
-      if (status.total === 0) {
-        $element.addClass("hidden");
-        return ICON_LEVELS.NONE;
-      }
-      $element.html('<span class="badge account-alert">' + status.display + '</span>');
-      return ICON_LEVELS.DANGER;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.total !== currentStatus.total;
     }
@@ -228,24 +225,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("checkedOut", {
     selector: ".checkedout-status",
     ajaxMethod: "getUserTransactions",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.ok > 0) {
-        html += renderStatusBadge('account_normal_checkouts', status.ok, 'account-info');
-      }
-      if (status.warn > 0) {
-        html += renderStatusBadge('account_checkouts_due', status.warn, 'account-warning');
-        level = ICON_LEVELS.WARNING;
-      }
-      if (status.overdue > 0) {
-        html += renderStatusBadge('account_checkouts_overdue', status.overdue, 'account-alert');
-        level = ICON_LEVELS.DANGER;
-      }
-      $element.html(html);
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.ok !== currentStatus.ok || status.warn !== currentStatus.warn || status.overdue !== currentStatus.overdue;
     }
@@ -254,27 +233,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("holds", {
     selector: ".holds-status",
     ajaxMethod: "getUserHolds",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.available > 0) {
-        html += renderStatusBadge('account_requests_available', status.available, 'account-info');
-        level = ICON_LEVELS.GOOD;
-      }
-      if (status.in_transit > 0) {
-        html += renderStatusBadge('account_requests_in_transit', status.in_transit, 'account-warning');
-      }
-      if (status.other > 0) {
-        html += renderStatusBadge('account_requests_other', status.other, 'account-none');
-      }
-      if (html !== '') {
-        $element.html(html);
-      } else {
-        $element.addClass("holds-status hidden");
-      }
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
@@ -283,27 +241,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("illRequests", {
     selector: ".illrequests-status",
     ajaxMethod: "getUserILLRequests",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.available > 0) {
-        html += renderStatusBadge('account_requests_available', status.available, 'account-info');
-        level = ICON_LEVELS.GOOD;
-      }
-      if (status.in_transit > 0) {
-        html += renderStatusBadge('account_requests_in_transit', status.in_transit, 'account-warning');
-      }
-      if (status.other > 0) {
-        html += renderStatusBadge('account_requests_other', status.other, 'account-none');
-      }
-      if (html !== '') {
-        $element.html(html);
-      } else {
-        $element.addClass("holds-status hidden");
-      }
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
@@ -312,27 +249,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("storageRetrievalRequests", {
     selector: ".storageretrievalrequests-status",
     ajaxMethod: "getUserStorageRetrievalRequests",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.available > 0) {
-        html += renderStatusBadge('account_requests_available', status.available, 'account-info');
-        level = ICON_LEVELS.GOOD;
-      }
-      if (status.in_transit > 0) {
-        html += renderStatusBadge('account_requests_in_transit', status.in_transit, 'account-warning');
-      }
-      if (status.other > 0) {
-        html += renderStatusBadge('account_requests_other', status.other, 'account-none');
-      }
-      if (html !== '') {
-        $element.html(html);
-      } else {
-        $element.addClass("holds-status hidden");
-      }
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
