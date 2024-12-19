@@ -385,11 +385,11 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // Holds available
-            ['holds' => ['in_transit' => 0, 'available' => 1]],
+            ['holds' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
             // ILL Requests available
-            ['illRequests' => ['in_transit' => 0, 'available' => 1]],
+            ['illRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
             // Storage Retrievals available
-            ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]],
+            ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
         ];
         $this->checkIcon($storage, '.account-status-good');
     }
@@ -404,7 +404,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // Checked out due soon
-            ['checkedOut' => ['warn' => 1]],
+            ['checkedOut' => ['warn' => 1, 'level' => 2]],
         ];
         $this->checkIcon($storage, '.account-status-warning');
     }
@@ -419,9 +419,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // User has fines
-            ['fines' => ['value' => 1000000, 'display' => '$...yikes']],
+            ['fines' => ['value' => 1000000, 'display' => '$...yikes', 'level' => 3]],
             // Checkedout overdue
-            ['checkedOut' => ['overdue' => 1]],
+            ['checkedOut' => ['overdue' => 1, 'level' => 3]],
         ];
         $this->checkIcon($storage, '.account-status-danger');
     }
@@ -438,15 +438,15 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         // Danger overrides warning
         $this->checkIcon(
-            [['checkedOut' => ['warn' => 2, 'overdue' => 1]]],
+            [['checkedOut' => ['warn' => 2, 'overdue' => 1, 'level' => 3]]],
             '.account-status-danger'
         );
         // Danger overrides good
         $this->checkIcon(
             [
                 [
-                    'checkedOut' => ['overdue' => 1],
-                    'holds' => ['available' => 1],
+                    'checkedOut' => ['overdue' => 1, 'level' => 3],
+                    'holds' => ['available' => 1, 'level' => 1],
                 ],
             ],
             '.account-status-danger'
@@ -455,8 +455,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->checkIcon(
             [
                 [
-                    'checkedOut' => ['warn' => 1],
-                    'holds' => ['available' => 1],
+                    'checkedOut' => ['warn' => 1, 'level' => 2],
+                    'holds' => ['available' => 1, 'level' => 1],
                 ],
             ],
             '.account-status-warning'
@@ -465,8 +465,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->checkIcon(
             [
                 [
-                    'holds' => ['available' => 1],
-                    'fines' => ['total' => 0, 'display' => 'none'],
+                    'holds' => ['available' => 1, 'level' => 1],
+                    'fines' => ['total' => 0, 'display' => 'none', 'level' => 0],
                 ],
             ],
             '.account-status-good'
