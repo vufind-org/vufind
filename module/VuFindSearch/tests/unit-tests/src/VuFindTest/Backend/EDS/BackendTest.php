@@ -330,9 +330,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
                 ->disableOriginalConstructor()->getMock();
         }
         if (null === $mock) {
-            return new Backend($connector, $factory, $cache, $container, new \Laminas\Config\Config($settings));
+            return new Backend($connector, $factory, $cache, $container, new \VuFind\Config\Config($settings));
         } else {
-            $params = [$connector, $factory, $cache, $container, new \Laminas\Config\Config($settings)];
+            $params = [$connector, $factory, $cache, $container, new \VuFind\Config\Config($settings)];
             return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
                 ->onlyMethods($mock)
                 ->setConstructorArgs($params)

@@ -71,14 +71,14 @@ class AlmaController extends AbstractBase
     /**
      * Configuration from config.ini
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Alma.ini config
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $configAlma;
 
@@ -349,8 +349,8 @@ class AlmaController extends AbstractBase
      * Send the "set password email" to a new user that was created in Alma and sent
      * to VuFind via webhook.
      *
-     * @param UserEntityInterface    $user   User entity object
-     * @param \Laminas\Config\Config $config A config object of config.ini
+     * @param UserEntityInterface   $user   User entity object
+     * @param \VuFind\Config\Config $config A config object of config.ini
      *
      * @return void
      */

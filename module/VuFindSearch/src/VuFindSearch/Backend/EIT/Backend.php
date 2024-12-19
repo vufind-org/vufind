@@ -82,7 +82,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -90,7 +90,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         if (null === $params) {
             $params = new ParamBag();
@@ -106,12 +106,12 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $response   = $this->connector->getRecord($id, $params);
         $collection = $this->createRecordCollection($response);

@@ -29,9 +29,9 @@
 
 namespace VuFindTest\Feature;
 
-use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
+use VuFind\Config\Config;
 use VuFind\Config\PluginManager;
 
 /**
@@ -64,8 +64,8 @@ trait ConfigPluginManagerTrait
     protected function getMockConfigPluginManager(
         array $configs,
         array $default = [],
-        InvocationOrder $getExpect = null,
-        InvocationOrder $hasExpect = null
+        ?InvocationOrder $getExpect = null,
+        ?InvocationOrder $hasExpect = null
     ): PluginManager {
         $manager = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
