@@ -29,7 +29,6 @@
 
 namespace VuFind\IdentifierLinker;
 
-use Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
 use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
@@ -98,7 +97,6 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
      * @param array  $config     Service-specific configuration settings
      *
      * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string}
-     * @throws Exception
      */
     protected function processServiceLink(array $data, string $serviceKey, array $config): array
     {
