@@ -70,12 +70,14 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             throw new \Exception('Unexpected options passed to factory.');
         }
         $search = $container->get(\VuFindSearch\Service::class);
-        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('BrowZine');
-        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
-        $doiServices = isset($fullConfig->DOIServices)
-            ? $fullConfig->DOIServices->toArray()
-            : [];
-        return new $requestedName($search, $config, $doiServices);
+        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)->get('BrowZine')->toArray();
+        // DOI config section is supported as a fallback for back-compatibility:
+        $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
+        return new $requestedName(
+            $search,
+            $config,
+            $fullConfig['DOIServices'] ?? [],
+            $fullConfig['ISSNServices'] ?? []
+        );
     }
 }

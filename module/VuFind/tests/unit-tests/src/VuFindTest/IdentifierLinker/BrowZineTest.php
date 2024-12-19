@@ -29,6 +29,7 @@
 
 namespace VuFindTest\IdentifierLinker;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\IdentifierLinker\BrowZine;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
@@ -65,87 +66,131 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock connector
      *
-     * @param string $doi      DOI expected by connector
-     * @param array  $response Response for connector to return
+     * @param array $ids      IDs expected by connector
+     * @param array $response Response for connector to return
      *
      * @return Connector
      */
-    protected function getMockConnector($doi, $response)
+    protected function getMockConnector(array $ids, array $response): MockObject&Connector
     {
         $connector = $this->createMock(Connector::class);
-        $connector->expects($this->once())
-            ->method('lookupDoi')
-            ->with($this->equalTo($doi))
-            ->willReturn($response);
+        if (isset($ids['doi'])) {
+            $connector->expects($this->once())
+                ->method('lookupDoi')
+                ->with($this->equalTo($ids['doi']))
+                ->willReturn($response);
+        }
+        if (isset($ids['issn'])) {
+            $connector->expects($this->once())
+                ->method('lookupIssns')
+                ->with($this->equalTo($ids['issn']))
+                ->willReturn($response);
+        }
         return $connector;
     }
 
     /**
-     * Test an API response.
+     * Data provider for testDOIApiSuccess()
      *
-     * @return void
+     * @return array[]
      */
-    public function testApiSuccess()
+    public static function doiProvider(): array
     {
-        $rawData = $this->getJsonFixture('browzine/doi.json');
-        $testData = [
-            [
-                'config' => [],
-                'response' => [
+        return [
+            'unfiltered' => [
+                [],
+                [
                     0 => [
                         [
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
-                            'data' => $rawData['data'],
                         ],
                         [
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'data' => $rawData['data'],
                         ],
                     ],
                 ],
             ],
-            [
-                'config' => ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
-                'response' => [
+            'exclude filter' => [
+                ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
+                [
                     0 => [
                         [
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'data' => $rawData['data'],
                         ],
                     ],
                 ],
             ],
-            [
-                'config' => ['filterType' => 'include', 'filter' => ['browzineWebLink']],
-                'response' => [
+            'include filter' => [
+                ['filterType' => 'include', 'filter' => ['browzineWebLink']],
+                [
                     0 => [
                         [
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
-                            'data' => $rawData['data'],
                         ],
                     ],
                 ],
             ],
         ];
+    }
 
-        $doi = '10.1155/2020/8690540';
-        $ids = [['doi' => $doi]];
-        foreach ($testData as $data) {
-            $connector = $this->getMockConnector($doi, $rawData);
-            $ss = $this->getSearchService($this->getBackendManager($connector));
-            $browzine = new BrowZine($ss, $data['config']);
-            $this->assertEquals(
-                $data['response'],
-                $browzine->getLinks($ids)
-            );
+    /**
+     * Test a DOI API response.
+     *
+     * @param array $config           Configuration
+     * @param array $expectedResponse Expected response
+     *
+     * @return void
+     *
+     * @dataProvider doiProvider
+     */
+    public function testDOIApiSuccess(array $config, array $expectedResponse): void
+    {
+        $rawData = $this->getJsonFixture('browzine/doi.json');
+
+        $ids = [['doi' => '10.1155/2020/8690540']];
+        $connector = $this->getMockConnector($ids[0], $rawData);
+        $ss = $this->getSearchService($this->getBackendManager($connector));
+        $browzine = new BrowZine($ss, $config);
+        foreach ($expectedResponse[0] as & $current) {
+            $current['data'] = $rawData['data'];
         }
+        unset($current);
+        $this->assertEquals($expectedResponse, $browzine->getLinks($ids));
+    }
+
+    /**
+     * Test an ISSN API response.
+     *
+     * @return void
+     */
+    public function testISSNApiSuccess(): void
+    {
+        $rawData = $this->getJsonFixture('browzine/issn.json');
+
+        $ids = [['issn' => '0006-2952']];
+        $connector = $this->getMockConnector($ids[0], $rawData);
+        $ss = $this->getSearchService($this->getBackendManager($connector));
+        $browzine = new BrowZine($ss, []);
+        $this->assertEquals(
+            [
+                0 => [
+                    [
+                        'link' => 'https://weblink',
+                        'label' => 'Browse Available Issues',
+                        'data' => $rawData['data'][0],
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                    ],
+                ],
+            ],
+            $browzine->getLinks($ids)
+        );
     }
 }

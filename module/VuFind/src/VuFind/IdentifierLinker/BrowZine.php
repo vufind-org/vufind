@@ -29,8 +29,10 @@
 
 namespace VuFind\IdentifierLinker;
 
+use Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
+use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
 use VuFindSearch\Service;
 
 use function in_array;
@@ -49,41 +51,19 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Search service
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
-     * Configuration options
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Configured DOI services
-     *
-     * @var array
-     */
-    protected $doiServices;
-
-    /**
      * Constructor
      *
      * @param Service $searchService Search service
      * @param array   $config        Configuration settings
      * @param array   $doiServices   Configured DOI services
+     * @param array   $issnServices  Configured ISSN services
      */
     public function __construct(
-        Service $searchService,
-        array $config = [],
-        array $doiServices = []
+        protected Service $searchService,
+        protected array $config = [],
+        protected array $doiServices = [],
+        protected array $issnServices = []
     ) {
-        $this->searchService = $searchService;
-        $this->config = $config;
-        $this->doiServices = $doiServices;
     }
 
     /**
@@ -111,6 +91,32 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     }
 
     /**
+     * Format a single service link.
+     *
+     * @param array  $data       Raw API response data
+     * @param string $serviceKey Key being extracted from response
+     * @param array  $config     Service-specific configuration settings
+     *
+     * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string}
+     * @throws Exception
+     */
+    protected function processServiceLink(array $data, string $serviceKey, array $config): array
+    {
+        $result = [
+            'link' => $data[$serviceKey],
+            'label' => $this->translate($config['linkText']),
+            'data' => $data,
+        ];
+        $localIcons = !empty($this->config['local_icons']);
+        if (!$localIcons && !empty($config['icon'])) {
+            $result['icon'] = $config['icon'];
+        } else {
+            $result['localIcon'] = $config['localIcon'];
+        }
+        return $result;
+    }
+
+    /**
      * Given an array of identifier arrays, perform a lookup and return an associative array
      * of arrays, matching the keys of the input array. Each output array contains one or more
      * associative arrays with required 'link' (URL to related resource) and 'label' (display text)
@@ -124,31 +130,51 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     public function getLinks(array $idArray): array
     {
         $response = [];
-        $localIcons = !empty($this->config['local_icons']);
         foreach ($idArray as $idKey => $ids) {
-            if (!isset($ids['doi'])) {
-                continue;
-            }
-            $command = new LookupDoiCommand('BrowZine', $ids['doi']);
-            $result = $this->searchService->invoke($command)->getResult();
-            $data = $result['data'] ?? null;
-            foreach ($this->getDoiServices() as $serviceKey => $config) {
-                if ($this->arrayKeyAvailable($serviceKey, $data)) {
-                    $result = [
-                        'link' => $data[$serviceKey],
-                        'label' => $this->translate($config['linkText']),
-                        'data' => $data,
-                    ];
-                    if (!$localIcons && !empty($config['icon'])) {
-                        $result['icon'] = $config['icon'];
-                    } else {
-                        $result['localIcon'] = $config['localIcon'];
+            // If we have a DOI, that gets priority because it is more specific; otherwise we'll
+            // fall back and attempt the ISSN:
+            if (isset($ids['doi'])) {
+                $command = new LookupDoiCommand('BrowZine', $ids['doi']);
+                $result = $this->searchService->invoke($command)->getResult();
+                $data = $result['data'] ?? null;
+                foreach ($this->getDoiServices() as $serviceKey => $config) {
+                    if ($this->arrayKeyAvailable($serviceKey, $data)) {
+                        $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
                     }
-                    $response[$idKey][] = $result;
+                }
+            } elseif (isset($ids['issn'])) {
+                $command = new LookupIssnsCommand('BrowZine', $ids['issn']);
+                $result = $this->searchService->invoke($command)->getResult();
+                $data = $result['data'][0] ?? null;
+                foreach ($this->getIssnServices() as $serviceKey => $config) {
+                    if ($this->arrayKeyAvailable($serviceKey, $data)) {
+                        $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
+                    }
                 }
             }
         }
         return $response;
+    }
+
+    /**
+     * Unpack service configuration into more useful array format.
+     *
+     * @param array $config Raw (pipe-delimited) configuration from BrowZine.ini
+     *
+     * @return array
+     */
+    protected function unpackServiceConfig(array $config): array
+    {
+        $result = [];
+        foreach ($config as $key => $config) {
+            $parts = explode('|', $config);
+            $result[$key] = [
+                'linkText' => $parts[0],
+                'localIcon' => $parts[1],
+                'icon' => $parts[2] ?? null,
+            ];
+        }
+        return $result;
     }
 
     /**
@@ -173,15 +199,26 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
                 ],
             ];
         }
-        $result = [];
-        foreach ($this->doiServices as $key => $config) {
-            $parts = explode('|', $config);
-            $result[$key] = [
-                'linkText' => $parts[0],
-                'localIcon' => $parts[1],
-                'icon' => $parts[2] ?? null,
+        return $this->unpackServiceConfig($this->doiServices);
+    }
+
+    /**
+     * Get an array of ISSN services and their configuration
+     *
+     * @return array
+     */
+    protected function getIssnServices(): array
+    {
+        if (empty($this->issnServices)) {
+            $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
+            return [
+                'browzineWebLink' => [
+                    'linkText' => 'Browse Available Issues',
+                    'localIcon' => 'browzine-issue',
+                    'icon' => $baseIconUrl . 'browzine-open-book-icon.svg',
+                ],
             ];
         }
-        return $result;
+        return $this->unpackServiceConfig($this->issnServices);
     }
 }
