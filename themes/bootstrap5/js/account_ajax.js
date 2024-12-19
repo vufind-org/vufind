@@ -82,7 +82,7 @@ VuFind.register('account', function Account() {
             } else {
               $element.addClass("hidden");
             }
-            $('[data-toggle="tooltip"],[data-bs-toggle="tooltip"]', $element).tooltip();
+            $element[0].querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => bootstrap.Tooltip.getOrCreateInstance(el));
             if (subStatus.level > accountStatus) {
               accountStatus = subStatus.level;
             }
