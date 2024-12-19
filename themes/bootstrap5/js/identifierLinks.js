@@ -1,5 +1,9 @@
 /*global VuFind, unwrapJQuery */
 VuFind.register('identifierLinks', function identifierLinks() {
+  /**
+   * Embed identifier links in a container.
+   * @param {Element} el Container for links
+   */
   function embedIdentifierLinks(el) {
     var queryParams = new URLSearchParams();
     var elements = el.classList.contains('identifierLink') ? [el] : el.querySelectorAll('.identifierLink');
@@ -66,12 +70,20 @@ VuFind.register('identifierLinks', function identifierLinks() {
       });
   }
 
+  /**
+   * Event handler to embed identifier links in a container.
+   * @param {Event} params
+   */
   function updateContainer(params) {
     embedIdentifierLinks(params.container);
   }
 
-  // Assign actions to the OpenURL links. This can be called with a container e.g. when
-  // combined results fetched with AJAX are loaded.
+  /**
+   * Apply identifier-based links. This can be called with a container e.g. when
+   * combined results fetched with AJAX are loaded.
+   * @param {object} _container Container to apply links to
+   * @returns {object} Container exposing public methods
+   */
   function init(_container) {
     var container = unwrapJQuery(_container || document.body);
     // assign action to the openUrlWindow link class
