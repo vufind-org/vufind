@@ -72,7 +72,7 @@ VuFind.register('identifierLinks', function identifierLinks() {
 
   /**
    * Event handler to embed identifier links in a container.
-   * @param {Event} params
+   * @param {Event} params Event triggering handler
    */
   function updateContainer(params) {
     embedIdentifierLinks(params.container);
@@ -82,7 +82,6 @@ VuFind.register('identifierLinks', function identifierLinks() {
    * Apply identifier-based links. This can be called with a container e.g. when
    * combined results fetched with AJAX are loaded.
    * @param {object} _container Container to apply links to
-   * @returns {object} Container exposing public methods
    */
   function init(_container) {
     var container = unwrapJQuery(_container || document.body);
