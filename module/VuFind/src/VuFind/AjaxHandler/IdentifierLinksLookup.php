@@ -109,34 +109,44 @@ class IdentifierLinksLookup extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
-        $response = [];
+        $gatheredData = [];
         $ids = json_decode($params->getController()->getRequest()->getContent(), true);
         foreach ($this->resolvers as $resolver) {
             if ($this->pluginManager->has($resolver)) {
                 $next = $this->pluginManager->get($resolver)->getLinks($ids);
                 $next = $this->processIconLinks($next);
                 foreach ($next as $key => $data) {
-                    foreach ($data as &$current) {
-                        $current['newWindow'] = $this->openInNewWindow;
-                    }
-                    unset($current);
-                    if (!isset($response[$key])) {
-                        $response[$key] = $data;
+                    if (!isset($gatheredData[$key])) {
+                        $gatheredData[$key] = $data;
                     } elseif ($this->multiMode == 'merge') {
-                        $response[$key] = array_merge($response[$key], $data);
+                        $gatheredData[$key] = array_merge($gatheredData[$key], $data);
                     }
                 }
                 // If all keys have been found and we're not in merge mode, we
                 // can short circuit out of here.
                 if (
                     $this->multiMode !== 'merge'
-                    && count(array_diff(array_keys($ids), array_keys($response))) == 0
+                    && count(array_diff(array_keys($ids), array_keys($gatheredData))) == 0
                 ) {
                     break;
                 }
             }
         }
+        $response = array_map([$this, 'renderResponseChunk'], $gatheredData);
         return $this->formatResponse($response);
+    }
+
+    /**
+     * Render the links for a single record.
+     *
+     * @param array $data Data to render
+     *
+     * @return string
+     */
+    protected function renderResponseChunk(array $data): string
+    {
+        $newWindow = $this->openInNewWindow;
+        return $this->viewRenderer->render('ajax/identifierLinks.phtml', compact('data', 'newWindow'));
     }
 
     /**
@@ -164,7 +174,7 @@ class IdentifierLinksLookup extends AbstractBase
                     );
                 }
                 if (!empty($link['localIcon'])) {
-                    $link['localIcon'] = $iconHelper($link['localIcon']);
+                    $link['localIcon'] = $iconHelper($link['localIcon'], 'icon-link__icon');
                 }
             }
             unset($link);

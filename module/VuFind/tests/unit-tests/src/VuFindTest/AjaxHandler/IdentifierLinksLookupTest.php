@@ -35,6 +35,8 @@ use VuFind\AjaxHandler\IdentifierLinksLookupFactory;
 use VuFind\IdentifierLinker\IdentifierLinkerInterface;
 use VuFind\IdentifierLinker\PluginManager;
 
+use function func_get_args;
+
 /**
  * IdentifierLinksLookup test class.
  *
@@ -144,6 +146,15 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
                     return $plugins[$plugin] ?? null;
                 }
             );
+        // JSON encode parameters to the render method so that it returns a string
+        // that we can make assertions about in our tests.
+        $mockRenderer->expects($this->any())
+            ->method('render')
+            ->willReturnCallback(
+                function () {
+                    return json_encode(func_get_args());
+                }
+            );
 
         $this->container->set('ViewRenderer', $mockRenderer);
 
@@ -215,18 +226,19 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         );
 
         // Test the handler:
+        $expectedTemplate = 'ajax/identifierLinks.phtml';
+        $expectedLinks = [
+            [
+                'link' => 'http://baz',
+                'label' => 'baz',
+                'icon' => $remoteIcon,
+                'localIcon' => '(local-icon)',
+            ],
+        ];
         $this->assertEquals(
             [
                 [
-                    0 => [
-                        [
-                            'link' => 'http://baz',
-                            'label' => 'baz',
-                            'newWindow' => $newWindow,
-                            'icon' => $remoteIcon,
-                            'localIcon' => '(local-icon)',
-                        ],
-                    ],
+                    0 => json_encode([$expectedTemplate, ['data' => $expectedLinks, 'newWindow' => $newWindow]]),
                 ],
             ],
             $this->getHandlerResults()
@@ -252,18 +264,19 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         );
 
         // Test the handler:
+        $expectedTemplate = 'ajax/identifierLinks.phtml';
+        $expectedLinks = [
+            [
+                'link' => 'http://baz',
+                'label' => 'baz',
+                'icon' => 'remote-icon',
+                'localIcon' => '(local-icon)',
+            ],
+        ];
         $this->assertEquals(
             [
                 [
-                    0 => [
-                        [
-                            'link' => 'http://baz',
-                            'label' => 'baz',
-                            'newWindow' => false,
-                            'icon' => 'remote-icon',
-                            'localIcon' => '(local-icon)',
-                        ],
-                    ],
+                    0 => json_encode([$expectedTemplate, ['data' => $expectedLinks, 'newWindow' => false]]),
                 ],
             ],
             $this->getHandlerResults()
@@ -291,18 +304,19 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         );
 
         // Test the handler:
+        $expectedTemplate = 'ajax/identifierLinks.phtml';
+        $expectedLinks = [
+            [
+                'link' => 'http://baz',
+                'label' => 'baz',
+                'icon' => 'remote-icon',
+                'localIcon' => '(local-icon)',
+            ],
+        ];
         $this->assertEquals(
             [
                 [
-                    0 => [
-                        [
-                            'link' => 'http://baz',
-                            'label' => 'baz',
-                            'newWindow' => false,
-                            'icon' => 'remote-icon',
-                            'localIcon' => '(local-icon)',
-                        ],
-                    ],
+                    0 => json_encode([$expectedTemplate, ['data' => $expectedLinks, 'newWindow' => false]]),
                 ],
             ],
             $this->getHandlerResults()
@@ -335,27 +349,28 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         );
 
         // Test the handler:
+        $expectedTemplate = 'ajax/identifierLinks.phtml';
+        $expectedLinks0 = [
+            [
+                'link' => 'http://baz',
+                'label' => 'baz',
+                'icon' => 'remote-icon',
+                'localIcon' => '(local-icon)',
+            ],
+        ];
+        $expectedLinks1 = [
+            [
+                'link' => 'http://baz2',
+                'label' => 'baz2',
+                'icon' => 'remote-icon',
+                'localIcon' => '(local-icon)',
+            ],
+        ];
         $this->assertEquals(
             [
                 [
-                    0 => [
-                        [
-                            'link' => 'http://baz',
-                            'label' => 'baz',
-                            'newWindow' => false,
-                            'icon' => 'remote-icon',
-                            'localIcon' => '(local-icon)',
-                        ],
-                    ],
-                    1 => [
-                        [
-                            'link' => 'http://baz2',
-                            'label' => 'baz2',
-                            'newWindow' => false,
-                            'icon' => 'remote-icon',
-                            'localIcon' => '(local-icon)',
-                        ],
-                    ],
+                    0 => json_encode([$expectedTemplate, ['data' => $expectedLinks0, 'newWindow' => false]]),
+                    1 => json_encode([$expectedTemplate, ['data' => $expectedLinks1, 'newWindow' => false]]),
                 ],
             ],
             $this->getHandlerResults($request)
@@ -382,25 +397,25 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ]
         );
         // Test the handler:
+        $expectedTemplate = 'ajax/identifierLinks.phtml';
+        $expectedLinks = [
+            [
+                'link' => 'http://baz',
+                'label' => 'baz',
+                'icon' => 'remote-icon',
+                'localIcon' => '(local-icon)',
+            ],
+            [
+                'link' => 'http://baz2',
+                'label' => 'baz2',
+                'icon' => 'remote-icon',
+                'localIcon' => '(local-icon)',
+            ],
+        ];
         $this->assertEquals(
             [
                 [
-                    0 => [
-                        [
-                            'link' => 'http://baz',
-                            'label' => 'baz',
-                            'newWindow' => false,
-                            'icon' => 'remote-icon',
-                            'localIcon' => '(local-icon)',
-                        ],
-                        [
-                            'link' => 'http://baz2',
-                            'label' => 'baz2',
-                            'newWindow' => false,
-                            'icon' => 'remote-icon',
-                            'localIcon' => '(local-icon)',
-                        ],
-                    ],
+                    0 => json_encode([$expectedTemplate, ['data' => $expectedLinks, 'newWindow' => false]]),
                 ],
             ],
             $this->getHandlerResults()
