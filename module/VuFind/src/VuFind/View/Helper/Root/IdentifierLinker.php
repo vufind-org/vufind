@@ -93,7 +93,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @return static
      */
-    public function __invoke($driver, $area): static
+    public function __invoke(RecordDriver $driver, string $area): static
     {
         $this->recordDriver = $driver;
         $this->area = $area;
