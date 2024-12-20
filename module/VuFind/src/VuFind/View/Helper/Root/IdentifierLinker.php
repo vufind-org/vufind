@@ -47,30 +47,30 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Current RecordDriver
      *
-     * @var \VuFind\RecordDriver
+     * @var RecordDriver
      */
-    protected $recordDriver;
+    protected RecordDriver $recordDriver;
 
     /**
-     * OpenURL context ('results', 'record' or 'holdings')
+     * Identifier link context ('results', 'record' or 'holdings')
      *
      * @var string
      */
-    protected $area;
+    protected string $area;
 
     /**
      * Instance counter (used for keeping track of records)
      *
      * @var int
      */
-    protected $counter = 0;
+    protected int $counter = 0;
 
     /**
      * Supported identifier types
      *
      * @var string[]
      */
-    protected $supportedIdentifiers = ['doi', 'isbn', 'issn'];
+    protected array $supportedIdentifiers = ['doi', 'isbn', 'issn'];
 
     /**
      * Constructor
@@ -93,7 +93,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @return static
      */
-    public function __invoke($driver, $area)
+    public function __invoke($driver, $area): static
     {
         $this->recordDriver = $driver;
         $this->area = $area;
@@ -108,24 +108,24 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     protected function getIdentifiers(): array
     {
         $ids = [];
-        if (in_array('doi', $this->supportedIdentifiers)) {
-            $ids['doi'] = $this->recordDriver->tryMethod('getCleanDOI');
+        if (in_array('doi', $this->supportedIdentifiers) && $doi = $this->recordDriver->tryMethod('getCleanDOI')) {
+            $ids['doi'] = $doi;
         }
-        if (in_array('isbn', $this->supportedIdentifiers)) {
-            $ids['isbn'] = $this->recordDriver->tryMethod('getCleanISBN');
+        if (in_array('isbn', $this->supportedIdentifiers) && $isbn = $this->recordDriver->tryMethod('getCleanISBN')) {
+            $ids['isbn'] = $isbn;
         }
-        if (in_array('issn', $this->supportedIdentifiers)) {
-            $ids['issn'] = $this->recordDriver->tryMethod('getCleanISSN');
+        if (in_array('issn', $this->supportedIdentifiers) && $issn = $this->recordDriver->tryMethod('getCleanISSN')) {
+            $ids['issn'] = $issn;
         }
         return $ids;
     }
 
     /**
-     * Public method to render the OpenURL template
+     * Public method to render the identifier links template
      *
      * @return string
      */
-    public function renderTemplate()
+    public function renderTemplate(): string
     {
         // Build parameters needed to display the control:
         $instance = $this->counter++;
@@ -142,7 +142,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    protected function checkContext()
+    protected function checkContext(): bool
     {
         // Doesn't matter the target area if no resolver is specified:
         if (empty($this->config['resolver'])) {
@@ -161,20 +161,13 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to check whether OpenURLs are active for current record
+     * Public method to check whether identifier links are active for current record
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         $ids = $this->getIdentifiers();
-        $hasId = false;
-        foreach ($ids as $id) {
-            if ($id !== null) {
-                $hasId = true;
-                break;
-            }
-        }
-        return $hasId && $this->checkContext();
+        return !empty($ids) && $this->checkContext();
     }
 }
