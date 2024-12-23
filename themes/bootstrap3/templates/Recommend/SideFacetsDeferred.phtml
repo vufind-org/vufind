@@ -1,4 +1,5 @@
 <?php
+  $this->layout()->sideFacetsInstanceCounter = ($this->layout()->sideFacetsInstanceCounter ?? 0) + 1;
   $this->headScript()->appendFile('facets.js');
 
   $results = $this->recommend->getResults();
@@ -42,6 +43,10 @@
 <?=$this->component('hide-offcanvas-button')?>
 <?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+  <?php if ($this->multiFacetsSelection && $this->layout()->sideFacetsInstanceCounter === 1): ?>
+    <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
+  <?php endif; ?>
+  <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
   <?php
     // We need to pass the current URL query to the Javascript; we use substr() to
     // strip off the leading ? character. The "suppress query" option is used for
@@ -58,7 +63,7 @@
   <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex)?>" data-query="<?=$this->escapeHtmlAttr($urlQuery)?>" data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>" data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
 <?php endif; ?>
 <?php if ($hasVisibleCheckboxes): ?>
-  <div class="checkboxFilter">
+  <div class="checkbox-filters">
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
   </div>
 <?php endif; ?>

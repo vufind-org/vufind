@@ -194,12 +194,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Return document specified by id.
      *
-     * @param string   $id     The document to retrieve from Solr
-     * @param ParamBag $params Parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return string
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params
@@ -274,14 +274,14 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param DocumentInterface $document Document to write
      * @param string            $handler  Update handler
-     * @param ParamBag          $params   Update handler parameters
+     * @param ?ParamBag         $params   Update handler parameters
      *
      * @return string Response body
      */
     public function write(
         DocumentInterface $document,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
@@ -406,10 +406,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Try all Solr URLs until we find one that works (or throw an exception).
      *
-     * @param string   $method    HTTP method to use
-     * @param string   $urlSuffix Suffix to append to all URLs tried
-     * @param callable $callback  Callback to configure client (null for none)
-     * @param bool     $cacheable Whether the request is cacheable
+     * @param string    $method    HTTP method to use
+     * @param string    $urlSuffix Suffix to append to all URLs tried
+     * @param ?callable $callback  Callback to configure client (null for none)
+     * @param bool      $cacheable Whether the request is cacheable
      *
      * @return string Response body
      *

@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\Options;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * Trait for setting up view options. Designed to be included in a subclass of

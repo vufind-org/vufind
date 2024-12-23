@@ -47,9 +47,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param string $id Id
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setId(string $id): ChangeTrackerEntityInterface;
+    public function setId(string $id): static;
 
     /**
      * Getter for identifier.
@@ -63,9 +63,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param string $name Index name
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setIndexName(string $name): ChangeTrackerEntityInterface;
+    public function setIndexName(string $name): static;
 
     /**
      * Getter for index name (formerly core).
@@ -79,9 +79,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Time first added to index.
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setFirstIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setFirstIndexed(?DateTime $dateTime): static;
 
     /**
      * FirstIndexed getter.
@@ -95,9 +95,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Last time changed in index.
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setLastIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setLastIndexed(?DateTime $dateTime): static;
 
     /**
      * LastIndexed getter.
@@ -111,9 +111,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Last time original record was edited
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setLastRecordChange(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setLastRecordChange(?DateTime $dateTime): static;
 
     /**
      * LastRecordChange getter.
@@ -127,9 +127,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Time record was removed from index
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setDeleted(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setDeleted(?DateTime $dateTime): static;
 
     /**
      * Deleted getter.

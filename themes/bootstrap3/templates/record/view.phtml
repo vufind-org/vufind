@@ -39,7 +39,7 @@
 
 <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <?php $sidebarList = $this->related()->getList($this->driver); ?>
-  <div class="<?=$this->layoutClass('mainbody')?><?=count($sidebarList) < 1 ? ' solo' : '' ?>">
+  <div class="<?=$this->layoutClass('mainbody', !empty($sidebarList))?><?=empty($sidebarList) ? ' solo' : '' ?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
     <?=$this->flashmessages()?>
@@ -69,8 +69,8 @@
                 $tabClasses[] = 'noajax';
               }
             ?>
-            <li id="record-tab-<?=$this->escapeHtmlAttr($tabName)?>" class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-              <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
+            <li role="presentation" id="record-tab-<?=$this->escapeHtmlAttr($tabName)?>" class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+              <a role="tab" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-target=".tab-pane.<?=$this->escapeHtmlAttr($tabName)?>" data-lightbox-ignore>
                 <?=$this->transEsc($desc)?>
               </a>
             </li>
@@ -79,7 +79,7 @@
 
         <div class="tab-content">
           <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab" aria-labelledby="record-tab-<?=$this->escapeHtmlAttr($activeTabName ?? '')?>">
+            <div role="tabpanel" class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab" aria-labelledby="record-tab-<?=$this->escapeHtmlAttr($activeTabName ?? '')?>">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <?php endif; ?>

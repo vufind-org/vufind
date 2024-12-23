@@ -1,11 +1,31 @@
 <?php if ($this->pageCount): ?>
   <?php
+    $results = $this->params['results'] ?? null;
     $showFirstLast = $this->pageCount > 3;
+    $navAttrs = $this->htmlAttributes(['aria-label' => $this->translate('pagination_label')]);
+    if ($results !== null) {
+      $showFirstLast = $showFirstLast && $results->getOptions()->firstLastNavigationSupported();
+      if ($results->getOptions()->loadResultsWithJsEnabled()) {
+        $navAttrs->add('class', 'js-pagination');
+        if ($this->top) {
+          $navAttrs->add('class', 'js-pagination__top');
+        }
+      }
+    }
   ?>
-  <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
-    <ul class="pagination">
-      <?php if ($this->previous): ?>
-        <?php if ($showFirstLast && $this->first): ?>
+  <nav<?=$navAttrs?>>
+    <?php
+      $ulAttrs = $this->htmlAttributes(['class' => 'pagination']);
+      if ($this->top) {
+        $ulAttrs->add('class', 'pagination-top');
+      }
+      if ($className = $this->options['className'] ?? '') {
+        $ulAttrs->add('class', $className);
+      }
+    ?>
+    <ul<?=$ulAttrs?>>
+      <?php if (isset($this->previous)): ?>
+        <?php if ($showFirstLast && isset($this->first)): ?>
           <?=
             $this->render(
                 'Helpers/pagination-item.phtml',
@@ -13,12 +33,14 @@
                   'params' => $this->params,
                   'current' => $this->current,
                   'page' => $this->first,
+                  'liClasses' => ['page-first'],
                   'label' => $this->translate('page_first'),
                   'contentHtml' => '[1]',
               ]
             )
           ?>
         <?php endif; ?>
+
         <?=
           $this->render(
               'Helpers/pagination-item.phtml',
@@ -28,28 +50,31 @@
                 'page' => $this->previous,
                 'liClasses' => ['page-prev'],
                 'label' => $this->translate('page_prev'),
-                'contentHtml' => $this->icon('page-prev') . ' ' . $this->transEsc('Prev'),
+                'contentHtml' => $this->icon('page-prev') . ' <span class="page-item-text">' . $this->transEsc('Prev') . '</span>',
             ]
           )
         ?>
       <?php endif; ?>
 
-      <?php foreach ($this->pagesInRange as $page): ?>
-        <?=
-          $this->render(
-              'Helpers/pagination-item.phtml',
-              [
-                'params' => $this->params,
-                'current' => $this->current,
-                'page' => $page,
-                'label' => $this->translate('page_num', ['%%page%%' => $page]),
-                'contentHtml' => $this->escapeHtml($page),
-            ]
-          )
-        ?>
-      <?php endforeach; ?>
+      <?php if (count($this->pagesInRange) > 1): ?>
+        <?php foreach ($this->pagesInRange as $page): ?>
+          <?=
+            $this->render(
+                'Helpers/pagination-item.phtml',
+                [
+                  'params' => $this->params,
+                  'current' => $this->current,
+                  'page' => $page,
+                  'liClasses' => ['page-num'],
+                  'label' => $this->translate('page_num', ['%%page%%' => $page]),
+                  'contentHtml' => $this->escapeHtml($page),
+              ]
+            )
+          ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
 
-      <?php if ($this->next): ?>
+      <?php if (isset($this->next)): ?>
         <?=
           $this->render(
               'Helpers/pagination-item.phtml',
@@ -59,12 +84,12 @@
                 'page' => $this->next,
                 'liClasses' => ['page-next'],
                 'label' => $this->translate('page_next'),
-                'contentHtml' => $this->transEsc('Next') . ' ' . $this->icon('page-next'),
+                'contentHtml' => '<span class="page-item-text">' . $this->transEsc('Next') . '</span> ' . $this->icon('page-next'),
             ]
           )
         ?>
 
-        <?php if ($showFirstLast && $this->last): ?>
+        <?php if ($showFirstLast && isset($this->last)): ?>
           <?=
             $this->render(
                 'Helpers/pagination-item.phtml',
@@ -72,8 +97,9 @@
                   'params' => $this->params,
                   'current' => $this->current,
                   'page' => $this->last,
+                  'liClasses' => ['page-last'],
                   'label' => $this->translate('page_last'),
-                  'contentHtml' => $this->escapeHtml('[' . $this->pageCount . ']'),
+                  'contentHtml' => '[' . $this->escapeHtml($this->pageCount) . ']',
               ]
             )
           ?>

@@ -22,6 +22,9 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
       console.error('Record preview element not found');
       return false;
     }
+    if (window.getComputedStyle(recordEl, null).getPropertyValue('display') === 'none') {
+      return false;
+    }
     const queryParams = new URLSearchParams({id: id, source: treeEl.dataset.source});
     fetch(VuFind.path + '/Hierarchy/GetRecord?' + queryParams.toString())
       .then((response) => response.text())
@@ -246,7 +249,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
         if (loadIndicatorEl) {
           loadIndicatorEl.classList.add('hidden');
         }
-        treePlaceholderEl.innerHTML = VuFind.translate('error_occurred');
+        treePlaceholderEl.textContent = VuFind.translate('error_occurred');
       });
   }
 

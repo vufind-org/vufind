@@ -197,3 +197,9 @@ body.rtl {
     padding-right: .25rem;
   }
 }
+
+#advSearchForm {
+  .facet-group .facet {
+    display: block;
+  }
+}

@@ -65,7 +65,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     public function testBug1(): void
     {
         $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
-        $config = new \Laminas\Config\Config($configArr);
+        $config = new \VuFind\Config\Config($configArr);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -124,7 +124,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      */
     public function testSubjectHeadings(): void
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -165,7 +165,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $marc = $this->getFixture('marc/subjectheadingsorder.xml');
-        $config = new \Laminas\Config\Config($configArray);
+        $config = new \VuFind\Config\Config($configArray);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $record->setRawData(['fullrecord' => $marc]);
         $this->assertEquals($expectedResults, $record->getAllSubjectHeadings());
@@ -234,7 +234,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     public function testTOC(): void
     {
         $marc = $this->getFixture('marc/toc1.xml');
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $record->setRawData(['fullrecord' => $marc]);
         $this->assertEquals(
@@ -310,7 +310,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     public function testGetSchemaOrgFormatsArray(bool $useIls, array $expectedFormats): void
     {
         // Set up record driver:
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
 
         // Load data:
@@ -337,7 +337,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFormattedMarcDetails(): void
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);

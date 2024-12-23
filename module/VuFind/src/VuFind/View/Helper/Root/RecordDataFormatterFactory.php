@@ -86,7 +86,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
@@ -191,6 +191,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             $this->getAuthorFunction()
         );
         $spec->setLine('Summary', 'getSummary');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setLine(
             'Format',
             'getFormats',
@@ -255,6 +256,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     {
         $spec = new RecordDataFormatter\SpecBuilder();
         $spec->setLine('Summary', 'getSummary');
+        $spec->setLine('Abstract', 'getAbstractNotes');
         $spec->setMultiLine(
             'Authors',
             'getDeduplicatedAuthors',
@@ -369,6 +371,9 @@ class RecordDataFormatterFactory implements FactoryInterface
     {
         $spec = new RecordDataFormatter\SpecBuilder();
         $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
+        $spec->setLine('Abstract', 'getAbstractNotes');
+        $spec->setLine('Review', 'getReviewNotes');
+        $spec->setLine('Content Advice', 'getContentAdviceNotes');
         $spec->setLine('Published', 'getDateSpan');
         $spec->setLine('Item Description', 'getGeneralNotes');
         $spec->setLine('Physical Description', 'getPhysicalDescriptions');

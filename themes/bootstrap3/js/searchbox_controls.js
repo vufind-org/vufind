@@ -70,12 +70,13 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       });
       $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
     }
-    window.Cookies.set("keyboard", layoutName);
     if (layoutName === "none") {
+      VuFind.cookie.remove("keyboard");
       $("#keyboard-selection-button").removeClass("activated");
       _enabled = false;
       _hideKeyboard();
     } else {
+      VuFind.cookie.set("keyboard", layoutName);
       $("#keyboard-selection-button").addClass("activated");
       _enabled = true;
       const keyboardLayout = new _KeyboardLayoutClass().get(layoutName);
@@ -168,7 +169,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
     _keyboard.setInput(_textInput.value);
 
-    let layout = window.Cookies.get("keyboard");
+    let layout = VuFind.cookie.get("keyboard");
     if (layout == null) {
       layout = "none";
     }

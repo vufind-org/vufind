@@ -56,7 +56,11 @@
           </option>
         <?php endif; ?>
         <?php foreach ($this->requestGroups as $group): ?>
-          <option value="<?=$this->escapeHtmlAttr($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
+          <option
+            value="<?=$this->escapeHtmlAttr($group['id'])?>"
+            data-locations-label="<?=$this->transEsc($group['locationsLabel'] ?? 'pick_up_location')?>"
+            <?=($selected == $group['id']) ? ' selected="selected"' : ''?>
+          >
             <?=$this->transEsc('request_group_' . $group['name'], null, $group['name'])?>
           </option>
         <?php endforeach; ?>

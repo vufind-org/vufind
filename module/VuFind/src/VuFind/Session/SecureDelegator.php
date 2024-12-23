@@ -31,9 +31,8 @@
 
 namespace VuFind\Session;
 
-use Laminas\Crypt\BlockCipher;
-use Laminas\Math\Rand;
 use VuFind\Cookie\CookieManager;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Table\PluginManager;
 
 use function func_get_args;
@@ -51,39 +50,17 @@ use function func_get_args;
 class SecureDelegator implements HandlerInterface
 {
     /**
-     * The block cipher for en/decrypting session data.
-     *
-     * @var BlockCipher
-     */
-    protected $cipher;
-
-    /**
-     * VuFind cookie manager service.
-     *
-     * @var CookieManager
-     */
-    protected $cookieManager;
-
-    /**
-     * The wrapped session handler.
-     *
-     * @var HandlerInterface
-     */
-    protected $handler;
-
-    /**
      * SecureDelegator constructor.
      *
      * @param CookieManager    $cookieManager VuFind cookie manager service.
      * @param HandlerInterface $handler       The wrapped session handler.
+     * @param BlockCipher      $cipher        The block cipher for en/decrypting session data.
      */
     public function __construct(
-        CookieManager $cookieManager,
-        HandlerInterface $handler
+        protected CookieManager $cookieManager,
+        protected HandlerInterface $handler,
+        protected BlockCipher $cipher
     ) {
-        $this->handler = $handler;
-        $this->cookieManager = $cookieManager;
-        $this->cipher = BlockCipher::factory('openssl');
     }
 
     /**
@@ -132,7 +109,7 @@ class SecureDelegator implements HandlerInterface
     {
         $cookieName = "{$name}_KEY";
         $cipherKey = ($cookieValue = $this->cookieManager->get($cookieName))
-            ?? base64_encode(Rand::getBytes(64));
+            ?? base64_encode(random_bytes(64));
 
         if (!$cookieValue) {
             $lifetime = session_get_cookie_params()['lifetime'];

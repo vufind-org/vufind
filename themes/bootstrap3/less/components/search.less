@@ -98,11 +98,22 @@ $thumbnail-width-large:  160px !default;
 
 header .container.navbar { margin-bottom: 0; }
 
-.search-sort, .search-result-limit { display: flex; }
-.search-sort label, .search-result-limit label {
-  line-height: @input-height-base;
-  padding-right: .5rem;
+.search-sort,
+.search-result-limit {
+  display: flex;
+  gap: 0.5rem;
+
+  label {
+    flex: none;
+    white-space: nowrap;
+    line-height: @input-height-base;
+  }
+
+  select.form-control {
+    flex: 1 1 0%;
+  }
 }
+
 .search-stats {
   display: block;
   padding-top: 0.5rem;
@@ -136,6 +147,7 @@ header .container.navbar { margin-bottom: 0; }
 .selection-controls-bar {
   gap: 0.25rem;
   align-items: center;
+  cursor: default;
 }
 .bulkActionButtons {
   margin-block: 1rem;
@@ -176,7 +188,22 @@ header .container.navbar { margin-bottom: 0; }
   padding-top: 1rem;
 
   .record-checkbox,
-  .record-number { display: none; }
+  .record-number {
+    display: none;
+  }
+
+  .record-checkbox {
+    padding: .4rem;
+    height: fit-content;
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+  }
+
+  .record-number {
+    padding-top: .2rem;
+  }
 
   .title,
   .result-author,
@@ -423,6 +450,8 @@ body.rtl {
 }
 
 .searchtools {
+  margin-bottom: 0.5rem;
+
   h2 {
     display: inline-block;
     margin: 0;
@@ -669,8 +698,17 @@ body.rtl {
 
 .clear-selection{
   font-weight: 700;
-  padding: .25rem .4rem .15rem .4rem;
   flex-basis: 100%;
+}
+
+.selection-controls-bar {
+  .clear-selection, label {
+    padding: .25rem .4rem .15rem .4rem;
+  }
+
+  input[type="checkbox"] {
+    margin-right: .4rem;
+  }
 }
 
 .active-filters .filters a.filter-value:hover,

@@ -34,8 +34,6 @@ namespace VuFind\Controller;
 use ArrayObject;
 use Composer\Semver\Comparator;
 use Exception;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -47,6 +45,7 @@ use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
@@ -1120,7 +1119,7 @@ class UpgradeController extends AbstractBase
         // Test that blowfish is still working
         $blowfishIsWorking = true;
         try {
-            $newcipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+            $newcipher = $this->serviceLocator->get(BlockCipher::class)->setAlgorithm('blowfish');
             $newcipher->setKey('akeyforatest');
             $newcipher->encrypt('youfoundtheeasteregg!');
         } catch (Exception $e) {

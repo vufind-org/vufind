@@ -58,7 +58,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     /**
      * EDS configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $edsConfig;
 
@@ -98,7 +98,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
         $this->edsConfig = $this->getService(\VuFind\Config\PluginManager::class)
@@ -178,17 +178,34 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnectorOptions()
     {
+        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST',
             'api_url' => $this->edsConfig->General->api_url
                 ?? $this->defaultApiUrl,
+            'is_guest' => !$auth->isGranted('access.EDSExtendedResults'),
+            'send_user_ip' => $this->edsConfig->AdditionalHeaders->send_user_ip ?? false,
         ];
         if (isset($this->edsConfig->General->auth_url)) {
             $options['auth_url'] = $this->edsConfig->General->auth_url;
         }
         if (isset($this->edsConfig->General->session_url)) {
             $options['session_url'] = $this->edsConfig->General->session_url;
+        }
+        if (!empty($this->edsConfig->EBSCO_Account->api_key)) {
+            $options['api_key'] = $this->edsConfig->EBSCO_Account->api_key;
+        }
+        if (!empty($this->edsConfig->EBSCO_Account->api_key_guest)) {
+            $options['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
+        }
+        if ($options['send_user_ip']) {
+            $options['ip_to_report'] = $this->getService(\VuFind\Net\UserIpReader::class)->getUserIp();
+            $options['report_vendor_version'] = \VuFind\Config\Version::getBuildVersion();
+            $server = $this->getService(\VuFind\Http\PhpEnvironment\Request::class)->getServer();
+            if (!empty($server['HTTP_USER_AGENT'])) {
+                $options['user_agent'] = $server['HTTP_USER_AGENT'];
+            }
         }
         return $options;
     }

@@ -73,7 +73,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ) {
         $detector = call_user_func($callback);
         $settings = $container->get(LocaleSettings::class);
@@ -107,7 +107,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
      *
      * @return \Generator
      */
-    protected function getStrategies(LocaleSettings $settings = null): \Generator
+    protected function getStrategies(?LocaleSettings $settings = null): \Generator
     {
         yield new LocaleDetectorParamStrategy();
 
