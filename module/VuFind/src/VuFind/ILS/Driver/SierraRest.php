@@ -1725,17 +1725,7 @@ class SierraRest extends AbstractBase implements
                 'success' => false, 'status' => 'authentication_error_invalid',
             ];
         }
-
-        if ($this->config['Authentication']['digits_only'] ?? false) {
-            $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
-            if (strlen($newPIN) != 4) {
-                return [
-                    'success' => false, 'status' => 'password_error_invalid',
-                ];
-            }
-        } else {
-            $newPIN = trim($details['newPassword']);
-        }
+        $newPIN = trim($details['newPassword']);
         $request = ['pin' => $newPIN];
 
         $result = $this->makeRequest(
