@@ -30,7 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\ILS\Logic\AccountStatusLevelType;
+use VuFind\Account\AccountStatusLevelType;
 
 /**
  * "Get User Transactions" AJAX handler

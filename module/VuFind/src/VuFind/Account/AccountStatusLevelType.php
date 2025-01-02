@@ -21,19 +21,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Logic
+ * @package  Account
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\ILS\Logic;
+namespace VuFind\Account;
 
 /**
  * Account status level enum
  *
  * @category VuFind
- * @package  ILS_Logic
+ * @package  Account
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki

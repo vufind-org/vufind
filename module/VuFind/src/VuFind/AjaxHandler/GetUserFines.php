@@ -31,10 +31,10 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Account\AccountStatusLevelType;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
-use VuFind\ILS\Logic\AccountStatusLevelType;
 use VuFind\Service\CurrencyFormatter;
 use VuFind\Session\Settings as SessionSettings;
 
