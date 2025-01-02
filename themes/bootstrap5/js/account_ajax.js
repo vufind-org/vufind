@@ -23,13 +23,40 @@ VuFind.register('account', function Account() {
 
   var _submodules = [];
   var _clearCaches = false;
-  var _sessionDataPrefix = "vf-account-status-";
+  var _sessionDataPrefix = "vf-account-status-2-";
 
-  var _save = function _save(module) {
+  var _getStorageKey = function _getStorageKey(module) {
+    return _sessionDataPrefix + module;
+  };
+
+  var _loadSessionData = function _loadSessionData(module) {
+    var theme = VuFind.getTheme();
+    var json = sessionStorage.getItem(_getStorageKey(module));
+    if (null !== json) {
+      var data = JSON.parse(json);
+      if (typeof data[theme] !== 'undefined') {
+        return data[theme];
+      }
+    }
+    return null;
+  };
+
+  var _saveSessionData = function _saveSessionData(module) {
+    var theme = VuFind.getTheme();
+    var json = sessionStorage.getItem(_getStorageKey(module));
+    var data = {};
+    if (null !== json) {
+      data = JSON.parse(json) || {};
+    }
+    data[theme] = _statuses[module];
     sessionStorage.setItem(
-      _sessionDataPrefix + module,
-      JSON.stringify(_statuses[module])
+      _getStorageKey(module),
+      JSON.stringify(data)
     );
+  };
+
+  var _clearSessionData = function _clearSessionData(module) {
+    sessionStorage.removeItem(_getStorageKey(module));
   };
 
   // Forward declaration for clearAllCaches
@@ -40,7 +67,7 @@ VuFind.register('account', function Account() {
     if (typeof name === "undefined" || name === '') {
       clearAllCaches();
     } else {
-      sessionStorage.removeItem(_sessionDataPrefix + name);
+      _clearSessionData(name);
     }
   };
 
@@ -120,21 +147,20 @@ VuFind.register('account', function Account() {
         _statuses[module] = MISSING;
       })
       .always(function ajaxLookupAlways() {
-        _save(module);
+        _saveSessionData(module);
         _render();
       });
   };
 
   var _load = function _load(module) {
     if (_clearCaches) {
-      sessionStorage.removeItem(_sessionDataPrefix + module);
+      _clearSessionData(module);
     }
     var $element = $(_submodules[module].selector);
     if (!$element) {
       _statuses[module] = INACTIVE;
     } else {
-      var json = sessionStorage.getItem(_sessionDataPrefix + module);
-      var session = typeof json === "undefined" ? null : JSON.parse(json);
+      var session = _loadSessionData(module);
       if (
         session === null ||
         session === LOADING ||

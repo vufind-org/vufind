@@ -8,6 +8,7 @@ var VuFind = (function VuFind() {
   var _submodules = [];
   var _cspNonce = '';
   var _searchId = null;
+  var _theme = null;
 
   var _icons = {};
   var _translations = {};
@@ -439,6 +440,14 @@ var VuFind = (function VuFind() {
     _searchId = searchId;
   };
 
+  var getTheme = function getTheme() {
+    return _theme;
+  };
+
+  var setTheme = function setTheme(theme) {
+    _theme = theme;
+  };
+
   function setupQRCodeLinks(_container) {
     var container = _container || document.body;
     var qrcodeLinks = container.querySelectorAll('a.qrcodeLink');
@@ -623,7 +632,9 @@ var VuFind = (function VuFind() {
     restoreTransitions: restoreTransitions,
     inURLSearchParams: inURLSearchParams,
     deleteKeyValueFromURLSearchParams: deleteKeyValueFromURLSearchParams,
-    deleteParamsFromURLSearchParams: deleteParamsFromURLSearchParams
+    deleteParamsFromURLSearchParams: deleteParamsFromURLSearchParams,
+    getTheme,
+    setTheme
   };
 })();
 
