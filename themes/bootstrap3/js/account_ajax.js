@@ -23,7 +23,7 @@ VuFind.register('account', function Account() {
 
   var _submodules = [];
   var _clearCaches = false;
-  var _sessionDataPrefix = "vf-account-status-2-";
+  var _sessionDataPrefix = "vf-account-status-";
 
   var _getStorageKey = function _getStorageKey(module) {
     return _sessionDataPrefix + module;
