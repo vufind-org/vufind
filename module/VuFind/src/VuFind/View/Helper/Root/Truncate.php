@@ -30,11 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\String\PropertyString;
 use VuFind\String\PropertyStringInterface;
-
-use function function_exists;
-use function strlen;
 
 /**
  * Truncate view helper
