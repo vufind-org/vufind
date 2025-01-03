@@ -91,7 +91,8 @@ class CleanHtmlFactory implements FactoryInterface
      * N.B. This is a relatively slow method.
      *
      * @param array $options Additional options. Currently supported:
-     *   targetBlank  true/false  Whether to add target="_blank" to external links
+     *   bool   targetBlank Whether to add target="_blank" to external links
+     *   string context     Rendering context ('default' or 'heading')
      *
      * @return HTMLPurifier
      */
@@ -119,28 +120,37 @@ class CleanHtmlFactory implements FactoryInterface
         // still intermittently present, and this setting should remain in place.
         $config->set('Core.AllowParseManyTags', true);
 
-        $this->setAdditionalConfiguration($config);
+        $this->setAdditionalConfiguration($config, $options);
         return new \HTMLPurifier($config);
     }
 
     /**
      * Sets additional configuration
      *
-     * @param HTMLPurifier_Config $config Configuration
+     * @param HTMLPurifier_Config $config  Configuration
+     * @param array               $options Additional options
      *
      * @return void
      */
-    protected function setAdditionalConfiguration(HTMLPurifier_Config $config)
+    protected function setAdditionalConfiguration(HTMLPurifier_Config $config, array $options): void
     {
-        // Add support for details and summary elements:
-        $definition = $config->getHTMLDefinition(true);
-        $definition->addElement(
-            'details',
-            'Block',
-            'Flow',
-            'Common',
-            ['open' => new \HTMLPurifier_AttrDef_HTML_Bool(true)]
-        );
-        $definition->addElement('summary', 'Block', 'Flow', 'Common');
+        $context = $options['context'] ?? 'default';
+        if ('heading' === $context) {
+            // Limit elements allowed in headings
+            // (see https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content for more
+            // information):
+            $config->set('HTML.AllowedElements', 'a,b,br,em,i,span');
+        } else {
+            // Add support for details and summary elements:
+            $definition = $config->getHTMLDefinition(true);
+            $definition->addElement(
+                'details',
+                'Block',
+                'Flow',
+                'Common',
+                ['open' => new \HTMLPurifier_AttrDef_HTML_Bool(true)]
+            );
+            $definition->addElement('summary', 'Block', 'Flow', 'Common');
+        }
     }
 }

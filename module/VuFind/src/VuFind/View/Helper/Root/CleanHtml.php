@@ -43,11 +43,11 @@ use Closure;
 class CleanHtml extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Purifier
+     * Purifiers
      *
-     * @var \HTMLPurifier
+     * @var \HTMLPurifier[]
      */
-    protected $purifier = null;
+    protected $purifiers = [];
 
     /**
      * Constructor
@@ -61,19 +61,21 @@ class CleanHtml extends \Laminas\View\Helper\AbstractHelper
     /**
      * Clean up HTML
      *
-     * @param string  $html        HTML
-     * @param boolean $targetBlank Whether to add target=_blank to outgoing links
+     * @param string $html        HTML
+     * @param bool   $targetBlank Whether to add target=_blank to outgoing links
+     * @param string $context     Display context (e.g. 'heading')
      *
      * @return string
      */
-    public function __invoke($html, $targetBlank = false): string
+    public function __invoke(string $html, bool $targetBlank = false, string $context = 'default'): string
     {
         if (!str_contains($html, '<')) {
             return $html;
         }
-        if (null === ($this->purifier[$targetBlank] ?? null)) {
-            $this->purifier[$targetBlank] = ($this->purifierFactory)(compact('targetBlank'));
+        $key = ($targetBlank ? 'blank' : 'noblank') . "_$context";
+        if (!isset($this->purifiers[$key])) {
+            $this->purifiers[$key] = ($this->purifierFactory)(compact('targetBlank', 'context'));
         }
-        return $this->purifier[$targetBlank]->purify($html);
+        return $this->purifiers[$key]->purify($html);
     }
 }
