@@ -77,46 +77,48 @@ VuFind.register('account', function Account() {
 
   var _render = function _render() {
     var accountStatus = ICON_LEVELS.NONE;
-    for (var sub in _submodules) {
-      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
-        var status = _getStatus(sub);
-        if (status === INACTIVE) {
-          continue;
-        }
-        var $element = $(_submodules[sub].selector);
-        if ($element.length === 0) {
-          // This could happen if the DOM is changed dynamically
-          _statuses[sub] = INACTIVE;
-          continue;
-        }
-        if (status === MISSING) {
-          $element.addClass('hidden');
-        } else {
-          $element.removeClass('hidden');
-          if (status === LOADING) {
-            $element.html(VuFind.spinner());
-          } else if (Object.prototype.hasOwnProperty.call(_submodules[sub], 'render')) {
-            // Render using render function:
-            let moduleStatus = _submodules[sub].render($element, _statuses[sub], ICON_LEVELS);
-            if (moduleStatus > accountStatus) {
-              accountStatus = moduleStatus;
-            }
-          } else {
-            // Render with default method:
-            const subStatus = _statuses[sub];
-            if (subStatus.html !== '') {
-              $element.html(subStatus.html);
-            } else {
-              $element.addClass("hidden");
-            }
-            $element[0].querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => bootstrap.Tooltip.getOrCreateInstance(el));
-            if (subStatus.level > accountStatus) {
-              accountStatus = subStatus.level;
-            }
-          }
-        }
+    Object.entries(_submodules).forEach(([moduleName, moduleData]) => {
+      const status = _getStatus(moduleName);
+      if (status === INACTIVE) {
+        return;
       }
-    }
+      const elements = document.querySelectorAll(moduleData.selector);
+      if (elements.length === 0) {
+        // This could happen if the DOM is changed dynamically
+        _statuses[moduleName] = INACTIVE;
+        return;
+      }
+      if (status === MISSING) {
+        elements.forEach((element) => element.classList.add('hidden'));
+      } else if (status === LOADING) {
+        elements.forEach((element) => {
+          element.classList.remove('hidden');
+          VuFind.setInnerHtml(element, VuFind.spinner());
+        });
+      } else if (Object.prototype.hasOwnProperty.call(moduleData, 'render')) {
+        // Render using render function (with jQuery for back-compatibility):
+        let moduleStatus = moduleData.render($(elements), _statuses[moduleName], ICON_LEVELS);
+        if (moduleStatus > accountStatus) {
+          accountStatus = moduleStatus;
+        }
+      } else {
+        // Render with default method:
+        const subStatus = _statuses[moduleName];
+        if (subStatus.level > accountStatus) {
+          accountStatus = subStatus.level;
+        }
+        elements.forEach((element) => {
+          if (subStatus.html !== '') {
+            element.classList.remove('hidden');
+            VuFind.setInnerHtml(element, subStatus.html);
+            element.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((subEl) => bootstrap.Tooltip.getOrCreateInstance(subEl));
+          } else {
+            element.classList.add('hidden');
+          }
+        });
+      }
+    });
+
     const accountIconEl = document.querySelector('#account-icon');
     if (accountIconEl) {
       VuFind.setInnerHtml(accountIconEl, VuFind.icon(..._accountIcons[accountStatus]));
@@ -126,8 +128,7 @@ VuFind.register('account', function Account() {
         accountIconEl.title = VuFind.translate('account_has_alerts');
         bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
       } else {
-        const tooltip = bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
-        tooltip.dispose();
+        bootstrap.Tooltip.getOrCreateInstance(accountIconEl).dispose();
       }
       Object.entries(ICON_LEVELS).forEach(([, level]) => {
         accountIconEl.classList.remove('notification-level-' + level);
