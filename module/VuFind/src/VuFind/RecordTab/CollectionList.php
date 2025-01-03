@@ -118,6 +118,16 @@ class CollectionList extends AbstractBase
     }
 
     /**
+     * Is this tab active?
+     *
+     * @return bool
+     */
+    public function isActive()
+    {
+        return parent::isActive() && $this->getRecordDriver()->tryMethod('isCollection');
+    }
+
+    /**
      * Get the processed search results.
      *
      * @return \VuFind\Search\SolrCollection\Results

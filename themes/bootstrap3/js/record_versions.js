@@ -13,7 +13,7 @@ VuFind.register("recordVersions", function recordVersions() {
 
   function checkVersionStatusFailure(items) {
     items.forEach(function displayVersionFailure(item) {
-      item.el.innerHTML = VuFind.translate("error_occurred");
+      item.el.textContent = VuFind.translate("error_occurred");
     });
   }
 

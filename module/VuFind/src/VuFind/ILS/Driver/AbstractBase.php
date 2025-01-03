@@ -70,14 +70,14 @@ abstract class AbstractBase implements DriverInterface
      * Rethrow the provided exception as an ILS exception.
      *
      * @param \Throwable $exception Exception to rethrow
-     * @param string     $msg       Override exception message (optional)
+     * @param ?string    $msg       Override exception message (optional)
      *
      * @throws ILSException
      * @return never
      */
     protected function throwAsIlsException(
         \Throwable $exception,
-        string $msg = null
+        ?string $msg = null
     ): void {
         throw new ILSException($msg ?? $exception->getMessage(), 0, $exception);
     }

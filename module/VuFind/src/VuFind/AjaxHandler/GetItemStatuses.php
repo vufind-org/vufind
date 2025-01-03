@@ -33,9 +33,9 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
@@ -241,10 +241,15 @@ class GetItemStatuses extends AbstractBase implements
 
         $callnumberHandler = $this->getCallnumberHandler($callnumbers, $callnumberSetting);
         foreach ($callnumbers as $number) {
-            $displayCallnumber = $actualCallnumber = $number['callnumber'];
+            // Call number is usually an array, but it could be a flat string if we're in "msg" mode:
+            if (is_array($number)) {
+                $displayCallnumber = $actualCallnumber = $number['callnumber'];
 
-            if (!empty($number['prefix'])) {
-                $displayCallnumber = $number['prefix'] . ' ' . $displayCallnumber;
+                if (!empty($number['prefix'])) {
+                    $displayCallnumber = $number['prefix'] . ' ' . $displayCallnumber;
+                }
+            } else {
+                $displayCallnumber = $actualCallnumber = $number;
             }
 
             $html[] = $this->renderer->render(

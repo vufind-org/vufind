@@ -44,22 +44,6 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 class Module
 {
     /**
-     * Get autoloader configuration
-     *
-     * @return void
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
-
-    /**
      * Return generic configuration
      *
      * @return array

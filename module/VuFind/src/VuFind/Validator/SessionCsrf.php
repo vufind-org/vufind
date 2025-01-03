@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Decorator for Laminas CSRF validator to add token counting/clearing functions.
  *
  * PHP version 8
  *
@@ -29,11 +29,13 @@
 
 namespace VuFind\Validator;
 
+use Laminas\Session\Validator\Csrf;
+
 use function array_slice;
 use function count;
 
 /**
- * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Decorator for Laminas CSRF validator to add token counting/clearing functions.
  *
  * @category VuFind
  * @package  Solr
@@ -41,8 +43,25 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SessionCsrf extends \Laminas\Validator\Csrf implements CsrfInterface
+class SessionCsrf implements CsrfInterface
 {
+    /**
+     * Laminas CSRF class.
+     *
+     * @var Csrf
+     */
+    protected Csrf $csrf;
+
+    /**
+     * Constructor
+     *
+     * @param array $options Options to pass to CSRF validator
+     */
+    public function __construct(array $options = [])
+    {
+        $this->csrf = new Csrf($options);
+    }
+
     /**
      * Keep only the most recent N tokens.
      *
@@ -52,7 +71,7 @@ class SessionCsrf extends \Laminas\Validator\Csrf implements CsrfInterface
      */
     public function trimTokenList($limit)
     {
-        $session = $this->getSession();
+        $session = $this->csrf->getSession();
         if ($limit < 1) {
             // Reset the array if necessary:
             $session->tokenList = [];
@@ -70,6 +89,48 @@ class SessionCsrf extends \Laminas\Validator\Csrf implements CsrfInterface
      */
     public function getTokenCount()
     {
-        return count($this->getSession()->tokenList ?? []);
+        return count($this->csrf->getSession()->tokenList ?? []);
+    }
+
+    /**
+     * Retrieve CSRF token
+     *
+     * If no CSRF token currently exists, or should be regenerated,
+     * generates one.
+     *
+     * @param bool $regenerate regenerate hash, default false
+     *
+     * @return string
+     */
+    public function getHash($regenerate = false)
+    {
+        return $this->csrf->getHash($regenerate);
+    }
+
+    /**
+     * Returns true if the CSRF token is valid.
+     *
+     * @param mixed $value Token to validate
+     *
+     * @return bool
+     */
+    public function isValid($value)
+    {
+        return $this->csrf->isValid($value);
+    }
+
+    /**
+     * Returns an array of messages that explain why the most recent isValid()
+     * call returned false. The array keys are validation failure message identifiers,
+     * and the array values are the corresponding human-readable message strings.
+     *
+     * If isValid() was never called or if the most recent isValid() call
+     * returned true, then this method returns an empty array.
+     *
+     * @return array<string, string>
+     */
+    public function getMessages()
+    {
+        return $this->csrf->getMessages();
     }
 }

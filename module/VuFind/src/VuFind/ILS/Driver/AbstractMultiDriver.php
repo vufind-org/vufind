@@ -189,7 +189,7 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Laminas\Log\
                 ? $name
                 : $this->driversConfigPath . '/' . $name;
             $config = $this->configLoader->get($path);
-        } catch (\Laminas\Config\Exception\RuntimeException $e) {
+        } catch (\Exception $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             $this->error("Could not load config for $name");

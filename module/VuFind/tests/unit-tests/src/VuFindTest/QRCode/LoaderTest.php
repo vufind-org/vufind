@@ -29,7 +29,7 @@
 
 namespace VuFindTest\QRCode;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 

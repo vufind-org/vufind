@@ -64,7 +64,7 @@ class ExpireExternalSessionsCommandFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $tableManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(

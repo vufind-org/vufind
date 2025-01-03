@@ -69,7 +69,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param \VuFind\Mailer\Mailer           $mailer          Mailer
      * @param PhpRenderer                     $viewRenderer    View Renderer
      * @param UserIpReader                    $userIpReader    User IP address reader
-     * @param \Laminas\Config\Config          $config          Configuration
+     * @param \VuFind\Config\Config           $config          Configuration
      * @param AuthHashServiceInterface        $authHashService AuthHash database service
      */
     public function __construct(
@@ -78,7 +78,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         protected \VuFind\Mailer\Mailer $mailer,
         protected PhpRenderer $viewRenderer,
         protected UserIpReader $userIpReader,
-        protected \Laminas\Config\Config $config,
+        protected \VuFind\Config\Config $config,
         protected AuthHashServiceInterface $authHashService
     ) {
     }

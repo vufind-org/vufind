@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 
 /**
  * Collection Controller

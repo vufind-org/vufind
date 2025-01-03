@@ -96,7 +96,7 @@
         <?php endforeach; ?>
       </ul>
     </form>
-    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results]])?>
   <?php else: ?>
     <p><?=$this->transEsc('You do not have any saved resources')?></p>
   <?php endif; ?>

@@ -62,7 +62,7 @@ class WorldCat2SimilarFactory extends SimilarFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $module = parent::__invoke($container, $requestedName, $options);
         $wc2Options = $container->get(\VuFind\Search\Options\PluginManager::class)->get('WorldCat2');
