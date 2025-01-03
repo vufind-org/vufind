@@ -68,11 +68,28 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     /**
      * Get HTML string
      *
-     * Note: This could contain anything and must be sanitized for display
+     * Note: This could contain anything and must be sanitized for display unless marked trusted
+     * (see setHtmlTrusted/getHtmlTrusted).
      *
      * @return ?string
      */
     public function getHtml(): ?string;
+
+    /**
+     * Set flag for trusted HTML
+     *
+     * @param bool $trusted Is the HTML content trusted?
+     *
+     * @return static
+     */
+    public function setHtmlTrusted(bool $trusted): static;
+
+    /**
+     * Get flag for trusted HTML
+     *
+     * @return ?bool
+     */
+    public function getHtmlTrusted(): ?bool;
 
     /**
      * Set identifiers
