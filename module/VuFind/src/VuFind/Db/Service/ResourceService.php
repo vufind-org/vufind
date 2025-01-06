@@ -363,6 +363,6 @@ class ResourceService extends AbstractDbService implements
      */
     public function deleteResource(ResourceEntityInterface|int $resourceOrId): void
     {
-        $this->deleteEntity($this->getDoctrineReference(UserResource::class, $resourceOrId));
+        $this->deleteEntity($this->getDoctrineReference(Resource::class, $resourceOrId));
     }
 }
