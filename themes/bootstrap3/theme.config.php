@@ -51,6 +51,7 @@ return [
          * Strings are supported for backwards compatibility reasons. example:
          * - 'example.js' => same as ['file' => 'example.js']
          */
+        ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],

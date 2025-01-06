@@ -31,6 +31,8 @@
 
 namespace VuFindTest\Service;
 
+use NumberFormatter;
+
 /**
  * CurrencyFormatter Test Class
  *
@@ -44,39 +46,6 @@ namespace VuFindTest\Service;
 class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Locale (for restoration after testing)
-     *
-     * @var string
-     */
-    protected $locale;
-
-    /**
-     * Standard setup method
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // store current default and set a value for consistency in testing
-        $this->locale = setlocale(LC_MONETARY, 0);
-        $locales = ['en_US.UTF8', 'en_US.UTF-8', 'en_US'];
-        if (false === setlocale(LC_MONETARY, $locales)) {
-            $this->markTestSkipped('Problem setting up locale');
-        }
-    }
-
-    /**
-     * Standard teardown method
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        // restore current default
-        setlocale(LC_MONETARY, $this->locale);
-    }
-
-    /**
      * Test the class
      *
      * @return void
@@ -84,18 +53,38 @@ class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
     public function testFormatting()
     {
         // test default settings
+        $locale = setlocale(LC_MONETARY, '');
+        $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+        $defaultCurrencyCode = trim($formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE) ?: '') ?: 'USD';
         $cc = new \VuFind\Service\CurrencyFormatter();
-        $this->assertEquals('$3,000.00', $cc->convertToDisplayFormat(3000));
-        $this->assertEquals('€3,000.00', $cc->convertToDisplayFormat(3000, 'EUR'));
+        $this->assertEquals(
+            $formatter->formatCurrency(3000, $defaultCurrencyCode),
+            $cc->convertToDisplayFormat(3000)
+        );
+        $this->assertEquals(
+            $formatter->formatCurrency(3000, 'EUR'),
+            $cc->convertToDisplayFormat(3000, 'EUR')
+        );
 
-        // test override default currency
+        // test overriding default currency
         $cc = new \VuFind\Service\CurrencyFormatter('EUR');
-        $this->assertEquals('€3,000.00', $cc->convertToDisplayFormat(3000));
-        $this->assertEquals('$3,000.00', $cc->convertToDisplayFormat(3000, 'USD'));
+        $this->assertEquals(
+            $formatter->formatCurrency(3000, 'EUR'),
+            $cc->convertToDisplayFormat(3000)
+        );
+        $this->assertEquals(
+            $formatter->formatCurrency(3000, 'USD'),
+            $cc->convertToDisplayFormat(3000, 'USD')
+        );
 
-        // test override default locale
+        // test overriding default locale
         $cc = new \VuFind\Service\CurrencyFormatter(null, 'de_DE');
         $this->assertEquals("3.000,00\u{a0}€", $cc->convertToDisplayFormat(3000));
+        $this->assertEquals("3.000,00\u{a0}\$", $cc->convertToDisplayFormat(3000, 'USD'));
+
+        // test overriding both
+        $cc = new \VuFind\Service\CurrencyFormatter('AUD', 'de_DE');
+        $this->assertEquals("3.000,00\u{a0}AU$", $cc->convertToDisplayFormat(3000));
         $this->assertEquals("3.000,00\u{a0}\$", $cc->convertToDisplayFormat(3000, 'USD'));
     }
 }

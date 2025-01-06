@@ -241,10 +241,15 @@ class GetItemStatuses extends AbstractBase implements
 
         $callnumberHandler = $this->getCallnumberHandler($callnumbers, $callnumberSetting);
         foreach ($callnumbers as $number) {
-            $displayCallnumber = $actualCallnumber = $number['callnumber'];
+            // Call number is usually an array, but it could be a flat string if we're in "msg" mode:
+            if (is_array($number)) {
+                $displayCallnumber = $actualCallnumber = $number['callnumber'];
 
-            if (!empty($number['prefix'])) {
-                $displayCallnumber = $number['prefix'] . ' ' . $displayCallnumber;
+                if (!empty($number['prefix'])) {
+                    $displayCallnumber = $number['prefix'] . ' ' . $displayCallnumber;
+                }
+            } else {
+                $displayCallnumber = $actualCallnumber = $number;
             }
 
             $html[] = $this->renderer->render(
