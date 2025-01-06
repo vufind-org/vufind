@@ -117,7 +117,7 @@ class CommentsService extends AbstractDbService implements
             . 'FROM ' . $this->getEntityClass(Comments::class) . ' c '
             . 'LEFT JOIN c.user u '
             . 'WHERE c.resource = :resource '
-            . 'ORDER BY c.created';
+            . 'ORDER BY c.created ASC';
 
         $parameters = compact('resource');
         $query = $this->entityManager->createQuery($dql);
