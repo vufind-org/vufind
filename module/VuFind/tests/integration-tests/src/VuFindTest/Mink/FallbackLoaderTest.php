@@ -75,6 +75,31 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Add a favorite with a tag.
+     *
+     * @param Element $page          Page object
+     * @param string  $tag           Tag to add
+     * @param bool    $createAccount Should we create an account?
+     *
+     * @return void
+     */
+    protected function addFavoriteWithTag(Element $page, string $tag, bool $createAccount = false): void
+    {
+        $this->clickCss($page, '.save-record');
+        if ($createAccount) {
+            $this->clickCss($page, '.modal-body .createAccountLink');
+            $this->fillInAccountForm($page);
+            $this->clickCss($page, '.modal-body .btn.btn-primary');
+        }
+        $this->findCss($page, '#save_list');
+        $this->findCssAndSetValue($page, '#add_mytags', $tag);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->findCss($page, '.modal .alert.alert-success');
+        $this->clickCss($page, '.modal-body .btn.btn-default');
+        $this->waitForLightboxHidden();
+    }
+
+    /**
      * Add a comment (assumes you are on record page and logged in).
      *
      * @param Element $page    Page object
@@ -120,16 +145,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
 
         // Create a user account and create a favorite, tag and comment to serve as "old data":
         $page = $this->gotoRecord($newId);
-        $this->clickCss($page, '.save-record');
-        $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->fillInAccountForm($page);
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '#save_list');
-        $this->findCssAndSetValue($page, '#add_mytags', 'old_tag');
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .alert.alert-success');
-        $this->clickCss($page, '.modal-body .btn.btn-default');
-        $this->waitForLightboxHidden();
+        $this->addFavoriteWithTag($page, 'old_tag', createAccount: true);
         $this->addComment($page, 'old comment');
 
         // We created the "old data" on the new ID, because the old ID doesn't really exist; our test
@@ -140,13 +156,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
         $resourceService->persistEntity($resource);
 
         // Now that the data has been moved away, let's create a new set of data on the new ID:
-        $this->clickCss($page, '.save-record');
-        $this->findCss($page, '#save_list');
-        $this->findCssAndSetValue($page, '#add_mytags', 'new_tag');
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .alert.alert-success');
-        $this->clickCss($page, '.modal-body .btn.btn-default');
-        $this->waitForLightboxHidden();
+        $this->addFavoriteWithTag($page, 'new_tag');
         $this->addComment($page, 'new comment');
 
         // Now set up the Solr-based fallback loader to use the ctrlnum field as the fallback ID. This is
