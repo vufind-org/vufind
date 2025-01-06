@@ -79,12 +79,17 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param Element $page          Page object
      * @param string  $tag           Tag to add
+     * @param ?string $newListName   Name of new list to create (null to skip list creation)
      * @param bool    $createAccount Should we create an account?
      *
      * @return void
      */
-    protected function addFavoriteWithTag(Element $page, string $tag, bool $createAccount = false): void
-    {
+    protected function addFavoriteWithTag(
+        Element $page,
+        string $tag,
+        ?string $newListName = null,
+        bool $createAccount = false
+    ): void {
         $this->clickCss($page, '.save-record');
         if ($createAccount) {
             $this->clickCss($page, '.modal-body .createAccountLink');
@@ -92,6 +97,16 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, '.modal-body .btn.btn-primary');
         }
         $this->findCss($page, '#save_list');
+        if ($newListName) {
+            $this->clickCss($page, '#make-list');
+            $this->waitForPageLoad($page);
+            $this->findCssAndSetValue($page, '#list_title', $newListName);
+            $this->clickCss($page, '.modal-body .btn.btn-primary');
+            $this->assertEquals(
+                $newListName,
+                trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
+            );
+        }
         $this->findCssAndSetValue($page, '#add_mytags', $tag);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .alert.alert-success');
@@ -127,6 +142,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertMergedResults(Element $page): void
     {
         $this->assertEquals('new_tag 1 old_tag 1', $this->findCssAndGetText($page, '.tagList'));
+        $this->assertEquals('old_list new_list', $this->findCssAndGetText($page, '.savedLists.loaded ul'));
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->assertEquals('old comment', $this->findCssAndGetText($page, '.comment-text', index: 0));
         $this->assertEquals('new comment', $this->findCssAndGetText($page, '.comment-text', index: 1));
@@ -145,7 +161,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
 
         // Create a user account and create a favorite, tag and comment to serve as "old data":
         $page = $this->gotoRecord($newId);
-        $this->addFavoriteWithTag($page, 'old_tag', createAccount: true);
+        $this->addFavoriteWithTag($page, 'old_tag', 'old_list', createAccount: true);
         $this->addComment($page, 'old comment');
 
         // We created the "old data" on the new ID, because the old ID doesn't really exist; our test
@@ -156,7 +172,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
         $resourceService->persistEntity($resource);
 
         // Now that the data has been moved away, let's create a new set of data on the new ID:
-        $this->addFavoriteWithTag($page, 'new_tag');
+        $this->addFavoriteWithTag($page, 'new_tag', 'new_list');
         $this->addComment($page, 'new comment');
 
         // Now set up the Solr-based fallback loader to use the ctrlnum field as the fallback ID. This is
