@@ -255,7 +255,7 @@ class Initializer
 
         // Load standard configuration options:
         if (PHP_SAPI == 'cli') {
-            return $themes['standard'];
+            return 'standard';
         }
 
         // Find out if the user has a saved preference in the POST, URL or cookies:
