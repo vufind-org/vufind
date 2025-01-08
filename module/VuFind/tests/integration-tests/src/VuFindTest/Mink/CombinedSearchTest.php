@@ -255,6 +255,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $expectedContent = 'Jump to Results: Solr One (1) Solr Two (1)';
+        // The AJAX count may not load right away, so wait to be sure we assert on the final value:
         $getText = "document.getElementsByClassName('combined-jump-links')[0].textContent.replace(/\s+/g, ' ').trim()";
         $this->waitStatement("$getText === '$expectedContent'");
         $this->assertEquals(
