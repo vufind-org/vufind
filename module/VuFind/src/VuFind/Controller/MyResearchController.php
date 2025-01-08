@@ -2098,8 +2098,8 @@ class MyResearchController extends AbstractBase
         // Update hash to prevent reusing hash
         $this->getAuthManager()->updateUserVerifyHash($user);
         if ($followUp = $this->followup()->retrieve('url')) {
-            //This exists because the followupURL gets set to Verify which returns
-            //an error message due to trying to check the hash a second time
+            // This exists because the followupURL gets set to Verify which returns
+            // an error message due to trying to check the hash a second time
             $followUpUrl = str_contains($followUp, 'Verify') ? $this->url()->fromRoute('home') : $followUp;
             $this->followup()->clear('url');
             $this->followup()->store([], $followUpUrl);
