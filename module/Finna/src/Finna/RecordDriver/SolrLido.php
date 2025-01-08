@@ -2388,8 +2388,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
      * Get identifiers by type
      *
      * @param bool  $includeType Whether to include identifier type in parenthesis
-     * @param array $include     Type attributes to include
-     * @param array $exclude     Type attributes to exclude
+     * @param array $include     Type and label attributes to include
+     * @param array $exclude     Type and label attributes to exclude
      *
      * @return array
      */
@@ -2405,16 +2405,18 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
             ->repositorySet ?? [] as $repository
         ) {
             foreach ($repository->workID ?? [] as $node) {
-                $type = $node->attributes()->type ?? '';
+                $label = trim((string)($node->attributes()->label ?? ''));
+                $type = trim((string)($node->attributes()->type ?? ''));
+                $typesLC = [mb_strtolower($label, 'UTF-8'), mb_strtolower($type, 'UTF-8')];
                 if (
-                    ($include && !in_array($type, $include))
-                    || ($exclude && in_array($type, $exclude))
+                    ($include && !array_intersect($typesLC, $include))
+                    || ($exclude && array_intersect($typesLC, $exclude))
                 ) {
                     continue;
                 }
                 if ($identifier = trim((string)$node ?? '')) {
-                    if ($type && $includeType) {
-                        $identifier .= " ($type)";
+                    if (($label || $type) && $includeType) {
+                        $identifier .= ' (' . ($label ?: $type) . ')';
                     }
                     $results[] = $identifier;
                 }
