@@ -2267,7 +2267,8 @@ class MyResearchController extends AbstractBase
         );
 
         if (!empty($method)) {
-        }    $this->getAuthManager()->setAuthMethod($method);
+            $this->getAuthManager()->setAuthMethod($method);
+        }
     }
 
     /**
