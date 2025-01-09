@@ -68,7 +68,7 @@
   <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
   <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
-  <property name="version" value="10.1" />
+  <property name="version" value="10.1.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -830,6 +830,9 @@ return [
             <exec executable="psql" checkreturn="true">
               <arg line="-c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
             </exec>
+            <exec executable="psql" checkreturn="true">
+              <arg line="-c &quot;ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            </exec>
           </then>
           <else>
             <exec executable="sudo">
@@ -848,6 +851,9 @@ return [
             </exec>
             <exec executable="sudo" checkreturn="true">
               <arg line="su -c &quot;psql -c 'GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo" checkreturn="true">
+              <arg line="su -c &quot;psql -c 'ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>

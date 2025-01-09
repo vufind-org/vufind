@@ -51,7 +51,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
@@ -78,7 +78,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testFailure()
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')

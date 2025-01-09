@@ -266,8 +266,7 @@ VuFind.register('search', function search() {
     errorMsg.classList = 'alert alert-danger';
     errorMsg.textContent = error;
     const recordList = document.querySelector(jsRecordListSelector);
-    recordList.innerHTML = '';
-    recordList.append(errorMsg);
+    recordList.replaceChildren(errorMsg);
   }
 
   /**
@@ -293,7 +292,7 @@ VuFind.register('search', function search() {
     loadingOverlay.classList = 'loading-overlay';
     loadingOverlay.setAttribute('aria-live', 'polite');
     loadingOverlay.setAttribute('role', 'status');
-    loadingOverlay.innerHTML = VuFind.loading();
+    loadingOverlay.append(VuFind.loadingElement());
     recordList.prepend(loadingOverlay);
     scrollToResults();
     const searchStats = document.querySelector(searchStatsSelector);
@@ -333,7 +332,7 @@ VuFind.register('search', function search() {
           throw result.error;
         }
         // We expect to get the results list in elements, but reset it to hide spinner just in case:
-        recordList.innerHTML = '';
+        recordList.textContent = '';
         Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
           document.querySelectorAll(elementSelector).forEach((element) => {
             VuFind.setElementContents(

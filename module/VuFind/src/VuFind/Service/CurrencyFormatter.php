@@ -61,15 +61,13 @@ class CurrencyFormatter
     /**
      * Constructor
      *
-     * @param string $defaultCurrency Default currency format (ISO 4217) to use (null
-     * for default from system locale)
-     * @param string $locale          Locale to use for number formatting (null for
-     * default system locale)
+     * @param string  $defaultCurrency Default currency format (ISO 4217) to use (null for default from system locale)
+     * @param ?string $locale          Locale to use for number formatting (null for default system locale)
      */
     public function __construct($defaultCurrency = null, $locale = null)
     {
         // Initialize number formatter:
-        $locale ??= setlocale(LC_MONETARY, 0);
+        $locale ??= setlocale(LC_MONETARY, '');
         $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
 
         // Initialize default currency:

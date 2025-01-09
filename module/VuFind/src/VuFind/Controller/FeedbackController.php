@@ -9,6 +9,7 @@
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -28,6 +29,7 @@ use VuFind\Log\LoggerAwareTrait;
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -102,15 +104,23 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             return $view;
         }
 
+        if ($this->senderIsBlocked($form)) {
+            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+            return $view;
+        }
+        if ($this->senderIsIgnored($form)) {
+            $view->setVariable('successMessage', $form->getSubmitResponse());
+            $view->setTemplate('feedback/response');
+            return $view;
+        }
+
         $primaryHandler = $form->getPrimaryHandler();
         $success = $primaryHandler->handle($form, $params, $user);
         if ($success) {
             $view->setVariable('successMessage', $form->getSubmitResponse());
             $view->setTemplate('feedback/response');
         } else {
-            $this->flashMessenger()->addErrorMessage(
-                $this->translate('could_not_process_feedback')
-            );
+            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
         }
 
         $handlers = $form->getSecondaryHandlers();
@@ -144,5 +154,54 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             );
         }
         return $form;
+    }
+
+    /**
+     * Check if sender email is blocked
+     *
+     * @param Form $form Form
+     *
+     * @return bool
+     */
+    protected function senderIsBlocked(Form $form): bool
+    {
+        $config = $this->getConfig()->toArray();
+        return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['blocked_senders'] ?? []));
+    }
+
+    /**
+     * Check if sender email is ignored
+     *
+     * @param Form $form Form
+     *
+     * @return bool
+     */
+    protected function senderIsIgnored(Form $form): bool
+    {
+        $config = $this->getConfig()->toArray();
+        return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['ignored_senders'] ?? []));
+    }
+
+    /**
+     * Check if an email address matches any of the given patterns
+     *
+     * @param Form  $form     Form
+     * @param array $patterns Patterns (substring or regexp)
+     *
+     * @return bool
+     */
+    protected function senderEmailMatchesPattern(Form $form, array $patterns): bool
+    {
+        $email = $form->getData()['email'] ?? '';
+        foreach ($patterns as $pattern) {
+            if (str_starts_with($pattern, '/') && str_ends_with($pattern, '/')) {
+                if (preg_match($pattern, $email)) {
+                    return true;
+                }
+            } elseif (str_contains($email, $pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

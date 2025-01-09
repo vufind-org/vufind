@@ -43,6 +43,8 @@ use Psr\Container\ContainerInterface;
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Will not be supported in future Laminas releases
  */
 class FigletFactory implements FactoryInterface
 {
@@ -63,7 +65,7 @@ class FigletFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');

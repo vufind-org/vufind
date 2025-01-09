@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\Base;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function count;
@@ -394,13 +394,6 @@ abstract class Options implements TranslatorAwareInterface
     protected $displayCitationLinksInResults;
 
     /**
-     * Should we display checkbox facet counts in results?
-     *
-     * @var bool
-     */
-    protected $displayCheckboxFacetCounts;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -428,7 +421,6 @@ abstract class Options implements TranslatorAwareInterface
             = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
         $this->hierarchicalFacetFilters
             = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
-        $this->displayCheckboxFacetCounts = (bool)($facetSettings->Results_Settings->checkboxFacetCounts ?? false);
 
         $searchSettings = $configLoader->get($this->searchIni);
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
@@ -1316,23 +1308,13 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we display counts for checkbox facets in results?
-     *
-     * @return bool
-     */
-    public function displayCheckboxFacetCounts(): bool
-    {
-        return $this->displayCheckboxFacetCounts;
-    }
-
-    /**
      * Configure autocomplete preferences from an .ini file.
      *
-     * @param Config $searchSettings Object representation of .ini file
+     * @param ?Config $searchSettings Object representation of .ini file
      *
      * @return void
      */
-    protected function configureAutocomplete(Config $searchSettings = null)
+    protected function configureAutocomplete(?Config $searchSettings = null)
     {
         // Only change settings from current values if they are defined in .ini:
         $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled

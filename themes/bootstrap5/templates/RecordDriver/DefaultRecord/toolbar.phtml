@@ -86,11 +86,13 @@
       </li>
     <?php endif; ?>
 
-    <li role="none">
-      <a class="permalink-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Permalink'))?>" rel="nofollow">
-        <?=$this->icon('external-link') ?>
-        <?=$this->transEsc('permanent_link')?>
-      </a>
-    </li>
+    <?php if ($this->config()->get('config')->Record->permanent_link ?? true): ?>
+      <li role="none">
+        <a class="permalink-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Permalink'))?>" rel="nofollow">
+          <?=$this->icon('external-link') ?>
+          <?=$this->transEsc('permanent_link')?>
+        </a>
+      </li>
+    <?php endif ?>
   </ul>
 </nav>

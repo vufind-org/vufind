@@ -30,20 +30,20 @@
 namespace VuFindTest\Auth;
 
 use DateTime;
-use Laminas\Config\Config;
 use Laminas\Http\Request;
-use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
 use VuFind\Validator\CsrfInterface;
+use VuFindTest\Feature\TranslatorTrait;
 
 /**
  * Email Authenticator Manager Test Class
@@ -56,6 +56,8 @@ use VuFind\Validator\CsrfInterface;
  */
 class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
 {
+    use TranslatorTrait;
+
     /**
      * Get an EmailAuthenticator to test.
      *
@@ -73,13 +75,13 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @throws NoPreviousThrowableException
      */
     protected function getEmailAuthenticator(
-        SessionManager $sessionManager = null,
-        CsrfInterface $csrf = null,
-        Mailer $mailer = null,
-        PhpRenderer $renderer = null,
-        UserIpReader $userIpReader = null,
+        ?SessionManager $sessionManager = null,
+        ?CsrfInterface $csrf = null,
+        ?Mailer $mailer = null,
+        ?PhpRenderer $renderer = null,
+        ?UserIpReader $userIpReader = null,
         array $config = [],
-        AuthHashServiceInterface $authHashService = null
+        ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
             $sessionManager ?? $this->createMock(SessionManager::class),
@@ -90,13 +92,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
             new Config($config),
             $authHashService ?? $this->createMock(AuthHashServiceInterface::class)
         );
-        $mockTranslator = $this->createMock(TranslatorInterface::class);
-        $mockTranslator->method('translate')->willReturnCallback(
-            function ($str) {
-                return $str;
-            }
-        );
-        $authenticator->setTranslator($mockTranslator);
+        $authenticator->setTranslator($this->getMockTranslator([]));
         return $authenticator;
     }
 

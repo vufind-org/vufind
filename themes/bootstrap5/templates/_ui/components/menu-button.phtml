@@ -5,6 +5,7 @@
   if ($this->wrapperClass ?? false) {
     $wrapperClass = $this->wrapperClass . ' dropdown'; // Bootstrap class
   }
+  $wrapperClass .= ' ' . $this->_componentClass;
 
   $toggleTag = 'button';
   $defaultAttrs = [
