@@ -30,6 +30,9 @@
       </span>
       <?php if ($availabilityStatus->isAvailable()): ?>
         <?php /* Begin Available Items (Holds) */ ?>
+        <?php if (isset($holding['loan_type_id']) && !empty($holding['loan_type_name'])):?>
+          <span class="loan-period"><?=$this->transEsc('Loan Type')?>: <?=$holding['loan_type_name']?>&nbsp;</span>
+        <?endif;?>
         <?php if ($holding['link'] ?? false): ?>
           <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
             <?=$this->icon('place-hold', 'icon-link__icon') ?>

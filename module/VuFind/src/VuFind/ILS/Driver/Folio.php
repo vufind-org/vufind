@@ -646,6 +646,35 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get data about a loan type.
+     *
+     * @param string $loanTypeId UUID
+     *
+     * @return array
+     */
+    protected function getLoanTypeData($loanTypeId)
+    {
+        $cacheKey = 'loanTypeMap';
+        $loanTypeMap = $this->getCachedData($cacheKey);
+        if (null === $loanTypeMap) {
+            $loanTypeMap = [];
+            foreach (
+                $this->getPagedResults(
+                    'loantypes',
+                    '/loan-types'
+                ) as $loanType
+            ) {
+                if (isset($loanType->name)) {
+                    $name = $loanType->name;
+                    $loanTypeMap[$loanType->id] = compact('name');
+                }
+            }
+        }
+        $this->putCachedData($cacheKey, $loanTypeMap);
+        return $loanTypeMap[$loanTypeId];
+    }
+
+    /**
      * Choose a call number and callnumber prefix.
      *
      * @param string $hCallNumP Holding-level call number prefix
@@ -812,6 +841,15 @@ class Folio extends AbstractAPI implements
         );
         $locAndHoldings = $this->getItemFieldsFromNonItemData($locationId, $holdingDetails, $currentLoan);
 
+        $loanTypeName = '';
+        $tempLoanTypeId = $item->temporaryLoanType->id ?? '';
+        $permLoanTypeId = $item->permanentLoanType->id ?? '';
+        $loanTypeId = !empty($tempLoanTypeId) ? $tempLoanTypeId : $permLoanTypeId;
+        if (!empty($loanTypeId)) {
+            $loanData = $this->getLoanTypeData($loanTypeId);
+            $loanTypeName = $loanData['name'];
+        }
+
         return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
             'item_id' => $item->id,
@@ -826,6 +864,8 @@ class Folio extends AbstractAPI implements
             'reserve' => 'TODO',
             'addLink' => 'check',
             'bound_with_records' => $boundWithRecords,
+            'loan_type_id' => $loanTypeId,
+            'loan_type_name' => $loanTypeName,
         ];
     }
 
