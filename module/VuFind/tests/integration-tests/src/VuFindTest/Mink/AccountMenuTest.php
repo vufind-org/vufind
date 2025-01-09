@@ -73,8 +73,10 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $this->waitForPageLoad($session->getPage());
         $js = '';
+        $theme = $this->getCurrentTheme();
         foreach ($states as $key => $state) {
-            $js .= 'sessionStorage.setItem(\'vf-account-status-' . $key . '\', \'' . json_encode($state) . '\');';
+            $themeState = [$theme => $state];
+            $js .= 'sessionStorage.setItem(\'vf-account-status-' . $key . '\', \'' . json_encode($themeState) . '\');';
         }
         $session->evaluateScript($js);
     }
@@ -233,7 +235,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $storage = $this->getJSStorage();
         // Status code MISSING is -2 * Math.PI, but we just round it here to avoid trouble
-        $this->assertEquals(-6, ceil($storage['fines']));
+        $fines = json_decode($storage['fines'], true);
+        $this->assertEquals(-6, ceil($fines[$this->getCurrentTheme()]));
     }
 
     /**
