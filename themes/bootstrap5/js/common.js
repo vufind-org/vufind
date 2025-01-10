@@ -361,6 +361,8 @@ var VuFind = (function VuFind() {
     if (property !== 'outerHTML') {
       // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
       Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
+    } else if (Object.keys(attrs).length > 0) {
+      console.error("Incompatible parameter 'attrs' " + JSON.stringify(attrs) + " passed to setElementContents() while 'property' is 'outerHTML'.");
     }
 
     // Append any scripts:
@@ -391,10 +393,9 @@ var VuFind = (function VuFind() {
    *
    * @param {Element} elm   Target element
    * @param {string}  html  HTML
-   * @param {Object}  attrs Any additional attributes
    */
-  function setOuterHtml(elm, html, attrs = {}) {
-    setElementContents(elm, html, attrs, 'outerHTML');
+  function setOuterHtml(elm, html) {
+    setElementContents(elm, html, {}, 'outerHTML');
   }
 
   var loadHtml = function loadHtml(_element, url, data, success) {
