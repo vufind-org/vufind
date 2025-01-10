@@ -32,6 +32,7 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
+use Laminas\Config\Reader\Ini;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
@@ -306,6 +307,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $config = $replace ? [] : Yaml::parseFile($local);
         $config = array_replace_recursive($config, $settings);
         file_put_contents($local, Yaml::dump($config));
+    }
+
+    /**
+     * Get configuration from an ini file
+     *
+     * Note: This is just a simple ini file reader and does not handle inheritance
+     *
+     * @param string $configName Configuration name (without file suffix)
+     *
+     * @return array
+     */
+    protected function getConfig($configName = 'config'): array
+    {
+        $file = $configName . '.ini';
+        $configPath = $this->pathResolver->getLocalConfigPath($file, null, true);
+        if (!file_exists($configPath)) {
+            $configPath = $this->pathResolver->getBaseConfigPath($file);
+            if (!file_exists($configPath)) {
+                throw new \Exception("Configuration file $file does not exist");
+            }
+        }
+        return parse_ini_file($configPath, true);
+    }
+
+    /**
+     * Get current theme name
+     *
+     * @return string
+     */
+    protected function getCurrentTheme(): string
+    {
+        $config = $this->getConfig();
+        return $config['Site']['theme'] ?? '';
     }
 
     /**
