@@ -46,6 +46,35 @@ use Psr\Container\ContainerInterface;
 class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
+     * Default DOI services to return if no configuration is provided.
+     *
+     * @var array
+     */
+    protected array $defaultDoiServices;
+
+    /**
+     * Default ISSN services to return if no configuration is provided.
+     *
+     * @var array
+     */
+    protected array $defaultIssnServices;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
+        $this->defaultDoiServices = [
+            'browzineWebLink' => "View Complete Issue|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
+            'fullTextFile' => "PDF Full Text|browzine-pdf|{$baseIconUrl}browzine-pdf-download-icon.svg",
+        ];
+        $this->defaultIssnServices = [
+            'browzineWebLink' => "Browse Available Issues|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
+        ];
+    }
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -73,11 +102,12 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         $fullConfig = $container->get(\VuFind\Config\PluginManager::class)->get('BrowZine')->toArray();
         // DOI config section is supported as a fallback for back-compatibility:
         $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
+
         return new $requestedName(
             $search,
             $config,
-            $fullConfig['DOIServices'] ?? [],
-            $fullConfig['ISSNServices'] ?? []
+            $fullConfig['DOIServices'] ?? $this->defaultDoiServices,
+            $fullConfig['ISSNServices'] ?? $this->defaultIssnServices
         );
     }
 }

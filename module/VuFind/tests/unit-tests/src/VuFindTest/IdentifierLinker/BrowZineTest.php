@@ -31,6 +31,7 @@ namespace VuFindTest\IdentifierLinker;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\IdentifierLinker\BrowZine;
+use VuFind\IdentifierLinker\BrowZineFactory;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
 
@@ -142,6 +143,32 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Build the BrowZine handler to test.
+     *
+     * @param array $ids     ID test data
+     * @param array $rawData Raw data for connector to return
+     * @param array $config  BrowZine configuration
+     *
+     * @return BrowZine
+     */
+    protected function getBrowZineHandler(array $ids, array $rawData, array $config = []): BrowZine
+    {
+        $connector = $this->getMockConnector($ids[0], $rawData);
+        $ss = $this->getSearchService($this->getBackendManager($connector));
+
+        // Use the factory to build the test object so that the correct default configs are
+        // injected. We'll use a mock container to set up all the dependencies.
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFindSearch\Service::class, $ss);
+        $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $config]);
+        $mockConfigManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager->expects($this->once())->method('get')->with('BrowZine')->willReturn($configObj);
+        $container->set(\VuFind\Config\PluginManager::class, $mockConfigManager);
+        $factory = new BrowZineFactory();
+        return $factory($container, BrowZine::class);
+    }
+
+    /**
      * Test a DOI API response.
      *
      * @param array $config           Configuration
@@ -154,11 +181,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     public function testDOIApiSuccess(array $config, array $expectedResponse): void
     {
         $rawData = $this->getJsonFixture('browzine/doi.json');
-
         $ids = [['doi' => '10.1155/2020/8690540']];
-        $connector = $this->getMockConnector($ids[0], $rawData);
-        $ss = $this->getSearchService($this->getBackendManager($connector));
-        $browzine = new BrowZine($ss, $config);
+        $browzine = $this->getBrowZineHandler($ids, $rawData, $config);
         foreach ($expectedResponse[0] as & $current) {
             $current['data'] = $rawData['data'];
         }
@@ -174,11 +198,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     public function testISSNApiSuccess(): void
     {
         $rawData = $this->getJsonFixture('browzine/issn.json');
-
         $ids = [['issn' => '0006-2952']];
-        $connector = $this->getMockConnector($ids[0], $rawData);
-        $ss = $this->getSearchService($this->getBackendManager($connector));
-        $browzine = new BrowZine($ss, []);
+        $browzine = $this->getBrowZineHandler($ids, $rawData);
         $this->assertEquals(
             [
                 0 => [

@@ -182,21 +182,6 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
      */
     protected function getDoiServices(): array
     {
-        if (empty($this->doiServices)) {
-            $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
-            return [
-                'browzineWebLink' => [
-                    'linkText' => 'View Complete Issue',
-                    'localIcon' => 'browzine-issue',
-                    'icon' => $baseIconUrl . 'browzine-open-book-icon.svg',
-                ],
-                'fullTextFile' => [
-                    'linkText' => 'PDF Full Text',
-                    'localIcon' => 'browzine-pdf',
-                    'icon' => $baseIconUrl . 'browzine-pdf-download-icon.svg',
-                ],
-            ];
-        }
         return $this->unpackServiceConfig($this->doiServices);
     }
 
@@ -207,16 +192,6 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
      */
     protected function getIssnServices(): array
     {
-        if (empty($this->issnServices)) {
-            $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
-            return [
-                'browzineWebLink' => [
-                    'linkText' => 'Browse Available Issues',
-                    'localIcon' => 'browzine-issue',
-                    'icon' => $baseIconUrl . 'browzine-open-book-icon.svg',
-                ],
-            ];
-        }
         return $this->unpackServiceConfig($this->issnServices);
     }
 }
