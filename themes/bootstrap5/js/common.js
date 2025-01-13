@@ -334,7 +334,7 @@ var VuFind = (function VuFind() {
    *
    * @param {Element} elm      Target element
    * @param {string}  html     HTML
-   * @param {Object}  attrs    Any additional attributes
+   * @param {Object}  attrs    Any additional attributes (does not work with outerHtml as property)
    * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
@@ -350,14 +350,21 @@ var VuFind = (function VuFind() {
       }
     });
 
+    let scriptElement = elm;
+
     if (property === 'innerHTML') {
       elm.replaceChildren(...tmpDiv.childNodes);
     } else if (property === 'outerHTML') {
+      scriptElement = elm.parentNode;
       elm.replaceWith(...tmpDiv.childNodes);
     }
 
-    // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
-    Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
+    if (property !== 'outerHTML') {
+      // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
+      Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
+    } else if (Object.keys(attrs).length > 0) {
+      console.error("Incompatible parameter 'attrs' " + JSON.stringify(attrs) + " passed to setElementContents() while 'property' is 'outerHTML'.");
+    }
 
     // Append any scripts:
     scripts.forEach(script => {
@@ -367,7 +374,7 @@ var VuFind = (function VuFind() {
         newScript.src = script.src;
       }
       newScript.setAttribute('nonce', getCspNonce());
-      elm.appendChild(newScript);
+      scriptElement.appendChild(newScript);
     });
   }
 
@@ -387,10 +394,9 @@ var VuFind = (function VuFind() {
    *
    * @param {Element} elm   Target element
    * @param {string}  html  HTML
-   * @param {Object}  attrs Any additional attributes
    */
-  function setOuterHtml(elm, html, attrs = {}) {
-    setElementContents(elm, html, attrs, 'outerHTML');
+  function setOuterHtml(elm, html) {
+    setElementContents(elm, html, {}, 'outerHTML');
   }
 
   var loadHtml = function loadHtml(_element, url, data, success) {
