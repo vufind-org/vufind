@@ -88,6 +88,13 @@ class Folio extends AbstractAPI implements
     protected $token = null;
 
     /**
+     * Authentication token expiration time
+     *
+     * @var string
+     */
+    protected $tokenExpiration = null;
+
+    /**
      * Factory function for constructing the SessionContainer.
      *
      * @var callable
@@ -282,15 +289,31 @@ class Folio extends AbstractAPI implements
      */
     protected function renewTenantToken()
     {
+        // If not using legacy authentication, see if the token has expired before trying to renew it
+        if (! $this->useLegacyAuthentication() && ! $this->checkTenantTokenExpired()) {
+            $currentTime = gmdate('D, d-M-Y H:i:s T', strtotime('now'));
+            $this->debug(
+                'No need to renew token; not yet expired. ' . $currentTime . ' < ' . $this->tokenExpiration .
+                'Username: ' . $this->config['API']['username'] . ' Token: ' . substr($this->token, 0, 30) . '...'
+            );
+            return;
+        }
+        $startTime = microtime(true);
         $this->token = null;
         $response = $this->performOkapiUsernamePasswordAuthentication(
             $this->config['API']['username'],
             $this->getSecretFromConfig($this->config['API'], 'password')
         );
         $this->token = $this->extractTokenFromResponse($response);
+        $this->tokenExpiration =
+            $this->useLegacyAuthentication() ?
+            null : $this->extractTokenExpirationFromResponse($response);
         $this->sessionCache->folio_token = $this->token;
+        $this->sessionCache->folio_token_expiration = $this->tokenExpiration;
+        $endTime = microtime(true);
+        $responseTime = $endTime - $startTime;
         $this->debug(
-            'Token renewed. Username: ' . $this->config['API']['username'] .
+            'Token renewed in ' . $responseTime . ' seconds. Username: ' . $this->config['API']['username'] .
             ' Token: ' . substr($this->token, 0, 30) . '...'
         );
     }
@@ -304,13 +327,36 @@ class Folio extends AbstractAPI implements
      */
     protected function checkTenantToken()
     {
-        $response = $this->makeRequest('GET', '/users', [], [], [401, 403]);
-        if ($response->getStatusCode() >= 400) {
+        if ($this->useLegacyAuthentication()) {
+            $response = $this->makeRequest('GET', '/users', [], [], [401, 403]);
+            if ($response->getStatusCode() >= 400) {
+                $this->token = null;
+                $this->tokenExpiration = null;
+                $this->renewTenantToken();
+                return false;
+            }
+            return true;
+        }
+        if ($this->checkTenantTokenExpired()) {
             $this->token = null;
+            $this->tokenExpiration = null;
             $this->renewTenantToken();
             return false;
         }
         return true;
+    }
+
+    /**
+     * Check if our token has expired. Return true if it has expired, false if it has not.
+     *
+     * @return bool
+     */
+    protected function checkTenantTokenExpired()
+    {
+        return
+            $this->token == null ||
+            $this->tokenExpiration == null ||
+            strtotime('now') >= strtotime($this->tokenExpiration);
     }
 
     /**
@@ -326,6 +372,7 @@ class Folio extends AbstractAPI implements
         $this->sessionCache = $factory($this->tenant);
         if ($this->sessionCache->folio_token ?? false) {
             $this->token = $this->sessionCache->folio_token;
+            $this->tokenExpiration = $this->sessionCache->folio_token_expiration ?? null;
             $this->debug(
                 'Token taken from cache: ' . substr($this->token, 0, 30) . '...'
             );
@@ -1114,6 +1161,35 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a response from performOkapiUsernamePasswordAuthentication(),
+     * extract the token expiration time.
+     *
+     * @param Response $response Response from performOkapiUsernamePasswordAuthentication().
+     *
+     * @return string
+     */
+    protected function extractTokenExpirationFromResponse(Response $response): string
+    {
+        $currentTime = gmdate('D, d-M-Y H:i:s T', strtotime('now'));
+
+        // If using legacy authentication, there is no option to renew tokens,
+        // so assume the token is expired as of now
+        if ($this->useLegacyAuthentication()) {
+            return $currentTime;
+        }
+        $folioUrl = $this->config['API']['base_url'];
+        $cookies = new \Laminas\Http\Cookies();
+        $cookies->addCookiesFromResponse($response, $folioUrl);
+        $results = $cookies->getAllCookies();
+        foreach ($results as $cookie) {
+            if ($cookie->getName() == 'folioAccessToken') {
+                return $cookie->getExpires();
+            }
+        }
+        throw new \Exception('Could not find token expiration in response');
+    }
+
+    /**
      * Support method for patronLogin(): authenticate the patron with an Okapi
      * login attempt. Returns a CQL query for retrieving more information about
      * the authenticated user.
@@ -1245,6 +1321,12 @@ class Folio extends AbstractAPI implements
     protected function getPagedResults($responseKey, $interface, $query = [], $limit = 1000)
     {
         $offset = 0;
+
+        // If we're using the new authentication method and our token has expired
+        // Renew it now before we make the call
+        if (! $this->useLegacyAuthentication() && $this->checkTenantTokenExpired()) {
+            $this->renewTenantToken();
+        }
 
         do {
             $json = $this->getResultPage($interface, $query, $offset, $limit);

@@ -968,11 +968,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function getOfflineMode($healthCheck = false)
     {
-        // If we have NoILS failover configured, force driver initialization so
-        // we can know we are checking the offline mode against the correct driver.
-        if ($this->hasNoILSFailover()) {
-            $this->getDriver();
-        }
+        // Always initialize the driver so that authentication tokens, if any,
+        // can be saved in the session cache
+        $this->getDriver();
 
         // If we need to perform a health check, try to do a random item lookup
         // before proceeding.

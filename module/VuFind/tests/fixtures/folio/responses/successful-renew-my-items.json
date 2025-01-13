@@ -1,8 +1,5 @@
 [
     {
-        "comment": "Initial token check"
-    },
-    {
         "expectedMethod": "POST",
         "expectedPath": "/circulation/renew-by-id",
         "expectedParams": "{\"itemId\":\"record1\",\"userId\":\"foo\"}",

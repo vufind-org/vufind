@@ -236,6 +236,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     public function testCheckInvalidToken(): void
     {
         $this->createConnector('check-invalid-token');
+        // Update the token expiration date to make it invalid
+        $this->setProperty($this->driver, 'tokenExpiration', null);
         $this->driver->getPickupLocations(['username' => 'whatever']);
     }
 
