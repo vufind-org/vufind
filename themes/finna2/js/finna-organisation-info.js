@@ -677,10 +677,10 @@ finna.organisationInfo = (function finnaOrganisationInfo() {
             if (result.data.details) {
               if (detailsEl) {
                 detailsEl.innerHTML = result.data.details;
+                finna.layout.initToolTips($(detailsEl));
               }
             }
             initWeekNavi(_container, _params, result.data.locationId);
-            finna.layout.initToolTips($(detailsEl));
             finna.common.trackContentImpressions(_container);
           });
         }

@@ -28,9 +28,11 @@
   </div>
 
   <?php // Information columns ?>
-  <?php if ($showDetails && $locationId): ?>
+  <?php if ($showDetails): ?>
     <div class="location-row-general js-details">
-      <?=$this->render('organisationinfo/elements/location/widget-details.phtml')?>
+      <?php if ($locationId): ?>
+        <?=$this->render('organisationinfo/elements/location/widget-details.phtml')?>
+      <?php endif; ?>
     </div>
   <?php endif; ?>
 </div>
