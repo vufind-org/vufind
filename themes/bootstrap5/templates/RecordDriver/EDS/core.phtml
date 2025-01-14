@@ -162,9 +162,9 @@
       <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php $identifierLinker = $this->identifierLinker($this->driver, 'record'); ?>
-    <?php if ($identifierLinker->isActive()): ?>
-      <div><?=$identifierLinker->renderTemplate()?></div>
+    <?php $identifierLinksHtml = $this->identifierLinker($this->driver, 'record'); ?>
+    <?php if ($identifierLinksHtml): ?>
+      <div><?=$identifierLinksHtml?></div>
     <?php endif; ?>
     </div>
   </div>

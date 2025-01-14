@@ -45,20 +45,6 @@ use function in_array;
 class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Current RecordDriver
-     *
-     * @var RecordDriver
-     */
-    protected RecordDriver $recordDriver;
-
-    /**
-     * Identifier link context ('results', 'record' or 'holdings')
-     *
-     * @var string
-     */
-    protected string $context;
-
-    /**
      * Instance counter (used for keeping track of records)
      *
      * @var int
@@ -86,35 +72,35 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Set up context for helper
+     * Display identifier links (or blank string, if not active).
      *
      * @param RecordDriver $driver  The current record driver
      * @param string       $context Display context ('results', 'record' or 'holdings')
      *
-     * @return static
+     * @return string
      */
-    public function __invoke(RecordDriver $driver, string $context): static
+    public function __invoke(RecordDriver $driver, string $context): string
     {
-        $this->recordDriver = $driver;
-        $this->context = $context;
-        return $this;
+        return $this->isActive($driver, $context) ? $this->renderTemplate($driver) : '';
     }
 
     /**
      * Get all available identifiers.
      *
+     * @param RecordDriver $driver The current record driver
+     *
      * @return array
      */
-    protected function getIdentifiers(): array
+    protected function getIdentifiers(RecordDriver $driver): array
     {
         $ids = [];
-        if (in_array('doi', $this->supportedIdentifiers) && $doi = $this->recordDriver->tryMethod('getCleanDOI')) {
+        if (in_array('doi', $this->supportedIdentifiers) && $doi = $driver->tryMethod('getCleanDOI')) {
             $ids['doi'] = $doi;
         }
-        if (in_array('isbn', $this->supportedIdentifiers) && $isbn = $this->recordDriver->tryMethod('getCleanISBN')) {
+        if (in_array('isbn', $this->supportedIdentifiers) && $isbn = $driver->tryMethod('getCleanISBN')) {
             $ids['isbn'] = $isbn;
         }
-        if (in_array('issn', $this->supportedIdentifiers) && $issn = $this->recordDriver->tryMethod('getCleanISSN')) {
+        if (in_array('issn', $this->supportedIdentifiers) && $issn = $driver->tryMethod('getCleanISSN')) {
             $ids['issn'] = $issn;
         }
         return $ids;
@@ -123,13 +109,15 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Public method to render the identifier links template
      *
+     * @param RecordDriver $driver The current record driver
+     *
      * @return string
      */
-    public function renderTemplate(): string
+    protected function renderTemplate(RecordDriver $driver): string
     {
         // Build parameters needed to display the control:
         $instance = $this->counter++;
-        $params = $this->getIdentifiers() + compact('instance');
+        $params = $this->getIdentifiers($driver) + compact('instance');
 
         // Render the subtemplate:
         return ($this->contextHelper)($this->getView())
@@ -140,9 +128,11 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
      * Does the configuration indicate that we should display identifier links in
      * the specified context?
      *
+     * @param string $context Display context ('results', 'record' or 'holdings')
+     *
      * @return bool
      */
-    protected function checkContext(): bool
+    protected function checkContext(string $context): bool
     {
         // Doesn't matter the target context if no resolver is specified:
         if (empty($this->config['resolver'])) {
@@ -150,24 +140,27 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
         }
 
         // If a setting exists, return that:
-        $key = 'show_in_' . $this->context;
+        $key = 'show_in_' . $context;
         if (isset($this->config[$key])) {
             return $this->config[$key];
         }
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return $this->context == 'results';
+        return $context == 'results';
     }
 
     /**
      * Public method to check whether identifier links are active for current record
      *
+     * @param RecordDriver $driver  The current record driver
+     * @param string       $context Display context ('results', 'record' or 'holdings')
+     *
      * @return bool
      */
-    public function isActive(): bool
+    protected function isActive(RecordDriver $driver, string $context): bool
     {
-        $ids = $this->getIdentifiers();
-        return !empty($ids) && $this->checkContext();
+        $ids = $this->getIdentifiers($driver);
+        return !empty($ids) && $this->checkContext($context);
     }
 }
