@@ -56,7 +56,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @var string
      */
-    protected string $area;
+    protected string $context;
 
     /**
      * Instance counter (used for keeping track of records)
@@ -75,10 +75,10 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Context $context Context helper
-     * @param array   $config  Identifier-based linking configuration settings
+     * @param Context $contextHelper Context helper
+     * @param array   $config        Identifier-based linking configuration settings
      */
-    public function __construct(protected Context $context, protected array $config = [])
+    public function __construct(protected Context $contextHelper, protected array $config = [])
     {
         if (!empty($config['supportedIdentifiers'])) {
             $this->supportedIdentifiers = $config['supportedIdentifiers'];
@@ -88,15 +88,15 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Set up context for helper
      *
-     * @param RecordDriver $driver The current record driver
-     * @param string       $area   Display context ('results', 'record' or 'holdings')
+     * @param RecordDriver $driver  The current record driver
+     * @param string       $context Display context ('results', 'record' or 'holdings')
      *
      * @return static
      */
-    public function __invoke(RecordDriver $driver, string $area): static
+    public function __invoke(RecordDriver $driver, string $context): static
     {
         $this->recordDriver = $driver;
-        $this->area = $area;
+        $this->context = $context;
         return $this;
     }
 
@@ -132,7 +132,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
         $params = $this->getIdentifiers() + compact('instance');
 
         // Render the subtemplate:
-        return ($this->context)($this->getView())
+        return ($this->contextHelper)($this->getView())
             ->renderInContext('Helpers/identifierLinks.phtml', $params);
     }
 
@@ -144,20 +144,20 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
      */
     protected function checkContext(): bool
     {
-        // Doesn't matter the target area if no resolver is specified:
+        // Doesn't matter the target context if no resolver is specified:
         if (empty($this->config['resolver'])) {
             return false;
         }
 
         // If a setting exists, return that:
-        $key = 'show_in_' . $this->area;
+        $key = 'show_in_' . $this->context;
         if (isset($this->config[$key])) {
             return $this->config[$key];
         }
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return $this->area == 'results';
+        return $this->context == 'results';
     }
 
     /**
