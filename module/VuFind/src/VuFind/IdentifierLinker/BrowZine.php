@@ -131,20 +131,20 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         foreach ($idArray as $idKey => $ids) {
             // If we have a DOI, that gets priority because it is more specific; otherwise we'll
             // fall back and attempt the ISSN:
-            if (isset($ids['doi'])) {
+            if (isset($ids['doi']) && ($doiServices = $this->getDoiServices())) {
                 $command = new LookupDoiCommand('BrowZine', $ids['doi']);
                 $result = $this->searchService->invoke($command)->getResult();
                 $data = $result['data'] ?? null;
-                foreach ($this->getDoiServices() as $serviceKey => $config) {
+                foreach ($doiServices as $serviceKey => $config) {
                     if ($this->arrayKeyAvailable($serviceKey, $data)) {
                         $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
                     }
                 }
-            } elseif (isset($ids['issn'])) {
+            } elseif (isset($ids['issn']) && ($issnServices = $this->getIssnServices())) {
                 $command = new LookupIssnsCommand('BrowZine', $ids['issn']);
                 $result = $this->searchService->invoke($command)->getResult();
                 $data = $result['data'][0] ?? null;
-                foreach ($this->getIssnServices() as $serviceKey => $config) {
+                foreach ($issnServices as $serviceKey => $config) {
                     if ($this->arrayKeyAvailable($serviceKey, $data)) {
                         $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
                     }
@@ -164,8 +164,8 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     protected function unpackServiceConfig(array $config): array
     {
         $result = [];
-        foreach ($config as $key => $config) {
-            $parts = explode('|', $config);
+        foreach ($config as $key => $configLine) {
+            $parts = explode('|', $configLine);
             $result[$key] = [
                 'linkText' => $parts[0],
                 'localIcon' => $parts[1],
