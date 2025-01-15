@@ -305,9 +305,8 @@ class Folio extends AbstractAPI implements
             $this->getSecretFromConfig($this->config['API'], 'password')
         );
         $this->token = $this->extractTokenFromResponse($response);
-        $this->tokenExpiration =
-            $this->useLegacyAuthentication() ?
-            null : $this->extractTokenExpirationFromResponse($response);
+        $this->tokenExpiration = $this->useLegacyAuthentication()
+            ? null : $this->extractTokenExpirationFromResponse($response);
         $this->sessionCache->folio_token = $this->token;
         $this->sessionCache->folio_token_expiration = $this->tokenExpiration;
         $endTime = microtime(true);
@@ -1137,6 +1136,28 @@ class Folio extends AbstractAPI implements
 
     /**
      * Given a response from performOkapiUsernamePasswordAuthentication(),
+     * extract the requested cookie.
+     *
+     * @param Response $response Response from performOkapiUsernamePasswordAuthentication().
+     *
+     * @return \Laminas\Http\Header\SetCookie
+     */
+    protected function getCookieByName(Response $response, string $cookieName): \Laminas\Http\Header\SetCookie
+    {
+        $folioUrl = $this->config['API']['base_url'];
+        $cookies = new \Laminas\Http\Cookies();
+        $cookies->addCookiesFromResponse($response, $folioUrl);
+        $results = $cookies->getAllCookies();
+        foreach ($results as $cookie) {
+            if ($cookie->getName() == $cookieName) {
+                return $cookie;
+            }
+        }
+        throw new \Exception('Could not find ' . $cookieName . ' in response');
+    }
+
+    /**
+     * Given a response from performOkapiUsernamePasswordAuthentication(),
      * extract the token value.
      *
      * @param Response $response Response from performOkapiUsernamePasswordAuthentication().
@@ -1148,14 +1169,8 @@ class Folio extends AbstractAPI implements
         if ($this->useLegacyAuthentication()) {
             return $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
         }
-        $folioUrl = $this->config['API']['base_url'];
-        $cookies = new \Laminas\Http\Cookies();
-        $cookies->addCookiesFromResponse($response, $folioUrl);
-        $results = $cookies->getAllCookies();
-        foreach ($results as $cookie) {
-            if ($cookie->getName() == 'folioAccessToken') {
-                return $cookie->getValue();
-            }
+        if ($cookie = $this->getCookieByName($response, 'folioAccessToken')) {
+            return $cookie->getValue();
         }
         throw new \Exception('Could not find token in response');
     }
@@ -1177,14 +1192,8 @@ class Folio extends AbstractAPI implements
         if ($this->useLegacyAuthentication()) {
             return $currentTime;
         }
-        $folioUrl = $this->config['API']['base_url'];
-        $cookies = new \Laminas\Http\Cookies();
-        $cookies->addCookiesFromResponse($response, $folioUrl);
-        $results = $cookies->getAllCookies();
-        foreach ($results as $cookie) {
-            if ($cookie->getName() == 'folioAccessToken') {
-                return $cookie->getExpires();
-            }
+        if ($cookie = $this->getCookieByName($response, 'folioAccessToken')) {
+            return $cookie->getExpires();
         }
         throw new \Exception('Could not find token expiration in response');
     }
@@ -1321,12 +1330,6 @@ class Folio extends AbstractAPI implements
     protected function getPagedResults($responseKey, $interface, $query = [], $limit = 1000)
     {
         $offset = 0;
-
-        // If we're using the new authentication method and our token has expired
-        // Renew it now before we make the call
-        if (! $this->useLegacyAuthentication() && $this->checkTenantTokenExpired()) {
-            $this->renewTenantToken();
-        }
 
         do {
             $json = $this->getResultPage($interface, $query, $offset, $limit);
