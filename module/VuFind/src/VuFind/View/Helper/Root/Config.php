@@ -194,4 +194,15 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->dateFormat() . $separator . $this->timeFormat();
     }
+
+    /**
+     * Check if the loan type should be displayed in holdings
+     *
+     * @return bool
+     */
+    public function displayLoanType(): bool
+    {
+        return (bool)($this->get('config')->Catalog
+            ->display_loan_type_in_holdings ?? false);
+    }
 }

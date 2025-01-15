@@ -30,7 +30,7 @@
       </span>
       <?php if ($availabilityStatus->isAvailable()): ?>
         <?php /* Begin Available Items (Holds) */ ?>
-        <?php if (!empty($holding['loan_type_name'])): ?>
+        <?php if ($this->config()->displayLoanType() ?? false && !empty($holding['loan_type_name'])): ?>
           <span class="loan-type"><?=$this->transEsc('Loan Type')?>: <?=$holding['loan_type_name']?>&nbsp;</span>
         <?php endif; ?>
         <?php if ($holding['link'] ?? false): ?>
