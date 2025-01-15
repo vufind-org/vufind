@@ -3,7 +3,7 @@
 /**
  * Reservation List Options
  *
- * PHP version 8.1
+ * PHP version 8
  *
  * Copyright (C) National Library of Finland 2024.
  *

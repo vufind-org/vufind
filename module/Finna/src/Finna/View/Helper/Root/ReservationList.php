@@ -36,7 +36,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\RecordDriver\DefaultRecord;
 
 use function in_array;
-use function is_string;
 
 /**
  * Reservation list view helper
@@ -55,23 +54,6 @@ class ReservationList extends \Laminas\View\Helper\AbstractHelper
      * @var UserEntityInterface|null
      */
     protected ?UserEntityInterface $user;
-
-    /**
-     * Default values for list config
-     *
-     * @var array
-     */
-    protected array $requiredFieldsAndDefaultValues = [
-        'Enabled' => false,
-        'Recipient' => [],
-        'Datasources' => [],
-        'Information' => [],
-        'LibraryCardSources' => [],
-        'Connection' =>  [
-            'type' => 'Database',
-        ],
-        'Identifier' => false,
-    ];
 
     /**
      * Constructor
@@ -103,57 +85,6 @@ class ReservationList extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Ensure that lists have all the required keys defined needed in other places.
-     * Sets the list disabled if list identifier is not set or is not a string.
-     *
-     * @param array $list Properties of the list to ensure
-     *
-     * @return array
-     */
-    protected function ensureListKeys(array $list): array
-    {
-        $merged = array_merge($this->requiredFieldsAndDefaultValues, $list);
-        if (!is_string($merged['Identifier'])) {
-            $merged['Enabled'] = false;
-        }
-        return $merged;
-    }
-
-    /**
-     * Get associative array of [institution => configured lists] where driver matches
-     *
-     * @param DefaultRecord $driver Record driver
-     *
-     * @return array
-     */
-    protected function getAvailableListsForRecord(DefaultRecord $driver): array
-    {
-        $datasource = $driver->tryMethod('getDatasource');
-        if (!$datasource) {
-            return [];
-        }
-        $result = [];
-        foreach ($this->yamlConfig['Institutions'] ?? [] as $institution => $settings) {
-            $current = [$institution => []];
-            foreach ($settings['Lists'] ?? [] as $list) {
-                $list = $this->ensureListKeys($list);
-                if (
-                    $list['Enabled']
-                    && in_array($datasource, $list['Datasources'])
-                    && $this->checkUserRightsForList($list)
-                ) {
-                    $current[$institution][] = $list;
-                    continue;
-                }
-            }
-            if ($current[$institution]) {
-                $result = array_merge($result, $current);
-            }
-        }
-        return $result;
-    }
-
-    /**
      * Get list properties defined by institution and list identifier in ReservationList.yaml,
      * institution specified information and
      * formed translation_keys for the list.
@@ -178,27 +109,62 @@ class ReservationList extends \Laminas\View\Helper\AbstractHelper
         string $institution,
         string $listIdentifier
     ): array {
-        foreach ($this->yamlConfig['Institutions'][$institution]['Lists'] ?? [] as $list) {
-            $list = $this->ensureListKeys($list);
-            if ($list['Identifier'] === $listIdentifier) {
-                return [
-                    'properties' => $list,
-                    'institution_information' => $this->yamlConfig['Institutions'][$institution]['Information'] ?? [],
-                    'translation_keys' => [
-                        'title' => "ReservationList::list_title_{$institution}_{$listIdentifier}",
-                        'description' => "ReservationList::list_description_{$institution}_{$listIdentifier}",
-                    ],
-                ];
+        return $this->reservationListService->getListProperties($institution, $listIdentifier);
+    }
+
+    /**
+     * Display buttons which routes the request to proper list procedures
+     * Checks if the list should be displayed for logged-in only users.
+     *
+     * @param DefaultRecord $driver Driver to use for checking available lists
+     *
+     * @return string
+     */
+    public function renderReserveTemplate(DefaultRecord $driver): string
+    {
+        if (!$this->isFunctionalityEnabled()) {
+            return '';
+        }
+        // Collect lists where we could potentially save this:
+        $lists = $this->getAvailableListsForRecord($driver);
+
+        // Set up the needed context in the view:
+        $view = $this->getView();
+        return $view->render('Helpers/reservationlist-reserve.phtml', compact('lists', 'driver'));
+    }
+
+    /**
+     * Get associative array of [institution => configured lists] where driver matches
+     *
+     * @param DefaultRecord $driver Record driver
+     *
+     * @return array
+     */
+    public function getAvailableListsForRecord(DefaultRecord $driver): array
+    {
+        $datasource = $driver->tryMethod('getDatasource');
+        if (!$datasource) {
+            return [];
+        }
+        $result = [];
+        foreach ($this->yamlConfig['Institutions'] ?? [] as $institution => $settings) {
+            $current = [$institution => []];
+            foreach ($settings['Lists'] ?? [] as $list) {
+                $list = $this->reservationListService->ensureListKeys($list);
+                if (
+                    $list['Enabled']
+                    && in_array($datasource, $list['Datasources'])
+                    && $this->checkUserRightsForList($list)
+                ) {
+                    $current[$institution][] = $list;
+                    continue;
+                }
+            }
+            if ($current[$institution]) {
+                $result = array_merge($result, $current);
             }
         }
-        return [
-            'properties' => $this->requiredFieldsAndDefaultValues,
-            'institution_information' => [],
-            'translation_keys' => [
-                'title' => '',
-                'description' => '',
-            ],
-        ];
+        return $result;
     }
 
     /**
@@ -221,27 +187,6 @@ class ReservationList extends \Laminas\View\Helper\AbstractHelper
             return false;
         }
         return in_array($patron['source'], $list['LibraryCardSources']);
-    }
-
-    /**
-     * Display buttons which routes the request to proper list procedures
-     * Checks if the list should be displayed for logged-in only users.
-     *
-     * @param DefaultRecord $driver Driver to use for checking available lists
-     *
-     * @return string
-     */
-    public function renderReserveTemplate(DefaultRecord $driver): string
-    {
-        if (!$this->isFunctionalityEnabled()) {
-            return '';
-        }
-        // Collect lists where we could potentially save this:
-        $lists = $this->getAvailableListsForRecord($driver);
-
-        // Set up the needed context in the view:
-        $view = $this->getView();
-        return $view->render('Helpers/reservationlist-reserve.phtml', compact('lists', 'driver'));
     }
 
     /**

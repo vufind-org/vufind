@@ -57,6 +57,10 @@
         <p><?= $this->transEsc('ReservationList::list_pickup_date', ['%%date%%' => $this->list->getPickupDate()->format('d.m.Y')]) ?></p>
       </div>
     <?php endif; ?>
+    <?php if ($this->list->getOrdered() && $this->list->getExternalId()): ?>
+      <div class="list-info js-reservation-list-status pending" data-list-id="<?=$this->escapeHtmlAttr($this->list->getId());?>">
+      </div>
+    <?php endif; ?>
     <div class="list-controls">
       <?php if (!$this->list->getOrdered() && $this->results->getResults() && $listProperties['properties']['Enabled']): ?>
         <!-- Add order buttons if the list has not been ordered yet. -->

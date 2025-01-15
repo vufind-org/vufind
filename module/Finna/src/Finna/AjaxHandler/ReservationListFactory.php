@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Reservation list controller factory.
+ * Reservation list ajax handler factory
  *
  * PHP version 8
  *
@@ -21,32 +21,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  AjaxHandler
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 
-namespace Finna\Controller;
+namespace Finna\AjaxHandler;
 
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Controller\AbstractBaseFactory;
 
 /**
- * Reservation list controller factory.
+ * Reservation list ajax handler factory
  *
  * @category VuFind
- * @package  Controller
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  AjaxHandler
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-class ReservationListControllerFactory extends AbstractBaseFactory
+class ReservationListFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -61,6 +55,8 @@ class ReservationListControllerFactory extends AbstractBaseFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -68,15 +64,12 @@ class ReservationListControllerFactory extends AbstractBaseFactory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        return parent::__invoke(
-            $container,
-            $requestedName,
-            [
-                $container->get(\Finna\ReservationList\ReservationListService::class),
-                $container->get('ViewHelperManager')->get('reservationList'),
-            ]
+        return new $requestedName(
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
+            $container->get(\Finna\ReservationList\ReservationListService::class),
+            $container->get(\Finna\ReservationList\Handler\PluginManager::class),
         );
     }
 }

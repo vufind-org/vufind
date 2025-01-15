@@ -53,6 +53,8 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordDriver\DefaultRecord;
 
+use function is_string;
+
 /**
  * Reservation list service
  *
@@ -76,6 +78,33 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
     public const RESOURCE_LIST_TYPE = 'reservationlist';
 
     /**
+     * Default connection handler used for list connections
+     *
+     * @var string
+     */
+    public const DEFAULT_CONNECTION_HANDLER = 'email';
+
+    /**
+     * Default values for list config
+     *
+     * @var array
+     */
+    protected const RESERVATION_LIST_DEFAULT_VALUES  = [
+        'Enabled' => false,
+        'Recipient' => [],
+        'Datasources' => [],
+        'Information' => [],
+        'LibraryCardSources' => [],
+        'Forms' => [
+            'PlaceOrder' => 'default',
+        ],
+        'Connection' =>  [
+            'type' => self::DEFAULT_CONNECTION_HANDLER,
+        ],
+        'Identifier' => false,
+    ];
+
+    /**
      * Constructor
      *
      * @param FinnaResourceListServiceInterface         $resourceListService         Resource list database service
@@ -88,6 +117,7 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
      * @param ?RecordCache                              $recordCache                 Record cache (optional)
      * @param ?Container                                $session                     Session container for remembering
      *                                                                               state (optional)
+     * @param array                                     $reservationListConfig       Reservation list configuration
      */
     public function __construct(
         protected FinnaResourceListServiceInterface $resourceListService,
@@ -97,7 +127,8 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
         protected ResourcePopulator $resourcePopulator,
         protected RecordLoader $recordLoader,
         protected ?RecordCache $recordCache = null,
-        protected ?Container $session = null
+        protected ?Container $session = null,
+        protected array $reservationListConfig = []
     ) {
     }
 
@@ -274,21 +305,23 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
     /**
      * Set list ordered
      *
-     * @param UserEntityInterface              $user    User to check for rights to list
-     * @param FinnaResourceListEntityInterface $list    List entity or id of the list
-     * @param Parameters                       $request Parameters to get values from
+     * @param UserEntityInterface              $user      User to check for rights to list
+     * @param FinnaResourceListEntityInterface $list      List entity or id of the list
+     * @param array                            $newValues New values to update as key value pairs
      *
      * @return void
      */
     public function setListOrdered(
         UserEntityInterface $user,
         FinnaResourceListEntityInterface $list,
-        Parameters $request
+        array $newValues
     ): void {
         if (!$this->userCanEditList($user, $list)) {
             throw new ListPermissionException('list_access_denied');
         }
-        $list->setPickupDate(DateTime::createFromFormat('Y-m-d', $request->get('pickup_date')))->setOrdered();
+        $list->setPickupDate(DateTime::createFromFormat('Y-m-d', $newValues['pickup_date']))->setOrdered();
+        $list->setExternalId($newValues['external_id'] ?? null);
+        $list->setConnection($newValues['connection'] ?? self::DEFAULT_CONNECTION_HANDLER);
         $this->resourceListService->persistEntity($list);
     }
 
@@ -340,7 +373,7 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
             ->setListConfigIdentifier($request->get('listIdentifier'))
             ->setUser($user)
             ->setListType(self::RESOURCE_LIST_TYPE)
-            ->setConnection($request->get('connection', 'database'));
+            ->setConnection($request->get('connection', self::DEFAULT_CONNECTION_HANDLER));
         $this->saveListForUser($list, $user);
         return $list->getId();
     }
@@ -494,5 +527,71 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
             $institution,
             self::RESOURCE_LIST_TYPE
         );
+    }
+
+    /**
+     * Get list properties defined by institution and list identifier in ReservationList.yaml,
+     * institution specified information and
+     * formed translation_keys for the list.
+     *
+     * Institution information contains keys and values:
+     *     - name => Example institution name
+     *     - address => Example institution address
+     *     - postal => Example institution postal
+     *     - city => Example institution city
+     *     - email => Example institution email
+     *
+     * Translation keys formed:
+     *     - title => list_title_{$institution}_{$listIdentifier},
+     *     - description => list_description_{$institution}_{$listIdentifier},
+     *
+     * @param string $institution    Lists controlling institution
+     * @param string $listIdentifier List identifier
+     *
+     * @return array
+     */
+    public function getListProperties(
+        string $institution,
+        string $listIdentifier
+    ): array {
+        foreach ($this->reservationListConfig['Institutions'][$institution]['Lists'] ?? [] as $list) {
+            $list = $this->ensureListKeys($list);
+            if ($list['Identifier'] === $listIdentifier) {
+                return [
+                    'properties' => $list,
+                    'institution_information'
+                        => $this->reservationListConfig['Institutions'][$institution]['Information'] ?? [],
+                    'translation_keys' => [
+                        'title' => "ReservationList::list_title_{$institution}_{$listIdentifier}",
+                        'description' => "ReservationList::list_description_{$institution}_{$listIdentifier}",
+                    ],
+                ];
+            }
+        }
+        return [
+            'properties' => self::RESERVATION_LIST_DEFAULT_VALUES,
+            'institution_information' => [],
+            'translation_keys' => [
+                'title' => '',
+                'description' => '',
+            ],
+        ];
+    }
+
+    /**
+     * Ensure that lists have all the required keys defined needed in other places.
+     * Sets the list disabled if list identifier is not set or is not a string.
+     *
+     * @param array $list Properties of the list to ensure
+     *
+     * @return array
+     */
+    public function ensureListKeys(array $list): array
+    {
+        $merged = array_merge(self::RESERVATION_LIST_DEFAULT_VALUES, $list);
+        if (!is_string($merged['Identifier'])) {
+            $merged['Enabled'] = false;
+        }
+        return $merged;
     }
 }

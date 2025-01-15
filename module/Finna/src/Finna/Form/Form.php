@@ -70,13 +70,6 @@ class Form extends \VuFind\Form\Form
     public const ARCHIVE_MATERIAL_REQUEST = 'ArchiveRequest';
 
     /**
-     * Reservation request form id.
-     *
-     * @var string
-     */
-    public const RESERVATION_LIST_REQUEST = 'ReservationListRequest';
-
-    /**
      * Handlers that are considered safe for transmitting information about the user
      *
      * @var array
@@ -343,10 +336,6 @@ class Form extends \VuFind\Form\Form
      */
     public function getRecipient($postParams = null)
     {
-        // Always get recipients from postparams
-        if ($this->getFormId() === self::RESERVATION_LIST_REQUEST) {
-            return $postParams['recipient'];
-        }
         // Get recipient email address for feedback form from data source
         // configuration:
         if ($this->getFormId() === 'FeedbackRecord') {
@@ -739,12 +728,7 @@ class Form extends \VuFind\Form\Form
                 $elements[$key] = ['type' => 'hidden', 'name' => $key, 'value' => null];
             }
         }
-        // Add hidden fields for reservation list order form
-        if (self::RESERVATION_LIST_REQUEST === $this->getFormId()) {
-            $elements['rl_institution'] = ['type' => 'hidden', 'name' => 'rl_institution', 'value' => null];
-            $elements['rl_list_identifier'] = ['type' => 'hidden', 'name' => 'rl_list_identifier', 'value' => null];
-            $elements['rl_list_id'] = ['type' => 'hidden', 'name' => 'rl_list_id', 'value' => null];
-        }
+
         return $elements;
     }
 

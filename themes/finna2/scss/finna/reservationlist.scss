@@ -13,6 +13,9 @@
     p {
       margin: 0;
     }
+    &.js-reservation-list-status.pending {
+      display: none;
+    }
   }
   .list-controls {
     margin-top: 10px;

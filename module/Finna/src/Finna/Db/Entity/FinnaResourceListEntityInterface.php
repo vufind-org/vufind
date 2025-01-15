@@ -3,7 +3,7 @@
 /**
  * Finna resource list entity interface
  *
- * PHP version 8.1
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2024.
  *
@@ -55,6 +55,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @property string $ordered
  * @property string $pickup_date
  * @property string $connection
+ * @property string $external_id
  */
 interface FinnaResourceListEntityInterface extends EntityInterface
 {
@@ -222,4 +223,20 @@ interface FinnaResourceListEntityInterface extends EntityInterface
      * @return static
      */
     public function setConnection(string $connection): static;
+
+    /**
+     * Get external id
+     *
+     * @return ?string
+     */
+    public function getExternalId(): ?string;
+
+    /**
+     * Set external id
+     *
+     * @param ?string $id External id
+     *
+     * @return static
+     */
+    public function setExternalId(?string $id): static;
 }

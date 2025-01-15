@@ -3,7 +3,7 @@
 /**
  * Row Definition for finna_resource_list
  *
- * PHP version 8.1
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2024.
  *
@@ -312,6 +312,29 @@ class FinnaResourceList extends RowGateway implements
     public function setListConfigIdentifier(string $listConfigIdentifier): static
     {
         $this->list_config_identifier = $listConfigIdentifier;
+        return $this;
+    }
+
+    /**
+     * Get the external id
+     *
+     * @return ?string
+     */
+    public function getExternalId(): ?string
+    {
+        return $this->external_id;
+    }
+
+    /**
+     * Set the external id
+     *
+     * @param ?string $id External id
+     *
+     * @return static
+     */
+    public function setExternalId(?string $id): static
+    {
+        $this->external_id = $id;
         return $this;
     }
 }

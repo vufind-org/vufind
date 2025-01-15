@@ -35,7 +35,7 @@
 namespace Finna\Controller;
 
 use Exception;
-use Finna\Form\Form;
+use Finna\ReservationList\Handler\AbstractBase as ConnectionAbstractBase;
 use Finna\ReservationList\ReservationListService;
 use Finna\View\Helper\Root\ReservationList;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -141,7 +141,7 @@ class ReservationListController extends AbstractBase
             $view->source ?: DEFAULT_SEARCH_BACKEND,
             false
         );
-        $listProperties = ($this->reservationListHelper)($user)->getListProperties(
+        $listProperties = $this->reservationListService->getListProperties(
             $view->institution,
             $view->listIdentifier
         )['properties'];
@@ -208,7 +208,7 @@ class ReservationListController extends AbstractBase
                 'listIdentifier' => $this->getParam('listIdentifier'),
             ]
         );
-        $listProperties = ($this->reservationListHelper)($user)->getListProperties(
+        $listProperties = $this->reservationListService->getListProperties(
             $view->institution,
             $view->listIdentifier
         )['properties'];
@@ -295,51 +295,30 @@ class ReservationListController extends AbstractBase
         if ($list->getOrdered()) {
             throw new \VuFind\Exception\Forbidden('List already ordered');
         }
-        $listProperties = $this->reservationListHelper->getListProperties(
+        $listProperties = $this->reservationListService->getListProperties(
             $list->getInstitution(),
             $list->getListConfigIdentifier()
         )['properties'];
-        if (!$listProperties || !$listProperties['Enabled']) {
-            throw new \VuFind\Exception\Forbidden('No list properties found.');
-        }
-        $formId = Form::RESERVATION_LIST_REQUEST;
-
-        $resourcesText = '';
-        foreach ($this->reservationListService->getResourcesForList($list, $user) as $resource) {
-            $resourcesText .= $resource->getRecordId() . '||' . $resource->getTitle() . PHP_EOL;
-        }
-        // Set reservationlist specific form values
-        $request->getPost()
-            ->set('rl_list_id', $listId)
-            ->set('rl_institution', $list->getInstitution())
-            ->set('rl_list_identifier', $list->getListConfigIdentifier())
-            ->set('record_ids', $resourcesText);
-
-        $form = $this->getService(\Finna\Form\Form::class);
-        $params = [];
-        if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
-            $params['referrer'] = $refererHeader->getFieldValue();
-        }
-        if ($userAgentHeader = $this->getRequest()->getHeader('User-Agent')) {
-            $params['userAgent'] = $userAgentHeader->getFieldValue();
-        }
-        $form->setFormId($formId, $params, $request->getPost()->toArray());
-
-        if (!$form->isEnabled()) {
-            throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
+        if (!($listProperties['Enabled'] ?? true)) {
+            throw new \VuFind\Exception\Forbidden('ReservationList: No list properties found.');
         }
 
+        $handler = $this->getService(\Finna\ReservationList\Handler\PluginManager::class)
+            ->getWithConfig($listProperties);
+        $orderSpecificValues = $handler->getValuesForPlaceOrderForm($list, $user, $request->getPost()->toArray());
+        $form = $handler->getPlaceOrderForm($orderSpecificValues);
+
+        $formId = ConnectionAbstractBase::FORM_ID;
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->setTemplate('feedback/form');
+        $view->setTemplate('reservationlist/form');
         $view->useCaptcha = false;
 
-        $params = $this->params();
-        $form->setData($request->getPost()->toArray());
         if (!$this->formWasSubmitted(useCaptcha: false)) {
             $form->setData(
                 [
-                 'name' => trim($user->getFirstname() . ' ' . $user->getLastname()),
-                 'email' => $user->getEmail(),
+                    'firstName' => $user->getFirstname(),
+                    'lastName' => $user->getLastname(),
+                    'email' => $user->getEmail(),
                 ]
             );
             return $view;
@@ -348,18 +327,13 @@ class ReservationListController extends AbstractBase
         if (!$form->isValid()) {
             return $view;
         }
-
-        // Override recipients to match list's configured recipients:
-        $request->getPost()->set('recipient', $listProperties['Recipient']);
-        $primaryHandler = $form->getPrimaryHandler();
-        $success = $primaryHandler->handle($form, $params, $user);
-        if ($success) {
-            $this->reservationListService->setListOrdered($user, $list, $request->getPost());
+        $result = $handler->placeOrder($orderSpecificValues, $user);
+        if ($result['success']) {
+            $this->reservationListService->setListOrdered($user, $list, $result);
             $this->flashMessenger()->addSuccessMessage($form->getSubmitResponse());
             return $this->getRefreshResponse();
-        } else {
-            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
         }
+        $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
         return $view;
     }
 

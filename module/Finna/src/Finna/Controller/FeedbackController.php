@@ -56,11 +56,6 @@ class FeedbackController extends \VuFind\Controller\FeedbackController implement
      */
     public function formAction()
     {
-        // Always forward reservation list orders to reservation list controller
-        $formId = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        if ($formId === \Finna\Form\Form::RESERVATION_LIST_REQUEST) {
-            return $this->forwardTo('ReservationList', 'PlaceOrder');
-        }
         // Copy any record_id from query params to post params so that it's available
         // for the form:
         $request = $this->getRequest();
