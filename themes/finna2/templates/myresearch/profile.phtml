@@ -180,6 +180,11 @@
               <?php else: ?>
                 <div class="my-profile-col profile-title"><?=$this->transEsc('Phone') ?>:</div>
                 <div class="profile-text-value"><?=$this->escapeHtml($this->profile['phone']) ?></div>
+                <?php foreach ($this->profile as $key => $value): ?>
+                  <?php if (preg_match('/^phone_\d+$/', $key) && $value !== $this->profile['phone']): ?>
+                    <div class="my-profile-col profile-title"></div><div class="profile-text-value"><?=$this->escapeHtml($value) ?></div>
+                  <?php endif; ?>
+                <?php endforeach; ?>
               <?php endif; ?>
             <?php endif; ?>
             <?php if (!empty($this->profile['smsnumber']) || $updateSmsNumber): ?>
@@ -201,6 +206,11 @@
                 </div>
               <?php else: ?>
                 <div class="profile-text-value"><?=$this->escapeHtml($this->profile['email']) ?></div>
+                <?php foreach ($this->profile as $key => $value): ?>
+                  <?php if (preg_match('/^email_\d+$/', $key) && $value !== $this->profile['email']): ?>
+                    <div class="my-profile-col profile-title"></div><div class="profile-text-value"><?=$this->escapeHtml($value) ?></div>
+                  <?php endif; ?>
+                <?php endforeach; ?>
               <?php endif; ?>
             <?php endif; ?>
             <?php if (!empty($this->profile['hold_identifier'])): ?>

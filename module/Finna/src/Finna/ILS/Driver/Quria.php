@@ -668,12 +668,15 @@ class Quria extends AxiellWebServices
         if (!empty($info->emailAddresses->emailAddress)) {
             $emailAddresses
                 =  $this->objectToArray($info->emailAddresses->emailAddress);
-            foreach ($emailAddresses as $emailAddress) {
-                if ($emailAddress->isActive == 'yes' || empty($userCached['email'])) {
-                    $userCached['email'] = $emailAddress->address ?? '';
-                    $userCached['emailId'] = $emailAddress->id ?? '';
-                    break;
+            $activeFound = false;
+            foreach ($emailAddresses as $i => $emailAddress) {
+                if (empty($userCached['email']) || !$activeFound) {
+                    $userCached['email'] = $emailAddress->address;
+                    $activeFound = $emailAddress->isActive == 'yes';
                 }
+                $userCached['email_' . $i] = $emailAddress->address ?? null;
+                $userCached['email_' . $i . '_id'] = $emailAddress->id ?? null;
+                $userCached['email_' . $i . '_active'] = $emailAddress->isActive == 'yes';
             }
         }
         if (isset($info->addresses->address)) {
@@ -691,19 +694,15 @@ class Quria extends AxiellWebServices
         }
         if (isset($info->phoneNumbers->phoneNumber)) {
             $phoneNumbers = $this->objectToArray($info->phoneNumbers->phoneNumber);
-            foreach ($phoneNumbers as $phoneNumber) {
-                if ($phoneNumber->sms->useForSms == 'yes') {
-                    $userCached['phone'] = $phoneNumber->areaCode ?? '';
-                    $userCached['phoneAreaCode'] = $userCached['phone'];
-                    if (isset($phoneNumber->localCode)) {
-                        $userCached['phone'] .= $phoneNumber->localCode;
-                        $userCached['phoneLocalCode'] = $phoneNumber->localCode;
-                    }
-                    if (isset($phoneNumber->id)) {
-                        $userCached['phoneId'] = $phoneNumber->id;
-                    }
-                    break;
+            foreach ($phoneNumbers as $i => $phoneNumber) {
+                $activeFound = false;
+                if (empty($userCached['phone']) || !$activeFound) {
+                    $userCached['phone'] = ($phoneNumber->areaCode ?? '') . $phoneNumber->localCode ?? null;
+                    $activeFound = $phoneNumber->sms->useForSms == 'yes';
                 }
+                $userCached['phone_' . $i] = ($phoneNumber->areaCode ?? '') . $phoneNumber->localCode ?? null;
+                $userCached['phone_' . $i . '_id'] = $phoneNumber->id ?? null;
+                $userCached['phone_' . $i . '_active'] = ($phoneNumber->sms->useForSms ?? '') == 'yes';
             }
         }
 
@@ -1126,8 +1125,8 @@ class Quria extends AxiellWebServices
     /**
      * Update patron contact information
      *
-     * @param array  $patron  Patron array
-     * @param String $details Associative array of patron contact information
+     * @param array $patron  Patron array
+     * @param array $details Associative array of patron contact information
      *
      * @throws ILSException
      *
@@ -1135,24 +1134,32 @@ class Quria extends AxiellWebServices
      */
     public function updateAddress($patron, $details)
     {
-        if (isset($details['email'])) {
-            $result = $this->updateEmail($patron, $details['email']);
-            if (!$result['success']) {
-                return $result;
-            }
-        }
+        $user = $this->getMyProfile($patron);
 
-        if (isset($details['phone'])) {
-            $result = $this->updatePhone($patron, $details['phone']);
-            if (!$result['success']) {
-                return $result;
+        // Handle phones and emails
+        foreach ($details as $field => $detail) {
+            $parts = explode('_', $field);
+            $fieldName = $parts[0];
+            $ind = $parts[1] ?? null;
+            $activeSuffix = $parts[2] ?? null;
+            if (in_array($fieldName, ['email', 'phone']) && $activeSuffix === null) {
+                $active = isset($details[$field . '_active']);
+                if (
+                    $user[$field] !== $detail
+                    || $user[$field . '_active'] !== $active
+                ) {
+                    $result = $fieldName === 'email'
+                        ? $this->updateEmailAddress($patron, $detail, $ind, $active)
+                        : $this->updatePhoneNumber($patron, $detail, $ind, $active);
+                    if (!$result['success']) {
+                        return $result;
+                    }
+                }
             }
         }
 
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
-
-        $user = $this->getMyProfile($patron);
 
         $conf = [
             'arenaMember'   => $this->arenaMember,
@@ -1607,15 +1614,33 @@ class Quria extends AxiellWebServices
     /**
      * Update patron's email address
      *
-     * @param array  $patron Patron array
-     * @param String $email  Email address
+     * @param array    $patron  Patron array
+     * @param String   $email   Email address
+     * @param int|null $emailId Email ID
+     * @param bool     $active  Whether to set the email active
      *
      * @throws ILSException
      *
      * @return array Associative array of the results
      */
-    public function updateEmail($patron, $email)
+    protected function updateEmailAddress($patron, $email, $emailId = null, $active = false)
     {
+        if (empty($email) || $emailId === null) {
+            return [
+                'success' => true,
+                'status' => 'No data to update',
+                'sys_message' => '',
+            ];
+        }
+        $validator = new \Laminas\Validator\EmailAddress();
+        if (!$validator->isValid($email)) {
+            return [
+                'success' => false,
+                'status' => 'Invalid email',
+                'sys_message' => '',
+            ];
+        }
+
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
 
@@ -1637,11 +1662,10 @@ class Quria extends AxiellWebServices
             'password'     => $password,
             'patronId'     => $patron['patronId'],
             'address'      => $email,
-            'isActive'     => 'yes',
+            'isActive'     => $active ? 'yes' : 'no',
         ];
-
-        if (!empty($user['email'])) {
-            $conf['id'] = $user['emailId'];
+        if (!empty($user['email_0'])) {
+            $conf['id'] = $user['email_' . $emailId . '_id'] ?? '';
             $function = 'changeEmail';
             $functionResult = 'changeEmailAddressResult';
             $functionParam = 'changeEmailAddressParam';
@@ -1685,15 +1709,24 @@ class Quria extends AxiellWebServices
     /**
      * Update patron's phone number
      *
-     * @param array  $patron Patron array
-     * @param string $phone  Phone number
+     * @param array  $patron  Patron array
+     * @param string $phone   Phone number
+     * @param string $phoneId Phone ID
+     * @param bool   $active  Whether to set the phone active
      *
      * @throws ILSException
      *
      * @return array Associative array of the results
      */
-    public function updatePhone($patron, $phone)
+    protected function updatePhoneNumber($patron, $phone, $phoneId = null, $active = false)
     {
+        if (empty($phone) || $phoneId === null) {
+            return [
+                'success' => true,
+                'status' => 'No data to update',
+                'sys_message' => '',
+            ];
+        }
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
         $user = $this->getMyProfile($patron);
@@ -1711,11 +1744,11 @@ class Quria extends AxiellWebServices
             'areaCode'     => '',
             'country'      => $user['phoneCountry'] ?? 'FI',
             'localCode'    => $phone,
-            'useForSms'    => 'yes',
+            'useForSms'    => $active ? 'yes' : 'no',
         ];
 
-        if (!empty($user['phone'])) {
-            $conf['id'] = $user['phoneId'];
+        if (!empty($user['phone_0'])) {
+            $conf['id'] = $user['phone_' . $phoneId . '_id'] ?? '';
             $function = 'changePhone';
             $functionResult = 'changePhoneNumberResult';
             $functionParam = 'changePhoneNumberParam';
@@ -1893,5 +1926,61 @@ class Quria extends AxiellWebServices
             ];
         }
         return $results;
+    }
+
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
+     *
+     * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getConfig($function, $params = null)
+    {
+        $config = parent::getConfig($function);
+        if ('updateAddress' === $function && isset($config['fields'])) {
+            if (isset($params['patron'])) {
+                $profile = $this->getMyProfile($params['patron']);
+                $extraFields = [];
+                foreach ($config['fields'] as $i => $field) {
+                    [$label, $fieldId] = explode(':', $field);
+                    if (in_array($fieldId, ['email', 'phone'])) {
+                        // Create a new field for every email/phone the user has
+                        foreach ($profile as $profileField => $value) {
+                            $pattern = "/^{$fieldId}_\d+$/";
+                            if (preg_match($pattern, $profileField)) {
+                                $activation = in_array(
+                                    $fieldId,
+                                    $this->config['updateAddress']['contactInfoActivation'] ?? []
+                                );
+                                $extraField = [
+                                    'field' => $profileField,
+                                    'label' => $label,
+                                    'type' => 'text',
+                                ];
+                                $extraFields[] = $extraField;
+                                if ($activation) {
+                                    $extraActiveField = [
+                                        'field' => $profileField . '_active',
+                                        'label' => $fieldId === 'email'
+                                            ? $fieldId . '_active'
+                                            : $fieldId . '_use_for_sms',
+                                        'type' => 'boolean',
+                                    ];
+                                    $extraFields[] = $extraActiveField;
+                                }
+                            }
+                        }
+                        unset($config['fields'][$i]);
+                    }
+                }
+                $config['fields'] = array_merge($config['fields'], $extraFields);
+            }
+        }
+        return $config;
     }
 }

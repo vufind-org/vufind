@@ -118,9 +118,13 @@ fields[] = Address:address1
 fields[] = Zip:zip
 fields[] = City:city
 fields[] = Country:country
-;fields[] = Phone:phone
-;fields[] = Email:email
+fields[] = Phone:phone
+fields[] = Email:email
 ;fields[] = Additional info:info
+
+; Array of fields that can be set active/inactive
+contactInfoActivation[] = phone
+contactInfoActivation[] = email
 ; url is required for the url method. url can be a single address or an array of
 ; language-specific addresses. First example is a single one:
 ;url = http://address.of.change.form
