@@ -975,6 +975,7 @@ url             = https://www.myendnoteweb.com/EndNoteWeb.html
 ;set_query['eod_books'] = "institution:kfu AND publishDate:[1911 TO 1911]"
 ;set_query['eod_ebooks'] = "format:eBook"
 ;vufind_api_format_fields = "id,authors,cleanIsbn,cleanIssn,formats,title"
+;finna_api_format_fields = "id,authors,cleanIsbn,cleanIssn,formats,title,images,mediaTypes,controlNumbers,institutions,year,recordFormat,sectors,majorGenres,usageRights,usageRightsExtended,measurements,collections"
 
 ; Proxy Server is Optional.
 [Proxy]

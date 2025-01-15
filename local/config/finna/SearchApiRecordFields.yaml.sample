@@ -130,6 +130,12 @@ corporateAuthors:
   type: array
   items:
     type: string
+controlNumbers:
+  vufind.method: getControlNumbers
+  description: Record control numbers
+  type: array
+  items:
+    type: string
 dedupIds:
   vufind.method: "Formatter::getDedupIds"
   description: IDs of all records deduplicated with the current record
@@ -337,6 +343,12 @@ lccn:
   type: array
   items:
     type: string
+majorGenres:
+  vufind.method: getMajorGenres
+  description: Major genres
+  type: array
+  items:
+    type: string
 manufacturer:
   vufind.method: getManufacturer
   description: manufacturer
@@ -344,6 +356,12 @@ manufacturer:
 measurements:
   vufind.method: getMeasurements
   description: Physical measurements
+  type: array
+  items:
+    type: string
+mediaTypes:
+  vufind.method: getMediaTypesAsStrings
+  description: Media types collected from links
   type: array
   items:
     type: string
@@ -475,6 +493,10 @@ rating:
 rawData:
   vufind.method: "Formatter::getRawData"
   description: All data in the index fields
+  type: string
+recordFormat:
+  vufind.method: getRecordFormat
+  description: Record format
   type: string
 recordLinks:
   vufind.method: "Formatter::getRecordLinks"
@@ -618,6 +640,20 @@ urls:
   type: array
   items:
     $ref: '#/components/schemas/Url'
+usageRights:
+  vufind.method: getUsageRights
+  description: Usage rights 
+    (see [usage_rights_str_mv at https://www.kiwi.fi/display/Finna/Kenttien+mappaukset+eri+formaateista+Finnan+indeksiin]
+    (https://github.com/NatLibFi/RecordManager-Finna/blob/dev/mappings/usage_rights.map.sample))
+  type: array
+  items:
+    type: string
+usageRightsExtended:
+  vufind.method: getUsageRightsExt
+  description: Extended usage rights (see https://github.com/NatLibFi/RecordManager-Finna/blob/dev/mappings/usage_rights_ext.map.sample)
+  type: array
+  items:
+    $ref: '#/components/schemas/TranslatedField'
 year:
   vufind.method: getYear
   description: >
