@@ -1138,7 +1138,8 @@ class Folio extends AbstractAPI implements
      * Given a response from performOkapiUsernamePasswordAuthentication(),
      * extract the requested cookie.
      *
-     * @param Response $response Response from performOkapiUsernamePasswordAuthentication().
+     * @param Response $response   Response from performOkapiUsernamePasswordAuthentication().
+     * @param string   $cookieName Name of the cookie to get from the response.
      *
      * @return \Laminas\Http\Header\SetCookie
      */
