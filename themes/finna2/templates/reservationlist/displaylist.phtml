@@ -98,7 +98,15 @@
               <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
               <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
               <div class="toolbar-sticky">
-                <?=$this->context($this)->renderInContext('reservationlist/bulk-action-buttons.phtml', ['idPrefix' => 'reservationlist_', 'list' => $list ?? null, 'account' => $this->account, 'lists' => $this->reservationList($user)->getReservationListsForUser()])?>
+                <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', [
+                  'idPrefix' => 'reservationlist_',
+                  'list' => $list,
+                  'account' => $this->account,
+                  'canDelete' => (bool)$list->getOrdered() && $this->account,
+                  'cartEnabled' => false,
+                  'email' => false,
+                  'export' => false,
+                ])?>
               </div>
               <?php foreach ($this->results->getResults() as $i => $current): ?>
                 <?php

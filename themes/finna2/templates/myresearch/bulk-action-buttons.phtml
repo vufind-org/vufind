@@ -4,7 +4,15 @@
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->getTitle())?>">
   <input type="hidden" name="listDescription" value="<?=$this->escapeHtmlAttr($list->getDescription() ?? '')?>">
 <?php endif; ?>
-<?php $user = $this->auth()->getUserObject(); ?>
+<?php
+  $user = $this->auth()->getUserObject();
+  $canDelete = $this->canDelete ?? false;
+  $cartEnabled = $this->cartEnabled ?? $this->cart()->isActive();
+  $lists = $this->lists ?? [];
+  $email = $this->email ?? true;
+  $export = $this->export ?? (count($this->export()->getActiveFormats('bulk')) > 0);
+  $displayBulkCheckboxes = $canDelete || $cartEnabled || $lists || $email || $export;
+?>
 <div class="bulk-action-buttons-row hidden-print">
   <?php
   $socialConfig = $this->config()->get('config')['Social'];
@@ -14,15 +22,16 @@
   <div class="bulkActionButtons bulk-action-buttons-col">
     <div class="mylist-functions btn-group">
       <span class="sr-only"><?=$this->transEsc('bulk_noitems_advice')?></span>
-      <button id="button_email" class="btn btn-primary" type="submit" name="email" value="<?=$this->transEscAttr('Email')?>" title="<?=$this->transEscAttr('bulk_email')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Email')?></button>
-      <?php $exportOptions = $this->export()->getActiveFormats('bulk');
-      if (count($exportOptions) > 0): ?>
+      <?php if ($email): ?>
+        <button id="button_email" class="btn btn-primary" type="submit" name="email" value="<?=$this->transEscAttr('Email')?>" title="<?=$this->transEscAttr('bulk_email')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Email')?></button>
+      <?php endif; ?>
+      <?php if ($export): ?>
         <button class="btn btn-primary" type="submit" name="export" value="<?=$this->transEscAttr('Export')?>" title="<?=$this->transEscAttr('bulk_export')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Export')?></button>
       <?php endif; ?>
-      <?php if ((null !== $this->list && $this->list->editAllowed($user)) || (null === $this->list && $user)): ?>
+      <?php if ($canDelete): ?>
         <button class="btn btn-primary" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''?>" type="submit" name="delete" value="<?=$this->transEscAttr('Delete')?>" title="<?=$this->transEsc('delete_selected')?>" disabled<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Delete')?></button>
       <?php endif; ?>
-        <?php if ($lists): ?>
+      <?php if ($lists): ?>
         <select id="add-to-list" class="btn btn-primary form-control" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
           <option value=""><?= $this->translate('Add to List'); ?>&hellip;</option>
           <?php foreach ($lists as $current): ?>
@@ -35,7 +44,7 @@
           <?php endforeach; ?>
         </select>
       <?php endif; ?>
-      <?php if ($this->cart()->isActive()): ?>
+      <?php if ($cartEnabled): ?>
         <button class="btn btn-primary" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" title="<?=$this->transEsc('Add to Book Bag')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Bag') ?></button>
       <?php endif; ?>
     </div>
@@ -44,24 +53,26 @@
     <?php endif; ?>
   </div>
   <ul class="selection-controls-bar checkbox-container">
-    <?php if (in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
-      <li class="bulk-checkbox">
-        <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
-        <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
-      </li>
-    <?php endif; ?>
-    <?php if ($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
-      <li class="bulk-checkbox">
-        <div class="select-all-global hidden">
-          <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
-          <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>
-        </div>
-      </li>
-    <?php endif; ?>
-    <?php if ($multiPageSelection): ?>
-      <li>
-        <button type="button" class="clear-selection hidden"></button>
-      </li>
+    <?php if ($displayBulkCheckboxes): ?>
+      <?php if (in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
+        <li class="bulk-checkbox">
+          <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
+          <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
+        </li>
+      <?php endif; ?>
+      <?php if ($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+        <li class="bulk-checkbox">
+          <div class="select-all-global hidden">
+            <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
+            <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>
+          </div>
+        </li>
+      <?php endif; ?>
+      <?php if ($multiPageSelection): ?>
+        <li>
+          <button type="button" class="clear-selection hidden"></button>
+        </li>
+      <?php endif; ?>
     <?php endif; ?>
   </ul>
   <div class="clearfix"></div>
