@@ -2,7 +2,16 @@
 <?php foreach ($data ?? [] as $link): ?>
     <a<?=$this->htmlAttributes($baseLinkAttrs + ['href' => $link['link']])?>>
         <?php if (isset($link['icon'])): ?>
-            <img<?=$this->htmlAttributes(['src' => $link['icon'], 'alt' => '', 'class' => 'identifier-link-icon icon-link__icon'])?>>
+            <img<?=
+                $this->htmlAttributes(
+                    [
+                        'src' => $link['icon'],
+                        'alt' => '',
+                        'aria-hidden' => 'true',
+                        'class' => 'identifier-link-icon icon-link__icon',
+                    ]
+                )
+            ?>>
         <?php elseif (isset($link['localIcon'])): ?>
             <?=$link['localIcon']?>
         <?php endif; ?>
