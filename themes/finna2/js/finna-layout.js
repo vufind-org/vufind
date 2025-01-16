@@ -327,8 +327,8 @@ finna.layout = (function finnaLayout() {
       .tooltip({trigger: 'click', viewport: '.container'})
       .attr('aria-expanded', 'false');
 
-    holder.find('[data-toggle="tooltip-hover')
-      .tooltip({trigger: 'hover', delay: {show: 1000, hide: 200}});
+    holder.find('[data-toggle="tooltip-hover"]')
+      .tooltip({trigger: 'hover', delay: {show: 500, hide: 200}});
     // prevent link opening if tooltip is placed inside link element
     holder.find('[data-toggle="tooltip"] > i').on('click', function onClickTooltip(event) {
       event.preventDefault();

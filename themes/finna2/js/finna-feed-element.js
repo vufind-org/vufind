@@ -325,6 +325,8 @@ class FinnaFeedElement extends HTMLElement {
         this.querySelectorAll('img[data-src]')
       );
     });
+
+    finna.layout.initToolTips($(this));
   }
 
   /**
