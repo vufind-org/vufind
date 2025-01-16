@@ -163,6 +163,7 @@ forms:
     useCaptcha: true
     reportReferrer: false
     reportUserAgent: true
+    #formActionRoute: controller-route
     #emailFrom:
     #  name: Your Library - Site Feedback
     #recipient:
