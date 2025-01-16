@@ -327,6 +327,7 @@ class Folio extends AbstractAPI implements
             if ($response->getStatusCode() < 400) {
                 return true;
             }
+            // Clear token data to ensure that checkTenantTokenExpired triggers a renewal:
             $this->token = $this->tokenExpiration = null;
         }
         if ($this->checkTenantTokenExpired()) {
@@ -1146,7 +1147,7 @@ class Folio extends AbstractAPI implements
                 return $cookie;
             }
         }
-        throw new \Exception('Could not find ' . $cookieName . ' in response');
+        throw new \Exception('Could not find ' . $cookieName . ' cookie in response');
     }
 
     /**
@@ -1159,11 +1160,11 @@ class Folio extends AbstractAPI implements
      */
     protected function setTokenValuesFromResponse(Response $response)
     {
-        $currentTime = gmdate('D, d-M-Y H:i:s T', strtotime('now'));
-
+        // If using legacy authentication, there is no option to renew tokens,
+        // so assume the token is expired as of now
         if ($this->useLegacyAuthentication()) {
             $this->token = $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
-            $this->tokenExpiration = $currentTime;
+            $this->tokenExpiration = gmdate('D, d-M-Y H:i:s T', strtotime('now'));
         } elseif ($cookie = $this->getCookieByName($response, 'folioAccessToken')) {
             $this->token = $cookie->getValue();
             $this->tokenExpiration = $cookie->getExpires();
