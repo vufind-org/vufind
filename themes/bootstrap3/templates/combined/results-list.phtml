@@ -52,8 +52,7 @@
         if (link) {
           let count = $recordTotal;
           count = count.toLocaleString();
-          const spanText = document.createTextNode();
-          spanText.textContent = '(' + count + ')';
+          const spanText = document.createTextNode('(' + count + ')');
           const totalSpan = document.createElement('span');
           totalSpan.className = 'record-total';
           totalSpan.append(spanText);

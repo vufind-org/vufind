@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for GetUserFines AJAX handler.
+ * Factory for AbstractIlsUserAndRendererAction AJAX handlers.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,12 +31,11 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for GetUserFines AJAX handler.
+ * Factory for AbstractIlsAndUserAction AJAX handlers.
  *
  * @category VuFind
  * @package  AJAX
@@ -44,7 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetUserFinesFactory extends AbstractIlsUserAndRendererActionFactory implements FactoryInterface
+class AbstractIlsUserAndRendererActionFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -67,10 +66,13 @@ class GetUserFinesFactory extends AbstractIlsUserAndRendererActionFactory implem
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $formatter = $container->get(\VuFind\Service\CurrencyFormatter::class);
-        return parent::__invoke($container, $requestedName, [$formatter]);
+        return new $requestedName(
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
+            $container->get('ViewRenderer'),
+            ...($options ?: [])
+        );
     }
 }

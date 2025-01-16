@@ -253,6 +253,16 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
+     * Return form action route if set in config
+     *
+     * @return string Form action route or feedback-form as default
+     */
+    public function getFormActionRoute(): string
+    {
+        return $this->formConfig['formActionRoute'] ?? 'feedback-form';
+    }
+
+    /**
      * Return form recipient(s).
      *
      * @param array $postParams Posted form data
