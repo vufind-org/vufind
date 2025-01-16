@@ -171,6 +171,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
    * @returns string
    */
   function normalizeSearchQueryKey(key) {
+    // Advanced search parameters could take one of two forms -- e.g. lookfor0[] or lookfor0[0]; this
+    // regular expression normalizes them to the more common non-indexed form for uniform comparisons.
     return key.replace(/(bool|lookfor|type)(\d+)\[\d+\]/, '$1$2[]');
   }
 
