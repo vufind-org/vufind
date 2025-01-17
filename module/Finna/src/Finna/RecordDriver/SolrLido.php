@@ -2698,7 +2698,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         if ($titleValues) {
             $titleValues = $this->getAllLanguageSpecificItems(
                 $titleValues,
-                $language
+                $language,
+                true
             );
             //Discard values matching the object title
             $titleValues = $this->compareWithTitle($titleValues);
