@@ -171,9 +171,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
    * @returns string
    */
   function normalizeSearchQueryKey(key) {
-    // Advanced search parameters could take one of two forms -- e.g. lookfor0[] or lookfor0[0]; this
-    // regular expression normalizes them to the more common non-indexed form for uniform comparisons.
-    return key.replace(/(bool|lookfor|type)(\d+)\[\d+\]/, '$1$2[]');
+    // We normally use open-ended brackets to signify array-based query parameters.
+    // However, some server-side processing can occasionally inject explicit index
+    // values. We want to normalize out the index values for consistency.
+    return key.replace(/(.+)\[\d+\]/, '$1[]');
   }
 
   /**
