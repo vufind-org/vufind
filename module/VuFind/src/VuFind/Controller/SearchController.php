@@ -297,8 +297,10 @@ class SearchController extends AbstractSolrSearch
             $this->getRequest()->getQuery()->set('hiddenFilters', $hiddenFilters);
         }
 
-        // Don't save to history -- history page doesn't handle correctly:
+        // Don't save to history or memory -- history page doesn't handle correctly
+        // and we don't want hidden filters bleeding to weird places:
         $this->saveToHistory = false;
+        $this->getSearchMemory()->disable();
 
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
@@ -314,7 +316,6 @@ class SearchController extends AbstractSolrSearch
         }
 
         // We don't want new items hidden filters to propagate to other searches:
-        $view->ignoreHiddenFilterMemory = true;
         $view->ignoreHiddenFiltersInRequest = true;
 
         return $view;
