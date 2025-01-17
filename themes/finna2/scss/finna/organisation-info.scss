@@ -743,7 +743,7 @@ $organisation-info-max-w: 400px !default;
         }
     }
 
-    .btn {
+    .btn:not(.btn-link) {
         background: $link-color;
         border-radius: 0px;
         margin-top: 5px;
