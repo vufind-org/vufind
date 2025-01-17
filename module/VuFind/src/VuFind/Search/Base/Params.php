@@ -2116,7 +2116,7 @@ class Params
      * Is this a specialized search (i.e. a customized scenario like new items,
      * rather than a "normal" backend search)?
      *
-     * @var bool
+     * @return bool
      */
     public function isSpecializedSearch(): bool
     {
