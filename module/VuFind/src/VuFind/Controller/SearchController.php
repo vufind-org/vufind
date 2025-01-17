@@ -297,6 +297,10 @@ class SearchController extends AbstractSolrSearch
             $this->getRequest()->getQuery()->set('hiddenFilters', $hiddenFilters);
         }
 
+        // Flag this as a specialized search to avoid bleeding defaults into the
+        // standard search box:
+        $this->getRequest()->getQuery()->set('specializedSearch', true);
+
         // Don't save to history or memory -- history page doesn't handle correctly
         // and we don't want hidden filters bleeding to weird places:
         $this->saveToHistory = false;
