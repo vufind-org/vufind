@@ -86,11 +86,11 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
     protected $cachedHiddenFilterParams = [];
 
     /**
-     * Are hidden filter params disabled?
+     * Should we force getCurrentHiddenFilterParams() to return an empty string?
      *
      * @var bool
      */
-    protected $hiddenFilterParamsDisabled = false;
+    protected $currentHiddenFilterParamsDisabled = false;
 
     /**
      * Constructor
@@ -236,7 +236,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         $ignoreHiddenFilterMemory = false,
         $prepend = '&amp;'
     ) {
-        if ($this->hiddenFilterParamsDisabled) {
+        if ($this->currentHiddenFilterParamsDisabled) {
             return '';
         }
         if (!isset($this->cachedHiddenFilterParams[$searchClassId])) {
@@ -383,13 +383,13 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Disable hidden filter params (used in contexts like New Items where we don't
-     * want to persist hidden filters through links).
+     * Force getCurrentHiddenFilterParams() to return an empty string (used in contexts like
+     * New Items where we don't want to persist hidden filters through links).
      *
      * @return void
      */
-    public function disableHiddenFilterParams(): void
+    public function disableCurrentHiddenFilterParams(): void
     {
-        $this->hiddenFilterParamsDisabled = true;
+        $this->currentHiddenFilterParamsDisabled = true;
     }
 }

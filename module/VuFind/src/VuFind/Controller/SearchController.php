@@ -316,7 +316,7 @@ class SearchController extends AbstractSolrSearch
         }
 
         // We don't want new items hidden filters to propagate to other searches:
-        $this->serviceLocator->get('ViewHelperManager')->get('searchTabs')->disableHiddenFilterParams();
+        $this->serviceLocator->get('ViewHelperManager')->get('searchTabs')->disableCurrentHiddenFilterParams();
         $view->ignoreHiddenFiltersInRequest = true;
 
         return $view;
