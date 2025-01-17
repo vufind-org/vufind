@@ -312,6 +312,7 @@ class SearchController extends AbstractSolrSearch
             $view->results->getUrlQuery()
                 ->setDefaultParameter('range', $range)
                 ->setDefaultParameter('department', $dept)
+                ->disableHiddenFilters()
                 ->setSuppressQuery(true);
         }
 
