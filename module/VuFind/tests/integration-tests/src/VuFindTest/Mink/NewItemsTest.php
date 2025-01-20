@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test Solr-driven new item functionality.
+ * Test new item search functionality.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Mink;
 
 /**
- * Test Solr-driven new item functionality.
+ * Test new item search functionality.
  *
  * @category VuFind
  * @package  Tests
@@ -38,14 +38,14 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NewItemSolrTest extends \VuFindTest\Integration\MinkTestCase
+class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Test that Solr-powered new items work as expected (using non-default range settings).
      *
      * @return void
      */
-    public function testNewItems(): void
+    public function testSolrDrivenNewItemsWithNonDefaultRanges(): void
     {
         $this->changeConfigs(
             [
