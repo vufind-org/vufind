@@ -859,6 +859,7 @@ class Form extends \Laminas\Form\Form implements
             'emailFrom',
             'emailSubject',
             'enabled',
+            'formActionRoute',
             'help',
             'onlyForLoggedUsers',
             'recipient',
