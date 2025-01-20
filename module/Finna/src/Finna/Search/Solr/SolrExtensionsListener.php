@@ -153,7 +153,7 @@ class SolrExtensionsListener
             $this->addDataSourceFilter($event);
             $context = $command->getContext();
             if (in_array($context, ['search', 'getids', 'workExpressions'])) {
-                $this->addHiddenComponentPartFilter($event);
+                $this->handleHiddenComponentPartFilter($event);
                 $this->handleAvailabilityFilters($event);
             }
             if ('search' === $context) {
@@ -345,19 +345,30 @@ class SolrExtensionsListener
     }
 
     /**
-     * Add hidden component part filter per search config.
+     * Handle hidden component part filter (finna.include_hidden_parts) per search config.
      *
      * @param EventInterface $event Event
      *
      * @return void
      */
-    protected function addHiddenComponentPartFilter(EventInterface $event)
+    protected function handleHiddenComponentPartFilter(EventInterface $event)
     {
         $hideHiddenComponentsPart = null;
         $command = $event->getParam('command');
         $params = $command->getSearchParameters();
         if (!$params) {
             return;
+        }
+
+        // Remove finna.include_hidden_parts from any facet fields:
+        if ($facetFields = $params->get('facet.field')) {
+            $newFields = [];
+            foreach ($facetFields as $field) {
+                if (strstr($field, 'finna.include_hidden_parts') === false) {
+                    $newFields[] = $field;
+                }
+            }
+            $params->set('facet.field', $newFields);
         }
 
         // Check that search is not for a known record id
