@@ -117,7 +117,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         $writer->set('Site', 'theme', $name);
         // Enable dropdown
         $settingPrefixes = [
-            'bootstrap' => 'bs3',
+            'bootstrap' => 'bs5',
             'custom' => strtolower(str_replace(' ', '', $name)),
         ];
         // - Set alternate_themes
