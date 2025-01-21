@@ -1055,7 +1055,7 @@ class Upgrade
         ];
         $this->applyOldSettings('EDS.ini', $groups);
 
-        // Fix autocomplete settings in case they use the old style:
+        // Fix default view settings in case they use the old style:
         $newConfig = & $this->newConfigs['EDS.ini']['General'];
 
         if (!str_contains($newConfig['default_view'], '_')) {
