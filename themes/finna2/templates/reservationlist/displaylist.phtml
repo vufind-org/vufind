@@ -101,8 +101,7 @@
                 <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', [
                   'idPrefix' => 'reservationlist_',
                   'list' => $list,
-                  'account' => $this->account,
-                  'canDelete' => (bool)$list->getOrdered() && $this->account,
+                  'canDelete' => (!$list->getOrdered()) && $user,
                   'cartEnabled' => false,
                   'email' => false,
                   'export' => false,
