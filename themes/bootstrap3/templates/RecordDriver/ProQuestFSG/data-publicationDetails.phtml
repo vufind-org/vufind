@@ -6,9 +6,5 @@
         <span<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->escapeHtml($pubName)?></span>
       <?php endif; ?>
     </span>
-    <?php $pubDate = $field->getDate(); ?>
-    <?php if (!empty($pubDate)): ?>
-      <span<?=$this->schemaOrg()->getAttributes(['property' => 'datePublished'])?> class="format"><?=$this->escapeHtml($pubDate)?></span>
-    <?php endif; ?>
   </div>
 <?php endforeach; ?>
