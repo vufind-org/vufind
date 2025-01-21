@@ -43,7 +43,7 @@
         JS;
   };
 
-  // Update result counts in jump links
+  // Update result counts (and, if necessary, href attributes) in jump links
   $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
   $jsMoreUrl = $this->escapeJs(html_entity_decode($moreUrl));
   $countsJs = <<<JS
