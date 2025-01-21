@@ -30,6 +30,8 @@
 
 namespace FinnaSearch\Backend\Primo;
 
+use function array_key_exists;
+
 /**
  * Primo Central connector (REST API).
  *
@@ -80,7 +82,12 @@ class RestConnector extends \VuFindSearch\Backend\Primo\RestConnector
             if ($filter == 'pcAvailability') {
                 // Toggle the setting unless we are told to ignore the hidden filter:
                 if (empty($args['ignorePcAvailabilityHiddenFilter'])) {
-                    $args['pcAvailability'] = $value ? 'true' : 'false';
+                    $args['pcAvailability'] = (bool)$value;
+                }
+            } elseif ($filter == 'cdiFulltext') {
+                // Toggle the setting unless it's already set:
+                if (!array_key_exists('cdiFulltext', $args)) {
+                    $args['cdiFulltext'] = (bool)$value;
                 }
             } else {
                 $args['filterList'][] = [
