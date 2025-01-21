@@ -48,6 +48,7 @@ use function is_callable;
 class Options extends \VuFind\Search\Base\Options
 {
     use \VuFind\Config\Feature\ExplodeSettingTrait;
+    use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
      * Default limit option
@@ -168,13 +169,6 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = $this->facetsIni = 'EDS';
         $this->searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
-        // 2015-06-30 RF - Changed to unlimited
-        //$this->resultLimit = 100;
-        $this->viewOptions = [
-            'list|title' => 'Title View',
-            'list|brief' => 'Brief View',
-            'list|detailed' => 'Detailed View',
-        ];
         // If we get the API info as a callback, defer until it's actually needed to
         // avoid calling the API:
         if (is_callable($apiInfo)) {
@@ -318,7 +312,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getEdsView()
     {
-        $viewArr = explode('|', $this->getApiProperty('defaultView'));
+        $viewArr = explode('_', $this->getApiProperty('defaultView'));
         return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
     }
 
@@ -492,10 +486,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // View preferences
-        if (isset($this->searchSettings->General->default_view)) {
-            $this->defaultView
-                = 'list|' . $this->searchSettings->General->default_view;
-        }
+        $this->initViewOptions($this->searchSettings);
 
         // Load list view for result (controls AJAX embedding vs. linking)
         if (isset($this->searchSettings->List->view)) {
@@ -724,7 +715,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
 
         // default view
-        $this->defaultView ??= 'list|' . ($settings['ResultListView'] ?? 'brief');
+        $this->defaultView ??= 'list_' . ($settings['ResultListView'] ?? 'brief');
     }
 
     /**
@@ -796,7 +787,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getDefaultView()
     {
-        $viewArr = explode('|', $this->getApiProperty('defaultView'));
+        $viewArr = explode('_', $this->getApiProperty('defaultView'));
         return $viewArr[0];
     }
 

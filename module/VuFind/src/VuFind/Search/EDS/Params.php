@@ -186,7 +186,7 @@ class Params extends AbstractEDSParams
      */
     public function getEdsView()
     {
-        $viewArr = explode('|', $this->view ?? '');
+        $viewArr = explode('_', $this->view ?? '');
         return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
     }
 
