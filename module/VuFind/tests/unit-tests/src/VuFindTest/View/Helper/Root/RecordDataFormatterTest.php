@@ -32,10 +32,12 @@ namespace VuFindTest\View\Helper\Root;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\Escaper\Escaper;
+use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
+use VuFind\View\Helper\Root\SchemaOrg;
 
 use function count;
 use function func_get_args;
@@ -75,11 +77,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get view helpers needed by test.
      *
-     * @param ContainerInterface $container Mock service container
+     * @param ContainerInterface $container       Mock service container
+     * @param SchemaOrg          $schemaOrgHelper schema.org helper
      *
      * @return array
      */
-    protected function getViewHelpers($container): array
+    protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
     {
         $context = new \VuFind\View\Helper\Root\Context();
         $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
@@ -110,9 +113,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => $record,
             'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
-            'schemaOrg' => new \VuFind\View\Helper\Root\SchemaOrg(
-                new \Laminas\View\Helper\HtmlAttributes()
-            ),
+            'schemaOrg' => $schemaOrgHelper,
             'searchMemory' => $this->getSearchMemoryViewHelper(),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
                 new \VuFind\Search\Options\PluginManager($container)
@@ -244,10 +245,25 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 'RecordDataFormatter' => $recordDataFormatterConfig,
             ])
         );
+        $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
+            new \Laminas\View\Helper\HtmlAttributes()
+        );
+        $specManager = $this->getMockBuilder(\VuFind\RecordDataFormatter\Specs\PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $specsMock = new DefaultRecordSpec($schemaOrgHelper, $recordDataFormatterConfig);
+        $specManager->expects($this->any())
+            ->method('get')
+            ->with($this->isType('string'))
+            ->willReturn($specsMock);
+        $container->set(
+            \VuFind\RecordDataFormatter\Specs\PluginManager::class,
+            $specManager
+        );
         $this->addPathResolverToContainer($container);
 
         // Create a view object with a set of helpers:
-        $helpers = $this->getViewHelpers($container);
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper);
         $view = $this->getPhpRenderer($helpers);
         $container->set(\Laminas\View\HelperPluginManager::class, $view->getHelperPluginManager());
         $formatter = $factory($container, RecordDataFormatter::class);

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for record driver data formatting view helper
+ * Factory for DefaultRecord specs.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,58 +21,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  RecordDataFormatter
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\RecordDataFormatter\Specs;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 
 /**
- * Factory for record driver data formatting view helper
+ * Factory for RecordDataFormatter specs.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  RecordDataFormatter
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class RecordDataFormatterFactory implements FactoryInterface
+class DefaultRecordFactory implements FactoryInterface
 {
-    /**
-     * Schema.org view helper
-     *
-     * @var SchemaOrg
-     */
-    protected $schemaOrgHelper = null;
-
-    /**
-     * The order in which groups of authors are displayed.
-     *
-     * The dictionary keys here correspond to the dictionary keys in the $labels
-     * array in getAuthorFunction()
-     *
-     * @var array<string, int>
-     */
-    protected $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
-
-    /**
-     * Default record spec.
-     *
-     * @var DefaultRecordSpec
-     */
-    protected DefaultRecordSpec $defaultRecordSpec;
-
     /**
      * Create an object
      *
@@ -97,41 +74,8 @@ class RecordDataFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $specPluginManager = $container->get(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
-        // for backward compatability check
-        $this->schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
-        $this->defaultRecordSpec = $specPluginManager->get(DefaultRecordSpec::class);
-        $methodMapping = [
-            'collection-info' => 'getDefaultCollectionInfoSpecs',
-            'collection-record' => 'getDefaultCollectionRecordSpecs',
-            'core' => 'getDefaultCoreSpecs',
-            'description' => 'getDefaultDescriptionSpecs',
-        ];
-        foreach ($methodMapping as $context => $method) {
-            if (method_exists($this, $method)) {
-                $this->defaultRecordSpec->setDefaults($context, [$this, $method]);
-            }
-        }
-        return new $requestedName($specPluginManager);
-    }
-
-    /**
-     * Get the callback function for processing authors.
-     *
-     * @return callable
-     */
-    protected function getAuthorFunction(): callable
-    {
-        return $this->defaultRecordSpec->getAuthorFunction();
-    }
-
-    /**
-     * Get the settings for formatting language lines.
-     *
-     * @return array
-     */
-    protected function getLanguageLineSettings(): array
-    {
-        return $this->defaultRecordSpec->getLanguageLineSettings();
+        $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('RecordDataFormatter')->toArray();
+        return new $requestedName($schemaOrgHelper, $config);
     }
 }

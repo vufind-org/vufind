@@ -1816,4 +1816,14 @@ class DefaultRecord extends AbstractBase
     {
         return (array)($this->fields['long_lat_label'] ?? []);
     }
+
+    /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        return \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
+    }
 }
