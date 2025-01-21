@@ -251,7 +251,7 @@ class Initializer
             && ($routeMatch = $this->event->getRouteMatch())
             && $routeMatch->getParam('admin_route')
             && ($this->config->admin_enabled ?? false)
-            && ($this->config->admin_theme ?? false)
+            && isset($themes['admin'])
         ) {
             return 'admin';
         }
