@@ -57,6 +57,13 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     use TranslatorAwareTrait;
 
     /**
+     * Turnstile service
+     *
+     * @var ?Turnstile
+     */
+    protected $turnstile = null;
+
+    /**
      * Current event description for logging
      *
      * @var string
@@ -77,7 +84,6 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      * @param string         $clientIp                   Client's IP address
      * @param ?int           $userId                     User ID or null if not logged in
      * @param Closure        $rateLimiterFactoryCallback Rate limiter factory callback
-     * @param Turnstile      $turnstile                  Turnstile service
      * @param IpAddressUtils $ipUtils                    IP address utilities
      */
     public function __construct(
@@ -85,13 +91,24 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         protected string $clientIp,
         protected ?int $userId,
         protected Closure $rateLimiterFactoryCallback,
-        protected Turnstile $turnstile,
         protected IpAddressUtils $ipUtils
     ) {
         $this->clientLogDetails = "ip:$clientIp";
         if (null !== $userId) {
             $this->clientLogDetails .= " u:$userId";
         }
+    }
+
+    /**
+     * Set the turnstile service instance.
+     *
+     * @param Turnstile $turnstile Turnstile service
+     *
+     * @return void
+     */
+    public function setTurnstile(Turnstile $turnstile)
+    {
+        $this->turnstile = $turnstile;
     }
 
     /**
@@ -152,7 +169,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             if (
                 $limit->isAccepted() &&
                 ($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false) &&
-                $this->turnstile->isChallengeAllowed($event)
+                $this->turnstile?->isChallengeAllowed($event)
             ) {
                 $turnstileLimiter = ($this->rateLimiterFactoryCallback)(
                     $this->config,

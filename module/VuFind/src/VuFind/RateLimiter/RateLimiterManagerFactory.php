@@ -87,14 +87,23 @@ class RateLimiterManagerFactory implements FactoryInterface
         $authManager = $container->get(\VuFind\Auth\Manager::class);
         $request = $container->get('Request');
 
-        return new $requestedName(
+        $rateLimiterManager = new $requestedName(
             $config,
             $request->getServer('REMOTE_ADDR'),
             $authManager->getUserObject()?->getId(),
             Closure::fromCallable([$this, 'getRateLimiter']),
-            $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class),
             $container->get(\VuFind\Net\IpAddressUtils::class)
         );
+
+        if (
+            ($config['Turnstile']['enabled'] ?? false)
+            && (strtolower($config['Storage']['adapter']) != 'redis')
+        ) {
+            $turnstile = $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class);
+            $rateLimiterManager->setTurnstile($turnstile);
+        }
+
+        return $rateLimiterManager;
     }
 
     /**
@@ -116,6 +125,15 @@ class RateLimiterManagerFactory implements FactoryInterface
         string $configSection = 'rateLimiterSettings'
     ): LimiterInterface {
         $policy = $config['Policies'][$policyId] ?? [];
+
+        // Truncate IP if configured, to share a quota among related IPs.
+        $ipv4Octets = $policy['groupByIpv4Octets'] ?? null;
+        $ipv6Hextets = $policy['groupByIpv6Hextets'] ?? null;
+        if ($ipv4Octets || $ipv6Hextets) {
+            $ipUtils = $this->serviceLocator->get(\VuFind\Net\IpAddressUtils::class);
+            $clientIp = $ipUtils->truncate($clientIp, $ipv4Octets, $ipv6Hextets);
+        }
+
         $rateLimiterConfig = $policy[$configSection] ?? [];
         $rateLimiterConfig['id'] = $policyId;
         if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {

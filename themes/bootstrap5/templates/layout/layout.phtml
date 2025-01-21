@@ -60,7 +60,8 @@
       // Collect small scripts together and append as one block:
       $appendScripts = [];
 
-      if (!empty($this->themeConfig()['stickyElements'])) {
+      $themeConfig = $this->themeConfig();
+      if (!empty($themeConfig['stickyElements'])) {
         $this->headScript()->appendFile('sticky_elements.js');
       }
 
@@ -98,6 +99,8 @@
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($this->layout()->searchId);
+      $theme = json_encode($themeConfig['themeName']);
+
       $appendScripts[] = <<<JS
           VuFind.path = '{$root}';
           VuFind.defaultSearchBackend = '{$dsb}';
@@ -106,6 +109,7 @@
           VuFind.addIcons({$icons});
           VuFind.setCspNonce('{$cspNonce}');
           VuFind.setCurrentSearchId($searchId);
+          VuFind.setTheme($theme);
           JS;
 
       if ($domain = $this->cookieManager()->getDomain()) {

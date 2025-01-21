@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use function count;
+
 /**
  * Mink account ajax menu test class.
  *
@@ -57,30 +59,6 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Standard setup + login
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        // Setup config
-        $this->changeConfigs(
-            [
-            'Demo' => $this->getDemoIniOverrides(),
-            'config' => [
-                'Catalog' => ['driver' => 'Demo'],
-                'Authentication' => [
-                    'enableAjax' => true,
-                    'enableDropdown' => false,
-                ],
-            ],
-            ]
-        );
-    }
-
-    /**
      * Create a specific state in the account ajax storage.
      *
      * Cleared when browser closes.
@@ -95,8 +73,10 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $this->waitForPageLoad($session->getPage());
         $js = '';
+        $theme = $this->getCurrentTheme();
         foreach ($states as $key => $state) {
-            $js .= 'sessionStorage.setItem(\'vf-account-status-' . $key . '\', \'' . json_encode($state) . '\');';
+            $themeState = [$theme => $state];
+            $js .= 'sessionStorage.setItem(\'vf-account-status-' . $key . '\', \'' . json_encode($themeState) . '\');';
         }
         $session->evaluateScript($js);
     }
@@ -136,113 +116,73 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that the menu is absent when enableAjax is true and enableDropdown
-     * is false.
+     * Data provider for menu configuration tests
      *
-     * @return void
+     * @return array
      */
-    public function testMenuOffAjaxNoDropdown()
+    public static function menuConfigurationProvider(): array
     {
-        // Create user
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl());
-        $page = $session->getPage();
-        $this->clickCss($page, '#loginOptions a');
-        $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->fillInAccountForm($page);
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->waitForPageLoad($page);
-
-        // Seed some fines
-        $page = $this->setUpFinesEnvironment();
-        $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertCount(0, $menu);
-        $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertCount(0, $stati);
+        return [
+            'no ajax, no dropdown' => [
+                false,
+                false,
+                0,
+            ],
+            'ajax, no dropdown' => [
+                true,
+                false,
+                1,
+            ],
+            'no ajax, dropdown' => [
+                false,
+                true,
+                0,
+            ],
+            'ajax, dropdown' => [
+                true,
+                true,
+                2,
+            ],
+        ];
     }
 
     /**
-     * Test that the menu is absent when enableAjax is false and enableDropdown
-     * is false.
+     * Test the menu configuration.
      *
-     * @depends testMenuOffAjaxNoDropdown
+     * @param bool $ajax                Enable account ajax?
+     * @param bool $dropdown            Enable navbar dropdown menu?
+     * @param int  $expectedStatusCount How many instances of status badge to expect
+     *
+     * @dataProvider menuConfigurationProvider
      *
      * @return void
      */
-    public function testMenuOffNoAjaxNoDropdown()
+    public function testMenuConfiguration(bool $ajax, bool $dropdown, int $expectedStatusCount)
     {
-        // Nothing on
         $this->changeConfigs(
             [
+                'Demo' => $this->getDemoIniOverrides(),
                 'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
                     'Authentication' => [
-                        'enableAjax' => false,
-                        'enableDropdown' => false,
+                        'method' => 'ILS',
+                        'enableAjax' => $ajax,
+                        'enableDropdown' => $dropdown,
                     ],
                 ],
             ]
         );
-        $this->login();
-        $page = $this->setUpFinesEnvironment();
-        $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertCount(0, $menu);
-        $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertCount(1, $stati);
-    }
 
-    /**
-     * Test that the menu is absent when enableAjax is false and enableDropdown
-     * is true.
-     *
-     * @depends testMenuOffAjaxNoDropdown
-     *
-     * @return void
-     */
-    public function testMenuOffNoAjaxDropdown()
-    {
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Authentication' => [
-                        'enableAjax' => false,
-                        'enableDropdown' => true,
-                    ],
-                ],
-            ]
-        );
-        $this->login();
-        $page = $this->setUpFinesEnvironment();
+        $page = $this->login('catuser', 'catpass')->getPage();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertCount(1, $menu);
-        $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertCount(2, $stati); // one in menu, one in dropdown
-    }
-
-    /**
-     * Test that the menu is absent when enableAjax is true and enableDropdown
-     * is true.
-     *
-     * @depends testMenuOffAjaxNoDropdown
-     *
-     * @return void
-     */
-    public function testMenuOffAjaxDropdown()
-    {
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Authentication' => [
-                        'enableAjax' => true,
-                        'enableDropdown' => true,
-                    ],
-                ],
-            ]
+        $this->assertCount($dropdown ? 1 : 0, $menu);
+        $this->findCss($page, '.account-menu .fines');
+        $this->assertEqualsWithTimeout(
+            $expectedStatusCount,
+            function () use ($page) {
+                return count($page->findAll('css', '.account-menu .fines-status'));
+            }
         );
-        $this->login();
-        $page = $this->setUpFinesEnvironment();
-        $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertCount(1, $menu);
-        $this->unFindCss($page, '.account-menu .fines-status.hidden');
     }
 
     /**
@@ -275,36 +215,109 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testGlobalCacheClearing()
     {
-        $session = $this->login();
-        // Seed some fines
-        $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
+        // This needs a valid list of caches, so create a user without ILS access:
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        $page = $this->setUpFinesEnvironment();
         $storage = $this->getJSStorage();
         $this->assertNotNull($storage['fines']);
         // Clear all cache
         $session->evaluateScript('VuFind.account.clearCache();');
         // Wait for reload
-        $this->waitForPageLoad($this->getMinkSession()->getPage());
+        $this->waitForPageLoad($page);
         $storage = $this->getJSStorage();
         // Status code MISSING is -2 * Math.PI, but we just round it here to avoid trouble
-        $this->assertEquals(-6, ceil($storage['fines']));
+        $fines = json_decode($storage['fines'], true);
+        $this->assertEquals(-6, ceil($fines[$this->getCurrentTheme()]));
     }
 
     /**
-     * Utility class to login
+     * Data provider for testAccountIcon
      *
-     * @return \Behat\Mink\Session
+     * @return array
      */
-    protected function login()
+    public static function accountIconProvider(): array
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl());
-        $page = $session->getPage();
-        $this->clickCss($page, '#loginOptions a');
-        $this->waitForPageLoad($page);
-        $this->fillInLoginForm($page, 'username1', 'test');
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->waitForPageLoad($page);
-        return $session;
+        return [
+            'no icon' => [
+                [
+                    // No fines
+                    ['fines' => ['total' => 0, 'display' => 'ZILTCH']],
+                    // Holds in transit only
+                    ['holds' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                    // ILL Requests in transit only
+                    ['illRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                    // Storage Retrievals in transit only
+                    ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                ],
+                '.account-status-none',
+            ],
+            'good' => [
+                [
+                    // Holds available
+                    ['holds' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                    // ILL Requests available
+                    ['illRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                    // Storage Retrievals available
+                    ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                ],
+                '.account-status-good',
+            ],
+            'warning' => [
+                [
+                    ['checkedOut' => ['warn' => 1, 'level' => 2]],
+                ],
+                '.account-status-warning',
+            ],
+            'danger' => [
+                [
+                    // User has fines
+                    ['fines' => ['value' => 1000000, 'display' => '$...yikes', 'level' => 3]],
+                    // Checkedout overdue
+                    ['checkedOut' => ['overdue' => 1, 'level' => 3]],
+                ],
+                '.account-status-danger',
+            ],
+            'danger overrides warning' => [
+                [['checkedOut' => ['warn' => 2, 'overdue' => 1, 'level' => 3]]],
+                '.account-status-danger',
+            ],
+            'danger overrides good' => [
+                [
+                    [
+                        'checkedOut' => ['overdue' => 1, 'level' => 3],
+                        'holds' => ['available' => 1, 'level' => 1],
+                    ],
+                ],
+                '.account-status-danger',
+            ],
+            'warning overrides good' => [
+                [
+                    [
+                        'checkedOut' => ['warn' => 1, 'level' => 2],
+                        'holds' => ['available' => 1, 'level' => 1],
+                    ],
+                ],
+                '.account-status-warning',
+            ],
+            'good overrides none' => [
+                [
+                    [
+                        'holds' => ['available' => 1, 'level' => 1],
+                        'fines' => ['total' => 0, 'display' => 'none', 'level' => 0],
+                    ],
+                ],
+                '.account-status-good',
+            ],
+        ];
     }
 
     /**
@@ -313,163 +326,120 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $storage    Array of storage values to test
      * @param string $checkClass Icon class to check
      *
+     * @dataProvider accountIconProvider
+     *
      * @return void
      */
-    protected function checkIcon($storage, $checkClass)
+    public function testAccountIcon(array $storage, string $checkClass): void
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl());
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'enableAjax' => true,
+                    ],
+                    'Catalog' => ['driver' => 'Demo'],
+                ],
+            ]
+        );
+        $session = $this->login();
         foreach ($storage as $item) {
             $this->setJSStorage($item);
             $session->reload();
             $page = $session->getPage();
-            $this->waitForPageLoad($page);
             $this->findCss($page, '#account-icon ' . $checkClass);
-            foreach ($item as $key => $value) {
+            foreach (array_keys($item) as $key) {
                 $session->evaluateScript('VuFind.account.clearCache("' . $key . '");');
             }
         }
     }
 
     /**
-     * Check cases that don't change the account icon
+     * Test status badges
      *
      * @return void
      */
-    public function testIconNone()
+    public function testStatusBadges(): void
     {
-        $this->login();
-        $storage = [
-            // No fines
+        $this->changeConfigs(
             [
-                'fines' => [
-                    'total' => 0,
-                    'display' => 'ZILTCH',
+                'Demo' => $this->getDemoIniOverrides(),
+                'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
+                    'Authentication' => [
+                        'method' => 'ILS',
+                        'enableAjax' => true,
+                    ],
                 ],
-            ],
-            // Holds in transit only
-            [
-                'holds' => [
-                    'in_transit' => 1,
-                    'available' => 0,
-                    'other' => 0,
-                ],
-            ],
-            // ILL Requests in transit only
-            [
-                'illRequests' => [
-                    'in_transit' => 1,
-                    'available' => 0,
-                    'other' => 0,
-                ],
-            ],
-            // Storage Retrievals in transit only
-            [
-                'storageRetrievalRequests' => [
-                    'in_transit' => 1,
-                    'available' => 0,
-                    'other' => 0,
-                ],
-            ],
-        ];
-        $this->checkIcon($storage, '.account-status-none');
-    }
-
-    /**
-     * Check cases that change the account icon to a happy bell
-     *
-     * @return void
-     */
-    public function testIconGood()
-    {
-        $this->login();
-        $storage = [
-            // Holds available
-            ['holds' => ['in_transit' => 0, 'available' => 1]],
-            // ILL Requests available
-            ['illRequests' => ['in_transit' => 0, 'available' => 1]],
-            // Storage Retrievals available
-            ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]],
-        ];
-        $this->checkIcon($storage, '.account-status-good');
-    }
-
-    /**
-     * Check cases that change the account icon to a concerned bell
-     *
-     * @return void
-     */
-    public function testIconWarning()
-    {
-        $this->login();
-        $storage = [
-            // Checked out due soon
-            ['checkedOut' => ['warn' => 1]],
-        ];
-        $this->checkIcon($storage, '.account-status-warning');
-    }
-
-    /**
-     * Check cases that change the account icon to an alarming triangle
-     *
-     * @return void
-     */
-    public function testIconDanger()
-    {
-        $this->login();
-        $storage = [
-            // User has fines
-            ['fines' => ['value' => 1000000, 'display' => '$...yikes']],
-            // Checkedout overdue
-            ['checkedOut' => ['overdue' => 1]],
-        ];
-        $this->checkIcon($storage, '.account-status-danger');
-    }
-
-    /**
-     * More urgent cases should override lower cases
-     *
-     * Danger > Warning > Good > None
-     *
-     * @return void
-     */
-    public function testIconClashes()
-    {
-        $this->login();
-        // Danger overrides warning
-        $this->checkIcon(
-            [['checkedOut' => ['warn' => 2, 'overdue' => 1]]],
-            '.account-status-danger'
+            ]
         );
-        // Danger overrides good
-        $this->checkIcon(
-            [
-                [
-                    'checkedOut' => ['overdue' => 1],
-                    'holds' => ['available' => 1],
-                ],
-            ],
-            '.account-status-danger'
+
+        $session = $this->login('catuser', 'catpass');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // Checkouts
+        $checkoutsStatus = $this->findCss($page, '.myresearch-menu .checkedout-status');
+        $this->assertEquals(
+            '1',
+            $this->findCssAndGetText($checkoutsStatus, '.badge.account-info')
         );
-        // Warning overrides good
-        $this->checkIcon(
-            [
-                [
-                    'checkedOut' => ['warn' => 1],
-                    'holds' => ['available' => 1],
-                ],
-            ],
-            '.account-status-warning'
+        $this->assertEquals(
+            'Items due later: 1 ,',
+            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden, .sr-only')
         );
-        // Good overrides none
-        $this->checkIcon(
-            [
-                [
-                    'holds' => ['available' => 1],
-                    'fines' => ['total' => 0, 'display' => 'none'],
-                ],
-            ],
-            '.account-status-good'
+
+        $this->assertEquals(
+            '2',
+            $this->findCssAndGetText($checkoutsStatus, ' .badge.account-warning')
+        );
+        $this->assertEquals(
+            'Items due soon: 2 ,',
+            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden, .sr-only', null, 1)
+        );
+
+        $this->assertEquals(
+            '3',
+            $this->findCssAndGetText($checkoutsStatus, '.badge.account-alert')
+        );
+        $this->assertEquals(
+            'Items overdue: 3 ,',
+            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden, .sr-only', null, 2)
+        );
+
+        // Holds
+        $holdsStatus = $this->findCss($page, '.myresearch-menu .holds-status');
+        $this->assertEquals(
+            '1',
+            $this->findCssAndGetText($holdsStatus, '.badge.account-info')
+        );
+        $this->assertEquals(
+            'Available for Pickup: 1 ,',
+            $this->findCssAndGetText($holdsStatus, '.visually-hidden, .sr-only')
+        );
+
+        $this->assertEquals(
+            '2',
+            $this->findCssAndGetText($holdsStatus, '.badge.account-warning')
+        );
+        $this->assertEquals(
+            'In Transit: 2 ,',
+            $this->findCssAndGetText($holdsStatus, '.visually-hidden, .sr-only', null, 1)
+        );
+
+        $this->assertEquals(
+            '3',
+            $this->findCssAndGetText($holdsStatus, '.badge.account-none')
+        );
+        $this->assertEquals(
+            'Other Status: 3 ,',
+            $this->findCssAndGetText($holdsStatus, '.visually-hidden, .sr-only', null, 2)
+        );
+
+        // Fines
+        $this->assertEquals(
+            '$1.23',
+            $this->findCssAndGetText($page, '.myresearch-menu .fines-status .badge.account-alert')
         );
     }
 
@@ -480,6 +450,79 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['username1', 'catuser']);
+    }
+
+    /**
+     * Utility method to login
+     *
+     * @param string $user     Username
+     * @param string $password Password
+     *
+     * @return \Behat\Mink\Session
+     */
+    protected function login($user = 'username1', $password = 'test')
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->clickCss($page, '#loginOptions a');
+        $this->waitForPageLoad($page);
+        $this->fillInLoginForm($page, $user, $password);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        return $session;
+    }
+
+    /**
+     * Get transaction JSON for Demo.ini.
+     *
+     * @param string $bibId Bibliographic record ID to create fake item info for.
+     *
+     * @return array
+     */
+    protected function getFakeTransactions($bibId)
+    {
+        $transactions = [];
+        $template = [
+            'barcode' => 1234567890,
+            'renew'   => 0,
+            'renewLimit' => 1,
+            'request' => 0,
+            'id' => $bibId,
+            'source' => 'Solr',
+            'item_id' => 0,
+            'renewable' => true,
+        ];
+        $params = [
+            [
+                'dueStatus' => 'due',
+                'duedate' => strtotime('now +5 days'),
+            ],
+            [
+                'dueStatus' => 'due',
+                'duedate' => strtotime('now +5 days'),
+            ],
+            [
+                'dueStatus' => 'overdue',
+                'duedate' => strtotime('now -1 days'),
+            ],
+            [
+                'dueStatus' => 'overdue',
+                'duedate' => strtotime('now -1 days'),
+            ],
+            [
+                'dueStatus' => 'overdue',
+                'duedate' => strtotime('now -2 days'),
+            ],
+            [
+                'dueStatus' => false,
+                'duedate' => strtotime('now +20 days'),
+            ],
+        ];
+        foreach ($params as $current) {
+            $transactions[] = [...$template, ...$current];
+        }
+        return json_encode($transactions);
     }
 }

@@ -307,6 +307,26 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Flip-flop the language to cause URL rewrites (useful for testing handling of
+     * arrays in query parameters).
+     *
+     * @param Element $page Current page object
+     *
+     * @return void
+     */
+    protected function flipflopLanguage(Element $page): void
+    {
+        // Flip to German:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->waitForPageLoad($page);
+        // Flip back to English:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->waitForPageLoad($page);
+    }
+
+    /**
      * Test applying a facet to filter results (deferred facet sidebar)
      *
      * @param bool  $deferred    Are deferred facets enabled?
@@ -1431,5 +1451,81 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $reset = $page->findAll('css', '.reset-filters-btn');
         $this->assertCount(0, $reset);
+    }
+
+    /**
+     * Data provider for testMultiSelectOnAdvancedSearch()
+     *
+     * @return array[]
+     */
+    public static function multiSelectOnAdvancedSearchProvider(): array
+    {
+        return [
+            'with language switch' => [true],
+            'without language switch' => [false],
+        ];
+    }
+
+    /**
+     * Test applying multi-facet selection to advanced search results, with or without changing the
+     * language setting first.
+     *
+     * @param bool $changeLanguage Should we change the language before applying the facets?
+     *
+     * @dataProvider multiSelectOnAdvancedSearchProvider
+     *
+     * @return void
+     */
+    public function testMultiSelectOnAdvancedSearch(bool $changeLanguage): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => true,
+                    ],
+                ],
+            ]
+        );
+        $path = '/Search/Advanced';
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . $path);
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'test');
+        $this->findCssAndSetValue($page, '#search_lookfor0_1', 'history');
+        $this->findCss($page, '[type=submit]')->press();
+
+        if ($changeLanguage) {
+            $this->flipflopLanguage($page);
+        }
+
+        // Activate the first two facet values:
+        $this->clickCss($page, '.js-user-selection-multi-filters');
+        $this->clickCss($page, '.facet__list__item a');
+        $this->clickCss($page, '.facet__list__item a', index: 1);
+        $this->clickCss($page, '.js-apply-multi-facets-selection');
+
+        // A past bug would cause search terms to get duplicated after facets
+        // were applied; make sure the search remains as expected!
+        $this->assertEquals(
+            '(All Fields:test AND All Fields:history)',
+            $this->findCssAndGetText($page, '.adv_search_terms strong')
+        );
+
+        $this->assertCount(2, $page->findAll('css', '.facet.active'));
+
+        // If configured, flip-flop language again to potentially modify filter params:
+        if ($changeLanguage) {
+            $this->flipflopLanguage($page);
+        }
+
+        // Let's also confirm that we can now remove the filters:
+        $this->clickCss($page, '.js-user-selection-multi-filters');
+        $this->clickCss($page, '.facet.active');
+        $this->clickCss($page, '.facet.active');
+        $this->clickCss($page, '.js-apply-multi-facets-selection');
+
+        $this->assertCount(0, $page->findAll('css', '.facet.active'));
     }
 }
