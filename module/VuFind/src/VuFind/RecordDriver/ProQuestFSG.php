@@ -126,4 +126,21 @@ class ProQuestFSG extends DefaultRecord
     {
         return $this->getFirstFieldValue('786', ['t']);
     }
+
+    /**
+     * Return the first valid DOI found in the record (false if none).
+     *
+     * @return mixed
+     */
+    public function getCleanDOI()
+    {
+        $identifiers = $this->getFieldArray('024', ['a', '2'], true, '~');
+        foreach ($identifiers as $identifier) {
+            [$value, $identifierType] = explode('~', $identifier);
+            if ('doi' === $identifierType) {
+                return $value;
+            }
+        }
+        return false;
+    }
 }
