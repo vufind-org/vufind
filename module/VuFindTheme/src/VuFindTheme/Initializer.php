@@ -213,6 +213,9 @@ class Initializer
             if (isset($this->config->mobile_theme)) {
                 $this->themeMap['mobile'] = $this->config->mobile_theme;
             }
+            if (isset($this->config->admin_theme)) {
+                $this->themeMap['admin'] = $this->config->admin_theme;
+            }
 
             // Parse the alternate theme settings for additional options:
             $parts = explode(',', $this->config->alternate_themes ?? '');
