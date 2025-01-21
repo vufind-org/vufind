@@ -156,6 +156,7 @@ VuFind.register('account', function Account() {
   var _load = function _load(module) {
     if (_clearCaches) {
       _clearSessionData(module);
+      return;
     }
     var $element = $(_submodules[module].selector);
     if (!$element) {
