@@ -208,7 +208,7 @@ class Initializer
     protected function getThemeAliasMap(): array
     {
         if ($this->themeMap === null) {
-            // Set up special-case 'standard' and 'mobile' aliases:
+            // Set up special-case 'standard', 'mobile' and 'admin' aliases:
             $this->themeMap = ['standard' => $this->config->theme];
             if (isset($this->config->mobile_theme)) {
                 $this->themeMap['mobile'] = $this->config->mobile_theme;
