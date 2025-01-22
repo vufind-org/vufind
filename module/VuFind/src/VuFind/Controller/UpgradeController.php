@@ -579,6 +579,12 @@ class UpgradeController extends AbstractBase
                 }
             }
 
+            // If we have SQL to show, stop at this point to allow the changes to be made before progressing any
+            // further:
+            if (!empty($this->session->sql)) {
+                return $this->forwardTo('Upgrade', 'ShowSql');
+            }
+
             // Now that database structure is addressed, we can fix database
             // content -- the checks below should be platform-independent.
 
@@ -622,9 +628,6 @@ class UpgradeController extends AbstractBase
         }
 
         $this->cookie->databaseOkay = true;
-        if (!empty($this->session->sql)) {
-            return $this->forwardTo('Upgrade', 'ShowSql');
-        }
         return $this->redirect()->toRoute('upgrade-home');
     }
 
@@ -635,6 +638,11 @@ class UpgradeController extends AbstractBase
      */
     public function showsqlAction()
     {
+        $recheck = $this->params()->fromPost('recheck');
+        if ($recheck) {
+            unset($this->session->sql);
+            return $this->redirect()->toRoute('upgrade-fixdatabase');
+        }
         $continue = $this->params()->fromPost('continue', 'nope');
         if ($continue == 'Next') {
             unset($this->session->sql);
