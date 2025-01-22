@@ -78,6 +78,13 @@ class RestConnector extends \VuFindSearch\Backend\Primo\RestConnector
     {
         $terms = $this->convertContainsOps($terms);
 
+        // Strip 'pci.' prefix from citation searches:
+        if (array_intersect(['citedby', 'citing'], array_column($args['filterList'] ?? [], 'field'))) {
+            if (str_starts_with($terms[0]['lookfor'] ?? '', '"pci.')) {
+                $terms[0]['lookfor'] = '"' . substr($terms[0]['lookfor'], 5);
+            }
+        }
+
         foreach ($this->hiddenFilters as $filter => $value) {
             if ($filter == 'pcAvailability') {
                 // Toggle the setting unless we are told to ignore the hidden filter:
