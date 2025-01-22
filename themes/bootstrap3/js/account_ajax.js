@@ -114,6 +114,7 @@ VuFind.register('account', function Account() {
   var _load = function _load(module) {
     if (_clearCaches) {
       sessionStorage.removeItem(_sessionDataPrefix + module);
+      return;
     }
     var $element = $(_submodules[module].selector);
     if (!$element) {
