@@ -163,8 +163,38 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     return value.substring(0, p) + ':' + filterValue;
   }
 
+  /**
+   * Normalize a single query key from a search
+   *
+   * @param {string} key Key name
+   *
+   * @returns string
+   */
+  function normalizeSearchQueryKey(key) {
+    // We normally use open-ended brackets to signify array-based query parameters.
+    // However, some server-side processing can occasionally inject explicit index
+    // values. We want to normalize out the index values for consistency.
+    return key.replace(/(.+)\[\d+\]/, '$1[]');
+  }
+
+  /**
+   * Normalize key names in a set of search parameters
+   *
+   * @param {URLSearchParams} params Parameters to normalize
+   *
+   * @returns URLSearchParams
+   */
+  function normalizeSearchQueryKeys(params) {
+    const normalized = new URLSearchParams();
+    for (const [key, value] of params) {
+      normalized.append(normalizeSearchQueryKey(key), value);
+    }
+    return normalized;
+  }
+
+
   for (const [key, value] of (new URLSearchParams(window.location.search))) {
-    initialParams.append(key, normalizeValue(key, value));
+    initialParams.append(normalizeSearchQueryKey(key), normalizeValue(key, value));
   }
 
   /**
@@ -219,19 +249,19 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     for (const elem of elems) {
       const href = elem.getAttribute('href');
       const p = href.indexOf('?');
-      const elemParams = new URLSearchParams(p >= 0 ? href.substring(p + 1) : '');
+      const elemParams = normalizeSearchQueryKeys(new URLSearchParams(p >= 0 ? href.substring(p + 1) : ''));
 
       // Add parameters that did not initially exist:
       for (const [key, value] of elemParams) {
         // URLSearchParams.has(key, value) seems to be broken on iOS 16, so check with our own method:
         if (!VuFind.inURLSearchParams(initialParams, key, value)) {
-          globalAddedParams.append(key, value);
+          globalAddedParams.append(normalizeSearchQueryKey(key), value);
         }
       }
       // Remove parameters that this URL no longer has:
       for (const [key, value] of initialParams) {
         if (!VuFind.inURLSearchParams(elemParams, key, value)) {
-          globalRemovedParams.append(key, value);
+          globalRemovedParams.append(normalizeSearchQueryKey(key), value);
         }
       }
     }

@@ -62,7 +62,15 @@ VuFind.register('account', function Account() {
   // Forward declaration for clearAllCaches
   var clearAllCaches = function clearAllCachesForward() {};
 
-  // Clearing save forces AJAX update next page load
+  /**
+   * Clear the specified client data cache; pass in empty/undefined value to clear
+   * all caches. Note that clearing all caches will prevent further data from loading
+   * on the current page, and should only be performed when exiting the page via a
+   * link, form submission, etc. Cleared data will be reloaded by AJAX on the next
+   * page load.
+   *
+   * @param {string|undefined} name Cache to clear (undefined/empty for all)
+   */
   var clearCache = function clearCache(name) {
     if (typeof name === "undefined" || name === '') {
       clearAllCaches();
@@ -156,6 +164,7 @@ VuFind.register('account', function Account() {
   var _load = function _load(module) {
     if (_clearCaches) {
       _clearSessionData(module);
+      return;
     }
     var $element = $(_submodules[module].selector);
     if (!$element) {
@@ -220,6 +229,11 @@ VuFind.register('account', function Account() {
     }
   };
 
+  /**
+   * Clear all account status data cached in the client's browser. This will prevent future data from
+   * loading on the current page and should only be called when exiting the page by clicking a link,
+   * submitting a form, etc.
+   */
   clearAllCaches = function clearAllCachesReal() {
     // Set a flag so that any modules yet to be loaded are cleared as well
     _clearCaches = true;

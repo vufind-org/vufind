@@ -43,21 +43,26 @@
         JS;
   };
 
-  // Update result counts in jump links
+  // Update result counts (and, if necessary, href attributes) in jump links
   $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
+  $jsMoreUrl = $this->escapeJs(html_entity_decode($moreUrl));
   $countsJs = <<<JS
       function updateJumpLink_$classId() {
         const combinedJumpLinks = document.querySelector('.combined-jump-links');
-        const link = combinedJumpLinks?.querySelector('.$classId');
-        if (link) {
+        const linkContainer = combinedJumpLinks?.querySelector('.$classId');
+        if (linkContainer) {
           let count = $recordTotal;
           count = count.toLocaleString();
           const spanText = document.createTextNode('(' + count + ')');
           const totalSpan = document.createElement('span');
           totalSpan.className = 'record-total';
           totalSpan.append(spanText);
-          link.append(totalSpan);
-          link.style.display = "inline";
+          linkContainer.append(totalSpan);
+          linkContainer.style.display = "inline";
+          const link = linkContainer.querySelector('a');
+          if (link.dataset.linkMode === 'link') {
+            link.href = "$jsMoreUrl";
+          };
           combinedJumpLinks.style.visibility = "inherit";
         }
       }
