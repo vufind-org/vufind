@@ -312,9 +312,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getEdsView()
     {
-        $apiDefaultView = $this->getApiProperty('defaultView');
-        $viewArr = explode('_', $apiDefaultView);
-        return (1 < count($viewArr)) ? $viewArr[1] : $apiDefaultView;
+        return  $this->getDefaultViewPart(1);
     }
 
     /**
@@ -788,9 +786,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getDefaultView()
     {
-        $apiDefaultView = $this->getApiProperty('defaultView');
-        $viewArr = explode('_', $apiDefaultView);
-        return (1 < count($viewArr)) ? $viewArr[0] : 'list';
+        return $this->getDefaultViewPart(0, 'list');
     }
 
     /**
@@ -820,5 +816,20 @@ class Options extends \VuFind\Search\Base\Options
             }
         }
         return $this->defaultFilters;
+    }
+
+    /**
+     * Extract a component from the defaultView API property.
+     *
+     * @param int     $index   Index of part to extract from the property
+     * @param ?string $default Default to use as a fallback if the property does not contain delimited values
+     *
+     * @return string
+     */
+    protected function getDefaultViewPart(int $index, ?string $default = null): string
+    {
+        $apiDefaultView = $this->getApiProperty('defaultView');
+        $viewArr = explode('_', $apiDefaultView);
+        return (count($viewArr) > 1) ? $viewArr[$index] : ($default ?? $apiDefaultView);
     }
 }
