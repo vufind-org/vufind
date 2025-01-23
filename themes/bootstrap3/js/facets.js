@@ -194,7 +194,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
 
   for (const [key, value] of (new URLSearchParams(window.location.search))) {
-    initialParams.append(normalizeSearchQueryKey(key), normalizeValue(key, value));
+    const normalizedKey = normalizeSearchQueryKey(key);
+    initialParams.append(normalizedKey, normalizeValue(normalizedKey, value));
   }
 
   /**
@@ -255,13 +256,15 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       for (const [key, value] of elemParams) {
         // URLSearchParams.has(key, value) seems to be broken on iOS 16, so check with our own method:
         if (!VuFind.inURLSearchParams(initialParams, key, value)) {
-          globalAddedParams.append(normalizeSearchQueryKey(key), value);
+          const normalizedKey = normalizeSearchQueryKey(key);
+          globalAddedParams.append(normalizedKey, normalizeValue(normalizedKey, value));
         }
       }
       // Remove parameters that this URL no longer has:
       for (const [key, value] of initialParams) {
         if (!VuFind.inURLSearchParams(elemParams, key, value)) {
-          globalRemovedParams.append(normalizeSearchQueryKey(key), value);
+          const normalizedKey = normalizeSearchQueryKey(key);
+          globalRemovedParams.append(normalizedKey, normalizeValue(normalizedKey, value));
         }
       }
     }
