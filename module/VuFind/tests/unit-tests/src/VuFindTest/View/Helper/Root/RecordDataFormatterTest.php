@@ -203,10 +203,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      * Build a formatter, including necessary mock view w/ helpers.
      *
      * @param array $additionalConfig Additional RecordDataFormatter config
+     * @param array $additionalSpecs  Additional specs
      *
      * @return RecordDataFormatter
      */
-    protected function getFormatter($additionalConfig = [])
+    protected function getFormatter($additionalConfig = [], $additionalSpecs = [])
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
@@ -248,14 +249,16 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
             new \Laminas\View\Helper\HtmlAttributes()
         );
-        $specManager = $this->getMockBuilder(\VuFind\RecordDataFormatter\Specs\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $specsMock = new DefaultRecordSpec($schemaOrgHelper, $recordDataFormatterConfig);
+        $specManager = $this->createMock(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
+        $specs = new DefaultRecordSpec($schemaOrgHelper, $recordDataFormatterConfig);
+        foreach ($additionalSpecs as $context => $additionalContextSpec) {
+            $contextSpec = $specs->getDefaults($context);
+            $specs->setDefaults($context, array_merge($additionalContextSpec, $contextSpec));
+        }
         $specManager->expects($this->any())
             ->method('get')
             ->with($this->isType('string'))
-            ->willReturn($specsMock);
+            ->willReturn($specs);
         $container->set(
             \VuFind\RecordDataFormatter\Specs\PluginManager::class,
             $specManager
@@ -345,9 +348,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      */
     public function testFormatting(string $function): void
     {
-        $driver = $this->getDriver();
-        $formatter = $this->getFormatter();
-        $spec = $formatter->getDefaults('core');
+        $spec = [];
         $spec['Building'] = [
             'dataMethod' => 'getBuildings', 'pos' => 0, 'context' => ['foo' => 1],
             'translationTextDomain' => 'prefix_',
@@ -528,6 +529,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'renderType' => 'Simple',
             'pos' => 7000,
         ];
+
+        $driver = $this->getDriver();
+        $formatter = $this->getFormatter([], ['core' => $spec]);
+        $spec = $formatter->getDefaults('core');
+
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
@@ -566,9 +572,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'ContextSensitive' => '0',
         ];
 
-        // Calling getDefaults again to apply changes from config
-        $formatter->setDefaults('core', $spec);
-        $spec = $formatter->getDefaults('core');
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys
@@ -654,10 +657,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      */
     public function testFormattingWithGlobalOptions(string $function): void
     {
-        $driver = $this->getDriver();
-        $formatter = $this->getFormatter($this->getGlobalTestConfig());
-        $spec = $formatter->getDefaults('core');
-
+        $spec = [];
         $spec['NormalField'] = [
             'dataMethod' => 'getContainerTitle',
             'renderType' => 'Simple',
@@ -707,6 +707,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'pos' => 2002,
         ];
 
+        $driver = $this->getDriver();
+        $formatter = $this->getFormatter($this->getGlobalTestConfig(), ['core' => $spec]);
+        $spec = $formatter->getDefaults('core');
+
         $expected = [
             'EnabledField' => '0',
             'EnabledFieldByConfig' => '0',
@@ -716,9 +720,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Extra' => '0',
         ];
 
-        // Calling getDefaults again to apply changes from config
-        $formatter->setDefaults('core', $spec);
-        $spec = $formatter->getDefaults('core');
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys

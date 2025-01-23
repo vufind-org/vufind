@@ -67,8 +67,7 @@ class DefaultRecord extends AbstractBase
      */
     public function __construct(protected ?SchemaOrg $schemaOrgHelper, array $config)
     {
-        $this->config = $config;
-        $this->init();
+        parent::__construct($config);
     }
 
     /**
@@ -153,9 +152,9 @@ class DefaultRecord extends AbstractBase
             $itemPrefix = $itemSuffix = '';
         }
         return compact('itemPrefix', 'itemSuffix') + [
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ];
+            'translate' => true,
+            'translationTextDomain' => 'ISO639-3::',
+        ];
     }
 
     /**

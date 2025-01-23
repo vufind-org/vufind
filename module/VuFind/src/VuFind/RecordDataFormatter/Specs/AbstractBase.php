@@ -31,6 +31,7 @@
 
 namespace VuFind\RecordDataFormatter\Specs;
 
+use VuFind\View\Helper\Root\SchemaOrg;
 use function is_array;
 use function is_callable;
 
@@ -50,18 +51,21 @@ abstract class AbstractBase implements \VuFind\I18n\Translator\TranslatorAwareIn
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Config.
-     *
-     * @var array
-     */
-    protected array $config = [];
-
-    /**
      * Default settings.
      *
      * @var array
      */
     protected array $defaults = [];
+
+    /**
+     * Constructor
+     *
+     * @param array      $config          Config
+     */
+    public function __construct(protected array $config)
+    {
+        $this->init();
+    }
 
     /**
      * Initialize specs.

@@ -103,13 +103,13 @@ class RecordDataFormatter extends AbstractHelper
      * Should we allow a value? (Always accepts non-empty values; for empty
      * values, allows zero when configured to do so).
      *
-     * @param mixed      $value            Data to check for zero value.
-     * @param array      $options          Rendering options.
-     * @param array|bool $ignoreCombineAlt If value should always be allowed when renderType is CombineAlt
+     * @param mixed $value            Data to check for zero value.
+     * @param array $options          Rendering options.
+     * @param bool  $ignoreCombineAlt If value should always be allowed when renderType is CombineAlt
      *
      * @return bool
      */
-    protected function allowValue(mixed $value, array $options, array|bool $ignoreCombineAlt = false): bool
+    protected function allowValue(mixed $value, array $options, bool $ignoreCombineAlt = false): bool
     {
         if (!empty($value) || ($ignoreCombineAlt && ($options['renderType'] ?? 'Simple') == 'CombineAlt')) {
             return true;
@@ -234,6 +234,8 @@ class RecordDataFormatter extends AbstractHelper
      * callable returning an array).
      *
      * @return void
+     *
+     * @deprecated Set defaults on spec class directly
      */
     public function setDefaults(string $key, array|callable $values): void
     {

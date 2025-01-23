@@ -63,6 +63,8 @@ class RecordDataFormatterFactory implements FactoryInterface
      * array in getAuthorFunction()
      *
      * @var array<string, int>
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
     protected $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
 
@@ -119,6 +121,8 @@ class RecordDataFormatterFactory implements FactoryInterface
      * Get the callback function for processing authors.
      *
      * @return callable
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
     protected function getAuthorFunction(): callable
     {
@@ -129,6 +133,8 @@ class RecordDataFormatterFactory implements FactoryInterface
      * Get the settings for formatting language lines.
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
     protected function getLanguageLineSettings(): array
     {
