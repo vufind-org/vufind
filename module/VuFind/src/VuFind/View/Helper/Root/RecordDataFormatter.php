@@ -239,7 +239,6 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function setDefaults(string $key, array|callable $values): void
     {
-        // This method is only used in tests and for BC
         $specClass = \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
         if ($this->driver !== null) {
             $specClass = $this->driver->getRecordDataFormatterSpecClass();
