@@ -82,6 +82,19 @@ Storage:
 #                         query        Query string parameters
 #                         post         POST request parameters
 #
+# groupByIpv4Octets     Share a single quota of tokens between a group of related IP
+#                       addresses, defined by truncating the client IP. Useful for
+#                       botnets that control a range of IPs. This config defines the
+#                       group by truncating the IP address, if it is IPv4, to the
+#                       given number of octets. Valid values are 1-3. For example,
+#                       setting this to 3 would truncate 1.2.3.4 to 1.2.3 for the
+#                       purpose of grouping.
+#
+# groupByIpv6Hextets    Same as groupByIpv6Hextets, but this truncates IPv6 addresses.
+#                       Valid values are 1-7. For example, setting this to 3 would
+#                       truncate 2001:0db8:0000:0000:0000:ff00:0042:8329 to
+#                       2001:0db8:0000 for the purpose of grouping.
+#
 # rateLimiterSettings   Rate Limiter settings.
 #                       See https://symfony.com/doc/current/rate_limiter.html#rate-limiting-policies
 #                       for more information and policy settings.
