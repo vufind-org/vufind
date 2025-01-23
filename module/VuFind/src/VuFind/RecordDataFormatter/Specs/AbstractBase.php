@@ -31,7 +31,6 @@
 
 namespace VuFind\RecordDataFormatter\Specs;
 
-use VuFind\View\Helper\Root\SchemaOrg;
 use function is_array;
 use function is_callable;
 
@@ -60,7 +59,7 @@ abstract class AbstractBase implements \VuFind\I18n\Translator\TranslatorAwareIn
     /**
      * Constructor
      *
-     * @param array      $config          Config
+     * @param array $config Config
      */
     public function __construct(protected array $config)
     {
