@@ -160,7 +160,7 @@ class RecordDataFormatterFactory implements FactoryInterface
      *
      * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultCollectionInfoSpecs()
+    public function getDefaultCollectionInfoSpecs(): array
     {
         return $this->defaultRecordSpec->getDefaults('collection-info');
     }
@@ -172,7 +172,7 @@ class RecordDataFormatterFactory implements FactoryInterface
      *
      * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultCollectionRecordSpecs()
+    public function getDefaultCollectionRecordSpecs(): array
     {
         return $this->defaultRecordSpec->getDefaults('collection-record');
     }
@@ -184,7 +184,7 @@ class RecordDataFormatterFactory implements FactoryInterface
      *
      * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultCoreSpecs()
+    public function getDefaultCoreSpecs(): array
     {
         return $this->defaultRecordSpec->getDefaults('core');
     }
@@ -196,7 +196,7 @@ class RecordDataFormatterFactory implements FactoryInterface
      *
      * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultDescriptionSpecs()
+    public function getDefaultDescriptionSpecs(): array
     {
         return $this->defaultRecordSpec->getDefaults('description');
     }
