@@ -312,7 +312,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getEdsView()
     {
-        return  $this->getDefaultViewPart(1);
+        return $this->getDefaultViewPart(1);
     }
 
     /**
