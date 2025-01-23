@@ -93,7 +93,7 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetContextWithDefaultConfigAndWithoutRequest(): void
+    public function testGetContextWithoutRequest(): void
     {
         $driver = $this->createMock(RecordDriver::class);
         $driver->method('getUniqueID')->willReturn('foo');
@@ -108,11 +108,11 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getContext() with non-default config and a request set.
+     * Test getContext() with default config and a request set.
      *
      * @return void
      */
-    public function testGetContextWithConfigAndRequest(): void
+    public function testGetContextWithRequest(): void
     {
         $driver = $this->createMock(RecordDriver::class);
         $driver->method('getUniqueID')->willReturn('foo');
@@ -122,10 +122,10 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
             ->method('getRecordContext')
             ->with('foo', 'tok', 'prov', 'bar', ['recordTab', 'record'])
             ->willReturn(['record' => 'context']);
-        $channels = $this->getChannels(['include_channels_search_box' => true], $loader, $driver);
+        $channels = $this->getChannels([], $loader, $driver);
         $request = new Request();
         $request->setQuery(new Parameters(['channelToken' => 'tok', 'channelProvider' => 'prov']));
         $channels->setRequest($request);
-        $this->assertEquals(['displaySearchBox' => true, 'record' => 'context'], $channels->getContext());
+        $this->assertEquals(['displaySearchBox' => false, 'record' => 'context'], $channels->getContext());
     }
 }

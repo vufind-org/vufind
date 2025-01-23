@@ -90,7 +90,7 @@ class Channels extends AbstractBase
         $request = $this->getRequest() ?: null;
         $query = $request?->getQuery();
         $driver = $this->getRecordDriver();
-        $context = ['displaySearchBox' => $this->options['include_channels_search_box'] ?? false];
+        $context = ['displaySearchBox' => false];
         return $context + $this->loader->getRecordContext(
             $driver->getUniqueID(),
             $query?->get('channelToken'),
