@@ -37,6 +37,8 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 
+use function get_class;
+
 /**
  * Factory for record driver data formatting view helper
  *
@@ -100,7 +102,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $specPluginManager = $container->get(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
-        // for backward compatability check
+        // for backward compatability check if getDefault*Specs methods got overridden.
         $this->schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         $this->defaultRecordSpec = $specPluginManager->get(DefaultRecordSpec::class);
         $methodMapping = [
@@ -109,10 +111,20 @@ class RecordDataFormatterFactory implements FactoryInterface
             'core' => 'getDefaultCoreSpecs',
             'description' => 'getDefaultDescriptionSpecs',
         ];
+        $showDeprecationWarning = false;
         foreach ($methodMapping as $context => $method) {
-            if (method_exists($this, $method)) {
+            $reflector = new \ReflectionMethod($this, $method);
+            if ($reflector->getDeclaringClass()->getName() !== RecordDataFormatterFactory::class) {
+                $showDeprecationWarning = true;
                 $this->defaultRecordSpec->setDefaults($context, [$this, $method]);
             }
+        }
+        if ($showDeprecationWarning) {
+            $logger = $container->get(\VuFind\Log\Logger::class);
+            $warningMessage = 'Using deprecated customization of RecordDataFormatter specs! '
+                . 'Please use the \VuFind\RecordDataFormatter\Specs\DefaultRecord instead. '
+                . 'See https://vufind.org/wiki/development:architecture:record_data_formatter for more information.';
+            $logger->warn(get_class($this) . ': ' . $warningMessage);
         }
         return new $requestedName($specPluginManager);
     }
@@ -139,5 +151,53 @@ class RecordDataFormatterFactory implements FactoryInterface
     protected function getLanguageLineSettings(): array
     {
         return $this->defaultRecordSpec->getLanguageLineSettings();
+    }
+
+    /**
+     * Get default specifications for displaying data in collection-info metadata.
+     *
+     * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
+     */
+    public function getDefaultCollectionInfoSpecs()
+    {
+        return $this->defaultRecordSpec->getDefaults('collection-info');
+    }
+
+    /**
+     * Get default specifications for displaying data in collection-record metadata.
+     *
+     * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
+     */
+    public function getDefaultCollectionRecordSpecs()
+    {
+        return $this->defaultRecordSpec->getDefaults('collection-record');
+    }
+
+    /**
+     * Get default specifications for displaying data in core metadata.
+     *
+     * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
+     */
+    public function getDefaultCoreSpecs()
+    {
+        return $this->defaultRecordSpec->getDefaults('core');
+    }
+
+    /**
+     * Get default specifications for displaying data in the description tab.
+     *
+     * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
+     */
+    public function getDefaultDescriptionSpecs()
+    {
+        return $this->defaultRecordSpec->getDefaults('description');
     }
 }
