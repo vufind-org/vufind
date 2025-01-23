@@ -558,3 +558,9 @@ Identifier:
     identifier:
       - [and, 100]
       - [or, ~]
+
+FileIdentifier:
+  QueryFields:
+    file_identifier_str_mv:
+      - [and, 100]
+      - [or, ~]
