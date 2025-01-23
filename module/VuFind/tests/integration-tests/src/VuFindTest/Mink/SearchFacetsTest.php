@@ -1444,8 +1444,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '.adv_search_terms strong')
         );
 
-        // Make sure we have the expected number of filters applied:
+        // Make sure we have the expected number of filters applied on screen and in the URL query:
         $this->assertCount(2, $page->findAll('css', '.facet.active'));
+        $this->assertCount($includeCheckbox ? 1 : 0, $page->findAll('css', '.checkbox-filter [data-checked="true"]'));
         $query = parse_url($session->getCurrentUrl(), PHP_URL_QUERY);
         parse_str($query, $queryArray);
         $expectedFilterCount = $includeCheckbox ? 3 : 2;
