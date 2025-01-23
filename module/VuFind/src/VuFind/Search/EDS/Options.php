@@ -312,8 +312,9 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getEdsView()
     {
-        $viewArr = explode('_', $this->getApiProperty('defaultView'));
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
+        $apiDefaultView = $this->getApiProperty('defaultView');
+        $viewArr = explode('_', $apiDefaultView);
+        return (1 < count($viewArr)) ? $viewArr[1] : $apiDefaultView;
     }
 
     /**
@@ -787,8 +788,9 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getDefaultView()
     {
-        $viewArr = explode('_', $this->getApiProperty('defaultView'));
-        return $viewArr[0];
+        $apiDefaultView = $this->getApiProperty('defaultView');
+        $viewArr = explode('_', $apiDefaultView);
+        return (1 < count($viewArr)) ? $viewArr[0] : 'list';
     }
 
     /**
