@@ -153,9 +153,9 @@ class DefaultRecord extends AbstractBase
             $itemPrefix = $itemSuffix = '';
         }
         return compact('itemPrefix', 'itemSuffix') + [
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ];
+            'translate' => true,
+            'translationTextDomain' => 'ISO639-3::',
+        ];
     }
 
     /**
