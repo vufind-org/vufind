@@ -400,7 +400,8 @@ CREATE TABLE login_token (
   last_session_id varchar(255),
   PRIMARY KEY (id)
 );
-CREATE INDEX login_token_user_id_series_idx ON login_token (user_id, series);
+CREATE INDEX login_token_user_id_idx ON login_token (user_id);
+CREATE INDEX login_token_series_idx ON login_token (series);
 
 -- --------------------------------------------------------
 
