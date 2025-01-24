@@ -184,30 +184,6 @@ abstract class AbstractCssPreCompiler
     }
 
     /**
-     * Convert fake absolute paths to working relative paths.
-     *
-     * @param string $css  Generated CSS
-     * @param string $scss Relative SCSS filename
-     *
-     * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     */
-    protected function makeRelative($css, $scss)
-    {
-        // Figure out how deep the scss file is nested -- this will
-        // affect our relative path. Note: we don't actually need
-        // to use $matches for anything, but some versions of PHP
-        // seem to be unhappy if we omit the parameter.
-        $depth = preg_match_all('|/|', $scss, $matches);
-        $relPath = '../../../';
-        for ($i = 0; $i < $depth; $i++) {
-            $relPath .= '/../';
-        }
-        return str_replace($this->fakePath, $relPath, $css);
-    }
-
-    /**
      * Log a message to the console
      *
      * @param string $str message string

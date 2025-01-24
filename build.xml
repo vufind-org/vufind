@@ -65,7 +65,6 @@
   <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
-  <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
   <property name="version" value="10.1.1" />
 
