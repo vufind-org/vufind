@@ -45,7 +45,7 @@ use function is_callable;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-abstract class AbstractBase implements \VuFind\I18n\Translator\TranslatorAwareInterface
+abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

@@ -33,6 +33,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\RecordDataFormatter\Specs\PluginManager as SpecsManager;
+use VuFind\RecordDataFormatter\Specs\SpecInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 use function call_user_func;
@@ -215,14 +216,10 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function getDefaults(string $key): array
     {
-        $specClass = \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
-        if ($this->driver !== null) {
-            $specClass = $this->driver->getRecordDataFormatterSpecClass();
+        $specs = $this->getSpecPluginForDriver();
+        if ($specs === null) {
+            throw new \Exception('Using the RecordDataFormatter view helper with a driver that is not supported.');
         }
-        if ($specClass === null) {
-            return [];
-        }
-        $specs = $this->specsManager->get($specClass);
         return $specs->getDefaults($key);
     }
 
@@ -239,15 +236,27 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function setDefaults(string $key, array|callable $values): void
     {
+        $specs = $this->getSpecPluginForDriver();
+        if ($specs !== null && method_exists($specs, 'setDefaults')) {
+            $specs->setDefaults($key, $values);
+        }
+    }
+
+    /**
+     * Get matching spec plugin for the driver.
+     *
+     * @return ?SpecInterface
+     */
+    protected function getSpecPluginForDriver(): ?SpecInterface
+    {
         $specClass = \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
         if ($this->driver !== null) {
             $specClass = $this->driver->getRecordDataFormatterSpecClass();
         }
         if ($specClass === null) {
-            return;
+            return null;
         }
-        $specs = $this->specsManager->get($specClass);
-        $specs->setDefaults($key, $values);
+        return $this->specsManager->get($specClass);
     }
 
     /**

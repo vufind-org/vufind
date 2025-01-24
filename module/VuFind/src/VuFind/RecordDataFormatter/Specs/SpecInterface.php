@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDataFormatter spec plugin manager
+ * RecordDataFormatter specs interface.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\RecordDataFormatter\Specs;
 
 /**
- * RecordDataFormatter spec plugin manager
+ * RecordDataFormatter specs interface.
  *
  * @category VuFind
  * @package  RecordDataFormatter
@@ -40,25 +40,14 @@ namespace VuFind\RecordDataFormatter\Specs;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+interface SpecInterface
 {
     /**
-     * Default plugin factories.
+     * Get default configuration.
      *
-     * @var array
-     */
-    protected $factories = [
-        DefaultRecord::class => DefaultRecordFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * @param string $key Key for configuration to look up.
      *
-     * @return string
+     * @return array
      */
-    protected function getExpectedInterface()
-    {
-        return SpecInterface::class;
-    }
+    public function getDefaults(string $key): array;
 }
