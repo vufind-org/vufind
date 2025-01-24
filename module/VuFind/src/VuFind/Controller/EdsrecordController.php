@@ -128,4 +128,15 @@ class EdsrecordController extends AbstractRecord
         $config = $this->getService(\VuFind\Config\PluginManager::class)->get('EDS');
         return $config->Record->next_prev_navigation ?? false;
     }
+
+    /**
+     * Should we display a warning in restricted views?
+     *
+     * @return bool
+     */
+    public function showRestrictedViewWarning(): bool
+    {
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('EDS');
+        return $config->General->show_restricted_view_warning ?? false;
+    }
 }

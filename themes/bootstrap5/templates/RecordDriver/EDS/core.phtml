@@ -76,6 +76,10 @@
     <?php endif; ?>
     <?=$this->record($this->driver)->getLabelList() ?>
 
+    <?php if (($this->showRestrictedViewWarning ?? false) && $restrictedView): ?>
+      <?=$this->render('error/restrictedViewWarning.phtml')?>
+    <?php endif; ?>
+
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
       <?php foreach ($items as $key => $item): ?>
