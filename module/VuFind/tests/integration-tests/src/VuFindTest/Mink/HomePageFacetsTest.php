@@ -29,9 +29,6 @@
 
 namespace VuFindTest\Mink;
 
-use VuFindTest\Feature\CacheManagementTrait;
-use VuFindTest\Feature\SearchFacetFilterTrait;
-
 /**
  * Test functionality of the home page facets.
  *
@@ -43,9 +40,6 @@ use VuFindTest\Feature\SearchFacetFilterTrait;
  */
 class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use CacheManagementTrait;
-    use SearchFacetFilterTrait;
-
     /**
      * Test that normal facets work properly.
      *
@@ -65,105 +59,38 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testHierarchicalFacets
-     *
-     * @return array
-     */
-    public static function hierarchicalFacetsProvider(): array
-    {
-        return [
-            'default sort' => [
-                null,
-                null,
-                'all',
-            ],
-            'top level alphabetical' => [
-                'top',
-                'all',
-                'top',
-            ],
-            'all alphabetical' => [
-                'all',
-                'top',
-                'all',
-            ],
-            'count' => [
-                'count',
-                'all',
-                'count',
-            ],
-            'top level alphabetical (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'all alphabetical (inherited)' => [
-                null,
-                'all',
-                'all',
-            ],
-            'count (inherited)' => [
-                null,
-                'count',
-                'count',
-            ],
-        ];
-    }
-
-    /**
      * Test that hierarchy facets work properly.
-     *
-     * @param ?string $sort         Sort option
-     * @param ?string $defaultSort  Default sort option
-     * @param string  $expectedSort Expected sort order of options
-     *
-     * @dataProvider hierarchicalFacetsProvider
      *
      * @return void
      */
-    public function testHierarchicalFacets(?string $sort, ?string $defaultSort, string $expectedSort)
+    public function testHierarchicalFacets()
     {
-        $config = [
-            'facets' => [
-                'Results' => [
-                    'hierarchical_facet_str_mv' => 'hierarchy',
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results' => [
+                        'hierarchical_facet_str_mv' => 'hierarchy',
+                    ],
+                    'SpecialFacets' => [
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
+                    ],
+                    'HomePage' => [
+                        'hierarchical_facet_str_mv' => 'Hierarchical',
+                    ],
                 ],
-                'SpecialFacets' => [
-                    'hierarchical[]' => 'hierarchical_facet_str_mv',
-                ],
-                'HomePage' => [
-                    'hierarchical_facet_str_mv' => 'Hierarchical',
-                ],
-                'Advanced_Settings' => [
-                    'translated_facets[]' => 'hierarchical_facet_str_mv:Facets',
-                ],
-            ],
-        ];
-        if (null !== $sort) {
-            $config['facets']['HomePage_Settings']['hierarchicalFacetSortOptions']['hierarchical_facet_str_mv'] = $sort;
-        }
-        if (null !== $defaultSort) {
-            $config['facets']['SpecialFacets']['hierarchicalFacetSortOptions']['hierarchical_facet_str_mv']
-                = $defaultSort;
-        }
-        $this->changeConfigs($config + $this->getCacheClearPermissionConfig());
-
-        // Clear object cache to ensure clean state:
-        $this->clearObjectCache();
+            ]
+        );
         $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
-
-        // Check hierarchy filter:
-        $expected = $this->getExpectedHierarchicalFacetTreeItems($expectedSort);
-        $actual = $this->getHierarchicalFacetTreeItems(
-            $page,
-            '.home-facet.hierarchical_facet_str_mv .home-facet-container'
+        $this->assertEquals(
+            'level1a level1z',
+            $this->findCssAndGetText($page, '.home-facet.hierarchical_facet_str_mv .home-facet-list')
         );
-        $this->assertSame($expected, $actual);
-
         $this->clickCss($page, '.home-facet.hierarchical_facet_str_mv .facet');
         $this->waitForPageLoad($page);
-        $expectedValue = $this->getExpectedHierarchicalFacetFilterText($expectedSort, 0);
-        $this->assertAppliedFilter($page, 0, 'hierarchy', $expectedValue);
+        $this->assertStringEndsWith(
+            '/Search/Results?filter%5B%5D=hierarchical_facet_str_mv%3A%220%2Flevel1a%2F%22',
+            $this->getMinkSession()->getCurrentUrl()
+        );
     }
 }

@@ -52,7 +52,6 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
         'reserves' => 'SolrReserves',
         // Legacy:
         'VuFind' => 'Solr',
-        'WorldCat' => 'WorldCat2',
     ];
 
     /**
@@ -77,6 +76,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
         'SolrReserves' => Factory\SolrReservesBackendFactory::class,
         'SolrWeb' => Factory\SolrWebBackendFactory::class,
         'Summon' => Factory\SummonBackendFactory::class,
+        'WorldCat' => Factory\WorldCatBackendFactory::class,
         'WorldCat2' => Factory\WorldCat2BackendFactory::class,
     ];
 

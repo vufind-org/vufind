@@ -5,7 +5,7 @@
  *
  * @type {Function} Function to check for multiFacetsSelectionEnabled
  */
-const isMultiFacetsSelectionEnabled = () => {
+let isMultiFacetsSelectionEnabled = () => {
   if (typeof multiFacetsSelectionEnabled === "undefined") {
     return false;
   }
@@ -29,11 +29,13 @@ VuFind.register('facetList', function FacetList() {
   function overrideHref(selector, overrideParams = {}) {
     $(selector).each(function overrideHrefEach() {
       const dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
-      const url = new URL(dummyDomain + $(this).attr('href'));
+      let url = new URL(dummyDomain + $(this).attr('href'));
       Object.entries(overrideParams).forEach(([key, value]) => {
         url.searchParams.set(key, value);
       });
-      $(this).attr('href', url.href.replaceAll(dummyDomain, ''));
+      url = url.href;
+      url = url.replaceAll(dummyDomain, '');
+      $(this).attr('href', url);
     });
   }
 
@@ -128,10 +130,10 @@ VuFind.register('facetList', function FacetList() {
 
 /* --- Multi Facets Handling --- */
 VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
-  const globalAddedParams = new URLSearchParams();
-  const globalRemovedParams = new URLSearchParams();
-  const initialParams = new URLSearchParams();
-  const rangeSelectorForms = [];
+  let globalAddedParams = [];
+  let globalRemovedParams = [];
+  let initialRawParams = window.location.search.substring(1).split('&');
+  let rangeSelectorIds = [];
   let isMultiFacetsSelectionActivated = false;
   let callbackOnApply;
   let callbackWhenDeactivated;
@@ -141,110 +143,123 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   const deactivation_event = 'facet-selection-cancel';
   const apply_event = 'facet-selection-done';
 
-  /**
-   * Normalize a filter value
-   *
-   * @param {string} key   Parameter name
-   * @param {string} value Value
-   *
-   * @returns string
-   */
-  function normalizeValue(key, value) {
-    if (key !== 'filter[]') {
-      return value;
+  function updateInitialParams(field, value) {
+    const count = initialRawParams.length;
+    for (let i = 0; i < count; i++) {
+      if (initialRawParams[i].startsWith(field + '=')) {
+        let returnValue = initialRawParams[i] !== encodeURI(field + '=' + value);
+        initialRawParams[i] = encodeURI(field + '=' + value);
+        return returnValue;
+      }
     }
-    const p = value.indexOf(':');
-    if (p < 0) {
-      return value;
-    }
-    // Ensure that filter value is surrounded by quotes
-    let filterValue = value.substring(p + 1);
-    filterValue = (!filterValue.startsWith('"') ? '"' : '') + filterValue + (!filterValue.endsWith('"') ? '"' : '');
-    return value.substring(0, p) + ':' + filterValue;
   }
 
-  for (const [key, value] of (new URLSearchParams(window.location.search))) {
-    initialParams.append(key, normalizeValue(key, value));
+  // Make sure NOT to have a specific range filter parameter in the final URL
+  function setRangeFilterToBeNotPresent(rangeName) {
+    const urlParameterStart = encodeURI("filter[]=" + rangeName) + encodeURIComponent(":");
+    for (const param of initialRawParams) {
+      if (param.startsWith(urlParameterStart)) {
+        globalRemovedParams.push(param);
+        return;
+      }
+    }
+    globalAddedParams = globalAddedParams.filter((elem) => {
+      return !elem.startsWith(urlParameterStart);
+    });
   }
 
-  // Update query params for every date range selector
-  function processRangeSelector(queryParams) {
-    for (const form of rangeSelectorForms) {
-      const rangeName = form.dataset.name;
-      const rangeFilterField = form.dataset.filterField;
-      let valuesExist = false;
-      const dateInputs = form.querySelectorAll('.date-fields input');
-      // Check if we have any non-empty inputs:
-      for (const input of dateInputs) {
+  // Foe every date range selector, does a routine to deal with URL parameters
+  function handleRangeSelector() {
+    let addedRangeParams, rangeParams, allEmptyRangeParams, form, dfinputs, updated;
+    function filterParamsNotInArray(array) {
+      return function callback(elem) {
+        for (const arrayElement of array) {
+          if (elem.startsWith(encodeURI(arrayElement) + '=')) {
+            return false;
+          }
+        }
+        return true;
+      };
+    }
+    for (let rangeSelectorId of rangeSelectorIds) {
+      addedRangeParams = [];
+      rangeParams = [];
+      allEmptyRangeParams = true;
+      updated = false;
+      form = document.querySelector('form#' + rangeSelectorId);
+      dfinputs = form.querySelectorAll('.date-fields input');
+      for (const input of dfinputs) {
+        if (window.location.search.match(new RegExp("[&?]" + input.name + "="))) {
+          // If the parameter is already present we update it
+          updated = updated || updateInitialParams(input.name, input.value);
+        } else {
+          addedRangeParams.push(encodeURI(input.name + '=' + input.value));
+        }
+        rangeParams.push(input.name);
         if (input.value !== '') {
-          valuesExist = true;
-          break;
+          allEmptyRangeParams = false;
         }
       }
-      if (valuesExist) {
-        // Update query params:
-        for (const input of dateInputs) {
-          queryParams.set(input.name, input.value);
-        }
-        queryParams.set(rangeFilterField, rangeName);
+
+      const filter = rangeSelectorId.slice(0, -"Filter".length);
+      const input = form.querySelector(':scope > input[value="' + filter + '"]');
+      // If at least one parameter is not null we continue the routine for the final URL
+      if (allEmptyRangeParams) {
+        globalRemovedParams = globalRemovedParams.concat(addedRangeParams);
+        setRangeFilterToBeNotPresent(input.value);
       } else {
-        // Delete from query params:
-        for (const input of dateInputs) {
-          queryParams.delete(input.name);
+        globalAddedParams = globalAddedParams.concat(addedRangeParams);
+        const dateRangeParam = encodeURI(input.name + '=' + input.value);
+        rangeParams.push(input.name);
+        if (!window.location.search.match(new RegExp("[&?]" + dateRangeParam + "(&|$)"))) {
+          globalAddedParams.push(dateRangeParam);
+          updated = true;
         }
-        queryParams.delete(rangeFilterField, rangeName);
-      }
-      // Remove any filter[]=rangeName:... from query params:
-      const paramStart = rangeName + ':';
-      for (const value of queryParams.getAll('filter[]')) {
-        if (value.startsWith(paramStart)) {
-          queryParams.delete('filter[]', value);
+        if (updated) {
+          setRangeFilterToBeNotPresent(input.value);
+          // We prevent the parameter to be deleted
+          globalRemovedParams = globalRemovedParams.filter(filterParamsNotInArray(rangeParams));
         }
       }
     }
   }
 
   // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
-  function processModifiedFacets() {
-    const elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
+  function setModifiedFacets() {
+    let elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
+    let href, elemFilters, addedParams, removedParams;
 
+    function filterAddedParams(array) {
+      return function callback(obj) {
+        // We want to keep elements only if they are not in array // elems in addition to the array
+        return array.includes(obj) === false;
+      };
+    }
     for (const elem of elems) {
-      const href = elem.getAttribute('href');
-      const p = href.indexOf('?');
-      const elemParams = new URLSearchParams(p >= 0 ? href.substring(p + 1) : '');
-
-      // Add parameters that did not initially exist:
-      for (const [key, value] of elemParams) {
-        if (!initialParams.has(key, value)) {
-          globalAddedParams.append(key, value);
-        }
+      // Get href attribute value
+      href = elem.getAttribute('href');
+      if (href[0] === '?') {
+        href = href.substring(1);
+      } else {
+        href = href.substring(window.location.pathname.length + 1);
       }
-      // Remove parameters that this URL no longer has:
-      for (const [key, value] of initialParams) {
-        if (!elemParams.has(key, value)) {
-          globalRemovedParams.append(key, value);
-        }
-      }
+      elemFilters = href.split('&');
+      addedParams = elemFilters.filter(filterAddedParams(initialRawParams));
+      removedParams = initialRawParams.filter(filterAddedParams(elemFilters));
+      globalAddedParams = globalAddedParams.concat(addedParams);
+      globalRemovedParams = globalRemovedParams.concat(removedParams);
     }
   }
 
   // Compile current parameters and newly added / removed to return the URL to redirect to
   function getHrefWithNewParams() {
-    processModifiedFacets();
-
-    const newParams = new URLSearchParams(initialParams);
-    // Remove parameters:
-    for (const [key, value] of globalRemovedParams) {
-      newParams.delete(key, value);
-    }
-    for (const [key, value] of globalAddedParams) {
-      newParams.append(key, value);
-    }
-    processRangeSelector(newParams);
-
-    // Take base url from data attribute if present (standalone full facet list):
-    const baseUrl = defaultContext.dataset.searchUrl || window.location.pathname;
-    return baseUrl + '?' + newParams.toString();
+    setModifiedFacets();
+    handleRangeSelector();
+    // Removing parameters
+    initialRawParams = initialRawParams.filter(function tmp(obj) { return !globalRemovedParams.includes(obj); });
+    // Adding parameters
+    initialRawParams = initialRawParams.concat(globalAddedParams);
+    return window.location.pathname + '?' + initialRawParams.join('&');
   }
 
   function applyMultiFacetsSelection() {
@@ -258,6 +273,20 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     };
     VuFind.emit(apply_event, params);
     window.location.assign(params.url);
+  }
+
+  // Save all the form ids for date range facets and add a listener on them to prevent submission
+  function rangeSelectorInit() {
+    document.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
+      if (!rangeSelectorIds.includes(elem.parentElement.id)) {
+        rangeSelectorIds.push(elem.parentElement.id);
+        elem.parentElement.addEventListener('submit', function switchAction(e) {
+          if (isMultiFacetsSelectionActivated) {
+            e.preventDefault();
+          }
+        });
+      }
+    });
   }
 
   function toggleSelectedFacetStyle(elem) {
@@ -274,7 +303,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         facet.classList.toggle('active');
       }
 
-      const icon = elem.closest('a').querySelector('.icon');
+      let icon = elem.closest('a').querySelector('.icon');
       if (icon !== null) {
         const newCheckedState = icon.dataset.checked === 'false';
         let attrs = {};
@@ -287,7 +316,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function handleMultiSelectionClick(e) {
     e.preventDefault();
-    const elem = e.currentTarget;
+    let elem = e.currentTarget;
 
     // Switch data-multi-filters-modified to keep track of changed facets
     const currentAttrVal = elem.getAttribute('data-multi-filters-modified');
@@ -299,12 +328,20 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     toggleSelectedFacetStyle(elem);
   }
 
-  function toggleMultiFacetsSelection(enable) {
-    if (typeof enable !== 'undefined') {
-      isMultiFacetsSelectionActivated = enable;
+  function multiFacetsSelectionToggle() {
+    isMultiFacetsSelectionActivated = this.checked;
+    const count = rangeSelectorIds.length;
+    for (let i = 0; i < count; i++) {
+      let form = document.querySelector('form#' + rangeSelectorIds[i]);
+      if (form !== null) {
+        form.querySelector('input[type="submit"]').classList.toggle('hidden');
+      }
     }
-    document.querySelectorAll('.multi-facet-selection').forEach( el => el.classList.toggle('multi-facet-selection-active', isMultiFacetsSelectionActivated) );
-    const checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
+    let buttons = document.getElementsByClassName('apply-filters');
+    for (let i = 0; i < buttons.length; i++) {
+      buttons[i].classList.toggle('hidden');
+    }
+    let checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = isMultiFacetsSelectionActivated;
     }
@@ -335,71 +372,57 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
-  function initMultiFacetControls(context) {
-    // Listener on checkbox for multiFacetsSelection feature
-    const activationElem = context.querySelector('.js-user-selection-multi-filters');
-    if (activationElem) {
-      activationElem.addEventListener('change', function multiFacetSelectionChange() { toggleMultiFacetsSelection(this.checked); } );
-    }
-    // Listener on apply filters button
-    const applyElem = context.querySelector('.js-apply-multi-facets-selection');
-    if (applyElem) {
-      applyElem.addEventListener('click', applyMultiFacetsSelection);
-    }
-  }
-
-  function initFacetClickHandler(context) {
-    context.classList.add('multi-facet-selection');
-    context.querySelectorAll('a.facet:not(.narrow-toggle):not(.js-facet-next-page), .facet a').forEach(function addListeners(link) {
+  function applyClickHandling(context) {
+    let finalContext = (typeof context === "undefined") ? defaultContext : context;
+    finalContext.classList.toggle('multi-facet-selection');
+    finalContext.querySelectorAll('a.facet:not(.narrow-toggle), .facet a').forEach(function addListeners(link) {
       link.addEventListener('click', handleClickedFacet);
     });
   }
 
-  // List all the forms for date range facets and add a listener on them to prevent submission
-  function initRangeSelection(context) {
-    context.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
-      const formElement = elem.closest('form');
-      if (formElement && !rangeSelectorForms.includes(formElement)) {
-        rangeSelectorForms.push(formElement);
-        formElement.addEventListener('submit', function rangeFormSubmit(e) {
-          if (isMultiFacetsSelectionActivated) {
-            e.preventDefault();
-          }
-        });
-      }
-    });
+  function addSwitchAndButton(context) {
+    let elem = document.getElementsByClassName('multi-filters-selection')[0].cloneNode(true);
+    const suffix = Date.now();
+    elem.getElementsByClassName('js-user-selection-multi-filters')[0].id += suffix;
+    elem.getElementsByTagName('label')[0].attributes.for.value += suffix;
+    context.insertAdjacentHTML("beforebegin", elem.outerHTML);
+    let checkbox = context.parentElement.getElementsByClassName('js-user-selection-multi-filters')[0];
+    checkbox.checked = isMultiFacetsSelectionActivated;
+    // Listener on checkbox for multiFacetsSelection feature
+    checkbox.addEventListener('change', multiFacetsSelectionToggle);
+    // Listener on apply filters button
+    context.parentElement.getElementsByClassName('js-apply-multi-facets-selection')[0]
+      .addEventListener('click', applyMultiFacetsSelection);
   }
 
-  function init(_context) {
+  function setListenerForUserToggle() {
+    // Listener on checkbox for multiFacetsSelection feature
+    defaultContext.getElementsByClassName('js-user-selection-multi-filters')[0]
+      .addEventListener('change', multiFacetsSelectionToggle);
+    // Listener on apply filters button
+    defaultContext.getElementsByClassName('js-apply-multi-facets-selection')[0]
+      .addEventListener('click', applyMultiFacetsSelection);
+  }
+
+  function init() {
     if (!isMultiFacetsSelectionEnabled()) {
       return;
     }
     if (defaultContext === undefined) {
       defaultContext = document.getElementById('search-sidebar');
-      if (null === defaultContext) {
-        // No sidebar, we may be on the standalone full facet list page:
-        defaultContext = document.querySelector('.js-full-facet-list');
-        if (null === defaultContext) {
-          // No context:
-          return;
-        }
-      }
     }
-    const context = (typeof _context === "undefined") ? defaultContext : _context;
-    initMultiFacetControls(context);
-    initFacetClickHandler(context);
-    initRangeSelection(context);
-    // Synchronize the state of multi-facet checkboxes in case there's e.g. a lightbox with its own controls:
-    VuFind.multiFacetsSelection.toggleMultiFacetsSelection();
+    setListenerForUserToggle();
+    rangeSelectorInit();
+    applyClickHandling();
   }
 
   return {
     init: init,
+    applyClickHandling: applyClickHandling,
+    rangeSelectorInit: rangeSelectorInit,
     registerCallbackOnApply: registerCallbackOnApply,
     registerCallbackWhenDeactivated: registerCallbackWhenDeactivated,
-    toggleMultiFacetsSelection: toggleMultiFacetsSelection,
-    initFacetClickHandler: initFacetClickHandler,
-    initRangeSelection: initRangeSelection
+    addSwitchAndButton: addSwitchAndButton
   };
 });
 
@@ -408,7 +431,7 @@ VuFind.register('sideFacets', function SideFacets() {
   function showLoadingOverlay() {
     let elem;
     if (this === undefined || this.nodeName === undefined) {
-      elem = $('#search-sidebar .collapse, .checkbox-filters');
+      elem = $('#search-sidebar .collapse');
     } else {
       elem = $(this).closest(".collapse");
     }
@@ -421,18 +444,17 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function activateFacetBlocking(context) {
-    const finalContext = (typeof context === "undefined") ? $(document.body) : context;
-    finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').click(showLoadingOverlay);
+    let finalContext = (typeof context === "undefined") ? $(document.body) : context;
+    finalContext.find('a.facet:not(.narrow-toggle),.facet a').click(showLoadingOverlay);
   }
 
   function activateSingleAjaxFacetContainer() {
     var $container = $(this);
     var facetList = [];
-    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filters [data-facet]');
+    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filter[data-facet]');
     $facets.each(function addFacet() {
-      if (!$(this).data('initialized')) {
+      if (!$(this).data('loaded')) {
         facetList.push($(this).data('facet'));
-        $(this).data('initialized', 'true');
       }
     });
     if (facetList.length === 0) {
@@ -471,7 +493,7 @@ VuFind.register('sideFacets', function SideFacets() {
       .done(function onGetSideFacetsDone(response) {
         $.each(response.data.facets, function initFacet(facet, facetData) {
           var containerSelector = typeof facetData.checkboxCount !== 'undefined'
-            ? '.checkbox-filters ' : '.facet-group ';
+            ? '.checkbox-filter' : ':not(.checkbox-filter)';
           var $facetContainer = $container.find(containerSelector + '[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData.checkboxCount !== 'undefined') {
@@ -486,19 +508,16 @@ VuFind.register('sideFacets', function SideFacets() {
               activateFacetBlocking($facetContainer);
             }
           }
-          if (isMultiFacetsSelectionEnabled() && $facetContainer.length > 0) {
-            VuFind.multiFacetsSelection.initFacetClickHandler($facetContainer.get()[0]);
+          if (isMultiFacetsSelectionEnabled()) {
+            VuFind.multiFacetsSelection.applyClickHandling($facetContainer.get()[0]);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
         VuFind.lightbox.bind($('.sidebar'));
-        if (isMultiFacetsSelectionEnabled()) {
-          const sidebar = document.querySelector('.sidebar');
-          if (sidebar) {
-            VuFind.multiFacetsSelection.initRangeSelection(sidebar);
-          }
-        }
         VuFind.emit('VuFind.sidefacets.loaded');
+        if (isMultiFacetsSelectionEnabled()) {
+          VuFind.multiFacetsSelection.rangeSelectorInit();
+        }
       })
       .fail(function onGetSideFacetsFail() {
         $container.find('.facet-load-indicator').remove();
@@ -508,13 +527,6 @@ VuFind.register('sideFacets', function SideFacets() {
 
   function loadAjaxSideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
-  }
-
-  /**
-   * Load AJAX side facets with a tiny delay so that all non-collapsed items are available after initialization
-   */
-  function delayLoadAjaxSideFacets() {
-    setTimeout(loadAjaxSideFacets, 50);
   }
 
   function facetSessionStorage(e, data) {
@@ -559,13 +571,13 @@ VuFind.register('sideFacets', function SideFacets() {
     if (VuFind.getBootstrapMajorVersion() === 3) {
       $('.side-facets-container-ajax')
         .find('div.collapse[data-facet]:not(.in)')
-        .on('shown.bs.collapse', delayLoadAjaxSideFacets);
+        .on('shown.bs.collapse', loadAjaxSideFacets);
     } else {
       document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
-        collapseEl.addEventListener('shown.bs.collapse', delayLoadAjaxSideFacets);
+        collapseEl.addEventListener('shown.bs.collapse', loadAjaxSideFacets);
       });
     }
-    delayLoadAjaxSideFacets();
+    loadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
     $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
@@ -601,14 +613,13 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   function setup() {
     if (isMultiFacetsSelectionEnabled()) {
-      const elem = document.querySelector('.js-full-facet-list');
-      if (elem) {
-        VuFind.multiFacetsSelection.init(elem);
-      }
+      let elem = document.getElementById('facet-info-result').children[0];
+      VuFind.multiFacetsSelection.applyClickHandling(elem);
+      VuFind.multiFacetsSelection.addSwitchAndButton(elem);
     }
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
-      const button = $(this);
+      let button = $(this);
       const page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;
@@ -629,10 +640,6 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           button.removeAttr('disabled');
         } else {
           button.remove();
-        }
-        if (isMultiFacetsSelectionEnabled()) {
-          document.querySelectorAll('.full-facet-list')
-            .forEach(facetList => VuFind.multiFacetsSelection.initFacetClickHandler(facetList));
         }
       });
       return false;
