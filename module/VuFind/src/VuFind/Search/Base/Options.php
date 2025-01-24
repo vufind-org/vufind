@@ -400,7 +400,6 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        $this->limitOptions = [$this->defaultLimit];
         $this->setConfigLoader($configLoader);
 
         $id = $this->getSearchClassId();
@@ -545,6 +544,9 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getLimitOptions()
     {
+        if (empty($this->limitOptions)) {
+            $this->limitOptions = [$this->getDefaultLimit()];
+        }
         return $this->limitOptions;
     }
 

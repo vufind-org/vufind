@@ -3,10 +3,9 @@
   $form->prepare();
 
   $title = $form->getTitle();
-  $title = !empty($title)
-    ? $this->translate($title) : null;
+  $title = !empty($title) ? $this->translate($title) : null;
 
-  $formUrl = $this->url('feedback-form', ['id' => $this->formId]);
+  $formUrl = $this->url($form->getFormActionRoute(), ['id' => $this->formId]);
   $form->setAttribute('action', $formUrl);
   $form->setAttribute('class', 'dynamic-form');
   $form->setAttribute('method', 'post');

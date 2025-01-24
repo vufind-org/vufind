@@ -570,6 +570,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     protected function createRequestList($requestType)
     {
+        $key = strtolower($requestType);
+        if ($records = $this->config['Records'][$key] ?? null) {
+            return json_decode($records, true);
+        }
+
         // How many items are there?  %10 - 1 = 10% chance of none,
         // 90% of 1-9 (give or take some odd maths)
         $items = rand() % 10 - 1;
@@ -1054,6 +1059,64 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
+     * Generate random fines
+     *
+     * @return array
+     */
+    protected function getRandomFines(): array
+    {
+        // How many items are there? %20 - 2 = 10% chance of none,
+        // 90% of 1-18 (give or take some odd maths)
+        $fines = rand() % 20 - 2;
+
+        $fineList = [];
+        for ($i = 0; $i < $fines; $i++) {
+            // How many days overdue is the item?
+            $day_overdue = rand() % 30 + 5;
+            // Calculate checkout date:
+            $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
+            // 1 in 10 chance of this being a "Manual Fee":
+            if (rand(1, 10) === 1) {
+                $fine = 2.50;
+                $type = 'Manual Fee';
+            } else {
+                // 50c a day fine
+                $fine = $day_overdue * 0.50;
+                // After 20 days it becomes 'Long Overdue'
+                $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
+            }
+
+            $fineList[] = [
+                'amount'   => $fine * 100,
+                'checkout' => $this->dateConverter
+                    ->convertToDisplayDate('U', $checkout),
+                'createdate' => $this->dateConverter
+                    ->convertToDisplayDate('U', time()),
+                'fine'     => $type,
+                // Additional description for long overdue fines:
+                'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
+                // 50% chance they've paid half of it
+                'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
+                'duedate'  => $this->dateConverter->convertToDisplayDate(
+                    'U',
+                    strtotime("now - $day_overdue days")
+                ),
+            ];
+            // Some fines will have no id or title:
+            if (rand() % 3 != 1) {
+                if ($this->idsInMyResearch) {
+                    [$fineList[$i]['id'], $fineList[$i]['title']]
+                        = $this->getRandomBibIdAndTitle();
+                    $fineList[$i]['source'] = $this->getRecordSource();
+                } else {
+                    $fineList[$i]['title'] = 'Demo Title ' . $i;
+                }
+            }
+        }
+        return $fineList;
+    }
+
+    /**
      * Get Patron Fines
      *
      * This is responsible for retrieving all fines by a specific patron.
@@ -1069,55 +1132,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $this->checkIntermittentFailure();
         $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->fines)) {
-            // How many items are there? %20 - 2 = 10% chance of none,
-            // 90% of 1-18 (give or take some odd maths)
-            $fines = rand() % 20 - 2;
-
-            $fineList = [];
-            for ($i = 0; $i < $fines; $i++) {
-                // How many days overdue is the item?
-                $day_overdue = rand() % 30 + 5;
-                // Calculate checkout date:
-                $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
-                // 1 in 10 chance of this being a "Manual Fee":
-                if (rand(1, 10) === 1) {
-                    $fine = 2.50;
-                    $type = 'Manual Fee';
-                } else {
-                    // 50c a day fine
-                    $fine = $day_overdue * 0.50;
-                    // After 20 days it becomes 'Long Overdue'
-                    $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
-                }
-
-                $fineList[] = [
-                    'amount'   => $fine * 100,
-                    'checkout' => $this->dateConverter
-                        ->convertToDisplayDate('U', $checkout),
-                    'createdate' => $this->dateConverter
-                        ->convertToDisplayDate('U', time()),
-                    'fine'     => $type,
-                    // Additional description for long overdue fines:
-                    'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
-                    // 50% chance they've paid half of it
-                    'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
-                    'duedate'  => $this->dateConverter->convertToDisplayDate(
-                        'U',
-                        strtotime("now - $day_overdue days")
-                    ),
-                ];
-                // Some fines will have no id or title:
-                if (rand() % 3 != 1) {
-                    if ($this->idsInMyResearch) {
-                        [$fineList[$i]['id'], $fineList[$i]['title']]
-                            = $this->getRandomBibIdAndTitle();
-                        $fineList[$i]['source'] = $this->getRecordSource();
-                    } else {
-                        $fineList[$i]['title'] = 'Demo Title ' . $i;
-                    }
-                }
-            }
-            $session->fines = $fineList;
+            $session->fines = ($records = $this->config['Records']['fines'] ?? null)
+                ? json_decode($records, true)
+                : $this->getRandomFines();
         }
         return $session->fines;
     }
