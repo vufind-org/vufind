@@ -196,6 +196,23 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Check for SRU Diagnostics error in a response.
+     * See https://www.loc.gov/standards/sru/diagnostics/diagnosticsList.html
+     *
+     * @param string $resultBody The response body to check.
+     *
+     * @throws BackendException
+     * @return void
+     */
+    public function checkForSRUDiagnosticsError($resultBody)
+    {
+        if (str_contains($resultBody, 'info:srw/diagnostic')) {
+            $xmlDoc = simplexml_load_string($resultBody);
+            throw new BackendException("Diagnostic error {$xmlDoc->diagnostic->uri} from SRU backend: {$xmlDoc->diagnostic->message}");
+        }
+    }
+
+    /**
      * Submit REST Request
      *
      * @param string $method  HTTP Method to use: GET or POST
@@ -243,6 +260,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $result = $this->client->setMethod($method)->send();
             $this->checkForHttpError($result);
             $resultBody = $result->getBody();
+            $this->checkForSRUDiagnosticsError($resultBody);
             if ($cacheKey) {
                 $this->putCachedData($cacheKey, $resultBody);
             }
