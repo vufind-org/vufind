@@ -1525,12 +1525,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Make sure we have the expected number of filters applied on screen and in the URL query:
-        $this->assertCount(2, $page->findAll('css', '.facet.active'));
-        $this->assertCount($includeCheckbox ? 1 : 0, $page->findAll('css', '.checkbox-filter [data-checked="true"]'));
+        $appliedFacetCount = $includeCheckbox ? 3 : 2;
+        $this->assertCount($appliedFacetCount, $page->findAll('css', '.facet.active'));
         $query = parse_url($session->getCurrentUrl(), PHP_URL_QUERY);
         parse_str($query, $queryArray);
-        $expectedFilterCount = $includeCheckbox ? 3 : 2;
-        $this->assertCount($expectedFilterCount, $queryArray['filter']);
+        $this->assertCount($appliedFacetCount, $queryArray['filter']);
 
         // If configured, flip-flop language again to potentially modify filter params:
         if ($changeLanguage) {
@@ -1539,10 +1538,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Let's also confirm that we can now remove the filters:
         $this->clickCss($page, '.js-user-selection-multi-filters');
-        $this->clickCss($page, '.facet.active');
-        $this->clickCss($page, '.facet.active');
+        for ($i = 0; $i < $appliedFacetCount; $i++) {
+            $this->clickCss($page, '.facet.active');
+        }
         $this->clickCss($page, '.js-apply-multi-facets-selection');
-
         $this->assertCount(0, $page->findAll('css', '.facet.active'));
     }
 }

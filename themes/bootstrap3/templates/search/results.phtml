@@ -85,6 +85,10 @@
   </div>
   <?php /* End Listing Options */ ?>
 
+  <?php if ($options->showRestrictedViewWarning() && $this->results->isRestrictedView()): ?>
+    <?=$this->render('error/restrictedViewWarning.phtml')?>
+  <?php endif; ?>
+
   <?php if ($recordTotal < 1): ?>
     <p>
       <?php
