@@ -310,7 +310,7 @@ class Params extends AbstractEDSParams
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = [
                 'desc' => $value,
-                'selected' => ($key == $this->getView() . '|' . $this->getEdsView()),
+                'selected' => ($key == $this->getView() . '_' . $this->getEdsView()),
             ];
         }
         return $list;
