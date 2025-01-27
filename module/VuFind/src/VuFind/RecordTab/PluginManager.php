@@ -70,7 +70,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'versions' => Versions::class,
         // Legacy backward compatibility:
         'similaritemscarousel' => Channels::class,
-        SimilarItemsCarousel::class => Channels::class,
     ];
 
     /**
