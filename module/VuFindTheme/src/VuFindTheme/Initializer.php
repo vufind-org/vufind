@@ -208,10 +208,13 @@ class Initializer
     protected function getThemeAliasMap(): array
     {
         if ($this->themeMap === null) {
-            // Set up special-case 'standard' and 'mobile' aliases:
+            // Set up special-case 'standard', 'mobile' and 'admin' aliases:
             $this->themeMap = ['standard' => $this->config->theme];
             if (isset($this->config->mobile_theme)) {
                 $this->themeMap['mobile'] = $this->config->mobile_theme;
+            }
+            if (isset($this->config->admin_theme)) {
+                $this->themeMap['admin'] = $this->config->admin_theme;
             }
 
             // Parse the alternate theme settings for additional options:
@@ -248,9 +251,9 @@ class Initializer
             && ($routeMatch = $this->event->getRouteMatch())
             && $routeMatch->getParam('admin_route')
             && ($this->config->admin_enabled ?? false)
-            && ($adminTheme = ($this->config->admin_theme ?? false))
+            && isset($themes['admin'])
         ) {
-            return $adminTheme;
+            return 'admin';
         }
 
         // Load standard configuration options:
