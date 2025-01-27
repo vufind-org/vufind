@@ -9,7 +9,7 @@
     $cover = $coverDetails['html'];
     $edsConfig = $this->config()->get('EDS');
     $authorDisplay = strtolower($edsConfig->AuthorDisplay->DetailPageFormat ?? 'Long');
-    $searchOptions = $this->searchParams($this->driver->getSourceIdentifier())->getOptions();
+    $searchOptions = $this->searchOptions(this->driver->getSourceIdentifier());
 ?>
 <div class="media"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'resource' => '#record', 'typeof' => $this->schemaOrg()->getRecordTypes($this->driver)])?>>
   <div class="media-left medium img-col">
