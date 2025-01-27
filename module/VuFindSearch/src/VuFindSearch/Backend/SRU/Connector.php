@@ -208,7 +208,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         if (str_contains($resultBody, 'info:srw/diagnostic')) {
             $xmlDoc = simplexml_load_string($resultBody);
-            throw new BackendException("Diagnostic error {$xmlDoc->diagnostic->uri} from SRU backend: {$xmlDoc->diagnostic->message}");
+            throw new BackendException(
+                "Diagnostic error {$xmlDoc->diagnostic->uri} from SRU backend: {$xmlDoc->diagnostic->message}"
+            );
         }
     }
 
