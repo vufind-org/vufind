@@ -930,17 +930,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Should we display a warning in restricted views?
-     *
-     * @return bool
-     */
-    public function showRestrictedViewWarning(): bool
-    {
-        // Disabled by default
-        return false;
-    }
-
-    /**
      * Display a particular tab.
      *
      * @param string $tab  Name of tab to display
@@ -983,7 +972,6 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->showRestrictedViewWarning = $this->showRestrictedViewWarning();
         $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');

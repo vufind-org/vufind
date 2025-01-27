@@ -10,7 +10,7 @@
     $spanAttrs = [];
     if ($side) {
         $aAttrs['class'] .= ' icon-link';
-        $aAttrs['data-bs-toggle'] = 'vufind-offcanvas';
+        $aAttrs['data-toggle'] = 'vufind-offcanvas';
         if ($side === 'left') {
             $iconBefore = $this->icon($this->layout()->rtl ? 'offcanvas-show-right' : 'offcanvas-show-left', 'icon-link__icon');
         } else {
