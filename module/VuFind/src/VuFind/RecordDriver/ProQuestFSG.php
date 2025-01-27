@@ -51,6 +51,7 @@ class ProQuestFSG extends DefaultRecord
         MarcBasicTrait::getPreviousTitles insteadof MarcAdvancedTrait;
         MarcBasicTrait::getShortTitle as marcGetShortTitle;
         MarcBasicTrait::getTitle as marcGetTitle;
+        MarcAdvancedTrait::getHumanReadablePublicationDates as marcGetHumanReadablePublicationDates;
     }
 
     /**
@@ -125,6 +126,26 @@ class ProQuestFSG extends DefaultRecord
     public function getSource()
     {
         return $this->getFirstFieldValue('786', ['t']);
+    }
+
+    /**
+     * Get human readable publication dates for display purposes (may not be suitable
+     * for computer processing -- use getPublicationDates() for that).
+     *
+     * @return array
+     */
+    public function getHumanReadablePublicationDates()
+    {
+        $dates = $this->marcGetHumanReadablePublicationDates();
+        // For books, we should only display the year
+        if ('Book' === $this->getOpenUrlFormat()) {
+            foreach ($dates as $i => $date) {
+                if (($pos = strpos($date, ',')) !== false) {
+                    $dates[$i] = trim(substr($date, $pos + 1));
+                }
+            }
+        }
+        return $dates;
     }
 
     /**
