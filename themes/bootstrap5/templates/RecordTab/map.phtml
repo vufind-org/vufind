@@ -1,7 +1,7 @@
 <?php
-  $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
-  $this->headScript()->appendFile('vendor/leaflet/leaflet.latlng-graticule.js');
-  $this->headScript()->appendFile('map_tab_leaflet.js');
+  $this->assetPipeline()->appendScriptFile('vendor/leaflet/leaflet.js');
+  $this->assetPipeline()->appendScriptFile('vendor/leaflet/leaflet.latlng-graticule.js');
+  $this->assetPipeline()->appendScriptFile('map_tab_leaflet.js');
   $this->assetPipeline()->appendStylesheet('vendor/leaflet/leaflet.css');
   $this->jsTranslations()->addStrings(
       ['Coordinates' => 'Coordinates', 'no_description' => 'no_description']

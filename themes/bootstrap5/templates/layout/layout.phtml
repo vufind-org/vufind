@@ -54,24 +54,23 @@
       // RTL styling
       $this->assetPipeline()->appendStylesheet('vendor/bootstrap-rtl.min.css');
     } ?>
-    <?=$this->assetPipeline()->outputAssets()?>
     <?php
       // Collect small scripts together and append as one block:
       $appendScripts = [];
 
       $themeConfig = $this->themeConfig();
       if (!empty($themeConfig['stickyElements'])) {
-        $this->headScript()->appendFile('sticky_elements.js');
+        $this->assetPipeline()->appendScriptFile('sticky_elements.js');
       }
 
       if (!isset($this->renderingError)) {
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile('vendor/js.cookie.js');
-          $this->headScript()->appendFile('cart.js');
+          $this->assetPipeline()->appendScriptFile('vendor/js.cookie.js');
+          $this->assetPipeline()->appendScriptFile('cart.js');
         }
-        $this->headScript()->prependScript(
+        $this->assetPipeline()->prependScript(
             'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
         );
       }
@@ -79,16 +78,20 @@
       // Session keep-alive
       if ($this->keepAlive()) {
           $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
-          $this->headScript()->appendFile('keep_alive.js');
+          $this->assetPipeline()->appendScriptFile('keep_alive.js');
       }
 
       // If account ajax is active, load script and add language strings
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
-        $this->headScript()->appendFile('account_ajax.js');
+        $this->assetPipeline()->appendScriptFile('account_ajax.js');
         if ($this->session()->put('reset_account_status', null)) {
-          $this->headScript()->setAllowArbitraryAttributes(true);
-          $this->headScript()->appendScript('VuFind.account.clearAllCaches();', 'text/javascript', ['data-lightbox-run' => 'always']);
+          $this->assetPipeline()->appendScript(
+              'VuFind.account.clearAllCaches();',
+              'text/javascript',
+              ['data-lightbox-run' => 'always'],
+              true
+          );
         }
       }
 
@@ -131,10 +134,10 @@
         $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild . ';';
       }
 
-      $this->headScript()->appendScript(implode("\n", $appendScripts));
+      $this->assetPipeline()->appendScript(implode("\n", $appendScripts));
     ?>
     <?=$this->cookieConsent()->render()?>
-    <?=$this->headScript() ?>
+    <?=$this->assetPipeline()->outputHeaderAssets()?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <header class="hidden-print">
@@ -174,6 +177,6 @@
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
     <?php endforeach; ?>
 
-    <?=$this->footScript() ?>
+    <?=$this->assetPipeline()->outputFooterAssets() ?>
   </body>
 </html>

@@ -35,6 +35,6 @@
     <?php endif; ?>
   </ul>
   <?php if ($this->showCounts): ?>
-    <?php $this->headScript()->appendFile('resultcount.js'); ?>
+    <?php $this->assetPipeline()->appendScriptFile('resultcount.js'); ?>
   <?php endif; ?>
 <?php endif; ?>

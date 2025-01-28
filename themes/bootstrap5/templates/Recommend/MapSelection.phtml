@@ -5,10 +5,10 @@
       'rectangle_center_message' => 'rectangle_center_message',
     ]);
 
-    $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
-    $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
-    $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
-    $this->headScript()->appendFile('map_selection_leaflet.js');
+    $this->assetPipeline()->appendScriptFile('vendor/leaflet/leaflet.js');
+    $this->assetPipeline()->appendScriptFile('vendor/leaflet/leaflet.draw.js');
+    $this->assetPipeline()->appendScriptFile('vendor/leaflet/leaflet.markercluster.js');
+    $this->assetPipeline()->appendScriptFile('map_selection_leaflet.js');
     $this->assetPipeline()->appendStylesheet('vendor/leaflet/leaflet.css');
     $this->assetPipeline()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
     $this->assetPipeline()->appendStylesheet('vendor/leaflet/MarkerCluster.css');

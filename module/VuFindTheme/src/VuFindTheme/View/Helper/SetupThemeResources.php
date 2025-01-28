@@ -157,27 +157,26 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
      */
     protected function addScripts()
     {
-        $legalHelpers = ['footScript', 'headScript'];
+        $legalPositions = ['header', 'footer'];
 
         // Load Javascript (same ordering considerations as CSS, above):
         $js = array_reverse($this->container->getJs());
 
         foreach ($js as $current) {
-            $position = $current['position'] ?? 'header';
-            $helper = substr($position, 0, 4) . 'Script';
-            if (!in_array($helper, $legalHelpers)) {
+            $position = strtolower($current['position'] ?? 'header');
+            if (!in_array($position, $legalPositions)) {
                 throw new \Exception(
                     'Invalid script position for '
                     . $current['file'] . ': ' . $position . '.'
                 );
             }
-
             $this->getView()
-                ->plugin($helper)
-                ->forcePrependFile(
+                ->plugin('assetPipeline')
+                ->forcePrependScriptFile(
                     $current['file'],
                     'text/javascript',
-                    $current['attributes'] ?? []
+                    $current['attributes'] ?? [],
+                    $position
                 );
         }
     }

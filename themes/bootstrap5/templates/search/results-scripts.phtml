@@ -1,16 +1,16 @@
 <?php
 // Load Javascript dependencies into header:
-$this->headScript()->appendFile('check_item_statuses.js');
-$this->headScript()->appendFile('check_save_statuses.js');
+$this->assetPipeline()->appendScriptFile('check_item_statuses.js');
+$this->assetPipeline()->appendScriptFile('check_save_statuses.js');
 if ($this->displayVersions) {
-    $this->headScript()->appendFile('record_versions.js');
-    $this->headScript()->appendFile('combined-search.js');
+    $this->assetPipeline()->appendScriptFile('record_versions.js');
+    $this->assetPipeline()->appendScriptFile('combined-search.js');
 }
 // Load only if list view parameter is NOT full:
 if (($this->listViewOption ?? 'full') !== 'full') {
-    $this->headScript()->appendFile('record.js');
-    $this->headScript()->appendFile('embedded_record.js');
+    $this->assetPipeline()->appendScriptFile('record.js');
+    $this->assetPipeline()->appendScriptFile('embedded_record.js');
 }
 if ($this->jsResults ?? false) {
-    $this->headScript()->appendFile('search.js');
+    $this->assetPipeline()->appendScriptFile('search.js');
 }

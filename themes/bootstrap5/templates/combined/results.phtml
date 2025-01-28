@@ -39,7 +39,7 @@
 
   // Load Javascript dependencies into header:
   $this->render('search/results-scripts.phtml', compact('displayVersions'));
-  $this->headScript()->appendFile('combined-search.js');
+  $this->assetPipeline()->appendScriptFile('combined-search.js');
   // Style
   $this->assetPipeline()->appendStylesheet('combined-search.css');
 ?>

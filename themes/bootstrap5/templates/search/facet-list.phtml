@@ -20,8 +20,8 @@
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
   $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
-  $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
-  $this->headScript()->appendFile('facets.js');
+  $this->assetPipeline()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
+  $this->assetPipeline()->appendScriptFile('facets.js');
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
 

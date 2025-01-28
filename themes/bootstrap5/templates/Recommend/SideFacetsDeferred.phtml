@@ -1,6 +1,6 @@
 <?php
   $this->layout()->sideFacetsInstanceCounter = ($this->layout()->sideFacetsInstanceCounter ?? 0) + 1;
-  $this->headScript()->appendFile('facets.js');
+  $this->assetPipeline()->appendScriptFile('facets.js');
 
   $results = $this->recommend->getResults();
   $activeFacets = $this->recommend->getActiveFacets();
@@ -22,7 +22,7 @@
 
   foreach ($activeFacets as $field => $facetName) {
     if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
-      $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+      $this->assetPipeline()->appendScriptFile('vendor/bootstrap-slider.min.js');
       $this->assetPipeline()->appendStylesheet('vendor/bootstrap-slider.min.css');
       break;
     }

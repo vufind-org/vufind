@@ -96,13 +96,104 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Output the collected assets.
+     * Append raw script code.
+     *
+     * @param string $script              Script code
+     * @param string $type                Script type
+     * @param array  $attrs               Additional attributes for the script tag
+     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     *
+     * @return void
+     */
+    public function appendScript(
+        string $script,
+        string $type = 'text/javascript',
+        array $attrs = [],
+        bool $allowArbitraryAttrs = false
+    ) {
+        $headScript = $this->getView()->plugin('headScript');
+        if ($allowArbitraryAttrs) {
+            $headScript->setAllowArbitraryAttributes(true);
+        }
+        $headScript->appendScript($script, $type, $attrs);
+    }
+
+    /**
+     * Add an entry to the list of script files.
+     *
+     * @param string $href     Script href
+     * @param string $position Position to output script (header or footer)
+     *
+     * @return void
+     */
+    public function appendScriptFile(string $href, string $position = 'header'): void
+    {
+        $helper = $position === 'header' ? 'headScript' : 'footScript';
+        $this->getView()->plugin($helper)->appendFile($href);
+    }
+
+    /**
+     * Forcibly prepend a file, removing it from any existing position.
+     *
+     * @param string $src      Script src
+     * @param string $type     Script type
+     * @param array  $attrs    Array of script attributes
+     * @param string $position Position to output script (header or footer)
+     *
+     * @return void
+     */
+    public function forcePrependScriptFile(
+        string $src,
+        string $type = 'text/javascript',
+        array $attrs = [],
+        string $position = 'header'
+    ): void {
+        $helper = $position === 'header' ? 'headScript' : 'footScript';
+        $this->getView()->plugin($helper)->forcePrependFile($src, $type, $attrs);
+    }
+
+    /**
+     * Prepend raw script code.
+     *
+     * @param string $script              Script code
+     * @param string $type                Script type
+     * @param array  $attrs               Additional attributes for the script tag
+     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     *
+     * @return void
+     */
+    public function prependScript(
+        string $script,
+        string $type = 'text/javascript',
+        array $attrs = [],
+        bool $allowArbitraryAttrs = false
+    ) {
+        $headScript = $this->getView()->plugin('headScript');
+        if ($allowArbitraryAttrs) {
+            $headScript->setAllowArbitraryAttributes(true);
+        }
+        $headScript->prependScript($script, $type, $attrs);
+    }
+
+    /**
+     * Output the collected assets for the header.
      *
      * @return string
      */
-    public function outputAssets(): string
+    public function outputHeaderAssets(): string
     {
         return ($this->getView()->plugin('headLink'))() . "\n"
-            . ($this->getView()->plugin('headStyle'))();
+            . ($this->getView()->plugin('headStyle'))() . "\n"
+            . ($this->getView()->plugin('headScript'))();
+    }
+
+    /**
+     * Output the collected assets for the footer.
+     *
+     * @return string
+     */
+    public function outputFooterAssets(): string
+    {
+        return ($this->getView()->plugin('footScript'))();
     }
 }

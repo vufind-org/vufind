@@ -110,9 +110,9 @@
           <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
-            $this->headScript()->appendFile('vendor/js.cookie.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard/index.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard-layouts/index.js');
+            $this->assetPipeline()->appendScriptFile('vendor/js.cookie.js');
+            $this->assetPipeline()->appendScriptFile('vendor/simple-keyboard/index.js');
+            $this->assetPipeline()->appendScriptFile('vendor/simple-keyboard-layouts/index.js');
             $this->assetPipeline()->appendStylesheet('vendor/simple-keyboard/index.css');
             ?>
             <div class="keyboard-selection dropdown">

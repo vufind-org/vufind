@@ -1,10 +1,10 @@
 <?php if ($visFacets = $this->recommend->getVisFacets()): ?>
   <?php
     // load jQuery flot:
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
-    $this->headScript()->appendFile('pubdate_vis.js');
+    $this->assetPipeline()->appendScriptFile('vendor/flot/jquery.flot.min.js');
+    $this->assetPipeline()->appendScriptFile('vendor/flot/jquery.flot.resize.min.js');
+    $this->assetPipeline()->appendScriptFile('vendor/flot/jquery.flot.selection.min.js');
+    $this->assetPipeline()->appendScriptFile('pubdate_vis.js');
   ?>
   <?php foreach ($visFacets as $facetField => $facetRange): ?>
     <div class="authorbox">
