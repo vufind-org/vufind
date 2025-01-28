@@ -83,7 +83,7 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getShortTitle()
     {
-        return strip_tags($this->marcGetShortTitle());
+        return html_entity_decode(strip_tags($this->marcGetShortTitle()));
     }
 
     /**
@@ -93,7 +93,7 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getTitle()
     {
-        return strip_tags($this->marcGetTitle());
+        return html_entity_decode(strip_tags($this->marcGetTitle()));
     }
 
     /**
