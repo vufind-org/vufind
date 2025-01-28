@@ -41,6 +41,18 @@ namespace VuFindTheme\View\Helper;
 class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
 {
     /**
+     * Add raw CSS to the pipeline.
+     *
+     * @param string $css Raw CSS.
+     *
+     * @return void
+     */
+    public function appendStyle(string $css): void
+    {
+        $this->getView()->plugin('headStyle')->appendStyle($css);
+    }
+
+    /**
      * Add an entry to the list of stylesheets.
      *
      * @param string $href Stylesheet href
@@ -90,6 +102,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
      */
     public function outputAssets(): string
     {
-        return ($this->getView()->plugin('headLink'))();
+        return ($this->getView()->plugin('headLink'))() . "\n"
+            . ($this->getView()->plugin('headStyle'))();
     }
 }
