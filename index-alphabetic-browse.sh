@@ -41,6 +41,12 @@ set -e
 set -x
 
 cd "`dirname $0`/import"
+SOLRMARC_CLASSPATH=$(echo solrmarc_core*.jar)
+if [[ `wc -w <<<"$SOLRMARC_CLASSPATH"` -gt 1 ]]
+then
+  echo "Error: more than one solrmarc_core*.jar in import/; exiting."
+  exit 1
+fi
 CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:/usr/local/vufind/solr/vendor/contrib/analysis-extras/lib/*:/usr/local/vufind/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index

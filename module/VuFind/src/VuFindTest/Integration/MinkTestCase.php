@@ -41,7 +41,6 @@ use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
-use function is_string;
 use function strlen;
 
 /**
@@ -759,12 +758,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element         $page     Page element
-     * @param string          $selector CSS selector
-     * @param string|callable $method   Node's method to call (string) or callable that gets the node as parameter
-     * @param int             $timeout  Wait timeout for CSS selection (in ms)
-     * @param int             $index    Index of the element (0-based)
-     * @param int             $retries  Retry count for set loop
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $method   Method to call
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
      *
      * @return string
      */
@@ -781,7 +780,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         for ($i = 1; $i <= $retries; $i++) {
             try {
                 $element = $this->findCss($page, $selector, $timeout, $index);
-                return is_string($method) ? call_user_func([$element, $method]) : $method($element);
+                return call_user_func([$element, $method]);
             } catch (\Exception $e) {
                 $this->logWarning(
                     'RETRY findCssAndGetText after exception in ' . $this->getTestName()
