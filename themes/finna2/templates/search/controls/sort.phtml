@@ -1,6 +1,9 @@
 <!-- START of: finna - search/controls/sort.phtml -->
-<?php $list = $this->sortList ? $this->sortList : $this->params->getSortList();
-if (!empty($list)): ?>
+<?php
+  $list = $this->sortList ? $this->sortList : $this->params->getSortList();
+  $context = $this->context ?: 'Results';
+  if (!empty($list)):
+?>
   <div class="sort-option-container">
     <span class="hidden-sm hidden-xs hidden-md button-label" id="sort-label"><?=$this->transEsc('Sort')?></span>
     <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('Sort')?></span>
@@ -23,7 +26,7 @@ if (!empty($list)): ?>
         <ul class="dropdown-menu" role="menu" aria-labelledby="sort-label">
           <?php foreach ($list as $sortType => $sortData): ?>
           <li>
-            <a href="Results<?=isset($sortData['url']) ? $this->escapeHtmlAttr($sortData['url']) : $this->results->getUrlQuery()->setSort($sortType)?>" role="menuitem" <?php if ($sortData['selected']):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>><?=$this->transEsc($sortData['desc'])?></a>
+            <a href="<?=$this->escapeHtmlAttr($context) ?><?=isset($sortData['url']) ? $this->escapeHtmlAttr($sortData['url']) : $this->results->getUrlQuery()->setSort($sortType)?>" role="menuitem" <?php if ($sortData['selected']):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>><?=$this->transEsc($sortData['desc'])?></a>
           <?php endforeach; ?>
           </li>
         </ul>
