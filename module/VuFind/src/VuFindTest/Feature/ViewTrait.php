@@ -50,7 +50,7 @@ trait ViewTrait
      *
      * @return \Laminas\View\Renderer\PhpRenderer
      */
-    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap3')
+    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap5')
     {
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 

@@ -1,9 +1,0 @@
-<?php // This can be used as a permission denied behavior; see example in permissionBehavior.ini... ?>
-<?php $isLoggedin = $this->auth()->getUserObject() !== null; ?>
-<?php if (!$isLoggedin): ?>
-  <a class="login" href="<?=$this->url('myresearch-userlogin')?>">
-    <strong><?=$this->transEsc('Login for full access')?></strong>
-  </a>
-<?php else: ?>
-  <?=$this->transEsc('logged_in_access_restricted');?>
-<?php endif; ?>

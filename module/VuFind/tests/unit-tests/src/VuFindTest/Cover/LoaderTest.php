@@ -51,7 +51,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected $testTheme = 'bootstrap3';
+    protected $testTheme = 'bootstrap5';
 
     /**
      * Test that failure to load even the baseline image causes an exception.
