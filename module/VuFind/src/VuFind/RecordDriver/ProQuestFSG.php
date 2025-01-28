@@ -104,6 +104,10 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getContainerTitle()
     {
+        // For books, don't display any container.
+        if ('Book' === $this->getOpenUrlFormat()) {
+            return '';
+        }
         return $this->getFirstFieldValue('773', ['t']);
     }
 
@@ -115,6 +119,10 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getContainerReference()
     {
+        // For books, don't display any container.
+        if ('Book' === $this->getOpenUrlFormat()) {
+            return '';
+        }
         return $this->getFirstFieldValue('773', ['g']);
     }
 
