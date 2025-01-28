@@ -29,6 +29,7 @@
 
 namespace VuFind\Net;
 
+use function array_slice;
 use function count;
 use function defined;
 
@@ -123,5 +124,35 @@ class IpAddressUtils
             }
         }
         return false;
+    }
+
+    /**
+     * Truncate an IP address to the given number of IPv4 octets
+     * or IPv6 hextets, depending what kind of IP address it is.
+     *
+     * @param string $ip          IP address to truncate
+     * @param int    $ipv4Octets  Number of octets to return if it is IPv4
+     * @param int    $ipv6Hextets Number of hextets to return if it is IPv6
+     *
+     * @return string The possibly truncated IP address
+     */
+    public function truncate($ip, $ipv4Octets = null, $ipv6Hextets = null)
+    {
+        if (!str_contains($ip, ':') || !defined('AF_INET6')) {
+            // IPv4 address
+            if ($ipv4Octets) {
+                $ipComponents = explode('.', $ip);
+                $ipComponents = array_slice($ipComponents, 0, $ipv4Octets);
+                $ip = implode('.', $ipComponents);
+            }
+        } else {
+            // IPv6 address
+            if ($ipv6Hextets) {
+                $ipComponents = explode(':', $ip);
+                $ipComponents = array_slice($ipComponents, 0, $ipv6Hextets);
+                $ip = implode(':', $ipComponents);
+            }
+        }
+        return $ip;
     }
 }

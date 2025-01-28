@@ -517,6 +517,27 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test EDS upgrade.
+     *
+     * @return void
+     */
+    public function testEDSUpgrade(): void
+    {
+        $upgrader = $this->getUpgrader('eds');
+        $upgrader->run();
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['foo' => 'bar'],
+            $results['EDS.ini']['Facets']
+        );
+        $this->assertEquals(
+            'list_test',
+            $results['EDS.ini']['General']['default_view']
+        );
+    }
+
+    /**
      * Test Primo upgrade.
      *
      * @return void
