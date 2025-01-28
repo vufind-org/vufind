@@ -19,7 +19,6 @@
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
         'selectedShards' => $this->params->getSelectedShards(),
         'ignoreHiddenFiltersInRequest' => $this->ignoreHiddenFiltersInRequest ?? false,
-        'ignoreHiddenFilterMemory' => $this->ignoreHiddenFilterMemory ?? false,
       ]
   );
 
@@ -85,6 +84,10 @@
     <?php endif; ?>
   </div>
   <?php /* End Listing Options */ ?>
+
+  <?php if ($options->showRestrictedViewWarning() && $this->results->isRestrictedView()): ?>
+    <?=$this->render('error/restrictedViewWarning.phtml')?>
+  <?php endif; ?>
 
   <?php if ($recordTotal < 1): ?>
     <p>
