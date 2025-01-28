@@ -227,16 +227,14 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         $page = $this->setUpFinesEnvironment();
+        // Check storage
         $storage = $this->getJSStorage();
         $this->assertNotNull($storage['fines']);
-        // Clear all cache
+        // Clear all cached data
         $session->evaluateScript('VuFind.account.clearCache();');
-        // Wait for reload
-        $this->waitForPageLoad($page);
+        // Check storage again
         $storage = $this->getJSStorage();
-        // Status code MISSING is -2 * Math.PI, but we just round it here to avoid trouble
-        $fines = json_decode($storage['fines'], true);
-        $this->assertEquals(-6, ceil($fines[$this->getCurrentTheme()]));
+        $this->assertNull($storage['fines']);
     }
 
     /**

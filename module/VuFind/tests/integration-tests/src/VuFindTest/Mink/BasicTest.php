@@ -111,12 +111,12 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testThemeSwitcher(): void
     {
         // Turn on theme switcher
-        $themeList = 'sandal:sandal,example:local_theme_example';
+        $themeList = 'sandal:sandal5,example:local_theme_example';
         $this->changeConfigs(
             [
                 'config' => [
                     'Site' => [
-                        'theme' => 'sandal',
+                        'theme' => 'sandal5',
                         'alternate_themes' => $themeList,
                         'selectable_themes' => $themeList,
                     ],

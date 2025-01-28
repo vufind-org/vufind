@@ -1,14 +1,7 @@
 // Thumbnail sizes for media items: search results, list entries, record views
-/* #LESS>
-$thumbnail-width-small:   60px;
-$thumbnail-width-medium: 100px;
-$thumbnail-width-large:  160px;
-<#LESS */
-/* #SCSS> */
 $thumbnail-width-small:   60px !default;
 $thumbnail-width-medium: 100px !default;
 $thumbnail-width-large:  160px !default;
-/* <#SCSS */
 
 // record result list ol, ul that contains li.result
 .record-list {
