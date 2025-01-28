@@ -1,6 +1,6 @@
 <?php
-  $this->headLink()->appendStylesheet('vendor/slick.css');
-  $this->headLink()->appendStylesheet('vendor/slick-theme.css');
+  $this->assetPipeline()->appendStylesheet('vendor/slick.css');
+  $this->assetPipeline()->appendStylesheet('vendor/slick-theme.css');
   $this->headScript()->appendFile('vendor/slick.min.js');
   $this->headScript()->appendFile('channels.js');
   $this->jsTranslations()->addStrings([

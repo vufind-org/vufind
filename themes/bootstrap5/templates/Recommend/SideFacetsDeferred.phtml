@@ -23,7 +23,7 @@
   foreach ($activeFacets as $field => $facetName) {
     if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
       $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
-      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      $this->assetPipeline()->appendStylesheet('vendor/bootstrap-slider.min.css');
       break;
     }
   }

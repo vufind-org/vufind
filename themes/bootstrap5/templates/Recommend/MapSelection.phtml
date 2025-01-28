@@ -9,11 +9,11 @@
     $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
     $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
     $this->headScript()->appendFile('map_selection_leaflet.js');
-    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
-    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
-    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
-    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
-    $this->headLink()->appendStylesheet('geofeatures.css');
+    $this->assetPipeline()->appendStylesheet('vendor/leaflet/leaflet.css');
+    $this->assetPipeline()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
+    $this->assetPipeline()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
+    $this->assetPipeline()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
+    $this->assetPipeline()->appendStylesheet('geofeatures.css');
 
     $basemap = $this->recommend->getBasemap();
     $geoField = $this->recommend->getGeoField();

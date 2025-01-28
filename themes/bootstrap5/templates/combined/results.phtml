@@ -41,7 +41,7 @@
   $this->render('search/results-scripts.phtml', compact('displayVersions'));
   $this->headScript()->appendFile('combined-search.js');
   // Style
-  $this->headLink()->appendStylesheet('combined-search.css');
+  $this->assetPipeline()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
 <h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>

@@ -109,12 +109,12 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     protected function addLinks(bool $partial = false)
     {
         // Convenient shortcut to view helper:
-        $headLink = $this->getView()->plugin('headLink');
+        $assetPipeline = $this->getView()->plugin('assetPipeline');
 
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $headLink()->forcePrependStylesheet(
+            $assetPipeline->forcePrependStylesheet(
                 $current['file'],
                 empty($current['media']) ? 'all' : $current['media'],
                 $current['conditional'] ?? '',
@@ -128,6 +128,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // a link element for each.
         // Skip favicons in partial mode because they are illegal outside of <head>.
         if (!$partial && ($favicon = $this->container->getFavicon())) {
+            $headLink = $this->getView()->plugin('headLink');
             $imageLink = $this->getView()->plugin('imageLink');
             if (is_array($favicon)) {
                 foreach ($favicon as $attrs) {

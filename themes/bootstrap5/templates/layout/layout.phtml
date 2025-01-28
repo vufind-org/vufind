@@ -52,9 +52,9 @@
     ?>
     <?php if ($this->layout()->rtl) {
       // RTL styling
-      $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
+      $this->assetPipeline()->appendStylesheet('vendor/bootstrap-rtl.min.css');
     } ?>
-    <?=$this->headLink()?>
+    <?=$this->assetPipeline()->outputAssets()?>
     <?=$this->headStyle()?>
     <?php
       // Collect small scripts together and append as one block:

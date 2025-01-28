@@ -87,8 +87,7 @@ class Module
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
-                InjectTemplateListener::class =>
-                    InjectTemplateListenerFactory::class,
+                InjectTemplateListener::class => InjectTemplateListenerFactory::class,
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
                 ResourceContainer::class => InvokableFactory::class,
@@ -108,34 +107,26 @@ class Module
     {
         return [
             'factories' => [
-                View\Helper\FootScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
+                View\Helper\AssetPipeline::class => InvokableFactory::class,
+                View\Helper\FootScript::class => View\Helper\PipelineInjectorFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
-                View\Helper\HeadLink::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\HeadScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\ParentTemplate::class =>
-                    View\Helper\ParentTemplateFactory::class,
-                View\Helper\InlineScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\Slot::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\TemplatePath::class =>
-                    View\Helper\TemplatePathFactory::class,
-                View\Helper\SetupThemeResources::class =>
-                    View\Helper\SetupThemeResourcesFactory::class,
+                View\Helper\HeadLink::class => View\Helper\PipelineInjectorFactory::class,
+                View\Helper\HeadScript::class => View\Helper\PipelineInjectorFactory::class,
+                View\Helper\ParentTemplate::class => View\Helper\ParentTemplateFactory::class,
+                View\Helper\InlineScript::class => View\Helper\PipelineInjectorFactory::class,
+                View\Helper\Slot::class => View\Helper\PipelineInjectorFactory::class,
+                View\Helper\TemplatePath::class => View\Helper\TemplatePathFactory::class,
+                View\Helper\SetupThemeResources::class => View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
+                'assetPipeline' => View\Helper\AssetPipeline::class,
                 'footScript' => View\Helper\FootScript::class,
                 // Legacy alias for compatibility with pre-8.0 templates:
                 'headThemeResources' => View\Helper\SetupThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
                 \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
-                \Laminas\View\Helper\HeadScript::class =>
-                    View\Helper\HeadScript::class,
-                \Laminas\View\Helper\InlineScript::class =>
-                    View\Helper\InlineScript::class,
+                \Laminas\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
+                \Laminas\View\Helper\InlineScript::class => View\Helper\InlineScript::class,
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,

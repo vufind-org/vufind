@@ -5,7 +5,7 @@
     <?php $this->setupThemeResources(); ?>
     <?=$this->headMeta()?>
     <?=$this->headTitle() ?>
-    <?=$this->headLink()->setStylesheet('help.css')  ?>
+    <?=$this->assetPipeline()->setStylesheet('help.css')  ?>
   </head>
   <body>
     <?=$this->layout()->content?>
