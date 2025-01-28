@@ -34,6 +34,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\EscapeHtmlAttr;
 use VuFind\Escaper\Escaper;
 use VuFind\View\Helper\Root\Icon;
+use VuFindTheme\View\Helper\AssetPipeline;
 use VuFindTheme\View\Helper\ImageLink;
 
 /**
@@ -137,6 +138,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         );
         $plugins = array_merge(
             [
+                'assetPipeline' => $this->createMock(AssetPipeline::class),
                 'escapeHtmlAttr' => new EscapeHtmlAttr($escaper),
             ],
             $plugins

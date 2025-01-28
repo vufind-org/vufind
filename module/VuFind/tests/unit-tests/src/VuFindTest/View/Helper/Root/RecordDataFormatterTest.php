@@ -89,6 +89,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         });
         $record->setDbServiceManager($serviceManager);
         return [
+            'assetPipeline' => new \VuFindTheme\View\Helper\AssetPipeline(),
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $this->createMock(\VuFind\Auth\Manager::class),
                 $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
