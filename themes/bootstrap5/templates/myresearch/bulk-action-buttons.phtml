@@ -82,8 +82,9 @@
     <ul class="selection-controls-bar">
       <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
         <li class="bulk-checkbox">
-          <label for="<?=$this->idPrefix?>myresearchCheckAll">
-            <input type="checkbox" name="selectAll" class="checkbox-select-all" id="<?=$this->idPrefix?>myresearchCheckAll">
+          <?php $selectAllCheckboxId = $this->idPrefix . 'myresearchCheckAll'; ?>
+          <label <?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
+            <input <?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId])?>>
             <?=$this->transEsc('select_all_on_page')?>
           </label>
         </li>
@@ -91,8 +92,9 @@
       <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
         <li class="bulk-checkbox">
           <div class="select-all-global hidden">
-            <label for="<?=$this->idPrefix?>myresearchCheckAllGlobal">
-              <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="<?=$this->idPrefix?>myresearchCheckAllGlobal">
+            <?php $selectAllGlobalCheckboxId = $this->idPrefix . 'myresearchCheckAllGlobal'; ?>
+            <label <?=$this->htmlAttributes(['for' => $selectAllGlobalCheckboxId])?>>
+              <input <?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAllGlobal', 'class' => 'checkbox-select-all-global', 'id' => $selectAllGlobalCheckboxId])?>>
               <?=$this->transEsc('select_all')?>
             </label>
           </div>
