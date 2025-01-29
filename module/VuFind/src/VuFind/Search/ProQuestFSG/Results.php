@@ -63,7 +63,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @var array
      */
-    protected $simplifiedResponseFacets = null;
+    protected $simplifiedResponseFacets = [];
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -128,7 +128,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        if (null === $this->simplifiedResponseFacets) {
+        if (!empty($filter) && empty($this->simplifiedResponseFacets)) {
             // Save actual search data
             $resultTotal = $this->resultTotal;
             $results = $this->results;
