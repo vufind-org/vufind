@@ -62,7 +62,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return Upgrade
      */
-    protected function getUpgrader(string $version): Upgrade
+    protected function getUpgrader($version)
     {
         $oldDir = realpath($this->getFixtureDir() . 'configs/' . $version);
         $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
@@ -78,7 +78,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function checkVersion(string $version): array
+    protected function checkVersion($version)
     {
         $upgrader = $this->getUpgrader($version);
         $upgrader->run();
@@ -204,7 +204,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade11(): void
+    public function testUpgrade11()
     {
         $this->checkVersion('1.1');
     }
@@ -214,7 +214,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade12(): void
+    public function testUpgrade12()
     {
         $this->checkVersion('1.2');
     }
@@ -224,7 +224,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade13(): void
+    public function testUpgrade13()
     {
         $this->checkVersion('1.3');
     }
@@ -234,7 +234,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpgrade14(): void
+    public function testUpgrade14()
     {
         $this->checkVersion('1.4');
     }
@@ -244,7 +244,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultGenerator(): void
+    public function testDefaultGenerator()
     {
         // We expect the upgrader to switch default values:
         $upgrader = $this->getUpgrader('defaultgenerator');
@@ -270,7 +270,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSpelling(): void
+    public function testSpelling()
     {
         $upgrader = $this->getUpgrader('spelling');
         $upgrader->run();
@@ -286,7 +286,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSyndetics(): void
+    public function testSyndetics()
     {
         // Test upgrading an SSL URL
         $upgrader = $this->getUpgrader('syndeticsurlssl');
@@ -312,7 +312,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGooglePreviewUpgrade(): void
+    public function testGooglePreviewUpgrade()
     {
         $upgrader = $this->getUpgrader('googlepreview');
         $upgrader->run();
@@ -324,11 +324,44 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test removal of xID settings
+     *
+     * @return void
+     */
+    public function testXidDeprecation()
+    {
+        $upgrader = $this->getUpgrader('xid');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['Similar'],
+            $results['config.ini']['Record']['related']
+        );
+        $this->assertEquals(
+            ['WorldCatSimilar'],
+            $results['WorldCat.ini']['Record']['related']
+        );
+        $this->assertEquals(['apiKey' => 'foo'], $results['config.ini']['WorldCat']);
+        $expectedWarnings = [
+            'The [WorldCat] id setting is no longer used and has been removed.',
+            'The [WorldCat] xISBN_token setting is no longer used and has been removed.',
+            'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
+            'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
+            'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
+            'The Editions related record module is no longer supported due to OCLC\'s xID '
+            . 'API shutdown. It has been removed from your settings.',
+            'The WorldCatEditions related record module is no longer supported due to OCLC\'s '
+            . 'xID API shutdown. It has been removed from your settings.',
+        ];
+        $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
+    }
+
+    /**
      * Test permission upgrade
      *
      * @return void
      */
-    public function testPermissionUpgrade(): void
+    public function testPermissionUpgrade()
     {
         $upgrader = $this->getUpgrader('permissions');
         $upgrader->run();
@@ -396,7 +429,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGoogleWarnings(): void
+    public function testGoogleWarnings()
     {
         $upgrader = $this->getUpgrader('googlewarnings');
         $upgrader->run();
@@ -434,17 +467,37 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWorldCatWarnings(): void
+    public function testWorldCatWarnings()
     {
         $upgrader = $this->getUpgrader('worldcatwarnings');
         $upgrader->run();
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
             in_array(
-                'The [WorldCat] section of config.ini has been removed following'
-                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
+                'The [WorldCat] LimitCodes setting never had any effect and has been'
+                . ' removed.',
                 $warnings
             )
+        );
+    }
+
+    /**
+     * Test WorldCat-specific upgrades.
+     *
+     * @return void
+     */
+    public function testWorldCatUpgrades()
+    {
+        $upgrader = $this->getUpgrader('worldcatupgrades');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'Author',
+            $results['WorldCat.ini']['Basic_Searches']['srw.au']
+        );
+        $this->assertEquals(
+            'adv_search_author',
+            $results['WorldCat.ini']['Advanced_Searches']['srw.au']
         );
     }
 
@@ -453,7 +506,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMeaningfulLineDetection(): void
+    public function testMeaningfulLineDetection()
     {
         $upgrader = $this->getUpgrader('1.4');
         $meaningless = realpath(
@@ -483,7 +536,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCommentExtraction(): void
+    public function testCommentExtraction()
     {
         $upgrader = $this->getUpgrader('comments');
         $config = $this->getFixtureDir() . 'configs/comments/config.ini';
@@ -521,7 +574,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPrimoUpgrade(): void
+    public function testPrimoUpgrade()
     {
         $upgrader = $this->getUpgrader('primo');
         $upgrader->run();
@@ -538,7 +591,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAmazonCoverWarning(): void
+    public function testAmazonCoverWarning()
     {
         $upgrader = $this->getUpgrader('amazoncover');
         $upgrader->run();
@@ -557,7 +610,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAmazonReviewWarning(): void
+    public function testAmazonReviewWarning()
     {
         $upgrader = $this->getUpgrader('amazonreview');
         $upgrader->run();
@@ -576,7 +629,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReCaptcha(): void
+    public function testReCaptcha()
     {
         $upgrader = $this->getUpgrader('recaptcha');
         $upgrader->run();

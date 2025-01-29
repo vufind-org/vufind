@@ -29,8 +29,7 @@
 
 namespace VuFindTest\RecordDriver\Feature;
 
-use PHPUnit\Framework\MockObject\MockObject;
-use VuFindTest\RecordDriver\MarcBasicTraitTestHarness;
+use VuFind\RecordDriver\WorldCat;
 
 /**
  * Record Driver Marc Traits Test Class
@@ -111,17 +110,17 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $fixture Record metadata fixture
      *
-     * @return MarcBasicTraitTestHarness&MockObject
+     * @return MockObjec&WorldCat
      */
-    protected function createMockRecord(string $fixture): MarcBasicTraitTestHarness&MockObject
+    protected function createMockRecord(string $fixture): WorldCat
     {
         $xml = $this->getFixture("marc/$fixture");
         $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(MarcBasicTraitTestHarness::class)
+        $obj = $this->getMockBuilder(WorldCat::class)
             ->onlyMethods(['getMarcReader'])->getMock();
         $obj->expects($this->any())
             ->method('getMarcReader')
-            ->willReturn($record);
+            ->will($this->returnValue($record));
         return $obj;
     }
 }
