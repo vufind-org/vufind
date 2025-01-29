@@ -94,8 +94,12 @@ class Results extends \VuFind\Search\Base\Results
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();
-        $this->responseFacets = $collection->getFacets();
-        $this->simplifiedResponseFacets = $this->simplifyFacets($this->responseFacets);
+
+        // ProQuest does not return facets unless the startRecord is 1
+        if ($offset === 1) {
+            $this->responseFacets = $collection->getFacets();
+            $this->simplifiedResponseFacets = $this->simplifyFacets($this->responseFacets);
+        }
     }
 
     /**
@@ -125,7 +129,22 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         if (null === $this->simplifiedResponseFacets) {
+            // Save actual search data
+            $resultTotal = $this->resultTotal;
+            $results = $this->results;
+            $suggestions = $this->suggestions;
+            $errors = $this->errors;
+
+            // The API only provides facets when startRecord == 1.
+            $this->overrideStartRecord(1);
             $this->performAndProcessSearch();
+
+            // Restore actual search data
+            $this->resultTotal = $resultTotal;
+            $this->results = $results;
+            $this->suggestions = $suggestions;
+            $this->errors = $errors;
+            $this->overrideStartRecord(null);
         }
         return $this->buildFacetList($this->simplifiedResponseFacets, $filter);
     }
