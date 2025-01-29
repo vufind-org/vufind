@@ -1,5 +1,6 @@
 /*global VuFind*/
 VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3CompatibilityLayer() {
+  const data_attribute_selector = '[data-dismiss],[data-target],[data-toggle],[data-ride],[data-slide],[data-slide-to]';
 
   function initNavbar() {
     document.querySelectorAll('.navbar').forEach((el) => {
@@ -54,16 +55,6 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
           }
           // Use a timeout to allow the transition to complete before restoring the state:
           setTimeout(() => { VuFind.restoreTransitions(aEl, oldStateA); }, 0);
-        }
-        // Move tab role from li to a:
-        if (aEl && liEl.parentElement.classList.contains('nav-tabs')) {
-          liEl.setAttribute('role', 'presentation');
-          liEl.classList.add('nav-item');
-          aEl.classList.add('nav-link');
-          aEl.setAttribute('role', 'tab');
-          if (aEl.classList.contains('active')) {
-            aEl.setAttribute('aria-selected', 'true');
-          }
         }
       });
     });
@@ -124,13 +115,14 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
   }
 
   function initDataAttributeMappings() {
-    document.querySelectorAll('[data-dismiss],[data-target],[data-toggle],[data-ride],[data-slide],[data-slide-to]').forEach((el) => {
-      convertDataAttributes(el);
-    });
+    document.querySelectorAll(data_attribute_selector).forEach((el) => convertDataAttributes(el));
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((el) => {
           convertDataAttributes(el);
+          if (typeof el.querySelectorAll !== 'undefined') {
+            el.querySelectorAll(data_attribute_selector).forEach((subEl) => convertDataAttributes(subEl));
+          }
         });
       });
     });

@@ -138,6 +138,7 @@ VuFind.register('lightbox', function Lightbox() {
     runScripts.each(function addScript(i2, script) {
       $(document).find('head').append(script);
     });
+    VuFind.emit('lightbox.rendered', {container: _modal});
   }
 
   var _xhr = false;
@@ -229,7 +230,7 @@ VuFind.register('lightbox', function Lightbox() {
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
         if (jq_xhr.status === 205) {
-          VuFind.refreshPage();
+          VuFind.refreshPage(jq_xhr.getResponseHeader('X-VuFind-Refresh-Method') === 'GET');
           return;
         }
         render(content);
@@ -543,6 +544,7 @@ VuFind.register('lightbox', function Lightbox() {
         _bsModal.show();
         // Set keyboard focus
         setFocusToFirstNode();
+        VuFind.emit('lightbox.show', {container: _modal});
       } else if (cmd === 'hide') {
         _bsModal.hide();
       } else {

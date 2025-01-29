@@ -334,7 +334,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -345,7 +345,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         // Strip off the prefix from vtls exports
         $db_id = str_replace('vtls', '', $id);
@@ -481,7 +481,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *   - Return the holdings array with true/false and a reason.
      *
      * Because of the location comparisons with the patron's
-     *   location that occur here we also take the oppurtunity
+     *   location that occur here we also take the opportunity
      *   to push their "Home" location to the top.
      *
      * @param string $patron_id ID of patron

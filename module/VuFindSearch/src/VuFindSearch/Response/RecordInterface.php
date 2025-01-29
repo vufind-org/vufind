@@ -79,6 +79,25 @@ interface RecordInterface
     public function getSearchBackendIdentifier();
 
     /**
+     * Sets the result set identifier for the record collection.
+     *
+     * @param string $uuid A valid UUID associated with the data set.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid);
+
+    /**
+     * Retrieves the unique result set identifier.
+     *
+     * This method returns the UUID or similar identifier associated with the result set.
+     * If no identifier has been set, it will return null.
+     *
+     * @return string|null The UUID of the result set, or null if not set.
+     */
+    public function getResultSetIdentifier();
+
+    /**
      * Add a label for the record
      *
      * @param string $label Label, may be a translation key

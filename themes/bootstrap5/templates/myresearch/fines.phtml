@@ -89,7 +89,7 @@
       <tfoot>
         <tr>
           <th colspan="<?=count($columns) - 1?>" scope="row"><?=$this->transEsc('Total Balance Due')?></th>
-          <td data-label="<?=$this->transEscAttr('Total Balance Due')?>" style="font-weight:bold"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
+          <td data-label="<?=$this->transEscAttr('Total Balance Due')?>" class="fines-total"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
         </tr>
       </tfoot>
     </table>

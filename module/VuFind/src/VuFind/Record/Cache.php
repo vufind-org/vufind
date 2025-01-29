@@ -31,7 +31,7 @@
 
 namespace VuFind\Record;
 
-use Laminas\Config\Config as Config;
+use VuFind\Config\Config as Config;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
@@ -229,7 +229,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Check whether a record source is cachable
+     * Check whether a record source is cacheable
      *
      * @param string $source Record source
      *

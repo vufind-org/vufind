@@ -170,24 +170,8 @@ class CAS extends AbstractBase
             }
         }
 
-        // Save credentials if applicable. Note that we want to allow empty
-        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
-        // we also want to be careful not to replace a non-blank password with a
-        // blank one in case the auth mechanism fails to provide a password on
-        // an occasion after the user has manually stored one. (For discussion,
-        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
-        // (unlikely) scenario that a password can actually change from non-blank
-        // to blank, additional work may need to be done here.
-        if (!empty($catUsername = $user->getCatUsername())) {
-            $this->ilsAuthenticator->setUserCatalogCredentials(
-                $user,
-                $catUsername,
-                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
-            );
-        }
-
-        // Save and return the user object:
-        $this->getUserService()->persistEntity($user);
+        // Save and return user data:
+        $this->saveUserAndCredentials($user, $catPassword, $this->ilsAuthenticator);
         return $user;
     }
 

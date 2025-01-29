@@ -78,7 +78,7 @@ class GatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $adapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
         $tm = $container->get(\VuFind\Db\Table\PluginManager::class);

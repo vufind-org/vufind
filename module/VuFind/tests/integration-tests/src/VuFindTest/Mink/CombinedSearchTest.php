@@ -147,6 +147,47 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that combined results contain valid author links with appropriate filtering.
+     *
+     * @param bool $leftAjax  Should left column load via AJAX?
+     * @param bool $rightAjax Should right column load via AJAX?
+     *
+     * @return void
+     *
+     * @dataProvider ajaxCombinationsProvider
+     */
+    public function testCombinedSearchResultsAuthorLinks(bool $leftAjax, bool $rightAjax): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        // Default configuration does not have authors in both columns; switch to a
+        // different data set that will let us test authors:
+        $config['Solr:one']['hiddenFilter'] = 'building:author_relators.mrc';
+        $config['Solr:one']['ajax'] = $leftAjax;
+        $config['Solr:two']['ajax'] = $rightAjax;
+        $this->changeConfigs(
+            ['combined' => $config],
+            ['combined']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('id:"0001732009-1" OR id:"theplus+andtheminus-"');
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
+        // The author link in each column should have an appropriate hidden filter applied:
+        $this->assertStringContainsString(
+            'hiddenFilters%5B%5D=building%3A%22author_relators.mrc%22',
+            $this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
+        );
+        $this->assertStringContainsString(
+            'hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22',
+            $this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
+        );
+    }
+
+    /**
      * Test that combined results work in AJAX mode.
      *
      * @return void
@@ -196,6 +237,61 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
+     * Data provider for testJumpMenu()
+     *
+     * @return array[]
+     */
+    public static function jumpMenuProvider(): array
+    {
+        return [
+            'anchor mode' => ['anchor'],
+            'link mode' => ['link'],
+        ];
+    }
+
+    /**
+     * Test that the jump menu can be enabled.
+     *
+     * @param string $linkMode Linking mode to activate
+     *
+     * @return void
+     *
+     * @dataProvider jumpMenuProvider
+     */
+    public function testJumpMenu(string $linkMode): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:one']['ajax'] = true; // use mixed AJAX mode for more thorough test
+        $config['Layout']['jump_links'] = true;
+        $config['Layout']['jump_links_mode'] = $linkMode;
+        $this->changeConfigs(
+            ['combined' => $config],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $expectedContent = 'Jump to Results: Solr One (1) Solr Two (1)';
+        // The AJAX count may not load right away, so wait to be sure we assert on the final value:
+        $getText = "document.getElementsByClassName('combined-jump-links')[0].textContent.replace(/\s+/g, ' ').trim()";
+        $this->waitStatement("$getText === '$expectedContent'");
+        $this->assertEquals(
+            $expectedContent,
+            $this->findCssAndGetText($page, '.combined-jump-links')
+        );
+        $firstLink = $this->findCss($page, '.combined-jump-links a')->getAttribute('href');
+        $secondLink = $this->findCss($page, '.combined-jump-links a', index: 1)->getAttribute('href');
+        $expectedFirstLink = $linkMode === 'anchor'
+            ? '#combined_Solr____one'
+            : '/Search/Results?hiddenFilters%5B%5D=building%3A%22journals.mrc%22&lookfor=id%3A%22testsample1%22'
+                . '+OR+id%3A%22theplus%2Bandtheminus-%22&type=AllFields';
+        $expectedSecondLink = $linkMode === 'anchor'
+            ? '#combined_Solr____two'
+            : '/Search/Results?hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22&lookfor=id%3A%22testsample1%22'
+                . '+OR+id%3A%22theplus%2Bandtheminus-%22&type=AllFields';
+        $this->assertStringEndsWith($expectedFirstLink, $firstLink);
+        $this->assertStringEndsWith($expectedSecondLink, $secondLink);
     }
 
     /**

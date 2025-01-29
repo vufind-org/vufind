@@ -9,6 +9,7 @@
     $cover = $coverDetails['html'];
     $edsConfig = $this->config()->get('EDS');
     $authorDisplay = strtolower($edsConfig->AuthorDisplay->DetailPageFormat ?? 'Long');
+    $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
 ?>
 <div class="media"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'resource' => '#record', 'typeof' => $this->schemaOrg()->getRecordTypes($this->driver)])?>>
   <div class="media-left medium img-col">
@@ -74,6 +75,11 @@
         <?=$this->transEsc('cached_record_warning')?>
       </div>
     <?php endif; ?>
+    <?=$this->record($this->driver)->getLabelList() ?>
+
+    <?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>
+      <?=$this->render('error/restrictedViewWarning.phtml')?>
+    <?php endif; ?>
 
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
@@ -133,9 +139,7 @@
           <td colspan="2">
             <div class="alert alert-info">
               <?=$this->transEsc('Full text is not displayed to guests')?>
-              <a class="login" href="<?=$this->url('myresearch-userlogin')?>" rel="nofollow">
-                <strong><?=$this->transEsc('Login for full access')?></strong>
-              </a>
+              <?=$this->render('error/loginForAccess.phtml')?>
             </div>
           </td>
         </tr>

@@ -12,8 +12,16 @@
         break;
       }
       $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';
+
+      $itemHasAdditionalHoldingsFields = false;
+      foreach ($this->holdingsTextFieldNames as $holdingsTextField) {
+        if (!empty($item[$holdingsTextField])) {
+          $itemHasAdditionalHoldingsFields = true;
+          break;
+        }
+      }
     ?>
-    <tr>
+    <tr<?=$itemHasAdditionalHoldingsFields ? $this->htmlAttributes(['class' => 'itemWithAdditionalHoldingFields']) : ''?>>
       <td class="fullLocation">
         <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
@@ -43,6 +51,16 @@
           <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription, $statusDescriptionTokens)?></span>
       </td>
     </tr>
+
+    <?php foreach ($this->holdingsTextFieldNames as $holdingsTextField): ?>
+      <?php if (!empty($item[$holdingsTextField])): ?>
+        <tr>
+          <td colspan="3" class="statusItemsHoldingsTextFields">
+            <strong><?= $this->transEsc(ucfirst($holdingsTextField)) ?>: </strong><span><?= $this->escapeHtml(implode('; ', ((array)$item[$holdingsTextField]))); ?></span>
+          </td>
+        </tr>
+      <?php endif; ?>
+    <?php endforeach; ?>
   <?php endforeach; ?>
 <?php if (count($this->statusItems) > 5): ?>
   <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']], ['query' => ['sid' => $this->searchId]])?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more_ellipsis')?></a></td></tr>

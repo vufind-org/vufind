@@ -61,11 +61,11 @@ class DefaultRecord extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
      * file
      */
     public function __construct(
@@ -122,6 +122,23 @@ class DefaultRecord extends AbstractBase
                 : [$i];
         };
         return array_map($callback, array_unique($headings));
+    }
+
+    /**
+     * Get the subject headings as a flat array of strings.
+     *
+     * @return array Subject headings
+     */
+    public function getAllSubjectHeadingsFlattened()
+    {
+        $headings = [];
+        $subjects = $this->getAllSubjectHeadings();
+        if (is_array($subjects)) {
+            foreach ($subjects as $subj) {
+                $headings[] = implode(' -- ', $subj);
+            }
+        }
+        return $headings;
     }
 
     /**
@@ -243,7 +260,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCallNumbers()
     {
-        return (array)($this->fields['callnumber-raw'] ?? []);
+        return array_unique((array)($this->fields['callnumber-raw'] ?? []));
     }
 
     /**

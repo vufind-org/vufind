@@ -104,7 +104,7 @@
   color: #fff;
   font-weight: 500;
   background-color: $header-bg;
-  background-image: url('../../sandal/images/forest.jpg');
+  background-image: url('../../sandal5/images/forest.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center top;
@@ -258,6 +258,14 @@
     a:hover {
       background-color: transparent;
     }
+  }
+}
+
+.main .active-filters .reset-filters-btn {
+  border: 1px solid $header-bg;
+  background-color: $header-bg;
+  &:hover {
+    color: $header-bg;
   }
 }
 

@@ -15,7 +15,6 @@
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <?=$this->headMeta()?>
     <?=$this->googleTagManager()->getHeadCode()?>
@@ -61,7 +60,8 @@
       // Collect small scripts together and append as one block:
       $appendScripts = [];
 
-      if (!empty($this->themeConfig()['stickyElements'])) {
+      $themeConfig = $this->themeConfig();
+      if (!empty($themeConfig['stickyElements'])) {
         $this->headScript()->appendFile('sticky_elements.js');
       }
 
@@ -71,15 +71,6 @@
         if ($cart->isActive()) {
           $this->headScript()->appendFile('vendor/js.cookie.js');
           $this->headScript()->appendFile('cart.js');
-          if ($domain = $cart->getCookieDomain()) {
-            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
-          }
-          if ($cookiePath = $cart->getCookiePath()) {
-            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
-          }
-          if ($cookieSameSite = $cart->getCookieSameSite()) {
-            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
-          }
         }
         $this->headScript()->prependScript(
             'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
@@ -108,6 +99,8 @@
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($this->layout()->searchId);
+      $theme = json_encode($themeConfig['themeName']);
+
       $appendScripts[] = <<<JS
           VuFind.path = '{$root}';
           VuFind.defaultSearchBackend = '{$dsb}';
@@ -116,23 +109,30 @@
           VuFind.addIcons({$icons});
           VuFind.setCspNonce('{$cspNonce}');
           VuFind.setCurrentSearchId($searchId);
+          VuFind.setTheme($theme);
           JS;
+
+      if ($domain = $this->cookieManager()->getDomain()) {
+        $appendScripts[] = 'VuFind.cookie.setDomain(' . json_encode($domain) . ');';
+      }
+      if ($cookiePath = $this->cookieManager()->getPath()) {
+        $appendScripts[] = 'VuFind.cookie.setCookiePath(' . json_encode($cookiePath) . ');';
+      }
+      if ($cookieSameSite = $this->cookieManager()->getSameSite()) {
+        $appendScripts[] = 'VuFind.cookie.setCookieSameSite(' . json_encode($cookieSameSite) . ');';
+      }
 
       if (!empty($lightboxParent)) {
         $lightboxParent = json_encode((string)$lightboxParent);
-        $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent;
+        $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent . ';';
       }
 
       if (!empty($lightboxChild)) {
         $lightboxChild = json_encode((string)$lightboxChild);
-        $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild;
+        $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild . ';';
       }
 
       $this->headScript()->appendScript(implode("\n", $appendScripts));
-
-      if ($this->config()->ajaxCoversEnabled()) {
-          $this->headScript()->appendFile('covers.js');
-      }
     ?>
     <?=$this->cookieConsent()->render()?>
     <?=$this->headScript() ?>

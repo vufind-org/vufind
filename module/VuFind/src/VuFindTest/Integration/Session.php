@@ -55,7 +55,14 @@ class Session extends \Behat\Mink\Session
     protected $coverageDir = '';
 
     /**
-     * Set remote code coverate configuration
+     * Whether Whoops error handler needs to be disabled
+     *
+     * @var bool
+     */
+    protected $disableWhoops = false;
+
+    /**
+     * Set remote code coverage configuration
      *
      * @param string $testName    Test name
      * @param string $coverageDir Coverage data directory
@@ -68,6 +75,18 @@ class Session extends \Behat\Mink\Session
     ): void {
         $this->testName = $testName;
         $this->coverageDir = $coverageDir;
+    }
+
+    /**
+     * Toggle HTTP header that disables Whoops
+     *
+     * @param bool $disable Whether to disable Whoops
+     *
+     * @return void
+     */
+    public function setWhoopsDisabled(bool $disable): void
+    {
+        $this->disableWhoops = $disable;
     }
 
     /**
@@ -91,6 +110,9 @@ class Session extends \Behat\Mink\Session
                     ]
                 )
             );
+        }
+        if ($this->disableWhoops) {
+            $this->setRequestHeader('X-VuFind-Disable-Whoops', '1');
         }
 
         parent::visit($url);
