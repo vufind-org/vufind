@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Andrew Nagy 2008.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  SRU
- * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -41,7 +41,7 @@ use function sprintf;
  *
  * @category VuFind
  * @package  SRU
- * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
