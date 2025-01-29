@@ -105,7 +105,7 @@ class ProQuestFSG extends DefaultRecord
     public function getContainerTitle()
     {
         // For books, don't display any container.
-        if ('Book' === $this->getOpenUrlFormat()) {
+        if ($this->isBook()) {
             return '';
         }
         return $this->getFirstFieldValue('773', ['t']);
@@ -120,10 +120,21 @@ class ProQuestFSG extends DefaultRecord
     public function getContainerReference()
     {
         // For books, don't display any container.
-        if ('Book' === $this->getOpenUrlFormat()) {
+        if ($this->isBook()) {
             return '';
         }
         return $this->getFirstFieldValue('773', ['g']);
+    }
+
+    /**
+     * Try to determine if this is a book, based on ProQuest's use of MARC.
+     *
+     * @return bool
+     */
+    protected function isBook()
+    {
+        $type = $this->getFirstFieldValue('513', ['a']);
+        return str_contains($type, 'Book') && !str_contains($type, 'Book Review');
     }
 
     /**
@@ -146,7 +157,7 @@ class ProQuestFSG extends DefaultRecord
     {
         $dates = $this->marcGetHumanReadablePublicationDates();
         // For books, we should only display the year
-        if ('Book' === $this->getOpenUrlFormat()) {
+        if ($this->isBook()) {
             foreach ($dates as $i => $date) {
                 if (($pos = strpos($date, ',')) !== false) {
                     $dates[$i] = trim(substr($date, $pos + 1));
