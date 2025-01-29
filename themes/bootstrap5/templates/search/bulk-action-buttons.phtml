@@ -1,7 +1,9 @@
 <?php
   $searchSettings = $this->searchSettings($this->params);
-  $this->idPrefix ??= $this->isBottom ? 'bottom_' : '';
 ?>
+<?php if ($this->isBottom): ?>
+  <?php $this->idPrefix = 'bottom_' . ($this->idPrefix ?? ''); ?>
+<?php endif; ?>
 <?php if ($searchSettings->checkboxesEnabled()): ?>
   <nav class="bulkActionButtons">
     <?php ob_start(); ?>

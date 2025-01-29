@@ -1,4 +1,6 @@
-<?php $this->idPrefix ??= $this->isBottom ? 'bottom_' : ''; ?>
+<?php if ($this->isBottom): ?>
+  <?php $this->idPrefix = 'bottom_' . ($this->idPrefix ?? ''); ?>
+<?php endif; ?>
 <?php if (isset($list) && !$this->isBottom): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->getId())?>">
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->getTitle())?>">
