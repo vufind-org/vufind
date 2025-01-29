@@ -1,5 +1,6 @@
 <?php
   $searchSettings = $this->searchSettings($this->params);
+  $this->idPrefix ??= $this->isBottom ? 'bottom_' : '';
 ?>
 <?php if ($searchSettings->checkboxesEnabled()): ?>
   <nav class="bulkActionButtons">
@@ -103,7 +104,7 @@
       $selectionControlsBar = ob_get_contents();
       ob_end_clean();
     ?>
-    <?php if ($this->idPrefix === 'bottom_'): ?>
+    <?php if ($this->isBottom): ?>
       <?=$selectionControlsBar?>
       <?=$bulkActionButtons?>
     <?php else: ?>

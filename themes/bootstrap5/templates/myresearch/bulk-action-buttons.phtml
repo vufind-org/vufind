@@ -1,5 +1,5 @@
-<?php $isBottom = $this->idPrefix === 'bottom_'; ?>
-<?php if (isset($list) && !$isBottom): ?>
+<?php $this->idPrefix ??= $this->isBottom ? 'bottom_' : ''; ?>
+<?php if (isset($list) && !$this->isBottom): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->getId())?>">
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->getTitle())?>">
 <?php endif; ?>
@@ -108,7 +108,7 @@
     $selectionControlsBar = ob_get_contents();
     ob_end_clean();
   ?>
-  <?php if ($isBottom): ?>
+  <?php if ($this->isBottom): ?>
     <?=$selectionControlsBar?>
     <?=$bulkActionButtons?>
   <?php else: ?>
