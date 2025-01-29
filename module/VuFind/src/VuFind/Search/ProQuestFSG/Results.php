@@ -128,7 +128,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        if (!empty($filter) && empty($this->simplifiedResponseFacets)) {
+        if (!empty($this->getParams()->getFacetConfig()) && empty($this->simplifiedResponseFacets)) {
             // Save actual search data
             $resultTotal = $this->resultTotal;
             $results = $this->results;
