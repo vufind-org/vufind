@@ -3,8 +3,8 @@
     $this->headTitle($this->translate('Change Email Address'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-        . '<li class="active">' . $this->transEsc('Change Email Address') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+        . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Change Email Address') . '</li>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
 

@@ -3,9 +3,9 @@
   $this->headTitle($this->translate('rating_add_or_update'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
     . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="active">' . $this->transEsc('rating_add_or_update') . '</li>';
+    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('rating_add_or_update') . '</li>';
 
   $ratingData = $this->ratings()->getRatingBreakdown($this->driver, [1 => [10, 29], 2 => [30, 49], 3 => [50, 69], 4 => [70, 89], 5 => [90, 100]]);
   krsort($ratingData['groups']);

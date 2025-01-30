@@ -4,9 +4,9 @@
   echo $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
     . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="active">' . $this->transEsc('Text this') . '</li>';
+    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Text this') . '</li>';
 ?>
 <?php $validatorCallback = <<<JS
     function phoneNumberValidation() {

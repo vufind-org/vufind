@@ -3,9 +3,9 @@
   $this->headTitle($this->translate('hold_edit_title'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li><a href="' . $this->url('holds-list') . '">' . $this->transEsc('My Holds') . '</a></li>'
-    . '<li class="active">' . $this->transEsc('hold_edit_title') . '</li>';
+    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('hold_edit_title') . '</li>';
 ?>
 <h2><?=$this->transEsc('hold_edit_title')?></h2>
 <?php if ($this->helpTextHtml): ?>
