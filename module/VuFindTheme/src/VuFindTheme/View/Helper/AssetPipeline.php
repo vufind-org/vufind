@@ -29,6 +29,8 @@
 
 namespace VuFindTheme\View\Helper;
 
+use VuFindTheme\ThemeInfo;
+
 /**
  * Asset pipeline view helper.
  *
@@ -40,6 +42,8 @@ namespace VuFindTheme\View\Helper;
  */
 class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
 {
+    use RelativePathTrait;
+
     /**
      * Array of accumulated scripts, indexed by position (header/footer).
      *
@@ -60,6 +64,15 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
      * @var array
      */
     protected $stylesheets = [];
+
+    /**
+     * Constructor
+     *
+     * @param ThemeInfo $themeInfo Theme information helper
+     */
+    public function __construct(protected ThemeInfo $themeInfo)
+    {
+    }
 
     /**
      * Add raw CSS to the pipeline.
@@ -257,6 +270,19 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
     {
         $headLink = $this->getView()->plugin('headLink');
         foreach ($this->stylesheets as $sheet) {
+            // Account for the theme system (when appropriate):
+            if ($this->isRelativePath($sheet['href'])) {
+                $relPath = 'css/' . $sheet['href'];
+                $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
+                if (!empty($details)) {
+                    $urlHelper = $this->getView()->plugin('url');
+                    $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+                    $url .= strstr($url, '?') ? '&_=' : '?_=';
+                    $url .= filemtime($details['path']);
+                    $sheet['href'] = $url;
+                }
+            }
+
             $headLink->appendStylesheet(
                 $sheet['href'],
                 $sheet['media'],

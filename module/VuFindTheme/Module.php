@@ -107,7 +107,7 @@ class Module
     {
         return [
             'factories' => [
-                View\Helper\AssetPipeline::class => InvokableFactory::class,
+                View\Helper\AssetPipeline::class => View\Helper\AssetPipelineFactory::class,
                 View\Helper\FootScript::class => View\Helper\PipelineInjectorFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
                 View\Helper\HeadLink::class => View\Helper\PipelineInjectorFactory::class,

@@ -105,32 +105,6 @@ class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\Log
     }
 
     /**
-     * Create HTML link element from data item
-     *
-     * @param stdClass $item data item
-     *
-     * @return string
-     */
-    public function itemToString(stdClass $item)
-    {
-        // Normalize href to account for themes (if appropriate), then call the parent class:
-        if (isset($item->href) && $this->isRelativePath($item->href)) {
-            $relPath = 'css/' . $item->href;
-            $details = $this->themeInfo
-                ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
-            if (!empty($details)) {
-                $urlHelper = $this->getView()->plugin('url');
-                $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
-                $url .= strstr($url, '?') ? '&_=' : '?_=';
-                $url .= filemtime($details['path']);
-                $item->href = $url;
-            }
-        }
-        $this->addNonce($item);
-        return parent::itemToString($item);
-    }
-
-    /**
      * Returns true if file should not be included in the compressed concat file
      * Required by ConcatTrait
      *
