@@ -126,7 +126,7 @@
                 </li>
                 <?php foreach ($keyboardLayouts as $keyboardLayout): ?>
                   <li>
-                    <a class="keyboard-selection-item" href="#" data-value="<?= $this->escapeHtmlAttr($keyboardLayout) ?>"><?= $this->transEsc("KeyboardLayout::$keyboardLayout") ?></a>
+                    <a class="dropdown-item keyboard-selection-item" href="#" data-value="<?= $this->escapeHtmlAttr($keyboardLayout) ?>"><?= $this->transEsc("KeyboardLayout::$keyboardLayout") ?></a>
                   </li>
                 <?php endforeach; ?>
               </ul>

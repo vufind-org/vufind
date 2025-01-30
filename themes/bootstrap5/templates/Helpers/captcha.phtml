@@ -13,8 +13,8 @@
   <ul class="nav nav-tabs">
     <?php foreach ($this->captchas as $i => $captcha):?>
       <?php $active = $i == 0 ? ' class="active"' : ''?>
-      <li<?=$active?>>
-        <a href="#<?=$captcha->getId()?>" role="tab" data-bs-toggle="tab"><?=$this->transEsc('captcha_method_' . strtolower($captcha->getId()), [], $captcha->getId())?></a>
+      <li>
+        <a<?=$active?>href="#<?=$captcha->getId()?>" role="tab" data-bs-toggle="tab"><?=$this->transEsc('captcha_method_' . strtolower($captcha->getId()), [], $captcha->getId())?></a>
       </li>
     <?php endforeach;?>
   </ul>
