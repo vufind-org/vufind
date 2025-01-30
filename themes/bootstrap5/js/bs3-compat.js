@@ -8,12 +8,6 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
     });
   }
 
-  function initFormElements() {
-    document.querySelectorAll('select.form-control').forEach((el) => {
-      el.classList.add('form-select');
-    });
-  }
-
   function initCollapse() {
     document.querySelectorAll('.collapse.in').forEach((el) => {
       el.classList.add('show');
@@ -61,7 +55,6 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
   }
 
   function init() {
-    initFormElements();
     initBreadcrumbs();
     initCollapse();
     initPagination();
