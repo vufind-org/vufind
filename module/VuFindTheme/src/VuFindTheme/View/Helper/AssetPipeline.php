@@ -41,10 +41,19 @@ namespace VuFindTheme\View\Helper;
 class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Array of accumulated scripts.
+     * Array of accumulated styles.
      *
-     * @return
+     * @var array
      */
+    protected $styles = [];
+
+    /**
+     * Array of accumulated stylesheets.
+     *
+     * @var array
+     */
+    protected $stylesheets = [];
+
     /**
      * Add raw CSS to the pipeline.
      *
@@ -55,7 +64,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
      */
     public function appendStyle(string $css, array $attributes = []): void
     {
-        $this->getView()->plugin('headStyle')->appendStyle($css, $attributes);
+        $this->styles[] = compact('css', 'attributes');
     }
 
     /**
@@ -74,7 +83,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         string $conditionalStylesheet = '',
         array $extras = []
     ): void {
-        $this->getView()->plugin('headLink')->appendStylesheet($href, $media, $conditionalStylesheet, $extras);
+        $this->stylesheets[] = compact('href', 'media', 'conditionalStylesheet', 'extras');
     }
 
     /**
@@ -93,7 +102,13 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         string $conditionalStylesheet = '',
         array $extras = []
     ): void {
-        $this->getView()->plugin('headLink')->forcePrependStylesheet($href, $media, $conditionalStylesheet, $extras);
+        $newSheets = [compact('href', 'media', 'conditionalStylesheet', 'extras')];
+        foreach ($this->stylesheets as $sheet) {
+            if ($sheet['href'] !== $newSheets[0]['href']) {
+                $newSheets[] = $sheet;
+            }
+        }
+        $this->stylesheets = $newSheets;
     }
 
     /**
@@ -112,7 +127,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         string $conditionalStylesheet = '',
         array $extras = []
     ): void {
-        $this->getView()->plugin('headLink')->setStylesheet($href, $media, $conditionalStylesheet, $extras);
+        $this->stylesheets = [compact('href', 'media', 'conditionalStylesheet', 'extras')];
     }
 
     /**
@@ -214,8 +229,23 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
      */
     public function outputHeaderAssets(): string
     {
-        return ($this->getView()->plugin('headLink'))() . "\n"
-            . ($this->getView()->plugin('headStyle'))() . "\n"
+        $headLink = $this->getView()->plugin('headLink');
+        foreach ($this->stylesheets as $sheet) {
+            $headLink->appendStylesheet(
+                $sheet['href'],
+                $sheet['media'],
+                $sheet['conditionalStylesheet'],
+                $sheet['extras']
+            );
+        }
+
+        $headStyle = $this->getView()->plugin('headStyle');
+        foreach ($this->styles as $style) {
+            $headStyle->appendStyle($style['css'], $style['attributes']);
+        }
+
+        return ($headLink)() . "\n"
+            . ($headStyle)() . "\n"
             . ($this->getView()->plugin('headScript'))();
     }
 
