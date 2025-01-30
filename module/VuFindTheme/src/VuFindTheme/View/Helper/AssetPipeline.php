@@ -41,27 +41,40 @@ namespace VuFindTheme\View\Helper;
 class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
 {
     /**
+     * Array of accumulated scripts.
+     *
+     * @return
+     */
+    /**
      * Add raw CSS to the pipeline.
      *
-     * @param string $css Raw CSS.
+     * @param string $css        Raw CSS.
+     * @param array  $attributes Extra attributes for style tag
      *
      * @return void
      */
-    public function appendStyle(string $css): void
+    public function appendStyle(string $css, array $attributes = []): void
     {
-        $this->getView()->plugin('headStyle')->appendStyle($css);
+        $this->getView()->plugin('headStyle')->appendStyle($css, $attributes);
     }
 
     /**
      * Add an entry to the list of stylesheets.
      *
-     * @param string $href Stylesheet href
+     * @param string $href                  Stylesheet href
+     * @param string $media                 Media
+     * @param string $conditionalStylesheet Any conditions
+     * @param array  $extras                Array of extra attributes
      *
      * @return void
      */
-    public function appendStylesheet(string $href): void
-    {
-        $this->getView()->plugin('headLink')->appendStylesheet($href);
+    public function appendStylesheet(
+        string $href,
+        string $media = 'screen',
+        string $conditionalStylesheet = '',
+        array $extras = []
+    ): void {
+        $this->getView()->plugin('headLink')->appendStylesheet($href, $media, $conditionalStylesheet, $extras);
     }
 
     /**
@@ -86,13 +99,20 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
     /**
      * Clear the list of stylesheets, re-establishing it with the provided one.
      *
-     * @param string $href Stylesheet href
+     * @param string $href                  Stylesheet href
+     * @param string $media                 Media
+     * @param string $conditionalStylesheet Any conditions
+     * @param array  $extras                Array of extra attributes
      *
      * @return void
      */
-    public function setStylesheet(string $href): void
-    {
-        $this->getView()->plugin('headLink')->setStylesheet($href);
+    public function setStylesheet(
+        string $href,
+        string $media = 'screen',
+        string $conditionalStylesheet = '',
+        array $extras = []
+    ): void {
+        $this->getView()->plugin('headLink')->setStylesheet($href, $media, $conditionalStylesheet, $extras);
     }
 
     /**
@@ -102,6 +122,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
      * @param string $type                Script type
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $position            Position to output script (header or footer)
      *
      * @return void
      */
@@ -109,27 +130,35 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         string $script,
         string $type = 'text/javascript',
         array $attrs = [],
-        bool $allowArbitraryAttrs = false
+        bool $allowArbitraryAttrs = false,
+        string $position = 'header'
     ) {
-        $headScript = $this->getView()->plugin('headScript');
+        $helperName = $position === 'header' ? 'headScript' : 'footScript';
+        $scriptHelper = $this->getView()->plugin($helperName);
         if ($allowArbitraryAttrs) {
-            $headScript->setAllowArbitraryAttributes(true);
+            $scriptHelper->setAllowArbitraryAttributes(true);
         }
-        $headScript->appendScript($script, $type, $attrs);
+        $scriptHelper->appendScript($script, $type, $attrs);
     }
 
     /**
      * Add an entry to the list of script files.
      *
-     * @param string $href     Script href
+     * @param string $src      Script src
+     * @param string $type     Script type
+     * @param array  $attrs    Array of script attributes
      * @param string $position Position to output script (header or footer)
      *
      * @return void
      */
-    public function appendScriptFile(string $href, string $position = 'header'): void
-    {
+    public function appendScriptFile(
+        string $src,
+        string $type = 'text/javascript',
+        array $attrs = [],
+        string $position = 'header'
+    ): void {
         $helper = $position === 'header' ? 'headScript' : 'footScript';
-        $this->getView()->plugin($helper)->appendFile($href);
+        $this->getView()->plugin($helper)->appendFile($src, $type, $attrs);
     }
 
     /**
@@ -159,6 +188,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
      * @param string $type                Script type
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $position            Position to output script (header or footer)
      *
      * @return void
      */
@@ -166,13 +196,15 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         string $script,
         string $type = 'text/javascript',
         array $attrs = [],
-        bool $allowArbitraryAttrs = false
+        bool $allowArbitraryAttrs = false,
+        string $position = 'header'
     ) {
-        $headScript = $this->getView()->plugin('headScript');
+        $helperName = $position === 'header' ? 'headScript' : 'footScript';
+        $scriptHelper = $this->getView()->plugin($helperName);
         if ($allowArbitraryAttrs) {
-            $headScript->setAllowArbitraryAttributes(true);
+            $scriptHelper->setAllowArbitraryAttributes(true);
         }
-        $headScript->prependScript($script, $type, $attrs);
+        $scriptHelper->prependScript($script, $type, $attrs);
     }
 
     /**
