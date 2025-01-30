@@ -41,6 +41,13 @@ namespace VuFindTheme\View\Helper;
 class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
 {
     /**
+     * Array of accumulated scripts, indexed by position (header/footer).
+     *
+     * @var array
+     */
+    protected $scripts = ['header' => [], 'footer' => []];
+
+    /**
      * Array of accumulated styles.
      *
      * @var array
@@ -148,12 +155,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         bool $allowArbitraryAttrs = false,
         string $position = 'header'
     ) {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $scriptHelper = $this->getView()->plugin($helperName);
-        if ($allowArbitraryAttrs) {
-            $scriptHelper->setAllowArbitraryAttributes(true);
-        }
-        $scriptHelper->appendScript($script, $type, $attrs);
+        $this->scripts[$position][] = compact('script', 'type', 'attrs', 'allowArbitraryAttrs');
     }
 
     /**
@@ -172,8 +174,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         array $attrs = [],
         string $position = 'header'
     ): void {
-        $helper = $position === 'header' ? 'headScript' : 'footScript';
-        $this->getView()->plugin($helper)->appendFile($src, $type, $attrs);
+        $this->scripts[$position][] = compact('src', 'type', 'attrs');
     }
 
     /**
@@ -192,8 +193,13 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         array $attrs = [],
         string $position = 'header'
     ): void {
-        $helper = $position === 'header' ? 'headScript' : 'footScript';
-        $this->getView()->plugin($helper)->forcePrependFile($src, $type, $attrs);
+        $newScripts = [compact('src', 'type', 'attrs')];
+        foreach ($this->scripts[$position] as $script) {
+            if ($script['src'] ?? null !== $newScripts[0]['src']) {
+                $newScripts[] = $script;
+            }
+        }
+        $this->scripts[$position] = $newScripts;
     }
 
     /**
@@ -214,20 +220,40 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
         bool $allowArbitraryAttrs = false,
         string $position = 'header'
     ) {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $scriptHelper = $this->getView()->plugin($helperName);
-        if ($allowArbitraryAttrs) {
-            $scriptHelper->setAllowArbitraryAttributes(true);
-        }
-        $scriptHelper->prependScript($script, $type, $attrs);
+        array_unshift($this->scripts[$position], compact('script', 'type', 'attrs', 'allowArbitraryAttrs'));
     }
 
     /**
-     * Output the collected assets for the header.
+     * Return the HTML to output script assets in the requested position.
+     *
+     * @param mixed $position Position of assets (header or footer)
      *
      * @return string
      */
-    public function outputHeaderAssets(): string
+    protected function outputScriptAssets($position): string
+    {
+        $helperName = $position === 'header' ? 'headScript' : 'footScript';
+        $scriptHelper = $this->getView()->plugin($helperName);
+        foreach ($this->scripts[$position] as $script) {
+            if ($script['allowArbitraryAttrs'] ?? false) {
+                $scriptHelper->setAllowArbitraryAttributes(true);
+            }
+            // Every $script will have either a script attribute (inline JS) or a src attribute (file):
+            if (isset($script['script'])) {
+                $scriptHelper->appendScript($script['script'], $script['type'], $script['attrs']);
+            } else {
+                $scriptHelper->appendFile($script['src'], $script['type'], $script['attrs']);
+            }
+        }
+        return ($scriptHelper)();
+    }
+
+    /**
+     * Return the HTML to output style assets.
+     *
+     * @return string
+     */
+    protected function outputStyleAssets(): string
     {
         $headLink = $this->getView()->plugin('headLink');
         foreach ($this->stylesheets as $sheet) {
@@ -244,9 +270,17 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
             $headStyle->appendStyle($style['css'], $style['attributes']);
         }
 
-        return ($headLink)() . "\n"
-            . ($headStyle)() . "\n"
-            . ($this->getView()->plugin('headScript'))();
+        return ($headLink)() . "\n" . ($headStyle)();
+    }
+
+    /**
+     * Output the collected assets for the header.
+     *
+     * @return string
+     */
+    public function outputHeaderAssets(): string
+    {
+        return $this->outputStyleAssets() . "\n" . $this->outputScriptAssets('header');
     }
 
     /**
@@ -256,6 +290,6 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper
      */
     public function outputFooterAssets(): string
     {
-        return ($this->getView()->plugin('footScript'))();
+        return $this->outputScriptAssets('footer');
     }
 }
