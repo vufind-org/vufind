@@ -280,26 +280,53 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider to allow testing of top or bottom controls.
+     *
+     * @return array[]
+     */
+    public static function topOrBottomProvider(): array
+    {
+        return [
+            'top button' => [''],
+            'bottom button' => ['bottom_'],
+        ];
+    }
+
+    /**
      * Test that the export control works.
      *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
      * @return void
+     *
+     * @dataProvider topOrBottomProvider
      */
-    public function testBulkExport(): void
+    public function testBulkExport(string $idPrefix): void
     {
+        $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-export');
+        $buttonSelector = '#' . $idPrefix . 'ribbon-export';
 
         // First try clicking without selecting anything:
-        $button->click();
+        $this->clickCss($page, $buttonSelector);
         $this->checkForNonSelectedMessage($page);
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
 
         // Select EndNote option
-        $select = $this->findCss($page, '#format');
+        try {
+            $select = $this->findCss($page, '#format', 100);
+        } catch (\Exception $e) {
+            // For some reason, the click action does not always succeed here; fall
+            // back to brute force Javascript to prevent intermittent test failures.
+            echo "\n\nMink click failed; retrying with Javascript!\n";
+            $session->evaluateScript('$("' . $buttonSelector . '").click()');
+            $select = $this->findCss($page, '#format');
+        }
         $select->selectOption('EndNote');
 
         // Do the export:
@@ -312,22 +339,35 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the print control works.
      *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
      * @return void
+     *
+     * @dataProvider topOrBottomProvider
      */
-    public function testBulkPrint(): void
+    public function testBulkPrint(string $idPrefix): void
     {
         $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-print');
+        $buttonSelector = '#' . $idPrefix . 'ribbon-print';
 
         // First try clicking without selecting anything:
-        $button->click();
+        $this->clickCss($page, $buttonSelector);
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
 
         // Now do it for real -- we should get redirected.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+        [, $params] = explode('?', $session->getCurrentUrl());
+        // For some reason, the click action does not always succeed here; fall
+        // back to brute force Javascript to prevent intermittent test failures.
+        if (str_starts_with($params, 'lookfor')) {
+            echo "\n\nMink click failed; retrying with Javascript!\n";
+            $session->evaluateScript('$("' . $buttonSelector . '").click()');
+            [, $params] = explode('?', $session->getCurrentUrl());
+        }
         [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
