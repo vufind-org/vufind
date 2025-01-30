@@ -280,31 +280,14 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider to allow testing of top or bottom controls.
-     *
-     * @return array[]
-     */
-    public static function topOrBottomProvider(): array
-    {
-        return [
-            'top button' => [''],
-            'bottom button' => ['bottom_'],
-        ];
-    }
-
-    /**
      * Test that the export control works.
      *
-     * @param string $idPrefix Prefix for bulk control IDs.
-     *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
-    public function testBulkExport(string $idPrefix): void
+    public function testBulkExport(): void
     {
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#' . $idPrefix . 'ribbon-export');
+        $button = $this->findCss($page, '#ribbon-export');
 
         // First try clicking without selecting anything:
         $button->click();
@@ -312,8 +295,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
-        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
-        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
 
         // Select EndNote option
@@ -330,17 +312,13 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the print control works.
      *
-     * @param string $idPrefix Prefix for bulk control IDs.
-     *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
-    public function testBulkPrint(string $idPrefix): void
+    public function testBulkPrint(): void
     {
         $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#' . $idPrefix . 'ribbon-print');
+        $button = $this->findCss($page, '#ribbon-print');
 
         // First try clicking without selecting anything:
         $button->click();
@@ -348,8 +326,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $page->find('css', '.modal-body .btn')->click();
 
         // Now do it for real -- we should get redirected.
-        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
-        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
