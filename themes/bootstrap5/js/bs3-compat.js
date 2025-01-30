@@ -2,15 +2,6 @@
 VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3CompatibilityLayer() {
   const data_attribute_selector = '[data-dismiss],[data-target],[data-toggle],[data-ride],[data-slide],[data-slide-to]';
 
-  function initNavbar() {
-    document.querySelectorAll('.navbar').forEach((el) => {
-      el.classList.add('navbar-expand-md');
-    });
-    document.querySelectorAll('.navbar-toggle').forEach((el) => {
-      el.classList.add('navbar-toggler');
-    });
-  }
-
   function initNav() {
     document.querySelectorAll('.nav').forEach((navEl) => {
       if (navEl.classList.contains('nav-tabs')) {
@@ -130,7 +121,6 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
   }
 
   function init() {
-    initNavbar();
     initNav();
     initFormElements();
     initBreadcrumbs();
