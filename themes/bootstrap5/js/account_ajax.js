@@ -97,7 +97,8 @@ VuFind.register('account', function Account() {
   };
 
   /**
-   * Get status as a number for module from _statuses object
+   * Get status as a number for module from _statuses object.
+   * (See constants defined above -- LOADING, MISSING, INACTIVE)
    * @param {string} module Name of the module to get status for
    * @returns {number} Number indicating the current status for the module
    */
@@ -222,7 +223,7 @@ VuFind.register('account', function Account() {
   };
 
   /**
-   * Notify a status
+   * Set a notification message for a specific module
    * @param {string} module Name of the module
    * @param {object} status Status to update
    */
@@ -239,7 +240,7 @@ VuFind.register('account', function Account() {
   };
 
   /**
-   * Initialize elements which should clear the account cache
+   * Initialize the account AJAX system
    */
   var init = function init() {
     // Update information when certain actions are performed
