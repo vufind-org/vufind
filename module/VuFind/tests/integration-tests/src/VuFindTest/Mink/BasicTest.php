@@ -48,7 +48,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testHomePage(): void
     {
         $page = $this->getSearchHomePage();
-        $this->assertTrue(false !== strstr($page->getContent(), 'VuFind'));
+        $this->assertStringContainsString('VuFind', $page->getContent());
     }
 
     /**
@@ -140,6 +140,31 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
             'Welcome to your custom theme!',
             $this->findCssAndGetHtml($page, 'h1')
         );
+    }
+
+    /**
+     * Test graceful handling of an invalid theme.
+     *
+     * Note that HTML validation is disabled on this test because an improperly initialized
+     * theme will not generate a fully-formed page; but we still want to confirm that it
+     * at least outputs a human-readable error message.
+     *
+     * @return void
+     */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    public function testBadThemeConfig(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'theme' => 'not-a-valid-theme',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertStringContainsString('An error has occurred', $page->getContent());
     }
 
     /**

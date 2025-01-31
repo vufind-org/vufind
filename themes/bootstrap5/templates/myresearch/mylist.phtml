@@ -95,6 +95,7 @@
           <?=$this->record($current)->getListEntry($list, $user)?>
         <?php endforeach; ?>
       </ul>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['isBottom' => true, 'list' => $list ?? null, 'account' => $this->account])?>
     </form>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results]])?>
   <?php else: ?>
