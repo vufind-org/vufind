@@ -96,7 +96,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper implements Logge
      *
      * @return bool
      */
-    protected function isPipelineActive(): bool
+    protected function isPipelineAvailable(): bool
     {
         try {
             $cacheDir = $this->getResourceCacheDir();
@@ -108,6 +108,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper implements Logge
             $this->logError("Cannot write to $cacheDir; disabling asset pipeline.");
             return false;
         }
+        return true;
     }
 
     /**
@@ -655,7 +656,7 @@ class AssetPipeline extends \Laminas\View\Helper\AbstractHelper implements Logge
      */
     protected function processForPipeline(array $assets, string $type): array
     {
-        if (!$this->isPipelineEnabledForType($type) || !$this->isPipelineActive()) {
+        if (!$this->isPipelineEnabledForType($type) || !$this->isPipelineAvailable()) {
             return $assets;
         }
 
