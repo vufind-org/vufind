@@ -69,7 +69,6 @@ return [
         ['file' => 'openurl.js', 'priority' => 390],
         ['file' => 'list_item_selection.js', 'priority' => 400],
         ['file' => 'covers.js', 'priority' => 410],
-        ['file' => 'bs3-compat.js', 'priority' => 1000],
     ],
     /**
      * Configuration for a single or multiple favicons.
