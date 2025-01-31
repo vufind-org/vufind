@@ -133,10 +133,8 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockHeadLink()
     {
-        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadLink::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
+        $mock = $this->createMock(\Laminas\View\Helper\HeadLink::class);
+        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
         return $mock;
     }
 
