@@ -135,6 +135,7 @@ class Results extends \VuFind\Search\Base\Results
             $results = $this->results;
             $suggestions = $this->suggestions;
             $errors = $this->errors;
+            $startRecordOverride = $this->startRecordOverride;
 
             // The API only provides facets when startRecord == 1.
             $this->overrideStartRecord(1);
@@ -145,7 +146,7 @@ class Results extends \VuFind\Search\Base\Results
             $this->results = $results;
             $this->suggestions = $suggestions;
             $this->errors = $errors;
-            $this->overrideStartRecord(null);
+            $this->overrideStartRecord($startRecordOverride);
         }
         return $this->buildFacetList($this->simplifiedResponseFacets, $filter);
     }
