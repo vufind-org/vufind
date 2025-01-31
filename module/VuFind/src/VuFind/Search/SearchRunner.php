@@ -135,7 +135,7 @@ class SearchRunner
         $params->initFromRequest($request);
 
         if (is_callable($setupCallback)) {
-            $setupCallback($this, $params, $runningSearchId);
+            $setupCallback($this, $params, $runningSearchId, $results);
         }
 
         // Trigger the "configuration done" event.

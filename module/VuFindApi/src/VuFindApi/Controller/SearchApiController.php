@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -55,6 +55,14 @@ use function is_array;
 class SearchApiController extends \VuFind\Controller\AbstractSearch implements ApiInterface
 {
     use ApiTrait;
+    use \VuFind\ResumptionToken\ResumptionTokenTrait;
+
+    /**
+     * Default sort used when no sort defined
+     *
+     * @var string
+     */
+    protected const DEFAULT_SORT = 'relevance';
 
     /**
      * Record formatter
@@ -127,6 +135,27 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     protected $maxLimit = 100;
 
     /**
+     * Max limit of cursor search results in API response (default 1000)
+     *
+     * @var int
+     */
+    protected $cursorMaxLimit = 1000;
+
+    /**
+     * Facet configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $facetConfig;
+
+    /**
+     * Hierarchical facets
+     *
+     * @var array
+     */
+    protected $hierarchicalFacets;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service manager
@@ -139,6 +168,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         FacetFormatter $ff
     ) {
         parent::__construct($sm);
+        $this->setResumptionService($this->getDbService(\VuFind\Db\Service\OaiResumptionServiceInterface::class));
         $this->recordFormatter = $rf;
         $this->facetFormatter = $ff;
         foreach ($rf->getRecordFields() as $fieldName => $fieldSpec) {
@@ -146,7 +176,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $this->defaultRecordFields[] = $fieldName;
             }
         }
-
+        $this->facetConfig = $this->getConfig('facets');
+        $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];
         // Load configurations from the search options class:
         $settings = $sm->get(\VuFind\Search\Options\PluginManager::class)
             ->get($this->searchClassId)->getAPISettings();
@@ -304,89 +335,161 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
-        if (
-            isset($request['limit'])
-            && (!ctype_digit($request['limit'])
-            || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
-        ) {
-            return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
-        }
-
-        // Sort by relevance by default
-        if (!isset($request['sort'])) {
-            $request['sort'] = 'relevance';
-        }
-
-        $requestedFields = $this->getFieldList($request);
-
-        $facetConfig = $this->getConfig('facets');
-        $hierarchicalFacets = isset($facetConfig->SpecialFacets->hierarchical)
-            ? $facetConfig->SpecialFacets->hierarchical->toArray()
-            : [];
-
-        $runner = $this->getService(\VuFind\Search\SearchRunner::class);
+        $isCursorSearch = ($request['resumptionToken'] ?? false);
         try {
-            $results = $runner->run(
-                $request,
-                $this->searchClassId,
-                function (
-                    $runner,
-                    $params,
-                    $searchId
-                ) use (
-                    $hierarchicalFacets,
-                    $request,
-                    $requestedFields
-                ) {
-                    foreach ($request['facet'] ?? [] as $facet) {
-                        if (!isset($hierarchicalFacets[$facet])) {
-                            $params->addFacet($facet);
-                        }
-                    }
-                    if ($requestedFields) {
-                        $limit = $request['limit'] ?? 20;
-                        $params->setLimit($limit);
-                    } else {
-                        $params->setLimit(0);
-                    }
-                }
-            );
+            if ($isCursorSearch) {
+                $response = $this->doCursorSearch($request);
+            } else {
+                $response = $this->doDefaultSearch($request);
+            }
         } catch (Exception $e) {
             return $this->output([], self::STATUS_ERROR, 400, $e->getMessage());
         }
+        return $this->output($response, self::STATUS_OK);
+    }
 
+    /**
+     * Perform a search using page in Solr
+     *
+     * @param array $request Array containing combination of post and get request params
+     *
+     * @return array Response to be sent for the user
+     *               - records: Records found
+     *               - resultCount: Total result count
+     *               - facets: array containing facets for the result
+     */
+    protected function doDefaultSearch(array $request): array
+    {
+        if (
+            isset($request['limit']) && (!ctype_digit($request['limit'])
+            || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
+        ) {
+            throw new Exception('Invalid limit', 400);
+        }
+        $limit = $request['limit'] ??= 20;
+        $request['sort'] ??= self::DEFAULT_SORT;
+        $facets = $request['facet'] ??= [];
+        $recordFields = $this->getFieldList($request);
+        $hierarchicalFacets = $this->hierarchicalFacets;
+        $results = $this->getService(\VuFind\Search\SearchRunner::class)->run(
+            $request,
+            $this->searchClassId,
+            function (
+                $runner,
+                $params,
+                $searchId
+            ) use (
+                $limit,
+                $facets,
+                $hierarchicalFacets,
+                $recordFields
+            ) {
+                foreach ($facets as $facet) {
+                    if (!isset($hierarchicalFacets[$facet])) {
+                        $params->addFacet($facet);
+                    }
+                }
+                $params->setLimit($recordFields ? $limit : 0);
+            }
+        );
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
         // warning to the user; otherwise, we should proceed with normal post-search
         // processing.
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
-            return $this->output([], self::STATUS_ERROR, 400, 'Invalid search');
+            throw new Exception('Invalid search', 400);
         }
-
         $response = ['resultCount' => $results->getResultTotal()];
 
         $records = $this->recordFormatter->format(
             $results->getResults(),
-            $requestedFields
+            $recordFields
         );
         if ($records) {
             $response['records'] = $records;
         }
-
-        $requestedFacets = $request['facet'] ?? [];
-        $hierarchicalFacetData = $this->getHierarchicalFacetData(
-            array_intersect($requestedFacets, $hierarchicalFacets)
-        );
-        $facets = $this->facetFormatter->format(
-            $request,
-            $results,
-            $hierarchicalFacetData
-        );
         if ($facets) {
-            $response['facets'] = $facets;
+            $hierarchicalFacetData = $this->getHierarchicalFacetData(
+                array_intersect($facets, $hierarchicalFacets)
+            );
+            if ($facets = $this->facetFormatter->format($request, $results, $hierarchicalFacetData)) {
+                $response['facets'] = $facets;
+            }
         }
+        return $response;
+    }
 
-        return $this->output($response, self::STATUS_OK);
+    /**
+     * Perform a search using cursor in Solr. Do not send facet information when using cursor
+     *
+     * @param array $request Array containing combination of post and get request params
+     *
+     * @return array Response to be sent for the user.
+     *               - records: Found records
+     *               - resultCount: Total result count
+     *               - resumptionToken: Array containing info about resumption token
+     *                  - token
+     */
+    protected function doCursorSearch(array $request): array
+    {
+        unset($request['page']);
+        // Always discard cursors from requests
+        $request['cursor'] = 0;
+        if ('true' !== $request['resumptionToken']) {
+            // Try to load a resumption token for this request
+            $resumptionTokenParams = $this->loadResumptionToken($request['resumptionToken']);
+            if (false === $resumptionTokenParams) {
+                throw new \Exception('badResumptiontoken:Invalid or expired');
+            }
+            $request = array_merge($request, $resumptionTokenParams);
+        }
+        $limit = $this->cursorMaxLimit;
+        $request['sort'] ??= self::DEFAULT_SORT;
+        $cursor = $request['cursor'];
+        $cursorMark = $request['cursorMark'] ?? '';
+        $recordFields = $this->getFieldList($request);
+        $results = $this->getService(\VuFind\Search\SearchRunner::class)->run(
+            $request,
+            $this->searchClassId,
+            function (
+                $runner,
+                $params,
+                $searchId,
+                $results
+            ) use (
+                $cursorMark,
+                $limit
+            ) {
+                $results->overrideStartRecord(1);
+                $results->setCursorMark($cursorMark);
+                $params->setLimit($limit);
+            }
+        );
+        // If we received an EmptySet back, that indicates that the real search
+        // failed due to some kind of syntax error, and we should display a
+        // warning to the user; otherwise, we should proceed with normal post-search
+        // processing.
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            throw new Exception('Invalid search', 400);
+        }
+        $response = ['resultCount' => $results->getResultTotal()];
+
+        $records = $this->recordFormatter->format(
+            $results->getResults(),
+            $recordFields
+        );
+        if ($records) {
+            $response['records'] = $records;
+            // Save resumption token if results were found
+            $nextCursor = $cursor += count($records);
+            $nextCursorMark = $results->getCursorMark();
+            $resumptionToken = $this->createResumptionToken($request, $nextCursor, $nextCursorMark);
+            $response['resumptionToken'] = [
+                'token' => $resumptionToken->getId(),
+                'expires' => $resumptionToken->getExpiry()->format('Y-m-d H:i:s'),
+            ];
+        }
+        return $response;
     }
 
     /**
