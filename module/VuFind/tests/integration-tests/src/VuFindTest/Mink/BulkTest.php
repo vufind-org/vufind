@@ -321,10 +321,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         try {
             $select = $this->findCss($page, '#format', 100);
         } catch (\Exception $e) {
-            // For some reason, the click action does not always succeed here; fall
-            // back to brute force Javascript to prevent intermittent test failures.
-            echo "\n\nMink click failed; retrying with Javascript!\n";
-            $session->evaluateScript('$("' . $buttonSelector . '").click()');
+            // For some reason, the click action does not always succeed here; resizing
+            // the window and retrying seems to prevent intermittent test failures.
+            echo "\n\nMink click failed; retrying with resized window!\n";
+            $session->resizeWindow(1280, 200, 'current');
+            $this->clickCss($page, $buttonSelector);
+            $session->resizeWindow(1280, 768, 'current');
             $select = $this->findCss($page, '#format');
         }
         $select->selectOption('EndNote');
@@ -361,11 +363,13 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
         $this->clickCss($page, $buttonSelector);
         [, $params] = explode('?', $session->getCurrentUrl());
-        // For some reason, the click action does not always succeed here; fall
-        // back to brute force Javascript to prevent intermittent test failures.
+        // For some reason, the click action does not always succeed here; resizing
+        // the window and retrying seems to prevent intermittent test failures.
         if (str_starts_with($params, 'lookfor')) {
-            echo "\n\nMink click failed; retrying with Javascript!\n";
-            $session->evaluateScript('$("' . $buttonSelector . '").click()');
+            echo "\n\nMink click failed; retrying with resized window!\n";
+            $session->resizeWindow(1280, 200, 'current');
+            $this->clickCss($page, $buttonSelector);
+            $session->resizeWindow(1280, 768, 'current');
             [, $params] = explode('?', $session->getCurrentUrl());
         }
         [, $params] = explode('?', $session->getCurrentUrl());
