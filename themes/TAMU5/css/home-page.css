@@ -75,6 +75,19 @@ a:focus,
   border-radius: 0px;
    
 }
+
+nav ul{
+  padding-inline-start: 0;
+}
+
+.navbar .icon{
+  color:#ffffff;
+}
+
+.navbar .icon:hover{
+  color: #ffc222;
+}
+
 .navbar-brand {
   
   height: auto;
@@ -370,7 +383,7 @@ footer {
   margin: 10px 0;
 }
 @media (min-width: 768px) {
-  .form-control {
+  .tab-content .form-control {
       min-width: 400px;
       max-width: 530px;
   }
