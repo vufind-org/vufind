@@ -2,18 +2,6 @@
 VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3CompatibilityLayer() {
   const data_attribute_selector = '[data-dismiss],[data-target],[data-toggle],[data-ride],[data-slide],[data-slide-to]';
 
-  function initPagination() {
-    document.querySelectorAll('.pagination li').forEach((el) => {
-      el.classList.add('page-item');
-      const linkEl = el.querySelector('a');
-      if (linkEl) {
-        linkEl.classList.add('page-link');
-      } else {
-        el.innerHTML = '<a href="#" class="page-link">' + el.innerHTML + '</a>';
-      }
-    });
-  }
-
   function convertDataAttributes(el) {
     if (typeof el.getAttribute === 'undefined') {
       return;
@@ -43,7 +31,6 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
   }
 
   function init() {
-    initPagination();
     initDataAttributeMappings();
   }
 
