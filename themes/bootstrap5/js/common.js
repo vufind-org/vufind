@@ -1,4 +1,4 @@
-/*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -499,12 +499,6 @@ var VuFind = (function VuFind() {
     setupQRCodeLinks();
   };
 
-  function getBootstrapMajorVersion() {
-    // Bootstrap 5 defines bootstrap global, while 3 doesn't, so we can use that as
-    // an easy way to determine the version:
-    return typeof bootstrap === 'undefined' ? 3 : 5;
-  }
-
   /**
    * Disable transition effects and return the previous state
    *
@@ -623,7 +617,6 @@ var VuFind = (function VuFind() {
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,
     setElementContents: setElementContents,
-    getBootstrapMajorVersion: getBootstrapMajorVersion,
     disableTransitions: disableTransitions,
     restoreTransitions: restoreTransitions,
     inURLSearchParams: inURLSearchParams,
