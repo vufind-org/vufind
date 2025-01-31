@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function count;
+
 /**
  * Factory for AssetPipeline view helper.
  *
@@ -46,6 +48,35 @@ use Psr\Container\ContainerInterface;
  */
 class AssetPipelineFactory implements FactoryInterface
 {
+    /**
+     * Split config and return prefixed setting with current environment.
+     *
+     * @param array $config Configuration settings
+     *
+     * @return string|bool
+     */
+    protected function getPipelineConfig(array $config)
+    {
+        $default = false;
+        if (isset($config['Site']['asset_pipeline'])) {
+            $settings = array_map(
+                'trim',
+                explode(';', $config['Site']['asset_pipeline'])
+            );
+            foreach ($settings as $setting) {
+                $parts = array_map('trim', explode(':', $setting));
+                if (APPLICATION_ENV === $parts[0]) {
+                    return $parts[1];
+                } elseif (count($parts) == 1) {
+                    $default = $parts[0];
+                } elseif ($parts[0] === '*') {
+                    $default = $parts[1];
+                }
+            }
+        }
+        return $default;
+    }
+
     /**
      * Create an object
      *
@@ -68,8 +99,15 @@ class AssetPipelineFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
+        $nonce = $nonceGenerator->getNonce();
+        $config = $configManager->get('config')->toArray();
         return new $requestedName(
-            $container->get(\VuFindTheme\ThemeInfo::class)
+            $container->get(\VuFindTheme\ThemeInfo::class),
+            $this->getPipelineConfig($config),
+            $nonce,
+            $config['Site']['asset_pipeline_max_css_import_size'] ?? null
         );
     }
 }
