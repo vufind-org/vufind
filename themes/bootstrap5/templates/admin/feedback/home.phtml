@@ -83,7 +83,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
             </td>
             <td><?=$this->escapeHtml($feedbackEntity->getSiteUrl())?></td>
             <td>
-              <span id="shortMessage_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" class="collapse in message_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>"><?=$this->truncate($feedbackEntity->getMessage(), 100, '')?></span>
+              <span id="shortMessage_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" class="collapse show message_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>"><?=$this->truncate($feedbackEntity->getMessage(), 100, '')?></span>
               <?php if (strlen(($feedbackEntity->getMessage())) > 100): ?>
                 <span id="fullMessage_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" class="collapse fullMessage message_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>"><?=$feedbackEntity->getMessage()?></span>
                 <a id="toggleButton_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" data-bs-toggle="collapse" data-bs-target=".message_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" aria-controls="fullMessage_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" aria-expanded="false" >

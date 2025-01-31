@@ -23,7 +23,7 @@
   <div class="tab-content">
     <?php foreach ($this->captchas as $i => $captcha):?>
       <?php $active = $i == 0 ? ' active' : ''?>
-      <div class="tab-pane fade in<?=$active?>" id="<?=$captcha->getId()?>">
+      <div class="tab-pane fade show<?=$active?>" id="<?=$captcha->getId()?>">
         <?=$this->captcha()->getHtmlForCaptcha($captcha)?>
       </div>
     <?php endforeach;?>

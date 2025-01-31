@@ -2,12 +2,6 @@
 VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3CompatibilityLayer() {
   const data_attribute_selector = '[data-dismiss],[data-target],[data-toggle],[data-ride],[data-slide],[data-slide-to]';
 
-  function initCollapse() {
-    document.querySelectorAll('.collapse.in').forEach((el) => {
-      el.classList.add('show');
-    });
-  }
-
   function initPagination() {
     document.querySelectorAll('.pagination li').forEach((el) => {
       el.classList.add('page-item');
@@ -49,7 +43,6 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
   }
 
   function init() {
-    initCollapse();
     initPagination();
     initDataAttributeMappings();
   }

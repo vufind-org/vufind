@@ -20,7 +20,7 @@
         <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
         </button>
-        <div id="itemhide" class="collapse in">
+        <div id="itemhide" class="collapse show">
           <ul>
             <?php foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
@@ -37,7 +37,7 @@
 <?php
   $script = <<<JS
       $('button.btn.hidden').removeClass('hidden');
-      $('#itemhide').removeClass('in');
+      $('#itemhide').removeClass('show');
       JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
