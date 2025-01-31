@@ -1,11 +1,4 @@
-/* #LESS>
-@import "../../bootstrap3/less/bootstrap";
-@import "colors";
-@import "variables";
-<#LESS */
-/* #SCSS> */
 @import "colors", "variables", "../../bootstrap5/scss/bootstrap";
-/* <#SCSS */
 
 @import "common";
 @import "search";

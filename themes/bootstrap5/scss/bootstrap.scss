@@ -114,7 +114,10 @@ input[type="checkbox"] { cursor: pointer; }
 .btn.disabled:active,
 .btn.disabled:focus,
 .btn.disabled:hover { color: #000; }
-.list-unstyled { margin: 0; }
+.list-unstyled {
+  margin: 0;
+  padding-right: 0;
+}
 .icon-bar { background-color: #888; }
 
 // Icons vs. Underline fix
@@ -183,6 +186,12 @@ img { max-width: 100%; }
 .breadcrumb {
   margin-top: .5rem;
   margin-bottom: .5rem;
+}
+.breadcrumb-item {
+  display: flex;
+  & + .breadcrumb-item::before {
+    padding-inline-end: var(--bs-breadcrumb-item-padding-x);
+  }
 }
 .label { display: inline-block; }
 .popover { width: 250px; }

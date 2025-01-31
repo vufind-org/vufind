@@ -49,7 +49,6 @@ module.exports = {
     "themes/bootstrap5/js/config.js",
     "themes/bootstrap5/js/channels.js",
     "themes/bootstrap5/js/truncate.js",
-    "themes/bootstrap3/**"
   ],
   extends: [],
   env: {

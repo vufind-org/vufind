@@ -117,7 +117,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         $writer->set('Site', 'theme', $name);
         // Enable dropdown
         $settingPrefixes = [
-            'bootstrap' => 'bs3',
+            'bootstrap' => 'bs5',
             'custom' => strtolower(str_replace(' ', '', $name)),
         ];
         // - Set alternate_themes
@@ -127,7 +127,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
             $alts = explode(',', $config->Site->alternate_themes);
             foreach ($alts as $a) {
                 $parts = explode(':', $a);
-                if ($parts[1] === 'bootstrap3') {
+                if ($parts[1] === 'bootstrap5') {
                     $settingPrefixes['bootstrap'] = $parts[0];
                 } elseif ($parts[1] === $name) {
                     $settingPrefixes['custom'] = $parts[0];
@@ -136,7 +136,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
                 }
             }
         }
-        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap3';
+        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap5';
         $altSetting[] = $settingPrefixes['custom'] . ':' . $name;
         $writer->set('Site', 'alternate_themes', implode(',', $altSetting));
         // - Set selectable_themes

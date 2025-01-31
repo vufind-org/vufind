@@ -50,71 +50,23 @@ use function in_array;
 class ChannelLoader
 {
     /**
-     * Cache manager
-     *
-     * @var CacheManager
-     */
-    protected $cacheManager;
-
-    /**
-     * Channel manager
-     *
-     * @var ChannelManager
-     */
-    protected $channelManager;
-
-    /**
-     * Channel configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Record loader
-     *
-     * @var RecordLoader
-     */
-    protected $recordLoader;
-
-    /**
-     * Search runner
-     *
-     * @var SearchRunner
-     */
-    protected $searchRunner;
-
-    /**
-     * Current locale (used for caching)
-     *
-     * @var string
-     */
-    protected $locale;
-
-    /**
      * Constructor
      *
-     * @param Config         $config Channels configuration
-     * @param CacheManager   $cache  Cache manager
-     * @param ChannelManager $cm     Channel manager
-     * @param SearchRunner   $runner Search runner
-     * @param RecordLoader   $loader Record loader
-     * @param string         $locale Current locale (used for caching)
+     * @param Config         $config         Channels configuration
+     * @param CacheManager   $cacheManager   Cache manager
+     * @param ChannelManager $channelManager Channel manager
+     * @param SearchRunner   $searchRunner   Search runner
+     * @param RecordLoader   $recordLoader   Record loader
+     * @param string         $locale         Current locale (used for caching)
      */
     public function __construct(
-        Config $config,
-        CacheManager $cache,
-        ChannelManager $cm,
-        SearchRunner $runner,
-        RecordLoader $loader,
-        string $locale = ''
+        protected Config $config,
+        protected CacheManager $cacheManager,
+        protected ChannelManager $channelManager,
+        protected SearchRunner $searchRunner,
+        protected RecordLoader $recordLoader,
+        protected string $locale = ''
     ) {
-        $this->config = $config;
-        $this->cacheManager = $cache;
-        $this->channelManager = $cm;
-        $this->searchRunner = $runner;
-        $this->recordLoader = $loader;
-        $this->locale = $locale;
     }
 
     /**
@@ -165,7 +117,7 @@ class ChannelLoader
      * if the channelProvider GET parameter is set).
      *
      * @param string $source        Search backend ID
-     * @param array  $configSection Configuration section to load ID list from
+     * @param string $configSection Configuration section to load ID list from
      * @param string $activeId      Currently selected channel ID (if any; used
      * when making an AJAX request for a single additional channel)
      *
@@ -262,10 +214,11 @@ class ChannelLoader
     /**
      * Generates channels for a record.
      *
-     * @param string $recordId      Record ID to load
-     * @param string $token         Channel token (optional, used for AJAX fetching)
-     * @param string $activeChannel Channel being requested (optional, used w/ token)
-     * @param string $source        Search backend to use
+     * @param string $recordId       Record ID to load
+     * @param string $token          Channel token (optional, used for AJAX fetching)
+     * @param string $activeChannel  Channel being requested (optional, used w/ token)
+     * @param string $source         Search backend to use
+     * @param array  $configSections Prioritized list of configuration sections to check
      *
      * @return array
      */
@@ -273,13 +226,20 @@ class ChannelLoader
         $recordId,
         $token = null,
         $activeChannel = null,
-        $source = DEFAULT_SEARCH_BACKEND
+        $source = DEFAULT_SEARCH_BACKEND,
+        array $configSections = ['record']
     ) {
         // Load record:
         $driver = $this->recordLoader->load($recordId, $source);
 
         // Load appropriate channel objects:
-        $providers = $this->getChannelProviders($source, 'record', $activeChannel);
+        $providers = [];
+        foreach ($configSections as $section) {
+            $providers = $this->getChannelProviders($source, $section, $activeChannel);
+            if (!empty($providers)) {
+                break;
+            }
+        }
 
         // Collect details:
         $channels = [];
