@@ -184,7 +184,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
         // Apply all supported configurations:
         $configKeys = [
-            'recordAccessPermission', 'searchAccessPermission', 'maxLimit',
+            'recordAccessPermission', 'searchAccessPermission', 'maxLimit', 'cursorMaxLimit',
         ];
         foreach ($configKeys as $key) {
             if (isset($settings[$key])) {
@@ -222,6 +222,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
             'maxLimit' => $this->maxLimit,
+            'cursorMaxLimit' => $this->cursorMaxLimit,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/openapi',

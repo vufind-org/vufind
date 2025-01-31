@@ -200,6 +200,15 @@
                             "default": 20
                         }
                     },
+                    {
+                        "name": "resumptionToken",
+                        "in": "query",
+                        "description": "Use resumption token for paging the results. Returns <?=$cursorMaxLimit ?> records per request. Using resumption token excludes page setting and returning facets is not possible.",
+                        "schema": {
+                            "type": "integer|boolean",
+                            "default": "false"
+                        }
+                    },
 <?=$commonFields ?>
                 ],
                 "tags": [
@@ -212,6 +221,16 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/<?=$this->modelPrefix?>SearchResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200 (resumption token)": {
+                        "description": "Response containing result count, records and/or resumptionToken.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/<?=$this->modelPrefix?>SearchResponseResumptionToken"
                                 }
                             }
                         }
@@ -371,6 +390,48 @@
                     }
                 },
                 "required": ["resultCount", "status"]
+            },
+            "<?=$this->modelPrefix?>SearchResponseResumptionToken": {
+                "type": "object",
+                "properties": {
+                    "resultCount": {
+                        "description": "Number of results",
+                        "type": "integer"
+                    },
+                    "records": {
+                        "description": "Records",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/<?=$this->modelPrefix?>Record"
+                        }
+                    },
+                    "resumptionToken": {
+                        "description": "New resumption token",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ResumptionToken"
+                        }
+                    },
+                    "status": {
+                        "description": "Status code",
+                        "type": "string",
+                        "enum": ["OK"]
+                    }
+                },
+                "required": ["resultCount", "status"]
+            },
+            "ResumptionToken": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "description": "Token to use for the next request",
+                        "type": "integer"
+                    },
+                    "expires": {
+                        "description": "Time stamp when the token expires",
+                        "type": "string"
+                    }
+                }
             },
             "Subject": {
                 "type": "object",
