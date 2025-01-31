@@ -1,4 +1,7 @@
-<?php if (isset($list)): ?>
+<?php if ($this->isBottom): ?>
+  <?php $this->idPrefix = 'bottom_' . ($this->idPrefix ?? ''); ?>
+<?php endif; ?>
+<?php if (isset($list) && !$this->isBottom): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->getId())?>">
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->getTitle())?>">
 <?php endif; ?>
@@ -9,92 +12,111 @@
   $multiPageSelection = $socialConfig['multi_page_favorites_selection'] ?? true;
   $checkboxSelectAllType = $socialConfig['checkbox_select_all_favorites_type'] ?? 'both';
   ?>
-  <ul class="action-toolbar">
-    <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+  <?php ob_start(); ?>
+    <ul class="action-toolbar">
+      <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+        <?=
+          $this->bulkAction()->button(
+              'email',
+              'send-email',
+              'Email',
+              [
+                'title' => $this->translate('bulk_email_myresearch'),
+              ]
+          )
+        ?>
+      <?php endif; ?>
+      <?php if ((null !== $this->list && $this->userlist()->userCanEditList($user, $list)) || null === $this->list && $user): ?>
+        <?=
+          $this->bulkAction()->button(
+              'delete',
+              'ui-delete',
+              'Delete',
+              [
+                'id' => $this->idPrefix . 'delete_list_items_' . (null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''),
+                'title' => $this->translate('bulk_delete_myresearch'),
+              ]
+          )
+        ?>
+      <?php endif; ?>
+      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
+      <?php if (count($exportOptions) > 0): ?>
+        <?=
+          $this->bulkAction()->button(
+              'export',
+              'export',
+              'Export',
+              [
+                'title' => $this->translate('bulk_export_myresearch'),
+              ]
+          )
+        ?>
+      <?php endif; ?>
       <?=
         $this->bulkAction()->button(
-            'email',
-            'send-email',
-            'Email',
+            'print',
+            'print',
+            'Print',
             [
-              'title' => $this->translate('bulk_email_myresearch'),
+              'title' => $this->translate('bulk_print_myresearch'),
+              'data-lightbox-ignore' => '',
             ]
         )
       ?>
-    <?php endif; ?>
-    <?php if ((null !== $this->list && $this->userlist()->userCanEditList($user, $list)) || null === $this->list && $user): ?>
-      <?=
-        $this->bulkAction()->button(
-            'delete',
-            'ui-delete',
-            'Delete',
-            [
-              'id' => $this->idPrefix . 'delete_list_items_' . (null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''),
-              'title' => $this->translate('bulk_delete_myresearch'),
-            ]
-        )
-      ?>
-    <?php endif; ?>
-    <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-    <?php if (count($exportOptions) > 0): ?>
-      <?=
-        $this->bulkAction()->button(
-            'export',
-            'export',
-            'Export',
-            [
-              'title' => $this->translate('bulk_export_myresearch'),
-            ]
-        )
-      ?>
-    <?php endif; ?>
-    <?=
-      $this->bulkAction()->button(
-          'print',
-          'print',
-          'Print',
-          [
-            'title' => $this->translate('bulk_print_myresearch'),
-            'data-lightbox-ignore' => '',
-          ]
-      )
-    ?>
-    <?php if ($this->cart()->isActive()): ?>
-      <?=
-        $this->bulkAction()->button(
-            'add',
-            'cart-add',
-            'Add to Book Bag',
-            [
-              'id' => $this->idPrefix . 'updateCart',
-            ]
-        )
-      ?>
-    <?php endif; ?>
-  </ul>
-  <ul class="selection-controls-bar">
-    <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
-      <li class="bulk-checkbox">
-        <label for="myresearchCheckAll">
-          <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
-          <?=$this->transEsc('select_all_on_page')?>
-        </label>
-      </li>
-    <?php endif; ?>
-    <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
-      <li class="bulk-checkbox">
-        <div class="select-all-global hidden">
-          <label for="myresearchCheckAllGlobal">
-            <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
-            <?=$this->transEsc('select_all')?>
+      <?php if ($this->cart()->isActive()): ?>
+        <?=
+          $this->bulkAction()->button(
+              'add',
+              'cart-add',
+              'Add to Book Bag',
+              [
+                'id' => $this->idPrefix . 'updateCart',
+              ]
+          )
+        ?>
+      <?php endif; ?>
+    </ul>
+  <?php
+    $bulkActionButtons = ob_get_contents();
+    ob_end_clean();
+    ob_start();
+  ?>
+    <ul class="selection-controls-bar">
+      <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
+        <li class="bulk-checkbox">
+          <?php $selectAllCheckboxId = $this->idPrefix . 'myresearchCheckAll'; ?>
+          <label <?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
+            <input <?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId])?>>
+            <?=$this->transEsc('select_all_on_page')?>
           </label>
-        </div>
-      </li>
-    <?php endif; ?>
-    <?php if($multiPageSelection): ?>
-      <li>
-        <button type="button" class="clear-selection hidden"></button>
-      </li>
-    <?php endif; ?>
-  </ul>
+        </li>
+      <?php endif; ?>
+      <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+        <li class="bulk-checkbox">
+          <div class="select-all-global hidden">
+            <?php $selectAllGlobalCheckboxId = $this->idPrefix . 'myresearchCheckAllGlobal'; ?>
+            <label <?=$this->htmlAttributes(['for' => $selectAllGlobalCheckboxId])?>>
+              <input <?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAllGlobal', 'class' => 'checkbox-select-all-global', 'id' => $selectAllGlobalCheckboxId])?>>
+              <?=$this->transEsc('select_all')?>
+            </label>
+          </div>
+        </li>
+      <?php endif; ?>
+      <?php if($multiPageSelection): ?>
+        <li>
+          <button type="button" class="clear-selection hidden"></button>
+        </li>
+      <?php endif; ?>
+    </ul>
+  <?php
+    $selectionControlsBar = ob_get_contents();
+    ob_end_clean();
+  ?>
+  <?php if ($this->isBottom): ?>
+    <?=$selectionControlsBar?>
+    <?=$bulkActionButtons?>
+  <?php else: ?>
+    <?=$bulkActionButtons?>
+    <?=$selectionControlsBar?>
+  <?php endif; ?>
 </nav>
