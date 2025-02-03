@@ -528,8 +528,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Multi Data' => 'Book',
             'Subjects' => 'Naples (Kingdom) History Spanish rule, 1442-1707 Sources',
             'Online Access' => 'http://fictional.com/sample/url',
-            // Double slash at the end comes from inline javascript
-            'Tags' => 'Add Tag No Tags, Be the first to tag this record! //',
+            'Tags' => 'Add Tag No Tags, Be the first to tag this record!',
             'ZeroAllowed' => 0,
             'c' => 'c',
             'a' => 'a',
