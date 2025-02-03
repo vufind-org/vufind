@@ -249,6 +249,14 @@ class Params
     protected $queryAdapterClass = QueryAdapter::class;
 
     /**
+     * Is this a specialized search (i.e. a customized scenario like new items,
+     * rather than a "normal" backend search)?
+     *
+     * @var bool
+     */
+    protected $isSpecializedSearch = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -376,6 +384,7 @@ class Params
         $this->initSort($request);
         $this->initFilters($request);
         $this->initHiddenFilters($request);
+        $this->isSpecializedSearch = $request->get('specializedSearch', false);
     }
 
     /**
@@ -2121,5 +2130,16 @@ class Params
     {
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         return method_exists($this, 'setFacetContains') && !in_array($facet, $translatedFacets);
+    }
+
+    /**
+     * Is this a specialized search (i.e. a customized scenario like new items,
+     * rather than a "normal" backend search)?
+     *
+     * @return bool
+     */
+    public function isSpecializedSearch(): bool
+    {
+        return $this->isSpecializedSearch;
     }
 }

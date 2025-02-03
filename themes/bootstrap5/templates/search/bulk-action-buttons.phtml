@@ -1,97 +1,122 @@
 <?php
   $searchSettings = $this->searchSettings($this->params);
 ?>
+<?php if ($this->isBottom): ?>
+  <?php $this->idPrefix = 'bottom_' . ($this->idPrefix ?? ''); ?>
+<?php endif; ?>
 <?php if ($searchSettings->checkboxesEnabled()): ?>
   <nav class="bulkActionButtons">
-    <ul class="action-toolbar">
-      <?php if ($searchSettings->bulkOptionsEnabled()): ?>
-        <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
-          <?=
-            $this->bulkAction()->button(
-                'email',
-                'send-email',
-                'Email',
-                array_merge(
-                    [
-                      'id' => $this->idPrefix . 'ribbon-email',
-                      'title' => $this->translate('bulk_email_search'),
-                    ],
-                    $this->formAttr ? ['form' => $this->formAttr] : []
-                )
-            )
-          ?>
-        <?php endif; ?>
-        <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-        <?php if (count($exportOptions) > 0): ?>
-          <?=
-            $this->bulkAction()->button(
-                'export',
-                'export',
-                'Export',
-                array_merge(
-                    [
-                      'id' => $this->idPrefix . 'ribbon-export',
-                      'title' => $this->translate('bulk_export_search'),
-                    ],
-                    $this->formAttr ? ['form' => $this->formAttr] : []
-                )
-            )
-          ?>
-        <?php endif; ?>
-        <?=
-          $this->bulkAction()->button(
-              'print',
-              'print',
-              'Print',
-              array_merge(
-                  [
-                    'id' => $this->idPrefix . 'ribbon-print',
-                    'title' => $this->translate('bulk_print_search'),
-                  ],
-                  $this->formAttr ? ['form' => $this->formAttr] : []
+    <?php ob_start(); ?>
+      <ul class="action-toolbar">
+        <?php if ($searchSettings->bulkOptionsEnabled()): ?>
+          <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
+            <?=
+              $this->bulkAction()->button(
+                  'email',
+                  'send-email',
+                  'Email',
+                  array_merge(
+                      [
+                        'id' => $this->idPrefix . 'ribbon-email',
+                        'title' => $this->translate('bulk_email_search'),
+                      ],
+                      $this->formAttr ? ['form' => $this->formAttr] : []
+                  )
               )
-          )
-        ?>
-        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+            ?>
+          <?php endif; ?>
+          <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
+          <?php if (count($exportOptions) > 0): ?>
+            <?=
+              $this->bulkAction()->button(
+                  'export',
+                  'export',
+                  'Export',
+                  array_merge(
+                      [
+                        'id' => $this->idPrefix . 'ribbon-export',
+                        'title' => $this->translate('bulk_export_search'),
+                      ],
+                      $this->formAttr ? ['form' => $this->formAttr] : []
+                  )
+              )
+            ?>
+          <?php endif; ?>
           <?=
             $this->bulkAction()->button(
-                'saveCart',
-                'user-list-add',
-                'bulk_save_button',
+                'print',
+                'print',
+                'Print',
                 array_merge(
                     [
-                      'id' => $this->idPrefix . 'ribbon-save',
-                      'title' => $this->translate('bulk_save_search'),
+                      'id' => $this->idPrefix . 'ribbon-print',
+                      'title' => $this->translate('bulk_print_search'),
+                    ],
+                    $this->formAttr ? ['form' => $this->formAttr] : []
+                )
+            )
+          ?>
+          <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+            <?=
+              $this->bulkAction()->button(
+                  'saveCart',
+                  'user-list-add',
+                  'bulk_save_button',
+                  array_merge(
+                      [
+                        'id' => $this->idPrefix . 'ribbon-save',
+                        'title' => $this->translate('bulk_save_search'),
+                      ],
+                      $this->formAttr ? ['form' => $this->formAttr] : []
+                  )
+              )
+            ?>
+          <?php endif; ?>
+        <?php endif; ?>
+        <?php if ($searchSettings->cartControlsEnabled()): ?>
+          <?=
+            $this->bulkAction()->button(
+                'add',
+                'cart-add',
+                'Add to Book Bag',
+                array_merge(
+                    [
+                      'id' => $this->idPrefix . 'updateCart',
                     ],
                     $this->formAttr ? ['form' => $this->formAttr] : []
                 )
             )
           ?>
         <?php endif; ?>
-      <?php endif; ?>
-      <?php if ($searchSettings->cartControlsEnabled()): ?>
-        <?=
-          $this->bulkAction()->button(
-              'add',
-              'cart-add',
-              'Add to Book Bag',
-              array_merge(
-                  [
-                    'id' => $this->idPrefix . 'updateCart',
-                  ],
-                  $this->formAttr ? ['form' => $this->formAttr] : []
-              )
-          )
-        ?>
-      <?php endif; ?>
-    </ul>
-    <ul class="selection-controls-bar">
-      <li class="bulk-checkbox">
-        <label for="<?=$this->idPrefix?>addFormCheckboxSelectAll">
-          <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
-          <?=$this->transEsc('select_all_on_page')?>
-        </label>
-      </li>
-    </ul>
+      </ul>
+    <?php
+      $bulkActionButtons = ob_get_contents();
+      ob_end_clean();
+      ob_start();
+    ?>
+      <ul class="selection-controls-bar">
+        <li class="bulk-checkbox">
+          <?php $selectAllCheckboxId = $this->idPrefix . 'addFormCheckboxSelectAll'; ?>
+          <label <?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
+            <?php $selectAllCheckboxAttrs = ['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId]; ?>
+            <?php if($this->formAttr): ?>
+              <?php $selectAllCheckboxAttrs['form'] = $this->formAttr; ?>
+            <?php endif; ?>
+            <input <?=$this->htmlAttributes($selectAllCheckboxAttrs)?>>
+            <?=$this->transEsc('select_all_on_page')?>
+          </label>
+        </li>
+      </ul>
+    <?php
+      $selectionControlsBar = ob_get_contents();
+      ob_end_clean();
+    ?>
+    <?php if ($this->isBottom): ?>
+      <?=$selectionControlsBar?>
+      <?=$bulkActionButtons?>
+    <?php else: ?>
+      <?=$bulkActionButtons?>
+      <?=$selectionControlsBar?>
+    <?php endif; ?>
   </nav>
 <?php endif; ?>

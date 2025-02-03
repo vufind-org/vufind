@@ -123,7 +123,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     public function getView()
     {
-        $viewArr = explode('|', $this->view ?? '');
+        $viewArr = explode('_', $this->view ?? '');
         return $viewArr[0];
     }
 

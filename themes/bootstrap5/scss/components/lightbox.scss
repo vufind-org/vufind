@@ -13,12 +13,7 @@
 @media (min-width: 768px) {
   #modal .modal-dialog {
     width: fit-content;
-/* #SCSS> */
     max-width: #{'min(1200px, calc(100vw - 200px))'};
-/* <#SCSS */
-/* #LESS>
-    max-width: min(1200px, calc(100vw - 200px));
-<#LESS */
     min-width: 600px;
     padding: 0;
 

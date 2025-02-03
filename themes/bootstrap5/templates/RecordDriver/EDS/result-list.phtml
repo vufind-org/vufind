@@ -74,9 +74,7 @@
             <p>
               <?=$this->transEsc('This result is not displayed to guests')?>
               <br>
-              <a class="login" href="<?=$this->url('myresearch-userlogin')?>">
-                <strong><?=$this->transEsc('Login for full access')?></strong>
-              </a>
+              <?=$this->render('error/loginForAccess.phtml')?>
             </p>
           </div>
         <?php endif; ?>

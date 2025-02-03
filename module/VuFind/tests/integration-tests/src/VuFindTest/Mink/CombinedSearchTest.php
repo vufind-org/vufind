@@ -240,15 +240,33 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testJumpMenu()
+     *
+     * @return array[]
+     */
+    public static function jumpMenuProvider(): array
+    {
+        return [
+            'anchor mode' => ['anchor'],
+            'link mode' => ['link'],
+        ];
+    }
+
+    /**
      * Test that the jump menu can be enabled.
      *
+     * @param string $linkMode Linking mode to activate
+     *
      * @return void
+     *
+     * @dataProvider jumpMenuProvider
      */
-    public function testJumpMenu(): void
+    public function testJumpMenu(string $linkMode): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true; // use mixed AJAX mode for more thorough test
         $config['Layout']['jump_links'] = true;
+        $config['Layout']['jump_links_mode'] = $linkMode;
         $this->changeConfigs(
             ['combined' => $config],
             ['combined']
@@ -262,6 +280,18 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $expectedContent,
             $this->findCssAndGetText($page, '.combined-jump-links')
         );
+        $firstLink = $this->findCss($page, '.combined-jump-links a')->getAttribute('href');
+        $secondLink = $this->findCss($page, '.combined-jump-links a', index: 1)->getAttribute('href');
+        $expectedFirstLink = $linkMode === 'anchor'
+            ? '#combined_Solr____one'
+            : '/Search/Results?hiddenFilters%5B%5D=building%3A%22journals.mrc%22&lookfor=id%3A%22testsample1%22'
+                . '+OR+id%3A%22theplus%2Bandtheminus-%22&type=AllFields';
+        $expectedSecondLink = $linkMode === 'anchor'
+            ? '#combined_Solr____two'
+            : '/Search/Results?hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22&lookfor=id%3A%22testsample1%22'
+                . '+OR+id%3A%22theplus%2Bandtheminus-%22&type=AllFields';
+        $this->assertStringEndsWith($expectedFirstLink, $firstLink);
+        $this->assertStringEndsWith($expectedSecondLink, $secondLink);
     }
 
     /**

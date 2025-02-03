@@ -8,23 +8,15 @@
     . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
-<?php $validatorCallback = <<<JS
-    function phoneNumberValidation() {
-      return phoneNumberFormHandler('sms_to', '{$this->validation}');
-    }
-    JS;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $validatorCallback, 'SET'); ?>
 <h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
-<form method="post" name="smsRecord" class="form-record-sms"<?php if (isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<?php endif; ?>>
+<form method="post" name="smsRecord" class="form-record-sms">
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
   <div class="form-group">
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
-    <input id="sms_to" type="tel" name="to" value="<?=$this->escapeHtmlAttr($this->to)?>" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control">
-    <div class="help-block with-errors"></div>
+    <input id="sms_to" type="tel" name="to" value="<?=$this->escapeHtmlAttr($this->to)?>" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control" required<?=!empty($this->validation) ? ' data-validator-region="' . $this->escapeHtmlAttr($this->validation) . '"' : ''?>>
   </div>
   <?php if (is_array($this->carriers) && count($this->carriers) > 1): ?>
     <div class="form-group">
