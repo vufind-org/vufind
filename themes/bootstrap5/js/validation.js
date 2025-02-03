@@ -39,7 +39,6 @@ VuFind.register('validation', function Validation() {
     return true;
   }
 
-
   /**
    * Check field validity
    * @param {Event} ev Event

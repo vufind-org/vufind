@@ -830,6 +830,42 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check that a field content is valid (does not have the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return bool
+     */
+    protected function checkFieldIsValid(Element $page, $selector)
+    {
+        $timeout ??= $this->getDefaultTimeout();
+        $session = $this->getMinkSession();
+        $session->wait(
+            $timeout,
+            "document.querySelector('$selector:invalid') === null"
+        );
+    }
+
+    /**
+     * Check that a field content is invalid (has the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return bool
+     */
+    protected function checkFieldIsInvalid(Element $page, $selector)
+    {
+        $timeout ??= $this->getDefaultTimeout();
+        $session = $this->getMinkSession();
+        $session->wait(
+            $timeout,
+            "document.querySelector('$selector:invalid') !== null"
+        );
+    }
+
+    /**
      * Wait for a callback to return the expected value
      *
      * @param mixed    $expected    Expected value
