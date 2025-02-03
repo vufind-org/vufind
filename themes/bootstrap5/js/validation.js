@@ -25,7 +25,6 @@ VuFind.register('validation', function Validation() {
    * Check field phone number validity
    * @param {Event} ev Event
    * @returns {boolean} Validity
-   * @deprecated See validation.js
    */
   function checkPhoneNumberValidity(ev) {
     const field = ev.target;
