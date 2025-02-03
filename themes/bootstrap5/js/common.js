@@ -726,7 +726,12 @@ function getUrlRoot(url) {
   return urlroot;
 }
 
-// Phone number validation
+/**
+ * Phone number validation
+ * @param {String} numID Phone number field ID
+ * @param {String} regionCode Region code
+ * @deprecated See validation.js for replacement
+ */
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
