@@ -21,7 +21,7 @@
           'relais_success_message' => 'relais_success_message',
         ]
     );
-    $this->assetPipeline()->appendScriptFile('relais.js');
+    $this->assetManager()->appendScriptFile('relais.js');
     $addLink = $this->escapeJs($this->url('relais-request'));
     $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
     $failLink = $this->escapeJs($this->relais()->getSearchLink($driver));

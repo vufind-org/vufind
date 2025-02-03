@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Preview') . ': ' . $this->driver->getBreadcrumb());
 
     // load the embedded preview javascript file
-    $this->assetPipeline()->appendScriptFile('https://www.google.com/books/jsapi.js');
-    $this->assetPipeline()->appendScriptFile('embedGBS.js');
+    $this->assetManager()->appendScriptFile('https://www.google.com/books/jsapi.js');
+    $this->assetManager()->appendScriptFile('embedGBS.js');
 ?>
 <div id="gbsViewer" style="height: 600px;"></div>

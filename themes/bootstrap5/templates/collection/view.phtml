@@ -1,14 +1,14 @@
 <?php
   // Set up standard record scripts:
-  $this->assetPipeline()->appendScriptFile('record.js');
-  $this->assetPipeline()->appendScriptFile('check_save_statuses.js');
+  $this->assetManager()->appendScriptFile('record.js');
+  $this->assetManager()->appendScriptFile('check_save_statuses.js');
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
-    $this->assetPipeline()->appendScriptFile($this->syndeticsPlus()->getScript());
+    $this->assetManager()->appendScriptFile($this->syndeticsPlus()->getScript());
   }
   // Add any extra scripts the tabs require:
   foreach ($this->tabsExtraScripts as $script) {
-    $this->assetPipeline()->appendScriptFile($script);
+    $this->assetManager()->appendScriptFile($script);
   }
 
   // Add RDF header link if applicable:

@@ -109,8 +109,8 @@
       <input type="text" id="PublicationDateSlider">
     </div>
     <?php
-      $this->assetPipeline()->appendScriptFile('vendor/bootstrap-slider.min.js');
-      $this->assetPipeline()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      $this->assetManager()->appendScriptFile('vendor/bootstrap-slider.min.js');
+      $this->assetManager()->appendStylesheet('vendor/bootstrap-slider.min.css');
       $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
       $future = date('Y', time() + 31536000);
       $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;

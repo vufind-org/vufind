@@ -1,6 +1,6 @@
 <?php
   $this->layout()->sideFacetsInstanceCounter = ($this->layout()->sideFacetsInstanceCounter ?? 0) + 1;
-  $this->assetPipeline()->appendScriptFile('facets.js');
+  $this->assetManager()->appendScriptFile('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();

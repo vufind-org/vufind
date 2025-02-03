@@ -1,5 +1,5 @@
 <?php
-  $this->assetPipeline()->appendStylesheet('EDS.css');
+  $this->assetManager()->appendStylesheet('EDS.css');
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
   $recordLinker = $this->recordLinker($this->results);

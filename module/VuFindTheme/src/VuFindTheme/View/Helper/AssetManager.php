@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Asset pipeline view helper
+ * Asset manager view helper (for pre-processing, combining when appropriate, etc.)
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function in_array;
 use function is_resource;
 
 /**
- * Asset pipeline view helper.
+ * Asset manager view helper (for pre-processing, combining when appropriate, etc.)
  *
  * @category VuFind
  * @package  View_Helpers
@@ -49,7 +49,7 @@ use function is_resource;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AssetPipeline extends \Laminas\View\Helper\AbstractHelper implements LoggerAwareInterface
+class AssetManager extends \Laminas\View\Helper\AbstractHelper implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use RelativePathTrait;

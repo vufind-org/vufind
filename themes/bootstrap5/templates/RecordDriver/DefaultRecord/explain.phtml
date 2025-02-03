@@ -1,6 +1,6 @@
 <?php
-$this->assetPipeline()->appendScriptFile('vendor/chart.js');
-$this->assetPipeline()->appendScriptFile('explain.js');
+$this->assetManager()->appendScriptFile('vendor/chart.js');
+$this->assetManager()->appendScriptFile('explain.js');
 
 $explanation = $this->explanation;
 $recordId = $explanation->getRecordId();

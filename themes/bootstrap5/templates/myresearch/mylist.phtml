@@ -10,12 +10,12 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
-  $this->assetPipeline()->appendScriptFile('check_item_statuses.js');
+  $this->assetManager()->appendScriptFile('check_item_statuses.js');
 
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != 'full') {
-    $this->assetPipeline()->appendScriptFile('record.js');
-    $this->assetPipeline()->appendScriptFile('embedded_record.js');
+    $this->assetManager()->appendScriptFile('record.js');
+    $this->assetManager()->appendScriptFile('embedded_record.js');
   }
 
   $recordTotal = $this->results->getResultTotal();

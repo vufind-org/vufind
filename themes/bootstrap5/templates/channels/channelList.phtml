@@ -1,8 +1,8 @@
 <?php
-  $this->assetPipeline()->appendStylesheet('vendor/slick.css');
-  $this->assetPipeline()->appendStylesheet('vendor/slick-theme.css');
-  $this->assetPipeline()->appendScriptFile('vendor/slick.min.js');
-  $this->assetPipeline()->appendScriptFile('channels.js');
+  $this->assetManager()->appendStylesheet('vendor/slick.css');
+  $this->assetManager()->appendStylesheet('vendor/slick-theme.css');
+  $this->assetManager()->appendScriptFile('vendor/slick.min.js');
+  $this->assetManager()->appendScriptFile('channels.js');
   $this->jsTranslations()->addStrings([
     'channel_browse' => 'channel_browse',
     'channel_expand' => 'channel_expand',

@@ -5,8 +5,8 @@
 ?>
 <?php if (!empty($this->request) && $score && $maxScore !== null && $maxScore > 0):?>
   <?php
-  $this->assetPipeline()->appendScriptFile('vendor/chart.js');
-  $this->assetPipeline()->appendScriptFile('explain.js');
+  $this->assetManager()->appendScriptFile('vendor/chart.js');
+  $this->assetManager()->appendScriptFile('explain.js');
   $link = $this->recordLinker()->getActionUrl($this->driver, 'Explain', $this->request);
   ?>
   <a class="result-list-explain" target="_blank" href="<?=$this->escapeHtmlAttr($link)?>">

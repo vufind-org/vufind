@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for AssetPipeline view helper.
+ * Factory for AssetManager view helper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use Psr\Container\ContainerInterface;
 use function count;
 
 /**
- * Factory for AssetPipeline view helper.
+ * Factory for AssetManager view helper.
  *
  * @category VuFind
  * @package  Theme
@@ -46,7 +46,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AssetPipelineFactory implements FactoryInterface
+class AssetManagerFactory implements FactoryInterface
 {
     /**
      * Split config and return prefixed setting with current environment.

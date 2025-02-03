@@ -109,12 +109,12 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     protected function addLinks(bool $partial = false)
     {
         // Convenient shortcut to view helper:
-        $assetPipeline = $this->getView()->plugin('assetPipeline');
+        $assetManager = $this->getView()->plugin('assetManager');
 
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $assetPipeline->forcePrependStylesheet(
+            $assetManager->forcePrependStylesheet(
                 $current['file'],
                 empty($current['media']) ? 'all' : $current['media'],
                 $current['conditional'] ?? '',
@@ -171,7 +171,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
                 );
             }
             $this->getView()
-                ->plugin('assetPipeline')
+                ->plugin('assetManager')
                 ->forcePrependScriptFile(
                     $current['file'],
                     'text/javascript',

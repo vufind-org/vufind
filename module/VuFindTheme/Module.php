@@ -107,7 +107,7 @@ class Module
     {
         return [
             'factories' => [
-                View\Helper\AssetPipeline::class => View\Helper\AssetPipelineFactory::class,
+                View\Helper\AssetManager::class => View\Helper\AssetManagerFactory::class,
                 View\Helper\FootScript::class => View\Helper\PipelineInjectorFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
                 View\Helper\HeadScript::class => View\Helper\PipelineInjectorFactory::class,
@@ -118,7 +118,7 @@ class Module
                 View\Helper\SetupThemeResources::class => View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
-                'assetPipeline' => View\Helper\AssetPipeline::class,
+                'assetManager' => View\Helper\AssetManager::class,
                 'footScript' => View\Helper\FootScript::class,
                 // Legacy alias for compatibility with pre-8.0 templates:
                 'headThemeResources' => View\Helper\SetupThemeResources::class,

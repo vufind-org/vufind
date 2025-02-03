@@ -34,11 +34,11 @@
   }
 
   // Step 1: Load the javascript
-  $this->assetPipeline()->appendScriptFile(
+  $this->assetManager()->appendScriptFile(
       $this->advancedSearchJsOverride ?? 'advanced_search.js'
   );
   // Step 2: Build the page
-  $this->assetPipeline()->appendScript(
+  $this->assetManager()->appendScript(
       $this->partial(
           $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
           ['options' => $this->options, 'searchDetails' => $searchDetails]
