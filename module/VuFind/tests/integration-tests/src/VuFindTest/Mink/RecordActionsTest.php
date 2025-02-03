@@ -702,32 +702,30 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // - too empty
         $this->findCssAndSetValue($page, '.modal #sms_to', '');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too short
         $this->findCssAndSetValue($page, '.modal #sms_to', '123');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too long
         $this->findCssAndSetValue($page, '.modal #sms_to', '12345678912345678912345679');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too lettery
         $this->findCssAndSetValue($page, '.modal #sms_to', '123abc');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - just right
         $this->findCssAndSetValue($page, '.modal #sms_to', '8005555555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
-        $this->assertNull($page->find('css', '.modal .sms-error'));
+        $this->checkFieldIsValid($page, '.modal #sms_to');
 
-        $this->unFindCss($page, '.modal .sms-error');
         // - pretty just right
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
-        $this->assertNull($page->find('css', '.modal .sms-error'));
-        $this->unFindCss($page, '.modal .sms-error');
+        $this->checkFieldIsValid($page, '.modal #sms_to');
         // Send text to false number
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $this->findCss($page, '.modal #sms_provider option');

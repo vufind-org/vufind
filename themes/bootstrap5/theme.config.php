@@ -55,7 +55,6 @@ return [
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/popper.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
-        ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
@@ -69,6 +68,7 @@ return [
         ['file' => 'openurl.js', 'priority' => 390],
         ['file' => 'list_item_selection.js', 'priority' => 400],
         ['file' => 'covers.js', 'priority' => 410],
+        ['file' => 'validation.js', 'priority' => 420],
         ['file' => 'bs3-compat.js', 'priority' => 1000],
     ],
     /**

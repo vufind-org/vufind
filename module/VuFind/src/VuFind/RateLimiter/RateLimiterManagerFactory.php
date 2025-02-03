@@ -125,6 +125,15 @@ class RateLimiterManagerFactory implements FactoryInterface
         string $configSection = 'rateLimiterSettings'
     ): LimiterInterface {
         $policy = $config['Policies'][$policyId] ?? [];
+
+        // Truncate IP if configured, to share a quota among related IPs.
+        $ipv4Octets = $policy['groupByIpv4Octets'] ?? null;
+        $ipv6Hextets = $policy['groupByIpv6Hextets'] ?? null;
+        if ($ipv4Octets || $ipv6Hextets) {
+            $ipUtils = $this->serviceLocator->get(\VuFind\Net\IpAddressUtils::class);
+            $clientIp = $ipUtils->truncate($clientIp, $ipv4Octets, $ipv6Hextets);
+        }
+
         $rateLimiterConfig = $policy[$configSection] ?? [];
         $rateLimiterConfig['id'] = $policyId;
         if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {

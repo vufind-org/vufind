@@ -9,7 +9,6 @@
 <div class="form-group">
   <label class="control-label" for="account_email"><?=$this->transEsc('Email Address')?>:</label>
   <input id="account_email" type="email" name="email" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request->get('email'))?>" class="form-control" autocomplete="email">
-  <div class="help-block with-errors"></div>
 </div>
 <div class="form-group">
   <label class="control-label" for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
@@ -21,7 +20,6 @@
   <?php if ($this->usernamePolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->usernamePolicy['hint']) ?></div>
   <?php endif; ?>
-  <div class="help-block with-errors"></div>
 </div>
 <div class="form-group">
   <label class="control-label" for="account_password"><?=$this->transEsc('Password')?>:</label>
@@ -33,10 +31,8 @@
   <?php if ($this->passwordPolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->passwordPolicy['hint']) ?></div>
   <?php endif; ?>
-  <div class="help-block with-errors"></div>
 </div>
 <div class="form-group">
   <label class="control-label" for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
   <input id="account_password2" type="password" name="password2" required class="form-control" data-match="#account_password" data-match-error="<?=$this->transEscAttr('Passwords do not match')?>" autocomplete="new-password">
-  <div class="help-block with-errors"></div>
 </div>

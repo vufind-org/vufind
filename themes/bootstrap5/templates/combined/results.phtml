@@ -54,7 +54,15 @@
   </div>
 <?php endif; ?>
 <?php if ($config['Layout']['jump_links'] ?? false): ?>
-  <?=$this->render('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
+  <?=
+    $this->render(
+        'combined/jump-links.phtml',
+        [
+          'combinedResults' => $this->combinedResults,
+          'mode' => $config['Layout']['jump_links_mode'] ?? 'anchor',
+        ]
+    )
+  ?>
 <?php endif; ?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
