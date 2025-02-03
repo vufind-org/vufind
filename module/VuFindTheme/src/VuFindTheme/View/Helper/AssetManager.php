@@ -714,6 +714,49 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
     }
 
     /**
+     * Output an inline script.
+     *
+     * @param string $script              Script code
+     * @param string $type                Script type
+     * @param array  $attrs               Additional attributes for the script tag
+     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     *
+     * @return string
+     */
+    public function outputInlineScript(
+        string $script,
+        string $type = 'text/javascript',
+        array $attrs = [],
+        bool $allowArbitraryAttrs = false,
+    ): string {
+        $inlineScript = $this->getView()->plugin('inlineScript');
+        if ($allowArbitraryAttrs) {
+            $inlineScript->setAllowArbitraryAttributes(true);
+        }
+        $inlineScript->setScript($script, $type, $attrs);
+        return ($inlineScript)();
+    }
+
+    /**
+     * Output an inline script file.
+     *
+     * @param string $src   Script src
+     * @param string $type  Script type
+     * @param array  $attrs Array of script attributes
+     *
+     * @return string
+     */
+    public function outputInlineScriptFile(
+        string $src,
+        string $type = 'text/javascript',
+        array $attrs = [],
+    ): string {
+        $inlineScript = $this->getView()->plugin('inlineScript');
+        $inlineScript->setFile($src, $type, $attrs);
+        return ($inlineScript)();
+    }
+
+    /**
      * Output the collected assets for the footer.
      *
      * @return string

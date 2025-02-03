@@ -7,7 +7,7 @@
       }
       JS;
 ?>
-<?=$this->inlineScript()->appendScript($js)?>
+<?=$this->assetManager()->outputInlineScript($js)?>
 
 <div
     class="cf-turnstile"

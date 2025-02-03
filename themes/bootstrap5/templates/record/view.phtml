@@ -98,4 +98,4 @@
     </div>
   <?php endif; ?>
 </div>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
+<?=$this->assetManager()->outputInlineScript('$(document).ready(recordDocReady);'); ?>
