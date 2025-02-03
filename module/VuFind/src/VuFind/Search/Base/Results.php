@@ -79,7 +79,7 @@ abstract class Results
     /**
      * Override (only for use in very rare cases)
      *
-     * @var int
+     * @var ?int
      */
     protected $startRecordOverride = null;
 
@@ -188,6 +188,13 @@ abstract class Results
      * @var HierarchicalFacetHelperInterface
      */
     protected $hierarchicalFacetHelper = null;
+
+    /**
+     * If the results provide only a restricted view.
+     *
+     * @var bool
+     */
+    protected bool $restrictedView = false;
 
     /**
      * Extra search details.
@@ -367,7 +374,7 @@ abstract class Results
     /**
      * Manually override the start record number.
      *
-     * @param int $rec Record number to use.
+     * @param ?int $rec Record number to use.
      *
      * @return void
      */
@@ -841,6 +848,16 @@ abstract class Results
             $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
+    }
+
+    /**
+     * Check if the results provide only a restricted view.
+     *
+     * @return bool
+     */
+    public function isRestrictedView()
+    {
+        return $this->restrictedView;
     }
 
     /**

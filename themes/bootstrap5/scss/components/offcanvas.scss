@@ -1,9 +1,4 @@
-/* #LESS>
-$offcanvas-offset: 80vw;  // Width of open menu
-<#LESS */
-/* #SCSS> */
 $offcanvas-offset: 80vw !default;  // Width of open menu
-/* <#SCSS */
 
 .vufind-offcanvas-overlay { display: none; }
 

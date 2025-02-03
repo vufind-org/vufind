@@ -48,6 +48,7 @@ use function is_callable;
 class Options extends \VuFind\Search\Base\Options
 {
     use \VuFind\Config\Feature\ExplodeSettingTrait;
+    use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
      * Default limit option
@@ -168,13 +169,6 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = $this->facetsIni = 'EDS';
         $this->searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
-        // 2015-06-30 RF - Changed to unlimited
-        //$this->resultLimit = 100;
-        $this->viewOptions = [
-            'list|title' => 'Title View',
-            'list|brief' => 'Brief View',
-            'list|detailed' => 'Detailed View',
-        ];
         // If we get the API info as a callback, defer until it's actually needed to
         // avoid calling the API:
         if (is_callable($apiInfo)) {
@@ -312,14 +306,13 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the view associated with this configuration
+     * Return the view type to request from the EDS API.
      *
      * @return string
      */
     public function getEdsView()
     {
-        $viewArr = explode('|', $this->getApiProperty('defaultView'));
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
+        return $this->getDefaultViewPart(1);
     }
 
     /**
@@ -492,10 +485,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // View preferences
-        if (isset($this->searchSettings->General->default_view)) {
-            $this->defaultView
-                = 'list|' . $this->searchSettings->General->default_view;
-        }
+        $this->initViewOptions($this->searchSettings);
 
         // Load list view for result (controls AJAX embedding vs. linking)
         if (isset($this->searchSettings->List->view)) {
@@ -724,7 +714,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
 
         // default view
-        $this->defaultView ??= 'list|' . ($settings['ResultListView'] ?? 'brief');
+        $this->defaultView ??= 'list_' . ($settings['ResultListView'] ?? 'brief');
     }
 
     /**
@@ -796,8 +786,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getDefaultView()
     {
-        $viewArr = explode('|', $this->getApiProperty('defaultView'));
-        return $viewArr[0];
+        return $this->getDefaultViewPart(0, 'list');
     }
 
     /**
@@ -827,5 +816,25 @@ class Options extends \VuFind\Search\Base\Options
             }
         }
         return $this->defaultFilters;
+    }
+
+    /**
+     * Extract a component from the defaultView API property.
+     *
+     * The defaultView API property takes the form vufindSetting_ebscoSetting -- the first component
+     * of the underscore-delimited string is the view name used by VuFind (e.g. list or grid).
+     * However, for EDS only list is suggested to be used. The second component is the format
+     * requested from the EDS API (e.g. title, brief or detailed).
+     *
+     * @param int     $index   Index of part to extract from the property
+     * @param ?string $default Default to use as a fallback if the property does not contain delimited values
+     *
+     * @return string
+     */
+    protected function getDefaultViewPart(int $index, ?string $default = null): string
+    {
+        $apiDefaultView = $this->getApiProperty('defaultView');
+        $viewArr = explode('_', $apiDefaultView);
+        return (count($viewArr) > 1) ? $viewArr[$index] : ($default ?? $apiDefaultView);
     }
 }
