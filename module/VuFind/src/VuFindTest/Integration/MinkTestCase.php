@@ -835,14 +835,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param Element $page     Page element (not currently used)
      * @param string  $selector CSS selector
      *
-     * @return bool
+     * @return void
      */
-    protected function checkFieldIsValid(Element $page, $selector)
+    protected function checkFieldIsValid(Element $page, string $selector): void
     {
-        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
-            $timeout,
+            $this->getDefaultTimeout(),
             "document.querySelector('$selector:invalid') === null"
         );
     }
@@ -853,14 +852,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param Element $page     Page element (not currently used)
      * @param string  $selector CSS selector
      *
-     * @return bool
+     * @return void
      */
-    protected function checkFieldIsInvalid(Element $page, $selector)
+    protected function checkFieldIsInvalid(Element $page, string $selector): void
     {
-        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
-            $timeout,
+            $this->getDefaultTimeout(),
             "document.querySelector('$selector:invalid') !== null"
         );
     }
