@@ -737,12 +737,10 @@ function phoneNumberFormHandler(numID, regionCode) {
     } else {
       valid = VuFind.translate('libphonenumber_invalid');
     }
-    $(phoneInput).siblings('.help-block.with-errors').html(valid);
-    $(phoneInput).closest('.form-group').addClass('sms-error');
+    phoneInput.setCustomValidity(valid);
     return false;
   } else {
-    $(phoneInput).closest('.form-group').removeClass('sms-error');
-    $(phoneInput).siblings('.help-block.with-errors').html('');
+    phoneInput.setCustomValidity('');
   }
 }
 

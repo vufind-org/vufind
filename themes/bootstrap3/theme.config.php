@@ -58,7 +58,6 @@ return [
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],
-        ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
@@ -70,6 +69,7 @@ return [
         ['file' => 'observer_manager.js', 'priority' => 370],
         ['file' => 'openurl.js', 'priority' => 380],
         ['file' => 'list_item_selection.js', 'priority' => 390],
+        ['file' => 'validation.js', 'priority' => 400],
     ],
     /**
      * Configuration for a single or multiple favicons.

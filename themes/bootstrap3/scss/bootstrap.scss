@@ -225,22 +225,6 @@ footer {
 .flex-col { flex: 0 1 100%; }
 .flex-none { flex: none; }
 
-/* ------ Form Errors ------ */
-.has-error {margin-bottom: 0;}
-.sms-error { @extend .has-error; }
-.help-block.with-errors {
-  margin: 0;
-  &:first-child {
-    padding-top: $padding-base-vertical;
-  }
-  padding-bottom: $padding-base-vertical;
-  &:empty {padding: 0;}
-
-  ul.list-unstyled {
-    margin: 0;
-  }
-}
-
 /* ------ Admin ------ */
 .form-admin-maintenance .form-control {
   display: inline-block;
