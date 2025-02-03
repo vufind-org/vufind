@@ -102,7 +102,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function disabledTestAddComment(): void
+    public function testAddComment(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -148,7 +148,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testAddComment
      */
-    public function disabledTestAddCommentWithCaptcha(): void
+    public function testAddCommentWithCaptcha(): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -240,7 +240,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testAddComment
      */
-    public function disabledTestAddTag(): void
+    public function testAddTag(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -314,7 +314,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testAddTag
      */
-    public function disabledTestTagSearch(): void
+    public function testTagSearch(): void
     {
         // First try an undefined tag:
         $page = $this->performSearch('tag-not-in-system', 'tag');
@@ -358,7 +358,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testTagSearch
      */
-    public function disabledTestTagSearchSort(
+    public function testTagSearchSort(
         int $index,
         string $expectedSort,
         string $expectedFirst,
@@ -378,7 +378,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testTagSearch
      */
-    public function disabledTestTagAutocomplete(): void
+    public function testTagAutocomplete(): void
     {
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
@@ -407,7 +407,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testAddTag
      */
-    public function disabledTestAddSensitiveTag(): void
+    public function testAddSensitiveTag(): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -464,7 +464,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @depends testTagSearch
      * @depends testAddSensitiveTag
      */
-    public function disabledTestTagAdminHome(): void
+    public function testTagAdminHome(): void
     {
         // Go to admin page:
         $page = $this->goToTagAdmin();
@@ -482,7 +482,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @depends testTagSearch
      * @depends testAddSensitiveTag
      */
-    public function disabledTestTagAdminList(): void
+    public function testTagAdminList(): void
     {
         $page = $this->goToTagAdmin('/List');
 
@@ -536,7 +536,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testTagAdminList
      */
-    public function disabledTestTagAdminManage(): void
+    public function testTagAdminManage(): void
     {
         $page = $this->goToTagAdmin('/Manage');
 
@@ -619,7 +619,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function disabledTestEmail(): void
+    public function testEmail(): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -740,7 +740,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function disabledTestPrint(): void
+    public function testPrint(): void
     {
         // Go to a record view (manually search so we can access $session)
         $page = $this->performSearch('Dewey');
@@ -764,7 +764,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function disabledTestRatingDisabled(): void
+    public function testRatingDisabled(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -794,7 +794,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function disabledTestRating($allowRemove): void
+    public function testRating($allowRemove): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -946,7 +946,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function disabledTestRefWorksExportButton(): void
+    public function testRefWorksExportButton(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
