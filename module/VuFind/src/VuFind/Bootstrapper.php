@@ -241,12 +241,20 @@ class Bootstrapper
      */
     protected function initTheme(): void
     {
-        // Attach remaining theme configuration to the dispatch event at high
-        // priority (TODO: use priority constant once defined by framework):
-        $config = $this->config->Site;
-        $callback = function ($event) use ($config) {
-            $theme = new \VuFindTheme\Initializer($config, $event);
-            $theme->init();
+        // Attach remaining theme configuration to the dispatch event at high priority:
+        $siteConfig = $this->config->Site;
+        $callback = function ($event) use ($siteConfig) {
+            $theme = new \VuFindTheme\Initializer($siteConfig, $event);
+            try {
+                $theme->init();
+            } catch (\Exception $e) {
+                // Try to display an error page if the theme fails to initialize:
+                $appConfig = $this->container->get('config');
+                $model = $event->getViewModel();
+                $model->setTemplate('error/index');
+                $model->display_exceptions = $appConfig['view_manager']['display_exceptions'] ?? false;
+                $model->exception = $e;
+            }
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);

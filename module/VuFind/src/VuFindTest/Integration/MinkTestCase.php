@@ -32,7 +32,6 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
-use Laminas\Config\Reader\Ini;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
@@ -861,6 +860,40 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             }
         }
         return false;
+    }
+
+    /**
+     * Check that a field content is valid (does not have the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return void
+     */
+    protected function checkFieldIsValid(Element $page, string $selector): void
+    {
+        $session = $this->getMinkSession();
+        $session->wait(
+            $this->getDefaultTimeout(),
+            "document.querySelector('$selector:invalid') === null"
+        );
+    }
+
+    /**
+     * Check that a field content is invalid (has the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return void
+     */
+    protected function checkFieldIsInvalid(Element $page, string $selector): void
+    {
+        $session = $this->getMinkSession();
+        $session->wait(
+            $this->getDefaultTimeout(),
+            "document.querySelector('$selector:invalid') !== null"
+        );
     }
 
     /**

@@ -57,6 +57,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $facetFields = null;
 
     /**
+     * If the results only provide a restricted view.
+     *
+     * @var bool
+     */
+    protected bool $restrictedView = false;
+
+    /**
      * Constructor.
      *
      * @param array $response EdsApi response
@@ -147,5 +154,27 @@ class RecordCollection extends AbstractRecordCollection
             return $page * $resultsPerPage;
         }
         return 0;
+    }
+
+    /**
+     * Set if the results only provide a restricted view.
+     *
+     * @param bool $restrictedView If restricted view
+     *
+     * @return void
+     */
+    public function setRestrictedView(bool $restrictedView): void
+    {
+        $this->restrictedView = $restrictedView;
+    }
+
+    /**
+     * Check if the results only provide a restricted view.
+     *
+     * @return bool
+     */
+    public function isRestrictedView()
+    {
+        return $this->restrictedView;
     }
 }

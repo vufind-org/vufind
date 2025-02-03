@@ -197,7 +197,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
     // queue the element into the queue
     let payload = { el, id: hiddenIdEl.value };
-    if (VuFind.config.get('item-status:load-batch-wise', true)) {
+    if (VuFind.isPrinting() || VuFind.config.get('item-status:load-batch-wise', true)) {
       _checkItemHandlers[handlerName].add(payload);
     } else {
       let runFunc = getItemStatusPromise({handlerName: handlerName});

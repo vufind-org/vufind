@@ -65,8 +65,6 @@
   <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
-  <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
-  <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
   <property name="version" value="10.1.1" />
 
@@ -141,23 +139,20 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
-    <phingcall target="check-bootstrap5"/>
   </target>
 
   <!-- Quality Assurance Tasks -->
   <target name="qa-console" description="quality assurance tasks">
     <!-- Call standard tasks -->
-    <phingcall target="qa-js-and-less"/>
+    <phingcall target="qa-js-and-scss"/>
     <phingcall target="qa-php"/>
-    <phingcall target="check-bootstrap5"/>
   </target>
 
   <!-- Quality Assurance Javascript Tasks -->
-  <target name="qa-js-and-less" description="quality assurance js and less tasks">
+  <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
     <phingcall target="eslint-jsdoc"/>
     <phingcall target="jshint"/>
-    <phingcall target="checkLessToSass"/>
     <phingcall target="checkSassBuild"/>
   </target>
 
@@ -1283,160 +1278,6 @@ ${git_status}
     <!-- clean up temp files -->
     <delete file="${localdir}/import/marc-${BASENAME}.properties" />
     <delete file="${localdir}/import/import-${BASENAME}.properties" />
-  </target>
-
-  <!-- Update bootstrap3 templates from bootstrap5 -->
-  <!-- N.B. This destroys any existing bootstrap3 templates (except explicitly excluded ones) -->
-  <target name="update-bootstrap3">
-    <property name="templatesdir" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
-    <if>
-      <available file="${templatesdir}"></available>
-      <then>
-        <echo message="Checking for uncommitted changes in ${templatesdir}" />
-        <exec executable="git" checkreturn="true" passthru="true">
-          <arg line="diff --exit-code ${templatesdir}" />
-        </exec>
-        <delete failonerror="true">
-          <fileset dir="${templatesdir}">
-            <exclude name="header.phtml" />
-            <exclude name="RecordTab/similaritemscarousel.phtml" />
-          </fileset>
-        </delete>
-      </then>
-    </if>
-    <mkdir dir="${templatesdir}"></mkdir>
-    <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/${bootstrap5_theme}/templates">
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-      </fileset>
-    </copy>
-    <reflexive>
-      <fileset dir="${templatesdir}">
-        <include pattern="**/*.phtml" />
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <!-- HTML attributes -->
-          <regexp pattern=" data-bs-(dismiss|ride|slide|slide-to|target|toggle)=" replace=" data-\1=" />
-
-          <!-- HTMLAttributes helper -->
-          <regexp pattern="'data-bs-(dismiss|target|toggle)'" replace="'data-\1'" />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
-  </target>
-
-  <!-- Update bootstrap5 templates from bootstrap3 -->
-  <!-- N.B. This destroys any existing bootstrap5 templates (except explicitly excluded ones) -->
-  <target name="update-bootstrap5">
-    <property name="templatesdir" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
-    <if>
-      <available file="${templatesdir}"></available>
-      <then>
-        <echo message="Checking for uncommitted changes in ${templatesdir}" />
-        <exec executable="git" checkreturn="true" passthru="true">
-          <arg line="diff --exit-code ${templatesdir}" />
-        </exec>
-        <delete failonerror="true">
-          <fileset dir="${templatesdir}">
-            <exclude name="header.phtml" />
-            <exclude name="RecordTab/similaritemscarousel.phtml" />
-          </fileset>
-        </delete>
-      </then>
-    </if>
-    <mkdir dir="${templatesdir}"></mkdir>
-    <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/${bootstrap3_theme}/templates">
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-      </fileset>
-    </copy>
-    <reflexive>
-      <fileset dir="${templatesdir}">
-        <include pattern="**/*.phtml" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <!-- HTML attributes -->
-          <regexp pattern=" data-(dismiss|ride|slide|slide-to|target|toggle)=(?!&quot;vufind)" replace=" data-bs-\1=" />
-
-          <!-- HTMLAttributes helper -->
-          <regexp pattern="'data-(dismiss|target|toggle)'" replace="'data-bs-\1'" />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
-  </target>
-
-  <!-- Check that bootstrap5 is up to date with bootstrap3 -->
-  <target name="check-bootstrap5">
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
-    <foreach target="check-dir-single-file" param="filename" inheritall="true">
-      <fileset dir="${check_dir_base}">
-        <type type="file" />
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-        <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
-      </fileset>
-    </foreach>
-
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/scss" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/scss" />
-    <foreach target="check-dir-single-file" param="filename" inheritall="true">
-      <fileset dir="${check_dir_base}">
-        <type type="file" />
-        <exclude name="bootstrap.scss" />
-        <exclude name="components/similar-carousel.scss" />
-        <exclude name="vendor/**" />
-        <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
-      </fileset>
-    </foreach>
-
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/js" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/js" />
-    <foreach target="check-dir-single-file" param="filename" inheritall="true">
-      <fileset dir="${check_dir_base}">
-        <type type="file" />
-        <exclude name="account_ajax.js" />
-        <exclude name="cart.js" />
-        <exclude name="channels.js" />
-        <exclude name="lightbox.js" />
-        <exclude name="vendor" />
-        <exclude name="vendor/bootstrap-accessibility.min.js" />
-        <exclude name="vendor/bootstrap.min.js" />
-        <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
-      </fileset>
-    </foreach>
-  </target>
-  <!-- subtask for check-bootstrap5 -->
-  <target name="check-dir-single-file">
-    <loadFile property="base_file" file="${check_dir_base}/${filename}">
-      <filterchain>
-        <replaceregexp>
-          <!-- HTML attributes -->
-          <regexp pattern=" data-(dismiss|ride|slide|slide-to|target|toggle)=(?!&quot;vufind)" replace=" data-bs-\1=" />
-
-          <!-- HTMLAttributes helper -->
-          <regexp pattern="'data-(dismiss|target|toggle)'" replace="'data-bs-\1'" />
-
-          <!-- button-size mixin -->
-          <regexp pattern="@include button-size\((.+),(.+),(.+),(.+),(.+)\)" replace="@include button-size(\1,\2,\3,\5)" />
-        </replaceregexp>
-      </filterchain>
-    </loadFile>
-    <loadFile property="compare_file" file="${check_dir_compare}/${filename}" />
-    <if>
-      <not>
-        <equals arg1="${base_file}" arg2="${compare_file}" />
-      </not>
-      <then>
-        <fail message="${check_dir_base}/${filename} and ${check_dir_compare}/${filename} are out of sync" />
-      </then>
-    </if>
   </target>
 
 </project>
