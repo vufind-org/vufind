@@ -39,7 +39,7 @@
       if ('collection' === $node->type) {
         $liClasses[] = 'hierarchy-tree__collection';
         $icon = 'hierarchy-collection';
-        if ($nodeId === 0 && $parentNodeId && count($nodes) === 1) {
+        if ($nodeId === 0 && !$parentNodeId && count($nodes) === 1) {
           $openTopLevel = true;
         }
       } else {
