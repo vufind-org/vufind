@@ -791,6 +791,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
             $attrs['nonce'] = $this->cspNonce;
         }
         $inlineScript = $this->getView()->plugin('inlineScript');
+        if ($this->isRelativePath($src)) {
+            $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
+        }
         $inlineScript->setFile($src, $type, $attrs);
         return ($inlineScript)();
     }
