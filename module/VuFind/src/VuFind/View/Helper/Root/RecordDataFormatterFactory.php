@@ -409,6 +409,7 @@ class RecordDataFormatterFactory implements FactoryInterface
         $spec->setLine('Access', 'getAccessRestrictions');
         $spec->setLine('Finding Aid', 'getFindingAids');
         $spec->setLine('Publication_Place', 'getHierarchicalPlaceNames');
+        $spec->setLine('Source', 'getSource');
         $spec->setTemplateLine('Author Notes', true, 'data-authorNotes.phtml');
         return $spec->getArray();
     }
