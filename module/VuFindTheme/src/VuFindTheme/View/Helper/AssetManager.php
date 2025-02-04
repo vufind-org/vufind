@@ -480,7 +480,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
                     'items' => [$item],
                     'key' => $details['path'] . filemtime($details['path']),
                 ];
-            } else {
+            } elseif (!in_array($item, $groups[$index]['items'])) {
                 $groups[$index]['items'][] = $item;
                 $groups[$index]['key'] .= $details['path'] . filemtime($details['path']);
             }
