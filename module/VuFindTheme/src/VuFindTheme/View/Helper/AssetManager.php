@@ -294,6 +294,28 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
     }
 
     /**
+     * Given a relative JS or CSS path, apply appropriate theme prefixing if possible; return null if
+     * the resource could not be found in a theme.
+     *
+     * @param string $relPath Relative path to find in theme
+     *
+     * @return ?string
+     */
+    protected function applyThemeToRelativePath(string $relPath): ?string
+    {
+        $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
+        if (!empty($details)) {
+            $urlHelper = $this->getView()->plugin('url');
+            $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url .= filemtime($details['path']);
+            return $url;
+        }
+        // Cannot find in theme? Return null.
+        return null;
+    }
+
+    /**
      * Return the HTML to output script assets in the requested position.
      *
      * @param mixed $position Position of assets (header or footer)
@@ -302,9 +324,8 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
      */
     protected function outputScriptAssets($position): string
     {
-        // We can use the headScript header for every position, because each call to this method will
-        // set up and then clear out the contents of the helper.
-        $scriptHelper = $this->getView()->plugin('headScript');
+        $helperName = $position === 'header' ? 'headScript' : 'footScript';
+        $scriptHelper = $this->getView()->plugin($helperName);
         $processedScripts = $this->processForPipeline($this->scripts[$position], 'js');
         foreach ($processedScripts as $script) {
             if ($script['allowArbitraryAttrs'] ?? false) {
@@ -318,6 +339,11 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
             if (isset($script['script'])) {
                 $scriptHelper->appendScript($script['script'], $script['type'], $script['attrs']);
             } else {
+                if ($this->isRelativePath($script['src'])) {
+                    if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
+                        $script['src'] = $themePath;
+                    }
+                }
                 $scriptHelper->appendFile($script['src'], $script['type'], $script['attrs']);
             }
         }
@@ -689,14 +715,8 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
         foreach ($processedStylesheets as $sheet) {
             // Account for the theme system (when appropriate):
             if ($this->isRelativePath($sheet['href'])) {
-                $relPath = 'css/' . $sheet['href'];
-                $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
-                if (!empty($details)) {
-                    $urlHelper = $this->getView()->plugin('url');
-                    $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
-                    $url .= strstr($url, '?') ? '&_=' : '?_=';
-                    $url .= filemtime($details['path']);
-                    $sheet['href'] = $url;
+                if ($themePath = $this->applyThemeToRelativePath('css/' . $sheet['href'])) {
+                    $sheet['href'] = $themePath;
                 }
             }
 

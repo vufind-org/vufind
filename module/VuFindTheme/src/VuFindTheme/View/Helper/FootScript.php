@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Head script view helper (extended for VuFind's theme system)
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -29,19 +30,19 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Laminas\View\Helper\HeadScript;
+
 /**
- * Head script view helper (extended for VuFind's theme system)
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
  * @category VuFind
  * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @method getWhitespace(string|int $indent)
- * @method getIndent()
- * @method getSeparator()
  */
-class HeadScript extends \Laminas\View\Helper\HeadScript
+class FootScript extends HeadScript
 {
+    // pass
 }
