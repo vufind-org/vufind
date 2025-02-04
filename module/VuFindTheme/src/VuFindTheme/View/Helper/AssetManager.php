@@ -121,13 +121,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
     protected function isPipelineEnabledForType(string $fileType): bool
     {
         $config = $this->pipelineConfig;
-        if ($config === false || $config == 'off') {
+        if ($config === false || $config == 'off' || $config == 'false' || $config === '0') {
             return false;
         }
-        if (
-            $config == '*' || $config == 'on'
-            || $config == 'true' || $config === true
-        ) {
+        if ($config == '*' || $config == 'on' || $config == 'true' || $config === true || $config === '1') {
             return true;
         }
         $settings = array_map('trim', explode(',', $config));
@@ -305,9 +302,11 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
      */
     protected function outputScriptAssets($position): string
     {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $scriptHelper = $this->getView()->plugin($helperName);
-        foreach ($this->scripts[$position] as $script) {
+        // We can use the headScript header for every position, because each call to this method will
+        // set up and then clear out the contents of the helper.
+        $scriptHelper = $this->getView()->plugin('headScript');
+        $processedScripts = $this->processForPipeline($this->scripts[$position], 'js');
+        foreach ($processedScripts as $script) {
             if ($script['allowArbitraryAttrs'] ?? false) {
                 $scriptHelper->setAllowArbitraryAttributes(true);
             }
@@ -359,6 +358,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
     {
         if ($type === 'css') {
             return !$this->isRelativePath($item['href']);
+        } elseif ($type === 'js') {
+            return empty($item['src'])
+                || !empty($item['attrs']['conditional'])
+                || !$this->isRelativePath($item['src']);
         }
         throw new Exception("Unknown type: $type");
     }
@@ -374,10 +377,11 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
      */
     protected function getResourceFilePath(array $item, string $type): string
     {
-        if ($type === 'css') {
-            return $item['href'];
+        $key = $this->getFileKeyByType($type);
+        if (!isset($item[$key])) {
+            throw new Exception("Unexpected missing $key key in $type item.");
         }
-        throw new Exception("Unknown type: $type");
+        return $item[$key];
     }
 
     /**
@@ -396,10 +400,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
             if (isset($item['conditionalStylesheet'])) {
                 $type .= '_' . $item['conditionalStylesheet'];
             }
-        } else {
-            throw new Exception("Unknown type: $type");
+            return $groupType;
         }
-        return $groupType;
+        return 'default';
     }
 
     /**
@@ -484,12 +487,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
     {
         $minifier = match ($type) {
             'css' => new \VuFindTheme\Minify\CSS(),
+            'js' => new \MatthiasMullie\Minify\JS(),
             default => null
         };
         if (!$minifier) {
-            throw new Exception("Unsupported type $type");
+            throw new Exception("Unsupported type: $type");
         }
-        if (null !== $this->maxImportSize) {
+        if ($type === 'css' && null !== $this->maxImportSize) {
             $minifier->setMaxImportSize($this->maxImportSize);
         }
         return $minifier;
@@ -519,6 +523,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
                     "Could not read file {$details['path']}"
                 );
             }
+        }
+        // Play it safe by terminating Javascript code with a semicolon
+        if ($type === 'js' && !str_ends_with(trim($data), ';')) {
+            $data .= ';';
         }
         return $data;
     }
@@ -615,8 +623,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
      */
     protected function getFileKeyByType(string $type): string
     {
-        if ($type === 'css') {
-            return 'href';
+        $keys = ['css' => 'href', 'js' => 'src'];
+        if (isset($keys[$type])) {
+            return $keys[$type];
         }
         throw new Exception("Unexpected type: $type");
     }
