@@ -102,7 +102,7 @@ class AssetManagerFactory implements FactoryInterface
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
         $nonce = $nonceGenerator->getNonce();
-        $config = $configManager->get('config')->toArray();
+        $config = $configManager->get('config')?->toArray() ?? [];
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
             $this->getPipelineConfig($config),
