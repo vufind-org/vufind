@@ -109,7 +109,6 @@ class Module
             'factories' => [
                 View\Helper\AssetManager::class => View\Helper\AssetManagerFactory::class,
                 View\Helper\FootScript::class => InvokableFactory::class,
-                View\Helper\HeadScript::class => InvokableFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
                 View\Helper\ParentTemplate::class => View\Helper\ParentTemplateFactory::class,
                 View\Helper\Slot::class => InvokableFactory::class,
@@ -118,7 +117,7 @@ class Module
             ],
             'aliases' => [
                 'assetManager' => View\Helper\AssetManager::class,
-                'footScript' => View\Helper\HeadScript::class,
+                'footScript' => View\Helper\FootScript::class,
                 // Legacy alias for compatibility with pre-8.0 templates:
                 'headThemeResources' => View\Helper\SetupThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
