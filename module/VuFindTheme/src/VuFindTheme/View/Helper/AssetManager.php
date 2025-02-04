@@ -324,10 +324,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
      */
     protected function outputScriptAssets($position): string
     {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $scriptHelper = $this->getView()->plugin($helperName);
+        $output = [];
+        $scriptHelper = $this->getView()->plugin('inlineScript');
         $processedScripts = $this->processForPipeline($this->scripts[$position], 'js');
-        foreach ($processedScripts as $script) {
+        foreach ($processedScripts as $i => $script) {
             if ($script['allowArbitraryAttrs'] ?? false) {
                 $scriptHelper->setAllowArbitraryAttributes(true);
             }
@@ -337,17 +337,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
             }
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
-                $scriptHelper->appendScript($script['script'], $script['type'], $script['attrs']);
+                $output[] = $this->outputInlineScript($script['script'], $script['type'], $script['attrs']);
             } else {
                 if ($this->isRelativePath($script['src'])) {
                     if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
                         $script['src'] = $themePath;
                     }
                 }
-                $scriptHelper->appendFile($script['src'], $script['type'], $script['attrs']);
+                $output[] = $this->outputInlineScriptFile($script['src'], $script['type'], $script['attrs']);
             }
         }
-        return ($scriptHelper)();
+        return implode("\n", $output);
     }
 
     /**
