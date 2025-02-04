@@ -311,6 +311,8 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
             if ($script['allowArbitraryAttrs'] ?? false) {
                 $scriptHelper->setAllowArbitraryAttributes(true);
             }
+            // Add nonce to output:
+            $script['attrs']['nonce'] = $this->cspNonce;
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
                 $scriptHelper->appendScript($script['script'], $script['type'], $script['attrs']);
@@ -729,6 +731,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
     ): string {
+        $attrs['nonce'] = $this->cspNonce;
         $inlineScript = $this->getView()->plugin('inlineScript');
         if ($allowArbitraryAttrs) {
             $inlineScript->setAllowArbitraryAttributes(true);
@@ -751,6 +754,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper implements Logger
         string $type = 'text/javascript',
         array $attrs = [],
     ): string {
+        $attrs['nonce'] = $this->cspNonce;
         $inlineScript = $this->getView()->plugin('inlineScript');
         $inlineScript->setFile($src, $type, $attrs);
         return ($inlineScript)();

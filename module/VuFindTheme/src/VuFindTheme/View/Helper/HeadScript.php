@@ -119,7 +119,6 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
             }
         }
 
-        $this->addNonce($item);
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 
@@ -195,17 +194,5 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
             $data .= ';';
         }
         return $data;
-    }
-
-    /**
-     * Add a nonce to the item
-     *
-     * @param stdClass $item Item
-     *
-     * @return void
-     */
-    protected function addNonce($item)
-    {
-        $item->attributes['nonce'] = $this->cspNonce;
     }
 }
