@@ -36,6 +36,7 @@ use Laminas\Session\Container as SessionContainer;
 use VuFind\Config\Config;
 use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
+use VuFindSearch\Backend\EDS\Response\RecordCollection;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -286,6 +287,9 @@ class Backend extends AbstractBackend
         }
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
+        if ($this->isGuest && $collection instanceof RecordCollection) {
+            $collection->setRestrictedView(true);
+        }
         return $collection;
     }
 

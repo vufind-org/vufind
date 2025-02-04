@@ -394,13 +394,19 @@ abstract class Options implements TranslatorAwareInterface
     protected $displayCitationLinksInResults;
 
     /**
+     * Should we display a warning in restricted views?
+     *
+     * @var bool
+     */
+    protected bool $showRestrictedViewWarning;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        $this->limitOptions = [$this->defaultLimit];
         $this->setConfigLoader($configLoader);
 
         $id = $this->getSearchClassId();
@@ -431,6 +437,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
         $this->displayCitationLinksInResults
             = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
+        $this->showRestrictedViewWarning = (bool)($searchSettings->General->show_restricted_view_warning ?? false);
     }
 
     /**
@@ -545,6 +552,9 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getLimitOptions()
     {
+        if (empty($this->limitOptions)) {
+            $this->limitOptions = [$this->getDefaultLimit()];
+        }
         return $this->limitOptions;
     }
 
@@ -1384,5 +1394,15 @@ abstract class Options implements TranslatorAwareInterface
             return $this->hierarchicalFacetFilters[$field] ?? [];
         }
         return $this->hierarchicalFacetFilters;
+    }
+
+    /**
+     * Should we display a warning in restricted views?
+     *
+     * @return bool
+     */
+    public function showRestrictedViewWarning(): bool
+    {
+        return $this->showRestrictedViewWarning ?? false;
     }
 }

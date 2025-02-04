@@ -12,32 +12,17 @@
   "scripts": {
     "build": "npm run build:css",
     "watch": "npm run watch:css",
-    "build-dev": "npm run build-dev:css",
-    "watch-dev": "npm run watch-dev:css",
 
-    "build:css": "npm run build:less && npm run build:scssonly",
-    "watch:css": "npm run watch:less",
-    "build-dev:css": "npm run build-dev:less",
-    "watch-dev:css": "npm run watch-dev:less",
-
-    "build:less": "grunt less && npm run lessToSass",
-    "watch:less": "grunt watch:less",
-    "build-dev:less": "grunt lessdev && npm run lessToSass",
-    "watch-dev:less": "grunt watch:lessdev",
+    "build:css": "npm run build:scss",
+    "watch:css": "npm run watch:scss",
 
     "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
     "build:scss": "npm run install:scss-dependencies && grunt scss",
     "check:scss": "npm run install:scss-dependencies && grunt check:scss",
-    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss",
-    "build:scssonly": "npm run install:scss-dependencies && grunt scssonly",
-
-    "lessToSass": "grunt lessToSass",
-    "watch:lessToSass": "grunt watch:lessToSass"
+    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss"
   },
   "dependencies": {
     "grunt": "^1.0.4",
-    "grunt-contrib-less": "^2.0.0",
-    "grunt-less-to-sass": "duvillierA/grunt-less-to-sass#0.0.11",
     "grunt-dart-sass": "^2.0.1",
     "jit-grunt": "^0.10.0",
     "sass": "^1.69.5"
