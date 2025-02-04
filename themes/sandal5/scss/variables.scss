@@ -4,6 +4,11 @@ $banner-height: 60px;
 $banner-height-sm: 40px;
 $search-tab-height: 2rem;
 
+// Sets the number of columns in which the facets on home page should be displayed for Desktop and smaller devices
+$home-facet-list-column-count: 2 !default;
+$home-facet-list-column-count-md-sm-xs: 1 !default;
+
+
 $result-checkbox-width: 28px;
 $result-checkbox-height: 80px;
 $result-sm-icon-size: 1.5rem;

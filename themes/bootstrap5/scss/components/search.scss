@@ -59,11 +59,18 @@ $thumbnail-width-large:  160px !default;
 }
 
 .searchHomeContent { @include clearfix(); }
+
 .home-facet-list {
+  column-count: $home-facet-list-column-count; // defines number of cols, set this in variables.scss
+  list-style: none;
   padding-left: 0;
   padding-right: 1rem;
-  list-style: none;
+
+  @media (max-width: $screen-lg - 1) {
+    column-count: $home-facet-list-column-count-md-sm-xs;
+  }
 }
+
 // Reset styling of hierarchical facets on the home page:
 .home-facet.facet-tree li {
   line-height: inherit;
