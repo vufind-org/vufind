@@ -413,7 +413,8 @@ class InstallController extends AbstractBase
             } else {
                 // Connect to database:
                 try {
-                    $dbName = ($view->driver == 'pgsql') ? 'template1' : $view->driver;
+                    // We need a default database name to use to establish a connection:
+                    $dbName = ($view->driver == 'pgsql') ? 'template1' : 'mysql';
                     $connectionParams = [
                         'driver' => $view->driver,
                         'hostname' => $view->dbhost,
@@ -440,8 +441,10 @@ class InstallController extends AbstractBase
                         : $db->getPlatform()->quoteValue($newpass);
                     $preCommands = $this->getPreCommands($view, $escapedPass);
                     $postCommands = $this->getPostCommands($view);
+                    // We use the same file to initialize the MariaDB and MySQL databases:
+                    $sqlFilename = $view->driver === 'mariadb' ? 'mysql' : $view->driver;
                     $sql = file_get_contents(
-                        APPLICATION_PATH . "/module/VuFind/sql/{$view->driver}.sql"
+                        APPLICATION_PATH . "/module/VuFind/sql/{$sqlFilename}.sql"
                     );
                     if ($skip) {
                         $omnisql = '';
