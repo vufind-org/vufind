@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('auto_configure_title'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix ILS') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Fix ILS') . '</li>';
 ?>
 <h2><?=$this->transEsc('auto_configure_title')?></h2>
 
@@ -15,7 +15,7 @@
   <form method="post" class="form-fix-ils">
     <div class="form-group">
       <label for="driver" class="control-label">Pick a driver:</label>
-      <select id="driver" name="driver" class="form-control">
+      <select id="driver" name="driver" class="form-control form-select">
         <?php foreach ($this->drivers as $driver): ?>
           <option value="<?=$this->escapeHtmlAttr($driver)?>"><?=$this->escapeHtml($driver)?></option>
         <?php endforeach; ?>

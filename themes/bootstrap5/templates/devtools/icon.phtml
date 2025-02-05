@@ -2,8 +2,8 @@
   $title = $this->translate('Icons');
   $titleEsc = $this->escapeHtml($title);
   $this->headTitle($title);
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
-  . '<li class="active">' . $titleEsc . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+  . '<li class="breadcrumb-item active" aria-current="page">' . $titleEsc . '</li>';
 ?>
 <h1><?=$titleEsc?></h1>
 <div>

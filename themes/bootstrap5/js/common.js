@@ -1,4 +1,4 @@
-/*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -499,23 +499,12 @@ var VuFind = (function VuFind() {
     setupQRCodeLinks();
   };
 
-  function getBootstrapMajorVersion() {
-    // Bootstrap 5 defines bootstrap global, while 3 doesn't, so we can use that as
-    // an easy way to determine the version:
-    return typeof bootstrap === 'undefined' ? 3 : 5;
-  }
-
   /**
    * Disable transition effects and return the previous state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    */
   function disableTransitions(elem) {
-    if (getBootstrapMajorVersion() === 3) {
-      const oldState = $.support.transition;
-      $.support.transition = false;
-      return oldState;
-    }
     const oldState = elem.style.transitionDuration;
     elem.style.transitionDuration = '0s';
     return oldState;
@@ -524,15 +513,10 @@ var VuFind = (function VuFind() {
   /**
    * Restore transition effects to the given state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    * @param {(string|boolean)} state State from previous call to disableTransitions
    */
   function restoreTransitions(elem, state) {
-    if (getBootstrapMajorVersion() === 3) {
-      $.support.transition = state;
-      return;
-    }
-
     elem.style.transitionDuration = state;
   }
 
@@ -633,7 +617,6 @@ var VuFind = (function VuFind() {
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,
     setElementContents: setElementContents,
-    getBootstrapMajorVersion: getBootstrapMajorVersion,
     disableTransitions: disableTransitions,
     restoreTransitions: restoreTransitions,
     inURLSearchParams: inURLSearchParams,

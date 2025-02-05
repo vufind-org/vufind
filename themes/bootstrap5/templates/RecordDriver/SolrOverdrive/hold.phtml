@@ -47,7 +47,7 @@
             <?php if ($result->data->isMagazine): ?>
               <div class="form-group">
                 <label id="select-issue-label"><?=$this->translate('Issue')?></label>
-                <select class="form-control" name="edition" id="select-edition" data-open="false">
+                <select class="form-control form-select" name="edition" id="select-edition" data-open="false">
 
                 <?php foreach ($result->data->products as $key => $issue):
                     $checkedout = $issue->checkedout ? ' - ' . $this->transEsc('od_mag_issue_ischeckedout') : ''; ?>
@@ -157,7 +157,7 @@
 
             <div class="form-group">
                 <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
-                <select class="form-control" name="suspendValue" id="select-suspension" data-open="false">
+                <select class="form-control form-select" name="suspendValue" id="select-suspension" data-open="false">
                     <option value="0" selected=""><?=$this->transEsc('od_susp_asap')?></option>
                     <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
                     <?php foreach ($durations as $duration): ?>
@@ -177,7 +177,7 @@
         <form class="" method="POST" name="suspHold" data-lightbox-onclose="VuFind.refreshPage">
             <div class="form-group">
                 <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
-                <select class="form-control" name="suspendValue"  id="select-suspension" data-open="false">
+                <select class="form-control form-select" name="suspendValue"  id="select-suspension" data-open="false">
                     <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
                     <?php foreach ($durations as $duration): ?>
                       <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
