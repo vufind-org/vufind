@@ -307,6 +307,26 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Flip-flop the language to cause URL rewrites (useful for testing handling of
+     * arrays in query parameters).
+     *
+     * @param Element $page Current page object
+     *
+     * @return void
+     */
+    protected function flipflopLanguage(Element $page): void
+    {
+        // Flip to German:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
+        $this->waitForPageLoad($page);
+        // Flip back to English:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
+        $this->waitForPageLoad($page);
+    }
+
+    /**
      * Test applying a facet to filter results (deferred facet sidebar)
      *
      * @param bool  $deferred    Are deferred facets enabled?

@@ -13,7 +13,7 @@ VuFind.register('channels', function Channels() {
     }
     var $cont = $(
       '<div class="dropdown">' +
-        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
+        '<button class="btn btn-link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
           VuFind.icon("ui-dots-menu") +
         '</button>' +
       '</div>'
@@ -24,7 +24,7 @@ VuFind.register('channels', function Channels() {
       li.append(
         $('<a/> ', {
           'href': links[i].url,
-          'class': links[i].label,
+          'class': 'dropdown-item ' + links[i].label,
           'html': '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
         })
       );

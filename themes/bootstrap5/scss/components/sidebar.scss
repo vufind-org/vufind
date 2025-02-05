@@ -1,10 +1,9 @@
 .facet-group {
   display: block;
-  margin-bottom: 1rem;
   padding-left: 0;
 
-  [data-toggle="collapse"] {
-    cursor: pointer;
+  &:not(:last-child) {
+    margin-bottom: 1rem;
   }
 
   .collapse,

@@ -66,9 +66,8 @@ return [
         ['file' => 'observer_manager.js', 'priority' => 370],
         ['file' => 'openurl.js', 'priority' => 380],
         ['file' => 'list_item_selection.js', 'priority' => 390],
-        ['file' => 'validation.js', 'priority' => 400],
         ['file' => 'covers.js', 'priority' => 410],
-        ['file' => 'bs3-compat.js', 'priority' => 1000],
+        ['file' => 'validation.js', 'priority' => 420],
     ],
     /**
      * Configuration for a single or multiple favicons.

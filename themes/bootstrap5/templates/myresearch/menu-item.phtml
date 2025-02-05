@@ -6,7 +6,7 @@
   $url = $this->url ?: $this->url($this->route, $this->routeParams ?? []);
 ?>
 <li>
-  <a href="<?=$url?>" class="<?=$this->name?> icon-link<?=$this->active == $this->name ? ' active' : ''?>">
+  <a href="<?=$url?>" class="<?=$this->name?> nav-link icon-link<?=$this->active == $this->name ? ' active' : ''?>">
     <?php if (isset($this->icon)): ?>
       <?=$this->icon($this->icon, 'icon-link__icon') ?>
     <?php endif; ?>
