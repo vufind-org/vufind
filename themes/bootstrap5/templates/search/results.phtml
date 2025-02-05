@@ -49,10 +49,6 @@
   $recommendations = $this->results->getRecommendations('side');
   $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
   $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
-
-  // Initialize the ILS driver so authentication tokens (if any) can be written to the session cache
-  // since subsequent AJAX calls to the ILS driver can only read from the session cache
-  $this->ils()->getDriver();
 ?>
 
 <h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
