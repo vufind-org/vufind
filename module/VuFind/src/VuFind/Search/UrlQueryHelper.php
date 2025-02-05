@@ -236,6 +236,17 @@ class UrlQueryHelper
     }
 
     /**
+     * Disable hidden filters
+     *
+     * @return UrlQueryHelper
+     */
+    public function disableHiddenFilters()
+    {
+        unset($this->urlParams['hiddenFilters']);
+        return $this;
+    }
+
+    /**
      * Control query suppression
      *
      * @param bool $suppress Should we suppress queries?

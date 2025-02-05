@@ -121,6 +121,106 @@ trait DemoDriverTestTrait
     }
 
     /**
+     * Get fine JSON for Demo.ini.
+     *
+     * @param string $bibId Bibliographic record ID to create fake item info for.
+     *
+     * @return array
+     */
+    protected function getFakeFines(string $bibId)
+    {
+        $checkoutDate = strtotime('now -30 days');
+        $returnDate = strtotime('now -2 days');
+        $dueDate = strtotime('now -5 days');
+        return json_encode([
+            [
+                'amount' => 123,
+                'balance' => 123,
+                'checkout' => date('Y-m-d', $checkoutDate),
+                'createdate' => date('Y-m-d', $returnDate),
+                'duedate' => date('Y-m-d', $dueDate),
+                'description' => 'Overdue fee',
+                'id' => $bibId,
+            ],
+        ]);
+    }
+
+    /**
+     * Get hold JSON for Demo.ini.
+     *
+     * @param string $bibId  Bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Second bibliographic record ID to create fake item info for.
+     *
+     * @return array
+     */
+    protected function getFakeHolds(string $bibId, string $bibId2)
+    {
+        $createDate = strtotime('now -30 days');
+        $expireDate = strtotime('now +1 year');
+        return json_encode([
+            [
+                'reqnum' => 1,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId,
+                'available' => true,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 2,
+                'item_id' => 1,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => true,
+            ],
+            [
+                'reqnum' => 3,
+                'item_id' => 3,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => true,
+            ],
+            [
+                'reqnum' => 4,
+                'item_id' => 7,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 5,
+                'item_id' => 17,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 6,
+                'item_id' => 27,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+        ]);
+    }
+
+    /**
      * Get Demo.ini override settings for testing ILS functions.
      *
      * @param string $bibId  Bibliographic record ID to create fake item info for.
@@ -136,8 +236,9 @@ trait DemoDriverTestTrait
         return [
             'Records' => [
                 'transactions' => $this->getFakeTransactions($bibId),
-                'historicTransactions'
-                    => $this->getFakeHistoricTransactions($bibId, $bibId2),
+                'historicTransactions' => $this->getFakeHistoricTransactions($bibId, $bibId2),
+                'fines' => $this->getFakeFines($bibId),
+                'holds' => $this->getFakeHolds($bibId, $bibId2),
             ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,

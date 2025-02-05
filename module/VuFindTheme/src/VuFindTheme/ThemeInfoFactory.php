@@ -71,7 +71,7 @@ class ThemeInfoFactory implements FactoryInterface
 
         $themeInfo = new $requestedName(
             realpath(APPLICATION_PATH . '/themes'),
-            'bootprint3'
+            'sandal5'
         );
 
         // As of release 1.1.0, the memory storage adapter has a flaw which can cause

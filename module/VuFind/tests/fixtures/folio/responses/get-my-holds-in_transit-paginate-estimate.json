@@ -1,8 +1,5 @@
 [
   {
-    "comment": "Initial token check"
-  },
-  {
     "comment": "Page 1 results",
     "expectedPath": "/request-storage/requests",
     "expectedParams": {
