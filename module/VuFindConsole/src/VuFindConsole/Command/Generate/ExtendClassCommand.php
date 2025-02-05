@@ -85,7 +85,7 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Normalize class name to exclude leading slashes; a FQCN doesn't need it:
+        // Normalize class name to exclude leading slashes; a FQCN doesn't need them:
         $class = ltrim($input->getArgument('class_name'), '\\');
         $target = $input->getArgument('target_module');
         $extendFactory = $input->getOption('extendfactory');
