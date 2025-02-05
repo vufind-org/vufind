@@ -59,6 +59,8 @@ $thumbnail-width-large: 160px !default;
 
 .home-facet-list {
   column-count: $home-facet-list-column-count; // defines number of cols, define this in variables.scss
+  column-fill: auto; // will automatically fill the columns to a certain height then break into new column
+  height: $home-facet-list-column-height; // defined in variables.scss
   list-style: none;
   padding-left: 0;
   padding-right: 1rem;

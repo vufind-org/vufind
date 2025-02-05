@@ -5,5 +5,6 @@ $myresearch-menu-ul-margin-bottom: 0 !default;
 $myresearch-menu-ul-padding-left: 0 !default;
 
 // Sets the number of columns in which the facets on home page should be displayed for Desktop and smaller devices
+$home-facet-list-column-height: 260px !default; // Defines the height of each column before the column breaks
 $home-facet-list-column-count: 2 !default;
 $home-facet-list-column-count-md-sm-xs: 1 !default;
