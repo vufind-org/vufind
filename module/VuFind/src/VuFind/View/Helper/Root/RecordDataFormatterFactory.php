@@ -35,8 +35,9 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 
-use function count;
+use function get_class;
 
 /**
  * Factory for record driver data formatting view helper
@@ -64,8 +65,17 @@ class RecordDataFormatterFactory implements FactoryInterface
      * array in getAuthorFunction()
      *
      * @var array<string, int>
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
     protected $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
+
+    /**
+     * Default record spec.
+     *
+     * @var DefaultRecordSpec
+     */
+    protected DefaultRecordSpec $defaultRecordSpec;
 
     /**
      * Create an object
@@ -91,326 +101,103 @@ class RecordDataFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $specPluginManager = $container->get(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
+        // for backward compatibility check if getDefault*Specs methods got overridden.
         $this->schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
-        $config = $container
-            ->get(\VuFind\Config\PluginManager::class)
-            ->get('RecordDataFormatter');
-        $helper = new $requestedName($config);
-        $helper->setDefaults(
-            'collection-info',
-            [$this, 'getDefaultCollectionInfoSpecs']
-        );
-        $helper->setDefaults(
-            'collection-record',
-            [$this, 'getDefaultCollectionRecordSpecs']
-        );
-        $helper->setDefaults('core', [$this, 'getDefaultCoreSpecs']);
-        $helper->setDefaults('description', [$this, 'getDefaultDescriptionSpecs']);
-        return $helper;
+        $this->defaultRecordSpec = $specPluginManager->get(DefaultRecordSpec::class);
+        $methodMapping = [
+            'collection-info' => 'getDefaultCollectionInfoSpecs',
+            'collection-record' => 'getDefaultCollectionRecordSpecs',
+            'core' => 'getDefaultCoreSpecs',
+            'description' => 'getDefaultDescriptionSpecs',
+        ];
+        $showDeprecationWarning = false;
+        foreach ($methodMapping as $context => $method) {
+            $reflector = new \ReflectionMethod($this, $method);
+            if ($reflector->getDeclaringClass()->getName() !== RecordDataFormatterFactory::class) {
+                $showDeprecationWarning = true;
+                $this->defaultRecordSpec->setDefaults($context, [$this, $method]);
+            }
+        }
+        if ($showDeprecationWarning) {
+            $logger = $container->get(\VuFind\Log\Logger::class);
+            $warningMessage = 'Using deprecated customization of RecordDataFormatter specs! '
+                . 'Please use the \VuFind\RecordDataFormatter\Specs\DefaultRecord instead. '
+                . 'See https://vufind.org/wiki/development:architecture:record_data_formatter for more information.';
+            $logger->warn(get_class($this) . ': ' . $warningMessage);
+        }
+        return new $requestedName($specPluginManager);
     }
 
     /**
      * Get the callback function for processing authors.
      *
      * @return callable
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    protected function getAuthorFunction()
+    protected function getAuthorFunction(): callable
     {
-        return function ($data, $options) {
-            // Lookup array of singular/plural labels (note that Other is always
-            // plural right now due to lack of translation strings).
-            $labels = [
-                'primary' => ['Main Author', 'Main Authors'],
-                'corporate' => ['Corporate Author', 'Corporate Authors'],
-                'secondary' => ['Other Authors', 'Other Authors'],
-            ];
-            // Lookup array of schema labels.
-            $schemaLabels = [
-                'primary' => 'author',
-                'corporate' => 'creator',
-                'secondary' => 'contributor',
-            ];
-
-            // Sort the data:
-            $final = [];
-            foreach ($data as $type => $values) {
-                $final[] = [
-                    'label' => $labels[$type][count($values) == 1 ? 0 : 1],
-                    'values' => [$type => $values],
-                    'options' => [
-                        'pos' => $options['pos'] + $this->authorOrder[$type],
-                        'renderType' => 'RecordDriverTemplate',
-                        'template' => 'data-authors.phtml',
-                        'context' => [
-                            'type' => $type,
-                            'schemaLabel' => $schemaLabels[$type],
-                            'requiredDataFields' => [
-                                ['name' => 'role', 'prefix' => 'CreatorRoles::'],
-                            ],
-                        ],
-                    ],
-                ];
-            }
-            return $final;
-        };
+        return $this->defaultRecordSpec->getAuthorFunction();
     }
 
     /**
      * Get the settings for formatting language lines.
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
     protected function getLanguageLineSettings(): array
     {
-        if ($this->schemaOrgHelper) {
-            $langSpan = $this->schemaOrgHelper
-                ->getTag('span', ['property' => 'availableLanguage', 'typeof' => 'Language']);
-            $nameSpan = $this->schemaOrgHelper->getTag('span', ['property' => 'name']);
-            $itemPrefix = $langSpan . $nameSpan;
-            $itemSuffix = ($nameSpan ? '</span>' : '') . ($langSpan ? '</span>' : '');
-        } else {
-            $itemPrefix = $itemSuffix = '';
-        }
-        return compact('itemPrefix', 'itemSuffix') + [
-            'translate' => true,
-            'translationTextDomain' => 'ISO639-3::',
-        ];
+        return $this->defaultRecordSpec->getLanguageLineSettings();
     }
 
     /**
      * Get default specifications for displaying data in collection-info metadata.
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultCollectionInfoSpecs()
+    public function getDefaultCollectionInfoSpecs(): array
     {
-        $spec = new RecordDataFormatter\SpecBuilder();
-        $spec->setMultiLine(
-            'Authors',
-            'getDeduplicatedAuthors',
-            $this->getAuthorFunction()
-        );
-        $spec->setLine('Summary', 'getSummary');
-        $spec->setLine('Abstract', 'getAbstractNotes');
-        $spec->setLine(
-            'Format',
-            'getFormats',
-            'RecordHelper',
-            ['helperMethod' => 'getFormatList']
-        );
-        $spec->setLine(
-            'Language',
-            'getLanguages',
-            null,
-            $this->getLanguageLineSettings()
-        );
-        $spec->setTemplateLine(
-            'Published',
-            'getPublicationDetails',
-            'data-publicationDetails.phtml'
-        );
-        $spec->setLine(
-            'Edition',
-            'getEdition',
-            null,
-            [
-                'itemPrefix' => '<span property="bookEdition">',
-                'itemSuffix' => '</span>',
-            ]
-        );
-        $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
-        $spec->setTemplateLine(
-            'Subjects',
-            'getAllSubjectHeadings',
-            'data-allSubjectHeadings.phtml'
-        );
-        $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
-        $spec->setTemplateLine(
-            'Related Items',
-            'getAllRecordLinks',
-            'data-allRecordLinks.phtml'
-        );
-        $spec->setLine('Notes', 'getGeneralNotes');
-        $spec->setLine('Production Credits', 'getProductionCredits');
-        $spec->setLine(
-            'ISBN',
-            'getISBNs',
-            null,
-            ['itemPrefix' => '<span property="isbn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
-            'ISSN',
-            'getISSNs',
-            null,
-            ['itemPrefix' => '<span property="issn">', 'itemSuffix' => '</span>']
-        );
-        return $spec->getArray();
+        return $this->defaultRecordSpec->getDefaults('collection-info');
     }
 
     /**
      * Get default specifications for displaying data in collection-record metadata.
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultCollectionRecordSpecs()
+    public function getDefaultCollectionRecordSpecs(): array
     {
-        $spec = new RecordDataFormatter\SpecBuilder();
-        $spec->setLine('Summary', 'getSummary');
-        $spec->setLine('Abstract', 'getAbstractNotes');
-        $spec->setMultiLine(
-            'Authors',
-            'getDeduplicatedAuthors',
-            $this->getAuthorFunction()
-        );
-        $spec->setLine(
-            'Language',
-            'getLanguages',
-            null,
-            $this->getLanguageLineSettings()
-        );
-        $spec->setLine(
-            'Format',
-            'getFormats',
-            'RecordHelper',
-            ['helperMethod' => 'getFormatList']
-        );
-        $spec->setLine('Access', 'getAccessRestrictions');
-        $spec->setLine('Related Items', 'getRelationshipNotes');
-        return $spec->getArray();
+        return $this->defaultRecordSpec->getDefaults('collection-record');
     }
 
     /**
      * Get default specifications for displaying data in core metadata.
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultCoreSpecs()
+    public function getDefaultCoreSpecs(): array
     {
-        $spec = new RecordDataFormatter\SpecBuilder();
-        $spec->setTemplateLine(
-            'Published in',
-            'getContainerTitle',
-            'data-containerTitle.phtml'
-        );
-        $spec->setLine(
-            'New Title',
-            'getNewerTitles',
-            null,
-            ['recordLink' => 'title']
-        );
-        $spec->setLine(
-            'Previous Title',
-            'getPreviousTitles',
-            null,
-            ['recordLink' => 'title']
-        );
-        $spec->setMultiLine(
-            'Authors',
-            'getDeduplicatedAuthors',
-            $this->getAuthorFunction()
-        );
-        $spec->setLine(
-            'Format',
-            'getFormats',
-            'RecordHelper',
-            ['helperMethod' => 'getFormatList']
-        );
-        $spec->setLine(
-            'Language',
-            'getLanguages',
-            null,
-            $this->getLanguageLineSettings()
-        );
-        $spec->setTemplateLine(
-            'Published',
-            'getPublicationDetails',
-            'data-publicationDetails.phtml'
-        );
-        $spec->setLine(
-            'Edition',
-            'getEdition',
-            null,
-            [
-                'itemPrefix' => '<span property="bookEdition">',
-                'itemSuffix' => '</span>',
-            ]
-        );
-        $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
-        $spec->setTemplateLine(
-            'Subjects',
-            'getAllSubjectHeadings',
-            'data-allSubjectHeadings.phtml'
-        );
-        $spec->setTemplateLine(
-            'Citations',
-            'getCitations',
-            'data-citations.phtml',
-        );
-        $spec->setTemplateLine(
-            'child_records',
-            'getChildRecordCount',
-            'data-childRecords.phtml',
-            ['allowZero' => false]
-        );
-        $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
-        $spec->setTemplateLine(
-            'Related Items',
-            'getAllRecordLinks',
-            'data-allRecordLinks.phtml'
-        );
-        $spec->setTemplateLine('Tags', true, 'data-tags.phtml');
-        return $spec->getArray();
+        return $this->defaultRecordSpec->getDefaults('core');
     }
 
     /**
      * Get default specifications for displaying data in the description tab.
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\RecordDataFormatter\Specs\DefaultRecord instead of defining the specs in this factory
      */
-    public function getDefaultDescriptionSpecs()
+    public function getDefaultDescriptionSpecs(): array
     {
-        $spec = new RecordDataFormatter\SpecBuilder();
-        $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
-        $spec->setLine('Abstract', 'getAbstractNotes');
-        $spec->setLine('Review', 'getReviewNotes');
-        $spec->setLine('Content Advice', 'getContentAdviceNotes');
-        $spec->setLine('Published', 'getDateSpan');
-        $spec->setLine('Item Description', 'getGeneralNotes');
-        $spec->setLine('Physical Description', 'getPhysicalDescriptions');
-        $spec->setLine('Publication Frequency', 'getPublicationFrequency');
-        $spec->setLine('Playing Time', 'getPlayingTimes');
-        $spec->setLine('Format', 'getSystemDetails');
-        $spec->setLine('Audience', 'getTargetAudienceNotes');
-        $spec->setLine('Awards', 'getAwards');
-        $spec->setLine('Production Credits', 'getProductionCredits');
-        $spec->setLine('Bibliography', 'getBibliographyNotes');
-        $spec->setLine(
-            'ISBN',
-            'getISBNs',
-            null,
-            ['itemPrefix' => '<span property="isbn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
-            'ISSN',
-            'getISSNs',
-            null,
-            ['itemPrefix' => '<span property="issn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
-            'DOI',
-            'getCleanDOI',
-            null,
-            [
-                'itemPrefix' => '<span property="identifier">',
-                'itemSuffix' => '</span>',
-            ]
-        );
-        $spec->setLine('Related Items', 'getRelationshipNotes');
-        $spec->setLine('Access', 'getAccessRestrictions');
-        $spec->setLine('Finding Aid', 'getFindingAids');
-        $spec->setLine('Publication_Place', 'getHierarchicalPlaceNames');
-        $spec->setLine('Source', 'getSource');
-        $spec->setTemplateLine('Author Notes', true, 'data-authorNotes.phtml');
-        return $spec->getArray();
+        return $this->defaultRecordSpec->getDefaults('description');
     }
 }
