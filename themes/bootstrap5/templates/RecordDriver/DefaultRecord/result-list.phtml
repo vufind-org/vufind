@@ -51,7 +51,7 @@
         <?php else: ?>
           <?php
             $journalTitle = $this->driver->getContainerTitle();
-            $summDate = $this->driver->getPublicationDates();
+            $summDate = $this->driver->getHumanReadablePublicationDates();
           ?>
           <?php if (!empty($journalTitle)): ?>
             <?=$this->transEsc('Published in')?>

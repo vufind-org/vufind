@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('auto_configure_title'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix Database') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Fix Database') . '</li>';
 ?>
 <h2><?=$this->transEsc('auto_configure_title')?></h2>
 
@@ -14,7 +14,7 @@
 <form class="form-fix-database" method="post">
   <div class="form-group">
     <label class="control-label" for="dbname">Select database type:</label>
-    <select name="driver" class="form-control">
+    <select name="driver" class="form-control form-select">
       <option value="mysql">MySQL</option>
       <option <?php if ($driver == 'pgsql'): ?>selected="selected" <?php endif; ?>value="pgsql">PostgreSQL</option>
     </select>

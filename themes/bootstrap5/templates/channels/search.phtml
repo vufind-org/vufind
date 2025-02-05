@@ -5,7 +5,7 @@
     $this->headTitle($this->translate('Channels') . (empty($lookfor) ? '' : " - {$lookfor}"));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('channels-home') . '">' . $this->transEsc('Channels') . '</a></li> <li class="active">' . $this->escapeHtml($lookfor) . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('channels-home') . '">' . $this->transEsc('Channels') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->escapeHtml($lookfor) . '</li>';
 
     // Set up query parameters for channel list:
     $this->queryParams = ltrim($this->results->getUrlQuery()->getParams(false), '?');

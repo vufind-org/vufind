@@ -1,4 +1,4 @@
-/*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -499,23 +499,12 @@ var VuFind = (function VuFind() {
     setupQRCodeLinks();
   };
 
-  function getBootstrapMajorVersion() {
-    // Bootstrap 5 defines bootstrap global, while 3 doesn't, so we can use that as
-    // an easy way to determine the version:
-    return typeof bootstrap === 'undefined' ? 3 : 5;
-  }
-
   /**
    * Disable transition effects and return the previous state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    */
   function disableTransitions(elem) {
-    if (getBootstrapMajorVersion() === 3) {
-      const oldState = $.support.transition;
-      $.support.transition = false;
-      return oldState;
-    }
     const oldState = elem.style.transitionDuration;
     elem.style.transitionDuration = '0s';
     return oldState;
@@ -524,15 +513,10 @@ var VuFind = (function VuFind() {
   /**
    * Restore transition effects to the given state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    * @param {(string|boolean)} state State from previous call to disableTransitions
    */
   function restoreTransitions(elem, state) {
-    if (getBootstrapMajorVersion() === 3) {
-      $.support.transition = state;
-      return;
-    }
-
     elem.style.transitionDuration = state;
   }
 
@@ -633,7 +617,6 @@ var VuFind = (function VuFind() {
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,
     setElementContents: setElementContents,
-    getBootstrapMajorVersion: getBootstrapMajorVersion,
     disableTransitions: disableTransitions,
     restoreTransitions: restoreTransitions,
     inURLSearchParams: inURLSearchParams,
@@ -780,7 +763,12 @@ function getUrlRoot(url) {
   return urlroot;
 }
 
-// Phone number validation
+/**
+ * Phone number validation
+ * @param {String} numID Phone number field ID
+ * @param {String} regionCode Region code
+ * @deprecated See validation.js for replacement
+ */
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
@@ -791,12 +779,10 @@ function phoneNumberFormHandler(numID, regionCode) {
     } else {
       valid = VuFind.translate('libphonenumber_invalid');
     }
-    $(phoneInput).siblings('.help-block.with-errors').html(valid);
-    $(phoneInput).closest('.form-group').addClass('sms-error');
+    phoneInput.setCustomValidity(valid);
     return false;
   } else {
-    $(phoneInput).closest('.form-group').removeClass('sms-error');
-    $(phoneInput).siblings('.help-block.with-errors').html('');
+    phoneInput.setCustomValidity('');
   }
 }
 
