@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for AssetManager view helper.
+ * Factory for AssetPipeline class.
  *
  * PHP version 8
  *
@@ -27,7 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindTheme\View\Helper;
+namespace VuFindTheme;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -38,7 +38,7 @@ use Psr\Container\ContainerInterface;
 use function count;
 
 /**
- * Factory for AssetManager view helper.
+ * Factory for AssetPipeline class.
  *
  * @category VuFind
  * @package  Theme
@@ -46,7 +46,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AssetManagerFactory implements FactoryInterface
+class AssetPipelineFactory implements FactoryInterface
 {
     /**
      * Split config and return prefixed setting with current environment.
@@ -99,12 +99,13 @@ class AssetManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
-        $nonce = $nonceGenerator->getNonce();
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $configManager->get('config')?->toArray() ?? [];
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
-            $container->get(\VuFindTheme\AssetPipeline::class),
-            $nonce
+            $container->get('ViewHelperManager')->get('url'),
+            $this->getPipelineConfig($config),
+            $config['Site']['asset_pipeline_max_css_import_size'] ?? null
         );
     }
 }

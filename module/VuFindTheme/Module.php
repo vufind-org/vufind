@@ -87,6 +87,7 @@ class Module
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
+                AssetPipeline::class => AssetPipelineFactory::class,
                 InjectTemplateListener::class => InjectTemplateListenerFactory::class,
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
