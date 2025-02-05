@@ -19,7 +19,7 @@
       </a>
       <!--Regular title for non-mobile -->
       <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
-      <div class="collapse in show" id="top_<?=$this->escapeHtml($title) ?>">
+      <div class="collapse show" id="top_<?=$this->escapeHtml($title) ?>">
         <ul class="top-facets-contents" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
           <?php foreach ($cluster['list'] as $index => $thisFacet): ?>
             <li class="facet top-facet">

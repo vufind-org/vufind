@@ -94,7 +94,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Check footer help-link
         $this->assertNotEquals(
@@ -132,7 +132,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the theme:
         $this->clickCss($page, '.theme-selector.dropdown');
-        $this->clickCss($page, '.theme-selector.dropdown li:not(.active) a');
+        $this->clickCss($page, '.theme-selector.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
 
         // Check h1 again -- it should exist now

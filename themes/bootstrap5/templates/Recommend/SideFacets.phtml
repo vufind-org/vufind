@@ -58,7 +58,7 @@
           <?=$this->icon('collapse', 'facet-title-icon') ?>
         </button>
       </h3>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" class="collapse<?php if (!$collapsed): ?> show<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-uncollapsed="1"<?php endif ?>>
         <?=
           $this->context($this)->renderInContext(
               'Recommend/SideFacets/facet.phtml',

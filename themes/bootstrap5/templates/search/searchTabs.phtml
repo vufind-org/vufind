@@ -3,15 +3,17 @@
     $hasSelectedTab = false;
     $resultTotal = $this->results?->getResultTotal() ?? -1;
   ?>
-  <ul class="nav nav-tabs">
+  <ul class="nav nav-tabs" role="tablist">
     <?php foreach ($searchTabs as $tab): ?>
       <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
         <?php
           $linkAttributes = [
             'data-source' => $tab['class'],
+            'class' => 'nav-link',
           ];
           if ($tab['selected']) {
             $hasSelectedTab = true;
+            $linkAttributes['class'] .= ' active';
             if ($this->showCounts && $resultTotal >= 0) {
               $linkAttributes['data-result-total'] = $resultTotal;
             } elseif ($this->showCounts) {
@@ -21,16 +23,16 @@
             $linkAttributes['href'] = $tab['url'];
           }
         ?>
-        <li<?=$tab['selected'] ? ' class="active"' : ''?><?=$this->showCounts ? ' data-show-counts' : ''?>>
-          <a <?=$this->htmlAttributes($linkAttributes)?>><?=$this->transEsc($tab['label']); ?></a>
+        <li class="nav-item"<?=$this->showCounts ? ' data-show-counts' : ''?>>
+          <a<?=$this->htmlAttributes($linkAttributes)?>><?=$this->transEsc($tab['label']); ?></a>
         </li>
       <?php elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
         <?=$block?>
       <?php endif; ?>
     <?php endforeach; ?>
     <?php if (!$hasSelectedTab && !$this->translationEmpty('temporary_search_tab_title')): ?>
-      <li class="active">
-        <a><?=$this->transEsc('temporary_search_tab_title')?></a>
+      <li class="nav-item">
+        <a class="nav-link active"><?=$this->transEsc('temporary_search_tab_title')?></a>
       </li>
     <?php endif; ?>
   </ul>

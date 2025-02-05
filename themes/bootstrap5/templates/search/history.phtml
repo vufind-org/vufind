@@ -10,7 +10,7 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs
-    = $parentBreadcrumb . '<li class="active">' . $this->transEsc('Search History') . '</li>';
+    = $parentBreadcrumb . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Search History') . '</li>';
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
   $loggedInUser = $this->auth()->getUserObject();

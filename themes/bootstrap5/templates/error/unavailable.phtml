@@ -5,7 +5,7 @@
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;
 
-  $this->layout()->breadcrumbs = '<li class="active">Error</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">Error</li>';
 ?>
 <div class="alert alert-warning">
   <h2><?=$this->transEsc('System Unavailable')?></h2>

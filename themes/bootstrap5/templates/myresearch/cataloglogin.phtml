@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Login'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Login') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Login') . '</li>';
 
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
@@ -28,7 +28,7 @@
       <?php if ($this->targets !== null): ?>
         <div class="form-group">
           <label class="control-label" for="profile_cat_target"><?=$this->transEsc('login_target')?>:</label>
-          <select id="profile_cat_target" name="target" class="form-control">
+          <select id="profile_cat_target" name="target" class="form-control form-select">
             <?php foreach ($this->targets as $target): ?>
               <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target === $this->defaultTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
             <?php endforeach; ?>

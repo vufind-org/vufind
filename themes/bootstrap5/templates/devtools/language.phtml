@@ -2,8 +2,8 @@
   $pageTitle = 'Comparing Languages Against ' . $mainName;
   $this->headTitle($pageTitle);
 
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
-  . '<li class="active">' . $this->escapeHtml($pageTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+  . '<li class="breadcrumb-item active" aria-current="page">' . $this->escapeHtml($pageTitle) . '</li>';
 
   $uLangs = [];
   foreach ($this->layout()->allLangs ?? [] as $c => $n) {
