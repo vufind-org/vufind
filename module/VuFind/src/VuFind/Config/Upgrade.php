@@ -778,6 +778,7 @@ class Upgrade
         $this->applyOldSettings('searches.ini', $groups);
 
         // fix call number sort settings:
+        $newConfig = & $this->newConfigs['searches.ini'];
         if (isset($newConfig['Sorting']['callnumber'])) {
             $newConfig['Sorting']['callnumber-sort']
                 = $newConfig['Sorting']['callnumber'];
