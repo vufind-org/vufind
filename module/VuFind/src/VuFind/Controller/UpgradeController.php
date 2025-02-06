@@ -193,41 +193,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Figure out which version(s) are being used.
-     *
-     * @return mixed
-     * @throws Exception
-     */
-    public function establishversionsAction()
-    {
-        $this->cookie->newVersion = Version::getBuildVersion();
-        $this->cookie->oldVersion = Version::getBuildVersion($this->getSourceDir());
-
-        // Block upgrade when encountering common errors:
-        if (empty($this->cookie->oldVersion)) {
-            $this->flashMessenger()
-                ->addMessage('Cannot determine source version.', 'error');
-            unset($this->cookie->oldVersion);
-            return $this->forwardTo('Upgrade', 'Error');
-        }
-        if (empty($this->cookie->newVersion)) {
-            $this->flashMessenger()
-                ->addMessage('Cannot determine destination version.', 'error');
-            unset($this->cookie->newVersion);
-            return $this->forwardTo('Upgrade', 'Error');
-        }
-        if ($this->cookie->newVersion == $this->cookie->oldVersion) {
-            $this->flashMessenger()
-                ->addMessage('Cannot upgrade version to itself.', 'error');
-            unset($this->cookie->newVersion);
-            return $this->forwardTo('Upgrade', 'Error');
-        }
-
-        // If we got this far, everything is okay:
-        return $this->forwardTo('Upgrade', 'Home');
-    }
-
-    /**
      * Upgrade the configuration files.
      *
      * @return mixed
@@ -936,16 +901,8 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (!$this->isSourceDirValid($this->getSourceDir(false))) {
+        if (!isset($this->cookie->oldVersion) || !isset($this->cookie->newVersion)) {
             return $this->forwardTo('Upgrade', 'GetSourceVersion');
-        }
-
-        // Next figure out which version(s) are involved:
-        if (
-            !isset($this->cookie->oldVersion)
-            || !isset($this->cookie->newVersion)
-        ) {
-            return $this->forwardTo('Upgrade', 'EstablishVersions');
         }
 
         // Check for critical upgrades
