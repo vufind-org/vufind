@@ -29,6 +29,7 @@
     // Use escapeHtml for performance (this data shouldn't contain anything that escapeHtmlAttr would be useful with)
     $escapeAttr = $escape;
     $truncate = $this->plugin('truncate');
+    $nodeCount = count($nodes);
     foreach ($nodes as $node) {
       $hasChildren = !empty($node->children);
       $liClasses = [];
@@ -39,7 +40,7 @@
       if ('collection' === $node->type) {
         $liClasses[] = 'hierarchy-tree__collection';
         $icon = 'hierarchy-collection';
-        if ($nodeId === 0 && !$parentNodeId && count($nodes) === 1) {
+        if ($nodeId === 0 && !$parentNodeId && $nodeCount === 1) {
           $openTopLevel = true;
         }
       } else {
