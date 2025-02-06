@@ -823,36 +823,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Prompt the user for a source directory (to upgrade from 1.x).
-     *
-     * @return mixed
-     */
-    public function getsourcedirAction()
-    {
-        // Process form submission:
-        $dir = $this->params()->fromPost('sourcedir');
-        if (!empty($dir)) {
-            if (!$this->isSourceDirValid($dir)) {
-                $this->flashMessenger()
-                    ->addMessage($dir . ' does not exist.', 'error');
-            } elseif (!file_exists($dir . '/build.xml')) {
-                $this->flashMessenger()->addMessage(
-                    'Could not find build.xml in source directory;'
-                    . ' upgrade does not support VuFind versions prior to 1.1.',
-                    'error'
-                );
-            } else {
-                $this->setSourceDir(rtrim($dir, '\/'));
-                // Clear out request to avoid infinite loop:
-                $this->getRequest()->getPost()->set('sourcedir', '');
-                return $this->forwardTo('Upgrade', 'Home');
-            }
-        }
-
-        return $this->createViewModel();
-    }
-
-    /**
      * Make sure we only skip the actions the user wants us to.
      *
      * @return void
@@ -877,9 +847,10 @@ class UpgradeController extends AbstractBase
         $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
             $this->cookie->newVersion = $newVersion = Version::getBuildVersion();
-            if (Comparator::lessThan($version, '2.0')) {
-                $this->flashMessenger()
-                    ->addMessage('Illegal version number.', 'error');
+            if (Comparator::lessThan($version, '10.0')) {
+                $this->flashMessenger()->addErrorMessage(
+                    'Illegal version number; please upgrade to at least version 10.x before proceeding.'
+                );
             } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
                 $this->flashMessenger()->addMessage(
                     "Source version must be less than {$newVersion}.",
@@ -894,9 +865,6 @@ class UpgradeController extends AbstractBase
                 return $this->forwardTo('Upgrade', 'Home');
             }
         }
-
-        // If we got this far, we need to send the user back to the form:
-        return $this->forwardTo('Upgrade', 'GetSourceDir');
     }
 
     /**
@@ -972,7 +940,7 @@ class UpgradeController extends AbstractBase
 
         // First find out which version we are upgrading:
         if (!$this->isSourceDirValid($this->getSourceDir(false))) {
-            return $this->forwardTo('Upgrade', 'GetSourceDir');
+            return $this->forwardTo('Upgrade', 'GetSourceVersion');
         }
 
         // Next figure out which version(s) are involved:
