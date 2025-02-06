@@ -29,7 +29,6 @@
 
 namespace VuFind\Config;
 
-use Composer\Semver\Comparator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
 
