@@ -235,13 +235,10 @@ class UpgradeController extends AbstractBase
     public function fixconfigAction()
     {
         $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
-        $confDir = $this->cookie->oldVersion < 2
-            ? $this->getSourceDir() . '/web/conf'
-            : $localConfig;
         $upgrader = new Upgrade(
             $this->cookie->oldVersion,
             $this->cookie->newVersion,
-            $confDir,
+            $localConfig,
             dirname($this->getBaseConfigFilePath('config.ini')),
             $localConfig
         );
