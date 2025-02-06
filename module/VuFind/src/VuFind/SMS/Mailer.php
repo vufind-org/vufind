@@ -46,7 +46,7 @@ use function in_array;
 class Mailer extends AbstractBase
 {
     /**
-     * Default carriers, usually overridden by contents of web/conf/sms.ini.
+     * Default carriers, usually overridden by contents of sms.ini.
      *
      * @var array
      */
