@@ -77,23 +77,23 @@
                   <div class="list-functions">
                     <div class="toolbar-button-col">
                       <div class="btn-group">
-                        <input type="submit" class="btn btn-primary btn-finna-toolbar dropdown-toggle" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr('renew_selected')?>" disabled="disabled" data-toggle="dropdown" data-lightbox-ignore>
+                        <input type="submit" class="btn btn-primary btn-finna-toolbar dropdown-toggle" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr('renew_selected')?>" disabled="disabled" data-bs-toggle="dropdown" data-lightbox-ignore aria-expanded="false">
                         <ul class="dropdown-menu useraccount-confirm" role="presentation">
                           <li><span class="dropdown-header"><?=$this->transEsc('confirm_renew_selected_text')?></span></li>
                           <li>
-                            <a href="#" id="confirm_renew_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a>
-                            <a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a>
+                            <a class="dropdown-item" href="#" id="confirm_renew_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a>
+                            <a class="dropdown-item" href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a>
                           </li>
                         </ul>
                       </div>
                       <?php if ($renewAll): ?>
                         <div class="btn-group">
-                          <input type="submit" class="btn btn-primary btn-finna-toolbar dropdown-toggle" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" data-toggle="dropdown" data-lightbox-ignore>
+                          <input type="submit" class="btn btn-primary btn-finna-toolbar dropdown-toggle" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" data-bs-toggle="dropdown" data-lightbox-ignore aria-expanded="false">
                           <ul class="dropdown-menu useraccount-confirm" role="presentation">
                             <li><span class="dropdown-header"><?=$this->transEsc('confirm_renew_all_text')?></span></li>
                             <li>
-                              <a href="#" id="confirm_renew_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a>
-                              <a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a>
+                              <a class="dropdown-item" href="#" id="confirm_renew_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a>
+                              <a class="dropdown-item" href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a>
                             </li>
                           </ul>
                         </div>

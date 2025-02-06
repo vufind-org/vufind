@@ -24,9 +24,21 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   font-size: 1.1em;
 
   // paginate_button is used in DataTables
+  > li.paginate_button {
+    @extend .page-item;
+    > a {
+      @extend .page-link;
+    }
+  }
+  > li.paginate_button.active > a {
+    color: var(--#{$prefix}pagination-active-color);
+    @include gradient-bg(var(--#{$prefix}pagination-active-bg));
+    border: none;
+  }
   > li.page-first > a,
   > li.page-prev > a,
   > li.page-next > a,

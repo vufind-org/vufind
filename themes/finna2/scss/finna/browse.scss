@@ -10,7 +10,7 @@ section.main.template-dir-search.template-name-results.browse {
 section.template-dir-browse {
     & .browse.list-group {
         @media (max-width: $screen-xs-max) {
-            margin-top: 20px;   
+            margin-top: 20px;
         }
         a.list-group-item:hover {
             text-decoration: underline;
@@ -19,10 +19,10 @@ section.template-dir-browse {
             margin-top: 20px;
         }
         &:last-child {
-            margin-bottom: 25px;   
+            margin-bottom: 25px;
         }
         & a.list-group-item {
-            display: inline-block;   
+            display: inline-block;
         }
         & .widen {
             width: 100%;
@@ -33,7 +33,7 @@ section.template-dir-browse {
                 background-color: $gray-ultralight;
             }
             & a.list-group-item.active {
-                background-color: $brand-primary;
+                background-color: $primary;
             }
         }
         & .list-group-item.view-record {

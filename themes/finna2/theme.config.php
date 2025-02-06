@@ -1,6 +1,6 @@
 <?php
 return [
-    'extends' => 'bootstrap3',
+    'extends' => 'bootstrap5',
     'helpers' => [
         'factories' => [
             'Finna\View\Helper\Root\AdjustHeadingLevel' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -34,7 +34,7 @@ return [
             'Finna\View\Helper\Root\Holdings' => 'VuFind\View\Helper\Root\HoldingsFactory',
             'Finna\View\Helper\Root\Iframe' => 'Finna\View\Helper\Root\IframeFactory',
             'Finna\View\Helper\Root\ImageSrc' => 'Finna\View\Helper\Root\HelperWithThemeInfoFactory',
-            'Finna\View\Helper\Root\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
+            'Finna\View\Helper\Root\LayoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClassFactory',
             'Finna\View\Helper\Root\LinkedEventsTabs' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Markdown' => 'VuFind\View\Helper\Root\MarkdownFactory',
             'Finna\View\Helper\Root\Matomo' => 'Finna\View\Helper\Root\MatomoFactory',
@@ -160,7 +160,7 @@ return [
             'VuFind\View\Helper\Root\ResultFeed' => 'Finna\View\Helper\Root\ResultFeed',
             'VuFind\View\Helper\Root\SearchTabs' => 'Finna\View\Helper\Root\SearchTabs',
             'VuFind\View\Helper\Root\Summon' => 'Finna\View\Helper\Root\Summon',
-            'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'Finna\View\Helper\Root\LayoutClass',
+            'VuFind\View\Helper\Bootstrap5\LayoutClass' => 'Finna\View\Helper\Root\LayoutClass',
 
             // Aliases for non-standard cases
             'Combined' => 'combined',
@@ -189,6 +189,8 @@ return [
     ],
     'js' => [
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'disabled' => true],
+        ['file' => 'bs3-compat.js', 'disabled' => true],
+        'finna-bs3-compat.js',
         'finna-object-editor.js',
         'account_ajax.js',
         'advanced_search.js',
@@ -257,7 +259,6 @@ return [
         'vendor/L.Control.Locate.min.js',
         'vendor/js.cookie.js',
         'vendor/select-a11y.iife.js',
-        'vendor/popper.min.js',
         'vendor/cally.iife.js',
         'finna-multiselect.js',
         'finna-model-viewer.js',

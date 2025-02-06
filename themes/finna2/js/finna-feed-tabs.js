@@ -30,7 +30,7 @@ finna.feedTabs = (function finnaFeedTab() {
   FeedTab.prototype.setEvents = function setEvents() {
     var _ = this;
     _.anchors.forEach(function addClickListener(element) {
-      element.parentNode.addEventListener('click', function onFeedTabClick(e) {
+      element.addEventListener('click', function onFeedTabClick(e) {
         e.preventDefault();
         _.displayTab(element);
       });
@@ -70,14 +70,14 @@ finna.feedTabs = (function finnaFeedTab() {
     _.anchors.forEach(function removeActive(el) {
       var parent = el.parentNode;
       if (el.dataset.tab === tab) {
-        parent.classList.add('active');
-        parent.setAttribute('aria-selected', true);
+        el.classList.add('active');
+        el.setAttribute('aria-selected', true);
         if (el.classList.contains('feed-accordion-anchor')) {
           parent.insertAdjacentElement('afterend', _.tabContent);
         }
       } else {
-        parent.classList.remove('active');
-        parent.setAttribute('aria-selected', false);
+        el.classList.remove('active');
+        el.setAttribute('aria-selected', false);
       }
     });
     _.tabContent.feedId = tab;
@@ -100,11 +100,10 @@ finna.feedTabs = (function finnaFeedTab() {
       if (!element.classList.contains('feed-tab-anchor')) {
         return;
       }
-      var parent = element.parentNode;
-      if ((!hash && !_.isLoading && parent.classList.contains('active')) ||
+      if ((!hash && !_.isLoading && element.classList.contains('active')) ||
         hash === element.dataset.tab
       ) {
-        parent.click();
+        element.click();
       }
     });
     if (_.anchors[0] && !_.isLoading) {

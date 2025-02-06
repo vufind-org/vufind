@@ -26,7 +26,7 @@
       bottom: -15px;
       left: 15px;
       width: 60px;
-      background: $brand-primary;
+      background: $primary;
       color: white;
       line-height: 64px;
       text-align: center;
@@ -164,7 +164,7 @@
   }
   #groupJoin {
     padding: 0px 0px 20px;
-    border: 2px solid $brand-primary;
+    border: 2px solid $primary;
     border-top: none;
     margin-top: -10px;
     margin-bottom: 30px;
@@ -325,7 +325,7 @@
     &::before {
       padding-left: 5px;
       font-size: 1.5em;
-      color: $brand-primary;
+      color: $primary;
       display: block;
       font-family: finnaicons;
       content: "\e00f";

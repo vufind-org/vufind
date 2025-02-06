@@ -2,7 +2,7 @@
 <div class="model-link">
     <?php if (count($models) > 1 && !$this->userAgent()->isBot()): ?>
         <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle download" type="button" id="downloadMenu-<?=$index?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-default dropdown-toggle download" type="button" id="downloadMenu-<?=$index?>" data-bs-toggle="dropdown" aria-expanded="false">
                 <?=$this->transEsc('Download the file')?> <span class="caret"></span>
             </button>
             <ul class="dropdown-menu download" aria-labelledby="downloadMenu-<?=$index?>">
@@ -23,7 +23,7 @@
                                     ]
                                 ) : $this->escapeHtmlAttr($model['url']);
                         ?>
-                        <a download href="<?=$url?>" rel="nofollow">
+                        <a class="dropdown-item" download href="<?=$url?>" rel="nofollow">
                             <?=$this->transEscWithPrefix('model_type_', $model['type'])?>
                             <span><?=$this->transEscWithPrefix('model_format_', $model['format'])?></span>
                         </a>

@@ -59,7 +59,9 @@ input, input.form-control {
   justify-content: center;
   border: none;
   background: $btn-primary-bg;
-  box-shadow: 0px 0px 5px rgba(100, 100, 100, 0.3);
+  &:not(:focus-visible) {
+    box-shadow: 0px 0px 5px rgba(100, 100, 100, 0.3);
+  }
 
   &:hover {
     background: darken($btn-primary-bg, 5%);
@@ -98,6 +100,10 @@ input, input.form-control {
     color: $gray;
     padding-left: 10px;
     height: 48px;
+    &:focus-visible {
+      outline: 0;
+      box-shadow: $focus-ring-box-shadow;
+    }
 
     @media (max-width: $screen-xs-max) {
       width: percentage(($finna-search-input-width - 0.06));
@@ -142,16 +148,18 @@ input, input.form-control {
   background: transparent;
   box-shadow: none;
   color: $gray;
+  height: 48px;
   margin: auto;
   a {
     color: black;
   }
   .dropdown-toggle {
     min-width: 110px;
-    display: inline-block;
+    display: inline-flex;
+    align-content: center;
     text-align: right;
     height: inherit;
-    padding: 8px 0px;
+    padding: 6px 0px;
   }
   li {
     text-align: left;

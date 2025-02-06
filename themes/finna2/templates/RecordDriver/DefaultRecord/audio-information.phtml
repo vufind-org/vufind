@@ -7,7 +7,7 @@
 <?php if (!empty($url['identifier'])): ?>
     <div class="audio-details-container text-left" data-img-index="<?=$ind?>">
         <div class="audio-details">
-            <button class="toggle-audio-information collapsed" data-toggle="collapse" data-target="#audio_details_<?=$ind?>" aria-expanded="false" aria-controls="audio_details_<?=$ind?>">
+            <button class="toggle-audio-information collapsed" data-bs-toggle="collapse" data-bs-target="#audio_details_<?=$ind?>" aria-expanded="false" aria-controls="audio_details_<?=$ind?>">
                 <span class="show-audio-information"><?=$this->icon('image-information-show') ?> <?=$this->transEsc($this->showButtonText ?? 'Show Audio Information')?></span>
                 <span class="hide-audio-information"><?=$this->icon('image-information-hide') ?> <?=$this->transEsc($this->hideButtonText ?? 'Hide Audio Information')?></span>
             </button>

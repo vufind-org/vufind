@@ -19,7 +19,7 @@
           font-size: $font-size-large;
           margin: 0 10px 10px 0;
           .profile-icon {
-            color: $brand-primary;
+            color: $primary;
             padding-right: 5px;
           }
         }
@@ -219,7 +219,7 @@
 }
 
 .address-change-description, .messaging-settings-change-description {
-    background-color: $state-info-bg;
+    background-color: $info-bg-subtle;
     padding: 2em;
     padding-left: 2.5em;
     margin-bottom: 1em;

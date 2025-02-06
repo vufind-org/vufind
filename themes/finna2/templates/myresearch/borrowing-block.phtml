@@ -2,7 +2,7 @@
 <?php if (!empty($blocks)): ?>
   <div class="borrowing-block-container alert alert-info">
     <?php foreach ($blocks as $block): ?>
-      <p class="borrowing-block"><?=!$this->translationEmpty($block . '_html') ? $this->translate($block . '_html') : str_replace("\n", '<br>', $this->transEsc($block))?></p>
+      <span class="borrowing-block"><?=!$this->translationEmpty($block . '_html') ? $this->translate($block . '_html') : str_replace("\n", '<br>', $this->transEsc($block))?></span>
     <?php endforeach; ?>
   </div>
 <?php endif; ?>

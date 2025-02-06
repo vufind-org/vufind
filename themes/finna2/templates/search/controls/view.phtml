@@ -24,7 +24,7 @@
       <div class="dropdown">
         <?php foreach ($viewList as $viewType => $viewData): ?>
           <?php if ($viewData['selected']): ?>
-            <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-label="<?=$this->transEsc('show_as') . ': ' . $this->transEsc('Show As ' . $viewData['desc']) . ' ' . $this->transEsc('selected')?>"><?=$this->icon('view-' . $viewType, 'icon-' . $viewType) ?> <span class="<?=($isCollection ?? false) ? 'hidden-xs hidden-sm' : '' ?>"><?=$this->transEsc('Show As ' . $viewData['desc'])?></span> <?=$this->icon('dropdown-open') ?></a>
+            <a href="#" role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="<?=$this->transEsc('show_as') . ': ' . $this->transEsc('Show As ' . $viewData['desc']) . ' ' . $this->transEsc('selected')?>"><?=$this->icon('view-' . $viewType, 'icon-' . $viewType) ?> <span class="<?=($isCollection ?? false) ? 'hidden-xs hidden-sm' : '' ?>"><?=$this->transEsc('Show As ' . $viewData['desc'])?></span> <?=$this->icon('dropdown-open') ?></a>
           <?php endif; ?>
         <?php endforeach; ?>
 
@@ -41,7 +41,7 @@
               }
             ?>
             <li>
-              <a href="<?=$viewUrl?>" role="menuitem" <?php if ($viewData['selected']):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>>
+              <a class="dropdown-item" href="<?=$viewUrl?>" role="menuitem" <?php if ($viewData['selected']):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>>
                 <?=$this->icon('view-' . $viewType, 'icon-' . $viewType) ?> <?=$this->transEsc('Show As ' . $viewData['desc'])?>
               </a>
             </li>

@@ -155,12 +155,12 @@ i.fa.fa-search.backgrounding:before {
 }
 /* Input styles */
 input[type=number].input-year {
-    -moz-appearance:textfield;
+    -moz-appearance:textfield !important;
     width: 5em;
 }
 input[type=number].input-year::-webkit-inner-spin-button,
 input[type=number].input-year::-webkit-outer-spin-button {
-    -webkit-appearance: none;
+    -webkit-appearance: none !important;
     margin: 0;
 }
 
@@ -237,7 +237,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
   }
   .slider-handle {
-    background: $brand-primary;
+    background: $primary;
     background-image:none;
     border:1px solid $gray-light;
     box-shadow:none;
@@ -292,9 +292,16 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   padding-top:600px;
 }
 
+// Truncate
+.truncate-done {
+  overflow-y: hidden;
+  // Add a bit of padding for focus rings:
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
 //Finna mixins
 .truncate-field {
-    overflow: hidden;
     display: none;
     &.truncate-done {
         display: block;
@@ -312,6 +319,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     margin-top: 5px;
     margin-bottom: 5px;
     border: none;
+    color: $text-color;
     background-color: transparent;
     padding: 0;
     &.link-buttons {
@@ -428,6 +436,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 // Inverse of .table-striped
 .finna-table-striped {
+  --#{$prefix}table-bg: transparent;
+
   > tbody > tr:nth-of-type(even) {
     background-color: $table-bg-accent;
   }
@@ -435,7 +445,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 // Hierarchy tree
 .hierarchy-tree-container .hierarchy-tree-search-form {
-    width: 250px;
     margin: 0;
     align-items: normal;
     gap: 0;
@@ -444,6 +453,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         height: 40px;
         border-right: none;
         border-radius: 4px 0 0 4px;
+    }
+    .input-group {
+        max-width: 250px;
     }
     .js-load-indicator {
         margin: 10px;
@@ -467,6 +479,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .hierarchy-tree-container {
     .hierarchy-tree {
+        outline: 0;
+        &:focus-visible {
+            box-shadow: $focus-ring-box-shadow;
+        }
+
         .hierarchy-tree__children, li:not(.hierarchy-tree__collection)  {
             padding-left: 0.7rem;
         }
@@ -475,7 +492,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         }
         button {
             font-size: 1.3rem;
-            color: $brand-primary;
+            color: $primary;
             &:hover {
                 background-color: $gray-lighter;
                 border-radius: 4px;

@@ -45,7 +45,7 @@
     <?php endif; ?>
     <?php $linkToResource = trim(ob_get_clean()); ?>
     <?php ob_start(); ?>
-    <button class="show-hide-button show-info more-link collapsed" data-toggle="collapse" data-target="#cc_info_<?= $i ?>" aria-expanded="false">
+    <button class="show-hide-button show-info more-link collapsed" data-bs-toggle="collapse" data-bs-target="#cc_info_<?= $i ?>" aria-expanded="false">
         <?=$this->transEsc('copyright_info_show')?> <?=$this->icon('truncate-more')?>
     </button>
     <?php $ccbutton = trim(ob_get_clean());?>
@@ -84,7 +84,7 @@
                 <?php foreach ($rightsDescription as $item): ?>
                     <p class="access-rights"><?=$this->escapeHtml((string)$item);?></p>
                 <?php endforeach; ?>
-                <button class="hide-info less-link" data-toggle="collapse" data-target="#cc_info_<?= $i ?>" aria-expanded="false">
+                <button class="hide-info less-link" data-bs-toggle="collapse" data-bs-target="#cc_info_<?= $i ?>" aria-expanded="false">
                     <?=$this->transEsc('copyright_info_hide')?> <?=$this->icon('truncate-less')?>
                 </button>
             </div>

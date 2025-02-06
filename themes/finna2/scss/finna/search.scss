@@ -537,18 +537,10 @@ h2 {
 
 .search-history-table {
   @extend .table;
-  @extend .table-striped;
   @extend .table-responsive;
 }
 table.search-history-table {
   table-layout: auto;
-
-  tr.oddrow {
-    background-color: transparent;
-  }
-  thead tr, tr.evenrow {
-    background-color: $table-bg-accent;
-  }
 
   .history_results {
     white-space: nowrap;

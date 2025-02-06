@@ -150,7 +150,7 @@
     <h1>
       <?= $this->transEsc('Your Account') ?>
       <?php if (!$this->translationEmpty('tooltip_myaccount_html')): ?>
-        <button class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?= $this->transEsc('tooltip_myaccount_html') ?>"><?=$this->icon('help') ?><span class="sr-only"><?=$this->transEsc('My account tips');?></span></button>
+        <button class="tooltip-myaccount" data-bs-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?= $this->transEsc('tooltip_myaccount_html') ?>"><?=$this->icon('help') ?><span class="sr-only"><?=$this->transEsc('My account tips');?></span></button>
       <?php endif; ?>
     </h1>
   </li>

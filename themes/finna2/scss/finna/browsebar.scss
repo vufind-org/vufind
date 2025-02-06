@@ -1,36 +1,54 @@
 .browsebar {
   width: 100%;
   background-color: $finna-browsebar-background;
-  bottom:0;
+  bottom: 0;
   color: $finna-browsebar-link-color;
+  padding-top: 2px;
 }
 .browsebar .nav>li .iconlabel:before,
 .browsebar .nav-dropdown-label.iconlabel:before,
 .browsebar .dropdown-menu a.iconlabel:before{
-  vertical-align: bottom;
+  vertical-align: center;
   font-size: 1.3em;
-  margin-right: 0.5em;   
+  margin-right: 0.5em;
 }
 .browsebar .navbar {
   border-radius: 0;
   border: none;
   max-width: none;
   background-color: transparent;
+
+  .nav-wrapper:not(.priority-nav) .nav-ul {
+    flex-direction: initial;
+  }
 }
 .browsebar .nav>li {
   line-height: normal;
 }
-.browsebar .navbar .navbar-nav>li>a {
-  color: $finna-browsebar-link-color;
-  padding-left: 5px;
-  padding-right: 5px;
-  font-size: 1.1em;
-  height: 64px;
-  line-height: 64px;
-  margin-top: 0;
-  margin-bottom: 0;
-  i.fa {
-    margin-right: 0.5em;
+.browsebar .navbar {
+  --#{$prefix}navbar-padding-y: 0;
+
+  .navbar-nav {
+    margin: 0;
+
+    & > li > a {
+      color: $finna-browsebar-link-color;
+      padding-left: 5px;
+      padding-right: 5px;
+      font-size: 1.1em;
+      height: 60px;
+      line-height: 60px;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      i.fa {
+        margin-right: 0.5em;
+      }
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.2rem;
+    }
   }
 }
 .browsebar button .iconlabel {
@@ -43,10 +61,9 @@
   color: mix(#ffffff, $finna-browsebar-background, 78%);
   text-transform: uppercase;
   font-size: 0.9em;
-  vertical-align: middle;
   font-weight: 600;
   padding-right: 25px;
-  line-height: 64px;
+  line-height: 60px;
   float: left;
 }
 @media (max-width: $screen-xs-max) {
@@ -64,27 +81,29 @@
 .browsebar {
   .priority-nav__dropdown {
     left: 0;
-    top: 30px;
+    top: 45px;
     li > a.iconlabel {
       margin: 0px;
     }
   }
+  .dropdown-menu-wrapper {
+    display: inline-flex;
+  }
   .nav-dropdown-toggle {
-    height: 64px;
+    height: 60px;
+    line-height: 60px;
     font-size: 1.1em;
     border: none;
     background-color: transparent;
     color: $finna-browsebar-link-color;
     padding: 0;
     padding-left: 1em;
-    line-height: normal;
     &:before {
       content: "\e00d";
       font-family: finnaicons;
       font-size: 1.3em;
       margin-right: 0.5em;
       padding-right: 3px;
-      vertical-align: bottom;
     }
     &:after {
       font-family: finnaicons;
@@ -104,6 +123,8 @@
     }
   }
   nav.navbar {
+    // `display: block` required for priority-nav
+    display: block;
     width: 100%;
     float: left;
     .nav-wrapper {

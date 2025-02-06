@@ -1,4 +1,4 @@
-.list-group-item , .logoutOptions , .status, .grid-image {
+.list-group-item, .logoutOptions, .tooltip-dark, .grid-image {
   .tooltip-inner {
     min-width: auto;
     padding: 4px 8px;
@@ -23,12 +23,7 @@
     border-bottom-color: $gray;
   }
 }
-.tooltip-tabs_local {
-  display: $tooltip-tabs-local;
-}
-.tooltip-tabs_pci {
-  display: $tooltip-tabs-pci;
-}
+
 .tooltip-facet {
   display: $tooltip-facet;
   display: block;
@@ -91,11 +86,7 @@
     display: none;
    }
 }
-.finna-main-tabs ul.nav-tabs>li.active>a {
-  .tooltip-tabs_local, .tooltip-tabs_pci {
-    color: $gray;
-  }
-}
+
 .tooltip-myaccount {
   margin-left: 10px;
   color: $gray;

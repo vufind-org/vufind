@@ -1,5 +1,5 @@
 .finna-truncate {
-  overflow: hidden;
+  overflow-y: clip;
   &.height-based > :last-child {
     margin-bottom: 0;
   }

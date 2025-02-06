@@ -12,8 +12,8 @@
           $isActive = 0 === strcasecmp($this->active, $feed);
           $tabId = $this->id . '-' . $feed;
         ?>
-        <li class="feed-tab <?=$isActive ? 'active' : ''?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>" role="tab" aria-selected="<?= $isActive ? 'true' : 'false' ?>">
-            <a class="feed-tab-anchor" tabindex="0" href="<?='#' . $this->escapeHtmlAttr($tabId)?>" id="<?=$this->escapeHtmlAttr($tabId) . '-tab'?>" data-tab="<?=$this->escapeHtmlAttr($feed)?>" aria-label="<?=$this->escapeHtmlAttr($this->transEsc($desc))?>" data-lightbox-ignore>
+        <li class="nav-item feed-tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>" role="presentation">
+            <a class="nav-link feed-tab-anchor<?=$isActive ? ' active' : ''?>" tabindex="0" role="tab" aria-selected="<?= $isActive ? 'true' : 'false' ?>" href="<?='#' . $this->escapeHtmlAttr($tabId)?>" id="<?=$this->escapeHtmlAttr($tabId) . '-tab'?>" data-tab="<?=$this->escapeHtmlAttr($feed)?>" aria-label="<?=$this->escapeHtmlAttr($this->transEsc($desc))?>" data-lightbox-ignore>
               <?= $this->transEsc($desc)?>
             </a>
         </li>

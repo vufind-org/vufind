@@ -368,8 +368,8 @@ VuFind.register('lightbox', function Lightbox() {
     // remove nodes on whose click, the modal closes
     var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
       return !node.hasAttribute("data-lightbox-close") && (
-        !node.hasAttribute("data-dismiss") ||
-        node.getAttribute("data-dismiss") !== "modal"
+        !node.hasAttribute("data-bs-dismiss") ||
+        node.getAttribute("data-bs-dismiss") !== "modal"
       );
     });
 

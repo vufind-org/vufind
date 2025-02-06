@@ -27,12 +27,6 @@
   }
 }
 
-.input-group {
-  .form-control {
-    width: auto;
-  }
-}
-
 .media,
 .media-body {
   overflow: visible;
@@ -150,16 +144,16 @@
 /* Site status bar */
 .site-status-bar {
   color: #fff;
-  background-color: $brand-info;
+  background-color: $info;
   padding-top: 0.6em;
   padding-bottom: 0.6em;
   text-align: center;
   z-index: 1;
   &.site-status-beta {
-    background-color: $brand-warning;
+    background-color: $warning;
   }
   &.site-status-disabled {
-    background-color: $brand-danger;
+    background-color: $danger;
   }
   &.site-status-production {
     display: none;

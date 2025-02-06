@@ -16,7 +16,7 @@
   <div class="carousel-more show-link" aria-hidden="true"><?=$this->icon('carousel-follow-link')?></div>
   <?php if (isset($item['title'])): ?>
     <div class="carousel-hover-title">
-      <p><?=$this->escapeHtml($this->truncate($item['title'], $item['titleTruncateSize']))?></p>
+      <span><?=$this->escapeHtml($this->truncate($item['title'], $item['titleTruncateSize']))?></span>
     </div>
   <?php endif; ?>
   <?php if (isset($item['dateFull'])): ?>
@@ -38,7 +38,7 @@
         <p class="xcal"><?=$this->icon('feed-xcal-location') ?><span class="sr-only"><?=$this->transEscAttr('Location') ?></span> <?=$this->escapeHtml($xcal['location']) ?></p>
       <?php endif; ?>
     <?php endif; ?>
-    <p><?=$this->escapeHtml($item['text'] ?? '') ?></p>
+    <span><?=$this->escapeHtml($item['text'] ?? '') ?></span>
     <?php if ($clickableLink): ?>
       <span class="carousel-description"><?= $linkTextEsc ?></span>
     <?php endif; ?>
@@ -51,8 +51,8 @@
   </div>
 <?php endif; ?>
 <?php if (isset($item['title']) || isset($item['dateFull'])): ?>
-  <div class="carousel-slide-header <?php if ($titleBottom): ?>carousel-slide-header-bottom<?php endif; ?>">
-    <p>
+  <div class="carousel-slide-header<?php if ($titleBottom): ?> carousel-slide-header-bottom<?php endif; ?>">
+    <span>
       <?php if ($hasIcon && !$hasImg): ?><?=$this->partial('Helpers/feed-icon.phtml', ['icon' => $item['icon']]);?><?php endif; ?>
       <?php if (isset($item['title'])): ?>
         <span class="carousel-header-title"><?=$this->escapeHtml($this->truncate($item['title'], $item['titleTruncateSize']));?></span>
@@ -65,7 +65,7 @@
       <?php endif; ?>
       <span class="carousel-slide-more carousel-show hidden"><?=$this->icon('carousel-show')?></span>
       <span class="carousel-slide-more carousel-close hidden"><?=$this->icon('carousel-close')?></span>
-    </p>
+    </span>
   </div>
 <?php endif; ?>
 <!-- END of: finna - ajax/feed-carousel-item.phtml -->

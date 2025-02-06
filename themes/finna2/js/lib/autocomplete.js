@@ -171,7 +171,7 @@
         } else if (type === 'isbn') {
           item.attr('data-title', data[i].match.title);
           item.attr('href', data[i].match.url);
-          item.append('<br />');
+          item.append('<br>');
           item.append(document.createTextNode('ISBN: ' + data[i].match.isbn));
           item.wrapInner($('<span>'));
           item.prepend('<div class="iconlabel format-1bookbook"></div>');

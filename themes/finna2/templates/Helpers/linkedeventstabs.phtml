@@ -6,20 +6,25 @@
 <div class="linked-events-tabs <?= $showMobileAccordion ? 'mobile-accordion-show' : 'mobile-accordion-hide'; ?>" id="<?= $this->escapeHtmlAttr($this->id) ?>" data-limit="<?= $this->escapeHtmlAttr($this->limit) ?>" data-lang="<?= $this->layout()->userLang; ?>">
   <div class="feed-tabs-container">
     <h2 class="feed-tabs-title"><?= $this->transEsc('Events'); ?></h2>
-    <ul class="nav <?= !empty($navStyle) ? 'feed-nav-' . $this->escapeHtmlAttr($this->navStyle) : 'nav-tabs' ?>" role="tablist">
+    <ul class="nav <?= !empty($navStyle) ? ' feed-nav-' . $this->escapeHtmlAttr($this->navStyle) : 'nav-tabs' ?>" role="tablist">
       <?php $i = 0;
       foreach ($this->tabs as $id => $tab): ?>
         <?php
           $tabId = $this->id . '-' . $i++;
           $isActive = $this->active === $tab['title'];
         ?>
-        <li class="nav-item event-tab feed-tab <?= $isActive ? 'active' : ''; ?>" id="<?=$this->escapeHtmlAttr($tabId)?>"
-          tabindex="0"
-          role="tab"
-          aria-selected="<?= $isActive ? 'true' : 'false'; ?>"
-          data-params="<?= isset($tab['params']) ? $this->escapeHtmlAttr(json_encode($tab['params'])) : ''?>"
-          aria-label="<?= $this->escapeHtmlAttr($tab['title']); ?>"
-          ><a role="button"><?= $this->escapeHtml($tab['title']) ?></a></li>
+        <li class="nav-item event-tab feed-tab" role="presentation">
+          <button
+            type="button"
+            id="<?=$this->escapeHtmlAttr($tabId)?>"
+            class="nav-link<?= $isActive ? ' active' : ''; ?>"
+            role="tab"
+            aria-selected="<?= $isActive ? 'true' : 'false'; ?>"
+            data-params="<?= isset($tab['params']) ? $this->escapeHtmlAttr(json_encode($tab['params'])) : ''?>"
+            >
+              <?= $this->escapeHtml($tab['title']) ?>
+          </button>
+        </li>
       <?php endforeach; ?>
     </ul>
   </div>

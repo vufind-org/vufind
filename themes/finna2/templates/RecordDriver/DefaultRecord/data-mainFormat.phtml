@@ -11,7 +11,7 @@
           $source = $method['source'] ?? null;
         ?>
       <?php if (!$id): ?>
-        <?=$this->escapeHtml($method['data']);?></br>
+        <?=$this->escapeHtml($method['data']);?><br>
       <?php else: ?>
         <?=$this->record($this->driver)->getLinkedFieldElement($this->headingType ?? 'subject', $method['data'], ['name' => $method['data'], 'id' => $id, 'source' => $source], ['class' => ['backlink']])?><br>
       <?php endif; ?>
@@ -24,7 +24,7 @@
           $source = $material['source'] ?? null;
         ?>
       <?php if (!$id): ?>
-        <?=$this->escapeHtml($material['data']);?></br>
+        <?=$this->escapeHtml($material['data']);?><br>
       <?php else: ?>
         <?=$this->record($this->driver)->getLinkedFieldElement($this->headingType ?? 'subject', $material['data'], ['name' => $material['data'], 'id' => $id, 'source' => $source], ['class' => ['backlink']])?><br>
       <?php endif; ?>

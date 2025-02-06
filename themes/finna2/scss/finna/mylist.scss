@@ -55,7 +55,7 @@
     > li {
       max-width: none;
       border: none;
-      
+
       > a {
         padding: 3px 20px;
         &.active {
@@ -75,7 +75,7 @@
           white-space: nowrap;
           margin-right: 5px;
         }
-  
+
         .public-favorite-list {
           padding: 2px;
           &:before {
@@ -151,7 +151,9 @@
   margin: 0;
   border-bottom: 1px solid $gray-lighter;
   @media (max-width: $screen-xs-max) {
-    @include make-row();
+    margin-right: calc(-0.5 * var(--bs-gutter-x));
+    margin-left: calc(-0.5 * var(--bs-gutter-x));
+    @include clearfix;
   }
 }
 
@@ -308,10 +310,10 @@
     border: 1px solid $gray-lighter;
     .info {
       font-weight: bold;
-      color: $brand-danger;
+      color: $danger;
       i {
        border-radius: 50%;
-       border: 2px solid $brand-danger;
+       border: 2px solid $danger;
        font-size: 1em;
        padding: 1px;
       }

@@ -3,15 +3,16 @@
 // --------------------------------------------------
 
 // Brand Colors
-// $brand-primary: #00a3b5 !default;
-// $brand-secondary: #B3E3E9 !default;
-// $brand-third: #d8f4ed !default;
-// $brand-fourth: #ebd4f0 !default;
-// $brand-success: #00b270 !default;
-// $brand-warning: #fff48c !default;
-// $brand-danger: #ff461e !default;
-// $brand-info: #b2e3ea !default;
-// $logo-color: #fff !default;
+// $primary:               #007c90 !default;
+// $secondary:             #007c90 !default;
+// $third:                 #007c90 !default;
+// $fourth:                #007c90 !default;
+// $success:               #33843B !default;
+// $warning:               #9E943D !default;
+// $danger:                #a94442 !default;
+// $info:                  #007c90 !default;
+// $info-bg-subtle:        #d9edf7 !default;
+// $logo-color:            #fff !default;
 
 //== Custom styling
 //== Background
@@ -356,21 +357,10 @@
 //
 //## Define colors for form feedback states and, by default, alerts.
 
-//$state-success-text:             #2d4821 !default;
-//$state-success-bg:               #dff0d8 !default;
-//$state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%) !default;
-
-//$state-info-text:                #31708f !default;
-//$state-info-bg:                  #d9edf7 !default;
-//$state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !default;
-
-//$state-warning-text:             #8a6d3b !default;
-//$state-warning-bg:               #fcf8e3 !default;
-//$state-warning-border:           darken(adjust-hue($state-warning-bg, -10), 5%) !default;
-
-//$state-danger-text:              #a94442 !default;
-//$state-danger-bg:                #f2dede !default;
-//$state-danger-border:            darken(adjust-hue($state-danger-bg, -10), 5%) !default;
+//$success:                        #33843B !default;
+//$info:                           #007c90 !default;
+//$warning:                        #9E943D !default;
+//$danger:                         #a94442 !default;
 
 
 //== Tooltips

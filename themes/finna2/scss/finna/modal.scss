@@ -29,6 +29,7 @@
   top: 14px;
   z-index: 2;
   opacity: 0.8;
+  background: none;
   &:after {
     font-family: finnaicons;
     content: '\e02e';
@@ -46,15 +47,15 @@
     color: $modal-header-color;
     font-size: $content-headings-font-size-h4;
     line-height: $modal-title-line-height;
-    border-top-left-radius: $border-radius-large - 1;
-    border-top-right-radius: $border-radius-large - 1;
+    border-top-left-radius: $modal-content-inner-border-radius;
+    border-top-right-radius: $modal-content-inner-border-radius;
     border-bottom: 1px solid $modal-header-border-color;
     margin: -$modal-inner-padding;
-    margin-bottom: $modal-title-padding;
+    margin-bottom: 2 * $modal-header-padding-y;
     padding: $modal-title-padding;
     // Account for close button
     padding-right: 45px;
-    min-height: ($modal-title-padding + $modal-title-line-height);
+    min-height: $modal-header-padding-y * $modal-title-line-height;
   }
   & .alert-success {
     margin-top: $modal-title-padding;

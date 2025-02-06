@@ -5,7 +5,7 @@
     <?php $targetCount = $this->ils()->checkCapability('getLoginDrivers') ? count($this->ils()->getLoginDrivers()) : 1; ?>
     <?php if (isset($loginMenu) && $loginMenu): ?>
       <li class="logoutOptions card-selection" role="none">
-        <a class="card-header" href="<?=$this->url('librarycards-home')?>">
+        <a class="card-header<?=$loginMenu ? ' nav-link' : ''?>" href="<?=$this->url('librarycards-home')?>">
           <?=$this->transEsc($this->label ?? 'Kirjastokortti') ?>
         </a>
         <label id="select-card-label-dropdown"><?= $this->transEsc('Library Card') ?></label>
@@ -70,7 +70,7 @@
               $display = $this->transEsc('Select');
             }
           ?>
-          <a href="#" class="dropdown-toggle" aria-describedby="select-card-label-maincontent" aria-expanded="false" aria-haspopup="true" data-toggle="dropdown"><span><?=$display ?></span> <?=$this->icon('dropdown-open') ?></a>
+          <a href="#" class="dropdown-toggle" aria-describedby="select-card-label-maincontent" aria-expanded="false" data-bs-toggle="dropdown"><span><?=$display ?></span> <?=$this->icon('dropdown-open') ?></a>
           <ul class="dropdown-menu library_card" role="menu">
           <?php foreach ($cards as $card): ?>
             <?php
@@ -88,7 +88,7 @@
               }
             ?>
             <li>
-              <a aria-describedby="select-card-label-maincontent" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->getId());?>" data-clear-account-cache><?=$display ?></a>
+              <a class="dropdown-item" aria-describedby="select-card-label-maincontent" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->getId());?>" data-clear-account-cache><?=$display ?></a>
             </li>
         <?php endforeach; ?>
         </ul>

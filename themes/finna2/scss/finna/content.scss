@@ -48,7 +48,7 @@ h1.content-header {
         text-transform: uppercase;
         margin: 0; padding-top: 0.4em; padding-bottom: 0em;
     }
-    p, ul, ol {
+    p, ul:not(.nav-tabs), ol {
         font-size: $content-font-size-base;
         line-height: $content-line-height-base;
         margin-bottom: 15px;
@@ -106,6 +106,10 @@ h1.content-header {
         @media(max-width: $screen-sm){
             width: 50%;
         }
+        a {
+            // Fixes :focus-visible
+            display: block;
+        }
     }
     .organisation-list-group {
         &::after {
@@ -128,7 +132,6 @@ ul.nav-tabs.help-tabs {
         color: $header-text-color;
         font-size: 24px;
         font-weight: 500;
-        padding: 10px 15px;
         @media(max-width: $screen-lg){
             font-size: 20px;
         }
@@ -168,13 +171,13 @@ ul.nav-tabs.help-tabs {
         display: inline-block;
         padding-bottom: 0.5em;
         > a {
-            color: $brand-primary;
-            border: 1px solid $brand-primary;
+            color: $primary;
+            border: 1px solid $primary;
             padding: 0.5em;
             &:hover,
             &:focus {
                 color: #fff;
-                background: $brand-primary;
+                background: $primary;
             }
         }
     }

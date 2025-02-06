@@ -140,10 +140,11 @@
               <?php // add current tab to breadcrumbs if applicable:
                 $desc = $obj->getDescription();
                 $tabName = preg_replace("/\W/", '-', strtolower($tab));
-                $tabClasses = [ 'record-tab', $tabName ];
+                $tabClasses = [ 'nav-item', 'record-tab', $tabName ];
+                $linkClasses = [ 'nav-link', $tabName ];
                 if (0 === strcasecmp($this->activeTab, $tab)) {
                   if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
-                      $tabClasses[] = 'active';
+                      $linkClasses[] = 'active';
                   }
                   $tabClasses[] = 'initiallyActive';
                   $activeTabName = $tabName;
@@ -160,8 +161,8 @@
                 }
               ?>
               <li role="presentation" id="record-tab-<?=$this->escapeHtmlAttr($tabName)?>" class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-                <a role="tab" class="<?=$this->escapeHtmlAttr(strtolower($tab)) ?>" aria-label="<?=$this->transEscAttr($desc)?>"
-                  href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
+                <a role="tab" class="<?=implode(' ', $linkClasses)?>" aria-label="<?=$this->transEscAttr($desc)?>"
+                  href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-bs-target=".tab-pane.<?=$this->escapeHtmlAttr($tabName)?>" data-lightbox-ignore>
                   <?php if (strtolower($tab) == 'details'): ?><?=$this->icon('staff-view', 'staff-view-icon')?><?php endif; ?>
                   <span class="tab-name"><?=$this->transEsc($desc)?></span>
                   <?php if (strtolower($tab) == 'usercomments') : ?> (<span class="count"><?= count($this->record($this->driver)->getComments()) ?></span>)<?php endif; ?>

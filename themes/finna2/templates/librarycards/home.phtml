@@ -25,90 +25,94 @@
       <?php if (empty($this->libraryCards)): ?>
         <h4><?=$this->transEsc('You do not have any library cards')?></h4>
       <?php else: ?>
-        <table class="table table-striped useraccount-table library-cards mobile-table">
-          <tr class="headers">
-            <th class="card-name"><?=$this->transEsc('Library Card Name')?></th>
-            <?php if ($this->multipleTargets): ?>
-            <th><?=$this->transEsc('login_target')?></th>
-            <?php endif; ?>
-            <th><?=$this->transEsc('Username')?></th>
-            <th class="library-card-actions"><?=$this->transEsc('Actions')?></th>
-          </tr>
-          <?php foreach ($this->libraryCards as $record): ?>
-            <?php $username = $record['cat_username']; ?>
-            <?php $target = ''; ?>
-            <?php if ($this->multipleTargets): ?>
-              <?php if (strstr($username, '.')): ?>
-                <?php [$target, $username] = explode('.', $username, 2); ?>
-              <?php endif; ?>
-            <?php endif; ?>
-            <tr>
-              <td data-label="<?=$this->transEsc('Library Card Name')?>" class="card-name">
-                <?php $libraryCardName = $record['card_name'] == "$target.$username" ? $this->escapeHtml($username) : $this->escapeHtml($record['card_name']) ?>
-                <?php if ($libraryCardName): ?>
-                  <span><?=$libraryCardName?></span>
-                <?php else: ?>
-                  <span>
-                    <?=$this->transEsc('Library Card name missing')?>
-                    <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-                      <a href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"> <?=$this->transEsc('Add name')?></a>
-                    <?php endif; ?>
-                  </span>
-                <?php endif; ?>
-              </td>
+        <table class="table finna-table-striped useraccount-table library-cards mobile-table">
+          <thead>
+            <tr class="headers">
+              <th class="card-name"><?=$this->transEsc('Library Card Name')?></th>
               <?php if ($this->multipleTargets): ?>
-                <td data-label="<?=$this->transEsc('login_target')?>"><span><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></span></td>
+              <th><?=$this->transEsc('login_target')?></th>
               <?php endif; ?>
-              <td data-label="<?=$this->transEsc('Username')?>">
-                <?php $barcode = $record['barcode'] ?? $username;?>
-                <?php if ($barcode !== $username): ?>
-                  <p><?=$this->escapeHtml($username)?></p>
-                <?php endif; ?>
-                <a href="<?=$this->url('librarycards-displaybarcode', ['id' => $record['id']])?>" title="<?=$this->transEscAttr('show_barcode_title')?>">
-                  <?php if (strcasecmp($record['cat_username'], $user->getCatUsername()) === 0 && ($barcodeSvg = $this->barcode()->createCode39SVG($barcode, 1.3, 50))): ?>
-                    <div class="librarycard-barcode">
-                      <?=$barcodeSvg?>
-                    </div>
-                  <?php endif; ?>
-                  <span><?=$this->escapeHtml($barcode)?></span>
-                </a>
-              </td>
-              <td data-label="<?=$this->transEsc('Actions')?>" class="library-card-actions">
-                <div>
-                  <?php if ($this->ils()->checkFunction('changePassword', (array)$record)): ?>
-                    <a class="icon-link change-library-card-password" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($record['id']) ?>" data-lightbox title="<?=$this->transEscAttr('Change Password')?>">
-                      <?=$this->icon('library-card-password', 'icon-link__icon') ?>
-                      <span class="icon-link__label">
-                        <?=$this->transEsc('Change Password')?>
-                      </span>
-                    </a>
-                  <?php endif; ?>
-                  <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-                    <a class="icon-link edit-library-card" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
-                      <?=$this->icon('library-card-edit', 'icon-link__icon') ?>
-                      <span class="icon-link__label">
-                        <?=$this->transEsc('Update Card Details')?>
-                      </span>
-                    </a>
-                  <?php endif; ?>
-                  <?=
-                    $this->component(
-                        'confirm-button',
-                        [
-                          'buttonLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id']]]),
-                          'buttonLabelHtml' => $this->icon('library-card-disconnect') . ' ' . $this->translate('Disconnect Library Card'),
-                          'buttonClass' => 'btn-unstyled',
-                          'confirmLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id'], 'confirm' => 1]]),
-                          'header' => 'confirm_delete_library_card_brief',
-                          'clearAccountCache' => true,
-                          'align' => 'right',
-                        ]
-                    );
-                  ?>
-                </div>
-              </td>
+              <th><?=$this->transEsc('Username')?></th>
+              <th class="library-card-actions"><?=$this->transEsc('Actions')?></th>
             </tr>
-          <?php endforeach; ?>
+          </thead>
+          <tbody>
+            <?php foreach ($this->libraryCards as $record): ?>
+              <?php $username = $record['cat_username']; ?>
+              <?php $target = ''; ?>
+              <?php if ($this->multipleTargets): ?>
+                <?php if (strstr($username, '.')): ?>
+                  <?php [$target, $username] = explode('.', $username, 2); ?>
+                <?php endif; ?>
+              <?php endif; ?>
+              <tr>
+                <td data-label="<?=$this->transEsc('Library Card Name')?>" class="card-name">
+                  <?php $libraryCardName = $record['card_name'] == "$target.$username" ? $this->escapeHtml($username) : $this->escapeHtml($record['card_name']) ?>
+                  <?php if ($libraryCardName): ?>
+                    <span><?=$libraryCardName?></span>
+                  <?php else: ?>
+                    <span>
+                      <?=$this->transEsc('Library Card name missing')?>
+                      <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
+                        <a href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"> <?=$this->transEsc('Add name')?></a>
+                      <?php endif; ?>
+                    </span>
+                  <?php endif; ?>
+                </td>
+                <?php if ($this->multipleTargets): ?>
+                  <td data-label="<?=$this->transEsc('login_target')?>"><span><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></span></td>
+                <?php endif; ?>
+                <td data-label="<?=$this->transEsc('Username')?>">
+                  <?php $barcode = $record['barcode'] ?? $username;?>
+                  <?php if ($barcode !== $username): ?>
+                    <p><?=$this->escapeHtml($username)?></p>
+                  <?php endif; ?>
+                  <a href="<?=$this->url('librarycards-displaybarcode', ['id' => $record['id']])?>" title="<?=$this->transEscAttr('show_barcode_title')?>">
+                    <?php if (strcasecmp($record['cat_username'], $user->getCatUsername()) === 0 && ($barcodeSvg = $this->barcode()->createCode39SVG($barcode, 1.3, 50))): ?>
+                      <div class="librarycard-barcode">
+                        <?=$barcodeSvg?>
+                      </div>
+                    <?php endif; ?>
+                    <span><?=$this->escapeHtml($barcode)?></span>
+                  </a>
+                </td>
+                <td data-label="<?=$this->transEsc('Actions')?>" class="library-card-actions">
+                  <div>
+                    <?php if ($this->ils()->checkFunction('changePassword', (array)$record)): ?>
+                      <a class="icon-link change-library-card-password" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($record['id']) ?>" data-lightbox title="<?=$this->transEscAttr('Change Password')?>">
+                        <?=$this->icon('library-card-password', 'icon-link__icon') ?>
+                        <span class="icon-link__label">
+                          <?=$this->transEsc('Change Password')?>
+                        </span>
+                      </a>
+                    <?php endif; ?>
+                    <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
+                      <a class="icon-link edit-library-card" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
+                        <?=$this->icon('library-card-edit', 'icon-link__icon') ?>
+                        <span class="icon-link__label">
+                          <?=$this->transEsc('Update Card Details')?>
+                        </span>
+                      </a>
+                    <?php endif; ?>
+                    <?=
+                      $this->component(
+                          'confirm-button',
+                          [
+                            'buttonLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id']]]),
+                            'buttonLabelHtml' => $this->icon('library-card-disconnect') . ' ' . $this->translate('Disconnect Library Card'),
+                            'buttonClass' => 'btn-unstyled',
+                            'confirmLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id'], 'confirm' => 1]]),
+                            'header' => 'confirm_delete_library_card_brief',
+                            'clearAccountCache' => true,
+                            'align' => 'right',
+                          ]
+                      );
+                    ?>
+                  </div>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
         </table>
       <?php endif; ?>
 

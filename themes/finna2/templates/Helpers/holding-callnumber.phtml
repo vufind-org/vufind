@@ -24,7 +24,7 @@
 
 <?php if ($this->qrCode): ?>
   <div class="dropdown location-service-qrcode">
-    <a href="#" class="dropdown-toggle qrcodeLink" data-toggle="dropdown" title="<?=$this->transEsc('QR Code')?>" rel="nofollow">
+    <a href="#" class="dropdown-toggle qrcodeLink" data-bs-toggle="dropdown" title="<?=$this->transEsc('QR Code')?>" rel="nofollow" aria-expanded="false">
       <?=$this->icon('qrcode', 'location-service-qrcode-icon')?><span class="sr-only"><?=$this->transEsc('QR Code')?></span>
     </a>
     <ul class="dropdown-menu qrcode" role="menu">

@@ -1,14 +1,14 @@
 <?php $cart = $this->cart(); ?>
 <?php $recordView = $this->layout()->templateDir ?>
 <?php if ($cart->isActive()): ?>
-    <?php $cartId = $this->source . '|' . $this->id; ?>
-    <div class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->id)?>" data-cart-source="<?=$this->escapeHtmlAttr($this->source)?>">
-    <a class="cart-add hidden<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>" title="<?=$this->transEsc('Add to Book Bag') ?>">
+  <?php $cartId = $this->source . '|' . $this->id; ?>
+  <div class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->id)?>" data-cart-source="<?=$this->escapeHtmlAttr($this->source)?>">
+    <a class="nav-link cart-add hidden<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>" title="<?=$this->transEsc('Add to Book Bag') ?>">
         <?=$this->icon('cart-add') ?>
         <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to Book Bag') ?></span>
         <?= $this->layout()->templateDir == 'record' ? $this->transEsc('Add to Book Bag') : ''?>
     </a>
-    <a class="cart-remove hidden<?php if($cart->contains($cartId)): ?> correct<?php endif ?>" title="<?=$this->transEsc('Remove from Book Bag') ?>">
+    <a class="nav-link cart-remove hidden<?php if($cart->contains($cartId)): ?> correct<?php endif ?>" title="<?=$this->transEsc('Remove from Book Bag') ?>">
         <?=$this->icon('cart-remove') ?>
         <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Remove from Book Bag') ?></span>
         <?= $this->layout()->templateDir == 'record' ? $this->transEsc('Remove from Book Bag') : ''?>

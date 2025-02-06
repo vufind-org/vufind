@@ -25,9 +25,14 @@
   }
 }
 
-@media (max-width: $screen-md-max) {
-  .finna-navbar .nav >li>a {
-    padding: 0 6px;
+@media (max-width: $screen-sm-max) {
+  .finna-navbar {
+    min-height: 64px;
+
+    .nav > li > a {
+      padding-left: 6px;
+      padding-right: 6px;
+    }
   }
 }
 
@@ -77,6 +82,29 @@
       color: $action-link-color;
     }
   }
+
+  .finna-navbar .navbar-collapse {
+    .dropdown-toggle {
+      width: 100%;
+    }
+    & > ul > li {
+      border-bottom: 1px solid $gray-lighter;
+    }
+    .dropdown-menu {
+      border: 0;
+      box-shadow: none;
+      margin-top: 0;
+
+      & > li {
+        border-bottom: none;
+      }
+      .dropdown-item {
+        border: 0;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+  }
 }
 
 // content-navigation-menu
@@ -84,22 +112,23 @@
   margin: 20px 0px;
 }
 
-.dropdown-toggle:focus {
-  outline: 1px dotted #212121;
-  outline: 5px auto -webkit-focus-ring-color;
-}
-
 .finna-navbar {
-  .navbar-nav > li > a,
-  .navbar-collapse.in .dropdown-menu a {
-    color: $header-text-color;
-    padding: 0 10px;
+  // #loginOptions.btn-uppercase included for back-compatibility
+  .login-button, #loginOptions .btn-uppercase {
+    display: block;
+    text-transform: uppercase;
   }
-  // remove exclamation mark from fines row
-  .fines-status .badge.overdue {
-    &:before {
-      content:"";
-    }
+  .nav-item > .nav-link {
+    display: flex;
+    gap: 0.25rem;
+    --#{$prefix}nav-link-color: #{$header-text-color};
+    --#{$prefix}nav-link-hover-color: #{$header-text-hover-color};
+    --#{$prefix}navbar-active-color: #{$header-text-active-color};
+  }
+  .dropdown-menu > li > .dropdown-item.active:not(:hover) {
+    font-weight: bold;
+    --#{$prefix}dropdown-link-active-color: --#{$prefix}dropdown-link-color;
+    --#{$prefix}dropdown-link-active-bg: --#{$prefix}dropdown-link-bg;
   }
 }
 
@@ -139,7 +168,6 @@
 #my-info-dropdown-menu {
   width: 280px;
   background-color: $body-bg;
-  margin-top: 0;
   @include box-shadow(0 6px 12px rgba(0, 0, 0, .275));
 
   .card-selection {
@@ -160,13 +188,14 @@
       display: flex;
       flex-direction: row;
       padding: 0 15px;
+      white-space: wrap;
       word-wrap: anywhere;
       min-height: 35px;
       .selected-icon {
         padding-right: 15px;
         width: 10px;
         align-self: center;
-        color: $brand-primary;
+        color: $primary;
       }
       > a, .barcode-container {
         border-bottom: 1px solid $gray-lighter;
@@ -205,7 +234,7 @@
       padding-left: 2rem;
     }
     .icon {
-      color: $brand-primary;
+      color: $primary;
     }
   }
   > li {
@@ -225,8 +254,6 @@
       width: 100%;
       &:hover {
         text-decoration: none;
-        color: $dropdown-link-hover-color;
-        background-color: $dropdown-link-hover-bg;
       }
       .sign-out-icon {
         font-size: 1.2em;
@@ -296,7 +323,7 @@
   }
   &.controls {
     border-radius: $finna-button-radius;
-    background-color: $brand-primary;
+    background-color: $primary;
     padding-top: 0px;
     transition: background-color .1s linear;
     option:checked {
@@ -323,16 +350,6 @@
   background-color:  $body-bg; /* this is necessary for overcome the caret default browser */
   pointer-events: none; /* https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events  */
   z-index: 1; /* this is necessary for overcome the pseudo element */
-}
-
-@media(min-width: $grid-float-breakpoint) {
-  .finna-navbar {
-    display: flex;
-    .navbar-collapse {
-      flex: 1 1 100%;
-      display: flex !important; // Needed to override bootstrap defaults
-    }
-  }
 }
 
 header {

@@ -9,7 +9,7 @@
     </div>
     <div class="reservation-request-buttons">
       <?php if ($user): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($driver, 'ArchiveRequest'))?>" class="btn btn-default" data-lightbox="" data-toggle="modal" data-target="order_archive_material_form" data-lightbox><?=$this->transEsc('archive_request_reserve_action')?></a>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($driver, 'ArchiveRequest'))?>" class="btn btn-default" data-lightbox data-bs-target="order_archive_material_form"><?=$this->transEsc('archive_request_reserve_action')?></a>
       <?php else: ?>
         <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox><span><?=$this->transEsc('archive_request_login')?></span></a>
       <?php endif; ?>

@@ -3,83 +3,58 @@
 {
   background-color: transparent;
   padding-bottom: 15px;
-  @media(max-width: $screen-sm-max) {
-    margin: 0px;
-    padding: 0px;
-  }
-  .container {
-    @media(max-width: $screen-xs-max) {
-      width: 100%;
-    }
-    .tabs-table {
-      display: table;
-      width: 100%;
-    }
-  }
-  ul.nav-tabs {
+
+  ul.nav-tabs > li {
+    background-color: #EDEDED;
+    padding-bottom: 0;
     display: flex;
-    @media(max-width: $screen-xs-max) {
-      padding-top: 10px;
-    }
-    @media(max-width: 390px) {
-      &.many-tabs > li {
-        max-width: 64px;
-        a {
-          min-height: 70px;
-          padding: 4px 4px;
-          font-size: .8em;
-        }
-      }
-    }
-    > li {
-      color: $body-bg;
+
+    &.with-tooltip {
       display: flex;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border-top: 4px solid transparent;
-      border-bottom: 1px solid transparent;
-      border-left: 1px solid transparent;
-      border-right: 1px solid transparent;
-      background-color: #EDEDED;
-      border-bottom: 1px solid #919191;
-      @media (max-width: $screen-sm) {
-        &:not(.many-tabs) {
-          flex-basis: 50%;
-        }
-      }
-      &.active {
-        border-top: 4px solid $main-tabs-active-color;
-        border-left: 1px solid $main-tabs-border-color;
-        border-right: 1px solid $main-tabs-border-color;
-        border-bottom: 1px solid $body-bg;
-        background-color: $main-tabs-background-color;
-        box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.25);
-        a:hover {
-          border: none;
-        }
-      }
       > a {
-        padding: 10px 5px;
-        margin-bottom: 0;
-        border: 0;
-        font-size: 1em;
-        font-weight: 600;
-        color: $main-tabs-text-color;
-        transition: none;
-        @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
-          word-break: break-word;
-        }
+        padding-right: 2.5rem;
       }
-      >button {
+    }
+    > a  {
+      flex: 1;
+      padding: 10px 5px;
+      font-size: 1em;
+
+      // Disable isolation that would cover the tooltip button:
+      &:hover {
+        isolation: auto;
+      }
+    }
+    &:not(.help-tab) > a {
+      font-weight: 600;
+    }
+    &.active {
+     .tooltip-tabs_local, .tooltip-tabs_pci {
+        color: $gray;
+      }
+    }
+
+    > .finna-toggletip {
+      display: $tooltip-tabs-default;
+      &.tooltip-tabs_local {
+        display: $tooltip-tabs-local;
+      }
+      &.tooltip-tabs_pci {
+        display: $tooltip-tabs-pci;
+      }
+
+      > button {
+        margin-left: -2.5rem;
         opacity: 1;
-        padding-left: 0;
+        padding: .2em;
+        margin-top: 0.25rem;
         color: $main-tabs-active-color;
-        position: inherit;
+        display: inline-block;
         z-index: 200;
         background-color: transparent;
         border: none;
-        font-size: 18px;
+        font-size: 1.3rem;
         cursor: pointer;
         .icon {
           cursor: pointer;
@@ -90,8 +65,8 @@
 }
 
 .search-tabs-recommendations {
-  border-top: 2px solid $brand-primary;
-  border-bottom: 2px solid $brand-primary;
+  border-top: 2px solid $primary;
+  border-bottom: 2px solid $primary;
   padding: $padding-large-horizontal 0 0 0;
 
   a.title {
@@ -133,7 +108,6 @@
 
 // RSS-feed and Linked Events tabs
 .feed-tabs .nav-tabs, .linked-events-tabs .nav-tabs {
-  border-bottom: 1px solid $nav-tabs-border-color;
   margin-left: 6px;
   > li {
     // Make the list-items overlay the bottom border
@@ -142,8 +116,6 @@
     font-weight: 500;
     background-color: transparent;
     color: $nav-tabs-text-color;
-    border-bottom: 1px solid transparent;
-    margin: 0;
     padding: .6em 0 0 0;
     cursor: pointer;
     @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
@@ -241,7 +213,6 @@
 .recordTabs.nav {
   margin-top: 20px;
   .staff-view-icon {
-    font-size: 1.2em;
     line-height: 1em;
   }
   @media (max-width: $screen-xs-max) {
@@ -259,7 +230,9 @@
     }
   }
   li.tab-right {
-    float:right
+    flex: 1 0;
+    display: flex;
+    justify-content: end;
   }
 }
 

@@ -1,12 +1,15 @@
 <?php
   $__attributes = $this->htmlAttributes($attributes ?? []);
+  $__attributes->add('class', 'nav-item');
+  $__linkAttributes = $this->htmlAttributes($__linkAttributes ?? []);
+  $__linkAttributes->add('class', 'nav-link');
   $__renderChildren = $renderChildren ?? 'dropdown';
   if (!empty($children) && 'dropdown' === $__renderChildren) {
     $__attributes->add('class', 'dropdown');
   } elseif (!empty($active)) {
-    $__attributes->add('class', 'active');
+    $__linkAttributes->add('class', 'active');
     if (isset($ariaCurrent)) {
-      $__attributes['aria-current'] = $ariaCurrent;
+      $__linkAttributes['aria-current'] = $ariaCurrent;
     }
   }
 
@@ -18,7 +21,7 @@
       $__childAttributes = $this->htmlAttributes($__child['attributes'] ?? []);
       if (!empty($__child['active'])) {
         $__attributes->add('class', 'active-trail');
-        $__childAttributes->add('class', 'active');
+        $__linkAttributes->add('class', 'active');
         if (isset($ariaCurrent)) {
           $__childAttributes['aria-current'] = $ariaCurrent;
         }
@@ -26,9 +29,16 @@
       if (isset($__child['description'])) {
         $__childAttributes->add('class', 'nav-item-has-description');
       }
-      $__child['attributes'] = $__childAttributes;
       $__childLinkAttributes = $this->htmlAttributes($__child['linkAttributes'] ?? []);
       $__childLinkAttributes['href'] = $__child['link'] ?? '';
+      if (!empty($__child['active'])) {
+        $__childLinkAttributes->add('class', 'active');
+      }
+
+      if ('simple' !== $__renderChildren) {
+        $__childLinkAttributes->add('class', 'dropdown-item');
+      }
+      $__child['attributes'] = $__childAttributes;
       $__child['linkAttributes'] = $__childLinkAttributes;
       $__children[$__i] = $__child;
     }
@@ -36,14 +46,12 @@
 ?>
 <li<?= $__attributes ?>>
   <?php
-    $__linkAttributes = $this->htmlAttributes($__linkAttributes ?? []);
     if ($__hasDropdown = (!empty($__children) && 'dropdown' === $__renderChildren)) {
       $__linkAttributes->set([
         'href' => '#',
         'class' => 'dropdown-toggle',
-        'data-toggle' => 'dropdown',
+        'data-bs-toggle' => 'dropdown',
         'role' => 'button',
-        'aria-haspopup' => 'true',
         'aria-expanded' => 'false',
       ]);
     } else {

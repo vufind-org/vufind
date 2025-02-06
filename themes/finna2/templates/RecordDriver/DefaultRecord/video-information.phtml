@@ -2,7 +2,7 @@
 <?php if (!empty($url['identifier'])): ?>
 <div class="video-details-container text-left" data-img-index="<?=$i?>">
     <div class="video-details">
-    <button class="toggle-video-information collapsed" data-toggle="collapse" data-target="#video_details_<?=$i?>" aria-expanded="false" aria-controls="video_details_<?=$i?>">
+    <button class="toggle-video-information collapsed" data-bs-toggle="collapse" data-bs-target="#video_details_<?=$i?>" aria-expanded="false" aria-controls="video_details_<?=$i?>">
         <span class="show-video-information"><?=$this->icon('image-information-show') ?> <?=$this->transEsc($this->showButtonText ?? 'Show Video Information')?></span>
         <span class="hide-video-information"><?=$this->icon('image-information-hide') ?> <?=$this->transEsc($this->hideButtonText ?? 'Hide Video Information')?></span>
     </button>

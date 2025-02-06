@@ -33,15 +33,17 @@
       </div>
     <?php endif; ?>
     <?php if ($this->tab->searchActive()): ?>
-      <div class="hidden hierarchy-tree-search-form input-group js-tree-search">
-        <input type="text" class="form-control search-query js-search-text" aria-label="<?=$this->transEscAttr('Search from archive')?>" value="">
-        <select class="form-control hidden js-search-type" name="type">
-          <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
-        </select>
-        <button class="btn btn-primary js-submit" type="submit" name="submit">
-          <?=$this->icon('search') ?>
-          <span><?=$this->transEsc('Find')?></span>
-        </button>
+      <div class="hidden hierarchy-tree-search-form js-tree-search">
+        <div class="input-group">
+          <input type="text" class="form-control search-query js-search-text" aria-label="<?=$this->transEscAttr('Search from archive')?>" value="">
+          <select class="form-control hidden js-search-type" name="type">
+            <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
+          </select>
+          <button class="btn btn-primary js-submit" type="submit" name="submit">
+            <?=$this->icon('search') ?>
+            <span><?=$this->transEsc('Find')?></span>
+          </button>
+        </div>
         <span class="hidden js-load-indicator"><?=$this->icon('spinner') ?></span>
       </div>
       <div class="js-search-error alert alert-danger hidden"><?=$this->transEsc('An error has occurred')?></div>

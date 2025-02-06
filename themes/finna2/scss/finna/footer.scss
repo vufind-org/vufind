@@ -46,6 +46,7 @@ footer {
   .footer-container {
     display: flex;
     width: 100%;
+    gap: $grid-gutter-width;
   }
   .footer-column {
     flex: 0 1 100%;

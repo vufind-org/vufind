@@ -18,7 +18,7 @@
   }
 ?>
 <div class="image-details">
-  <button class="toggle-image-information collapsed" data-toggle="collapse" data-target="#image_details_<?=$this->index?>" aria-expanded="false" aria-controls="image_details_<?=$this->index?>">
+  <button class="toggle-image-information collapsed" data-bs-toggle="collapse" data-bs-target="#image_details_<?=$this->index?>" aria-expanded="false" aria-controls="image_details_<?=$this->index?>">
     <span class="show-image-information"><?=$this->icon('image-information-show') ?> <?=$this->transEsc($this->showButtonText ?? 'Show Image Information')?></span>
     <span class="hide-image-information"><?=$this->icon('image-information-hide') ?> <?=$this->transEsc($this->hideButtonText ?? 'Hide Image Information')?></span>
   </button>

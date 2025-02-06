@@ -10,6 +10,6 @@
     <?php
       $tooltip = $this->record($this->driver)->renderTemplate("recordlabel-tooltip-{$label}.phtml", ['label' => $label], false);
     ?>
-    <li class="label iconlabel <?=str_replace('_', '-', $label)?><?= $tooltip ? ' with-tooltip' : '' ?>"<?= $tooltip ? (' data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->escapeHtmlAttr($tooltip) . '"') : '' ?>><?=$this->transEsc($label)?></li>
+    <li class="label iconlabel <?=str_replace('_', '-', $label)?><?= $tooltip ? ' with-tooltip' : '' ?>"<?= $tooltip ? (' data-bs-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->escapeHtmlAttr($tooltip) . '"') : '' ?>><?=$this->transEsc($label)?></li>
   <?php endforeach; ?>
 </ul>

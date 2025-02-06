@@ -9,7 +9,7 @@
         float: left;
         margin-top: 0.4em;
         margin-left: 0.5em;
-        color: $brand-primary;
+        color: $primary;
         @media (max-width: $screen-xs-max) {
             margin-top: 0;
         }
@@ -28,7 +28,7 @@
     font-weight: bold;
 }
 .login-description-terms, .register-description {
-    background-color: $state-info-bg;
+    background-color: $info-bg-subtle;
     padding: 2em;
     padding-left: 2.5em;
     margin-bottom: 1em;

@@ -21,9 +21,10 @@
         if (isset($collapseId)) {
           $__headingInnerElement = 'a';
           $__headingInnerAttributes = $this->htmlAttributes([
+            'href' => '#',
             'role' => 'button',
-            'data-toggle' => 'collapse',
-            'href' => '#' . $collapseId,
+            'data-bs-toggle' => 'collapse',
+            'data-bs-target' => '#' . $collapseId,
             'aria-expanded' => $collapsed ? 'false' : 'true',
             'aria-controls' => $collapseId,
           ]);
@@ -52,7 +53,7 @@
         'aria-labelledby' => $headingId,
       ]);
       if (!$collapsed) {
-        $__collapseAttributes->add('class', 'in');
+        $__collapseAttributes->add('class', 'show');
       }
     ?>
     <div<?= $__collapseAttributes ?>>

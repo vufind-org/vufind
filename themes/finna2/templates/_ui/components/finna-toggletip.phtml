@@ -1,0 +1,26 @@
+<?php
+  $__attributes = $this->htmlAttributes($attributes ?? []);
+  $__attributes->set([
+    'type' => 'button',
+    'class' => 'finna-toggletip__button',
+    'data-toggle' => 'finna-toggletip',
+    'data-toggletip-placement' => $placement ?? 'bottom',
+    'data-toggletip-content' => $content ?? '',
+  ]);
+  if (empty($label) && !empty($ariaLabel)) {
+    $__attributes['aria-label'] = $ariaLabel;
+  }
+  if (!empty($class)) {
+    $__attributes->add('class', $class);
+  }
+?>
+<span class="finna-toggletip">
+  <button<?=$__attributes?>>
+    <?php if (!empty($icon)): ?><?=$this->icon($icon, 'finna-toggletip__icon')?><?php endif; ?>
+    <?= $label ?? '' ?>
+  </button>
+  <span role="status" class="tooltip bs-tooltip-auto finna-toggletip__bubble js-status">
+    <span class="tooltip-arrow finna-toggletip__arrow" data-popper-arrow></span>
+    <span class="tooltip-inner finna-toggletip__bubble--inner js-status-inner"></span>
+  </span>
+</span>

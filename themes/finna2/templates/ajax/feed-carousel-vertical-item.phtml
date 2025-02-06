@@ -17,7 +17,7 @@
 <div class="carousel-vertical-text-part">
   <?php if (!empty($item['title']) || !empty($item['dateFull'])): ?>
     <div class="carousel-slide-header">
-      <p>
+      <span>
       <?php if ($hasIcon && !$hasImg): ?><?=$this->partial('Helpers/feed-icon.phtml', ['icon' => $item['icon']]);?><?php endif; ?>
       <?php if (!empty($item['title'])): ?>
         <?=$this->escapeHtml($this->truncate($item['title'], 70));?>
@@ -25,7 +25,7 @@
       <?php if (!empty($item['dateFull'])): ?>
         <span class="carousel-header-date carousel-date"><?=$this->transEsc('Published')?> <?=$this->escapeHtml($item['dateFull'])?></span>
       <?php endif; ?>
-      </p>
+      </span>
     </div>
   <?php endif; ?>
   <?php if (!$noText): ?>
@@ -38,7 +38,7 @@
   <?php endif; ?>
   <div class="carousel-text <?php if ($noText): ?>no-text<?php endif; ?>" aria-hidden="true">
     <?php if (!empty($item['title'])): ?>
-      <p class="carousel-hover-title"><?=$this->escapeHtml($this->truncate($item['title'], 70))?></p>
+      <span class="carousel-hover-title"><?=$this->escapeHtml($this->truncate($item['title'], 70))?></span>
     <?php endif; ?>
     <?php if (!empty($item['dateFull'])): ?>
       <span class="carousel-date carousel-hover-date"><?=$this->transEsc('Published')?> <?=$this->escapeHtml($item['dateFull'])?></span>
@@ -59,7 +59,7 @@
           <p class="xcal"><?=$this->icon('feed-xcal-location') ?><span class="sr-only"><?=$this->transEscAttr('Location') ?></span> <?=$this->escapeHtml($xcal['location']) ?></p>
         <?php endif; ?>
       <?php endif; ?>
-      <p><?=$this->escapeHtml($item['text'] ?? '') ?></p>
+      <span><?=$this->escapeHtml($item['text'] ?? '') ?></span>
     </div>
     <?php if ($clickableLink): ?>
       <span class="carousel-description"><?= $linkTextEsc ?></span>

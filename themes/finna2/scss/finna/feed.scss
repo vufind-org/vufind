@@ -260,33 +260,34 @@
     .feed-nav-pills {
         width: 100%;
         margin-bottom: 6px;
-            > li {
-              float: left;
-              margin-right: 6px;
-              // Links rendered as pills
-              > a {
+        > .nav-item {
+            float: left;
+            margin-right: 6px;
+            // Links rendered as pills
+            > .nav-link {
                 border-radius: $feed-nav-pills-border-radius;
                 background-color: $feed-nav-pills-bg;
                 color: $feed-nav-pills-color;
                 border: $feed-nav-pills-border;
                 padding: $feed-nav-pills-padding;
-              }
-              + li {
+                font-weight: normal;
+            }
+            + .nav-item {
                 margin-bottom: 6px;
-              }
-              // Active state
-              &.active > a {
+            }
+            // Active state
+            > .nav-link.active {
                 color: $feed-nav-pills-active-color;
                 background-color: $feed-nav-pills-active-bg;
-                border-color: $feed-nav-pills-active-border;
+                border: $feed-nav-pills-active-border;
                 &:hover,
                 &:focus {
-                  color: $feed-nav-pills-active-hover-color;
-                  background-color: $feed-nav-pills-active-hover-bg;
-                  border: $feed-nav-pills-active-hover-border;
+                    color: $feed-nav-pills-active-hover-color;
+                    background-color: $feed-nav-pills-active-hover-bg;
+                    border: $feed-nav-pills-active-hover-border;
                 }
-              }
             }
+        }
     }
 }
 
@@ -493,7 +494,7 @@
     .event-geolocation {
         text-transform: uppercase;
         font-size: 0.84em;
-        color: $brand-primary;
+        color: $primary;
         font-weight: bold;
         margin-left: 10px;
         &:hover {
@@ -587,12 +588,18 @@ finna-feed {
         flex-direction: row;
         align-items: center;
         position: relative;
+        @media (max-width: $screen-sm-max) {
+            // Leave room for scroll buttons
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
     }
     .carousel-hover-title {
         font-size: 14px;
         font-weight: 900;
         color: $carousel-slide-header-color;
-        p {
+        span {
+            display: block;
             margin: 0;
             width: 100%;
             overflow-wrap: anywhere;
@@ -608,7 +615,7 @@ finna-feed {
         position: sticky;
         top: 0;
     }
-    .carousel-hover-title, .carousel-slide-header p {
+    .carousel-hover-title, .carousel-slide-header span {
         overflow-wrap: break-word;
     }
     .carousel-hover-date {
@@ -661,7 +668,8 @@ finna-feed {
         }
     }
     .carousel-slide-header {
-        p {
+        span {
+            display: block;
             .carousel-date {
                 display: block;
                 font-weight: 400;
@@ -710,7 +718,7 @@ finna-feed {
                     outline: none;
                     border-radius: 50%;
                     &.is-active {
-                        background-color: $brand-primary;
+                        background-color: $primary;
                     }
                     &:focus {
                         outline: 2px solid $action-link-color;
@@ -747,7 +755,7 @@ finna-feed.carousel.splide--ltr {
                     z-index: 1;
                 }
             }
-            .carousel-slide-header p:not(.title-bottom) {
+            .carousel-slide-header > span:not(.title-bottom) {
                 opacity: 0;
             }
             .carousel-text.scrollable {
@@ -769,7 +777,7 @@ finna-feed.carousel.splide--ltr {
                 z-index: 1;
                 opacity: 1;
             }
-            .carousel-slide-header p:not(.title-bottom) {
+            .carousel-slide-header > span:not(.title-bottom) {
                 opacity: 0;
             }
             .carousel-text.scrollable {
@@ -846,7 +854,8 @@ finna-feed.carousel.splide--ltr {
             &.carousel-slide-header-bottom {
                 position: relative;
             }
-            p {
+            > span {
+                display: block;
                 position: relative;
                 bottom: 0;
                 width: 100%;

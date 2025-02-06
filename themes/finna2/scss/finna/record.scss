@@ -117,6 +117,10 @@
       text-transform: uppercase;
     }
   }
+
+  .record-tabs {
+    clear: both;
+  }
 }
 
 a.authority {
@@ -578,46 +582,56 @@ a.authority {
   white-space: pre-wrap;
 }
 
-.nav-pills {
-  padding: 0px;
-  margin: 0px;
-  & a:hover {
-    text-decoration: none;
-  }
-  & > li:not(.share-buttons):not(.whatsapp) {
-    margin: 10px;
-    float: left;
-    // Links rendered as pills
-    & > a {
-      border-radius: $nav-pills-border-radius;
-      padding: 0px;
+.record-toolbar,
+.mobile-toolbar {
+  .nav-pills {
+    padding: 0px;
+    margin: 0px;
+    a:hover {
+      text-decoration: none;
+    }
+    > li:not(.share-buttons):not(.whatsapp) {
+      float: left;
+      // Links rendered as pills
+      > a, > .btn-bookbag-toggle > a {
+        border-radius: $nav-pills-border-radius;
+      }
+      &:not(.library-link) {
+        margin: 10px;
+      }
+    }
+
+    // QRCode in record view
+    img.qrcode {
+      border-radius: 8px;
+      min-width: 150px;
+    }
+
+    // Share buttons
+    > li.share-buttons {
+      display: flex;
+      flex-grow: 1;
+      justify-content: end;
+      padding-top: 5px;
+      .share-buttons-toolbox {
+        a {
+          padding-left: 5px;
+          display: inline-block;
+        }
+      }
     }
   }
 }
-
-// QRCode in record view
-.nav-pills {
-  img.qrcode {
-    border-radius: 8px;
-    min-width: 150px;
-  }
-}
-
-// Share buttons
-.nav-pills > li.share-buttons {
-  float: right;
-  padding-top: 5px;
-  .share-buttons-toolbox {
-      a {
-          padding-left: 5px;
-          display: inline-block;
-      }
+.record-toolbar .nav-pills li {
+  > a,
+  > .btn-bookbag-toggle > a {
+    padding: 0px;
   }
 }
 
 // Request forms
 .ill-request-terms {
-  background-color: $state-info-bg;
+  background-color: $info-bg-subtle;
   padding: 2em;
   padding-left: 2.5em;
   margin-bottom: 1em;
@@ -644,7 +658,7 @@ a.authority {
     .comment-info-icon {
       font-size: 1.5em;
       float: left;
-      color: $brand-primary;
+      color: $primary;
     }
     .comment-description {
       margin-top: 1em;
@@ -720,7 +734,7 @@ a.authority {
   }
 }
 .rights-text {
-  color: $brand-primary;
+  color: $primary;
 }
 
 // Material provided by
@@ -732,6 +746,9 @@ a.authority {
     }
     li.organisation-page-link {
       padding-top: 5px;
+      a {
+        display: block;
+      }
     }
     li.material-questions-feedback {
       font-weight: bold;
@@ -794,7 +811,7 @@ finna-model-viewer {
     flex: 1 1 100%;
     background-color: #efefefcc;
     &.filedrop {
-      box-shadow: 0px 0px 2px 2px $brand-primary;
+      box-shadow: 0px 0px 2px 2px $primary;
     }
   }
   .options {
@@ -844,7 +861,7 @@ finna-model-viewer {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $brand-primary;
+    background-color: $primary;
     padding: 10px 12px;
     font-weight: 500;
     line-height: 1.5;
@@ -1023,21 +1040,27 @@ finna-model-viewer .object-editor {
   .rating__label {
     cursor: pointer;
     /* If you change the left/right padding, update the margin-right property of .rating__label--half as well. */
-    padding: 0;
-    margin: 0;
-    font-size: 1.8rem;
+    padding: 0 0.1em;
+    font-size: 1rem;
   }
 
   /* Add padding and positioning to half star labels */
   .rating__label--half {
     padding-right: 0;
-    margin-right: -0.5em;
+    margin-right: -0.6em;
     z-index: 2;
+
+    /* Display only half of the star and ensure that the remainder cannot be hovered over */
+    .rating__icon--star {
+      width: 0.5rem;
+      overflow: clip;
+      overflow-clip-margin: 1px;
+    }
   }
 
   /* Set default star color */
   .rating__icon--star {
-    color: $text-color;
+    color: $warning;
   }
 
   /* If any input is checked, make its following siblings grey */
@@ -1050,7 +1073,7 @@ finna-model-viewer .object-editor {
   {
     &:hover .rating__label .rating__icon--star,
     &:hover .rating__label--half .rating__icon--star {
-      color: $text-color;
+      color: $warning;
     }
     /* Make hovered input's following siblings grey on hover */
     .rating__input:hover ~ .rating__label .rating__icon--star,
@@ -1059,6 +1082,7 @@ finna-model-viewer .object-editor {
     }
   }
 }
+
 // Similar items carousel
 .similar-bottom {
   display: inline-block;

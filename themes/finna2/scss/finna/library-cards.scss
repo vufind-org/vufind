@@ -19,7 +19,7 @@
       padding: 3px 7px;
       color: black;
       background-color: white;
-      border: 1px solid $input-border;
+      border: 1px solid $input-border-color;
       border-radius: $finna-button-radius;
       display: inline-block;
       margin-top: -7px;
@@ -52,7 +52,7 @@
     .dropdown > a {
       background: $body-bg;
       color: $gray;
-      border: 1px solid $input-border;
+      border: 1px solid $input-border-color;
     }
   }
 }

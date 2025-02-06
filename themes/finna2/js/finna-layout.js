@@ -1,7 +1,5 @@
-/*global VuFind, videojs, finna, priorityNav */
+/*global VuFind, videojs, finna, priorityNav, bootstrap, unwrapJQuery, Popper */
 finna.layout = (function finnaLayout() {
-  var currentOpenTooltips = [];
-
   /**
    * Initialize a throttled resize listener
    */
@@ -303,50 +301,141 @@ finna.layout = (function finnaLayout() {
   }
 
   /**
-   * Initialize tooltips
+   * Initialize tooltips and popovers
+   * @param {HTMLElement} holder Holder to look for toggletip elements from
+   */
+  function initToggleTips(holder) {
+    holder.querySelectorAll('[data-toggle="finna-toggletip"]').forEach(toggletip => {
+      if (toggletip.dataset.initialized) {
+        return;
+      }
+      toggletip.dataset.initialized = true;
+      // Get the message from the data-content element
+      const message = toggletip.dataset.toggletipContent || '';
+      const tipEl = toggletip.parentNode.querySelector('.js-status');
+      if (!tipEl) {
+        return;
+      }
+      const tipInnerEl = tipEl.querySelector('.js-status-inner');
+      if (!tipInnerEl) {
+        return;
+      }
+
+      const placement = toggletip.dataset.toggletipPlacement || 'bottom';
+      const popperInst = Popper.createPopper(
+        toggletip,
+        tipEl,
+        {
+          placement: placement,
+          modifiers: [
+            {
+              name: 'flip',
+              options: {
+                fallbackPlacements: ['top', 'bottom', 'left', 'right'],
+              },
+            },
+            {
+              name: 'preventOverflow',
+              options: {}
+            }
+          ],
+        }
+      );
+      toggletip.addEventListener('click', () => {
+        if (tipEl.classList.contains('show')) {
+          tipEl.classList.remove('show');
+          tipInnerEl.innerHTML = '';
+        } else {
+          window.setTimeout(() => {
+            tipInnerEl.innerHTML = message;
+            tipEl.classList.add('show');
+            popperInst.update();
+          }, 100);
+        }
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (toggletip !== e.target) {
+          tipEl.classList.remove('show');
+          tipInnerEl.innerHTML = '';
+        }
+      });
+
+      // Remove toggletip on Esc
+      toggletip.addEventListener('keydown', (e) => {
+        if ((e.keyCode || e.which) === 27) {
+          tipEl.classList.remove('show');
+          tipInnerEl.innerHTML = '';
+        }
+      });
+
+      // Remove on blur
+      toggletip.addEventListener('blur', () => {
+        tipEl.classList.remove('show');
+        tipInnerEl.innerHTML = '';
+      });
+    });
+  }
+
+  /**
+   * Hide all tooltips when Esc is pressed
+   * @param {Event} e Event
+   */
+  function tooltipKeyDownHandler(e) {
+    if (e.which === 27) {
+      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => bootstrap.Tooltip.getOrCreateInstance(el).hide());
+    }
+  }
+
+  /**
+   * Hide all tooltips with a click outside of a tooltip trigger
+   */
+  function tooltipClickHandler() {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => bootstrap.Tooltip.getOrCreateInstance(el).hide());
+  }
+
+  /**
+   * Initialize tooltips and popovers
    * @param {jQuery} _holder Holder to look for tooltip elements from
    */
   function initToolTips(_holder) {
-    var holder = typeof _holder === 'undefined' ? $(document) : _holder;
-    // other tooltips
-    holder.find('[data-toggle="tooltip"]')
-      .on('show.bs.tooltip', function onShowTooltip() {
-        var self = $(this);
-        $(this).attr('aria-expanded', 'true');
-        $(currentOpenTooltips).each(function hideOtherTooltips() {
-          if ($(this)[0] !== self[0]) {
-            $(this).tooltip('hide');
-          }
-        });
-        currentOpenTooltips = [self];
-      })
-      .on('hidden.bs.tooltip', function onHideTooltip(e) {
-        $(e.target).attr('aria-expanded', 'false');
-        $(e.target).data('bs.tooltip').inState.click = false;
-      })
-      .tooltip({trigger: 'click', viewport: '.container'})
-      .attr('aria-expanded', 'false');
+    const holder = typeof _holder === 'undefined' ? document : unwrapJQuery(_holder);
+    // Supports also the old data-toggle attribute
+    holder.querySelectorAll('[data-bs-toggle="tooltip"],[data-bs-toggle="tooltip"],[data-toggle="tooltip-hover"]').forEach(el => {
+      if (null === el.dataset.bsToggle) {
+        el.dataset.bsToggle = 'tooltip';
+      }
+      if (el.dataset.originalTitle) {
+        el.dataset.bsTitle = el.dataset.originalTitle;
+        if (el.dataset.html) {
+          el.dataset.bsHtml = el.dataset.html;
+        }
+        if (!el.dataset.bsTrigger) {
+          el.dataset.bsTrigger = 'click';
+        }
+        if (el.dataset.position) {
+          el.dataset.bsPosition = el.dataset.position;
+        }
+      }
+      if (el.dataset.toggle === 'tooltip-hover') {
+        el.dataset.bsDelay = '{"show": 500, "hide": 200}';
+        el.dataset.bsToggle = 'tooltip';
+        el.dataset.bsTrigger = 'hover';
+      }
 
-    holder.find('[data-toggle="tooltip-hover"]')
-      .tooltip({trigger: 'hover', delay: {show: 500, hide: 200}});
-    // prevent link opening if tooltip is placed inside link element
-    holder.find('[data-toggle="tooltip"] > i').on('click', function onClickTooltip(event) {
-      event.preventDefault();
+      bootstrap.Tooltip.getOrCreateInstance(el);
+
+      // Prevent link from opening if tooltip is placed inside link element:
+      el.querySelectorAll(':scope > i, :scope > span').forEach((i) => {
+        i.addEventListener('click', (event) => event.preventDefault());
+      });
     });
-    // close tooltip if user clicks anything else than tooltip button
-    $('html').on('click', function onClickHtml(e) {
-      if (typeof $(e.target).parent().data('original-title') == 'undefined' && typeof $(e.target).data('original-title') == 'undefined') {
-        $('[data-toggle="tooltip"]').tooltip('hide');
-        currentOpenTooltips = [];
-      }
-    });
-    // close tooltip if esc-key pressed
-    $('html').on('keydown', function onClickHtml(e) {
-      if (e.which === 27) {
-        $('[data-toggle="tooltip"]').tooltip('hide');
-        currentOpenTooltips = [];
-      }
-    });
+
+    document.addEventListener('keydown', tooltipKeyDownHandler);
+    document.querySelector('html').addEventListener('click', tooltipClickHandler);
+
+    initToggleTips(holder);
   }
 
   /**
@@ -557,14 +646,23 @@ finna.layout = (function finnaLayout() {
         cancelRefresh();
       }
     });
-    $('#modal').on('show.bs.modal', function onShowModal() {
-      if ($('#modal').find('#authcontainer').length > 0) {
-        $('#modal .modal-dialog').addClass('modal-lg modal-lg-dynamic');
-      }
-    });
-    $('#modal').on('hidden.bs.modal', function onHiddenModal() {
-      $('#modal .modal-dialog.modal-lg-dynamic').removeClass('modal-lg');
-    });
+    const modalEl = document.getElementById('modal');
+    if (modalEl) {
+      modalEl.addEventListener('shown.bs.modal', () => {
+        if (modalEl.querySelector('#authcontainer')) {
+          const modalDialogEl = modalEl.querySelector('.modal-dialog');
+          if (modalDialogEl) {
+            modalDialogEl.classList.add('modal-lg', 'modal-lg-dynamic');
+          }
+        }
+      });
+      modalEl.addEventListener('hidden.bs.modal', () => {
+        const modalDialogEl = modalEl.querySelector('.modal-dialog');
+        if (modalDialogEl) {
+          modalDialogEl.classList.remove('modal-lg', 'modal-lg-dynamic');
+        }
+      });
+    }
   }
 
   /**
@@ -691,6 +789,10 @@ finna.layout = (function finnaLayout() {
    * Initialize priority navigation
    */
   function initPriorityNav() {
+    const navWrapperEl = document.querySelector('.nav-wrapper');
+    if (!navWrapperEl || typeof navWrapperEl.dataset.disablePriorityNav !== 'undefined') {
+      return;
+    }
     priorityNav.init({
       mainNavWrapper: ".nav-wrapper",
       mainNav: ".nav-ul",
@@ -774,7 +876,7 @@ finna.layout = (function finnaLayout() {
       // Hide tab from accordion
       $loginTabs.find('.tab-pane.active').removeClass('active');
       // Deactivate any tab since it can't follow the state of a collapsed accordion
-      $loginTabs.find('.nav-tabs li.active').removeClass('active');
+      $loginTabs.find('.nav-tabs > li > a.active').removeClass('active');
       // Move tab content out from accordions
       $tabContent.insertAfter($('.login-accordion .accordion-heading').last());
     } else {
@@ -792,24 +894,34 @@ finna.layout = (function finnaLayout() {
    * @param {string} tabId Id of the tab to activate
    */
   function _activateLoginTab(tabId) {
-    var $top = $('.login-tabs');
-    $top.find('.tab-pane.active').removeClass('active');
-    $top.find('li.' + tabId).tab('show');
-    $top.find('.' + tabId + '-tab').addClass('active');
+    const tabsEl = document.querySelector('.login-tabs');
+    if (tabsEl) {
+      const newTabEl = tabsEl.querySelector('li.' + tabId);
+      if (newTabEl) {
+        const triggerEl = newTabEl.querySelector('a');
+        bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+      }
+    }
     _toggleLoginAccordion(tabId);
+  }
+
+  /**
+   * Handle a login tab click
+   * @param {HTMLElement} linkEl Tab link
+   */
+  function handleLoginTabClick(linkEl)
+  {
+    const tabEl = linkEl.closest('li');
+    if (tabEl && tabEl.dataset.bsTab) {
+      _activateLoginTab(tabEl.dataset.bsTab);
+    }
   }
 
   /**
    * Init login tabs
    */
   function initLoginTabs() {
-    // Tabs
-    $('.login-tabs .nav-tabs a').on('click', function recordTabsClick() {
-      if (!$(this).closest('li').hasClass('active')) {
-        _activateLoginTab(this.className);
-      }
-      return false;
-    });
+    document.querySelectorAll('.login-tabs .nav-tabs a').forEach(linkEl => linkEl.addEventListener('click', () => handleLoginTabClick(linkEl)));
 
     // Accordion
     $('.login-accordion .accordion-toggle').on('click', function accordionClicked() {
@@ -846,19 +958,33 @@ finna.layout = (function finnaLayout() {
    */
   function initHelpTabs() {
     if ($('.help-tabs')[0]) {
+      $('.help-tabs').removeAttr('role');
       $('.help-tab').each(function initHelpTab() {
-        if ($(this).hasClass('active')) {
-          $(this).trigger("focus");
+        const $li = $(this);
+        if ($li.hasClass('nav-item')) {
+          // Already converted
+          return;
         }
-        var url = $(this).data('url');
-        $(this).on("keydown", function onTabEnter(event) {
-          if (event.which === 13) {
-            window.location.href = url;
-          }
-        });
-        $(this).on("click", function onTabClick() {
-          window.location.href = url;
-        });
+
+        const tabContent = $li.text();
+        $li.html('')
+          .addClass('nav-item')
+          .attr('tabindex', '-1')
+          .removeAttr('aria-selected')
+          .removeAttr('role');
+
+        const url = $li.data('url');
+        const $a = $('<a>')
+          .attr('href', url)
+          .attr('class', 'nav-link')
+          .text(tabContent)
+          .appendTo($li);
+
+        if ($li.hasClass('active')) {
+          $a.addClass('active')
+            .attr('aria-current', 'page')
+            .trigger('focus');
+        }
       });
     }
   }

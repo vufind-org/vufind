@@ -13,7 +13,7 @@
 
 $logo-color: #fff !default;
 $aoe-brand-primary: #ccf5e7 !default;
-$action-link-color: $brand-primary !default;
+$action-link-color: $primary !default;
 
 // Extra extra small screen / phone (e.g. iPhone 5)
 $screen-xxs: 400px !default;
@@ -36,6 +36,8 @@ $logo-height: 66px !default;
 $logo-separator-color: #fff !default; // Color of hr line under main logo
 $header-background-color: $body-bg !default; // Color of navigation bar top
 $header-text-color: $navbar-default-link-color !default;
+$header-text-active-color: $header-text-color !default;
+$header-text-hover-color: $header-text-color !default;
 $footer-background: $gray-ultralight !default;
 $footer-text-color: $gray !default;
 $finna-search-background: color.mix($body-bg, contrast($body-bg), 95%) !default; // Background color of finna searchbox section
@@ -45,7 +47,7 @@ $finna-searchbox-link-color: $body-bg !default; // style searchbox link text col
 $finna-searchbox-link-background: rgba(1,1,1,0.6) !default; // style searchbox links (advanced search etc.) background contrast with background
 $finna-record-header-background: $gray-ultralight !default;
 $finna-feedback-color: #fff !default;
-$finna-feedback-background: $brand-primary !default;
+$finna-feedback-background: $primary !default;
 $field-margin-vertical: 20px !default;
 $field-margin-horizontal: 15px !default;
 $finna-text-shadow: 1px 1px 1px black !default;
@@ -53,7 +55,7 @@ $finna-search-input-width: 0.655 !default; //== THIS is percentage Change this i
 $finna-button-radius: $border-radius-base !default; // Defines all button radiuses
 $finna-header-font-size: 1.6em !default;
 $record-title-font-size: 1.65em !default;
-$record-holdings-title-background: $brand-primary !default;
+$record-holdings-title-background: $primary !default;
 $record-holdings-title-color: color.mix($record-holdings-title-background, contrast($record-holdings-title-background), 5%) !default;
 $record-holdings-border-color: $gray-lighter !default;
 
@@ -74,7 +76,7 @@ $infobox-text-color: $gray !default;
 $infobox-box-shadow: none !default;
 
 //== Finna facets
-$sidebar-background: $brand-primary !default;
+$sidebar-background: $primary !default;
 $sidebar-header-text-color: color.mix($sidebar-background, contrast($sidebar-background), 5%) !default;
 $sidebar-header-icon-color: #fff !default;
 $sidebar-border-color: color.mix($body-bg, contrast($body-bg), 80%) !default;
@@ -92,12 +94,12 @@ $filterContent-background: $body-bg !default;
 $filterContent-border-color: color.mix($filterContent-background, contrast($filterContent-background), 80%) !default;
 $filterContent-text-color: $text-color !default;
 //Search tools
-$finna-searchtools-background: $brand-primary !default;
+$finna-searchtools-background: $primary !default;
 $finna-searchtools-color: $body-bg !default;
 
 
 //== Browsebar
-$finna-browsebar-background: $brand-primary !default;
+$finna-browsebar-background: $primary !default;
 $finna-browsebar-highlight-background: color.adjust($finna-browsebar-background, $lightness: -10% /*, $space: hsl*/) !default;
 $finna-browsebar-link-color: $body-bg !default;
 
@@ -150,15 +152,16 @@ $myresearch-tabs-color: $gray !default;
 $myresearch-menu-header-font-color: #fff !default;
 
 // Finna info box
-$finna-infobox-bg: color.adjust($brand-primary, $lightness: 70% /*, $space: hsl*/) !default;
-$finna-infobox-border: 4px solid $brand-primary !default;
-$finna-infobox-color: $brand-primary !default;
+$finna-infobox-bg: color.adjust($primary, $lightness: 70% /*, $space: hsl*/) !default;
+$finna-infobox-border: 4px solid $primary !default;
+$finna-infobox-color: $primary !default;
 
 
 //== Typography
 //
 
 $font-size-root: 14px !default;
+$font-size-icon-tiny: 0.7rem !default;
 $font-size-icon-small: 14px !default;
 $font-size-icon-large: 1.5em !default;
 
@@ -174,7 +177,7 @@ $content-headings-font-size-h5: $content-font-size-base !default;
 $content-headings-font-size-h6: math.floor(($content-font-size-base * 0.875)) !default;
 $content-headings-line-height: $headings-line-height !default;
 $content-headings-color: $gray-dark !default;
-$content-heading-background: $brand-secondary !default;
+$content-heading-background: $secondary !default;
 $content-nav-bg: $gray-ultralight !default;
 
 
@@ -222,8 +225,6 @@ $navbar-right:                     64px !default;
 // Navbar links
 $navbar-font-size:                         1.1em !default; // Font-size of navbar links
 $navbar-font-weight:                       500 !default; // Font weight for navbar texts
-// Navbar toggle
-$navbar-toggle-color:                      $navbar-default-link-color !default;
 
 
 //== Navs
@@ -270,6 +271,7 @@ $pagination-background:                $body-bg !default;
 //
 //##
 //** Tooltips for Finna, set to inline or none;
+$tooltip-tabs-default:        inline !default;
 $tooltip-tabs-pci:            inline !default;
 $tooltip-tabs-local:          inline !default;
 $tooltip-facet:               inline !default;
@@ -282,13 +284,13 @@ $tooltip-eds-advanced:        inline !default;
 $tooltip-summon-advanced:     inline !default;
 $tooltip-button-color:        $action-link-color !default;
 
-$tooltip-min-width:           250px !default;
+$tooltip-min-width:           150px !default;
 
 
 //== Modals
 //
 //##
-$modal-header-background: $brand-primary !default;
+$modal-header-background: $primary !default;
 $modal-header-color: color.mix($modal-header-background, contrast($modal-header-background), 5%) !default;
 
 

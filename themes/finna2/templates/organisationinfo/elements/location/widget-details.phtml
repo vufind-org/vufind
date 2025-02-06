@@ -15,7 +15,7 @@
         <?php endforeach; ?>
       </ul>
       <?php $content = ob_get_clean(); ?>
-      <button type="button" class="btn btn-open-widget emails email info-element btn-link" data-placement="bottom" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($content)?>" aria-label="<?=$this->transEscAttr('organisation_info_email')?>" data-toggle="tooltip">
+      <button type="button" class="btn btn-open-widget emails email info-element" data-placement="bottom" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($content)?>" aria-label="<?=$this->transEscAttr('organisation_info_email')?>" data-bs-toggle="tooltip">
         <?=$this->icon('contact-email')?>
       </button>
     <?php endif; ?>
@@ -31,7 +31,7 @@
       <?php endforeach ?>
       </ul>
       <?php $content = ob_get_clean(); ?>
-      <button type="button" class="btn btn-open-widget phone info-element btn-link" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title="<?=$this->transEscAttr($content)?>" aria-label="<?=$this->transEsc('organisation_info_phone_numbers') ?>">
+      <button type="button" class="btn btn-open-widget phone info-element" data-bs-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title="<?=$this->transEscAttr($content)?>" aria-label="<?=$this->transEsc('organisation_info_phone_numbers') ?>">
         <?=$this->icon('phone') ?>
       </button>
     <?php endif; ?>

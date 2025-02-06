@@ -34,7 +34,7 @@ a .icon:hover, a .icon:hover {
     &:before {
         padding-right: 3px;
         font-size: 1.3em;
-        vertical-align: text-bottom;
+        vertical-align: baseline;
     }
 }
 table .iconlabel {
@@ -63,13 +63,11 @@ table .iconlabel {
 }
 .iconlabel[class*="format-1othermicrofilm"]:before,
 .iconlabel[class*="format-feed-othermicrofilm"]:before {
-    font-family: FontAwesome;
-    content: $fa-var-film;
+    @extend .fa, .fa-film;
 }
 .iconlabel[class*="format-1otherinterview"]:before,
 .iconlabel[class*="format-feed-otherinterview"]:before {
-    font-family: FontAwesome;
-    content: $fa-var-microphone;
+    @extend .fa, .fa-microphone;
 }
 .iconlabel.format-book:before,
 .iconlabel[class*="format-1book"]:before,
@@ -220,8 +218,7 @@ table .iconlabel {
 .iconlabel[class*="format-1gamevideogame"]:before,
 .iconlabel[class*="format-2gamevideogame"]:before,
 .iconlabel[class*="format-feed-gamevideogame"]:before {
-	font-family: FontAwesome;
-	content: $fa-var-gamepad;
+	@extend .fa, .fa-gamepad;
 }
 .iconlabel.full-text-available:before {
     content: "\e96e";
@@ -375,29 +372,29 @@ table .iconlabel {
         float: right;
         margin-left: 4px;
         &.ok {
-            color: $brand-success;
+            color: $success;
             &:before {
                 font-family: finnaicons;
                 content:"\e805";
-                color: $brand-success;
+                color: $success;
                 margin-right: 4px;
             }
         }
         &.warn {
-            color: $brand-warning;
+            color: $warning;
             &:before {
                 font-family: finnaicons;
                 content:"\e8b2";
-                color: $brand-warning;
+                color: $warning;
                 margin-right: 4px;
             }
         }
         &.overdue {
-            color: $brand-danger;
+            color: $danger;
             &:before {
                 font-family: finnaicons;
                 content:"\e8b3";
-                color: $brand-danger;
+                color: $danger;
                 margin-right: 4px;
             }
         }
@@ -413,7 +410,7 @@ table .iconlabel {
 // Status success
 .status .fa-bell.text-success:before {
     font-family: finnaicons;
-    color: $brand-success;
+    color: $success;
     content:"\e8b2";
 }
 #account-icon .account-status-good.text-success {
@@ -425,7 +422,7 @@ table .iconlabel {
         height: 12px;
         top: 65%;
         left: 9px;
-        background: $brand-success;
+        background: $success;
         border: 2px solid $header-background-color;
         border-radius: 50%;
     }
@@ -433,7 +430,7 @@ table .iconlabel {
 // Status warning
 .status .fa-bell.text-warning:before {
     font-family: finnaicons;
-    color: $brand-warning;
+    color: $warning;
     content:"\e8b2";
 }
 #account-icon .account-status-warning.text-warning {
@@ -445,7 +442,7 @@ table .iconlabel {
         height: 12px;
         top: 65%;
         left: 9px;
-        background: $brand-warning;
+        background: $warning;
         border: 2px solid $header-background-color;
         border-radius: 50%;
     }
@@ -453,11 +450,11 @@ table .iconlabel {
 // Status danger
 .status .fa-exclamation-triangle:before {
     font-family: finnaicons;
-    color: $brand-danger;
+    color: $danger;
     content:"\e8b0";
 }
 .profile-status.status .fa-exclamation-triangle:before {
-    color: $brand-warning;
+    color: $warning;
 }
 #account-icon .account-status-danger.text-danger {
     width: auto;
@@ -468,7 +465,7 @@ table .iconlabel {
         height: 12px;
         top: 65%;
         left: 9px;
-        background: $brand-danger;
+        background: $danger;
         border: 2px solid $header-background-color;
         border-radius: 50%;
     }

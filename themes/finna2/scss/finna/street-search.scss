@@ -36,7 +36,7 @@
   font-size: $font-size-h2;
   font-weight: 600;
   .highlight {
-    color: $brand-primary;
+    color: $primary;
   }
   @media(max-width: $screen-xs-max) {
     font-size: 18px;
@@ -47,7 +47,7 @@
   margin-bottom: 2em;
   position: relative;
   &:hover {
-    background: darken($brand-primary,5%);
+    background: darken($primary,5%);
   }
   &:before {
     content: "";
@@ -56,10 +56,10 @@
     margin: auto;
     border-width: 0 0 9px 12px;
     border-style: solid;
-    border-color: transparent $brand-primary;
+    border-color: transparent $primary;
   }
   &:hover:before {
-    border-color: transparent darken($brand-primary,5%);
+    border-color: transparent darken($primary,5%);
   }
 }
 
@@ -87,7 +87,7 @@
     padding: 10px;
     text-transform: uppercase;
     font-weight: 600;
-    color: $brand-primary;
+    color: $primary;
     margin: auto 0;
     i {
       margin-right: 10px;
@@ -129,7 +129,7 @@
 }
 
 .template-name-streetsearch .introduction .introduction-text {
-  background-color: $brand-primary;
+  background-color: $primary;
   position: relative;
   display: inline-block;
   max-width: 450px;
@@ -146,7 +146,7 @@
       left: 0;
       border-width: 0 0 12px 12px;
       border-style: solid;
-      border-color: transparent $brand-primary;
+      border-color: transparent $primary;
     }
   }
 }

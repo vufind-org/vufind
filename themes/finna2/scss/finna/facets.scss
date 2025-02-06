@@ -7,13 +7,19 @@
   color: $action-link-color;
 }
 
-div.facet > a {
-  min-width: 0;
-  > span.text, > span.facet-value {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    display: inline-block;
+div.facet {
+  ul {
+    margin-bottom: 0;
+  }
+
+  > a {
+    min-width: 0;
+    > span.text, > span.facet-value {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      display: inline-block;
+    }
   }
 }
 
@@ -92,12 +98,14 @@ div.facet > a {
 
   .more-less-btn-wrapper {
     border-bottom: none;
+    padding: 1px;
   }
 
   .more-less-btn-wrapper .btn, a.more-narrow-toggle {
     display: flex;
     align-items: baseline;
-    padding: 4px 0 0 8px;
+    padding: 0 0 0 4px;
+    margin: 4px;
     border-radius: 0px;
     color: $gray;
     background: transparent;
@@ -106,6 +114,9 @@ div.facet > a {
     text-transform: uppercase;
     text-decoration: none;
     box-shadow: none;
+    &:focus-visible {
+      box-shadow: $focus-ring-box-shadow;
+    }
   }
 
   .list-group-item i.fa.fa-check-square-o {
@@ -170,7 +181,7 @@ span.badge.cb-facet {
   margin-bottom: 1rem;
 
   .facet {
-    padding: 3px 0 2px 8px;
+    padding: 3px 3px 2px 8px;
     display: flex;
     .text {
       flex-grow: 1;
@@ -193,7 +204,7 @@ span.badge.cb-facet {
     display: none;
   }
 
-  [data-toggle="collapse"] {
+  [data-toggle="collapse"], [data-bs-toggle="collapse"] {
     cursor: pointer;
   }
 
@@ -256,7 +267,6 @@ span.badge.cb-facet {
   margin-bottom: 5px;
   .btn-group {
     a {
-      border-radius: 15px;
       padding: 5px 10px;
       border: 1px solid $action-link-color;
       color: $action-link-color;
@@ -317,7 +327,7 @@ span.badge.cb-facet {
       font-size: 1.2em;
       vertical-align: baseline;
       display: table-cell;
-      color: $brand-primary;
+      color: $primary;
     }
     .info {
       padding-left: 5px;
@@ -443,79 +453,17 @@ span.badge.cb-facet {
   }
 
   li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    // Ensure that there is enough room for a button focus outline:
-    padding-left: .2rem;
     border-bottom: none;
 
     .facet-tree__toggle-expanded {
-      flex: 1 1;
-      border: 0;
-      background: none;
-      max-width: 1.5em;
-      padding: 0;
-
-      &:hover {
-        background-color: $list-group-hover-bg;
-      }
-
-      &[aria-expanded=false] {
-        .facet-tree__collapse {
-          display: none;
-        }
-        & ~ ul {
-          display: none;
-        }
-      }
-      &[aria-expanded=true] .facet-tree__expand {
-        display: none;
-      }
-    }
-
-    .facet-tree__item-container {
-      // Leave space for the open/close icon (see above):
-      width: calc(100% - 1.5em);
-
-      .text {
-        // Leave space for the badge:
-        width: calc(100% - 1.5em);
-      }
-
-      &--exclude .text {
-        // Leave space for the badge and exclude link:
-        width: calc(100% - 3.0em);
-      }
-
-      .facet-value {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        display: inline;
-      }
-    }
-
-    // Child items:
-    ul {
-      padding-left: 1rem;
-      flex: 1;
-      .facet {
-        // Smaller padding to make the list a bit more condensed:
-        padding-top: 0.3rem;
-        padding-bottom: 0.3rem;
-      }
+      color: $text-color;
+      // Fix focus ring:
+      margin-right: 3px;
     }
   }
 
   .facet {
     border: 0;
     padding-left: .1rem;
-  }
-
-  // Make the first child level start a bit higher to counter the padding of top
-  // level items:
-  & > li > ul {
-    margin-top: -0.2rem;
   }
 }

@@ -183,12 +183,12 @@
           }
         ?>
         <input id="searchForm_type" type="hidden" name="type" value="<?=$this->escapeHtmlAttr($value)?>" class="searchForm_type">
-        <a role="button" href="#" class="dropdown-toggle" aria-expanded="false" aria-label="<?= $this->transEsc('Narrow Search') ?>" data-toggle="dropdown"><span><?=$this->transEsc($label)?></span> <?=$this->icon('type-dropdown-open') ?></a>
+        <a role="button" href="#" class="dropdown-toggle" aria-expanded="false" aria-label="<?= $this->transEsc('Narrow Search') ?>" data-bs-toggle="dropdown"><span><?=$this->transEsc($label)?></span> <?=$this->icon('type-dropdown-open') ?></a>
         <ul class="dropdown-menu" role="menu">
           <?php foreach ($handlers as $handler): ?>
             <li>
               <input type="hidden" value="<?=$this->escapeHtmlAttr($handler['value'])?>">
-              <a role="menuitem" class="select-type" href="#"><?=$this->transEsc($handler['label'])?></a>
+              <a role="menuitem" class="dropdown-item select-type" href="#"><?=$this->transEsc($handler['label'])?></a>
             </li>
           <?php endforeach; ?>
         </ul>
@@ -208,17 +208,17 @@
           $this->headLink()->appendStylesheet('vendor/simple-keyboard/index.css');
           ?>
           <div class="keyboard-selection dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-expanded="false">
               <?=$this->icon('keyboard-o') ?>
               <?=$this->icon('caret-down') ?>
             </button>
             <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">
               <li>
-                <a class="keyboard-selection-item" href="#" data-value="none"><?= $this->transEsc('None') ?></a>
+                <a class="dropdown-item keyboard-selection-item" href="#" data-value="none"><?= $this->transEsc('None') ?></a>
               </li>
               <?php foreach ($keyboardLayouts as $keyboardLayout): ?>
                 <li>
-                  <a class="keyboard-selection-item" href="#" data-value="<?= $this->escapeHtmlAttr($keyboardLayout) ?>"><?= $this->transEsc("KeyboardLayout::$keyboardLayout") ?></a>
+                  <a class="dropdown-item keyboard-selection-item" href="#" data-value="<?= $this->escapeHtmlAttr($keyboardLayout) ?>"><?= $this->transEsc("KeyboardLayout::$keyboardLayout") ?></a>
                 </li>
               <?php endforeach; ?>
             </ul>
@@ -278,7 +278,7 @@
         }
         if (isset($tooltipClass) && isset($tooltipText)):
       ?>
-        <button aria-label="<?= $this->transEsc('Search Tips') ?>" class="tooltip-button <?=$tooltipClass?> hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($tooltipText)?>">
+        <button aria-label="<?= $this->transEsc('Search Tips') ?>" class="tooltip-button <?=$tooltipClass?> hidden-xs" data-bs-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($tooltipText)?>">
           <?=$this->icon('help', 'search-help-icon') ?>
         </button>
     <?php endif; ?></div>

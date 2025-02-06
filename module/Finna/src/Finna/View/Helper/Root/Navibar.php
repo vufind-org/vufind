@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -42,6 +43,7 @@ use function strlen;
  * @category VuFind
  * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -194,20 +196,25 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
      */
     public function getLanguageUrl($lng)
     {
-        $url = $this->view->serverUrl(true);
-        $parts = parse_url($url);
-
-        $params = [];
-        if (isset($parts['query'])) {
-            parse_str($parts['query'], $params);
-            $url = substr($url, 0, strpos($url, '?'));
-        }
+        $url = $this->router->getRequestUri();
+        $params = $url->getQueryAsArray();
         $params['lng'] = $lng;
-        $url .= '?' . http_build_query($params);
-        if (isset($parts['fragment'])) {
-            $url .= '#' . $parts['fragment'];
-        }
-        return $url;
+        $url->setQuery(http_build_query($params));
+        return $url->toString();
+    }
+
+    /**
+     * Check if a URL points to the current page
+     *
+     * @param string $url URL
+     *
+     * @return bool
+     */
+    public function isCurrentPage(string $url): bool
+    {
+        $requestUri = $this->router->getRequestUri();
+        return $url === (string)$requestUri
+            || $url === $requestUri->getPath();
     }
 
     /**

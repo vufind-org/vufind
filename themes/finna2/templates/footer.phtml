@@ -1,7 +1,7 @@
 <!-- START of: finna - footer.phtml -->
 <div class="footer-container">
   <div class="footer-column">
-    <h2><strong><?=$this->transEsc('About')?></strong></h2>
+    <h2><?=$this->transEsc('About')?></h2>
     <ul>
       <li><a href="<?=$this->url('content-page', ['page' => 'about'])?>"><?=$this->transEsc('About Us')?></a></li>
       <li><a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>"><?=$this->transEsc('What is Finna')?></a></li>
@@ -13,7 +13,7 @@
     </ul>
   </div>
   <div class="footer-column">
-    <h2><strong><?=$this->transEsc('footer_header_find_more')?></strong></h2>
+    <h2><?=$this->transEsc('footer_header_find_more')?></h2>
     <ul>
       <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
       <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
@@ -31,7 +31,7 @@
     </ul>
   </div>
   <div class="footer-column">
-    <h2><strong><?=$this->transEsc('footer_header_need_help')?></strong></h2>
+    <h2><?=$this->transEsc('footer_header_need_help')?></h2>
     <ul>
       <li><a href="<?=$this->url('content-page', ['page' => 'help'])?>" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Help')?></a></li>
       <li><a href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a></li>
@@ -42,7 +42,14 @@
 <div class="footer-container">
   <div class="footer-column">
     <a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>" title="<?=$this->transEscAttr('About Finna')?>">
-      <img src="<?=$this->imageLink('powered-by-finna_' . $this->layout()->userLang . '-black.png')?>" alt="">
+      <?php
+        if (!($finnaImage = $this->imageLink('powered-by-finna_' . $this->layout()->userLang . '-black.png'))) {
+          $finnaImage = $this->imageLink('powered-by-finna_en-gb-black.png');
+        }
+        if ($finnaImage):
+      ?>
+        <img src="<?=$finnaImage?>" alt="">
+      <?php endif; ?>
       <span class="sr-only"><?=$this->transEsc('About Finna')?></span>
     </a>
     <br><br>

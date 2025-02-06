@@ -4,14 +4,9 @@
     $__attributes['aria-label'] = $ariaLabel;
   }
 ?>
-<nav<?= $__attributes->add('class', ['finna-navbar-component', 'navbar']) ?>>
+<nav<?= $__attributes->add('class', ['finna-navbar-component', 'navbar', 'navbar-expand-md']) ?>>
   <div class="container-fluid">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#<?= $collapseId ?? '' ?>" aria-expanded="false">
-        <?php if (isset($toggleBtnSrOnly)): ?><span class="sr-only"><?= $toggleBtnSrOnly ?></span><?php endif; ?>
-        <?php if (isset($toggleBtnLabel)): ?><?= $toggleBtnLabel ?><?php endif; ?>
-        <?php if (isset($toggleBtnIconClass)): ?><i class="<?= $toggleBtnIconClass ?>"></i><?php endif; ?>
-      </button>
       <?php if (isset($brandContent)): ?>
         <span class="navbar-brand">
           <?php if (isset($brandLink)): ?><a href="<?= $brandLink ?>"><?php endif; ?>
@@ -20,7 +15,13 @@
           <?php if (isset($brandLink)): ?></a><?php endif; ?>
         </span>
       <?php endif; ?>
+      <button type="button" class="navbar-toggler navbar-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#<?= $collapseId ?? '' ?>" aria-expanded="false">
+        <?php if (isset($toggleBtnSrOnly)): ?><span class="sr-only"><?= $toggleBtnSrOnly ?></span><?php endif; ?>
+        <?php if (isset($toggleBtnLabel)): ?><?= $toggleBtnLabel ?><?php endif; ?>
+        <?php if (isset($toggleBtnIconClass)): ?><i class="<?= $toggleBtnIconClass ?>"></i><?php endif; ?>
+      </button>
     </div>
+
     <div class="collapse navbar-collapse" id="<?= $collapseId ?? '' ?>">
       <?= $collapseContent ?? '' ?>
     </div>

@@ -28,7 +28,7 @@
 }
 
 .audio-title-wrapper {
-  background-color: $brand-primary;
+  background-color: $primary;
   color: white;
   border-radius: 5px;
   position: relative;
@@ -45,7 +45,7 @@
     display: inline-block;
     border-radius: 10px;
     text-align: center;
-    color: $brand-primary;
+    color: $primary;
     position: absolute;
     top:  calc(50% - 10px);
     left: 5px;
@@ -90,7 +90,7 @@
 
 .vjs-audio {
   background: transparent;
-  color: $brand-primary;
+  color: $primary;
   height: 60px !important;
   padding: 0;
   width: 100%;
@@ -131,7 +131,7 @@
       width: 30px;
       height: 30px;
       border-radius: 15px;
-      background-color: $brand-primary;
+      background-color: $primary;
       color: white;
       left: calc((100% - 30px) / 2);
     }
@@ -146,7 +146,7 @@
     display: block;
     top: 0%;
     width: 15%;
-    padding: 0;   
+    padding: 0;
   }
 
   .vjs-current-time {
@@ -163,7 +163,7 @@
     top: 0;
 
     .vjs-play-progress {
-      background-color: $brand-primary;
+      background-color: $primary;
     }
   }
 

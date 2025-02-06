@@ -30,7 +30,7 @@
           <?php endif; ?>
 
           <li class="dropdown dropup nav-pills mobile-sharing">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow"><?=$this->icon('share') ?><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
+            <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" rel="nofollow" aria-expanded="false"><?=$this->icon('share') ?><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
             <ul class="dropdown-menu" role="menu">
               <?php if (!empty($shareUrl)): ?>
                 <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
@@ -54,14 +54,14 @@
 
           <?php if(count($exportFormats) > 0): ?>
             <li role="none" class="dropdown dropup">
-              <a class="export-toggle toolbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options">
+              <a class="export-toggle toolbar-btn dropdown-toggle" data-bs-toggle="dropdown" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options-mobile">
                 <?=$this->icon('export') ?>
                 <span class="sr-only"><?=$this->transEsc('Export Record') ?></span>
               </a>
-              <ul class="dropdown-menu" id="export-options" role="menu">
+              <ul class="dropdown-menu" id="export-options-mobile" role="menu">
                 <?php foreach ($exportFormats as $exportFormat): ?>
                   <li role="none">
-                    <a <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem">
+                    <a class="dropdown-item" <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem">
                       <?=$this->transEsc('export_to', ['%%target%%' => $this->translate($this->export()->getLabelForFormat($exportFormat))])?>
                     </a>
                   </li>
@@ -91,7 +91,9 @@
     </ul>
     <ul class="nav nav-pills library-link hidden-print">
       <li class="hidden">
-        <?= $this->transEsc('Holdings'); ?>
+        <a href="#">
+          <?= $this->transEsc('Holdings'); ?>
+        </a>
       </li>
     </ul>
   </div>

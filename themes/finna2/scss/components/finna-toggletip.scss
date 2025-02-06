@@ -1,0 +1,21 @@
+.finna-toggletip {
+  .finna-toggletip__button {
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+
+    .finna-toggletip__icon {
+      cursor: pointer;
+    }
+  }
+
+  .finna-toggletip__bubble {
+    &:not(.show) {
+      display: none;
+    }
+
+    .finna-toggletip__bubble--inner {
+      display: block;
+    }
+  }
+}

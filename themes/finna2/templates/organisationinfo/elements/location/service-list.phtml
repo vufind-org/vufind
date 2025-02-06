@@ -11,7 +11,7 @@
       <div>
         <?php if ($desc = $service['description'] ?: $service['shortDescription']): ?>
           <?php $tooltipEsc = $this->transEscAttr('<h6>' . $this->cleanHtml($service['name']) . '</h6>' . $this->cleanHtml($desc)); ?>
-          <button type="button" class="service-tooltip" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title="<?=$tooltipEsc?>">
+          <button type="button" class="service-tooltip" data-bs-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title="<?=$tooltipEsc?>">
             <?=$this->cleanHtml($service['name'])?>
           </button>
         <?php else: ?>

@@ -3,10 +3,10 @@
   @media(max-width: $grid-float-breakpoint-max) {
     .navbar-header {
       display: flex;
-      flex-direction: row-reverse;
       align-items: center;
+      flex: 1;
     }
-    .navbar-toggle {
+    .navbar-toggler {
       position: static;
       display: flex;
       justify-content: center;
@@ -17,15 +17,39 @@
       height: auto;
       max-width: none;
       line-height: normal;
+      text-decoration: none;
     }
-    .navbar-collapse > ul > li {
-      border-bottom: 1px solid $gray-lighter;
+    .navbar-collapse {
+      .dropdown-toggle {
+        width: 100%;
+      }
+      & > ul > li {
+        border-bottom: 1px solid $gray-lighter;
+      }
+      .dropdown-menu {
+        border: 0;
+        box-shadow: none;
+        margin-top: 0;
+
+        > li {
+          border: 0;
+        }
+
+        .dropdown-item {
+          border: 0;
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+      }
     }
-    .navbar-nav > li > a {
-      margin-top: 0;
-      margin-bottom: 0;
-      padding-top: 16px;
-      padding-bottom: 16px;
+    .navbar-nav {
+      margin: 0;
+
+      & > li > a {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 16px;
+      }
     }
   }
 }
@@ -36,15 +60,15 @@
   &::after {
     content: '\e612';
   }
-  .finna-navbar-component .navbar-toggle.collapsed &::after {
+  .finna-navbar-component .navbar-toggler.collapsed &::after {
     content: '\e613';
   }
 }
 
 // Content navbar variation with own variables for customization.
 
-$finna-navbar-content-color:             mix($brand-primary, contrast($brand-primary), 5%) !default;
-$finna-navbar-content-bg:                $brand-primary !default;
+$finna-navbar-content-color:             mix($primary, contrast($primary), 5%) !default;
+$finna-navbar-content-bg:                $primary !default;
 $finna-navbar-content-border:            $finna-navbar-content-bg !default;
 
 // Navbar links
@@ -94,7 +118,7 @@ $finna-navbar-content-toggle-border-color:       $finna-navbar-content-border !d
         background-color: $finna-navbar-content-link-hover-bg;
       }
     }
-    > .active > a {
+    > .active > a, a.active {
       &,
       &:hover,
       &:focus {
@@ -102,7 +126,7 @@ $finna-navbar-content-toggle-border-color:       $finna-navbar-content-border !d
         background-color: $finna-navbar-content-link-active-bg;
       }
     }
-    > .disabled > a {
+    > .disabled > a, a.disabled {
       &,
       &:hover,
       &:focus {
@@ -113,7 +137,7 @@ $finna-navbar-content-toggle-border-color:       $finna-navbar-content-border !d
 
     // Dropdown menu items
     // Remove background color from open dropdown
-    > .open > a {
+    > .open > a, a.open {
       &,
       &:hover,
       &:focus {
@@ -123,7 +147,7 @@ $finna-navbar-content-toggle-border-color:       $finna-navbar-content-border !d
     }
   }
 
-  .navbar-toggle {
+  .navbar-toggler {
     border-color: $finna-navbar-content-toggle-border-color;
     &:hover,
     &:focus {
@@ -156,7 +180,7 @@ $finna-navbar-content-toggle-border-color:       $finna-navbar-content-border !d
             background-color: $dropdown-link-hover-bg;
           }
         }
-        > .active > a {
+        > .active > a, a.active {
           &,
           &:hover,
           &:focus {
@@ -164,7 +188,7 @@ $finna-navbar-content-toggle-border-color:       $finna-navbar-content-border !d
             background-color: $dropdown-link-hover-bg;
           }
         }
-        > .disabled > a {
+        > .disabled > a, a.disabled {
           &,
           &:hover,
           &:focus {

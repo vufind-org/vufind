@@ -3,7 +3,9 @@
   margin: 0;
   word-wrap: break-word;
   @media(max-width: $screen-xs-max) {
-    @include make-row();
+    margin-right: calc(-0.5 * var(--bs-gutter-x));
+    margin-left: calc(-0.5 * var(--bs-gutter-x));
+    @include clearfix;
   }
   &:nth-child(odd) {
     background: $table-bg-accent;
@@ -120,7 +122,7 @@
     .btn-group {
       margin-right: 20px;
       .btn {
-        margin-right: 1px;
+        margin-right: calc(var(--#{$prefix}border-width) + 1px);
         &:last-child {
           margin-right: 0;
         }
@@ -403,12 +405,6 @@
   p.no-content-message {
     margin-top: 5px;
   }
-  .borrowing-block-container {
-    p.borrowing-block {
-      padding: 0;
-      margin-bottom: 0;
-    }
-  }
   .support-notice {
     margin: 0;
     margin-top: 5px;
@@ -416,7 +412,7 @@
   }
 
   .library-card-terms {
-    background-color: $state-info-bg;
+    background-color: $info-bg-subtle;
     padding: 2em;
     padding-left: 2.5em;
     margin-bottom: 1em;
@@ -551,7 +547,9 @@
   margin: 0;
   @media (max-width: $screen-md) {
     padding: 0px 15px;
-    @include make-row();
+    margin-right: calc(-0.5 * var(--bs-gutter-x));
+    margin-left: calc(-0.5 * var(--bs-gutter-x));
+    @include clearfix;
   }
   .toolbar-sticky {
     position: sticky;
@@ -646,7 +644,7 @@ form#renewals, form#update_holds, form#purge_history {
   border-collapse: separate;
   margin-top: 10px;
 
-  &:not(.fines-table) {
+  &:not(.fines-table):not(.library-cards):not(.search-history-table) {
     border-top: none;
   }
   &.online-payment {
@@ -668,7 +666,6 @@ form#renewals, form#update_holds, form#purge_history {
   }
   .headers th {
     background: none;
-    border-top: 1px solid #d1d1d1;
     &:last-child {
       border-right: none;
     }
@@ -779,7 +776,7 @@ form#renewals, form#update_holds, form#purge_history {
       border-top: none;
     }
     &.menu-header {
-      background-color: $brand-third;
+      background-color: $third;
       > h1 {
         text-transform: none;
         color: $myresearch-menu-header-font-color;
@@ -845,7 +842,7 @@ form#renewals, form#update_holds, form#purge_history {
   }
 }
 
-// Status badges
+// Menu style
 .myresearch-menu, #my-info-dropdown-menu {
   a {
     display: flex;
@@ -855,6 +852,7 @@ form#renewals, form#update_holds, form#purge_history {
     }
     &:hover {
       background-color: $gray-lighter;
+      text-decoration: none;
     }
     &:focus {
       background-color: $nav-link-hover-bg;
@@ -863,31 +861,40 @@ form#renewals, form#update_holds, form#purge_history {
       margin-left: 0.5rem;
     }
     &.active {
-      background-color: $brand-primary;
+      background-color: $primary;
       color: #fff;
     }
   }
+}
 
+// Status badges
+.myresearch-menu, #my-info-dropdown-menu {
   .status {
     float: right;
     .badge {
       border-radius: 2px;
       margin: 0 2px;
-      border: 1px solid; /* color inherited from bootstrap */
+      border: 1px solid $gray-lighter;
       height: 22px;
       padding: 0 7px;
+      color: var(--#{$prefix}body-color);
+      background-color: var(--#{$prefix}body-bg);
+      border: 1px solid $gray-lighter;
 
       &.account-info {
-        color: $state-success-text;
-        background-color: $state-success-bg;
+        color: var(--#{$prefix}success-text-emphasis);
+        background-color: var(--#{$prefix}success-bg-subtle);
+        border-color: var(--#{$prefix}success-border-subtle);
       }
       &.account-warning {
-        color: $state-warning-text;
-        background-color: $state-warning-bg;
+        color: var(--#{$prefix}warning-text-emphasis);
+        background-color: var(--#{$prefix}warning-bg-subtle);
+        border-color: var(--#{$prefix}warning-border-subtle);
       }
       &.account-alert {
-        color: $state-danger-text;
-        background-color: $state-danger-bg;
+        color: var(--#{$prefix}danger-text-emphasis);
+        background-color: var(--#{$prefix}danger-bg-subtle);
+        border-color: var(--#{$prefix}danger-border-subtle);
       }
     }
   }

@@ -4,7 +4,7 @@
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
     <?php if (!$this->hideProfileEmailAddress): ?>
       <div class="my-profile-row">
-        <div class="my-profile-col">
+        <div class="my-profile-col profile-title">
           <label for="email"><?=$this->transEsc('Email') ?>:</label>
         </div>
         <div class="my-profile-col">
@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="my-profile-row">
-        <div class="my-profile-col">
+        <div class="my-profile-col profile-title">
           <label for="finna_nickname"><?=$this->transEsc('finna_nickname') ?>:</label>
         </div>
         <div class="my-profile-col">

@@ -25,7 +25,7 @@
   line-height: 1.4em;
   font-weight: bold;
   & .brand-third {
-    color: $brand-third;
+    color: $third;
   }
 }
 .introduction h3 {
@@ -48,7 +48,7 @@ h1.introductionText, h2.introductionText, h3.introductionText {
   }
 }
 h1.introductionText > em {
-  color: $brand-secondary;
+  color: $secondary;
 }
 h2.introductionText > em, h3.introductionText > em {
   color: $link-color;

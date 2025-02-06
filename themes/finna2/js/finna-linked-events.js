@@ -174,7 +174,7 @@ finna.linkedEvents = (function finnaLinkedEvents() {
   /**
    * Toggle linked events accordion
    * @param {jQuery} container Container containing the linked events elements
-   * @param {jQuery} accordion Accordion in the linked events elements 
+   * @param {jQuery} accordion Accordion in the linked events elements
    * @returns {boolean} Should content be loaded
    */
   function toggleAccordion(container, accordion) {
@@ -189,7 +189,7 @@ finna.linkedEvents = (function finnaLinkedEvents() {
         .removeClass('active')
         .attr('aria-selected', false);
 
-      container.find('.event-tab.active')
+      container.find('.event-tab .nav-link.active')
         .removeClass('active')
         .attr('aria-selected', false);
 
@@ -197,7 +197,7 @@ finna.linkedEvents = (function finnaLinkedEvents() {
         .addClass('active')
         .attr('aria-selected', true);
 
-      container.find('.event-tab[id="' + accordion.data('id') + '"]')
+      container.find('.event-tab > .nav-link[id="' + accordion.data('id') + '"]')
         .addClass('active')
         .attr('aria-selected', true);
 
@@ -221,7 +221,7 @@ finna.linkedEvents = (function finnaLinkedEvents() {
       var tabParams = {};
       tabParams.query = accordion.data('params');
       var tabs = accordion.closest('.event-tabs');
-      tabs.find('.event-tab').removeClass('active');
+      tabs.find('.event-tab .nav-link').removeClass('active');
       if (toggleAccordion(container, accordion)) {
         getEvents(tabParams, handleMultipleEvents, false, container);
       }
@@ -243,17 +243,17 @@ finna.linkedEvents = (function finnaLinkedEvents() {
    */
   function initEventsTabs(id) {
     var container = $('.linked-events-tabs[id="' + id + '"]');
-    var initial = container.find($('li.nav-item.event-tab.active'));
+    var initial = container.find($('li.nav-item.event-tab .nav-link.active'));
     var initialParams = {};
     initialParams.query = initial.data('params');
     getEvents(initialParams, handleMultipleEvents, false, container);
-    container.find($('li.nav-item.event-tab')).on('click', function eventTabClick() {
+    container.find($('li.nav-item.event-tab .nav-link')).on('click', function eventTabClick() {
       if ($(this).hasClass('active')) {
         return false;
       }
       var params = {};
       params.query = $(this).data('params');
-      container.find($('li.nav-item.event-tab')).removeClass('active').attr('aria-selected', 'false');
+      container.find($('li.nav-item.event-tab .nav-link')).removeClass('active').attr('aria-selected', 'false');
       $(this).addClass('active').attr('aria-selected', 'true');
       var accordion = container.find('.accordion[data-id="' + $(this).attr('id') + '"');
       container.find('.accordion').removeClass('active');
@@ -279,7 +279,7 @@ finna.linkedEvents = (function finnaLinkedEvents() {
 
     if (container.find($('.events-searchtools-container'))[0]) {
       var searchClick = function onSearchClick() {
-        var activeParams = container.find($('.event-tab.active')).data('params');
+        var activeParams = container.find($('.event-tab .nav-link.active')).data('params');
         var startDate = container.find($('.event-date-start'))[0].value
           ? {'start': container.find($('.event-date-start'))[0].value.replace(/\./g, '-')}
           : '';

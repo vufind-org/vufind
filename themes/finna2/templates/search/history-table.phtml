@@ -17,9 +17,9 @@
     }
   }
 ?>
-<table class="search-history-table" id="<?=$this->showSaved ? 'saved-searches' : 'recent-searches'?>">
+<table class="table useraccount-table search-history-table finna-table-striped" id="<?=$this->showSaved ? 'saved-searches' : 'recent-searches'?>">
   <thead>
-    <tr>
+    <tr class="headers">
       <th scope="col" class="history_time"><?=$this->transEsc('history_time')?></th>
       <th scope="col" class="history_search"><?=$this->transEsc('history_search')?></th>
       <th scope="col" class="history_limits"><?=$this->transEsc('history_limits')?></th>
@@ -30,7 +30,7 @@
   </thead>
   <tbody>
     <?php foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
-      <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
+      <tr>
         <td class="history_time" data-label="<?=$this->transEscAttr('history_time')?>"><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('U', $info->getStartTime()))?></td>
         <td class="history_search" data-label="<?=$this->transEscAttr('history_search')?>">
           <span>

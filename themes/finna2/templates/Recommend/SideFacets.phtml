@@ -9,7 +9,7 @@
   $resultsTotal = $results->getResultTotal();
 ?>
 <?php if ($resultsTotal > 0): ?>
-  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?><?php if (null === $this->slot('side-facet-caption')->get() && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><?=$this->icon('help') ?></span><?php endif; ?><span role="button" class="visible-xs sidebar-close-btn" aria-label="<?=$this->transEsc('close')?>"><?=$this->icon('sidefacets-close', 'sidefacets-close-icon') ?></span></h2>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?><?php if (null === $this->slot('side-facet-caption')->get() && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-bs-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><?=$this->icon('help') ?></span><?php endif; ?><span role="button" class="visible-xs sidebar-close-btn" aria-label="<?=$this->transEsc('close')?>"><?=$this->icon('sidefacets-close', 'sidefacets-close-icon') ?></span></h2>
   <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
 <?php endif; ?>
 <?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
@@ -67,11 +67,11 @@ if ($this->fromStreetSearch) {
       $dataTarget = 'side-collapse-' . $escTitle;
     ?>
     <div class="list-group facets<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$escTitle?>">
-      <button class="list-group-item title<?= $isCollapsed ? ' collapsed' : '' ?>" data-toggle="collapse" data-target="#<?=$dataTarget?>" aria-controls="<?=$dataTarget?>" aria-expanded="<?= !$isCollapsed ? 'true' : 'false';?>">
+      <button class="list-group-item title<?= $isCollapsed ? ' collapsed' : '' ?>" data-bs-toggle="collapse" data-bs-target="#<?=$dataTarget?>" aria-controls="<?=$dataTarget?>" aria-expanded="<?= !$isCollapsed ? 'true' : 'false';?>">
         <span class="facet-title"><?=$this->transEsc($cluster['label'])?></span>
         <?=$this->icon('collapse', 'facet-title-icon') ?>
       </button>
-      <div id="<?=$dataTarget?>" class="collapse<?= !$isCollapsed ? ' in' : '' ?>" data-facet="<?=$escTitle?>" aria-expanded="<?= !$isCollapsed ? 'true' : 'false';?>">
+      <div id="<?=$dataTarget?>" class="collapse<?= !$isCollapsed ? ' show' : '' ?>" data-facet="<?=$escTitle?>" aria-expanded="<?= !$isCollapsed ? 'true' : 'false';?>">
         <?=
           $this->context($this)->renderInContext(
               'Recommend/SideFacets/facet.phtml',

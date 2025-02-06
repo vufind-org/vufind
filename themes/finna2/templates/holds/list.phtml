@@ -63,12 +63,12 @@
                         <input id="update_selected" name="updateSelected" type="submit" value="<?=$this->transEscAttr('hold_edit_selected') ?>" class="btn btn-primary btn-finna-toolbar hidden">
                       <?php endif; ?>
                       <?php if ($this->cancelForm): ?>
-                        <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr('hold_cancel_selected') ?>" class="btn btn-primary btn-finna-toolbar dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+                        <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr('hold_cancel_selected') ?>" class="btn btn-primary btn-finna-toolbar dropdown-toggle" data-bs-toggle="dropdown" data-lightbox-ignore aria-expanded="false">
                         <ul class="dropdown-menu useraccount-confirm" role="presentation">
                           <li><span class="dropdown-header"><?=$this->transEsc('confirm_hold_cancel_selected_text') ?></span></li>
                           <li>
-                            <a href="#" id="confirm_cancel_selected_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a>
-                            <a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a>
+                            <a class="dropdown-item" href="#" id="confirm_cancel_selected_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a>
+                            <a class="dropdown-item" href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a>
                           </li>
                         </ul>
                       <?php endif; ?>
@@ -244,11 +244,11 @@
         </table>
         <?php if ($this->cancelForm): ?>
               <div class="dropdown button-bottom">
-                <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('hold_cancel_all') ?>" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+                <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('hold_cancel_all') ?>" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" data-lightbox-ignore aria-expanded="false">
                 <ul class="dropdown-menu useraccount-confirm" role="presentation">
                   <li><span class="dropdown-header"><?=$this->transEsc('confirm_hold_cancel_all_text') ?></span></li>
-                  <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-                  <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+                  <li><a class="dropdown-item" href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+                  <li><a class="dropdown-item" href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
                 </ul>
               </div>
             </form>

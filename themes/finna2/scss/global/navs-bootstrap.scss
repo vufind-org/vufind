@@ -2,24 +2,21 @@
   margin-bottom: 12px;
   margin-top: 12px;
   > li {
-    display: block;
     > a {
       transition: background .2s ease-in-out;
     }
   }
 }
-@media (min-width:$screen-md-min) {
-  .nav > li {
-    display: inline-block;
-  }
-}
 
+// TODO: clean up the tab styles below
 .nav-tabs {
-  border-bottom: 1px solid $nav-tabs-border-color;
+  .nav-link {
+    border-top: 4px solid transparent;
+    --#{$prefix}nav-tabs-border-radius: 0;
+    --#{$prefix}nav-link-hover-color: #{$nav-tabs-text-color};
+  }
   // style 5 tabs to make sure they stay as tabs
   > li {
-    // Make the list-items overlay the bottom border
-    margin-bottom: -1px;
     > a {
       font-size: 1.1em;
       font-weight: 500;
@@ -31,7 +28,6 @@
       margin-bottom: 0;
       border-radius: 0;
       transition: none;
-      border-top: 4px solid transparent;
       @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
         i {
           display: block;
@@ -41,23 +37,15 @@
       @media (max-width: $screen-sm-max) {
         font-size: .9em;
       }
-      &:hover {
-        color: $nav-tabs-link-hover-color;
-        border-color: transparent;
-      }
     }
-    // Active state, and its :hover to override normal :hover
-    &.active > a {
-      &,
-      &:hover,
-      &:focus {
+    // Active state
+    & > a.nav-link.active {
         background-color: $body-bg;
-        border: 1px solid $nav-tabs-border-color;
+        border-left: 1px solid $nav-tabs-border-color;
         border-top: 4px solid $nav-tabs-active-color;
-        border-bottom-color: transparent;
+        border-right: 1px solid $nav-tabs-border-color;
         transition: border 0.05s linear;
         color: $text-color;
-      }
     }
   }
 }
@@ -65,37 +53,24 @@
 @media (max-width:$screen-xs-max) {
   .nav-tabs {
     text-align: center;
-    //border-bottom: 5px solid $gray-lighter;
+    flex-wrap: nowrap;
+
     #details {
       display: none;
     }
     > li {
       word-wrap: break-word;
     }
-    > li > a {
-      padding: 0 10px 10px;
-      background-color: transparent;
-      border: none;
-      border-bottom: 5px solid transparent;
-      margin:0;
-      i {
-        display: block;
-        min-height: 14px;
-      }
-    }
-    > li.active > a {
-      &,
-      &:hover,
-      &:focus {
-        border: none;
-        border-bottom: 5px solid $link-color;
-      }
-    }
   }
 }
 
 .tab-content {
   margin-bottom: 20px;
+  outline: 0;
+  &:focus-visible {
+    box-shadow: $focus-ring-box-shadow;
+  }
+
   div.dataTables_info {
     white-space: normal;
   }

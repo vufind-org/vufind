@@ -12,8 +12,8 @@
     <ul class="loginTabs nav nav-tabs visible-md visible-lg">
       <?php foreach ($methods as $loop => $method):?>
         <?php $this->auth()->getManager()->setAuthMethod($method) ?>
-        <li class="<?=$this->escapeHtmlAttr($method)?><?=$method === $activeMethod ? ' active' : ''?>">
-          <a href="#" class="<?=$this->escapeHtmlAttr($method)?>"><?=$this->transEsc('login_method_tab_' . strtolower($method)) ?></a>
+        <li class="<?=$this->escapeHtmlAttr($method)?><?=$method === $activeMethod ? ' active' : ''?>" data-bs-tab="<?=$this->escapeHtmlAttr($method)?>">
+          <a href="#" class="<?=$this->escapeHtmlAttr($method)?> nav-link<?=$method === $activeMethod ? ' active' : ''?>" data-bs-toggle="tab" data-bs-target=".tab-pane.<?=$this->escapeHtmlAttr($method)?>-tab" data-lightbox-ignore><?=$this->transEsc('login_method_tab_' . strtolower($method)) ?></a>
         </li>
       <?php endforeach ?>
     </ul>

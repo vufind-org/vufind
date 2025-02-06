@@ -1,9 +1,10 @@
 .navbar {
-  max-width: 1300px; // dont fully scale the navigation bar text
+  max-width: map-get($container-max-widths, "xl"); // dont fully scale the navigation bar text
+  min-height: $navbar-height;
+
   .collapse-open-icon {
-    font-size: 10px;
+    font-size: $font-size-icon-tiny;
     vertical-align: middle;
-    margin-top: -2px;
   }
   .logoutOptions, #loginOptions {
     .my-account-icon {
@@ -26,19 +27,20 @@
   }
 }
 
-.navbar {
+.navbar .navbar-main {
   .dropdown .dropdown-menu > li > a > *:not(.description) {
     font-weight: bold;
   }
   .dropdown .dropdown-menu > li > a > .description {
     font-size: .9em;
-    display: inline-block;
+    display: block;
     width: 100%;
+    white-space: normal;
   }
 }
 
 .navbar-collapse {
-  border-top: 3px solid $brand-primary;
+  border-top: 3px solid $primary;
   @media (min-width: $grid-float-breakpoint) {
     border-top: 0;
     box-shadow: none;
@@ -47,13 +49,16 @@
 
 .navbar-brand {
   padding: 0;
-  line-height: $navbar-height;
+//  line-height: $navbar-height;
   max-width: 150px;
   display: flex;
   align-items: center;
-  @media (min-width: $grid-float-breakpoint) {
-    max-width: 200px;
+
+  @media (max-width: $screen-sm-max) {
+    min-height: 64px;
+
   }
+
   .navbar-logo {
     font-size: $navbar-logo-height;
     color: $logo-color;
@@ -65,20 +70,20 @@
   }
 }
 
-.navbar-toggle {
+.navbar-toggler {
   position: absolute;
   z-index: 30;
-  right:0;
+  top: 0;
+  right: 0;
   height: $navbar-height;
   width: $navbar-height;
   margin:0;
   color: $btn-primary-color;
-  background-color: $brand-primary;
+  background-color: $primary;
   padding: 0;
   border-radius: 0;
   &:focus {
-    background: darken($brand-primary, 10%);
-    outline: 5px auto -webkit-focus-ring-color;
+    background: darken($primary, 10%);
   }
   .mobilemenu-bars, .mobilemenu-close {
     font-size: 24px;
@@ -95,7 +100,7 @@
   }
   @keyframes bg-blinker {
     50%  {
-      background-color: screen($brand-primary, rgba(255, 255, 255, 0.4));
+      background-color: screen($primary, rgba(255, 255, 255, 0.4));
     }
   }
 }
@@ -104,22 +109,13 @@
   margin: calc((#{$navbar-padding-vertical} / 2) - #{$navbar-padding-horizontal});
 
   > li > a {
-    padding-top: $navbar-padding-vertical;
-    padding-bottom: $navbar-padding-vertical;
-    line-height: calc(#{$navbar-height} / 2);
-    margin-top: calc(#{$navbar-height} / 4);
-    margin-bottom: calc(#{$navbar-height} / 4);
     font-size: $navbar-font-size;
-    font-weight: $navbar-font-weight;
-    @media (min-width:$screen-md-min) {
-      margin-bottom: 0;
-    }
   }
   &.language:not(.lang-1):before {
     color: $navbar-default-link-color;
     content: '';
     height: (($navbar-height) - 24);
-    margin-top: calc((#{$navbar-height} - (#{$navbar-height} - 24)) / 2);
+    margin-top: calc((#{$navbar-height} - (#{$navbar-height} - 24px)) / 2);
 
     @media (min-width: $grid-float-breakpoint) {
       border-left: solid 1px $navbar-default-link-color;
@@ -196,20 +192,6 @@
       }
     }
   }
-  // Uncollapse the nav
-  @media (min-width: $grid-float-breakpoint) {
-    flex-grow: 1;
-    flex-shrink: 1;
-    float: initial;
-    margin: 0;
-
-    &.navbar-main {
-      margin-bottom: calc(#{$navbar-height} / 4);
-    }
-  }
-  .btn {
-    vertical-align: baseline;
-  }
 }
 
 .navbar-nav {
@@ -235,21 +217,25 @@
 
 // Menu position and menu carets
 .navbar-nav > li > .dropdown-menu {
-  margin-top: 0;
   @include border-top-radius($border-radius-base);
 }
 
 // Fix dropdowns in navbar for wide screen
 @media (min-width: $screen-md-min) {
-  .navbar .dropdown-menu > li > a {
+  .navbar li:not(#language_menu) .dropdown-menu > li > a {
     width: 280px;
     white-space: normal;
     transition: none;
   }
 }
 #language_menu {
-  #language_menu_dropdown_button:active {
-    box-shadow: none;
+  #language_menu_dropdown_button {
+    padding-top: #{$btn-padding-y};
+    padding-bottom: #{$btn-padding-y};
+
+    &:active {
+      box-shadow: none;
+    }
   }
   .dropdown-menu {
     margin: 0;
@@ -275,28 +261,39 @@
   display: flex;
   flex-direction: row;
   align-items: baseline;
+  // This is required for proper positioning of dropdown menus:
+  position: relative;
+
+  // Counter the responsive menu behavior for non-expandable items:
+  .dropdown-menu {
+    position: absolute;
+  }
 
   div.logoutOptions a:active {
     box-shadow: none;
   }
   div.logoutOptions, #loginOptions {
     padding-right: 12px;
-    margin-top: 8px;
     position: relative;
   }
 
   @media (max-width: $screen-sm-max) {
     position: absolute;
-    margin: 0;
-    line-height: $navbar-height;
     top: 0;
+    display: flex;
+    align-items: center;
+    height: $navbar-height;
     right: $navbar-right;
-    flex: 0 0;
+
     div.logoutOptions, #loginOptions {
       margin-top: 0;
     }
-    .dropdown-menu > li > a {
-      white-space: normal;
+    .dropdown-menu {
+      margin-top: 1rem;
+
+      > li > a {
+        white-space: normal;
+      }
     }
   }
 }
@@ -312,6 +309,7 @@
     border-width: 0 0 1px;
     background-color: $header-background-color;
     box-shadow: 0 0 3px 3px rgba(0,0,0,0.1);
+
     .navbar-collapse > ul > li {
       border-bottom: 1px solid $gray-lighter;
     }
@@ -323,12 +321,10 @@
       display: inherit;
     }
   }
-  .navbar-collapse.in {
+  .navbar-collapse.show {
     box-shadow: 0 3px 5px $gray;
-/* #SCSS> */
     max-height: calc(100vh - #{#{$navbar-height}});
-/* <#SCSS */
-
+    overflow: scroll;
   }
   .navbar-header {
     padding-left: 10px;
@@ -345,14 +341,4 @@
 .navbar .navbar-logo {
   height: $navbar-logo-height;
   margin-right: 10px;
-}
-
-//Focus outline for dropdowns in Firefox
-@supports (-moz-appearance:none) {
-  a.dropdown-toggle:focus {
-    outline: none;
-  }
-  a.dropdown-toggle:focus-visible {
-    outline: revert;
-  }
 }

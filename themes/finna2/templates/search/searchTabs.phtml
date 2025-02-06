@@ -9,38 +9,35 @@
 <?php endif; ?>
 <?php if (!empty($searchTabs)): ?>
   <div role="navigation" aria-label="<?=$this->transEscAttr('Search Tabs')?>">
-    <?php
-      $tooltipElement = $this->htmlElement()->addAttributeTemplate('tooltip-element', [
-        'class' => 'tooltip',
-        'data-toggle' => 'tooltip',
-        'data-html' => 'true',
-        'data-placement' => 'bottom',
-      ]);
-    ?>
     <ul class="nav nav-tabs <?=$isManyTabs ? ' many-tabs hidden-xs' : '';?>">
       <?php foreach ($searchTabs as $tab): ?>
         <?php if ($tab['selected']) {
           $this->layout()->currentTabId = $tab['id'];
           $hasSelectedTab = true;
-        } ?>
-        <li class="<?=$tab['selected'] ? 'active' : 'hidden-print'?>">
-          <a <?=$tab['selected'] ? 'aria-current="true"' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
-          <?php if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName !== 'advanced'): ?>
-            <?php
-              $tooltip = [
-                'aria-label' => $this->translate('Help') . ' - ' . $this->translate($tab['label']),
-                'data-original-title' => $this->translate('tooltip_' . $tab['label'] . '_html'),
-                'class' => $this->translate('tooltip-' . $tab['label']),
-              ];
-            ?>
-            <button <?= $this->htmlElement()->getAttributes($tooltip, 'tooltip-element'); ?>>
-              <?=$this->icon('help') ?>
-            </button>
+        }
+        $toggletipKeyHtml = 'tooltip_' . $tab['label'] . '_html';
+        if ($this->layout()->templateName !== 'advanced' && !$this->translationEmpty($toggletipKeyHtml)) {
+          $toggletip = [
+            'icon' => 'help',
+            'ariaLabel' => $this->translate('Help') . ' - ' . $this->translate($tab['label']),
+            'content' => $this->translate($toggletipKeyHtml),
+            'class' => 'tooltip-' . $tab['label'], // for back-compatibility
+          ];
+        } else {
+          $toggletip = '';
+        }
+        ?>
+        <li class="nav-item <?=$tab['selected'] ? 'active' : 'hidden-print'?><?=$toggletip ? ' with-tooltip' : ''?>">
+          <a class="nav-link<?=$tab['selected'] ? ' active' : ''?>" <?=$tab['selected'] ? 'aria-current="true"' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>>
+            <?=$this->transEsc($tab['label']); ?>
+          </a>
+          <?php if ($toggletip): ?>
+            <?=$this->component('finna-toggletip', $toggletip)?>
           <?php endif; ?>
         </li>
       <?php endforeach; ?>
       <?php if (!$hasSelectedTab && !$this->translationEmpty('temporary_search_tab_title')): ?>
-        <li class="active">
+        <li class="nav-item active">
           <a><?=$this->transEsc('temporary_search_tab_title')?></a>
         </li>
       <?php endif; ?>
@@ -54,7 +51,7 @@
       <div class="dropdown visible-xs">
         <?php foreach ($searchTabs as $tab): ?>
           <?php if ($tab['selected']): ?>
-            <div class="dropdown-toggle clearfix" data-toggle="dropdown">
+            <div class="dropdown-toggle clearfix" data-bs-toggle="dropdown" aria-expanded="false">
               <div class="tab-title"><?=$this->transEsc($tab['label']); ?></div>
               <div class="more"><?=$this->transEsc('More');?><?=$this->icon('menu-open') ?> </div>
             </div>
@@ -66,7 +63,7 @@
               $this->layout()->currentTabId = $tab['id'];
             } ?>
             <li class="<?=$tab['selected'] ? 'active' : ''?>">
-              <a role="menuitem" <?=$tab['selected'] ? 'aria-current="true"' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+              <a class="dropdown-item" role="menuitem" <?=$tab['selected'] ? 'aria-current="true"' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
             </li>
           <?php endforeach; ?>
         </ul>

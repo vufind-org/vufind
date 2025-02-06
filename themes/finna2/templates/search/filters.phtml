@@ -70,7 +70,7 @@
             <div class="search-filter-dropdown dropdown">
               <?php $dropdown = true; ?>
               <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $field); ?>
-              <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+              <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 <?=$this->transEsc('filter_toggle_entries', ['%%count%%' => count($data)])?>
                 <?=$this->icon('dropdown-open')?>
               </button>
