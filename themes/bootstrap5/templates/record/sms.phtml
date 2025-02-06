@@ -4,9 +4,9 @@
   echo $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
     . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="active">' . $this->transEsc('Text this') . '</li>';
+    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Text this') . '</li>';
 ?>
 <h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
 <form method="post" name="smsRecord" class="form-record-sms">
@@ -21,7 +21,7 @@
   <?php if (is_array($this->carriers) && count($this->carriers) > 1): ?>
     <div class="form-group">
       <label class="control-label" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
-      <select id="sms_provider" name="provider" class="form-control">
+      <select id="sms_provider" name="provider" class="form-control form-select">
         <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
         <?php foreach ($this->carriers as $val => $details): ?>
           <option value="<?=$this->escapeHtmlAttr($val)?>"<?=$val === $this->provider ? ' selected' : ''?>><?=$this->escapeHtml($details['name'])?></option>

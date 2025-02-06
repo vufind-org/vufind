@@ -3,9 +3,9 @@
   $this->headTitle($this->translate('permanent_link'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item">' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="active">' . $this->transEsc('permanent_link') . '</li>';
+    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('permanent_link') . '</li>';
 
   // Collect permalink data:
   $link = $this->serverUrl() . $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);

@@ -1,7 +1,7 @@
 // Thumbnail sizes for media items: search results, list entries, record views
-$thumbnail-width-small: 60px !default;
+$thumbnail-width-small:   60px !default;
 $thumbnail-width-medium: 100px !default;
-$thumbnail-width-large: 160px !default;
+$thumbnail-width-large:  160px !default;
 
 // record result list ol, ul that contains li.result
 .record-list {
@@ -45,9 +45,9 @@ $thumbnail-width-large: 160px !default;
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
-    // Bulk action checkboxes:
+  // Bulk action checkboxes:
   #search-cart-form .result .checkbox,
-    // Search result and favorites bulk action buttons:
+  // Search result and favorites bulk action buttons:
   .bulkActionButtons {
     display: none;
   }
@@ -745,7 +745,7 @@ body.rtl {
     .collapse {
       display: none;
 
-      .in {
+      .show {
         display: inline-block;
       }
     }

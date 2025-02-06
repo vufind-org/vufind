@@ -586,7 +586,7 @@ VuFind.register('sideFacets', function SideFacets() {
         try {
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
-          } else if (!$(item).data('forceIn')) {
+          } else if (!$(item).data('forceUncollapsed')) {
             $(item).collapse('hide');
           }
         } finally {
@@ -601,15 +601,9 @@ VuFind.register('sideFacets', function SideFacets() {
     facetGroup.on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
-    if (VuFind.getBootstrapMajorVersion() === 3) {
-      $('.side-facets-container-ajax')
-        .find('div.collapse[data-facet]:not(.in)')
-        .on('shown.bs.collapse', delayLoadAjaxSideFacets);
-    } else {
-      document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
-        collapseEl.addEventListener('shown.bs.collapse', delayLoadAjaxSideFacets);
-      });
-    }
+    document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
+      collapseEl.addEventListener('shown.bs.collapse', delayLoadAjaxSideFacets);
+    });
     delayLoadAjaxSideFacets();
 
     // Keep filter dropdowns on screen

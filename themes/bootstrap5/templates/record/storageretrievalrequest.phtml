@@ -3,9 +3,9 @@
     $this->headTitle($this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li>')
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li>')
         . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>'
-        . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
+        . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
 <?php if ($this->helpTextHtml): ?>
@@ -69,7 +69,7 @@
           }
         ?>
         <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
-        <select name="gatheredDetails[pickUpLocation]" class="form-control">
+        <select name="gatheredDetails[pickUpLocation]" class="form-control form-select">
           <?php if ($selected === false && count($this->pickup) > 1): ?>
             <option value="" selected="selected">
               <?=$this->transEsc('select_pickup_location')?>

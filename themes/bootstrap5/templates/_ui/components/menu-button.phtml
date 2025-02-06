@@ -39,8 +39,8 @@
 
   <ul class="dropdown-menu">
     <?php foreach ($this->menuItems as $current): ?>
-      <li class="dropdown__item <?php if ($current['selected'] ?? false): ?> active<?php endif ?>">
-        <a class="dropdown__link"
+      <li class="dropdown__item">
+        <a class="dropdown-item dropdown__link<?=($current['selected'] ?? false) ? ' active' : ''?>"
           href="<?=$this->escapeHtmlAttr($current['url']) ?>"
           <?php if ($current['external'] ?? false): ?> target="_blank"<?php endif; ?>
           <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
