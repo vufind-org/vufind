@@ -820,7 +820,6 @@ class UpgradeController extends AbstractBase
                 );
             } else {
                 $this->cookie->oldVersion = $version;
-                $this->setSourceDir(realpath(APPLICATION_PATH));
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourceversion', '');
                 $this->processSkipParam();
@@ -840,50 +839,6 @@ class UpgradeController extends AbstractBase
         return $this->criticalCheckForInsecureDatabase()
             ?? $this->criticalCheckForBlowfishEncryption()
             ?? null;
-    }
-
-    /**
-     * Validate a source directory string.
-     *
-     * @param string $dir Directory string to check
-     *
-     * @return bool
-     */
-    protected function isSourceDirValid(string $dir): bool
-    {
-        // Prevent abuse of stream wrappers:
-        if (empty($dir) || str_contains($dir, '://')) {
-            return false;
-        }
-        return is_dir($dir);
-    }
-
-    /**
-     * Set the source directory for the upgrade
-     *
-     * @param string $dir Directory to set
-     *
-     * @return void
-     */
-    protected function setSourceDir(string $dir): void
-    {
-        $this->cookie->sourceDir = $dir;
-    }
-
-    /**
-     * Get the source directory for the upgrade
-     *
-     * @param bool $validate Should we validate the directory?
-     *
-     * @return string
-     */
-    protected function getSourceDir($validate = true): string
-    {
-        $sourceDir = $this->cookie->sourceDir ?? '';
-        if ($validate && !$this->isSourceDirValid($sourceDir)) {
-            throw new \Exception('Unexpected source directory value!');
-        }
-        return $sourceDir;
     }
 
     /**
