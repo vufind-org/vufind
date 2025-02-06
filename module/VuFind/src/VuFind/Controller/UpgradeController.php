@@ -894,12 +894,7 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(
-            [
-                'configDir'
-                    => dirname($this->getForcedLocalConfigPath('config.ini')),
-                'importDir' => LOCAL_OVERRIDE_DIR . '/import',
-                'oldVersion' => $this->cookie->oldVersion,
-            ]
+            ['configDir' => dirname($this->getForcedLocalConfigPath('config.ini'))]
         );
     }
 
