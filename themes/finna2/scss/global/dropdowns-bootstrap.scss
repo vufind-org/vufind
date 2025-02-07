@@ -36,9 +36,11 @@
   display: block;
 
   &:focus {
+    // Hide focus effect so that menus look ok even if first item is automatically focused:
     background-color: inherit;
   }
   &.active:focus {
+    // Make sure the active item is displayed properly:
     color: $dropdown-link-active-color;
     background-color: $dropdown-link-active-bg;
   }
