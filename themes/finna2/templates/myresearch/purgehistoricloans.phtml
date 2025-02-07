@@ -7,7 +7,7 @@
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'purgehistoricloans']);
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb active">' . $this->transEsc('loan_history_purge') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('loan_history_purge') . '</li>';
 ?>
 <h2><?=$this->transEsc('loan_history_purge')?></h2>
 

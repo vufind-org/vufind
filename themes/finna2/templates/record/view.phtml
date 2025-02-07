@@ -19,8 +19,8 @@
   }
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb">', '</li> ') .
-    '<li class="active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> ';
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ') .
+    '<li class="breadcrumb-item active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> ';
 
   $this->headMeta()->appendName('format-detection', 'telephone=no');
 

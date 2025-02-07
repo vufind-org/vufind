@@ -4,9 +4,9 @@
   $pageTitle = empty($this->card->getId()) ? 'Connect Library Card' : 'Update Card Details';
   $this->headTitle($this->translate($pageTitle));
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    . '<li class="breadcrumb"><a href="' . $this->url('librarycards-home') . '">' . $this->transEsc('Library Cards') . '</a></li>'
-    . '<li class="breadcrumb active">' . $this->transEsc($pageTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . '<li class="breadcrumb-item"><a href="' . $this->url('librarycards-home') . '">' . $this->transEsc('Library Cards') . '</a></li>'
+    . '<li class="breadcrumb-item active">' . $this->transEsc($pageTitle) . '</li>';
 ?>
 
 <!-- Leftside navigationbar -->

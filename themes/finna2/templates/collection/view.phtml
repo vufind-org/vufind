@@ -23,11 +23,11 @@
   // Set up breadcrumbs:
   $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   if (!empty($lastSearch)) {
-      $this->layout()->breadcrumbs = '<li class="breadcrumb">' . $lastSearch . '</li> ';
+      $this->layout()->breadcrumbs = '<li class="breadcrumb-item">' . $lastSearch . '</li> ';
   } else {
       $this->layout()->breadcrumbs = '';
   }
-  $this->layout()->breadcrumbs .= '<li class="active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
+  $this->layout()->breadcrumbs .= '<li class="breadcrumb-item active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(

@@ -4,8 +4,8 @@
   $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    . '<li class="breadcrumb">' . $this->transEsc($pageTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . '<li class="breadcrumb-item">' . $this->transEsc($pageTitle) . '</li>';
 ?>
 
 <?=$this->flashmessages()?>

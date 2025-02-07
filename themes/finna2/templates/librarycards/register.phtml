@@ -7,7 +7,7 @@
     $this->layout()->finnaMainHeader = '';
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb active">' . $this->transEsc('new_ils_account') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('new_ils_account') . '</li>';
 
 ?>
 <h2><?=$this->escapeHtml($pageTitle) ?></h2>

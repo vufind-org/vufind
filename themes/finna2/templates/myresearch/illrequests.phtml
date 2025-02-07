@@ -4,8 +4,8 @@
     $this->headTitle($this->translate('Interlibrary Loan Requests'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-        . '<li class="breadcrumb active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+        . '<li class="breadcrumb-item active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
 
     $user = $this->auth()->getUserObject();
 ?>

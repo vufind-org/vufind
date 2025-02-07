@@ -30,6 +30,6 @@
     $titleLink .= ' - <a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)) . '">' . $this->driver->getBreadcrumb() . '</a>';
   }
 
-  $this->layout()->breadcrumbs = '<li class="breadcrumb active">' . $this->transEsc('Versions') . $titleLink . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active">' . $this->transEsc('Versions') . $titleLink . '</li>';
 
   $this->layout()->advSearchHeader = '<div class="container"><div class="finna-main-header"><h1 class="search-result-header">' . $this->transEsc('Versions') . $titleLink . '</h1></div></div>';

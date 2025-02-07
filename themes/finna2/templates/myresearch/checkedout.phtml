@@ -4,7 +4,7 @@
     $this->headTitle($this->translate('Checked Out Items'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb active">' . $this->transEsc('Checked Out Items') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Checked Out Items') . '</li>';
 
     // Check if "Renew All" button can be displayed:
     $renewAll = !$this->ilsPaging || !$paginator;

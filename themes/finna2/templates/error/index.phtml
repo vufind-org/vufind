@@ -2,7 +2,7 @@
   // Set page title.
   $this->headTitle($this->translate('An error has occurred'));
 
-  $this->layout()->breadcrumbs = '<li class="breadcrumb active">Error</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active">Error</li>';
 ?>
 <div class="alert alert-danger">
   <?php if ($this->exception instanceof \VuFind\Exception\RecordMissing): ?>

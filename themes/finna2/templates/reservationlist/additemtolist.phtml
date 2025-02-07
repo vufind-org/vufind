@@ -4,8 +4,8 @@
   $this->headTitle($this->translate($pageTitle));
   $user = $this->auth()->getUserObject();
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('reservationlist-additemtolist') . '">' . $this->transEsc('ReservationList::Add To Reservation List') . '</a></li>'
-    . '<li class="breadcrumb active">' . $this->transEsc($pageTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('reservationlist-additemtolist') . '">' . $this->transEsc('ReservationList::Add To Reservation List') . '</a></li>'
+    . '<li class="breadcrumb-item active">' . $this->transEsc($pageTitle) . '</li>';
   $listTranslations = $this->reservationList($user)->getListProperties($this->institution, $this->listIdentifier)['translation_keys'];
 ?>
 
