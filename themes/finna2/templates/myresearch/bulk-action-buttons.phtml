@@ -32,7 +32,7 @@
         <button class="btn btn-primary" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''?>" type="submit" name="delete" value="<?=$this->transEscAttr('Delete')?>" title="<?=$this->transEsc('delete_selected')?>" disabled<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Delete')?></button>
       <?php endif; ?>
       <?php if ($lists): ?>
-        <select id="add-to-list" class="btn btn-primary form-control" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+        <select id="add-to-list" class="btn btn-primary form-control form-select" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
           <option value=""><?= $this->translate('Add to List'); ?>&hellip;</option>
           <?php foreach ($lists as $current): ?>
             <?php $l = $current['list_entity']; ?>

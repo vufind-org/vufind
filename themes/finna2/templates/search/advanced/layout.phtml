@@ -7,11 +7,11 @@
   $this->layout()->searchbox = false;
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb">';
   $lastSearchLink = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   $this->layout()->breadcrumbs .= !empty($lastSearchLink)
     ? $lastSearchLink : $this->transEsc('Search');
-  $this->layout()->breadcrumbs .= '</li> <li class="active">' . $this->transEsc('Advanced') . '</li>';
+  $this->layout()->breadcrumbs .= '</li> <li class="breadcrumb active">' . $this->transEsc('Advanced') . '</li>';
 
   // Set up saved search details:
   if (isset($this->saved) && is_object($this->saved)) {
@@ -140,7 +140,7 @@
               <div class="adv-search-group">
                 <div class="adv-group-match match">
                   <label class="search_bool"><?=$msgSearchMatch?>:</label>
-                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
+                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline form-select">
                     <option value="AND"<?php if (isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?php endif;?>><?=$msgSearchAnd?></option>
                     <option value="OR"<?php if (isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?php endif;?>><?=$msgSearchOr?></option>
                     <option value="NOT"<?php if (isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif;?>><?=$msgSearchNot?></option>
@@ -223,7 +223,7 @@
       <div class="group-join-container">
         <div id="groupJoin" class="form text-center">
           <label for="groupJoinOptions"><?=$this->transEsc('adv_search_group_join')?>:</label>
-          <select id="groupJoinOptions" name="join" class="form-control form-inline">
+          <select id="groupJoinOptions" name="join" class="form-control form-inline form-select">
             <option value="AND"<?php if ($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?php endif?>><?= $this->transEsc('group_AND') ?></option>
             <option value="OR"<?php if ($searchDetails && $searchDetails->getOperator() == 'OR'):?> selected<?php endif?>><?= $this->transEsc('group_OR') ?></option>
           </select>

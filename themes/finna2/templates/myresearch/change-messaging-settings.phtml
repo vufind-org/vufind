@@ -6,7 +6,7 @@
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'profile']);
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb active">' . $this->transEsc('Profile') . '</li>';
 ?>
 <h2><?=$this->transEsc('request_messaging_settings_change'); ?></h2>
 <?=$this->flashmessages()?>
@@ -21,7 +21,7 @@
       <?php foreach ($this->services as $service => $data): ?>
         <div class="form-group">
           <label class="control-label"><?=$this->escapeHtml($data['type']) ?>:</label>
-          <select name="<?=$this->escapeHtmlAttr($service)?>" class="form-control">
+          <select name="<?=$this->escapeHtmlAttr($service)?>" class="form-control form-select">
             <?php foreach ($data['sendMethods'] as $method => $methodData): ?>
               <?php if (!($service == 'dueDateAlert' && $method == 'email')): ?>
               <option value="<?=$this->escapeHtmlAttr($methodData['type'] ?? '') ?>"<?php if ($methodData['active']): ?> selected<?php endif; ?>><?=$this->escapeHtml($methodData['method']) ?></option>

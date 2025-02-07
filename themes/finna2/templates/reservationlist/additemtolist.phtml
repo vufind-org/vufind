@@ -4,8 +4,8 @@
   $this->headTitle($this->translate($pageTitle));
   $user = $this->auth()->getUserObject();
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('reservationlist-additemtolist') . '">' . $this->transEsc('ReservationList::Add To Reservation List') . '</a></li>'
-    . '<li>' . $this->transEsc($pageTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('reservationlist-additemtolist') . '">' . $this->transEsc('ReservationList::Add To Reservation List') . '</a></li>'
+    . '<li class="breadcrumb active">' . $this->transEsc($pageTitle) . '</li>';
   $listTranslations = $this->reservationList($user)->getListProperties($this->institution, $this->listIdentifier)['translation_keys'];
 ?>
 
@@ -40,7 +40,7 @@
       <input type="hidden" name="listIdentifier" value="<?=$this->escapeHtmlAttr($this->listIdentifier)?>">
       <label class="control-label" for="save_list"><?=$this->transEsc('ReservationList::Choose a List') ?></label>
       <div class="form-group">
-        <select class="form-control" id="save_list" name="list">
+        <select class="form-control form-select" id="save_list" name="list">
           <?php foreach ($this->lists as $list): ?>
             <option value="<?=$this->escapeHtmlAttr($list->getId())?>"><?=$this->escapeHtml($list->getTitle())?></option>
           <?php endforeach; ?>

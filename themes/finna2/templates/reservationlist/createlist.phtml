@@ -4,8 +4,8 @@
   $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('reservationlist-createlist') . '">' . $this->transEsc('ReservationList::Add List') . '</a></li>'
-    . '<li>' . $this->transEsc($pageTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb"><a href="' . $this->url('reservationlist-createlist') . '">' . $this->transEsc('ReservationList::Add List') . '</a></li>'
+    . '<li class="breadcrumb active">' . $this->transEsc($pageTitle) . '</li>';
 ?>
 
 <?=$this->flashmessages()?>

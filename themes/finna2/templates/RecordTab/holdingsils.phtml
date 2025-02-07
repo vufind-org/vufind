@@ -190,7 +190,7 @@
     <div class="dedup-information">
       <span class="holdings-title"><?=$this->transEsc("source_$recordSource", null, $recordSource) ?></span>
       <?php if ($mergedData && count($mergedData['records']) > 1): ?>
-        <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
+        <select class="dedup-select form-control jumpMenuUrl hidden-print form-select" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
           <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
           <?php foreach ($mergedData['records'] as $current): ?>
             <?php if ($recordSource != $current['source']): ?>

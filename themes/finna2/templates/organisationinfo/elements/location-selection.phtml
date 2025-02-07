@@ -12,7 +12,7 @@
         <form class="location-selection">
           <h2 class="sr-only"><?=$this->transEscAttr('organisation_info_location_search')?></h2>
           <label for="location_select"><?=$this->transEscAttr('Search')?></label>
-          <select id="location_select" class="js-location-select">
+          <select id="location_select" class="js-location-select form-select">
               <option hidden value=""><?=$this->transEsc('organisation_info_autocomplete', ['%%count%%' => $locationCount])?></option>
             <?php foreach ($orgInfo['list'] as $item): ?>
               <?php

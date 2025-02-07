@@ -7,7 +7,7 @@
     $lang = $this->layout()->userLang;
     $selectedLang = $this->layout()->allLangs[$lang];
 ?>
-<div role="navigation" aria-label="<?=$this->transEscAttr('Main Menu')?>" class="finna-navbar">
+<div role="navigation" aria-label="<?=$this->transEscAttr('Main Menu')?>" class="finna-navbar navbar-expand-md">
   <div class="navbar-header">
     <?php if ($this->resolver('navibar-logo.phtml')): ?><a class="navbar-brand" href="<?=$this->url('home')?>"><?=$this->render('navibar-logo.phtml')?></a><?php endif ?>
     <button type="button" class="navbar-toggler navbar-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('Mobile Menu') ?>" aria-expanded="false">
@@ -130,7 +130,7 @@
         <span class="hidden-xs"><?=$this->displayLanguageOption($selectedLang)?></span>
         <?=$this->icon('collapse-open', 'collapse-open-icon') ?>
       </a>
-      <ul class="dropdown-menu dropdown-menu-right">
+      <ul class="dropdown-menu dropdown-menu-right dropdown-menu-end">
           <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
             <?php if ($this->layout()->userLang == $langCode): ?>
               <li>
@@ -153,7 +153,7 @@
       <?php if ($user): ?>
         <li class="nav-item logoutOptions">
           <a href="#" class="btn nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span id="account-icon"></span><?=$this->icon('my-account', 'my-account-icon') ?> <span class="username login-text"><?=$this->transEsc('Your Account')?></span> <?=$this->icon('collapse-open', 'collapse-open-icon')?></a>
-          <ul id="my-info-dropdown-menu" class="dropdown-menu dropdown-menu-right">
+          <ul id="my-info-dropdown-menu" class="dropdown-menu dropdown-menu-right dropdown-menu-end">
             <?php if ($this->libraryCards()->getCardsForUser($user)): ?>
               <li>
                 <a <?=$this->url('myresearch-checkedout') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('myresearch-checkedout')?>">

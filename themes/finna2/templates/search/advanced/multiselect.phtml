@@ -9,7 +9,7 @@
     <?php if ($this->resolver($filenameHeader)): ?>
       <?=$this->render($filenameHeader) ?>
     <?php endif; ?> 
-    <select class="finna-multiselect init" aria-labelledby="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>" name="filter[]"  multiple="multiple">
+    <select class="finna-multiselect init form-select" aria-labelledby="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>" name="filter[]"  multiple="multiple">
       <?php if (is_array($this->hierarchicalFacets) && in_array($this->field, $this->hierarchicalFacets)): ?>
         <?php foreach ($this->list['list'] as $key => $value): ?>
           <?php

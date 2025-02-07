@@ -10,7 +10,7 @@
 
   <div class="form-group">
     <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
-    <select class="form-control" id="save_list" name="list">
+    <select class="form-control form-select" id="save_list" name="list">
     <?php if ($this->lists): ?>
       <?php foreach ($this->lists as $list): ?>
         <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>

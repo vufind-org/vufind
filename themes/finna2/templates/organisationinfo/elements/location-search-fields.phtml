@@ -1,7 +1,7 @@
 <div class="input-row">
   <div class="service-type-container">
     <label for="select-service-type"><?=$this->transEsc('Service')?></label>
-    <select id="select-service-type" name="service_type" class="js-location-search-service-type">
+    <select id="select-service-type" name="service_type" class="js-location-search-service-type form-select">
       <option hidden value=""><?=$this->transEsc('Select Service')?></option>
       <?php foreach ($serviceList as $service): ?>
         <option value="<?=$this->escapeHtmlAttr($service)?>"><?=$this->escapeHtml($service)?></option>
@@ -10,7 +10,7 @@
   </div>
   <div class="service-location-container">
     <label for="select-service-location"><?=$this->transEscAttr('Location')?></label>
-    <select id="select-service-location" name="service_location" class="js-location-search-service-location">
+    <select id="select-service-location" name="service_location" class="js-location-search-service-location form-select">
       <option value=""><?=$this->transEsc('All Municipalities')?></option>
       <?php foreach ($cityList as $city): ?>
         <option value="<?=$this->escapeHtmlAttr($city)?>"><?=$this->escapeHtml($city)?></option>
