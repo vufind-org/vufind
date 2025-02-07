@@ -32,21 +32,20 @@
   }
 }
 
-.dropdown-menu > li {
-  &:hover, &:active {
+.dropdown-menu > li > a {
+  display: block;
+
+  &:focus {
     background-color: inherit;
   }
-  > a {
-    display: block;
-
-    &:focus {
-      background-color: inherit;
-    }
-    &:hover,
-    &:active {
-      text-decoration: none;
-      color: $dropdown-link-hover-color;
-      background-color: $dropdown-link-hover-bg;
-    }
+  &.active:focus {
+    color: $dropdown-link-active-color;
+    background-color: $dropdown-link-active-bg;
+  }
+  &:hover,
+  &:active {
+    text-decoration: none;
+    color: $dropdown-link-hover-color;
+    background-color: $dropdown-link-hover-bg;
   }
 }

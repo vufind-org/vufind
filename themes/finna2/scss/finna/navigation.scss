@@ -127,8 +127,8 @@
   }
   .dropdown-menu > li > .dropdown-item.active:not(:hover) {
     font-weight: bold;
-    --#{$prefix}dropdown-link-active-color: --#{$prefix}dropdown-link-color;
-    --#{$prefix}dropdown-link-active-bg: --#{$prefix}dropdown-link-bg;
+    color: var(--#{$prefix}dropdown-link-color);
+    background-color: var(--#{$prefix}dropdown-link-bg);
   }
 }
 
