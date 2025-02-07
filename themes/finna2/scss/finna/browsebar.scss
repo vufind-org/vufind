@@ -18,7 +18,8 @@
   max-width: none;
   background-color: transparent;
 
-  .nav-wrapper:not(.priority-nav) .nav-ul {
+  .nav-wrapper:not(.priority-nav) .nav-ul,
+  .navbar-nav.nav-ul {
     flex-direction: initial;
   }
 }
