@@ -20,6 +20,7 @@
 
   .nav-wrapper:not(.priority-nav) .nav-ul,
   .navbar-nav.nav-ul {
+    flex-wrap: wrap;
     flex-direction: initial;
   }
 }
