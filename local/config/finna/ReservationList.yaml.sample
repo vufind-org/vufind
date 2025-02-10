@@ -65,6 +65,7 @@ Institutions:
 PlaceOrder:
   default:
     allowLocalOverride: false
+    formActionRoute: reservationlist-placeorder
     title: ReservationList::form_title
     enabled: true
     onlyForLoggedUsers: true
