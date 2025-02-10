@@ -274,8 +274,15 @@ nav ul{
 }
   
   
+.active-filters .facet, .facet-group .active {
+  background-color: #500000;
+  color: #fff;
+}
 
-
+.result {
+  
+  padding-top: 2rem;
+}
 
 
 .navbar-toggle {
