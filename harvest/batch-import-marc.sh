@@ -137,22 +137,23 @@ else
   }
 fi
 
-# Process all the files in the target directory:
-find -L $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 \
-  | sort -z \
-  | xargs -0 -r -n $MAX_BATCH_COUNT \
-  | while read -d $'\n' files
-do
-  # Logging output handled by log() function
-  # PROPERTIES_FILE passed via environment
-  $VUFIND_HOME/import-marc.sh "$files" 2> >(log "$files")
-  
-  if [ "$?" -eq 0 ] && [ "$MOVE_DATA" == true ]; then
-    # Convert the space-separated file string into an array
-    IFS= read -r -a file_array <<< "$files"
-    
-    for file in "${file_array[@]}"; do
-      mv "$file" "$BASEPATH/processed/$(basename "$file")"
-    done
-  fi
+# Collect all matching files into an array using a null-separated list
+mapfile -d '' files < <(find -L "$BASEPATH" -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | sort -z)
+total_files=${#files[@]}
+
+# Iterate over the files in batches
+for ((i = 0; i < total_files; i += MAX_BATCH_COUNT)); do
+    # Slice off a batch of files
+    batch=("${files[@]:i:MAX_BATCH_COUNT}")
+
+    # Execute the import command with the batch of files
+    if $VUFIND_HOME/import-marc.sh "${batch[@]}" 2> >(log "${batch[@]}"); then
+        if [ "$MOVE_DATA" == true ]; then
+            for file in "${batch[@]}"; do
+                mv "$file" "$BASEPATH/processed/$(basename "$file")"
+            done
+        fi
+    else
+        echo "Failed to process batch starting with ${batch[0]}" >&2
+    fi
 done
