@@ -8,19 +8,22 @@
     }
 }
 .status-available-icon {
-    color: $success;
-}
-.status-unavailable-icon {
-    color: $danger;
+    color: $item-status-color-available;
 }
 .status-available .status-icon {
-    color: $success;
+    color: $item-status-color-available;
+}
+.status-unavailable-icon {
+    color: $item-status-color-unavailable;
 }
 .status-unavailable .status-icon {
-    color: $danger;
+    color: $item-status-color-unavailable;
 }
-.status-uncertain .status-icon, .status-unknown .status-icon {
-    color: $warning;
+.status-uncertain .status-icon {
+    color: $item-status-color-uncertain;
+}
+.status-unknown .status-icon {
+    color: $item-status-color-unknown;
 }
 .dedup-select {
     max-width: 100%;
