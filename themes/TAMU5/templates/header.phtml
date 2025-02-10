@@ -1,12 +1,14 @@
 <?php $account = $this->auth()->getManager(); ?>
-<div class="banner container-fluid brow navbar">
+<div class="banner container-fluid navbar brow">
   
 
-<div class="container">
+<div class="container ">
+
 <div class="col-9 logoLock">
   <div class="libLogo"></div>
   <div class="nameBrand"><a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">Texas A&amp;M University Libraries</a></div>
 </div>
+
 
     <button type="button" class="navbar-toggle" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
     <?=$this->icon('ui-menu') ?>
@@ -102,9 +104,15 @@
       </nav>
     </div>
   <?php endif; ?>
+                </div>
+
   
+    <div class="container-fluid titleBar">
+    <div class="container">
   <div class=" col-12 appTitle clearfix"><h2><a href="<?=$this->url('home')?>"><?=$this->config()->get('config')->Site->title?></a></h2></div>
   </div> 
+                </div>
+                </div>
 </div> 
 <?php if ($this->layout()->searchbox !== false): ?>
   <div class="search container navbar">
