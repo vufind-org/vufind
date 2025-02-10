@@ -1138,8 +1138,8 @@ class SolrEad3 extends SolrEad
         if (!isset($xml->did)) {
             return [];
         }
-        $results = $this->getDisplayLabel($xml->did, 'physdesc');
-        $localeResults = $this->getDisplayLabel($xml->did, 'physdesc', true);
+        $results = $localeResults = [];
+        // Check structured physical descriptions first
         foreach ($xml->did->physdescstructured ?? [] as $desc) {
             $lang = $this->detectNodeLanguage($desc);
             $quantity = trim((string)($desc->quantity ?? ''));
@@ -1151,8 +1151,8 @@ class SolrEad3 extends SolrEad
                 }
             }
         }
-
-        return $localeResults ?: $results;
+        // If no structured descriptions were found, use unstructured descriptions
+        return $localeResults ?: $results ?: $this->getDisplayLabel($xml->did, 'physdesc');
     }
 
     /**

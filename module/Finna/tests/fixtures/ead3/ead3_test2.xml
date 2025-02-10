@@ -17,6 +17,7 @@
     <unitdate label="Ajallinen kattavuus" normal="1600-01-01/1610-01-01"></unitdate>
     <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
 
+    <physdesc lang="fi">9 koteloa (ei näytetä)</physdesc>
     <physdescstructured coverage="whole" physdescstructuredtype="materialtype" lang="fi">
       <quantity>9</quantity>
       <unittype>Koteloa</unittype>
