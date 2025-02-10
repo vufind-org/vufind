@@ -159,7 +159,7 @@
   button { border: 0; }
   .tag-form { display: inline; }
 }
-.tagList.loggedin .tag:not(.selected) .badge:hover { background-color: $brand-success; }
+.tagList.loggedin .tag:not(.selected) .badge:hover { background-color: $success; }
 
 
 .staff-view .pace-car {
@@ -308,7 +308,7 @@
 
   /* Set default star color */
   .rating__icon--star {
-    color: $brand-warning;
+    color: $warning;
   }
 
   /* If any input is checked, make its following siblings grey */
@@ -321,7 +321,7 @@
   {
     &:hover .rating__label .rating__icon--star,
     &:hover .rating__label--half .rating__icon--star {
-      color: $brand-warning;
+      color: $warning;
     }
     /* Make hovered input's following siblings grey on hover */
     .rating__input:hover ~ .rating__label .rating__icon--star,

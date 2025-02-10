@@ -307,7 +307,7 @@ body.rtl .dropdown-menu {
   word-wrap: break-word;
 }
 .browse-item.active {
-  background-color: $brand-primary;
+  background-color: $primary;
   color: #fff;
 
   .badge {
@@ -425,7 +425,7 @@ body.rtl .dropdown-menu {
       margin-left: 0.5rem;
     }
     &.active {
-      background-color: $brand-primary;
+      background-color: $primary;
       color: #fff;
     }
 
@@ -551,7 +551,7 @@ ul.list-group {
   background-color: #fff; // background of box
   fill: #eee;             // fillColor
   outline-color: #c38835; // selection color
-  stroke: $brand-primary; // color
+  stroke: $primary; // color
 }
 
 /* ------ Table wrapping to prevent horizontal overflow ------ */
