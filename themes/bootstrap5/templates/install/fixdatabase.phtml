@@ -16,6 +16,7 @@
     <label class="control-label" for="dbname">Select database type:</label>
     <select name="driver" class="form-control form-select">
       <option value="mysql">MySQL</option>
+      <option <?php if ($driver == 'mariadb'): ?>selected="selected" <?php endif; ?>value="mariadb">MariaDB</option>
       <option <?php if ($driver == 'pgsql'): ?>selected="selected" <?php endif; ?>value="pgsql">PostgreSQL</option>
     </select>
   </div>
@@ -36,7 +37,7 @@
     <input type="password" name="dbpassconfirm" value="" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbhost">MySQL Host:</label>
+    <label class="control-label" for="dbhost">Database Host:</label>
     <input type="text" name="dbhost" value="<?=$this->escapeHtmlAttr($this->dbhost)?>" class="form-control">
   </div>
   <div class="form-group">
@@ -44,11 +45,11 @@
     <input type="text" name="vufindhost" value="<?=$this->escapeHtmlAttr($this->vufindhost)?>" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbrootuser">MySQL Root User:</label>
+    <label class="control-label" for="dbrootuser">Database Root User:</label>
     <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbrootpass">MySQL Root Password:</label>
+    <label class="control-label" for="dbrootpass">Database Root Password:</label>
     <input type="password" name="dbrootpass" value="" class="form-control">
   </div>
   <div class="form-group">

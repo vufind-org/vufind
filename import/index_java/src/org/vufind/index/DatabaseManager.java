@@ -40,6 +40,8 @@ public class DatabaseManager
     // Shutdown flag:
     private boolean shuttingDown = false;
 
+    private UpdateDateTracker udt;
+
     private static ThreadLocal<DatabaseManager> managerCache =
         new ThreadLocal<DatabaseManager>()
         {
@@ -102,9 +104,11 @@ public class DatabaseManager
 
         // Parse key settings from the PHP-style DSN:
         String platform = "invalid";
-        if (dsn.substring(0, 8).equals("mysql://")) {
+        if (dsn.startsWith("mysql://")) {
             platform = "mysql";
-        } else if (dsn.substring(0, 8).equals("pgsql://")) {
+        } else if (dsn.startsWith("mariadb://")) {
+            platform = "mariadb";
+        } else if (dsn.startsWith("pgsql://")) {
             platform = "postgresql";
         }
 
@@ -172,13 +176,37 @@ public class DatabaseManager
             prefix = "mysql";
             String useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false) ? "true" : "false";
             extraParams = "?useSSL=" + useSsl;
+            // NOTE: useSSL is deprecated for both mysql and mariadb
+            // sslMode is supported since mysql Connector/J 8.0.13 and mariadb Connector/J 3.0.0
             if (useSsl != "false") {
                 String verifyCert = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "verify_server_certificate", false) ? "true" : "false";
                 extraParams += "&verifyServerCertificate=" + verifyCert;
             }
+            extraParams += "&rewriteBatchedStatements=true";
+        } else if (platform.equals("mariadb")) {
+            classname = "org.mariadb.jdbc.Driver";
+            prefix = "mariadb";
+            boolean useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false);
+            String sslMode;
+            if (useSsl) {
+                boolean verifyCert = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "verify_server_certificate", false);
+                if (verifyCert) {
+                    sslMode = "verify-full";
+                    // NOTE: we could also use "verify-ca" here, it would be better to have an sslMode VuFind config
+                    // (but note that mysql values are different)
+                } else {
+                    sslMode = "trust";
+                }
+            } else {
+                sslMode = "disable";
+            }
+            extraParams = "?sslMode=" + sslMode;
+            // NOTE: rewriteBatchedStatements was removed from mariadb Connector/J in version 3.0.0.
+            // It was replaced by useBulkStmts, which defaults to true.
         } else if (platform.equals("pgsql") || platform.equals("postgresql")) {
             classname = "org.postgresql.Driver";
             prefix = "postgresql";
+            extraParams = "?reWriteBatchedInserts=true";
         }
 
         Class.forName(classname).getDeclaredConstructor().newInstance();
@@ -192,6 +220,10 @@ public class DatabaseManager
         vufindDatabase = DriverManager.getConnection("jdbc:" + dsn + extraParams, username, password);
 
         Runtime.getRuntime().addShutdownHook(new DatabaseManagerShutdownThread(this));
+    }
+
+    void setUpdateDateTracker(UpdateDateTracker udt) {
+        this.udt = udt;
     }
 
     private void disconnectFromDatabase()
@@ -208,6 +240,10 @@ public class DatabaseManager
 
     public void shutdown()
     {
+        if (udt != null) {
+            // We can't use UpdateDateTracker.instance() in shutdown, so we have to use a previously-saved reference
+            udt.shutdown();
+        }
         disconnectFromDatabase();
         shuttingDown = true;
     }
