@@ -346,7 +346,7 @@ $skip-link-color: #fff !default;
 $skip-link-background-color: $action-link-color !default;
 
 // Item statuses
-$item-status-color-available:       $success;
-$item-status-color-unavailable:     $danger;
-$item-status-color-unknown:         $warning;
-$item-status-color-uncertain:       $warning;
+$item-status-color-available:       $success !default;
+$item-status-color-unavailable:     $danger !default;
+$item-status-color-unknown:         $warning !default;
+$item-status-color-uncertain:       $warning !default;
