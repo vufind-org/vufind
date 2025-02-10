@@ -192,14 +192,17 @@
         .status-available {
             color: $state-success-text;
             .icon {
-                color: $success;
+                color: $item-status-color-available;
             }
         }
         .status-unavailable {
-            color: $danger;
+            color: $item-status-color-unavailable;
         }
-        .status-uncertain, .status-unknown {
-            color: $warning;
+        .status-uncertain {
+            color: $item-status-color-uncertain;
+        }
+        .status-unknown {
+            color: $item-status-color-unknown;
         }
     }
     .holdings-group:not(.headers+.holdings-group) {
