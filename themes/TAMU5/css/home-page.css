@@ -1,435 +1,123 @@
-/* .searchHomeContent {
-  margin-left: -@grid-gutter-width;
-  margin-right: -@grid-gutter-width;
-} 
-*/
-body {
-  position: relative;
-}
-.main {
-  z-index: 0;
-}
-.search-hero {
-  position: relative;
-  padding: 2rem 3rem;
-  font-size: 1.15rem;
-  z-index: 1;
-  /*background-image: url('@{image-path}/evans_full_c.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  */
-}
-a {
-  color: #00648b;
-  text-decoration: none;
-  border-bottom: 1px dotted #00648b;
-}
-a:hover,
-a:focus,
-.channel .channel-record.is-selected {
-  color: #003f58;
-  border-bottom: 1px solid #003f58;
-  text-decoration: none;
-}
-.image-credit {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 1rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
-  background-color: rgba(0, 0, 0, 0.5);
-}
-.image-credit a {
-  color: #fff;
-}
-/* .search-home-facets {
-    margin-top: 60px;
-    background-color: #500000;
-    padding: 20px;
-    border: 2px solid #fff;
-  }	  
-*/
-.search-home-facets h2 {
-  color: #000000;
-  font-size: 1.25rem;
-}
-.home-facet-list {
-  line-height: 2rem;
-}
-
-
-.banner{
-  padding:.5rem 0;
-}
-
-
-.navbar {
- 
-  margin-bottom: 0px;
-  border: none;
-}
-.navbar {
+<?php $account = $this->auth()->getManager(); ?>
+<div class="banner container-fluid navbar brow">
   
-  border-radius: 0px;
-   
-}
 
-nav ul{
-  padding-inline-start: 0;
-}
+<div class="container ">
 
-.navbar .icon{
-  color:#ffffff;
-}
+<div class="col-9 logoLock">
+  <div class="libLogo"></div>
+  <div class="nameBrand"><a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">Texas A&amp;M University Libraries</a></div>
+</div>
 
-.navbar .icon:hover{
-  color: #ffc222;
-}
 
-.navbar-brand {
+    <button type="button" class="navbar-toggle" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
+    <?=$this->icon('ui-menu') ?>
+    </button>
+  <?php if (!isset($this->layout()->renderingError)): ?>
+    <div class="collapse navbar-collapse" id="header-collapse">
+      <nav>
+        <ul class="nav navbar-nav navbar-right flip browLinks">
+          <?php if ($this->feedback()->tabEnabled()): ?>
+            <li>
+              <a class="icon-link" id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>">
+                <?=$this->icon('feedback', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc('Feedback')?></span>
+              </a>
+            </li>
+          <?php endif; ?>
+          <?php $cart = $this->cart(); ?>
+          <?php if ($cart->isActive()): ?>
+            <li id="cartSummary" aria-live="polite" aria-atomic="true">
+              <a id="cartItems" class="icon-link" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+                <?=$this->icon('cart', 'icon-link__icon') ?>
+                <span class="icon-link__label">
+                  <span class="sr-only"><?=$this->transEsc('Book Bag')?>:</span>
+                  <span role="status"><strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?></span>
+                  <span class="full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full') ?>)</span>
+                </span>
+              </a>
+            </li>
+          <?php endif; ?>
+          <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+            <?php if ($account->getIdentity()): ?>
+              <li class="logoutOptions<?php if ($account->dropdownEnabled()): ?> with-dropdown<?php endif ?>">
+                <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" class="icon-link">
+                  <span id="account-icon" class="icon-link__icon" role="link"><?=$this->icon('my-account') ?></span>
+                  <span class="icon-link__label"><?=$this->transEsc('Your Account')?></span>
+                </a>
+              </li>
+              <?php if ($account->dropdownEnabled()): ?>
+                <li id="login-dropdown" class="dropdown hidden-xs">
+                  <a href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
+                  <div class="dropdown-menu">
+                    <?=$this->accountMenu()->render('', 'header_')?>
+                  </div>
+                </li>
+              <?php endif; ?>
+              <li class="logoutOptions">
+                <a href="<?=$this->url('myresearch-logout')?>" class="logout icon-link">
+                  <?=$this->icon('sign-out', 'icon-link__icon') ?>
+                  <span class="icon-link__label"><?=$this->transEsc('Log Out')?></span>
+                </a>
+              </li>
+            <?php else: ?>
+              <li id="loginOptions">
+                <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                  <a href="<?=$this->url('myresearch-userlogin')?>" class="icon-link">
+                    <?=$this->icon('sign-in', 'icon-link__icon') ?>
+                    <span class="icon-link__label"><?=$this->transEsc('Institutional Login')?></span>
+                  </a>
+                <?php else: ?>
+                  <a href="<?=$this->url('myresearch-userlogin')?>" class="icon-link" data-lightbox>
+                    <?=$this->icon('sign-in', 'icon-link__icon') ?>
+                    <span class="icon-link__label"><?=$this->transEsc('Login')?></span>
+                  </a>
+                <?php endif; ?>
+              </li>
+            <?php endif; ?>
+          <?php endif; ?>
+
+          <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+              <?=$this->component('menu-button', [
+                  'toggleLabel' => 'Theme',
+                  'wrapperClass' => 'theme-selector',
+                  'wrapperTag' => 'li',
+                  'menuItems' => array_map(
+                      function ($item) {
+                          $item['label'] = $item['desc'];
+                          $item['url'] = $this->url()->addQueryParameters(['ui' => $item['name']]);
+
+                          return $item;
+                      },
+                      $this->layout()->themeOptions
+                  ),
+              ]) ?>
+          <?php endif; ?>
+
+         
+          
+                
+          <li><a href="https://library.tamu.edu/mylibrary/">MyLibrary</a></li>
+          <li><a href="https://askus.library.tamu.edu/">Help</a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  <?php endif; ?>
+                </div>
+
   
-  height: auto;
-  padding: 0px;
-  font-size: 18px;
-  line-height: 20px;
-}
-/* Hide search bar */
-.template-dir-search.template-name-home .search.container {
-  display: none;
-}
-.brow {
-  background-color: #3c0000;
-  border-bottom: 2px solid #a7a7a7;
-}
-.libLogo {
-  display: inline-block;
-  width: 52px;
-  height: 36px;
-  background: url(../images/tamu-logo.svg);
-  background-size: 52px 36px;
-}
-.nameBrand {
-  display: inline-block;
-  vertical-align: top;
-  padding-top: 8px;
-  color: #ffffff;
-}
-.nameBrand a {
-  color: #ffffff;
-  border-bottom: none;
-  text-decoration: none;
-}
-.nameBrand a:hover {
-  color: #ffffff;
-  border-bottom: none;
-}
-.logoLock {
-  margin-left: 1.25rem;
-}
-
-
-
-@media (min-width: 992px) {
-  .navbar-expand-md {
-      flex-wrap: wrap !important; 
-      justify-content: flex-start; 
-  }
-}
-
-
-
-.browLinks ul {
-  margin-bottom: 0px;
-  margin-left: 0;
-  padding-left: 0;
-  text-align: center;
-}
-.browLinks ul li {
-  list-style-type: none;
-  display: inline-block;
-  border-right: 1px solid #500000;
-  padding: 12px 0;
-}
-.brow .nav-link, .browLinks ul li a {
-  color: #ffffff !important;
-  text-decoration: none;
-  padding: 12px;
-  border-bottom: none;
-}
-.browLinks ul li:last-child {
-  border-right: none;
-}
-.brow .nav-link:hover, .browLinks ul li a:hover {
-  color: #000000 !important;
-  background-color: #ffc222 !important;
-  text-decoration: none;
-  border-bottom: none;
-}
-
-.appTitle h2 {
-  color: #ffffff;
-  font-size: 36px;
-  margin-top: .25rem;
-  margin-bottom: .75rem;
-  margin-left: 1.25rem;
-}
-
-.appTitle h2 a {
-  color: #ffffff;
-  text-decoration: none;
-  border-bottom: none;
-}
-.appTitle h2 a:hover {
-  color: #ffffff;
-  text-decoration: none;
-  border-bottom: none;
-}
-.languageDrp a {
-  color: #ffffff;
-  border-bottom: none;
-  text-decoration: none;
-}
-.languageDrp a:hover {
-  color: #ffffff;
-  border-bottom: none;
-  text-decoration: none;
-}
-.language a {
-  color: #2b5d7d;
-  border-bottom: 1px dotted #2b5d7d;
-  text-decoration: none;
-}
-.language a:hover {
-  color: #000000;
-  border-bottom: 1px dotted #2b5d7d;
-  text-decoration: none;
-}
-.nav > li > a:hover,
-.nav > li > a:focus {
-  color: #000000;
-  outline: dotted 1px #000;
-}
-.nav > li {
-  position: relative;
-  display: block;
-  z-index: 1000;
-}
-.navbar-toggle {
-  position: relative;
-  float: right;
-  padding: 9px 10px;
-  margin-right: 10px;
-  margin-top: 20px;
-  margin-bottom: 8px;
-  background-color: transparent;
-  background-image: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
-}
-.nav > li > a:hover,
-.nav > li > a:focus {
-  color: #000;
-  text-decoration: none;
-  background-color: #eee;
-}
-.yellowBox {
-  color: #8A6D3B;
-  background-color: #FCF8E3;
-  border-color: #FAEBCC;
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  text-align: center;
-  z-index: 0;
-}
-.yellowBox p {
-  text-align: center;
-}
-.searchbox {
-  background: #ffffff;
-  padding-top: 20px;
-}
-.dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus {
-  color: #262626;
-  text-decoration: none;
-  background-color: #cff1ff;
-}
-.languageDrp a {
-  color: #000000;
-  border-bottom: none;
-  text-decoration: none;
-}
-.langNav {
-  margin-top: 0;
-  background: #ffffff;
-  color: #000000;
-  z-index: 1000;
-}
-@media (max-width: 767px) {
-  .navbar-nav .open .dropdown-menu {
-    position: static;
-    float: none;
-    width: auto;
-    margin-top: 0;
-    background-color: #ffffff;
-    border: 0;
-    box-shadow: none;
-    z-index: 1000;
-  }
-  .navbar-header {
-    padding-left: 20px;
-  }
-}
-.tab-content {
-  padding: 30px;
-  background: #eeeeee;
-}
-.nav-tabs > li.active > a,
-.nav-tabs > li.active > a:hover,
-.nav-tabs > li.active > a:focus {
-  color: #000;
-  cursor: default;
-  background-color: #eeeeee;
-  border: 1px solid #ddd;
-  border-bottom-color: transparent;
-  text-decoration: none;
-}
-.tamuFooter {
-  background: #500000;
-  border-radius: 0px;
-  padding: 20px;
-  min-height: 50px;
-  z-index: 2;
-}
-.tamuFooter nav li {
-  display: inline-block;
-  margin-left: 1.125em;
-}
-.tamuFooter nav li a {
-  color: #fff;
-  font-size: 0.85em;
-  text-decoration: none;
-  border-bottom: 0px dotted #2b5d7d;
-}
-.tamuFooter nav li a:hover {
-  color: #ffc222;
-  border-bottom: 1px dotted #ffc222;
-  text-decoration: none;
-}
-
-
-
-.footer-container nav{
-  text-align: center;
-    margin: 0 auto;
-}
-
-  .langNav {
-    margin-top: 20px;
-    background: #500000;
-    color: #ffffff;
-  }
-
-  @media (min-width: 1400px) {
-    footer {
-        max-width: 100%;
-    }
-}
-@media (min-width: 1200px) {
-   footer {
-    max-width: 100%;
-    }
-}
-@media (min-width: 992px) {
-    footer {
-      max-width: 100%;
-    }
-}
-@media (min-width: 768px) {
-    footer {
-      max-width: 100%;
-    }
-}
-
-footer {
-  padding:0;
-}
-
-
-@media (min-width: 768px) {
-  .navbar-form {
-    width: 100%;
-  }
-  .navbar-form .form-control {
-    display: inline-block;
-    width: 100%;
-    vertical-align: middle;
-  }
-  .languageDrp a {
-    color: #ffffff;
-    border-bottom: none;
-    text-decoration: none;
-  }
-  .appTitle h2 {
-    color: #ffffff;
-    font-size: 36px;
-  }
-}
-.form-control {
-  margin: 10px 0;
-}
-@media (min-width: 768px) {
-  .tab-content .form-control {
-      min-width: 400px;
-      max-width: 530px;
-  }
-}
-
-.pagination {
-  margin: 80px 0;
-}
-.search-hero .search-home-facets {
-  margin-top: 60px;
-  background-color: #ffffff;
-  padding: 20px;
-  border: 0px;
-}
-#content {
-  min-height: calc(100vh - 70px);
-  padding-bottom: 90px;
-}
-.active-filters .filters .filter-value {
-  padding: 2px 8px;
-  margin: 5px 10px;
-  font-weight: normal;
-  color: #000000;
-  background: transparent;
-  white-space: nowrap;
-  display: inline-block;
-  border-left: 5px solid #500000;
-  border-bottom: 1px dotted #000000;
-}
-.search-filter-remove {
-  margin: 4px 1px 4px 4px;
-  font-weight: normal;
-  color: #555555;
-  border-bottom: none;
-}
-.badge {
-  display: inline-block;
-  min-width: 10px;
-  padding: 3px 7px;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 1;
-  color: #4A4A4A;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  background-color: #cff1ff;
-  border-radius: 10px;
-}
+    <div class="container-fluid titleBar">
+    <div class="container">
+  <div class=" col-12 appTitle clearfix"><h2><a href="<?=$this->url('home')?>"><?=$this->config()->get('config')->Site->title?></a></h2></div>
+  </div> 
+                </div>
+                </div>
+</div> 
+<?php if ($this->layout()->searchbox !== false): ?>
+  <div class="search container navbar">
+    <div class="nav searchbox hidden-print" role="search">
+      <?=$this->layout()->searchbox ?>
+    </div>
+  </div>
+<?php endif; ?>
