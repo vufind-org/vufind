@@ -105,6 +105,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $params->set('operation', 'searchRetrieve');
         $params->set('recordSchema', 'marcxml');
 
+        // TEMP -- blender wants to start at zero
+        if ($offset == 0) {
+            $offset = 1;
+        }
+
         $options = $params->getArrayCopy();
         $options['startRecord'] = $offset;
         if (null !== $limit) {
