@@ -509,3 +509,5 @@ footer {
   box-shadow: none;
   opacity: .9;
 }
+
+.fa-map-marker:before{content:"\f041"}
