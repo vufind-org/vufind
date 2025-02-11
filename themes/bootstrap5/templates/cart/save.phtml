@@ -3,8 +3,8 @@
     $this->headTitle($this->translate('bulk_save_cart'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ') .
-        '<li class="active">' . $this->transEsc('bulk_save_cart') . '</li>';
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ') .
+        '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('bulk_save_cart') . '</li>';
 ?>
 <h2><?=$this->transEsc('bulk_save_cart')?></h2>
 
@@ -19,7 +19,7 @@
         <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
         </button>
-        <div id="itemhide" class="collapse in">
+        <div id="itemhide" class="collapse show">
           <ul>
             <?php foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
@@ -33,7 +33,7 @@
 
     <div class="form-group">
       <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
-      <select id="save_list" name="list" class="form-control">
+      <select id="save_list" name="list" class="form-control form-select">
         <?php if (count($this->lists) > 0): ?>
           <?php foreach ($this->lists as $list): ?>
             <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
@@ -63,7 +63,7 @@
 <?php
   $script = <<<JS
       $('button.btn.hidden').removeClass('hidden');
-      $('#itemhide').removeClass('in');
+      $('#itemhide').removeClass('show');
       JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

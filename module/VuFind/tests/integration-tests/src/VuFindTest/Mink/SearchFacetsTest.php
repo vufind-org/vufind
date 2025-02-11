@@ -318,11 +318,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Flip to German:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Flip back to English:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
     }
 
@@ -1461,32 +1461,37 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public static function multiSelectOnAdvancedSearchProvider(): array
     {
         return [
-            'with language switch' => [true],
-            'without language switch' => [false],
+            'with language switch / with checkbox' => [true, true],
+            'without language switch / with checkbox' => [false, true],
+            'with language switch / without checkbox' => [true, false],
+            'without language switch / without checkbox' => [false, false],
         ];
     }
 
     /**
      * Test applying multi-facet selection to advanced search results, with or without changing the
-     * language setting first.
+     * language setting first and/or including a pre-existing checkbox filter.
      *
-     * @param bool $changeLanguage Should we change the language before applying the facets?
+     * @param bool $changeLanguage  Should we change the language before applying the facets?
+     * @param bool $includeCheckbox Should we apply a checkbox prior to multi-selection?
      *
      * @dataProvider multiSelectOnAdvancedSearchProvider
      *
      * @return void
      */
-    public function testMultiSelectOnAdvancedSearch(bool $changeLanguage): void
+    public function testMultiSelectOnAdvancedSearch(bool $changeLanguage, bool $includeCheckbox): void
     {
-        $this->changeConfigs(
-            [
-                'facets' => [
-                    'Results_Settings' => [
-                        'multiFacetsSelection' => true,
-                    ],
-                ],
-            ]
-        );
+        $facets = [
+            'Results_Settings' => [
+                'multiFacetsSelection' => true,
+            ],
+        ];
+        if ($includeCheckbox) {
+            // Create a pointless checkbox filter that will not impact the result set size
+            // (we're just testing that it applies to the URL correctly):
+            $facets['CheckboxFacets']['title:*'] = 'Has Title';
+        }
+        $this->changeConfigs(compact('facets'));
         $path = '/Search/Advanced';
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
@@ -1496,11 +1501,17 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#search_lookfor0_1', 'history');
         $this->findCss($page, '[type=submit]')->press();
 
+        if ($includeCheckbox) {
+            $link = $this->findAndAssertLink($page, 'Has Title');
+            $link->click();
+            $this->waitForPageLoad($page);
+        }
+
         if ($changeLanguage) {
             $this->flipflopLanguage($page);
         }
 
-        // Activate the first two facet values:
+        // Activate the first two facet values (and the checkbox filter, if requested):
         $this->clickCss($page, '.js-user-selection-multi-filters');
         $this->clickCss($page, '.facet__list__item a');
         $this->clickCss($page, '.facet__list__item a', index: 1);
@@ -1513,7 +1524,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '.adv_search_terms strong')
         );
 
-        $this->assertCount(2, $page->findAll('css', '.facet.active'));
+        // Make sure we have the expected number of filters applied on screen and in the URL query:
+        $appliedFacetCount = $includeCheckbox ? 3 : 2;
+        $this->assertCount($appliedFacetCount, $page->findAll('css', '.facet.active'));
+        $query = parse_url($session->getCurrentUrl(), PHP_URL_QUERY);
+        parse_str($query, $queryArray);
+        $this->assertCount($appliedFacetCount, $queryArray['filter']);
 
         // If configured, flip-flop language again to potentially modify filter params:
         if ($changeLanguage) {
@@ -1522,10 +1538,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Let's also confirm that we can now remove the filters:
         $this->clickCss($page, '.js-user-selection-multi-filters');
-        $this->clickCss($page, '.facet.active');
-        $this->clickCss($page, '.facet.active');
+        for ($i = 0; $i < $appliedFacetCount; $i++) {
+            $this->clickCss($page, '.facet.active');
+        }
         $this->clickCss($page, '.js-apply-multi-facets-selection');
-
         $this->assertCount(0, $page->findAll('css', '.facet.active'));
     }
 }

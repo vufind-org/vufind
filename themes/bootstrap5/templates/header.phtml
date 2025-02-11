@@ -1,7 +1,7 @@
 <?php $account = $this->auth()->getManager(); ?>
-<div class="banner container navbar">
+<div class="banner container navbar navbar-expand-md">
   <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
-  <button type="button" class="navbar-toggle" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
+  <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
     <?=$this->icon('ui-menu') ?>
   </button>
   <?php if (!isset($this->layout()->renderingError)): ?>
@@ -10,7 +10,7 @@
         <ul class="nav navbar-nav navbar-right flip">
           <?php if ($this->feedback()->tabEnabled()): ?>
             <li>
-              <a class="icon-link" id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>">
+              <a class="nav-link icon-link" id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>">
                 <?=$this->icon('feedback', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc('Feedback')?></span>
               </a>
@@ -19,7 +19,7 @@
           <?php $cart = $this->cart(); ?>
           <?php if ($cart->isActive()): ?>
             <li id="cartSummary" aria-live="polite" aria-atomic="true">
-              <a id="cartItems" class="icon-link" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+              <a id="cartItems" class="nav-link icon-link" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
                 <?=$this->icon('cart', 'icon-link__icon') ?>
                 <span class="icon-link__label">
                   <span class="sr-only"><?=$this->transEsc('Book Bag')?>:</span>
@@ -32,21 +32,21 @@
           <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
             <?php if ($account->getIdentity()): ?>
               <li class="logoutOptions<?php if ($account->dropdownEnabled()): ?> with-dropdown<?php endif ?>">
-                <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" class="icon-link">
+                <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" class="nav-link icon-link">
                   <span id="account-icon" class="icon-link__icon" role="link"><?=$this->icon('my-account') ?></span>
                   <span class="icon-link__label"><?=$this->transEsc('Your Account')?></span>
                 </a>
               </li>
               <?php if ($account->dropdownEnabled()): ?>
                 <li id="login-dropdown" class="dropdown hidden-xs">
-                  <a href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
+                  <a class="nav-link" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
                   <div class="dropdown-menu">
                     <?=$this->accountMenu()->render('', 'header_')?>
                   </div>
                 </li>
               <?php endif; ?>
               <li class="logoutOptions">
-                <a href="<?=$this->url('myresearch-logout')?>" class="logout icon-link">
+                <a href="<?=$this->url('myresearch-logout')?>" class="nav-link logout icon-link">
                   <?=$this->icon('sign-out', 'icon-link__icon') ?>
                   <span class="icon-link__label"><?=$this->transEsc('Log Out')?></span>
                 </a>
@@ -54,12 +54,12 @@
             <?php else: ?>
               <li id="loginOptions">
                 <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-                  <a href="<?=$this->url('myresearch-userlogin')?>" class="icon-link">
+                  <a href="<?=$this->url('myresearch-userlogin')?>" class="nav-link icon-link">
                     <?=$this->icon('sign-in', 'icon-link__icon') ?>
                     <span class="icon-link__label"><?=$this->transEsc('Institutional Login')?></span>
                   </a>
                 <?php else: ?>
-                  <a href="<?=$this->url('myresearch-userlogin')?>" class="icon-link" data-lightbox>
+                  <a href="<?=$this->url('myresearch-userlogin')?>" class="nav-link icon-link" data-lightbox>
                     <?=$this->icon('sign-in', 'icon-link__icon') ?>
                     <span class="icon-link__label"><?=$this->transEsc('Login')?></span>
                   </a>

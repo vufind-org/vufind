@@ -134,6 +134,8 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function getDriverName($type)
     {
         switch (strtolower($type)) {
+            // mariadb and mysql are equivalent for now:
+            case 'mariadb':
             case 'mysql':
                 return 'mysqli';
             case 'oci8':
