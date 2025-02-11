@@ -36,7 +36,7 @@ $thumbnail-width-large:  160px !default;
     .loading-spinner {
       padding: 2rem;
       background-color: rgba(0,0,0,0.6);
-      border-radius: $border-radius-large;
+      border-radius: $border-radius-lg;
       color: $gray-lighter;
     }
   }
@@ -377,8 +377,8 @@ header .container.navbar { margin-bottom: 0; }
     @extend .list-group-item;
     margin-top: -11px;
     padding-left: .5rem;
-    border-top-left-radius: $border-radius-base;
-    border-top-right-radius: $border-radius-base;
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
     &::before {
       content: '\25BC';
       position: absolute;
@@ -397,8 +397,8 @@ header .container.navbar { margin-bottom: 0; }
     padding: .5rem;
     border: 1px solid $list-group-border;
     background-color: #fff;
-    border-bottom-left-radius: $border-radius-base;
-    border-bottom-right-radius: $border-radius-base;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
   }
   .long-view .tab-content { padding: 0; }
   .list-tabs { margin-bottom: 0; }

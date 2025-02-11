@@ -4,11 +4,6 @@
 @use 'sass:math';
 
 // *** Variables ***
-$border-radius-base:   $border-radius !default;
-$border-radius-large:  $border-radius-lg !default;
-
-$breadcrumb-separator: $breadcrumb-divider !default;
-
 $btn-border-radius-base: $btn-border-radius;
 $btn-default-color:      #333 !default;
 $btn-default-bg:         #fff !default;

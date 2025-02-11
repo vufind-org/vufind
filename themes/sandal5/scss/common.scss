@@ -1,6 +1,6 @@
 /* ------ Border radius changes ------ */
 $list-group-border-radius: 0;
-$border-radius-large: 0; // modal
+$border-radius-lg: 0; // modal
 
 /* ------ Common element changes ------ */
 .help-block {
@@ -112,4 +112,4 @@ $pagination-hover-border: transparent;
     color: $primary;
   }
 }
-.pagination > .active > a { border-radius: $border-radius-base; }
+.pagination > .active > a { border-radius: $border-radius; }

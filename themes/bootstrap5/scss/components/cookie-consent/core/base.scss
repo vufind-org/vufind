@@ -6,7 +6,7 @@
 
 :root{
     --cc-font-family: #{$font-family-base};
-    --cc-modal-border-radius: #{$border-radius-base};
+    --cc-modal-border-radius: #{$border-radius};
     --cc-btn-border-radius: #{$btn-border-radius-base};
     --cc-modal-transition-duration: .25s;
     --cc-link-color: #{$link-color};
