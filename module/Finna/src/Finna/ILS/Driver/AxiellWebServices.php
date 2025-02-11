@@ -1120,11 +1120,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param array  $organisationHoldings Organisation holdings
      * @param string $id                   The record id to retrieve the holdings
-     * @param array  $journalInfo          Jornal information
+     * @param ?array $journalInfo          Jornal information
      *
      * @return array
      */
-    protected function parseHoldings($organisationHoldings, $id, $journalInfo = null)
+    protected function parseHoldings(array $organisationHoldings, string $id, ?array $journalInfo = null)
     {
         if ($organisationHoldings[0]->status == 'noHolding') {
             return [];

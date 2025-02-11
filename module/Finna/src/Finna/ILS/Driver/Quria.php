@@ -318,7 +318,12 @@ class Quria extends AxiellWebServices
                 }
             }
         } else {
-            $result = $this->parseHoldings($holdings, $id);
+            $result = $this->parseHoldings(
+                $holdings,
+                $id,
+                null,
+                (string)($response->$functionResult->catalogueRecordDetail->reservable ?? '')
+            );
         }
 
         if (!empty($result)) {
@@ -333,14 +338,19 @@ class Quria extends AxiellWebServices
     /**
      * This is responsible for iterating the organisation holdings
      *
-     * @param array  $organisationHoldings Organisation holdings
-     * @param string $id                   The record id to retrieve the holdings
-     * @param array  $journalInfo          Jornal information
+     * @param array   $organisationHoldings Organisation holdings
+     * @param string  $id                   The record id to retrieve the holdings
+     * @param ?array  $journalInfo          Jornal information
+     * @param ?string $reservable           Is the record reservable
      *
      * @return array
      */
-    protected function parseHoldings($organisationHoldings, $id, $journalInfo = null)
-    {
+    protected function parseHoldings(
+        array $organisationHoldings,
+        string $id,
+        ?array $journalInfo = null,
+        ?string $reservable = null
+    ) {
         $result = [];
         foreach ($organisationHoldings as $organisation) {
             $holdingsBranch = $journalInfo === null
@@ -354,7 +364,7 @@ class Quria extends AxiellWebServices
                     $holdable = $journalInfo['holdable'];
                 } else {
                     $reservableId = $branch->reservable ?? '';
-                    $holdable = ($branch->reservationButtonStatus ?? '') == 'reservationOk';
+                    $holdable = $reservable === 'yes';
                 }
                 $departments = $this->objectToArray($branch->holdings->holding ?? []);
                 $organisationId = $branch->id ?? '';
