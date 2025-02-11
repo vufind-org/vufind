@@ -171,7 +171,9 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             $this->saveSearchToHistory($results);
         }
 
-        $requestParams->getController()->resultScroller()->init($results);
+        if ($results->getOptions()->resultScrollerActive()) {
+            $requestParams->getController()->resultScroller()->init($results);
+        }
 
         // Always save search parameters, since these are namespaced by search
         // class ID.
