@@ -1,4 +1,4 @@
-/*global VuFind, multiFacetsSelectionEnabled */
+/*global VuFind, multiFacetsSelectionEnabled, unwrapJQuery */
 
 /**
  * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
@@ -543,7 +543,7 @@ VuFind.register('sideFacets', function SideFacets() {
             VuFind.multiFacetsSelection.initRangeSelection(sidebar);
           }
         }
-        VuFind.emit('VuFind.sidefacets.loaded');
+        VuFind.emit('VuFind.sidefacets.loaded', {container: unwrapJQuery($container)});
       })
       .fail(function onGetSideFacetsFail() {
         $container.find('.facet-load-indicator').remove();

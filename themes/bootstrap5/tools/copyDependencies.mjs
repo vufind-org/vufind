@@ -32,6 +32,10 @@ await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
 // jQuery
 await copyFile('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js');
 
+// nouislider
+await copyFile('node_modules/nouislider/dist/nouislider.min.js', 'js/vendor/nouislider.min.js');
+await copyFile('node_modules/nouislider/dist/nouislider.min.css', 'css/vendor/nouislider.min.css');
+
 // simple-keyboard
 await copyFile('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js');
 await copyFile('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css');
