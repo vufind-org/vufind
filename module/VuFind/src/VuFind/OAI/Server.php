@@ -225,8 +225,9 @@ class Server
         protected \VuFind\Search\Results\PluginManager $resultsManager,
         protected \VuFind\Record\Loader $recordLoader,
         protected ChangeTrackerServiceInterface $trackerService,
-        protected OaiResumptionServiceInterface $resumptionService
+        OaiResumptionServiceInterface $resumptionService
     ) {
+        $this->setResumptionService($resumptionService);
     }
 
     /**
@@ -1070,7 +1071,7 @@ class Server
         // parameters or fail if it is invalid.
         if (!empty($this->params['resumptionToken'])) {
             $params = $this->loadResumptionToken($this->params['resumptionToken']);
-            if ($params === false) {
+            if (null === $params) {
                 throw new \Exception(
                     'badResumptionToken:Invalid or expired resumption token'
                 );

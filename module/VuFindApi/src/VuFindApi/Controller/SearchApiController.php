@@ -58,13 +58,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
 
     /**
-     * Default sort used when no sort defined
-     *
-     * @var string
-     */
-    protected const DEFAULT_SORT = 'relevance';
-
-    /**
      * Record formatter
      *
      * @var RecordFormatter
@@ -135,11 +128,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     protected $maxLimit = 100;
 
     /**
-     * Max limit of cursor search results in API response (default 1000)
+     * Default max limit for cursor based search. Even if cursor search is cheaper in terms of processing in Solr,
+     * PHP memory still has limitations so set the default to be a decent amount.
+     * Value is adjustable in searches.ini [API] cursorMaxLimit
      *
      * @var int
      */
-    protected $cursorMaxLimit = 1000;
+    protected $cursorMaxLimit = 200;
 
     /**
      * Facet configuration
@@ -176,12 +171,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $this->defaultRecordFields[] = $fieldName;
             }
         }
-        $this->facetConfig = $this->getConfig('facets');
-        $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];
         // Load configurations from the search options class:
-        $settings = $sm->get(\VuFind\Search\Options\PluginManager::class)
-            ->get($this->searchClassId)->getAPISettings();
-
+        $options = $sm->get(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
+        $settings = $options->getAPISettings();
+        $this->facetConfig = $this->getConfig($options->getFacetsIni());
+        $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];
         // Apply all supported configurations:
         $configKeys = [
             'recordAccessPermission', 'searchAccessPermission', 'maxLimit', 'cursorMaxLimit',
@@ -344,7 +338,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $response = $this->doDefaultSearch($request);
             }
         } catch (Exception $e) {
-            return $this->output([], self::STATUS_ERROR, 400, $e->getMessage());
+            $message = $e instanceof ApiException ? $e->getMessage() : 'Error occurred.';
+            return $this->output([], self::STATUS_ERROR, 400, $message);
         }
         return $this->output($response, self::STATUS_OK);
     }
@@ -362,13 +357,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     protected function doDefaultSearch(array $request): array
     {
         if (
-            isset($request['limit']) && (!ctype_digit($request['limit'])
+            isset($request['limit'])
+            && (!ctype_digit($request['limit'])
             || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
         ) {
-            throw new Exception('Invalid limit', 400);
+            throw new ApiException(ApiException::INVALID_LIMIT, 400);
         }
         $limit = $request['limit'] ??= 20;
-        $request['sort'] ??= self::DEFAULT_SORT;
         $facets = $request['facet'] ??= [];
         $recordFields = $this->getFieldList($request);
         $hierarchicalFacets = $this->hierarchicalFacets;
@@ -398,7 +393,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         // warning to the user; otherwise, we should proceed with normal post-search
         // processing.
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
-            throw new Exception('Invalid search', 400);
+            throw new ApiException(ApiException::INVALID_SEARCH, 400);
         }
         $response = ['resultCount' => $results->getResultTotal()];
 
@@ -439,13 +434,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         if ('true' !== $request['resumptionToken']) {
             // Try to load a resumption token for this request
             $resumptionTokenParams = $this->loadResumptionToken($request['resumptionToken']);
-            if (false === $resumptionTokenParams) {
-                throw new \Exception('badResumptiontoken:Invalid or expired');
+            if (null === $resumptionTokenParams) {
+                throw new ApiException(ApiException::INVALID_OR_EXPIRED_TOKEN, 400);
             }
             $request = array_merge($request, $resumptionTokenParams);
         }
         $limit = $this->cursorMaxLimit;
-        $request['sort'] ??= self::DEFAULT_SORT;
         $cursor = $request['cursor'];
         $cursorMark = $request['cursorMark'] ?? '';
         $recordFields = $this->getFieldList($request);
@@ -471,7 +465,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         // warning to the user; otherwise, we should proceed with normal post-search
         // processing.
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
-            throw new Exception('Invalid search', 400);
+            throw new ApiException(ApiException::INVALID_SEARCH, 400);
         }
         $response = ['resultCount' => $results->getResultTotal()];
 

@@ -68,17 +68,19 @@ trait ResumptionTokenTrait
      * @param array  $params     Params to be saved for the resumption token
      * @param int    $cursor     Cursor to be saved for the resumption token
      * @param string $cursorMark Cursor mark to be saved for the resumption token
+     * @param int    $lifetime   [Optional] How many seconds until token is expired. Default is 86400.
      *
      * @return OaiResumptionEntityInterface
      */
     public function createResumptionToken(
         array $params,
         int $cursor,
-        string $cursorMark
+        string $cursorMark,
+        int $lifetime = 86400
     ): OaiResumptionEntityInterface {
         $params['cursor'] = $cursor;
         $params['cursorMark'] = $cursorMark;
-        $expire = time() + 24 * 60 * 60;
+        $expire = time() + $lifetime;
         return $this->resumptionService->createAndPersistToken($params, $expire);
     }
 
@@ -87,9 +89,9 @@ trait ResumptionTokenTrait
      *
      * @param string $token The resumption token to look up
      *
-     * @return array|false Parameters associated with token or false if invalid or expired
+     * @return ?array Parameters associated with token or null if invalid or expired
      */
-    protected function loadResumptionToken(string $token): array|false
+    protected function loadResumptionToken(string $token): ?array
     {
         // Clean up expired records before doing our search:
         $this->resumptionService->removeExpired();
@@ -101,6 +103,6 @@ trait ResumptionTokenTrait
         }
 
         // If we got this far, the token is invalid or expired:
-        return false;
+        return null;
     }
 }
