@@ -122,6 +122,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
     /**
      * Max limit of search results in API response (default 100);
+     * Applies to searches not using resumptionToken.
      *
      * @var int
      */
@@ -129,7 +130,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
     /**
      * Default max limit for cursor based search. Even if cursor search is cheaper in terms of processing in Solr,
-     * PHP memory still has limitations so set the default to be a decent amount.
+     * PHP memory still has limitations so set the default to be a decent amount. (Default 200).
      * Value is adjustable in searches.ini [API] cursorMaxLimit
      *
      * @var int
@@ -336,8 +337,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 ? $this->doCursorSearch($request)
                 : $this->doDefaultSearch($request);
         } catch (Exception $e) {
-            $message = $e instanceof ApiException ? $e->getMessage() : 'Error occurred.';
-            return $this->output([], self::STATUS_ERROR, 400, $message);
+            // Filter output from exceptions and only allow messages from
+            // ApiExceptions to be sent to user.
+            $isSafeError = $e instanceof ApiException;
+            $message = $isSafeError ? $e->getMessage() : 'Error occurred.';
+            $errorCode = $isSafeError ? $e->getCode() : 500;
+            return $this->output([], self::STATUS_ERROR, $errorCode, $message);
         }
         return $this->output($response, self::STATUS_OK);
     }
@@ -383,6 +388,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                         $params->addFacet($facet);
                     }
                 }
+                // Set limit to 0 if no record fields were requested to
+                // prevent unnecessary loading.
                 $params->setLimit($recordFields ? $limit : 0);
             }
         );
@@ -441,6 +448,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         $cursor = $request['cursor'];
         $cursorMark = $request['cursorMark'] ?? '';
         $recordFields = $this->getFieldList($request);
+        // Throw an error here, as there is no reason to search for anything, if no record fields were defined
+        if (!$recordFields) {
+            throw new ApiException(ApiException::INVALID_RECORD_FIELDS, 400);
+        }
         $results = $this->getService(\VuFind\Search\SearchRunner::class)->run(
             $request,
             $this->searchClassId,

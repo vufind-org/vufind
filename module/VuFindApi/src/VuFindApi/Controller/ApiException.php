@@ -62,4 +62,11 @@ class ApiException extends Exception
      * @var string
      */
     public const INVALID_OR_EXPIRED_TOKEN = 'Invalid or expired token';
+
+    /**
+     * Error if invalid or no record fields were defined
+     *
+     * @var string
+     */
+    public const INVALID_RECORD_FIELDS = 'Invalid record fields defined';
 }
