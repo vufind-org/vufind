@@ -332,11 +332,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
         $isCursorSearch = ($request['resumptionToken'] ?? false);
         try {
-            if ($isCursorSearch) {
-                $response = $this->doCursorSearch($request);
-            } else {
-                $response = $this->doDefaultSearch($request);
-            }
+            $response = $isCursorSearch
+                ? $this->doCursorSearch($request)
+                : $this->doDefaultSearch($request);
         } catch (Exception $e) {
             $message = $e instanceof ApiException ? $e->getMessage() : 'Error occurred.';
             return $this->output([], self::STATUS_ERROR, 400, $message);
