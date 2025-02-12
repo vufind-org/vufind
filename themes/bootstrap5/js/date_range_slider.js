@@ -15,10 +15,22 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
     ]
   };
 
+  /**
+   * Parse the value of an input to an integer
+   * @param {Element} input Input element
+   * @returns {number} Value of input as integer
+   */
   function _parseInput(input) {
     return parseInt(input.value, 10);
   }
 
+  /**
+   * Create a slider
+   * @param {Element} sliderElement Slider base element
+   * @param {object} extraOptions Additional options for the slider. Range and starting values have to be included.
+   * @param {?array} inputs Optional array that contains two input elements that should be connected to the slider.
+   * @returns {object} Slider object
+   */
   function create(sliderElement, extraOptions, inputs = null) {
     let options = Object.assign({}, _defaultOptions, extraOptions);
     let slider = noUiSlider.create(sliderElement, options);
@@ -38,6 +50,9 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
       }
     });
 
+    /**
+     * Set the slider handles to the values of the input.
+     */
     function setRangeToInput() {
       let selectionMin = _parseInput(inputMin);
       let selectionMax = _parseInput(inputMax);
@@ -52,6 +67,9 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
     inputMin.addEventListener('input', setRangeToInput);
     inputMax.addEventListener('input', setRangeToInput);
 
+    /**
+     * Switches the values of the inputs if they are out of order
+     */
     function sortInput() {
       let selectionMin = _parseInput(inputMin);
       let selectionMax = _parseInput(inputMax);
@@ -67,6 +85,10 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
     return slider;
   }
 
+  /**
+   * Initializes the sliders in the provided container
+   * @param {object} params Params (has to include a container element)
+   */
   function updateContainer(params) {
     let container = params.container;
     container.querySelectorAll('.range-slider').forEach((sliderElement) => {
@@ -84,6 +106,9 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
     });
   }
 
+  /**
+   * Init date range sliders
+   */
   function init() {
     updateContainer({container: document});
     VuFind.listen('VuFind.sidefacets.loaded', updateContainer);
