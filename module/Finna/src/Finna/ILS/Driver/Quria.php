@@ -1923,7 +1923,7 @@ class Quria extends AxiellWebServices
 
         foreach ($loans as $loan) {
             $id = $loan->id;
-            $isRenewed = (string)($loan->loanStatus->isRenewable ?? '') === 'yes';
+            $isRenewed = (string)($loan->loanStatus->status ?? '') === 'isRenewedToday';
             $results['details'][$id] = [
                 'success' => $isRenewed,
                 'status' => $isRenewed ? 'Loan renewed' : 'Renewal failed',
