@@ -19,8 +19,14 @@
     <?php if (!empty($icon)): ?><?=$this->icon($icon, 'finna-toggletip__icon')?><?php endif; ?>
     <?= $label ?? '' ?>
   </button>
-  <span role="status" class="tooltip bs-tooltip-auto finna-toggletip__bubble js-status">
-    <span class="tooltip-arrow finna-toggletip__arrow" data-popper-arrow></span>
-    <span class="tooltip-inner finna-toggletip__bubble--inner js-status-inner"></span>
+  <?php
+    // Note: role="status" needs to be on the outer element that is never hidden for screen readers to note the change
+    // in its contents.
+  ?>
+  <span role="status">
+    <span class="tooltip bs-tooltip-auto finna-toggletip__bubble js-status">
+      <span class="tooltip-arrow finna-toggletip__arrow" data-popper-arrow></span>
+      <span class="tooltip-inner finna-toggletip__bubble--inner js-status-inner"></span>
+    </span>
   </span>
 </span>
