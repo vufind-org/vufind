@@ -31,31 +31,12 @@
       </div>
     </div>
     <?php if ($isDateRange): ?>
-      <?php
-        $this->headScript()->appendFile('vendor/nouislider.min.js');
-        $this->headLink()->appendStylesheet('vendor/nouislider.min.css');
-        $this->headScript()->appendFile('date_range_slider.js');
-        $min = !empty($cleanValues[0]) ? min($cleanValues[0], 1400) : 1400;
-        $future = date('Y', time() + 31536000); // next year
-        $max = !empty($cleanValues[1]) ? max($future, $cleanValues[1]) : $future;
-        $low = !empty($cleanValues[0]) ? $cleanValues[0] : $min;
-        $high = !empty($cleanValues[1]) ? $cleanValues[1] : $max;
-        $sliderOptions = [
-          'range' => [
-            'min' => (int)$min,
-            'max' => (int)$max,
-          ],
-          'start' => [(int)$low, (int)$high],
-        ];
-        $sliderAttrs = [
-          'id' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',
-          'class' => 'range-slider',
-          'data-options' => json_encode($sliderOptions),
-          'data-input-min-id' => $safeBaseId . 'from',
-          'data-input-max-id' => $safeBaseId . 'to',
-        ];
-      ?>
-      <div class="slider-container" aria-hidden="true"><div <?=$this->htmlAttributes($sliderAttrs)?>></div></div>
+      <?=$this->render('Helpers/date-range-slider.phtml', [
+        'values' => $cleanValues,
+        'sliderId' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',
+        'inputMinId' => $safeBaseId . 'from',
+        'inputMaxId' => $safeBaseId . 'to',
+      ])?>
     <?php endif; ?>
     <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>">
   </form>

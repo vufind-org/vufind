@@ -20,35 +20,12 @@
         </div>
       </div>
       <?php if ($isDateRange): ?>
-        <?php
-          $this->headScript()->appendFile('vendor/nouislider.min.js');
-          $this->headLink()->appendStylesheet('vendor/nouislider.min.css');
-          $this->headScript()->appendFile('date_range_slider.js');
-          $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
-          $future = date('Y', time() + 31536000);
-          $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
-          $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
-          $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
-          $min = intval($min);
-          $max = intval($max);
-          $low = intval($low);
-          $high = intval($high);
-          $sliderOptions = [
-            'range' => [
-              'min' => $min,
-              'max' => $max,
-            ],
-            'start' => [$low, $high],
-          ];
-          $sliderAttrs = [
-            'id' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
-            'class' => 'range-slider',
-            'data-options' => json_encode($sliderOptions),
-            'data-input-min-id' => $escField . 'from',
-            'data-input-max-id' => $escField . 'to',
-          ];
-        ?>
-        <div class="slider-container" aria-hidden="true"><div <?=$this->htmlAttributes($sliderAttrs)?>></div></div>
+        <?=$this->render('Helpers/date-range-slider.phtml', [
+          'values' => $current['values'] ?? [],
+          'sliderId' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
+          'inputMinId' => $escField . 'from',
+          'inputMaxId' => $escField . 'to',
+        ])?>
       <?php endif; ?>
     </fieldset>
   <?php endforeach; ?>
