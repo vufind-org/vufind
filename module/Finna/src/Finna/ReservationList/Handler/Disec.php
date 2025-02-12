@@ -105,7 +105,7 @@ class Disec extends AbstractBase
             'resourceIds' => $resources,
             'contentInfo' => $formValues['message'] . PHP_EOL,
         ];
-        $data['contentInfo'] .= $formValues['pickup_date'] . PHP_EOL;
+        $data['contentInfo'] .= 'Delivery date: ' . $formValues['pickup_date'] . PHP_EOL;
         if ($catId = $user->getCatId()) {
             [, $id] = explode('.', $catId);
             if ($this->useCatId) {
@@ -129,7 +129,7 @@ class Disec extends AbstractBase
                 'success' => true,
                 'external_id' => $body['id'],
                 'pickup_date' => $formValues['pickup_date'],
-                'connection' => strtolower(__CLASS__),
+                'connection' => 'disec',
             ];
         }
         $this->debug(__CLASS__ . ': Failed to place order: ' . $response->getBody());
@@ -137,7 +137,7 @@ class Disec extends AbstractBase
             'success' => false,
             'external_id' => null,
             'pickup_date' => null,
-            'connection' => strtolower(__CLASS__),
+            'connection' => 'disec',
         ];
     }
 

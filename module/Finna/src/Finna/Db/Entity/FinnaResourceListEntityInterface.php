@@ -62,9 +62,9 @@ interface FinnaResourceListEntityInterface extends EntityInterface
     /**
      * Get the ID of the list.
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
      * Get user entity

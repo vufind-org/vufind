@@ -77,7 +77,22 @@ interface HandlerInterface
      *
      * @return array
      */
-    public function getValuesForPlaceOrderForm(
+    public function getValuesForListOrder(
+        FinnaResourceListEntityInterface $list,
+        UserEntityInterface $user,
+        array $requestValues
+    ): array;
+
+    /**
+     * Get values required for placing single record order.
+     *
+     * @param FinnaResourceListEntityInterface $list          List being ordered
+     * @param UserEntityInterface              $user          User who owns the list
+     * @param array                            $requestValues Values obtained i.e from post request as array
+     *
+     * @return array
+     */
+    public function getValuesForSingleOrder(
         FinnaResourceListEntityInterface $list,
         UserEntityInterface $user,
         array $requestValues
@@ -91,6 +106,15 @@ interface HandlerInterface
      * @return Form
      */
     public function getPlaceOrderForm(array $prefill = []): Form;
+
+    /**
+     * Get form used for placing singular orders.
+     *
+     * @param array $prefill Prefill form with these values.
+     *
+     * @return Form
+     */
+    public function getSingleOrderForm(array $prefill = []): Form;
 
     /**
      * Initialize connection handler

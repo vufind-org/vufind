@@ -24,7 +24,7 @@ return;
             <?php endif; ?>
           </div>
           <div class="location-link text-right">
-            <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-additemtolist', [], ['query' => ['recordId' => $this->driver->getUniqueID(), 'source' => $this->driver->getSourceIdentifier(), 'institution' => $institution, 'listIdentifier' => $list['Identifier']]]))?>" data-lightbox="" data-bs-target="" data-lightbox><?= $this->icon('save') . ' ' . $this->transEsc(['ReservationList', 'Add To Reservation List'])?></a>
+            <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorderoptions', [], ['query' => ['recordId' => $this->driver->getUniqueID(), 'source' => $this->driver->getSourceIdentifier(), 'institution' => $institution, 'listIdentifier' => $list['Identifier']]]))?>" data-lightbox><?= $this->icon('save') . ' ' . $this->transEsc(['ReservationList', 'Reserve Resource'])?></a>
           </div>
         </div>
       </div>
@@ -37,7 +37,7 @@ return;
         <ul>
           <?php foreach ($listsContainingRecord as $list): ?>
             <li>
-              <a href="<?= $this->url('reservationlist-displaylist', ['id' => $list->getId()]) ?>"><?= $this->escapeHtml($list->getTitle()); ?></a><br>
+              <a href="<?= $this->url('reservationlist-displaylist', ['listId' => $list->getId()]) ?>"><?= $this->escapeHtml($list->getTitle()); ?></a><br>
             </li>
           <?php endforeach; ?>
         </ul>

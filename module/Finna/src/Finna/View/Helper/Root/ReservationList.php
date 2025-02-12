@@ -60,13 +60,13 @@ class ReservationList extends \Laminas\View\Helper\AbstractHelper
      *
      * @param ReservationListService $reservationListService Reservation list service
      * @param ILSAuthenticator       $ilsAuthenticator       Authenticator to ILS
-     * @param array                  $yamlConfig             ReservationList.yaml as an array
+     * @param array                  $reservationListConfig  Reservation list configuration
      * @param array                  $configSection          Reservation list section from config.ini
      */
     public function __construct(
         protected ReservationListService $reservationListService,
         protected ILSAuthenticator $ilsAuthenticator,
-        protected array $yamlConfig = [],
+        protected array $reservationListConfig = [],
         protected array $configSection = []
     ) {
     }
@@ -147,7 +147,7 @@ class ReservationList extends \Laminas\View\Helper\AbstractHelper
             return [];
         }
         $result = [];
-        foreach ($this->yamlConfig['Institutions'] ?? [] as $institution => $settings) {
+        foreach ($this->reservationListConfig['Institutions'] ?? [] as $institution => $settings) {
             $current = [$institution => []];
             foreach ($settings['Lists'] ?? [] as $list) {
                 $list = $this->reservationListService->ensureListKeys($list);

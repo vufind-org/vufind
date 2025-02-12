@@ -84,8 +84,9 @@ class RecordController extends \VuFind\Controller\RecordController
     /**
      * Create archive request form and send to correct recipient.
      *
-     * @return \Laminas\View\Model\ViewModel
-     * @throws \Exception
+     * @return     \Laminas\View\Model\ViewModel
+     * @throws     \Exception
+     * @deprecated Use ReservationList::placeSingleOrderAction
      */
     public function archiveRequestAction()
     {

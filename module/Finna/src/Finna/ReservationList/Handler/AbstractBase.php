@@ -51,13 +51,6 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
     use GetServiceTrait;
 
     /**
-     * Place order action form key
-     *
-     * @var string
-     */
-    public const PLACE_ORDER_FORM = 'PlaceOrder';
-
-    /**
      * Unique identifier to identify forms used for reservation lists.
      *
      * @var string
@@ -65,25 +58,18 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
     public const FORM_ID = 'ReservationListRequest';
 
     /**
-     * Keys to look for in an array to be returned when searching for requested params.
-     *
-     * @var array
-     */
-    public const PLACE_ORDER_REQUEST_KEYS = [
-        'firstName' => '',
-        'lastName' => '',
-        'phone' => '',
-        'email' => '',
-        'pickup_date' => '',
-        'message' => '',
-    ];
-
-    /**
      * Order form configuration defined.
      *
      * @var array
      */
     protected array $orderFormConfig = [];
+
+    /**
+     * Singular item order form configuration
+     *
+     * @var array
+     */
+    protected array $singleOrderFormConfig = [];
 
     /**
      * Constructor
@@ -104,26 +90,60 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
      *
      * @return array
      */
-    public function getValuesForPlaceOrderForm(
+    public function getValuesForListOrder(
+        FinnaResourceListEntityInterface $list,
+        UserEntityInterface $user,
+        array $requestValues
+    ): array {
+        $result = $this->getValuesForSingleOrder($list, $user, $requestValues);
+        $reservationListService = $this->getService(\Finna\ReservationList\ReservationListService::class);
+        $result['record_ids_text'] = '';
+        $result['record_source_and_ids'] = [];
+        foreach ($reservationListService->getResourcesForList($list, $user) as $resource) {
+            $result['record_ids_text'] .= $resource->getRecordId() . '||' . $resource->getTitle() . PHP_EOL;
+            $result['record_source_and_ids'][] = $resource->getSource() . '|' . $resource->getRecordId();
+        }
+        return $result;
+    }
+
+    /**
+     * Get values for placing single order form
+     *
+     * @param FinnaResourceListEntityInterface $list          List being ordered
+     * @param UserEntityInterface              $user          User who owns the list
+     * @param array                            $requestValues Values obtained i.e from post request as array
+     *
+     * @return array
+     */
+    public function getValuesForSingleOrder(
         FinnaResourceListEntityInterface $list,
         UserEntityInterface $user,
         array $requestValues
     ): array {
         $result = [
-            'rl_list_id' => $list->getId(),
-            'rl_institution' => $list->getInstitution(),
-            'rl_list_identifier' => $list->getListConfigIdentifier(),
-            'record_ids_text' => '',
-            'record_source_and_ids' => [],
+            'listId' => $list->getId(),
+            'institution' => $list->getInstitution(),
+            'listIdentifier' => $list->getListConfigIdentifier(),
+            'firstName' => $requestValues['firstName'] ?? $user->getFirstname(),
+            'lastName' => $requestValues['lastName'] ?? $user->getLastname(),
+            'email' => $requestValues['email'] ?? $user->getEmail(),
+            'phone' => $requestValues['phone'] ?? null,
+            'pickup_date' => $requestValues['pickup_date'] ?? null,
+            'message' => $requestValues['message'] ?? null,
         ];
-        $reservationListService = $this->getService(\Finna\ReservationList\ReservationListService::class);
-        foreach ($reservationListService->getResourcesForList($list, $user) as $resource) {
-            $result['record_ids_text'] .= $resource->getRecordId() . '||' . $resource->getTitle() . PHP_EOL;
-            $result['record_source_and_ids'][] = $resource->getSource() . '|' . $resource->getRecordId();
+
+        if (empty($requestValues['recordId'])) {
+            return $result;
         }
-        foreach (array_intersect_key($requestValues, self::PLACE_ORDER_REQUEST_KEYS) as $foundKey => $value) {
-            $result[$foundKey] = $requestValues[$foundKey];
-        }
+
+        $recordLoader = $this->getService(\VuFind\Record\Loader::class);
+        $recordID = $requestValues['recordId'];
+        $source = $requestValues['source'] ?? DEFAULT_SEARCH_BACKEND;
+        $record = $recordLoader->load($recordID, $source);
+        $result['recordId'] = $record->getUniqueID();
+        $result['source'] = $record->getSourceIdentifier();
+        $result['record_ids_text'] = $record->getUniqueID() . '||' . $record->getTitle();
+        $result['record_source_and_ids'] = [$record->getSourceIdentifier() . '|' . $record->getUniqueID()];
         return $result;
     }
 
@@ -136,8 +156,24 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
      */
     public function getPlaceOrderForm(array $prefill = []): Form
     {
-        $form = $this->getService(\Finna\ReservationList\Form\Form::class);
+        $form = $this->getService(Form::class);
         $form->buildFromConfig($this->orderFormConfig, self::FORM_ID, $prefill);
+        $form->setData($prefill);
+        $form->setName(self::FORM_ID);
+        return $form;
+    }
+
+    /**
+     * Build form with configuration obtained from ReservationList.yaml <Action>Forms section.
+     *
+     * @param array $prefill Prefill form with these values.
+     *
+     * @return Form
+     */
+    public function getSingleOrderForm(array $prefill = []): Form
+    {
+        $form = $this->getService(Form::class);
+        $form->buildFromConfig($this->singleOrderFormConfig, self::FORM_ID, $prefill);
         $form->setData($prefill);
         $form->setName(self::FORM_ID);
         return $form;
@@ -182,7 +218,14 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
         if (!$definedForms) {
             throw new Exception('ReservationList: No forms defined.');
         }
-        $this->orderFormConfig = $definedForms[self::PLACE_ORDER_FORM][$orderFormKey];
+        $this->orderFormConfig = $definedForms['PlaceOrder'][$orderFormKey];
+        $this->singleOrderFormConfig = $definedForms['PlaceOrder']['single'];
+        if ($extend = $this->singleOrderFormConfig['extends'] ?? false) {
+            $this->singleOrderFormConfig = array_merge(
+                $definedForms['PlaceOrder'][$extend],
+                $this->singleOrderFormConfig
+            );
+        }
         return $this;
     }
 }

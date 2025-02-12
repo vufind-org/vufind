@@ -1,0 +1,37 @@
+<?php
+  $pageTitle = 'ReservationList::Add To Reservation List';
+  // Set up page title:
+  $this->headTitle($this->translate($pageTitle));
+  $user = $this->auth()->getUserObject();
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('reservationlist-placeorderoptions') . '">' . $this->transEsc('ReservationList::Choose Option For The Record') . '</a></li>'
+    . '<li>' . $this->transEsc($pageTitle) . '</li>';
+  $listTranslations = $this->reservationList()->getListProperties($this->params['institution'], $this->params['listIdentifier'])['translation_keys'];
+?>
+<h2><?= $this->transEsc($pageTitle); ?></h2>
+<div>
+  <div>
+    <label for="list_title"><?=$this->transEsc('ReservationList::Reservation List')?>:</label>
+    <p id="list_title"><?=$this->transEsc($listTranslations['title']);?></p>
+  </div>
+  <?php if (!$this->translationEmpty($listTranslations['description'])): ?>
+    <div>
+      <label for="list_description"><?=$this->transEsc('ReservationList::Description')?>:</label>
+      <p id="list_description"><?=$this->transEsc($listTranslations['description']);?></p>
+    </div>
+  <?php endif; ?>
+  <div>
+    <label for="resource_name"><?=$this->transEsc('ReservationList::Resource')?>:</label>
+    <p id="resource_name"><?=$this->transEsc($this->params['recordId'])?></p>
+  </div>
+  <div>
+    <label for="resource_institution"><?=$this->transEsc('ReservationList::Resource Institution')?>:</label>
+    <p id="resource_institution"><?=$this->transEscWithPrefix('source_', $this->params['institution']);?></p>
+  </div>
+</div>
+<div class="btn-group">
+  <a class="btn btn-primary" href="<?=$this->url('reservationlist-placesingleorder', ['id' => \Finna\ReservationList\Form\Form::RESERVATION_LIST_REQUEST], ['query' => $this->params])?>"><?=$this->transEsc('ReservationList::Reserve only this item')?></a>
+</div>
+<div class="btn-group">
+  <a class="btn btn-primary" href="<?=$this->url('reservationlist-additemtolist', [], ['query' => $this->params])?>"><?=$this->transEsc('ReservationList::Add To Reservation List')?></a>
+</div>

@@ -126,7 +126,7 @@ class Email extends AbstractBase
             'success' => $result,
             'external_id' => null,
             'pickup_date' => $formValues['pickup_date'],
-            'connection' => strtolower(__CLASS__),
+            'connection' => 'email',
         ];
     }
 

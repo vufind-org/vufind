@@ -23,16 +23,16 @@
       <li class="reservations-list-home-li">
         <div class="reservation-list-header">
           <div>
-            <a href="<?= $this->url('reservationlist-displaylist', ['id' => $list->getId()])?>"><?= $this->escapeHtml($list->getTitle()) ?></a>
+            <a href="<?= $this->url('reservationlist-displaylist', ['listId' => $list->getId()])?>"><?= $this->escapeHtml($list->getTitle()) ?></a>
           </div>
           <div class="pull-right">
             <?=
               $this->component(
                   'confirm-button',
                   [
-                    'buttonLink' => $this->url('reservationlist-deletelist', [], ['query' => ['listID' => $list->getId()]]),
+                    'buttonLink' => $this->url('reservationlist-deletelist', ['listId' => $list->getId()]),
                     'buttonLabel' => 'delete_list',
-                    'confirmLink' => $this->url('reservationlist-deletelist', [], ['query' => ['listID' => $list->getId(), 'confirm' => 1]]),
+                    'confirmLink' => $this->url('reservationlist-deletelist', ['listId' => $list->getId()], ['query' => ['confirm' => 1]]),
                     'header' => 'confirm_delete_list_text',
                     'align' => 'right',
                   ]

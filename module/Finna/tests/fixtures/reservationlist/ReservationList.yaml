@@ -15,7 +15,7 @@
 #   Sender:
 #     name: Name to be shown as the sender of the email
 #     email: Email address to be shown as where the email was sent
-#   subject: Subject to be shown in the email
+#   Subject: Subject to be shown in the email
 # disec: Uses Disec api for sending orders
 #   base_url: Api base url
 #   secret:   Api specific secret
@@ -38,8 +38,8 @@ Institutions:
       city: Example Institution city
       email: Example Institution email
     Lists:
-      - Identifier: unique_identifier_for_this_list
-        Enabled: false
+      - Identifier: list_with_email
+        Enabled: true
         Recipient:
           - name: name_of_the_recipient_1
             email: email_of_the_recipient_1
@@ -53,7 +53,61 @@ Institutions:
           Postal: 000001
           City: Test city
         Forms:
-          - PlaceOrder: default
+          PlaceOrder: default
+        LibraryCardSources:
+          - connection_established_to_use_lists
+        Connection:
+          type: email
+          Sender:
+            name: sender_test
+            email: sender_email@email.fi
+          Subject: Reservation List
+      - Identifier: list_with_disec
+        Enabled: true
+        Datasources:
+          - datasource_1
+          - datasource_2
+        Information:
+          Address: teststreet 10
+          Postal: 000001
+          City: Test city
+        Forms:
+          PlaceOrder: default
+        LibraryCardSources:
+          - connection_established_to_use_lists
+        Connection:
+          type: disec
+          base_url: "http://disectest.url.fi/"
+          secret: verysecretphrase
+      - Identifier: list_not_enabled
+        Enabled: false
+        Datasources:
+          - datasource_1
+          - datasource_2
+        Information:
+          Address: teststreet 10
+          Postal: 000001
+          City: Test city
+        Forms:
+          PlaceOrder: default
+        LibraryCardSources:
+          - connection_established_to_use_lists
+        Connection:
+          type: disec
+          base_url: "http://disectest.url.fi/"
+          secret: verysecretphrase
+      - Identifier: list_insufficient_data
+        Enabled: false
+        Recipient:
+          - name: name_of_the_recipient_1
+            email: email_of_the_recipient_1
+          - name: name_of_the_recipient_2
+            email: email_of_the_recipient_2
+        Datasources:
+          - datasource_1
+          - datasource_2
+        Forms:
+          PlaceOrder: default
         LibraryCardSources:
           - connection_established_to_use_lists
         Connection:
@@ -66,7 +120,6 @@ Forms:
   PlaceOrder:
     default:
       allowLocalOverride: false
-      formActionRoute: reservationlist-placeorder
       title: ReservationList::form_title
       enabled: true
       onlyForLoggedUsers: true
@@ -112,3 +165,6 @@ Forms:
           label: ReservationList::Message
           settings:
             - [rows, 3]
+    single:
+      extends: default
+      formActionRoute: reservationlist-placesingleorder

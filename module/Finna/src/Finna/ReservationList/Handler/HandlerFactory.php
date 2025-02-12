@@ -62,6 +62,8 @@ class HandlerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container);
+        $handler = new $requestedName($container);
+        $handler->setLogger($container->get(\VuFind\Log\Logger::class));
+        return $handler;
     }
 }

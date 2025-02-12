@@ -1100,11 +1100,14 @@ $dynamicRoutes = [
     ],
     'MyResearch' => ['sortList' => 'SortList/[:id]'],
     'ReservationList' => [
+        'reservationlist-placeorderoptions' => 'PlaceOrderOptions',
         'reservationlist-displaylists' => 'DisplayLists',
-        'reservationlist-displaylist' => 'DisplayList/[:id]',
+        'reservationlist-displaylist' => 'DisplayList/:listId',
+        // Keep :id optional in placeorder routes for compatibility with form logic
         'reservationlist-placeorder' => 'PlaceOrder/[:id]',
-        'reservationlist-deletelist' => 'DeleteList/[:id]',
-        'reservationlist-deletebulk' => 'DeleteBulk/[:id]',
+        'reservationlist-placesingleorder' => 'PlaceSingleOrder/[:id]',
+        'reservationlist-deletelist' => 'DeleteList/:listId',
+        'reservationlist-deletebulk' => 'DeleteBulk/:listId',
         'reservationlist-additemtolist' => 'AddItemToList',
         'reservationlist-createlist' => 'CreateList',
     ],

@@ -1,22 +1,4 @@
 <!-- START of: finna - RecordTab/holdingsarchive.phtml -->
-
-<?php if ($this->driver->tryMethod('archiveRequestAllowed')): ?>
-  <?php $user = $this->auth()->getManager()->getUserObject(); ?>
-  <!-- Display lists where it has been saved: -->
-  <div class="reservation-request-table record-holdings-url-table">
-    <div class="headers">
-      <span class="holdings-url-title"><?=$this->transEsc('ReservationList::Reserve to Research Room')?></span>
-    </div>
-    <div class="reservation-request-buttons">
-      <?php if ($user): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($driver, 'ArchiveRequest'))?>" class="btn btn-default" data-lightbox data-bs-target="order_archive_material_form"><?=$this->transEsc('archive_request_reserve_action')?></a>
-      <?php else: ?>
-        <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox><span><?=$this->transEsc('archive_request_login')?></span></a>
-      <?php endif; ?>
-    </div>
-  </div>
-<?php endif;?>
-<br>
 <?= $this->reservationList($this->auth()->getUserObject())->renderReserveTemplate($driver); ?>
 
 <?= $this->render('RecordTab/holdings-record-urls'); ?>

@@ -4,7 +4,7 @@
   $this->headTitle($this->translate('ReservationList::Reservation List'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('reservationlist-displaylist', ['id' => $this->id]) . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('ReservationList::Reservation List') . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('reservationlist-displaylist', ['listId' => $this->list->getId()]) . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('ReservationList::Reservation List') . '</li>';
 
   $user = $this->auth()->isLoggedIn();
   $recordTotal = $this->results->getResultTotal();
@@ -63,17 +63,16 @@
     <?php endif; ?>
     <div class="list-controls">
       <?php if (!$this->list->getOrdered() && $this->results->getResults() && $listProperties['properties']['Enabled']): ?>
-        <!-- Add order buttons if the list has not been ordered yet. -->
-        <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorder', ['id' => $this->list->getId()]))?>" class="btn btn-primary" data-lightbox><?=$this->transEsc('ReservationList::Order List')?></a>
+        <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorder', [], ['query' => ['listId' => $this->list->getId()]]))?>" class="btn btn-primary" data-lightbox><?=$this->transEsc('ReservationList::Order List')?></a>
       <?php endif; ?>
       <?=
         $this->component(
             'confirm-button',
             [
-              'buttonLink' => $this->url('reservationlist-deletelist', [], ['query' => ['listID' => $list->getId()]]),
+              'buttonLink' => $this->url('reservationlist-deletelist', ['listId' => $list->getId()]),
               'buttonLabel' => 'delete_list',
               'buttonClass' => 'btn btn-primary',
-              'confirmLink' => $this->url('reservationlist-deletelist', [], ['query' => ['listID' => $list->getId(), 'confirm' => 1]]),
+              'confirmLink' => $this->url('reservationlist-deletelist', ['listId' => $list->getId()], ['query' => ['confirm' => 1]]),
               'header' => 'confirm_delete_list_text',
             ]
         );
@@ -94,7 +93,7 @@
         <div class="myaccount-sticky-header"></div>
           <div class="toolbar-sticky-container">
             <?php $multiPageSelection = ($this->config()->get('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
-            <form class="form<?= $multiPageSelection ?>" id="form-reservation-<?= $this->list->getId() ?? ''?>" method="post" name="bulkActionForm" action="<?=$this->url('reservationlist-deletebulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+            <form class="form<?= $multiPageSelection ?>" id="form-reservation-<?= $this->list->getId() ?? ''?>" method="post" name="bulkActionForm" action="<?=$this->url('reservationlist-deletebulk', ['listId' => $this->list->getId()])?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
               <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
               <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
               <div class="toolbar-sticky">

@@ -32,11 +32,13 @@
 namespace Finna\ReservationList;
 
 use DateTime;
+use Exception;
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
 use Finna\Db\Service\FinnaResourceListResourceServiceInterface;
 use Finna\Db\Service\FinnaResourceListServiceInterface;
 use Laminas\Session\Container;
 use Laminas\Stdlib\Parameters;
+use TypeError;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
@@ -135,20 +137,23 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
     /**
      * Create a new list object for the specified user
      *
-     * @param ?UserEntityInterface $user Logged in user (null if logged out)
+     * @param ?UserEntityInterface $user    Logged in user (null if logged out)
+     * @param array                $prefill Prefill the list with these values.
      *
      * @return FinnaResourceListEntityInterface
      * @throws LoginRequiredException
      */
-    public function createListForUser(?UserEntityInterface $user): FinnaResourceListEntityInterface
+    public function createListForUser(?UserEntityInterface $user, array $prefill = []): FinnaResourceListEntityInterface
     {
         if (!$user) {
             throw new LoginRequiredException('Log in to create lists.');
         }
 
-        return $this->resourceListService->createEntity()
-            ->setUser($user)
-            ->setCreated(new DateTime());
+        $list = $this->resourceListService->createEntity()->setUser($user)->setCreated(new DateTime());
+        if ($prefill) {
+            $list = $this->populateListValues($list, $user, $prefill);
+        }
+        return $list;
     }
 
     /**
@@ -319,6 +324,9 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
         if (!$this->userCanEditList($user, $list)) {
             throw new ListPermissionException('list_access_denied');
         }
+        if (!isset($newValues['pickup_date'])) {
+            throw new Exception('Missing pickup date');
+        }
         $list->setPickupDate(DateTime::createFromFormat('Y-m-d', $newValues['pickup_date']))->setOrdered();
         $list->setExternalId($newValues['external_id'] ?? null);
         $list->setConnection($newValues['connection'] ?? self::DEFAULT_CONNECTION_HANDLER);
@@ -354,9 +362,9 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
      * Update and save the list object using a request object -- useful for
      * sharing form processing between multiple actions.
      *
-     * @param FinnaResourceListEntityInterface $list    List to update
-     * @param UserEntityInterface              $user    Logged-in user
-     * @param Parameters                       $request Request to process
+     * @param FinnaResourceListEntityInterface $list       List to update
+     * @param UserEntityInterface              $user       Logged-in user
+     * @param array                            $listValues List values as key value pairs
      *
      * @return int ID of newly created row
      * @throws ListPermissionException
@@ -365,17 +373,41 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
     public function updateListFromRequest(
         FinnaResourceListEntityInterface $list,
         UserEntityInterface $user,
-        Parameters $request
+        array $listValues
     ): int {
-        $list->setTitle($request->get('title'))
-            ->setDescription($request->get('desc'))
-            ->setInstitution($request->get('institution'))
-            ->setListConfigIdentifier($request->get('listIdentifier'))
-            ->setUser($user)
-            ->setListType(self::RESOURCE_LIST_TYPE)
-            ->setConnection($request->get('connection', self::DEFAULT_CONNECTION_HANDLER));
+        $list = $this->populateListValues($list, $user, $listValues);
         $this->saveListForUser($list, $user);
         return $list->getId();
+    }
+
+    /**
+     * Populate list with values, useful for cases where the list is not saved instantly.
+     *
+     * @param FinnaResourceListEntityInterface $list       List to update
+     * @param UserEntityInterface              $user       Logged-in user
+     * @param array                            $listValues List values as key value pairs
+     *
+     * @return FinnaResourceListEntityInterface List populated
+     * @throws ListPermissionException
+     * @throws MissingFieldException
+     */
+    public function populateListValues(
+        FinnaResourceListEntityInterface $list,
+        UserEntityInterface $user,
+        array $listValues
+    ): FinnaResourceListEntityInterface {
+        try {
+            $list->setTitle($listValues['title'])
+                ->setDescription($listValues['desc'])
+                ->setInstitution($listValues['institution'])
+                ->setListConfigIdentifier($listValues['listIdentifier'])
+                ->setUser($user)
+                ->setListType(self::RESOURCE_LIST_TYPE)
+                ->setConnection($listValues['connection']);
+        } catch (TypeError $e) {
+            throw new Exception('Missing values to populate list');
+        }
+        return $list;
     }
 
     /**

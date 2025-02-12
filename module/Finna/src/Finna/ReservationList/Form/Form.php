@@ -91,9 +91,10 @@ class Form extends \Finna\Form\Form
     {
         $elements = parent::getFormElements($config);
         // Add hidden fields for reservation list order form
-        $elements['rl_institution'] = ['type' => 'hidden', 'name' => 'rl_institution', 'value' => null];
-        $elements['rl_list_identifier'] = ['type' => 'hidden', 'name' => 'rl_list_identifier', 'value' => null];
-        $elements['rl_list_id'] = ['type' => 'hidden', 'name' => 'rl_list_id', 'value' => null];
+        $elements['institution'] = ['type' => 'hidden', 'name' => 'institution', 'value' => null];
+        $elements['listIdentifier'] = ['type' => 'hidden', 'name' => 'listIdentifier', 'value' => null];
+        $elements['listId'] = ['type' => 'hidden', 'name' => 'listId', 'value' => null];
+        $elements['recordId'] = ['type' => 'hidden', 'name' => 'recordId', 'value' => null];
         return $elements;
     }
 
