@@ -46,18 +46,12 @@ use function in_array;
 class BrowZine extends \VuFind\Content\AbstractCover
 {
     /**
-     * Cover image URLs to ignore (we don't want to display third-party generic images).
-     *
-     * @var string[]
-     */
-    protected $ignoreList = ['https://assets.thirdiron.com/default-journal-cover.png'];
-
-    /**
      * Constructor
      *
-     * @param Service $searchService Search service
+     * @param Service  $searchService Search service
+     * @param string[] $ignoreList    Cover image URLs to ignore (we don't want to display third-party generic images)
      */
-    public function __construct(protected Service $searchService)
+    public function __construct(protected Service $searchService, protected array $ignoreList)
     {
         $this->supportsIssn = true;
     }
