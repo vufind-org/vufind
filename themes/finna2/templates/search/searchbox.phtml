@@ -270,18 +270,23 @@
     <?php if (!$browse && !$mainPage && $advSearch): ?>
       <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced hidden-xs"><?=$this->icon('search-advanced', 'search-advanced-icon') ?><?=$this->transEsc('Advanced Search')?></a>
     <?php endif; ?>
-    <div class="search-tooltip"><?php
-        $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'summon' => 'summon'];
-        if (isset($searchTypes[$module]) && !$this->translationEmpty('tooltip_' . $searchTypes[$module] . '_search_html')) {
-          $tooltipClass = 'tooltip-search-' . $searchTypes[$module];
-          $tooltipText = $this->translate('tooltip_' . $searchTypes[$module] . '_search_html');
-        }
-        if (isset($tooltipClass) && isset($tooltipText)):
-      ?>
-        <button aria-label="<?= $this->transEsc('Search Tips') ?>" class="tooltip-button <?=$tooltipClass?> hidden-xs" data-bs-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($tooltipText)?>">
-          <?=$this->icon('help', 'search-help-icon') ?>
-        </button>
-    <?php endif; ?></div>
+    <?php
+      $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'summon' => 'summon'];
+      if (
+        ($searchType = $searchTypes[$module] ?? null)
+        && !$this->translationEmpty('tooltip_' . $searchType . '_search_html')
+      ):
+    ?>
+      <div class="search-tooltip">
+        <?=$this->component('finna-toggletip', [
+          'icon' => 'help',
+          'iconClass' => 'search-help-icon',
+          'ariaLabel' => $this->translate('Search Tips'),
+          'contentHtml' => $this->translate('tooltip_' . $searchType . '_search_html'),
+          'class' => 'tooltip-button tooltip-search-' . $searchType, // for back-compatibility
+        ])?>
+      </div>
+    <?php endif; ?>
     <?php if ($module != 'record' && $module != 'collection'): ?>
       <?php if ($browse || $mainPage || ($module === 'authority' && $action === 'search')): ?>
         <div class="search-links">
