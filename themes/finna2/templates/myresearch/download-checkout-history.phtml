@@ -1,0 +1,44 @@
+<!-- START of: finna - myresearch/download-checkout-history.phtml -->
+<?php
+    $this->headScript()->prependFile('finna-checkout-history.js');
+    // Set page title.
+    $this->headTitle($this->translate('loan_history_download'));
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('loan_history_download') . '</li>';
+    $inLightBox = $this->inLightbox ?? false;
+?>
+<?php if (!$inLightBox): ?>
+  <!-- Leftside navigationbar -->
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'historicLoans']); ?>
+  <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
+<?php else: ?>
+  <?php // Print headscript in lightbox so the loading of the script works properly ?>
+  <?= $this->headScript(); ?>
+<?php endif; ?>
+
+<h2><?=$this->transEsc('loan_history_download') . ': ' . $this->transEscWithPrefix('loan_history_download_', $this->format); ?></h2>
+
+<?php if (!$this->translationEmpty('download_checkout_history_info_html')): ?>
+  <div class="alert alert-info"><?=$this->translate('download_checkout_history_info_html'); ?></div>
+<?php endif; ?>
+
+<button class="btn btn-primary js-download-checkout-history" data-format="<?=$this->escapeHtmlAttr($this->format)?>" type="button"></button>
+
+<?php if (!$inLightBox): ?>
+  </div>
+<?php endif; ?>
+
+<?php
+// Initialize checkout history download element
+$js = <<<JS
+      if (document.readyState === 'complete') {
+        finna.checkoutHistory.init();
+      } else {
+        document.addEventListener('DOMContentLoaded', () => {
+          finna.checkoutHistory.init();
+        });
+      }
+    JS;
+
+echo $this->inlineScript()->appendScript($js);
+?>
+<!-- END of: finna - myresearch/download-checkout-history.phtml -->

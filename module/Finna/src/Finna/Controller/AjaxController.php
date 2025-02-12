@@ -54,4 +54,60 @@ class AjaxController extends \VuFind\Controller\AjaxController
         // Use text/html to avoid any output
         return $this->callAjaxMethod('onlinePaymentNotify', 'text/html');
     }
+
+    /**
+     * Handle a file download with AJAX call
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function fileAction()
+    {
+        $method = $this->params()->fromQuery('method');
+        if (!$method) {
+            return $this->getAjaxResponse('text/plain', ['error' => 'Parameter "method" missing'], 400);
+        }
+        // Check the AJAX handler plugin manager for the method.
+        if (!$this->ajaxManager) {
+            throw new \Exception('AJAX Handler Plugin Manager missing.');
+        }
+        if ($this->ajaxManager->has($method)) {
+            try {
+                $handler = $this->ajaxManager->get($method);
+                if ($handler->supportsStream ?? false) {
+                    [$data, $status] = $handler->handleRequest($this->params());
+                    if ($status === 200) {
+                        return $this->getFileResponse($data);
+                    }
+                }
+            } catch (\Exception $e) {
+                return $this->getExceptionResponse('text/plain', $e);
+            }
+        }
+
+        // If we got this far, we can't handle the requested method:
+        return $this->getAjaxResponse(
+            'text/plain',
+            $this->translate('Invalid Method'),
+            \VuFind\AjaxHandler\AjaxHandlerInterface::STATUS_HTTP_BAD_REQUEST
+        );
+    }
+
+    /**
+     * Send output data and exit.
+     *
+     * @param mixed $data The response data
+     *
+     * @return \Laminas\Http\Response
+     * @throws \Exception
+     */
+    protected function getFileResponse($data)
+    {
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', $data['mediaType']);
+        $headers->addHeaderLine('Content-Disposition', 'attachment; filename="' . $data['fileName'] . '"');
+        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
+        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+        return $response->setContent(stream_get_contents($data['filePointer']));
+    }
 }

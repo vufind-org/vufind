@@ -40,12 +40,6 @@ use Finna\Db\Service\FinnaFeedbackServiceInterface;
 use Finna\Db\Service\FinnaUserListServiceInterface;
 use Finna\Db\Service\FinnaUserServiceInterface;
 use Finna\Db\Service\UserListService as FinnaUserListService;
-use PhpOffice\PhpSpreadsheet\Cell\AdvancedValueBinder;
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use PhpOffice\PhpSpreadsheet\Writer\Ods;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -82,21 +76,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     use FinnaUnsupportedFunctionViewTrait;
     use FinnaPersonalInformationSupportTrait;
     use Feature\FinnaUserListTrait;
-
-    protected $exportFormats = [
-        'xlsx' => [
-            'mediaType' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'writer' => Xlsx::class,
-        ],
-        'ods' => [
-            'mediaType' => 'application/vnd.oasis.opendocument.spreadsheet',
-            'writer' => Ods::class,
-        ],
-        'csv' => [
-            'mediaType' => 'text/csv',
-            'writer' => Csv::class,
-        ],
-    ];
 
     /**
      * Catalog Login Action
@@ -1333,131 +1312,31 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     /**
      * Download historic loans
      *
-     * @return mixed
+     * @return     mixed
+     * @deprecated Use AjaxHandler/GetCheckoutHistory
      */
     public function downloadLoanHistoryAction()
     {
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-        $catalog = $this->getILS();
+    }
 
-        // Check function config
-        $functionConfig = $catalog->checkFunction(
-            'getMyTransactionHistory',
-            $patron
+    /**
+     * Returns template for downloading checkouts history
+     *
+     * @return mixed
+     */
+    public function downloadCheckoutHistoryAction()
+    {
+        // Retrieve user object and force login if necessary:
+        if (!$this->getUser()) {
+            return $this->forceLogin();
+        }
+        $view = $this->createViewModel(
+            [
+                'format' => $this->params()->fromQuery('format', 'csv'),
+            ]
         );
-        if (false === $functionConfig) {
-            $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
-            return $this->redirect()->toRoute('checkouts-history');
-        }
-        $fileFormat = $this->params()->fromQuery('format', '');
-        if (!in_array($fileFormat, ['ods', 'csv', 'xlsx'])) {
-            throw new \Exception('Invalid parameters.');
-        }
-
-        $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-        $page = 1;
-        try {
-            $tmp = fopen('php://temp/maxmemory:' . (5 * 1024 * 1024), 'r+');
-            $header = [
-                $this->translate('Title'),
-                $this->translate('Format'),
-                $this->translate('Author'),
-                $this->translate('Publication Year'),
-                $this->translate('Institution'),
-                $this->translate('Borrowing Location'),
-                $this->translate('Checkout Date'),
-                $this->translate('Return Date'),
-                $this->translate('Due Date'),
-            ];
-            $spreadsheet = new Spreadsheet();
-            $worksheet = $spreadsheet->getActiveSheet();
-            $worksheet->fromArray($header);
-            if ('xlsx' === $fileFormat) {
-                Cell::setValueBinder(new AdvancedValueBinder());
-            }
-            do {
-                // Try to use large page size, but take ILS limits into account
-                $pageOptions = $this->getPaginationHelper()
-                    ->getOptions($page, null, 1000, $functionConfig);
-                $result = $catalog
-                    ->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
-
-                if (isset($result['success']) && !$result['success']) {
-                    $this->flashMessenger()->addErrorMessage($result['status']);
-                    return $this->redirect()->toRoute('checkouts-history');
-                }
-
-                $ids = [];
-                foreach ($result['transactions'] as $current) {
-                    $id = $current['id'] ?? '';
-                    $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
-                    $ids[] = compact('id', 'source');
-                }
-                $records = $recordLoader->loadBatch($ids, true);
-                foreach ($result['transactions'] as $i => $current) {
-                    $driver = $records[$i];
-                    $format = $driver->getFormats();
-                    $format = end($format);
-                    $author = $driver->tryMethod('getNonPresenterAuthors');
-
-                    $loan = [];
-                    $loan[] = $current['title'] ?? $driver->getTitle() ?? '';
-                    $loan[] = $this->translate($format);
-                    $loan[] = $author[0]['name'] ?? '';
-                    $loan[] = $current['publication_year'] ?? '';
-                    $loan[] = empty($current['institution_name'])
-                        ? ''
-                        : $this->translateWithPrefix('location_', $current['institution_name']);
-                    $loan[] = empty($current['borrowingLocation'])
-                        ? ''
-                        : $this->translateWithPrefix('location_', $current['borrowingLocation']);
-                    $loan[] = $current['checkoutDate'] ?? '';
-                    $loan[] = $current['returnDate'] ?? '';
-                    $loan[] = $current['dueDate'] ?? '';
-
-                    $nextRow = $worksheet->getHighestRow() + 1;
-                    $worksheet->fromArray($loan, null, 'A' . (string)$nextRow);
-                }
-
-                $pageEnd = $pageOptions['ilsPaging']
-                    ? ceil($result['count'] / $pageOptions['limit'])
-                    : 1;
-                $page++;
-            } while ($page <= $pageEnd);
-            if ('xlsx' === $fileFormat) {
-                $worksheet->getStyle('G2:I' . $worksheet->getHighestRow())
-                    ->getNumberFormat()
-                    ->setFormatCode('dd.mm.yyyy');
-                foreach (['G', 'H', 'I'] as $col) {
-                    $worksheet->getColumnDimension($col)->setAutoSize(true);
-                }
-            }
-            $response = $this->getResponse();
-            $response->getHeaders()
-                ->addHeaderLine(
-                    'Content-Type',
-                    $this->exportFormats[$fileFormat]['mediaType']
-                );
-            $writer = new $this->exportFormats[$fileFormat]['writer']($spreadsheet);
-            $writer->save($tmp);
-
-            $response->getHeaders()
-                ->addHeaderLine(
-                    'Content-Disposition',
-                    'attachment; filename="finna-loan-history.' . $fileFormat . '"'
-                );
-
-            rewind($tmp);
-
-            $response->setContent(stream_get_contents($tmp));
-        } catch (\Exception $e) {
-            $this->flashMessenger()->addErrorMessage('An error has occurred');
-            return $this->redirect()->toRoute('checkouts-history');
-        }
-
-        return $response;
+        $view->setTemplate('myresearch/download-checkout-history');
+        return $view;
     }
 
     /**

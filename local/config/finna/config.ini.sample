@@ -311,6 +311,10 @@ library_cards = true
 ; memory problems for users with a large number of historic loans). Default = 50
 ;historic_loan_page_size = 50
 
+; Limit for how many historic transactions to fetch at most from ILS
+; when downloading loan history
+loan_history_download_batch_limit = 1000
+
 ; Whether to display the item barcode for each loan. Default is false.
 display_checked_out_item_barcode = true
 

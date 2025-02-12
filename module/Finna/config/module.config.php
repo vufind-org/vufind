@@ -495,6 +495,10 @@ $config = [
                         'Finna\AjaxHandler\GetUserListFactory',
                     'Finna\AjaxHandler\GetUserLists' =>
                         'Finna\AjaxHandler\GetUserListsFactory',
+                    'Finna\AjaxHandler\GetCheckoutHistory' =>
+                        'Finna\AjaxHandler\GetCheckoutHistoryFactory',
+                    'Finna\AjaxHandler\GetCheckoutHistoryFile' =>
+                        'Finna\AjaxHandler\GetCheckoutHistoryFactory',
                     'Finna\AjaxHandler\ReservationList' =>
                         'Finna\AjaxHandler\ReservationListFactory',
                     'Finna\AjaxHandler\ImportFavorites' =>
@@ -517,6 +521,8 @@ $config = [
                     'getAccountNotifications' => 'Finna\AjaxHandler\GetAccountNotifications',
                     'getAuthorityInfo' => 'Finna\AjaxHandler\GetAuthorityInfo',
                     'getAuthorityFullInfo' => 'Finna\AjaxHandler\GetAuthorityFullInfo',
+                    'getCheckoutHistory' => 'Finna\AjaxHandler\GetCheckoutHistory',
+                    'getCheckoutHistoryFile' => 'Finna\AjaxHandler\GetCheckoutHistoryFile',
                     'getContentFeed' => 'Finna\AjaxHandler\GetContentFeed',
                     'getDescription' => 'Finna\AjaxHandler\GetDescription',
                     'getModel' => 'Finna\AjaxHandler\GetModel',
@@ -1110,8 +1116,8 @@ $staticRoutes = [
     'LibraryCards/ResetPassword',
     'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
-    'MyResearch/DownloadLoanHistory',
     'MyResearch/SaveCustomOrder', 'MyResearch/SaveHistoricLoans',
+    'MyResearch/DownloadCheckoutHistory',
     'OrganisationInfo/Home',
     'PCI/Home', 'PCI/Search', 'PCI/Record',
     'Search/StreetSearch',

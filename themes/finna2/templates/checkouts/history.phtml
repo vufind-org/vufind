@@ -89,17 +89,17 @@
                         </div>
                         <?php if (!empty($this->transactions)): ?>
                           <div class="btn-group">
-                            <div class="dropdown loan-history-download">
-                              <button class="btn btn-primary btn-finna-toolbar dropdown-toggle download" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <?=$this->transEsc('loan_history_download')?> <span class="caret"></span>
+                            <div class="dropdown loan-history-download js-download-loan-history">
+                              <button class="btn btn-primary btn-finna-toolbar dropdown-toggle download js-history-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <?=$this->transEsc('loan_history_download')?> <?=$this->icon('caret-down')?>
                               </button>
                               <ul class="dropdown-menu dropdown-menu-<?php if ($purgeSelectedAllowed): ?>right<?php else: ?>left<?php endif;?> download">
                                 <li>
                                   <a class="dropdown-item" data-lightbox href="<?=$this->url('myresearch-savehistoricloans') ?>"><?=$this->transEsc('loan_history_save')?></a>
                                 </li>
-                                <?php foreach (['csv', 'ods', 'xlsx'] as $format): ?>
+                                <?php foreach (['csv', 'ods', 'xlsx'] as $formatEsc): ?>
                                   <li>
-                                    <a class="dropdown-item" href="<?=$this->url('myresearch-downloadloanhistory', [], ['query' => ['format' => $format]])?>"><?=$this->transEsc('loan_history_download_' . $format)?></a>
+                                    <a href="<?=$this->url('myresearch-downloadcheckouthistory', [], ['query' => ['format' => $formatEsc]]);?>" class="btn btn-link dropdown-item" data-lightbox="" aria-haspopup="true"><?=$this->transEscWithPrefix('loan_history_download_', $formatEsc)?></a>
                                   </li>
                                 <?php endforeach; ?>
                               </ul>
