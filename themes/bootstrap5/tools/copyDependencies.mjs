@@ -33,6 +33,7 @@ await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
 await copyFile('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js');
 
 // nouislider
+await copyFile('node_modules/nouislider/LICENSE.md', 'js/vendor/nouislider_LICENSE.md');
 await copyFile('node_modules/nouislider/dist/nouislider.min.js', 'js/vendor/nouislider.min.js');
 await copyFile('node_modules/nouislider/dist/nouislider.min.css', 'css/vendor/nouislider.min.css');
 
