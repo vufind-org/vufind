@@ -193,13 +193,41 @@ class RecordDataFormatter extends AbstractHelper
             throw new \Exception('Argument 0 must be an array');
         }
         // Apply the spec:
+        $spec = $args[0];
         $result = [];
-        foreach ($args[0] as $field => $current) {
+        $filteredLabels = [];
+        foreach ($spec as $field => $current) {
+            if ($field === 'itemSpecs') {
+                continue;
+            }
             // Extract the relevant data from the driver and try to render it.
             $data = $this->extractData($current);
             $value = $this->render($field, $data, $current);
             if ($value !== null) {
+                $filteredLabels[] = $field;
                 $result = array_merge($result, $value);
+            }
+        }
+        $itemSpecs = $spec['itemSpecs'] ?? [];
+        if ($itemSpecs['enabled'] ?? false) {
+            $filter = $itemSpecs['filter'] ?? [];
+            $filter['Label']['exclude'] = array_merge($filter['Label']['exclude'] ?? [], $filteredLabels);
+            $data = $this->extractData(['dataMethod' => 'getItems', 'dataMethodParams' => [$filter]]);
+            $itemPos = $itemSpecs['defaultOptions']['startPos'] ?? 0;
+            foreach ($data as $item) {
+                $options = $itemSpecs['defaultOptions'] ?? [];
+                foreach (array_keys($item) as $itemKey) {
+                    $itemValue = $item[$itemKey];
+                    $options = array_merge($itemSpecs['options'][$itemKey][$itemValue] ?? [], $options);
+                }
+                if (!isset($options['pos'])) {
+                    $options['pos'] = $itemPos;
+                }
+                $value = $this->render($item['Label'], $item, $options);
+                if ($value !== null) {
+                    $itemPos++;
+                    $result = array_merge($result, $value);
+                }
             }
         }
         // Sort the result:

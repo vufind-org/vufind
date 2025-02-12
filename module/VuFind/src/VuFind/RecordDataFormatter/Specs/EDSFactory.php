@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for DefaultRecord specs.
+ * Factory for EDS specs.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for DefaultRecord specs.
+ * Factory for EDS specs.
  *
  * @category VuFind
  * @package  RecordDataFormatter
@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class DefaultRecordFactory implements FactoryInterface
+class EDSFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -74,8 +74,9 @@ class DefaultRecordFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('RecordDataFormatter')->toArray();
-        return new $requestedName($schemaOrgHelper, $config);
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $edsConfig = $configManager->get('EDS')->toArray();
+        $config = $configManager->get('EDSRecordDataFormatter')->toArray();
+        return new $requestedName($edsConfig, $config);
     }
 }

@@ -56,6 +56,16 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         $builder->setLine('foo', 'getFoo');
         $builder->setLine('bar', 'getBar');
         $builder->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
+        $builder->addItems(['Group' => ['exclude' => ['Au']]]);
+        $expectedLineSpecs = [
+            'enabled' => true,
+            'defaultOptions' => [
+                'startPos' => 1300,
+                'renderType' => 'RecordDriverTemplate',
+                'template' => 'data-item.phtml',
+            ],
+            'filter' => ['Group' => ['exclude' => ['Au']]],
+        ];
         $expected = [
             'foo' => [
                 'dataMethod' => 'getFoo',
@@ -73,6 +83,7 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
                 'renderType' => 'RecordDriverTemplate',
                 'pos' => 300,
             ],
+            'itemSpecs' => $expectedLineSpecs,
         ];
         $this->assertEquals($expected, $builder->getArray());
         // Test various methods of reordering the spec:
@@ -92,6 +103,6 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         // Test that we can remove lines from the spec:
         $builder->removeLine('bar');
         $builder->removeLine('foo');
-        $this->assertEquals(['xyzzy' => $expected['xyzzy']], $builder->getArray());
+        $this->assertEquals(['xyzzy' => $expected['xyzzy'], 'itemSpecs' => $expectedLineSpecs], $builder->getArray());
     }
 }

@@ -62,7 +62,7 @@
             "Name": "Author",
             "Label": "Authors",
             "Group": "Au",
-            "Data": "&lt;searchLink fieldCode=\"AR\" term=\"%22TORNEKE%2C+NIKLAS%2E%22\"&gt;TORNEKE, NIKLAS.&lt;/searchLink"
+            "Data": "&lt;searchLink fieldCode=\"AR\" term=\"%22TORNEKE%2C+NIKLAS%2E%22\"&gt;TORNEKE, NIKLAS.&lt;/searchLink&gt;"
         },
         {
             "Name": "Publisher",

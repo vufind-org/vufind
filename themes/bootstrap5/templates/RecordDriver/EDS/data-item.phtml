@@ -1,0 +1,31 @@
+<?php if (!empty($this->data['Elements'])): ?>
+  <?php
+    $useSearchLink = $this->options['useSearchLink'] ?? false;
+    $limit = $this->options['limit'] ?? null;
+    $prefix = $this->options['itemPrefix'] ?? '';
+    $suffix = $this->options['itemSuffix'] ?? '';
+    $separator = $this->options['separator'] ?? ', ';
+    $abbreviation = $this->options['abbreviation'] ?? '...';
+    $entries = array_map(function ($element) use ($useSearchLink) {
+      if ($useSearchLink) {
+        if (!empty($element['SearchLink'])) {
+          return $element['SearchLink'];
+        }
+        $data = $element['Data'];
+        $type = $useSearchLink === true ? 'generic' : $useSearchLink;
+        return '<a href="'
+          . $this->record($this->driver)->getLink($type, $this->highlight($data, null, true, false))
+          . '">' . $data . '</a>';
+      }
+      return $element['Link'] ?? $element['Data'];
+    }, $this->data['Elements']);
+    $entries = array_map(fn ($element) => $prefix . $this->linkify($element) . $suffix, $entries);
+    if ($limit !== null && count($entries) > $limit) {
+      $entries = array_slice($entries, 0, $limit);
+      $entries[] = $abbreviation;
+    }
+    echo implode($separator, $entries);
+  ?>
+<?php else: ?>
+  <?=$this->linkify($this->data['Data'])?>
+<?php endif ?>

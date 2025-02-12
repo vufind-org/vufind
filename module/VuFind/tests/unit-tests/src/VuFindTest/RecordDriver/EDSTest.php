@@ -56,11 +56,64 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected $defaultDriverConfig = [
+    protected array $defaultDriverConfig = [
         'General' => [
             'default_sort' => 'relevance',
         ],
         'ItemGlobalOrder' => [],
+    ];
+
+    /**
+     * Valid eds record title.
+     *
+     * @var array
+     */
+    protected array $validTitle = [
+        'Name' => 'Title',
+        'Label' => 'Title',
+        'Group' => 'Ti',
+        'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'RawData' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'Elements' => [
+            ['Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.'],
+        ],
+    ];
+
+    /**
+     * Valid eds record author.
+     *
+     * @var array
+     */
+    protected array $validAuthor =  [
+        'Name' => 'Author',
+        'Label' => 'Authors',
+        'Group' => 'Au',
+        'Data' => '<span>TORNEKE, NIKLAS.</span>',
+        'RawData' =>
+            '&lt;searchLink fieldCode="AR" term="%22TORNEKE%2C+NIKLAS%2E%22"&gt;TORNEKE, NIKLAS.&lt;/searchLink&gt;',
+        'Elements' => [
+            [
+                'Data' => '<span>TORNEKE, NIKLAS.</span>',
+                'SearchLink' =>
+                    '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&type=AU">TORNEKE, NIKLAS.</a>',
+            ],
+        ],
+    ];
+
+    /**
+     * Valid eds record publisher.
+     *
+     * @var array
+     */
+    protected array $validPublisher =  [
+        'Name' => 'Publisher',
+        'Label' => 'Publisher Information',
+        'Group' => 'PubInfo',
+        'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'RawData' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'Elements' => [
+            ['Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.'],
+        ],
     ];
 
     /**
@@ -140,14 +193,14 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getItemsAbstract for a record.
+     * Test getAbstractNotes for a record.
      *
      * @return void
      */
     public function testGetItemsAbstract(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('unit test abstract', $driver->getItemsAbstract());
+        $this->assertEquals(['unit test abstract'], $driver->getAbstractNotes());
     }
 
     /**
@@ -170,7 +223,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals(
-            '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
+            '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&type=AU">TORNEKE, NIKLAS.</a>',
             $driver->getItemsAuthors()
         );
     }
@@ -259,24 +312,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record');
         $items = [
-            [
-                'Name' => 'Title',
-                'Label' => 'Title',
-                'Group' => 'Ti',
-                'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
-            ],
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            $this->validTitle,
+            $this->validAuthor,
+            $this->validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -301,24 +339,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         $driver = $this->getDriver('valid-eds-record', $config);
         $items = [
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Title',
-                'Label' => 'Title',
-                'Group' => 'Ti',
-                'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            $this->validAuthor,
+            $this->validTitle,
+            $this->validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -342,20 +365,12 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         $driver = $this->getDriver('valid-eds-record', $config);
         $items = [
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            $this->validAuthor,
+            $this->validPublisher,
         ];
-        $results = $driver->getItems('core');
+
+        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($config, []);
+        $results = $driver->getItems($spec->getDefaultCoreSpecs()['itemSpecs']['filter']);
 
         // Verify total number of metadata elements
         // (Note one is removed from the fixture file since it has been filtered)
@@ -378,20 +393,11 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         $driver = $this->getDriver('valid-eds-record', $config);
         $items = [
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            $this->validAuthor,
+            $this->validPublisher,
         ];
-        $results = $driver->getItems('result-list');
+        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($config, []);
+        $results = $driver->getItems($spec->getDefaultResultListSpecs()['itemSpecs']['filter']);
 
         // Verify total number of metadata elements
         // (Note one is removed from the fixture file since it has been filtered)
@@ -415,24 +421,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         // items in original order are returned when the config can't be parsed
         $items = [
-            [
-                'Name' => 'Title',
-                'Label' => 'Title',
-                'Group' => 'Ti',
-                'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
-            ],
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            $this->validTitle,
+            $this->validAuthor,
+            $this->validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -670,22 +661,6 @@ class EDSTest extends \PHPUnit\Framework\TestCase
                 '<a href=\'https://localhost/sample\'>https://localhost/sample</a>',
             ],
         ];
-    }
-
-    /**
-     * Test linkUrls for a record.
-     *
-     * @param string $url      Input URL
-     * @param string $expected Expected value
-     *
-     * @dataProvider getLinkUrlsProvider
-     *
-     * @return void
-     */
-    public function testLinkUrls(string $url, string $expected): void
-    {
-        $driver = $this->getDriver();
-        $this->assertEquals($expected, $driver->linkUrls($url));
     }
 
     /**

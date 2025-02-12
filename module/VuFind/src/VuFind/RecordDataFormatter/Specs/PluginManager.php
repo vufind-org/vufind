@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         DefaultRecord::class => DefaultRecordFactory::class,
+        EDS::class => EDSFactory::class,
     ];
 
     /**
