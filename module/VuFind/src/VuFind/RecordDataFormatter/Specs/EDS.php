@@ -91,15 +91,16 @@ class EDS extends AbstractBase
     }
 
     /**
-     * Get default specifications for displaying data in core metadata.
+     * Get filters from section of config.
+     *
+     * @param string $section Section
      *
      * @return array
      */
-    public function getDefaultCoreSpecs(): array
+    protected function getFilterFromConfigSection(string $section): array
     {
-        $spec = new SpecBuilder();
-        $filterConfig = $this->edsConfig['ItemCoreFilter'];
-        $filter = [
+        $filterConfig = $this->edsConfig[$section] ?? [];
+        return [
             'Group' => [
                 'exclude' => $filterConfig['excludeGroup'] ?? [],
                 'include' => $filterConfig['includeGroup'] ?? [],
@@ -109,6 +110,17 @@ class EDS extends AbstractBase
                 'include' => $filterConfig['includeLabel'] ?? [],
             ],
         ];
+    }
+
+    /**
+     * Get default specifications for displaying data in core metadata.
+     *
+     * @return array
+     */
+    public function getDefaultCoreSpecs(): array
+    {
+        $spec = new SpecBuilder();
+        $filter = $this->getFilterFromConfigSection('ItemCoreFilter');
         $format = $this->edsConfig['AuthorDisplay']['DetailPageFormat'] ?? 'Long';
         if (strtolower($format) === 'short') {
             $filter['Group']['exclude'] = ['AuInfo'];
@@ -127,17 +139,7 @@ class EDS extends AbstractBase
     public function getDefaultResultListSpecs(): array
     {
         $spec = new SpecBuilder();
-        $filterConfig = $this->edsConfig['ItemResultListFilter'];
-        $filter = [
-            'Group' => [
-                'exclude' => $filterConfig['excludeGroup'] ?? [],
-                'include' => $filterConfig['includeGroup'] ?? [],
-            ],
-            'Label' => [
-                'exclude' => $filterConfig['excludeLabel'] ?? [],
-                'include' => $filterConfig['includeLabel'] ?? [],
-            ],
-        ];
+        $filter = $this->getFilterFromConfigSection('ItemResultListFilter');
         $format = $this->edsConfig['AuthorDisplay']['ResultListFormat'] ?? 'Long';
         $spec->addItems($filter);
         $spec->setItemLine('Group', 'Au', $this->getAuthorOptions($format));
