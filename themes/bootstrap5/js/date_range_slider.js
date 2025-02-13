@@ -28,7 +28,7 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
    * Create a slider
    * @param {Element} sliderElement Slider base element
    * @param {object} extraOptions Additional options for the slider. Range and starting values have to be included.
-   * @param {?array} inputs Optional array that contains two input elements that should be connected to the slider.
+   * @param {?Array} inputs Optional array that contains two input elements that should be connected to the slider.
    * @returns {object} Slider object
    */
   function create(sliderElement, extraOptions, inputs = null) {
