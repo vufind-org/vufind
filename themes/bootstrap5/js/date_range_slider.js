@@ -28,19 +28,20 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
    * Create a slider
    * @param {Element} sliderElement Slider base element
    * @param {object} extraOptions Additional options for the slider. Range and starting values have to be included.
-   * @param {?Array} inputs Optional array that contains two input elements that should be connected to the slider.
+   * @param {?Element} inputMin Optional input element that should be connected to the lower handle.
+   * @param {?Element} inputMax Optional input element that should be connected to the upper handle.
    * @returns {object} Slider object
    */
-  function create(sliderElement, extraOptions, inputs = null) {
+  function create(sliderElement, extraOptions, inputMin = null, inputMax = null) {
     let options = Object.assign({}, _defaultOptions, extraOptions);
     let slider = noUiSlider.create(sliderElement, options);
 
-    if (inputs === null) {
+    if (inputMin === null || inputMax === null) {
+      if (inputMin !== null || inputMax !== null) {
+        console.error("Invalid parameters passed to dateRangeSlider.create. Either both or none of the inputs must be null.");
+      }
       return slider;
     }
-
-    let inputMin = inputs[0];
-    let inputMax = inputs[1];
 
     slider.on('slide', (values) => {
       if (_parseInput(inputMin) !== values[0] || _parseInput(inputMax) !== values[1]) {
@@ -97,11 +98,13 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
         let options = JSON.parse(sliderElement.dataset.options);
         let inputMinId = sliderElement.dataset.inputMinId;
         let inputMaxId = sliderElement.dataset.inputMaxId;
-        let inputs = null;
+        let inputMin = null;
+        let inputMax = null;
         if (inputMinId !== undefined && inputMaxId !== undefined) {
-          inputs = [document.getElementById(inputMinId), document.getElementById(inputMaxId)];
+          inputMin = document.getElementById(inputMinId);
+          inputMax = document.getElementById(inputMaxId);
         }
-        create(sliderElement, options, inputs);
+        create(sliderElement, options, inputMin, inputMax);
       }
     });
   }
