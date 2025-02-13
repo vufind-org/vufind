@@ -288,6 +288,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteAutoSubmit = true;
 
     /**
+     * Autocomplete apply active filters setting
+     *
+     * @var bool
+     */
+    protected $autocompleteApplyActiveFilters = false;
+
+    /**
      * Autocomplete query formatting rules
      *
      * @var array
@@ -935,6 +942,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Should autocomplete apply active filters?
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters()
+    {
+        return $this->autocompleteApplyActiveFilters;
+    }
+
+    /**
      * Get autocomplete query formatting rules.
      *
      * @return array
@@ -1331,6 +1348,8 @@ abstract class Options implements TranslatorAwareInterface
             ?? $this->autocompleteEnabled;
         $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
             ?? $this->autocompleteAutoSubmit;
+        $this->autocompleteApplyActiveFilters = $searchSettings->Autocomplete->apply_active_filters
+            ?? $this->autocompleteApplyActiveFilters;
         $formattingRules = $searchSettings->Autocomplete->formatting_rule ?? [];
         if (!is_string($formattingRules) && count($formattingRules) > 0) {
             $this->autocompleteFormattingRules = $formattingRules->toArray();

@@ -177,6 +177,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       const formattingRules = $searchbox.data('autocompleteFormattingRules');
       const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
       const typePrefix = $searchbox.data('autocompleteTypePrefix');
+      const applyActiveFilters = $searchbox.data('autocompleteApplyActiveFilters');
       const getFormattingRule = function getAutocompleteFormattingRule(type) {
         if (typeof(formattingRules) !== "undefined") {
           if (typeof(formattingRules[type]) !== "undefined") {
@@ -237,6 +238,17 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
           hiddenFilters.push($(this).val());
         });
+
+        if (applyActiveFilters) {
+          const queryParams = new URLSearchParams(window.location.search);
+          [...queryParams].forEach(
+            function (queryParam) {
+              if (queryParam[0].startsWith("filter[")) {
+                hiddenFilters.push(queryParam[1])
+              }
+            }
+          );
+        }
 
         $.ajax({
           url: VuFind.path + '/AJAX/JSON',
