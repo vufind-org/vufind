@@ -1173,7 +1173,7 @@ class Folio extends AbstractAPI implements
         if ($this->useLegacyAuthentication()) {
             $this->token = $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
             $this->tokenExpiration = gmdate('D, d-M-Y H:i:s T', strtotime('now'));
-            $tokenCacheLifetime = 10 * 60; // cache old-fashioned tokens for 10 minutes
+            $tokenCacheLifetime = 600; // cache old-fashioned tokens for 10 minutes
         } elseif ($cookie = $this->getCookieByName($response, 'folioAccessToken')) {
             $this->token = $cookie->getValue();
             $this->tokenExpiration = $cookie->getExpires();
