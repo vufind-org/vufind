@@ -83,7 +83,7 @@ header {
       outline: dotted 1px #000;
     }
   }
-  .navbar-toggle {
+  .navbar-toggler {
     margin: .5rem;
     padding-left: 1rem;
     padding-right: 1rem;
@@ -94,8 +94,8 @@ header {
     background-color: $header-light;
     color: $black;
   }
-  .dropdown-menu .active a,
-  .dropdown-menu .active a:hover { background-color: $header-bg; }
+  .dropdown-menu a.active,
+  .dropdown-menu a.active:hover { background-color: $header-bg; }
 
   .navbar-brand {
     width: 200px;

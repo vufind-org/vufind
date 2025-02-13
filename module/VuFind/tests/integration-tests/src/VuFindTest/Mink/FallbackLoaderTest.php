@@ -90,6 +90,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
         ?string $newListName = null,
         bool $createAccount = false
     ): void {
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '.save-record');
         if ($createAccount) {
             $this->clickCss($page, '.modal-body .createAccountLink');
