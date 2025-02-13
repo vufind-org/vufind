@@ -352,6 +352,19 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Should we use a global cache for FOLIO API tokens?
+     *
+     * @return bool
+     */
+    protected function useGlobalTokenCache(): bool
+    {
+        // If we're configured to store user-specific tokens, we can't use the global
+        // token cache.
+        $useUserToken = $this->config['User']['use_user_token'] ?? false;
+        return !$useUserToken && ($this->config['API']['global_token_cache'] ?? true);
+    }
+
+    /**
      * Initialize the driver.
      *
      * Check or renew our auth token
@@ -363,7 +376,7 @@ class Folio extends AbstractAPI implements
         $factory = $this->sessionFactory;
         $this->sessionCache = $factory($this->tenant);
         $cacheType = 'session';
-        if ($this->config['API']['global_token_cache'] ?? true) {
+        if ($this->useGlobalTokenCache()) {
             $globalTokenData = (array)($this->getCachedData('token') ?? []);
             if (count($globalTokenData) === 2) {
                 $cacheType = 'global';
@@ -1183,7 +1196,7 @@ class Folio extends AbstractAPI implements
         if ($this->token != null && $this->tokenExpiration != null) {
             $this->sessionCache->folio_token = $this->token;
             $this->sessionCache->folio_token_expiration = $this->tokenExpiration;
-            if ($this->config['API']['global_token_cache'] ?? true) {
+            if ($this->useGlobalTokenCache()) {
                 $this->putCachedData('token', [$this->token, $this->tokenExpiration], $tokenCacheLifetime);
             }
         } else {
