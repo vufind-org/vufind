@@ -663,23 +663,6 @@ finna.layout = (function finnaLayout() {
         cancelRefresh();
       }
     });
-    const modalEl = document.getElementById('modal');
-    if (modalEl) {
-      modalEl.addEventListener('shown.bs.modal', () => {
-        if (modalEl.querySelector('#authcontainer')) {
-          const modalDialogEl = modalEl.querySelector('.modal-dialog');
-          if (modalDialogEl) {
-            modalDialogEl.classList.add('modal-lg', 'modal-lg-dynamic');
-          }
-        }
-      });
-      modalEl.addEventListener('hidden.bs.modal', () => {
-        const modalDialogEl = modalEl.querySelector('.modal-dialog');
-        if (modalDialogEl) {
-          modalDialogEl.classList.remove('modal-lg', 'modal-lg-dynamic');
-        }
-      });
-    }
   }
 
   /**
