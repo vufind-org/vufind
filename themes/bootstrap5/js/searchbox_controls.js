@@ -242,7 +242,12 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         if (applyActiveFilters) {
           const queryParams = new URLSearchParams(window.location.search);
           [...queryParams].forEach(
-            function (queryParam) {
+            /**
+             * If the provided parameter is a filter, add it to the hiddenFilters array.
+             *
+             * @param {Array} queryParam Array representing query parameter ([key, value] format)
+             */
+            function extractFilters(queryParam) {
               if (queryParam[0].startsWith("filter[")) {
                 hiddenFilters.push(queryParam[1])
               }
