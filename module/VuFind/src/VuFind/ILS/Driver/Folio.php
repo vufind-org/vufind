@@ -362,11 +362,17 @@ class Folio extends AbstractAPI implements
     {
         $factory = $this->sessionFactory;
         $this->sessionCache = $factory($this->tenant);
+        $cacheType = 'session';
+        $globalTokenData = (array)($this->getCachedData('token') ?? []);
+        if (($this->config['API']['global_token_cache'] ?? true) && count($globalTokenData) === 2) {
+            $cacheType = 'global';
+            [$this->sessionCache->folio_token, $this->sessionCache->folio_token_expiration] = $globalTokenData;
+        }
         if ($this->sessionCache->folio_token ?? false) {
             $this->token = $this->sessionCache->folio_token;
             $this->tokenExpiration = $this->sessionCache->folio_token_expiration ?? null;
             $this->debug(
-                'Token taken from cache: ' . substr($this->token, 0, 30) . '...'
+                'Token taken from ' . $cacheType . ' cache: ' . substr($this->token, 0, 30) . '...'
             );
         }
         if ($this->token == null) {
@@ -1165,13 +1171,19 @@ class Folio extends AbstractAPI implements
         if ($this->useLegacyAuthentication()) {
             $this->token = $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
             $this->tokenExpiration = gmdate('D, d-M-Y H:i:s T', strtotime('now'));
+            $tokenCacheLifetime = 10 * 60 * 60; // cache old-fashioned tokens for 10 minutes
         } elseif ($cookie = $this->getCookieByName($response, 'folioAccessToken')) {
             $this->token = $cookie->getValue();
             $this->tokenExpiration = $cookie->getExpires();
+            // cache RTR tokens using their known lifetime:
+            $tokenCacheLifetime = strtotime($this->tokenExpiration) - strtotime('now');
         }
         if ($this->token != null && $this->tokenExpiration != null) {
             $this->sessionCache->folio_token = $this->token;
             $this->sessionCache->folio_token_expiration = $this->tokenExpiration;
+            if ($this->config['API']['global_token_cache'] ?? true) {
+                $this->putCachedData('token', [$this->token, $this->tokenExpiration], $tokenCacheLifetime);
+            }
         } else {
             throw new \Exception('Could not find token data in response');
         }
