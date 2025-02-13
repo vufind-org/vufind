@@ -1,6 +1,14 @@
 ; Inherit main configuration
 [Parent_Config]
 relative_path = ../finna/L1.ini
-override_full_sections = "Results,ResultsTop,SpecialFacets,CheckboxFacets,Results_Settings,Author,Advanced,Advanced_Settings,HomePage,HomePage_Settings,"
+override_full_sections = "Results,ResultsTop,SpecialFacets,CheckboxFacets,Results_Settings,Author,Advanced,Advanced_Settings,HomePage,HomePage_Settings,RawHiddenFilters"
 
 ; Add any overrides below
+
+[RawHiddenFilters]
+; AOE/AIPA selection
+; Comment or remove the following line and uncomment one of the options below.
+0 = 'datasource_str_mv:("")'
+;0 = 'datasource_str_mv:("aoe")'
+;0 = 'educational_material_type_str_mv:("1/AIPA/Education/")'
+;0 = 'datasource_str_mv:("aoe") OR educational_material_type_str_mv:("1/AIPA/Education/")'
