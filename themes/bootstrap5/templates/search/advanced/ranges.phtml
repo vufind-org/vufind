@@ -20,7 +20,7 @@
         </div>
       </div>
       <?php if ($isDateRange): ?>
-        <?=$this->render('Helpers/date-range-slider.phtml', [
+        <?=$this->component('date-range-slider', [
           'values' => $current['values'] ?? [],
           'sliderId' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
           'inputMinId' => $escField . 'from',

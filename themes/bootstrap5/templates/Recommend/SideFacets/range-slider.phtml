@@ -31,7 +31,7 @@
       </div>
     </div>
     <?php if ($isDateRange): ?>
-      <?=$this->render('Helpers/date-range-slider.phtml', [
+      <?=$this->component('date-range-slider', [
         'values' => $cleanValues,
         'sliderId' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',
         'inputMinId' => $safeBaseId . 'from',

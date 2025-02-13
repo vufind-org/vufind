@@ -105,7 +105,7 @@
         <input type="number" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control" min="-9999" max="9999">
       </div>
     </div>
-    <?=$this->render('Helpers/date-range-slider.phtml', [
+    <?=$this->component('date-range-slider', [
       'values' => $current['values'] ?? [],
       'sliderId' => 'PublicationDateSlider',
       'inputMinId' => 'PublicationDatefrom',
