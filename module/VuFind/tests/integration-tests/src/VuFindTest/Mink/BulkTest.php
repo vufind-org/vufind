@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
 
 /**
  * Mink bulk action test class.
@@ -293,6 +294,25 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * After a failed button click has been detected, resize the window and try again.
+     *
+     * @param Session $session  Mink session
+     * @param Element $page     Current page element
+     * @param string  $selector Selector to click
+     *
+     * @return void
+     */
+    protected function retryClickWithResizedWindow(Session $session, Element $page, string $selector): void
+    {
+        // For some reason, the click action does not always succeed here; resizing
+        // the window and retrying seems to prevent intermittent test failures.
+        echo "\n\nMink click failed; retrying with resized window!\n";
+        $session->resizeWindow(1280, 200, 'current');
+        $this->clickCss($page, $selector);
+        $session->resizeWindow(1280, 768, 'current');
+    }
+
+    /**
      * Test that the export control works.
      *
      * @param string $idPrefix Prefix for bulk control IDs.
@@ -321,12 +341,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         try {
             $select = $this->findCss($page, '#format', 100);
         } catch (\Exception $e) {
-            // For some reason, the click action does not always succeed here; resizing
-            // the window and retrying seems to prevent intermittent test failures.
-            echo "\n\nMink click failed; retrying with resized window!\n";
-            $session->resizeWindow(1280, 200, 'current');
-            $this->clickCss($page, $buttonSelector);
-            $session->resizeWindow(1280, 768, 'current');
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             $select = $this->findCss($page, '#format');
         }
         $select->selectOption('EndNote');
@@ -363,16 +378,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
         $this->clickCss($page, $buttonSelector);
         [, $params] = explode('?', $session->getCurrentUrl());
-        // For some reason, the click action does not always succeed here; resizing
-        // the window and retrying seems to prevent intermittent test failures.
         if (str_starts_with($params, 'lookfor')) {
-            echo "\n\nMink click failed; retrying with resized window!\n";
-            $session->resizeWindow(1280, 200, 'current');
-            $this->clickCss($page, $buttonSelector);
-            $session->resizeWindow(1280, 768, 'current');
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             [, $params] = explode('?', $session->getCurrentUrl());
         }
-        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
