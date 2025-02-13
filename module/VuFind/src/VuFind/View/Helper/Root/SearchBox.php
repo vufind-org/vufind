@@ -142,7 +142,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function autocompleteApplyActiveFilters($activeSearchClass)
+    public function autocompleteApplyActiveFilters(string $activeSearchClass): bool
     {
         $options = $this->optionsManager->get($activeSearchClass);
         return $options->autocompleteApplyActiveFilters();
