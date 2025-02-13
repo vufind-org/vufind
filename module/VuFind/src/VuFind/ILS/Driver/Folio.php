@@ -363,10 +363,12 @@ class Folio extends AbstractAPI implements
         $factory = $this->sessionFactory;
         $this->sessionCache = $factory($this->tenant);
         $cacheType = 'session';
-        $globalTokenData = (array)($this->getCachedData('token') ?? []);
-        if (($this->config['API']['global_token_cache'] ?? true) && count($globalTokenData) === 2) {
-            $cacheType = 'global';
-            [$this->sessionCache->folio_token, $this->sessionCache->folio_token_expiration] = $globalTokenData;
+        if ($this->config['API']['global_token_cache'] ?? true) {
+            $globalTokenData = (array)($this->getCachedData('token') ?? []);
+            if (count($globalTokenData) === 2) {
+                $cacheType = 'global';
+                [$this->sessionCache->folio_token, $this->sessionCache->folio_token_expiration] = $globalTokenData;
+            }
         }
         if ($this->sessionCache->folio_token ?? false) {
             $this->token = $this->sessionCache->folio_token;
