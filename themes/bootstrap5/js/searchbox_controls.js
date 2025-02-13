@@ -249,7 +249,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
              */
             function extractFilters(queryParam) {
               if (queryParam[0].startsWith("filter[")) {
-                hiddenFilters.push(queryParam[1])
+                hiddenFilters.push(queryParam[1]);
               }
             }
           );
