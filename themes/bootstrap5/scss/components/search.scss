@@ -315,15 +315,12 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.btn-bookbag-toggle,
 .result-links a {
   line-height: 1.5;
 }
 
 .result-links .alert { margin: 0; }
 .result-formats { margin-bottom: .5rem; }
-
-.btn-bookbag-toggle form { display: inline; }
 
 .savedLists {
   @extend .alert;
@@ -653,8 +650,6 @@ body.rtl {
 }
 
 .toolbar-btn,
-.record-nav .cart-add,
-.record-nav .cart-remove,
 .reset-filters-btn,
 .clear-selection {
   border: 0;
@@ -669,8 +664,6 @@ body.rtl {
 }
 
 .toolbar-btn,
-.record-nav .cart-add,
-.record-nav .cart-remove,
 .reset-filters-btn {
   @extend .icon-link;
   gap: 0.25rem;

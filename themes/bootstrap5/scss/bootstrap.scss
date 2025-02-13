@@ -376,19 +376,6 @@ footer {
   }
 }
 
-.nav .btn-bookbag-toggle { float: left; }
-.nav .btn-bookbag-toggle a {
-  display: block;
-  padding: $nav-link-padding;
-  text-decoration: none;
-  &:hover,
-  &:focus {
-    @extend .btn-outline-secondary;
-    text-decoration: none;
-    background-color: $nav-link-hover-bg;
-  }
-}
-
 /* ------ Devtools ------ */
 .translation-output {
   width: 100%;
