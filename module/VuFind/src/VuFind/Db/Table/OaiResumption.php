@@ -30,6 +30,7 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
+use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\DbServiceAwareInterface;
 
@@ -90,6 +91,19 @@ class OaiResumption extends Gateway implements DbServiceAwareInterface
     public function findToken($token)
     {
         return $this->select(['id' => $token])->current();
+    }
+
+    /**
+     * Retrieve a row from the database based on hash; return null if it
+     * is not found.
+     *
+     * @param string $hash Hash used to search for a resumption token.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findTokenWithHash(string $hash): ?OaiResumptionEntityInterface
+    {
+        return $this->select(['hash' => $hash])->current();
     }
 
     /**

@@ -203,7 +203,7 @@
                     {
                         "name": "resumptionToken",
                         "in": "query",
-                        "description": "Use resumption token for paging the results. Returns <?=$cursorMaxLimit ?> records per request. Using resumption token excludes page setting and returning facets is not possible.",
+                        "description": "A large result set can only be downloaded in batches. You can initiate a batch download by setting resumptionToken to true. Each batch will then return a resumptionToken value to use for the next batch until no more results are available (note that the last result set can be empty). Other parameters are ignored when resumptionToken is set to any other value than true or false. The following parameters are not available with resumptionToken: limit, page, facet[].",
                         "schema": {
                             "type": "integer|boolean",
                             "default": "false"

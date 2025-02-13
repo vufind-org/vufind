@@ -62,6 +62,16 @@ interface OaiResumptionServiceInterface
     public function findToken(string $token): ?OaiResumptionEntityInterface;
 
     /**
+     * Retrieve a row from the database based on hash; return null if it
+     * is not found.
+     *
+     * @param string $hash Hash used to search for a resumption token.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findTokenWithHash(string $hash): ?OaiResumptionEntityInterface;
+
+    /**
      * Create and persist a new resumption token.
      *
      * @param array $params Parameters associated with the token.

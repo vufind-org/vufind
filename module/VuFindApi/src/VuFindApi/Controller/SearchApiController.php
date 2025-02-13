@@ -131,11 +131,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     /**
      * Default max limit for cursor based search. Even if cursor search is cheaper in terms of processing in Solr,
      * PHP memory still has limitations so set the default to be a decent amount. (Default 200).
-     * Value is adjustable in searches.ini [API] cursorMaxLimit
+     * Value is adjustable in searches.ini [API] cursorLimit
      *
      * @var int
      */
-    protected $cursorMaxLimit = 200;
+    protected $cursorLimit = 200;
 
     /**
      * Facet configuration
@@ -179,7 +179,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];
         // Apply all supported configurations:
         $configKeys = [
-            'recordAccessPermission', 'searchAccessPermission', 'maxLimit', 'cursorMaxLimit',
+            'recordAccessPermission', 'searchAccessPermission', 'maxLimit', 'cursorLimit',
         ];
         foreach ($configKeys as $key) {
             if (isset($settings[$key])) {
@@ -217,7 +217,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
             'maxLimit' => $this->maxLimit,
-            'cursorMaxLimit' => $this->cursorMaxLimit,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/openapi',
@@ -444,7 +443,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             }
             $request = array_merge($request, $resumptionTokenParams);
         }
-        $limit = $this->cursorMaxLimit;
+        $limit = $this->cursorLimit;
         $cursor = $request['cursor'];
         $cursorMark = $request['cursorMark'] ?? '';
         $recordFields = $this->getFieldList($request);
@@ -489,7 +488,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             $nextCursorMark = $results->getCursorMark();
             $resumptionToken = $this->createResumptionToken($request, $nextCursor, $nextCursorMark);
             $response['resumptionToken'] = [
-                'token' => $resumptionToken->getId(),
+                'token' => $resumptionToken->getHash(),
                 'expires' => $resumptionToken->getExpiry()->format('Y-m-d H:i:s'),
             ];
         }

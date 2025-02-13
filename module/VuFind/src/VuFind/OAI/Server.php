@@ -1313,7 +1313,7 @@ class Server
         $oldCursor = $params['cursor'];
         $resumptionToken = $this->createResumptionToken($params, $currentCursor, $cursorMark);
         // Add details to the xml:
-        $token = $xml->addChild('resumptionToken', $resumptionToken->getId());
+        $token = $xml->addChild('resumptionToken', $resumptionToken->getHash());
         $token->addAttribute('cursor', $oldCursor);
         $token->addAttribute('expirationDate', date($this->iso8601, $resumptionToken->getExpiry()->getTimestamp()));
         $token->addAttribute('completeListSize', $listSize);

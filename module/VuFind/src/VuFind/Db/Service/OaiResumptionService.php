@@ -76,6 +76,19 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
+     * Retrieve a row from the database based on hash; return null if it
+     * is not found.
+     *
+     * @param string $hash Hash used to search for a resumption token.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findTokenWithHash(string $hash): ?OaiResumptionEntityInterface
+    {
+        return $this->getDbTable('oairesumption')->findTokenWithHash($hash);
+    }
+
+    /**
      * Create and persist a new resumption token.
      *
      * @param array $params Parameters associated with the token.
@@ -87,6 +100,7 @@ class OaiResumptionService extends AbstractDbService implements
     public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface
     {
         $row = $this->createEntity()
+            ->setHash(bin2hex(random_bytes(32)))
             ->setResumptionParameters($this->encodeParams($params))
             ->setExpiry(\DateTime::createFromFormat('U', $expire));
         try {
