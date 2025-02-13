@@ -946,7 +946,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function autocompleteApplyActiveFilters()
+    public function autocompleteApplyActiveFilters(): bool
     {
         return $this->autocompleteApplyActiveFilters;
     }
