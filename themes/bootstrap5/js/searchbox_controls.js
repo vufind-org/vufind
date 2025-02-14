@@ -241,13 +241,16 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
         if (applyActiveFilters) {
           // There may be multiple copies of the active-filters area, so be sure to only pull from one:
-          document.querySelector(".active-filters")?.querySelectorAll(".filter-value")?.forEach(
-            (element) => {
-              if (element.dataset.filter) {
-                hiddenFilters.push(element.dataset.filter);
+          const activeFilters = document.querySelector(".active-filters");
+          if (activeFilters) {
+            activeFilters.querySelectorAll(".filter-value").forEach(
+              (element) => {
+                if (element.dataset.filter) {
+                  hiddenFilters.push(element.dataset.filter);
+                }
               }
-            }
-          );
+            );
+          }
         }
         $.ajax({
           url: VuFind.path + '/AJAX/JSON',
