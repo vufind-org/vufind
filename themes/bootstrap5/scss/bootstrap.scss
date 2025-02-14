@@ -243,6 +243,10 @@ footer {
   }
 }
 
+body.rtl .dropdown-menu {
+  text-align: right;
+}
+
 /* ------ Navigation ------ */
 .navbar-brand {
   font-size: 1.4rem;
@@ -396,6 +400,11 @@ footer {
     list-style: none;
     margin-bottom: $myresearch-menu-ul-margin-bottom;
     padding-left: $myresearch-menu-ul-padding-left;
+
+    body.rtl & {
+      padding-left: inherit;
+      padding-right: $myresearch-menu-ul-padding-left;
+    }
   }
   a {
     display: inline-flex;
@@ -475,13 +484,23 @@ ul.list-group {
 }
 
 // Reduce the gap between the text and dropdown button:
-#account-home-nav.with-dropdown a {
+#account-home-nav.with-dropdown > a {
   padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
-}
-#login-dropdown a {
+
+  body.rtl & {
     padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
-    padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
-    margin-right: .5rem;
+    padding-right: inherit;
+  }
+}
+#login-dropdown > a {
+  padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+  padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+  margin-right: .5rem;
+
+  body.rtl & {
+    margin-left: .5rem;
+    margin-right: inherit;
+  }
 }
 
 #login-dropdown .dropdown-menu {
