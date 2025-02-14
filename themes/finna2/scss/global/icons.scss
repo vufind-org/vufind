@@ -63,11 +63,13 @@ table .iconlabel {
 }
 .iconlabel[class*="format-1othermicrofilm"]:before,
 .iconlabel[class*="format-feed-othermicrofilm"]:before {
-    @extend .fa, .fa-film;
+    @extend .fa;
+    content: "#{$fa-var-film}";
 }
 .iconlabel[class*="format-1otherinterview"]:before,
 .iconlabel[class*="format-feed-otherinterview"]:before {
-    @extend .fa, .fa-microphone;
+    @extend .fa;
+    content: "#{$fa-var-microphone}";
 }
 .iconlabel.format-book:before,
 .iconlabel[class*="format-1book"]:before,
