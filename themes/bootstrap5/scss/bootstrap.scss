@@ -474,28 +474,26 @@ ul.list-group {
   min-width: 200px;
 }
 
+// Reduce the gap between the text and dropdown button:
 #account-home-nav.with-dropdown a {
   padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
 }
-#login-dropdown {
-  a {
-    // These with the `.logoutOptions.with-dropdown a` above reduce the gap between the text and dropdown button:
+#login-dropdown a {
     padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
     padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
     margin-right: .5rem;
+}
+
+#login-dropdown .dropdown-menu {
+  width: 250px;
+  padding: 0 0.5rem 0.5rem 0.5rem;
+
+  .account-menu {
+    display: block;
   }
 
-  .dropdown-menu {
-    width: 250px;
-    padding: 0 0.5rem 0.5rem 0.5rem;
-
-    .account-menu {
-      display: block;
-    }
-
-    h3 {
-      margin-left: 0.5rem;
-    }
+  h3 {
+    margin-left: 0.5rem;
   }
 }
 #login-dropdown
