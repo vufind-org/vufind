@@ -240,21 +240,15 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         });
 
         if (applyActiveFilters) {
-          const queryParams = new URLSearchParams(window.location.search);
-          [...queryParams].forEach(
-            /**
-             * If the provided parameter is a filter, add it to the hiddenFilters array.
-             *
-             * @param {Array} queryParam Array representing query parameter ([key, value] format)
-             */
-            function extractFilters(queryParam) {
-              if (queryParam[0].startsWith("filter[")) {
-                hiddenFilters.push(queryParam[1]);
+          // There may be multiple copies of the active-filters area, so be sure to only pull from one:
+          document.querySelector(".active-filters")?.querySelectorAll(".filter-value")?.forEach(
+            (element) => {
+              if (element.dataset.filter) {
+                hiddenFilters.push(element.dataset.filter);
               }
             }
           );
         }
-
         $.ajax({
           url: VuFind.path + '/AJAX/JSON',
           data: {
