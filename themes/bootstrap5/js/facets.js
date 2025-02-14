@@ -164,8 +164,49 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     return value.substring(0, p) + ':' + filterValue;
   }
 
+  /**
+   * Normalize a single query key from a search
+   *
+   * @param {string} key Key name
+   *
+   * @returns string
+   */
+  function normalizeSearchQueryKey(key) {
+    // We normally use open-ended brackets to signify array-based query parameters.
+    // However, some server-side processing can occasionally inject explicit index
+    // values. We want to normalize out the index values for consistency.
+    return key.replace(/(.+)\[\d+\]/, '$1[]');
+  }
+
+  /**
+   * Append a normalized value to a normalized key in a set of parameters
+   *
+   * @param {URLSearchParams} params Parameters to update
+   * @param {string}          key    Key name
+   * @param {string}          value  Value to set
+   */
+  function appendNormalizedValue(params, key, value) {
+    const normalizedKey = normalizeSearchQueryKey(key);
+    params.append(normalizedKey, normalizeValue(normalizedKey, value));
+  }
+
+  /**
+   * Normalize keys and values in a set of search parameters
+   *
+   * @param {URLSearchParams} params Parameters to normalize
+   *
+   * @returns URLSearchParams
+   */
+  function normalizeSearchQueryKeysAndValues(params) {
+    const normalized = new URLSearchParams();
+    for (const [key, value] of params) {
+      appendNormalizedValue(normalized, key, value);
+    }
+    return normalized;
+  }
+
   for (const [key, value] of (new URLSearchParams(window.location.search))) {
-    initialParams.append(key, normalizeValue(key, value));
+    appendNormalizedValue(initialParams, key, value);
   }
 
   /**
@@ -220,19 +261,19 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     for (const elem of elems) {
       const href = elem.getAttribute('href');
       const p = href.indexOf('?');
-      const elemParams = new URLSearchParams(p >= 0 ? href.substring(p + 1) : '');
+      const elemParams = normalizeSearchQueryKeysAndValues(new URLSearchParams(p >= 0 ? href.substring(p + 1) : ''));
 
       // Add parameters that did not initially exist:
       for (const [key, value] of elemParams) {
         // URLSearchParams.has(key, value) seems to be broken on iOS 16, so check with our own method:
         if (!VuFind.inURLSearchParams(initialParams, key, value)) {
-          globalAddedParams.append(key, value);
+          appendNormalizedValue(globalAddedParams, key, value);
         }
       }
       // Remove parameters that this URL no longer has:
       for (const [key, value] of initialParams) {
         if (!VuFind.inURLSearchParams(elemParams, key, value)) {
-          globalRemovedParams.append(key, value);
+          appendNormalizedValue(globalRemovedParams, key, value);
         }
       }
     }
@@ -559,7 +600,7 @@ VuFind.register('sideFacets', function SideFacets() {
         try {
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
-          } else if (!$(item).data('forceIn')) {
+          } else if (!$(item).data('forceUncollapsed')) {
             $(item).collapse('hide');
           }
         } finally {
@@ -574,15 +615,9 @@ VuFind.register('sideFacets', function SideFacets() {
     facetGroup.on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
-    if (VuFind.getBootstrapMajorVersion() === 3) {
-      $('.side-facets-container-ajax')
-        .find('div.collapse[data-facet]:not(.in)')
-        .on('shown.bs.collapse', delayLoadAjaxSideFacets);
-    } else {
-      document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
-        collapseEl.addEventListener('shown.bs.collapse', delayLoadAjaxSideFacets);
-      });
-    }
+    document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
+      collapseEl.addEventListener('shown.bs.collapse', delayLoadAjaxSideFacets);
+    });
     delayLoadAjaxSideFacets();
 
     // Keep filter dropdowns on screen

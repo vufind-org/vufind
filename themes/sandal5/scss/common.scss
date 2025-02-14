@@ -36,12 +36,7 @@ mark { background-color: $highlighter-color; }
 .form-control { box-shadow: none; }
 .form-control:hover,
 .form-control:focus {
-  /* #LESS>
-  --outline-color: rgba($brand-primary, (40/100));
-  <#LESS */
-  /* #SCSS> */
   --outline-color: color.change($brand-primary, $alpha: 0.4);
-  /* <#SCSS */
 
   border-color: $brand-primary;
   outline: 4px solid var(--outline-color);

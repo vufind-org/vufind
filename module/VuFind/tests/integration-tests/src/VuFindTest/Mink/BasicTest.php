@@ -48,7 +48,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testHomePage(): void
     {
         $page = $this->getSearchHomePage();
-        $this->assertTrue(false !== strstr($page->getContent(), 'VuFind'));
+        $this->assertStringContainsString('VuFind', $page->getContent());
     }
 
     /**
@@ -94,7 +94,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Check footer help-link
         $this->assertNotEquals(
@@ -111,12 +111,12 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testThemeSwitcher(): void
     {
         // Turn on theme switcher
-        $themeList = 'sandal:sandal,example:local_theme_example';
+        $themeList = 'sandal:sandal5,example:local_theme_example';
         $this->changeConfigs(
             [
                 'config' => [
                     'Site' => [
-                        'theme' => 'sandal',
+                        'theme' => 'sandal5',
                         'alternate_themes' => $themeList,
                         'selectable_themes' => $themeList,
                     ],
@@ -132,7 +132,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the theme:
         $this->clickCss($page, '.theme-selector.dropdown');
-        $this->clickCss($page, '.theme-selector.dropdown li:not(.active) a');
+        $this->clickCss($page, '.theme-selector.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
 
         // Check h1 again -- it should exist now
@@ -140,6 +140,31 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
             'Welcome to your custom theme!',
             $this->findCssAndGetHtml($page, 'h1')
         );
+    }
+
+    /**
+     * Test graceful handling of an invalid theme.
+     *
+     * Note that HTML validation is disabled on this test because an improperly initialized
+     * theme will not generate a fully-formed page; but we still want to confirm that it
+     * at least outputs a human-readable error message.
+     *
+     * @return void
+     */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    public function testBadThemeConfig(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'theme' => 'not-a-valid-theme',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertStringContainsString('An error has occurred', $page->getContent());
     }
 
     /**

@@ -9,7 +9,7 @@
         ?? 'Solr';
     }
     // Initialize from current search if eligible, defaults otherwise:
-    if (isset($params) && $this->searchClassId === $params->getSearchClassId()) {
+    if (isset($params) && $this->searchClassId === $params->getSearchClassId() && !$params->isSpecializedSearch()) {
       $hiddenFilters = $params->getHiddenFilters();
       $lastSort = $params->getSort();
       $lastLimit = $params->getLimit();
@@ -126,7 +126,7 @@
                 </li>
                 <?php foreach ($keyboardLayouts as $keyboardLayout): ?>
                   <li>
-                    <a class="keyboard-selection-item" href="#" data-value="<?= $this->escapeHtmlAttr($keyboardLayout) ?>"><?= $this->transEsc("KeyboardLayout::$keyboardLayout") ?></a>
+                    <a class="dropdown-item keyboard-selection-item" href="#" data-value="<?= $this->escapeHtmlAttr($keyboardLayout) ?>"><?= $this->transEsc("KeyboardLayout::$keyboardLayout") ?></a>
                   </li>
                 <?php endforeach; ?>
               </ul>
@@ -135,7 +135,7 @@
         </div>
       </div>
       <?php if ($handlerCount > 1): ?>
-        <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
+        <select id="searchForm_type" class="searchForm_type form-control form-select" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
           <?php $currentGroup = $insideGroup = false; ?>
           <?php foreach ($handlers as $handler): ?>
             <?php

@@ -1,8 +1,5 @@
 [
     {
-        "comment": "Initial token check"
-    },
-    {
         "comment": "login attempt",
         "expectedMethod": "POST",
         "expectedPath": "/authn/login-with-expiry",

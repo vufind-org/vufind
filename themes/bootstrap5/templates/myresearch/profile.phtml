@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('My Profile'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Profile') . '</li>';
 
     // Template for use by the renderArray helper:
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
@@ -42,7 +42,7 @@
               $selected = $this->profile['home_library'] ?? ' ** ';
             ?>
             <form id="profile_form" class="form-inline" method="post">
-              <select id="home_library" name="home_library" class="form-control">
+              <select id="home_library" name="home_library" class="form-control form-select">
                 <option value=""<?='' === $selected ? ' selected="selected"' : ''?>>
                   <?=$this->transEsc('preferred_library_default')?>
                 </option>

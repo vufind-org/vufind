@@ -3,9 +3,9 @@
     $this->headTitle($this->translate('ill_request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
         . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-        . '<li class="active">' . $this->transEsc('ill_request_place_text') . '</li>';
+        . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('ill_request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('ill_request_place_text')?></h2>
 <?php if ($this->helpTextHtml): ?>
@@ -17,7 +17,7 @@
   <?php if (in_array('itemId', $this->extraFields)): ?>
     <div class="form-group">
       <label class="control-label"><?=$this->transEsc('ill_request_item')?>:</label>
-      <select id="itemId" name="gatheredDetails[itemId]" class="form-control">
+      <select id="itemId" name="gatheredDetails[itemId]" class="form-control form-select">
         <?php foreach ($this->items as $item): ?>
           <option value="<?=$this->escapeHtmlAttr($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>>
             <?=$this->escapeHtml($item['name'])?>
@@ -31,7 +31,7 @@
     <div class="form-group">
       <label class="control-label"><?=$this->transEsc('ill_request_pick_up_library')?>:</label>
       <?php if (count($this->pickupLibraries) > 1): ?>
-        <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" class="form-control">
+        <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" class="form-control form-select">
         <?php
           if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== '') {
               $selected = $this->gatheredDetails['pickUpLibrary'];
@@ -60,7 +60,7 @@
         <?=$this->transEsc('ill_request_pick_up_location')?>:
         <noscript> (<?=$this->transEsc('Please enable JavaScript.')?>)</noscript>
       </label>
-      <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control"></select>
+      <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control form-select"></select>
     </div>
   <?php endif; ?>
 
@@ -77,7 +77,7 @@
           }
         ?>
         <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
-        <select name="gatheredDetails[pickUpLocation]" class="form-control">
+        <select name="gatheredDetails[pickUpLocation]" class="form-control form-select">
           <?php foreach ($this->pickup as $lib): ?>
             <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
               <?=$this->escapeHtml($lib['locationDisplay'])?>

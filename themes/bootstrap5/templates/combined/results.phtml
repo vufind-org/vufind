@@ -25,7 +25,7 @@
   $combinedResults = $this->results;
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">' . $this->escapeHtml($headTitle) . '</li>';
 
   // Check if any results have version support enabled:
   $displayVersions = false;
@@ -54,7 +54,15 @@
   </div>
 <?php endif; ?>
 <?php if ($config['Layout']['jump_links'] ?? false): ?>
-  <?=$this->render('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
+  <?=
+    $this->render(
+        'combined/jump-links.phtml',
+        [
+          'combinedResults' => $this->combinedResults,
+          'mode' => $config['Layout']['jump_links_mode'] ?? 'anchor',
+        ]
+    )
+  ?>
 <?php endif; ?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>

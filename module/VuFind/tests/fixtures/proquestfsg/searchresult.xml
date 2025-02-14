@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zs:searchRetrieveResponse xmlns:zs="http://www.loc.gov/zing/srw/">
+    <zs:version>1.2</zs:version>
+    <zs:numberOfRecords>31</zs:numberOfRecords>
+    <zs:records>
+        <zs:record>
+            <zs:recordPosition>1</zs:recordPosition>
+            <zs:recordSchema>marcxml</zs:recordSchema>
+            <zs:recordPacking>xml</zs:recordPacking>
+            <zs:recordData>
+                <record xmlns="http://www.loc.gov/MARC21/slim">
+                    <leader>00000nab a2200000uu 4500</leader>
+                    <controlfield tag="001">2615626038</controlfield>
+                    <controlfield tag="003">UK-CbPIL</controlfield>
+                    <datafield tag="022" ind1=" " ind2=" ">
+                        <subfield code="a">0164-0178</subfield>
+                    </datafield>
+                    <datafield tag="022" ind1=" " ind2=" ">
+                        <subfield code="a">1086-3141</subfield>
+                    </datafield>
+                    <datafield tag="022" ind1=" " ind2=" ">
+                        <subfield code="a">0146-5511</subfield>
+                    </datafield>
+                    <datafield tag="022" ind1=" " ind2=" ">
+                        <subfield code="a">0002-9068</subfield>
+                    </datafield>
+                    <datafield tag="035" ind1=" " ind2=" ">
+                        <subfield code="a">2615626038</subfield>
+                    </datafield>
+                    <datafield tag="045" ind1="2" ind2=" ">
+                        <subfield code="b">d20210701</subfield>
+                        <subfield code="b">d20210731</subfield>
+                    </datafield>
+                    <datafield tag="084" ind1=" " ind2=" ">
+                        <subfield code="a">12342</subfield>
+                        <subfield code="2">nlm</subfield>
+                    </datafield>
+                    <datafield tag="100" ind1="1" ind2=" ">
+                        <subfield code="a">Jenna Weissman Joselit</subfield>
+                    </datafield>
+                    <datafield tag="245" ind1="1" ind2=" ">
+                        <subfield code="a">&lt;i&gt;Painted Pomegranates and Needlepoint Rabbis: How Jews Craft Resilience and Craft Community&lt;/i&gt; by Jodi Eichler-Levine (review)</subfield>
+                    </datafield>
+                    <datafield tag="260" ind1=" " ind2=" ">
+                        <subfield code="b">Johns Hopkins University Press</subfield>
+                        <subfield code="c">Jul 2021</subfield>
+                    </datafield>
+                    <datafield tag="513" ind1=" " ind2=" ">
+                        <subfield code="a">Book Review</subfield>
+                    </datafield>
+                    <datafield tag="520" ind1="3" ind2=" ">
+                        <subfield code="a">The Pomegranate Guild of Judaic Needlework, established in 1977 to foster "synagogue decoration, Judaic symbolism, Jewish art and Judaic embroidery," and Jewish Hearts for Pittsburgh, a digital group some one thousand members strong that arose more recently, in the wake of the deadly 2018 Tree of Life shootings, are among them (103).
+
+Paying close attention to what they created, Eichler-Levine, herself a member of the Jewish craft community, explores a wide array of handmade goods, from the Pussyhat, the hot pink knitted cap with pointed cat ears worn by millions of women in 2017 in protest against then-President Trump, to the traditional wimple whose impetus has recently expanded to include all sorts of lifecycle moments, not just the birth of a son.
+
+In its compelling analysis and, yes, in its embrace of Jewish women's craft culture, the book repeatedly rings the bell in favor of material culture, sounding now and again much more like a brief, an exercise in special pleading, than a confident narrative.</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Judaic studies</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Clergy</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Jewish people</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Symbolism</subfield>
+                    </datafield>
+                    <datafield tag="773" ind1="0" ind2=" ">
+                        <subfield code="t">American Jewish History</subfield>
+                        <subfield code="g">vol. 105, no. 3 (Jul 2021), p. 433</subfield>
+                    </datafield>
+                    <datafield tag="786" ind1="0" ind2=" ">
+                        <subfield code="d">ProQuest</subfield>
+                        <subfield code="t">Religion Database</subfield>
+                    </datafield>
+                    <datafield tag="856" ind1="4" ind2="1">
+                        <subfield code="3">Citation/Abstract</subfield>
+                        <subfield code="u">https://www.proquest.com/docview/2615626038/abstract/embedded/UHA0DUZFOHJEPDBM?source=fedsrch</subfield>
+                    </datafield>
+                    <datafield tag="856" ind1="4" ind2="0">
+                        <subfield code="3">Full Text</subfield>
+                        <subfield code="u">https://www.proquest.com/docview/2615626038/fulltext/embedded/UHA0DUZFOHJEPDBM?source=fedsrch</subfield>
+                    </datafield>
+                    <datafield tag="856" ind1="4" ind2="0">
+                        <subfield code="3">Full Text - PDF</subfield>
+                        <subfield code="u">https://www.proquest.com/docview/2615626038/fulltextPDF/embedded/UHA0DUZFOHJEPDBM?source=fedsrch</subfield>
+                    </datafield>
+                </record>
+            </zs:recordData>
+        </zs:record>
+        <zs:record>
+            <zs:recordPosition>2</zs:recordPosition>
+            <zs:recordSchema>marcxml</zs:recordSchema>
+            <zs:recordPacking>xml</zs:recordPacking>
+            <zs:recordData>
+                <record xmlns="http://www.loc.gov/MARC21/slim">
+                    <leader>00000nab a2200000uu 4500</leader>
+                    <controlfield tag="001">2432781939</controlfield>
+                    <controlfield tag="003">UK-CbPIL</controlfield>
+                    <datafield tag="022" ind1=" " ind2=" ">
+                        <subfield code="a">1948-7428</subfield>
+                    </datafield>
+                    <datafield tag="022" ind1=" " ind2=" ">
+                        <subfield code="a">1948-741X</subfield>
+                    </datafield>
+                    <datafield tag="022" ind1=" " ind2=" ">
+                        <subfield code="a">0042-6598</subfield>
+                    </datafield>
+                    <datafield tag="035" ind1=" " ind2=" ">
+                        <subfield code="a">2432781939</subfield>
+                    </datafield>
+                    <datafield tag="045" ind1="0" ind2=" ">
+                        <subfield code="b">d20200815</subfield>
+                    </datafield>
+                    <datafield tag="084" ind1=" " ind2=" ">
+                        <subfield code="a">157528</subfield>
+                        <subfield code="2">nlm</subfield>
+                    </datafield>
+                    <datafield tag="245" ind1="1" ind2=" ">
+                        <subfield code="a">PAINTED POMEGRANATES AND NEEDLEPOINT RABBIS</subfield>
+                    </datafield>
+                    <datafield tag="260" ind1=" " ind2=" ">
+                        <subfield code="b">Kirkus Media LLC</subfield>
+                        <subfield code="c">Aug 15, 2020</subfield>
+                    </datafield>
+                    <datafield tag="513" ind1=" " ind2=" ">
+                        <subfield code="a">Book Review</subfield>
+                    </datafield>
+                    <datafield tag="520" ind1="3" ind2=" ">
+                        <subfield code="a">An academic look at Jewish crafts.</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Nonfiction</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Handicrafts</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Jewish people</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Jews</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Ethnology</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Ethnic Groups</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Coping</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Resilience (Psychology)</subfield>
+                    </datafield>
+                    <datafield tag="653" ind1=" " ind2=" ">
+                        <subfield code="a">Resistance (Psychology)</subfield>
+                    </datafield>
+                    <datafield tag="773" ind1="0" ind2=" ">
+                        <subfield code="t">Kirkus Reviews</subfield>
+                        <subfield code="g">vol. LXXXVIII, no. 16 (Aug 15, 2020)</subfield>
+                    </datafield>
+                    <datafield tag="786" ind1="0" ind2=" ">
+                        <subfield code="d">ProQuest</subfield>
+                        <subfield code="t">Library Science Database</subfield>
+                    </datafield>
+                    <datafield tag="856" ind1="4" ind2="1">
+                        <subfield code="3">Citation/Abstract</subfield>
+                        <subfield code="u">https://www.proquest.com/docview/2432781939/abstract/embedded/UHA0DUZFOHJEPDBM?source=fedsrch</subfield>
+                    </datafield>
+                    <datafield tag="856" ind1="4" ind2="0">
+                        <subfield code="3">Full Text</subfield>
+                        <subfield code="u">https://www.proquest.com/docview/2432781939/fulltext/embedded/UHA0DUZFOHJEPDBM?source=fedsrch</subfield>
+                    </datafield>
+                </record>
+            </zs:recordData>
+        </zs:record>
+    </zs:records>
+    <zs:extraResponseData>
+        <diagnosticMessage>Original CQL query: (cql.serverChoice all "painted pomegranates and needlepoint rabbis")</diagnosticMessage>
+        <diagnosticMessage>Converted to ProQuest query: ALLFIELDS("painted" AND "pomegranates" AND "and" AND "needlepoint" AND "rabbis")</diagnosticMessage>
+        <diagnosticMessage>ProQuest limiters: None</diagnosticMessage>
+        <diagnosticMessage>Navigators: database</diagnosticMessage>
+        <diagnosticMessage>Sort order: relevance</diagnosticMessage>
+        <diagnosticMessage>Databases searched by this request are: 20drama:1008836 abidateline:1007139 abiglobal:1000001 abitrade:1007133 accountingtaxbanking:10000231 africannews:1007059 agriculturejournals:1007160 americanperiodicals:10000019 anz:1009046 anznews:1007061 artshumanities:1000277 asianeuropeanbusiness:10000236 asianews:1007060 assia:1007429 avon:1009174 aws:1008818 biologicalscijournals:1007856 britishperiodicals:10000001 canadiannews:1007330 career:10000026 cbcacomplete:10000023 cbs60m:1009241 chicagotribune:1005635 compscijour:1008043 conteurope:1009048 coronavirus:1009903 criminaljusticeperiodicals:1007025 eaasdb:1009715 eas:1010553 eastcentraleurope:1009050 eastsouthasia:1009049 ebookcentral1:1009388 education:1007161 eebo:1009636 engindex:10000353 engineeringjournals:1007853 eric:1007399 esdb:1009714 europeannews:1007062 familyhealth:1006520 globalwires:1009054 healthcompleteshell:10000155 healthmanagement:1006481 hightechjournals:1007852 hispanicnews:1009047 hnpnewyorktimes:1007155 hnppennsylvaniacollection:1009887 hnpphiladelphiainquirer:1009157 hnppittsburghpostgazette:1009159 ibss:1007409 indianjournals:10000204 latimes:1005692 latinamericaiberian:1009056 latinamericanews1:1009057 latx:1010284 libraryscience:1006545 linguistics:1009059 lisa:1007519 litcollectioneawso:1009776 litcollectionlittheory:1010514 llba:1007521 marketresearch:10000239 materialsscijournals:1007851 medline:1007527 middleeastafrica:1009060 middleeastnews:1006075 midwestnews1:1009067 military:1007156 msindex:10000352 nahs:1007107 ncjrs:1007535 northcentralnews:1009065 northeastnews1:1009068 nytimes:1005701 pais:10000017 physicaleducation:1007555 pilots:1007557 policyfile:1009062 politicalscience:1005684 pqdtglobal1:1010268 pqdtlocal1006887:1006887 pqrl:10000025 psychology:1007106 publiccontent:1009240 publichealth:1007617 religion:1005641 rsa:1010010 sciencejournals:1000283 socabs:1007480 socialservices:1007485 sociology:1005683 socscijournals:1007200 southcentralnews:1009066 southeastnews:1009069 tdmstudiounl:1010230 telecomms:1006986 turkey:1009063 ukireland:1009064 wallstreetjournal:1006968 washingtonpost:1005922 westnews:1009070 wlitshell:10000365 wma:10000228 wpsa:1007566 wwd:1008717</diagnosticMessage>
+        <diagnosticMessage>Subscribed databases (codes and IDs) are: Academic databases - 20drama:1008836 abidateline:1007139 abiglobal:1000001 abitrade:1007133 accountingtaxbanking:10000231 africannews:1007059 agriculturejournals:1007160 americanperiodicals:10000019 anz:1009046 anznews:1007061 artshumanities:1000277 asianeuropeanbusiness:10000236 asianews:1007060 assia:1007429 avon:1009174 aws:1008818 biologicalscijournals:1007856 britishperiodicals:10000001 canadiannews:1007330 career:10000026 cbcacomplete:10000023 cbs60m:1009241 chicagotribune:1005635 compscijour:1008043 conteurope:1009048 coronavirus:1009903 criminaljusticeperiodicals:1007025 eaasdb:1009715 eas:1010553 eastcentraleurope:1009050 eastsouthasia:1009049 ebookcentral1:1009388 education:1007161 eebo:1009636 engindex:10000353 engineeringjournals:1007853 eric:1007399 esdb:1009714 europeannews:1007062 familyhealth:1006520 globalwires:1009054 healthcompleteshell:10000155 healthmanagement:1006481 hightechjournals:1007852 hispanicnews:1009047 hnpnewyorktimes:1007155 hnppennsylvaniacollection:1009887 hnpphiladelphiainquirer:1009157 hnppittsburghpostgazette:1009159 ibss:1007409 indianjournals:10000204 latimes:1005692 latinamericaiberian:1009056 latinamericanews1:1009057 latx:1010284 libraryscience:1006545 linguistics:1009059 lisa:1007519 litcollectioneawso:1009776 litcollectionlittheory:1010514 llba:1007521 marketresearch:10000239 materialsscijournals:1007851 medline:1007527 middleeastafrica:1009060 middleeastnews:1006075 midwestnews1:1009067 military:1007156 msindex:10000352 nahs:1007107 ncjrs:1007535 northcentralnews:1009065 northeastnews1:1009068 nytimes:1005701 pais:10000017 physicaleducation:1007555 pilots:1007557 policyfile:1009062 politicalscience:1005684 pqdtglobal1:1010268 pqdtlocal1006887:1006887 pqrl:10000025 psychology:1007106 publiccontent:1009240 publichealth:1007617 religion:1005641 rsa:1010010 sciencejournals:1000283 socabs:1007480 socialservices:1007485 sociology:1005683 socscijournals:1007200 southcentralnews:1009066 southeastnews:1009069 tdmstudiounl:1010230 telecomms:1006986 turkey:1009063 ukireland:1009064 wallstreetjournal:1006968 washingtonpost:1005922 westnews:1009070 wlitshell:10000365 wma:10000228 wpsa:1007566 wwd:1008717; </diagnosticMessage>
+        <diagnosticMessage>XML Gateway software version: 2024.11.0.1605, dated 2024-10-31</diagnosticMessage>
+        <diagnosticMessage>Execution time: authentication 0.3s; search 0.2s; retrieval 0.0s; total 0.4s</diagnosticMessage>
+        <resultCountForDatabase>
+            <databaseId>1007107</databaseId>
+            <databaseCode>nahs</databaseCode>
+            <databaseName>Nursing &amp; Allied Health Database</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1009068</databaseId>
+            <databaseCode>northeastnews1</databaseCode>
+            <databaseName>U.S. Northeast Newsstream</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1005922</databaseId>
+            <databaseCode>washingtonpost</databaseCode>
+            <databaseName>The Washington Post</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1005641</databaseId>
+            <databaseCode>religion</databaseCode>
+            <databaseName>Religion Database</databaseName>
+            <numberOfRecords>10</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>10000025</databaseId>
+            <databaseCode>pqrl</databaseCode>
+            <databaseName>Research Library</databaseName>
+            <numberOfRecords>20</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>10000155</databaseId>
+            <databaseCode>healthcompleteshell</databaseCode>
+            <databaseName>Health &amp; Medical Collection</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1009240</databaseId>
+            <databaseCode>publiccontent</databaseCode>
+            <databaseName>Publicly Available Content Database</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007139</databaseId>
+            <databaseCode>abidateline</databaseCode>
+            <databaseName>ABI/INFORM Dateline</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007133</databaseId>
+            <databaseCode>abitrade</databaseCode>
+            <databaseName>ABI/INFORM Trade &amp; Industry</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1000001</databaseId>
+            <databaseCode>abiglobal</databaseCode>
+            <databaseName>ABI/INFORM Global</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1009388</databaseId>
+            <databaseCode>ebookcentral1</databaseCode>
+            <databaseName>Ebook Central</databaseName>
+            <numberOfRecords>11</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1005683</databaseId>
+            <databaseCode>sociology</databaseCode>
+            <databaseName>Sociology Database</databaseName>
+            <numberOfRecords>2</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007480</databaseId>
+            <databaseCode>socabs</databaseCode>
+            <databaseName>Sociological Abstracts</databaseName>
+            <numberOfRecords>3</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007519</databaseId>
+            <databaseCode>lisa</databaseCode>
+            <databaseName>Library &amp; Information Science Abstracts (LISA)</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1006545</databaseId>
+            <databaseCode>libraryscience</databaseCode>
+            <databaseName>Library Science Database</databaseName>
+            <numberOfRecords>2</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007409</databaseId>
+            <databaseCode>ibss</databaseCode>
+            <databaseName>International Bibliography of the Social Sciences (IBSS)</databaseName>
+            <numberOfRecords>4</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007566</databaseId>
+            <databaseCode>wpsa</databaseCode>
+            <databaseName>Worldwide Political Science Abstracts</databaseName>
+            <numberOfRecords>1</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1005684</databaseId>
+            <databaseCode>politicalscience</databaseCode>
+            <databaseName>Political Science Database</databaseName>
+            <numberOfRecords>2</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007161</databaseId>
+            <databaseCode>education</databaseCode>
+            <databaseName>Education Database</databaseName>
+            <numberOfRecords>2</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1007200</databaseId>
+            <databaseCode>socscijournals</databaseCode>
+            <databaseName>Social Science Database</databaseName>
+            <numberOfRecords>5</numberOfRecords>
+        </resultCountForDatabase>
+        <resultCountForDatabase>
+            <databaseId>1010268</databaseId>
+            <databaseCode>pqdtglobal1</databaseCode>
+            <databaseName>ProQuest Dissertations &amp; Theses Global</databaseName>
+            <numberOfRecords>4</numberOfRecords>
+        </resultCountForDatabase>
+    </zs:extraResponseData>
+</zs:searchRetrieveResponse>

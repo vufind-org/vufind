@@ -62,6 +62,7 @@
 }
 
 // Comma-separate formatting
+.record .format { display: inline-flex; }
 .record .format::after { content: ", "; }
 .record .format.badge::after,
 .record .result-formats .format::after,
