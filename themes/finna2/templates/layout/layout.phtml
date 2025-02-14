@@ -165,7 +165,9 @@
       <?php endif; ?>
       <?php
         $contentElementId = 'main';
-        if (!empty($this->layout()->finnaMainHeader)) {
+        if (!empty($this->layout()->finnaUserAccountHeading)) {
+          $contentElementId = 'useraccount-content-heading';
+        } elseif (!empty($this->layout()->finnaMainHeader)) {
           $contentElementId = 'content-heading';
         } elseif (!empty($this->layout()->finnaMainTabs)) {
           $contentElementId = 'content-main-tabs';

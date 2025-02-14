@@ -2,6 +2,7 @@
 <?php
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
+    $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Profile') . '</li>';
     // Only display home library form if we have multiple pickup locations:
@@ -44,7 +45,7 @@
 <?= $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'profile']); ?>
 
 <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
-  <div class="useraccount-header">
+  <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
     <h2><?=$this->transEsc('Profile')?></h2>
   </div>
   <div class="my-research-content">

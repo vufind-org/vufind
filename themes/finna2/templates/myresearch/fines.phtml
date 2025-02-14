@@ -2,6 +2,7 @@
 <?php
     // Set up page title:
     $this->headTitle($this->translate('My Fines'));
+    $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Fines') . '</li>';
@@ -116,13 +117,13 @@
       <div class="useraccount-row">
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
       </div>
-      <div class="useraccount-header">
+      <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
         <h2><?=$this->transEsc('Your Fines') . ' (' . count($this->fines ?? []) . ')'?></h2>
       </div>
     </div>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
-    <div class="fines-info-area">
+    <div class="fines-info-area" tabindex="0">
       <?php if (!empty($this->lastTransaction)): ?>
         <div class="last-transaction-information">
           <div>
@@ -234,7 +235,7 @@
             </div>
           </div>
         <?php endif; ?>
-        <table class="table finna-table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?> table-responsive fines-table">
+        <table class="table finna-table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?> table-responsive fines-table" tabindex="0">
           <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
           <thead>
             <tr class="headers">

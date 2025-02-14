@@ -347,7 +347,7 @@ finna.myList = (function finnaMyList() {
       });
     }
 
-    $('.add-new-list .icon').on('click', function createNewList() {
+    $('#add-new-list-item-btn').on('click', function createNewList() {
       var newListInput = $('.new-list-input');
       var newListName = newListInput.val().trim();
 
@@ -357,11 +357,16 @@ finna.myList = (function finnaMyList() {
         updateList({'id': 'NEW', 'title': newListName, 'desc': null, 'public': 0}, newListAdded, 'add-list');
       }
     });
+    $('#add-new-list-item-btn').on('keyup', function invokeCreateNewList(e) {
+      if (e.keyCode === 32) {
+        $('#add-new-list-item-btn').trigger("click");
+      }
+    });
 
     //Add new list, listen for keyup enter
     $('.new-list-input').on('keyup', function invokeCreateNewList(e) {
       if (e.keyCode === 13) {
-        $('.add-new-list .icon').trigger("click");
+        $('#add-new-list-item-btn').trigger("click");
       }
     });
 

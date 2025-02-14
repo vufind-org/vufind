@@ -2,6 +2,7 @@
 <?php
   // Set up page title:
   $this->headTitle($this->translate('Storage Retrieval Requests'));
+  $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
@@ -20,7 +21,7 @@
     <div class="useraccount-row">
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
     </div>
-    <div class="useraccount-header">
+    <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
       <h2><?=$this->transEsc('Storage Retrieval Requests') ?> (<?=count($this->recordList ?? []);?>)</h2>
     </div>
     <?php if (isset($this->noSupport)): ?>
@@ -177,6 +178,7 @@
           </tr>
         <?php endforeach; ?>
         </table>
+        <h3 class="sr-only"><?=$this->transEsc('End of List')?></h3>
         <?php if ($this->cancelForm): ?>
               <div class="dropdown button-bottom">
                 <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('storage_retrieval_request_cancel_all') ?>" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

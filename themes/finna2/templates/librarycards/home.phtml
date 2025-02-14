@@ -2,6 +2,7 @@
 <?php
     // Set up page title:
     $this->headTitle($this->translate('Library Cards'));
+    $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Library Cards') . '</li>';
@@ -19,13 +20,13 @@
   <div class="my-research-content">
       <?=$this->flashmessages()?>
       <?php if (!$this->translationEmpty('library_cards_instructions_html')): ?><p class="no-content-message"><?=$this->translate('library_cards_instructions_html')?></p><?php endif; ?>
-        <div class="useraccount-header">
+        <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
           <h2><?=$this->transEsc('Library Cards Connected To My Account')?></h2>
         </div>
       <?php if (empty($this->libraryCards)): ?>
         <h4><?=$this->transEsc('You do not have any library cards')?></h4>
       <?php else: ?>
-        <table class="table finna-table-striped useraccount-table library-cards mobile-table">
+        <table class="table finna-table-striped useraccount-table library-cards mobile-table" tabindex="0">
           <thead>
             <tr class="headers">
               <th class="card-name"><?=$this->transEsc('Library Card Name')?></th>
