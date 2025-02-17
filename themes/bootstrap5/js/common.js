@@ -787,9 +787,10 @@ function phoneNumberFormHandler(numID, regionCode) {
 }
 
 // Setup captchas after Google script loads
-function recaptchaOnLoad() {
+function recaptchaOnLoad(_context) {
+  let context = typeof _context === "undefined" ? document : _context;
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = document.querySelectorAll('.g-recaptcha:empty');
+    var captchas = context.querySelectorAll('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
       var captchaElement = captchas[i];
       var captchaData = captchaElement.dataset;
@@ -799,11 +800,11 @@ function recaptchaOnLoad() {
   }
 }
 
-function resetCaptcha($form) {
+function resetCaptcha(target) {
   if (typeof grecaptcha !== 'undefined') {
-    var captcha = $form.find('.g-recaptcha');
-    if (captcha.length > 0) {
-      grecaptcha.reset(captcha.data('captchaId'));
+    let captcha = target.querySelector('.g-recaptcha');
+    if (captcha) {
+      grecaptcha.reset(captcha.dataset.captchaId);
     }
   }
 }
@@ -859,7 +860,7 @@ function unwrapJQuery(node) {
 }
 
 function setupJumpMenus(_container) {
-  var container = unwrapJQuery(_container || document.body);
+  var container = _container || document.body;
   var selects = container.querySelectorAll('select.jumpMenu');
   selects.forEach((select) => {
     select.addEventListener('change', function jumpMenu() {
