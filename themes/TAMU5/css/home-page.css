@@ -23,7 +23,7 @@ body {
 a {
   color: #00648b;
   text-decoration: none;
-  
+  border-bottom: 1px dotted #00648b;
 }
 a:hover,
 a:focus,
@@ -31,6 +31,12 @@ a:focus,
   color: #003f58;
   border-bottom: 1px solid #003f58;
   text-decoration: none;
+}
+.record-cover-link {
+  border-bottom: none;
+}
+.record-cover-link:hover {
+  border-bottom: none;
 }
 .image-credit {
   position: absolute;
