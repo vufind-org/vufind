@@ -515,6 +515,10 @@ footer {
   content:"\f041"
 }
 
+.fa.fa-external-link:before {
+  content:"\f08e"
+}
+
 
 .mainbody.solo {
   width: 100%;
