@@ -1854,14 +1854,12 @@ class Params
             ];
         }
         if (!isset($list[$currentSort])) {
-            // Prepend a placeholder for selected sort:
-            $list = [
-                $currentSort => [
-                    'desc' => '-',
-                    'selected' => true,
-                    'default' => false,
-                ],
-            ] + $list;
+            // Add selected sort with a generic description so that we display it:
+            $list[$currentSort] = [
+                'desc' => 'unrecognized_sort_option',
+                'selected' => true,
+                'default' => false,
+            ];
         }
         return $list;
     }
