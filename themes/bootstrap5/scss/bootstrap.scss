@@ -358,11 +358,16 @@ footer {
   margin: 0;
   padding: 0;
 }
-.cart-controls .toolbar-btn {
-  @extend .toolbar-btn;
-  @extend .icon-link;
+.cart-controls {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid $border-color;
 
-  margin: 0;
+  .toolbar-btn {
+    @extend .toolbar-btn;
+    @extend .icon-link;
+
+    margin: 0;
+  }
 }
 
 @media (min-width: 992px) {
