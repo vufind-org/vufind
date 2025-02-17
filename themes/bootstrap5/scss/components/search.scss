@@ -161,8 +161,8 @@ header .container.navbar { margin-bottom: 0; }
     padding-left: 1em;
   }
 }
-.action-toolbar li,
-.selection-controls-bar li {
+.action-toolbar > li,
+.selection-controls-bar > li {
   display: inline-block;
 
   .popover li {
