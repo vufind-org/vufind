@@ -99,6 +99,13 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected $limit = 50;
 
     /**
+     * Sort order to use when performing searches
+     *
+     * @var string
+     */
+    protected $sort = 'first_indexed desc';
+
+    /**
      * Constructor
      *
      * @param SecretCalculator       $secretCalculator Secret calculator
@@ -311,7 +318,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         // Prepare query
         $params = $searchObject->getParams();
         $params->setLimit($this->limit);
-        $params->setSort('first_indexed desc', true);
+        $params->setSort($this->sort, true);
         $searchId = $searchObject->getSearchId();
         try {
             $records = $searchObject->getResults();
