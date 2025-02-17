@@ -1845,12 +1845,23 @@ class Params
         $valid = $this->getOptions()->getSortOptions();
         $defaultSort = $this->getDefaultSort();
         $list = [];
+        $currentSort = $this->getSort();
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
-                'selected' => ($sort == $this->getSort()),
+                'selected' => ($sort == $currentSort),
                 'default' => $sort == $defaultSort,
             ];
+        }
+        if (!isset($list[$currentSort])) {
+            // Prepend a placeholder for selected sort:
+            $list = [
+                $currentSort => [
+                    'desc' => '-',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ] + $list;
         }
         return $list;
     }
