@@ -435,7 +435,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->topPaginatorStyle = $searchSettings->General->top_paginator
             ?? ($this->loadResultsWithJs ? 'simple' : false);
 
-        // Merge hidden sort options and any labels into an associative array:
+        // Merge hidden sort options and any labels into a single array:
         $hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
         $hiddenSortOptionLabels = $searchSettings?->HiddenSorting?->label?->toArray() ?? [];
         foreach ($hiddenSortOptions as $key => $pattern) {
