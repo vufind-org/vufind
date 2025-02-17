@@ -1,6 +1,13 @@
 <?php
     // Initialize from current search (if available and not explicitly overridden) or defaults:
-    if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
+    if ($this->results === null) {
+      $fromSearchMemory = true;
+      $results = $this->searchMemory()->getCurrentSearch();
+    } else {
+      $fromSearchMemory = false;
+      $results = $this->results;
+    }
+    if ($results) {
       $params = $results->getParams();
       $this->searchClassId = $params->getSearchClassId();
     } else {
@@ -70,6 +77,7 @@
               'checkboxFilters' => $showFilters ? $checkboxFilters : [],
               'searchClassId' => $this->searchClassId,
               'searchType' => $this->searchType,
+              'fromSearchMemory' => $fromSearchMemory,
             ]
         );
       ?>
@@ -216,13 +224,14 @@
     <?=$this->context($this)->renderInContext(
           'search/filters.phtml',
           [
-          'params' => $params ?? null,
-          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
-          'filterList' => $showFilters ? $filterList : [],
-          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-          'searchClassId' => $this->searchClassId,
-          'searchType' => $this->searchType,
-        ]
+            'params' => $params ?? null,
+            'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+            'filterList' => $showFilters ? $filterList : [],
+            'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+            'searchClassId' => $this->searchClassId,
+            'searchType' => $this->searchType,
+            'fromSearchMemory' => $fromSearchMemory,
+          ]
       );?>
   </form>
 <?php endif; ?>
