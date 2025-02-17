@@ -69,21 +69,6 @@
 .record .format:last-child::after { content: ""; }
 .record-previews { margin-top: .5rem; }
 
-/* ------ Nav ------ */
-.record-nav.nav { margin-bottom: 1rem; }
-.record-nav > li,
-.btn-bookbag-toggle { width: 100%; }
-.record-nav > li > a { padding: .5rem; }
-.record-nav > li > a,
-.btn-bookbag-toggle { text-align: center; }
-@media(min-width: 768px) {
-  .record-nav > li,
-  .btn-bookbag-toggle { width: auto; }
-  .record-nav > li > a { padding: $nav-link-padding; }
-  .record-nav > li > a,
-  .btn-bookbag-toggle { text-align: left; }
-}
-
 /* ------ Comments ------ */
 .comment-label,
 .comment-name { font-style: italic; }
