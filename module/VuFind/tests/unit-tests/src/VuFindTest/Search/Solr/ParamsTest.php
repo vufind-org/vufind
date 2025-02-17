@@ -222,6 +222,31 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
+        $searchConfigKeyLabel = [
+            'Sorting' => [
+                'relevance' => 'Relevance',
+            ],
+            'HiddenSorting' => [
+                'pattern' => [
+                    'TEST' => '[Tt]est',
+                ],
+            ],
+        ];
+
+        $searchConfigLabel = [
+            'Sorting' => [
+                'relevance' => 'Relevance',
+            ],
+            'HiddenSorting' => [
+                'pattern' => [
+                    '[Tt]est',
+                ],
+                'label' => [
+                    'TEST',
+                ],
+            ],
+        ];
+
         return [
             'relevance' => [
                 $searchConfig,
@@ -255,6 +280,22 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'invalid' => [
+                $searchConfig,
+                'foobar',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => true,
+                        'default' => true,
+                    ],
+                    'title' => [
+                        'desc' => 'Title',
+                        'selected' => false,
+                        'default' => false,
+                    ],
+                ],
+            ],
             'hidden' => [
                 $searchConfig,
                 'footestbar',
@@ -276,18 +317,34 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            'invalid' => [
-                $searchConfig,
-                'foobar',
+            'hidden with label in key' => [
+                $searchConfigKeyLabel,
+                'footestbar',
                 [
                     'relevance' => [
                         'desc' => 'Relevance',
-                        'selected' => true,
+                        'selected' => false,
                         'default' => true,
                     ],
-                    'title' => [
-                        'desc' => 'Title',
+                    'footestbar' => [
+                        'desc' => 'TEST',
+                        'selected' => true,
+                        'default' => false,
+                    ],
+                ],
+            ],
+            'hidden with label in separate array' => [
+                $searchConfigLabel,
+                'footestbar',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
                         'selected' => false,
+                        'default' => true,
+                    ],
+                    'footestbar' => [
+                        'desc' => 'TEST',
+                        'selected' => true,
                         'default' => false,
                     ],
                 ],

@@ -434,7 +434,17 @@ abstract class Options implements TranslatorAwareInterface
         $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
         $this->topPaginatorStyle = $searchSettings->General->top_paginator
             ?? ($this->loadResultsWithJs ? 'simple' : false);
-        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
+
+        // Merge hidden sort options and any labels into an associative array:
+        $hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
+        $hiddenSortOptionLabels = $searchSettings?->HiddenSorting?->label?->toArray() ?? [];
+        foreach ($hiddenSortOptions as $key => $pattern) {
+            $label = (string)($hiddenSortOptionLabels[$key] ?? $key);
+            $this->hiddenSortOptions[] = [
+                'label' => ctype_digit($label) ? null : $label,
+                'pattern' => $pattern,
+            ];
+        }
         $this->displayCitationLinksInResults
             = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
         $this->showRestrictedViewWarning = (bool)($searchSettings->General->show_restricted_view_warning ?? false);
@@ -624,7 +634,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get an array of hidden sort options.
      *
-     * @return array
+     * @return array An array of associative arrays with keys 'label' and 'pattern'
      */
     public function getHiddenSortOptions()
     {
