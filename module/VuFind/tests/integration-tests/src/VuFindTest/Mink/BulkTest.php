@@ -313,6 +313,21 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * After a failed button click has been detected, try again with Javascript
+     *
+     * @param Session $session  Mink session
+     * @param string  $selector Selector to click
+     *
+     * @return void
+     */
+    protected function retryClickWithJavascript(Session $session, string $selector): void
+    {
+        // If retryClickWithResizedWindow() failed, we can force a click with Javascript.
+        echo "\n\nMink click failed; retrying with Javascript!\n";
+        $session->evaluateScript('$("' . $selector . '").click()');
+    }
+
+    /**
      * Test that the export control works.
      *
      * @param string $idPrefix Prefix for bulk control IDs.
@@ -338,11 +353,21 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $buttonSelector);
 
         // Select EndNote option
+        $error = false;
         try {
             $select = $this->findCss($page, '#format', 100);
         } catch (\Exception $e) {
-            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
-            $select = $this->findCss($page, '#format');
+            $error = true;
+        }
+        // Fallback logic in case of unexpected (but occasionally encountered) random failures:
+        if ($error) {
+            try {
+                $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+                $select = $this->findCss($page, '#format');
+            } catch (\Exception $e) {
+                $this->retryClickWithJavascript($session, $buttonSelector);
+                $select = $this->findCss($page, '#format');
+            }
         }
         $select->selectOption('EndNote');
 
@@ -378,8 +403,13 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
         $this->clickCss($page, $buttonSelector);
         [, $params] = explode('?', $session->getCurrentUrl());
+        // Fallback logic in case of unexpected (but occasionally encountered) random failures:
         if (str_starts_with($params, 'lookfor')) {
             $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            [, $params] = explode('?', $session->getCurrentUrl());
+        }
+        if (str_starts_with($params, 'lookfor')) {
+            $this->retryClickWithJavascript($session, $buttonSelector);
             [, $params] = explode('?', $session->getCurrentUrl());
         }
         $this->assertEquals(
