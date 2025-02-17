@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
 
 /**
  * Mink bulk action test class.
@@ -280,26 +281,69 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that the export control works.
+     * Data provider to allow testing of top or bottom controls.
+     *
+     * @return array[]
+     */
+    public static function topOrBottomProvider(): array
+    {
+        return [
+            'top button' => [''],
+            'bottom button' => ['bottom_'],
+        ];
+    }
+
+    /**
+     * After a failed button click has been detected, resize the window and try again.
+     *
+     * @param Session $session  Mink session
+     * @param Element $page     Current page element
+     * @param string  $selector Selector to click
      *
      * @return void
      */
-    public function testBulkExport(): void
+    protected function retryClickWithResizedWindow(Session $session, Element $page, string $selector): void
     {
+        // For some reason, the click action does not always succeed here; resizing
+        // the window and retrying seems to prevent intermittent test failures.
+        echo "\n\nMink click failed; retrying with resized window!\n";
+        $session->resizeWindow(1280, 200, 'current');
+        $this->clickCss($page, $selector);
+        $session->resizeWindow(1280, 768, 'current');
+    }
+
+    /**
+     * Test that the export control works.
+     *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
+     * @return void
+     *
+     * @dataProvider topOrBottomProvider
+     */
+    public function testBulkExport(string $idPrefix): void
+    {
+        $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-export');
+        $buttonSelector = '#' . $idPrefix . 'ribbon-export';
 
         // First try clicking without selecting anything:
-        $button->click();
+        $this->clickCss($page, $buttonSelector);
         $this->checkForNonSelectedMessage($page);
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
 
         // Select EndNote option
-        $select = $this->findCss($page, '#format');
+        try {
+            $select = $this->findCss($page, '#format', 100);
+        } catch (\Exception $e) {
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            $select = $this->findCss($page, '#format');
+        }
         $select->selectOption('EndNote');
 
         // Do the export:
@@ -312,23 +356,32 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the print control works.
      *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
      * @return void
+     *
+     * @dataProvider topOrBottomProvider
      */
-    public function testBulkPrint(): void
+    public function testBulkPrint(string $idPrefix): void
     {
         $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-print');
+        $buttonSelector = '#' . $idPrefix . 'ribbon-print';
 
         // First try clicking without selecting anything:
-        $button->click();
+        $this->clickCss($page, $buttonSelector);
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
 
         // Now do it for real -- we should get redirected.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
         [, $params] = explode('?', $session->getCurrentUrl());
+        if (str_starts_with($params, 'lookfor')) {
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            [, $params] = explode('?', $session->getCurrentUrl());
+        }
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
