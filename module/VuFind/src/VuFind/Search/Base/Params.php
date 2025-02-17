@@ -1865,11 +1865,20 @@ class Params
         $valid = $this->getOptions()->getSortOptions();
         $defaultSort = $this->getDefaultSort();
         $list = [];
+        $currentSort = $this->getSort();
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
-                'selected' => ($sort == $this->getSort()),
+                'selected' => ($sort == $currentSort),
                 'default' => $sort == $defaultSort,
+            ];
+        }
+        if (!isset($list[$currentSort])) {
+            // Add selected sort with a generic description so that we display it:
+            $list[$currentSort] = [
+                'desc' => 'unrecognized_sort_option',
+                'selected' => true,
+                'default' => false,
             ];
         }
         return $list;
