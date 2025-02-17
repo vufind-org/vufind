@@ -3,8 +3,9 @@
   <?php
     $cartId = $this->source . '|' . $this->id;
     $btnType = $this->inToolbar ? 'toolbar-btn' : 'btn-result';
+    $wrapperTag = $this->inToolbar ? 'li' : 'span';
   ?>
-  <<?=$this->inToolbar ? 'li' : 'span'?> class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->id)?>" data-cart-source="<?=$this->escapeHtmlAttr($this->source)?>">
+  <<?=$wrapperTag?> class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->id)?>" data-cart-source="<?=$this->escapeHtmlAttr($this->source)?>">
     <a href="#" class="cart-add <?=$btnType?> icon-link hidden<?php if (!$cart->contains($cartId)): ?> correct<?php endif ?>">
       <?=$this->icon('cart-add', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Add to Book Bag') ?></span>
@@ -13,5 +14,5 @@
       <?=$this->icon('cart-remove', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Remove from Book Bag') ?></span>
     </a>
-  </<?=$this->inToolbar ? 'li' : 'span'?>>
+  </<?=$wrapperTag?>>
 <?php endif; ?>
