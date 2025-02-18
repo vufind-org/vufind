@@ -95,8 +95,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Constructor
      *
-     * @param SessionContainer       $session    Session container for persisting state information.
-     * @param array                  $oidcConfig Configuration
+     * @param SessionContainer $session    Session container for persisting state information.
+     * @param array            $oidcConfig Configuration
      */
     public function __construct(protected SessionContainer $session, protected array $oidcConfig)
     {
@@ -110,6 +110,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
 
     /**
      * Get configuration. Throw an exception if the configuration is invalid.
+     *
+     * @param string $key Configuration key
      *
      * @throws AuthException
      * @return null|string|array
@@ -187,7 +189,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         foreach ($requiredParams as $param) {
             if (empty($this->oidcConfig['OpenIDConnect'][$param] ?? null)) {
                 throw new AuthException(
-                    'One or more OpenID Connect parameters are missing. Check your OpenIDConnect.ini!'
+                    'One or more OpenID Connect parameters are missing. Check your OpenIDConnectClient.ini!'
                 );
             }
         }
@@ -255,7 +257,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'major',
             'home_library',
         ];
-        $user = $this->getUserTable()->getByUsername($userInfo->sub);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($userInfo->sub);
         $attrMappings = array_filter(
             $this->getAttributesMappings(),
             function ($key) use ($availableAttributes) {
@@ -268,7 +271,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             $attrValue = $this->getAttributeValue($userInfo, $infoAttr);
             if (!empty($attrValue)) {
                 if ($userAttr === 'email') {
-                    $user->updateEmail($attrValue);
+                    $userService->updateUserEmail($user, $attrValue);
                     continue;
                 }
                 if ($userAttr === 'cat_password') {
@@ -399,7 +402,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function decodeJWT(string $jwt): object
     {
-        [$headerEncoded, ] = explode('.', $jwt);
+        [$headerEncoded] = explode('.', $jwt);
         $header = json_decode(base64_decode(strtr($headerEncoded, '-_', '+/')));
         $key = JWK::parseKey($this->getJwk($header->kid), $header->alg);
         return JWT::decode($jwt, $key);
