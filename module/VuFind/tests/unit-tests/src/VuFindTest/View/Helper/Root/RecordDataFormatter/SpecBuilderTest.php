@@ -49,8 +49,9 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBuilder()
+    public function testBuilder(): void
     {
+        // Test building a spec:
         $builder = new SpecBuilder();
         $builder->setLine('foo', 'getFoo');
         $builder->setLine('bar', 'getBar');
@@ -74,6 +75,7 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals($expected, $builder->getArray());
+        // Test various methods of reordering the spec:
         $builder->reorderKeys(['xyzzy', 'bar']);
         $expected['xyzzy']['pos'] = 100;
         $expected['bar']['pos'] = 200;
@@ -87,5 +89,9 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         $expected['bar']['pos'] = 400;
         $expected['foo']['pos'] = 100;
         $this->assertEquals($expected, $builder->getArray());
+        // Test that we can remove lines from the spec:
+        $builder->removeLine('bar');
+        $builder->removeLine('foo');
+        $this->assertEquals(['xyzzy' => $expected['xyzzy']], $builder->getArray());
     }
 }

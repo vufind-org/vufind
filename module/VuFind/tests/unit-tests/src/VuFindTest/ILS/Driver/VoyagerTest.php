@@ -29,6 +29,8 @@
 
 namespace VuFindTest\ILS\Driver;
 
+use PDOStatement;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ILS\Driver\Voyager;
 
 /**
@@ -109,5 +111,80 @@ class VoyagerTest extends \VuFindTest\Unit\ILSDriverTestCase
             ],
             $results
         );
+    }
+
+    /**
+     * Test that patron usernames are correctly encoded during login.
+     *
+     * @return void
+     */
+    public function testUsernameEncodingDuringLogin(): void
+    {
+        // Create a mock SQL response
+        $mockResult = $this->createMock(PDOStatement::class);
+        $mockResult->method('fetch')->willReturn(null);
+
+        $driver = $this->getDriverWithMockSqlResponse($mockResult);
+        $this->assertNull($driver->patronLogin('Tést', 'foo'));
+        $this->assertEquals([':username' => mb_convert_encoding('tést', 'ISO-8859-1', 'UTF-8')], $driver->lastBind);
+        $this->assertEquals(
+            'SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME, PATRON.LAST_NAME as LOGIN '
+            . 'FROM .PATRON, .PATRON_BARCODE '
+            . 'WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND '
+            . 'lower(PATRON_BARCODE.PATRON_BARCODE) = :username AND PATRON_BARCODE.BARCODE_STATUS IN (1,4)',
+            $driver->lastSql
+        );
+    }
+
+    /**
+     * Get a Voyager driver customized to return a mock SQL response.
+     *
+     * @param MockObject&PDOStatement $mockResult Mock result to return from executeSQL
+     *
+     * @return Voyager
+     */
+    protected function getDriverWithMockSqlResponse(MockObject&PDOStatement $mockResult): Voyager
+    {
+        return new class ($mockResult) extends Voyager {
+            /**
+             * Last SQL statement passed to executeSQL
+             *
+             * @var string
+             */
+            public string $lastSql = '';
+
+            /**
+             * Last bind array passed to executeSQL
+             *
+             * @var array
+             */
+            public array $lastBind = [];
+
+            /**
+             * Constructor
+             *
+             * @param MockObject&PDOStatement $mockResult Mock result to return from executeSQL
+             */
+            public function __construct(protected MockObject&PDOStatement $mockResult)
+            {
+                parent::__construct(new \VuFind\Date\Converter());
+            }
+
+            /**
+             * Execute an SQL query
+             *
+             * @param string|array $sql  SQL statement (string or array that includes
+             * bind params)
+             * @param array        $bind Bind parameters (if $sql is string)
+             *
+             * @return PDOStatement
+             */
+            protected function executeSQL($sql, $bind = [])
+            {
+                $this->lastSql = $sql;
+                $this->lastBind = $bind;
+                return $this->mockResult;
+            }
+        };
     }
 }

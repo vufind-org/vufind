@@ -32,6 +32,7 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 use ArrayObject;
 use Countable;
 use IteratorAggregate;
+use Traversable;
 
 use function is_array;
 use function strlen;
@@ -127,7 +128,7 @@ class Spellcheck implements IteratorAggregate, Countable
             }
         }
 
-        // Store secondary suggestions in case merge yielded non-useful
+        // Store secondary suggestions in case merge yielded useless
         // result set:
         if (!$this->secondary) {
             $this->secondary = $spellcheck;
@@ -141,9 +142,9 @@ class Spellcheck implements IteratorAggregate, Countable
     /**
      * Return aggregated iterator.
      *
-     * @return ArrayIterator
+     * @return Traversable
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
         return $this->terms->getIterator();
     }

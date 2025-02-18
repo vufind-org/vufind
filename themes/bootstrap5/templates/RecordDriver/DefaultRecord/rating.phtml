@@ -1,0 +1,27 @@
+<?php
+  $ratingData = $this->ratings()->getRatingData($this->driver);
+  $translationParams = [
+    '%%rating%%' => $this->localizedNumber($ratingData['rating']),
+    '%%count%%' => $this->localizedNumber($ratingData['count']),
+  ];
+  $addUrlEsc = $this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Rating'));
+  $countKeys = [
+    0 => 'rating_summary_unrated',
+    1 => 'rating_summary_single',
+  ];
+?>
+<div class="rating">
+  <div class="rating-average">
+    <?php if (!$this->translationEmpty('rating_heading')): ?>
+      <a href="<?=$addUrlEsc?>" data-lightbox title="<?=$this->transEscAttr('rating_add_or_update')?>">
+        <?=$this->transEsc('rating_heading', $translationParams)?>
+      </a>
+    <?php endif; ?>
+    <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData, 'labelAttrs' => ['data-click-callback="addRecordRating"']]);?>
+    <span class="rating-summary">
+      <a href="<?=$addUrlEsc?>" data-lightbox title="<?=$this->transEscAttr('rating_add_or_update')?>">
+        <?=$this->transEsc($countKeys[$ratingData['count']] ?? 'rating_summary', $translationParams)?>
+      </a>
+    </span>
+  </div>
+</div>

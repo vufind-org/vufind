@@ -32,9 +32,11 @@ namespace VuFindTest\Backend\Solr;
 use InvalidArgumentException;
 use Laminas\Http\Response;
 use Laminas\Uri\Http;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
@@ -62,13 +64,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $resp = $this->loadResponse('single-record');
         $conn = $this->getConnectorMock(['retrieve']);
         $conn->expects($this->once())
             ->method('retrieve')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -85,13 +87,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieveBatch()
+    public function testRetrieveBatch(): void
     {
         $resp = $this->loadResponse('multi-record');
         $conn = $this->getConnectorMock(['search']);
         $conn->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
         $back = new Backend($conn);
         $this->runRetrieveBatchTests($back);
     }
@@ -104,7 +106,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    protected function runRetrieveBatchTests($back)
+    protected function runRetrieveBatchTests(Backend $back): void
     {
         $back->setIdentifier('test');
         $coll = $back->retrieveBatch(['12345', '125456', '234547']);
@@ -116,7 +118,6 @@ class BackendTest extends TestCase
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
         $this->assertEquals('125456', $recs[1]->id);
-        $rec  = $coll->next();
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('234547', $recs[2]->id);
     }
@@ -126,7 +127,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieveBatchWithNonDefaultPageSize()
+    public function testRetrieveBatchWithNonDefaultPageSize(): void
     {
         $resp1 = $this->loadResponse('multi-record-part1');
         $resp2 = $this->loadResponse('multi-record-part2');
@@ -146,13 +147,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testSimilar()
+    public function testSimilar(): void
     {
         $resp = $this->loadResponse('morelikethis');
         $conn = $this->getConnectorMock(['similar']);
         $conn->expects($this->once())
             ->method('similar')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -169,13 +170,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testTerms()
+    public function testTerms(): void
     {
         $resp = $this->loadResponse('terms');
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
         $back = new Backend($conn);
         $back->setIdentifier('test');
         $terms = $back->terms('author', '', -1);
@@ -188,13 +189,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testFacets()
+    public function testFacets(): void
     {
         $resp = $this->loadResponse('facet');
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
         $back = new Backend($conn);
         $response = $back->search(new Query(), 0, 0);
         $facets = $response->getFacets();
@@ -218,13 +219,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testPivotFacets()
+    public function testPivotFacets(): void
     {
         $resp = $this->loadResponse('pivot-facet');
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
         $back = new Backend($conn);
         $response = $back->search(new Query(), 0, 0);
         $facets = $response->getPivotFacets();
@@ -355,13 +356,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testQueryFacets()
+    public function testQueryFacets(): void
     {
         $resp = $this->loadResponse('query-facet');
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
         $back = new Backend($conn);
         $response = $back->search(new Query(), 0, 0);
         $facets = $response->getQueryFacets();
@@ -380,13 +381,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testTermsWithParamBagAsFirstParameter()
+    public function testTermsWithParamBagAsFirstParameter(): void
     {
         $resp = $this->loadResponse('terms');
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($resp->getBody()));
+            ->willReturn($resp->getBody());
         $back = new Backend($conn);
         $back->setIdentifier('test');
         $bag = new ParamBag();
@@ -403,7 +404,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testBadJson()
+    public function testBadJson(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
         $this->expectExceptionMessage('JSON decoding error: 4 -- bad {');
@@ -411,9 +412,9 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue('bad {'));
+            ->willReturn('bad {');
         $back = new Backend($conn);
-        $terms = $back->terms('author', '', -1);
+        $back->terms('author', '', -1);
     }
 
     /**
@@ -421,7 +422,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
+    public function testInjectResponseWriterThrownOnIncompabileResponseWriter(): void
     {
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid response writer type: xml');
@@ -436,7 +437,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
+    public function testInjectResponseWriterThrownOnIncompabileNamedListSetting(): void
     {
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid named list implementation type: bad');
@@ -451,7 +452,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testGetConnector()
+    public function testGetConnector(): void
     {
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
@@ -463,7 +464,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testGetIdentifier()
+    public function testGetIdentifier(): void
     {
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
@@ -472,17 +473,35 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Data provider for testGetIds
+     *
+     * @return array
+     */
+    public static function getIdsProvider(): array
+    {
+        return [
+            'default field list' => [null, 'id'],
+            'customized field list' => ['last_indexed', 'id,last_indexed'],
+        ];
+    }
+
+    /**
      * Test getting multiple IDs.
      *
+     * @param ?string $flIn          Additional field list in input (null = none)
+     * @param string  $expectedFlOut Expected field list in output
+     *
      * @return void
+     *
+     * @dataProvider getIdsProvider
      */
-    public function testGetIds()
+    public function testGetIds(?string $flIn, string $expectedFlOut): void
     {
-        $paramBagChecker = function (ParamBag $params) {
+        $paramBagChecker = function (ParamBag $params) use ($expectedFlOut) {
             $expected = [
                 'wt' => ['json'],
                 'json.nl' => ['arrarr'],
-                'fl' => ['id'],
+                'fl' => [$expectedFlOut],
                 'rows' => [10],
                 'start' => [0],
                 'q' => ['foo'],
@@ -501,10 +520,14 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['search']);
         $conn->expects($this->once())->method('search')
             ->with($this->callback($paramBagChecker))
-            ->will($this->returnValue(json_encode([])));
+            ->willReturn(json_encode([]));
         $back = new Backend($conn);
         $query = new Query('foo');
-        $result = $back->getIds($query, 0, 10);
+        $params = new ParamBag();
+        if ($flIn) {
+            $params->set('fl', $flIn);
+        }
+        $result = $back->getIds($query, 0, 10, $params);
         $this->assertInstanceOf(RecordCollection::class, $result);
         $this->assertCount(0, $result);
     }
@@ -514,7 +537,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRefineAlphaBrowseException()
+    public function testRefineAlphaBrowseException(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
         $this->expectExceptionMessage('Alphabetic Browse index missing.');
@@ -527,7 +550,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRefineAlphaBrowseExceptionWithAltString()
+    public function testRefineAlphaBrowseExceptionWithAltString(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
         $this->expectExceptionMessage('Alphabetic Browse index missing.');
@@ -540,7 +563,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRefineAlphaBrowseExceptionWithNonBrowseString()
+    public function testRefineAlphaBrowseExceptionWithNonBrowseString(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
         $this->expectExceptionMessage('not a browse error');
@@ -553,7 +576,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRandom()
+    public function testRandom(): void
     {
         // Test that random sort parameter is added:
         $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
@@ -569,7 +592,7 @@ class BackendTest extends TestCase
             ->getMock();
         $back->expects($this->once())->method('injectResponseWriter');
         $back->expects($this->once())->method('search')
-            ->will($this->returnValue('dummy'));
+            ->willReturn('dummy');
         $this->assertEquals('dummy', $back->random(new Query('foo'), 1, $params));
     }
 
@@ -578,7 +601,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testWriteDocument()
+    public function testWriteDocument(): void
     {
         $doc = new CommitDocument();
         $client = $this->getMockBuilder(\Laminas\Http\Client::class)
@@ -593,18 +616,16 @@ class BackendTest extends TestCase
                 $this->equalTo('update'),
                 $this->isNull()
             )
-            ->will(
-                $this->returnCallback(
-                    function () use ($connector) {
-                        // Call client factory for expectations to be met:
-                        $factory = $this->getProperty($connector, 'clientFactory');
-                        $factory('');
-                        return true;
-                    }
-                )
+            ->willReturnCallback(
+                function () use ($connector) {
+                    // Call client factory for expectations to be met:
+                    $factory = $this->getProperty($connector, 'clientFactory');
+                    $factory('');
+                    return true;
+                }
             );
         $connector->expects($this->once())->method('getUrl')
-            ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
+            ->willReturn('http://localhost:8983/solr/core/biblio');
         $backend = new Backend($connector);
         $this->assertEquals(
             ['core' => 'biblio'],
@@ -617,12 +638,11 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testExtraRequestDetails()
+    public function testExtraRequestDetails(): void
     {
         $solrUri = new Http('https://www.someExampleSolr.com');
         $connector = $this->getConnectorMock(['getLastUrl']);
-        $connector->expects($this->once())->method('getLastUrl')
-            ->will($this->returnValue($solrUri));
+        $connector->expects($this->once())->method('getLastUrl')->willReturn($solrUri);
         $backend = new Backend($connector);
         $this->assertEquals(
             ['solrRequestUrl' => $solrUri],
@@ -635,16 +655,13 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testResetExtraRequestDetails()
+    public function testResetExtraRequestDetails(): void
     {
         $solrUri = new Http('https://www.someExampleSolr.com');
         $connector = $this->getConnectorMock(['getLastUrl', 'resetLastUrl']);
         $connector->expects($this->once())->method('resetLastUrl');
         $connector->expects($this->exactly(2))->method('getLastUrl')
-            ->willReturnOnConsecutiveCalls(
-                $this->returnValue($solrUri),
-                $this->returnValue(null)
-            );
+            ->willReturnOnConsecutiveCalls($solrUri, null);
         $backend = new Backend($connector);
         $this->assertEquals(
             ['solrRequestUrl' => $solrUri],
@@ -666,7 +683,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    protected function runRefineExceptionCall($msg)
+    protected function runRefineExceptionCall($msg): void
     {
         $conn = $this->getConnectorMock(['query']);
         $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
@@ -682,11 +699,11 @@ class BackendTest extends TestCase
      *
      * @param string $fixture Fixture file
      *
-     * @return Laminas\Http\Response
+     * @return Response
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture)
+    protected function loadResponse($fixture): Response
     {
         return Response::fromString(
             $this->getFixture("solr/response/$fixture", 'VuFindSearch')
@@ -699,9 +716,9 @@ class BackendTest extends TestCase
      * @param array      $mock   Functions to mock
      * @param HttpClient $client HTTP Client (optional)
      *
-     * @return Connector
+     * @return MockObject&Connector
      */
-    protected function getConnectorMock(array $mock = [], $client = null)
+    protected function getConnectorMock(array $mock = [], $client = null): MockObject&Connector
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)

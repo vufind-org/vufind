@@ -78,14 +78,14 @@ class InjectSpellingListener
      *
      * @param BackendInterface $backend      Backend
      * @param array            $dictionaries Spelling dictionaries to use.
-     * @param LoggerInterface  $logger       Logger
+     * @param ?LoggerInterface $logger       Logger
      *
      * @return void
      */
     public function __construct(
         BackendInterface $backend,
         array $dictionaries,
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     ) {
         $this->backend = $backend;
         $this->dictionaries = $dictionaries;
@@ -102,12 +102,12 @@ class InjectSpellingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_POST,
             [$this, 'onSearchPost']
         );

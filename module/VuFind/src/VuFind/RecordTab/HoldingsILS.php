@@ -47,14 +47,14 @@ class HoldingsILS extends AbstractBase
     /**
      * ILS connection (or null if not applicable)
      *
-     * @param Connection
+     * @var Connection
      */
     protected $catalog;
 
     /**
      * Name of template to use for rendering holdings.
      *
-     * @param string
+     * @var string
      */
     protected $template;
 
@@ -68,15 +68,13 @@ class HoldingsILS extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog       ILS connection to use to
-     * check for holdings before displaying the tab; may be set to null if no check
-     * is needed.
-     * @param string                      $template      Holdings template to use
-     * @param bool                        $hideWhenEmpty Whether the
-     * holdings tab should be hidden when empty or not
+     * @param ?Connection $catalog       ILS connection to use to check for holdings before displaying the tab;
+     * may be set to null if no check is needed.
+     * @param ?string     $template      Holdings template to use
+     * @param bool        $hideWhenEmpty Whether the holdings tab should be hidden when empty or not
      */
     public function __construct(
-        Connection $catalog = null,
+        ?Connection $catalog = null,
         $template = null,
         $hideWhenEmpty = false
     ) {

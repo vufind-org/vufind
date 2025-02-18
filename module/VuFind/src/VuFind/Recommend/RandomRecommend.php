@@ -121,7 +121,7 @@ class RandomRecommend implements RecommendInterface
     /**
      * Constructor
      *
-     * @param \VuFindSearch\Service               $searchService VuFind Search Serive
+     * @param \VuFindSearch\Service               $searchService VuFind Search Service
      * @param \VuFind\Search\Params\PluginManager $paramManager  Params manager
      */
     public function __construct(

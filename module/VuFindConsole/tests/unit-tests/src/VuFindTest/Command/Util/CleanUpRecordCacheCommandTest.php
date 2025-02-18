@@ -30,6 +30,7 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Service\RecordServiceInterface;
 use VuFindConsole\Command\Util\CleanUpRecordCacheCommand;
 
 /**
@@ -48,13 +49,11 @@ class CleanUpRecordCacheCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicOperation()
+    public function testBasicOperation(): void
     {
-        $table = $this->getMockBuilder(\VuFind\Db\Table\Record::class)
-            ->disableOriginalConstructor()->getMock();
-        $table->expects($this->once())->method('cleanup')
-            ->will($this->returnValue(5));
-        $command = new CleanUpRecordCacheCommand($table);
+        $service = $this->createMock(RecordServiceInterface::class);
+        $service->expects($this->once())->method('cleanup')->willReturn(5);
+        $command = new CleanUpRecordCacheCommand($service);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expected = "5 records deleted.\n";

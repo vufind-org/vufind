@@ -62,7 +62,7 @@ class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\Facto
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
@@ -72,10 +72,10 @@ class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\Facto
             $container->get(\VuFind\Validator\CsrfInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
-            $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),
+            $container->get(\VuFind\Net\UserIpReader::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get(\VuFind\Db\Table\AuthHash::class)
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+                ->get(\VuFind\Db\Service\AuthHashServiceInterface::class)
         );
     }
 }

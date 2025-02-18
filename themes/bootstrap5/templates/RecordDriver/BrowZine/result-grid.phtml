@@ -1,0 +1,21 @@
+<?php
+  $urls = $this->driver->getURLs();
+  $url = isset($urls[0]) ? $urls[0]['url'] : null;
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-grid', 'small', $url);
+?>
+
+<div class="grid-result">
+  <div class="grid-body">
+    <div class="browzine"><?=$coverDetails['html']?></div>
+    <div>
+      <h2>
+        <a class="title" href="<?=$this->escapeHtmlAttr($url)?>">
+          <?=$this->record($this->driver)->getTitleHtml(80)?>
+        </a>
+      </h2>
+    </div>
+  </div>
+
+  <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+</div>
+

@@ -155,7 +155,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the work keys helper with an ICU tranliteration.
+     * Test the work keys helper with an ICU transliteration.
      *
      * @return void
      */
@@ -184,7 +184,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the work keys helper with an ICU tranliteration.
+     * Test the work keys helper with an ICU transliteration.
      *
      * @return void
      */

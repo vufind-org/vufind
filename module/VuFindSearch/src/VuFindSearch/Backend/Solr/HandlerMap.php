@@ -34,6 +34,8 @@ use RuntimeException;
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 
+use function sprintf;
+
 /**
  * SOLR backend handler map.
  *
@@ -243,7 +245,7 @@ class HandlerMap extends AbstractHandlerMap
     }
 
     /**
-     * Return handler defauls, appends, or invariants.
+     * Return handler defaults, appends, or invariants.
      *
      * @param string $handler Request handler
      * @param string $type    Parameter type, one of 'defaults', 'appends',

@@ -92,7 +92,7 @@ trait AutocompleteTrait
         if ($type) {
             $this->findCssAndSetValue($page, '#searchForm_type', $type);
         }
-        $this->findCssAndSetValue($page, '#searchForm_lookfor', $search);
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $search, reFocus: true);
         $acItem = $this->getAndAssertFirstAutocompleteValue($page, $expected);
         return $acItem;
     }

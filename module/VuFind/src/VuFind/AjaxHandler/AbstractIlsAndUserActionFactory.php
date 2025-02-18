@@ -64,13 +64,13 @@ class AbstractIlsAndUserActionFactory implements \Laminas\ServiceManager\Factory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             ...($options ?: [])
         );
     }

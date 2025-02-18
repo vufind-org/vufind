@@ -93,7 +93,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $memcache->expects($this->once())->method('get')
             ->with($this->equalTo('vufind_sessions/foo'))
             ->will($this->returnValue('bar'));
-        $config = new \Laminas\Config\Config(['memcache_client' => 'Memcached']);
+        $config = new \VuFind\Config\Config(['memcache_client' => 'Memcached']);
         $handler = $this->getHandler($config, $memcache);
         $this->assertEquals('bar', $handler->read('foo'));
     }
@@ -154,7 +154,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo(0),
                 $this->equalTo(1000)
             )->will($this->returnValue(true));
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'lifetime' => 1000,
                 'memcache_host' => 'myhost',
@@ -213,7 +213,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $memcache->expects($this->once())->method('get')
             ->with($this->equalTo('vufind_sessions/foo'))
             ->will($this->returnValue('bar'));
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'memcache_client' => 'Memcached',
             ]
@@ -251,7 +251,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo('stuff'),
                 $this->equalTo(3600)
             )->will($this->returnValue(true));
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'memcache_client' => 'Memcached',
             ]
@@ -289,7 +289,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo('stuff'),
                 $this->equalTo(1000)
             )->will($this->returnValue(true));
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'lifetime' => 1000,
                 'memcache_host' => 'myhost',
@@ -325,7 +325,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $memcache->expects($this->once())->method('delete')
             ->with($this->equalTo('vufind_sessions/foo'))
             ->will($this->returnValue(true));
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'memcache_client' => 'Memcached',
             ]
@@ -339,15 +339,15 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Laminas\Config\Config $config Optional configuration
-     * @param \Memcache              $client Optional client object
+     * @param \VuFind\Config\Config $config Optional configuration
+     * @param \Memcache             $client Optional client object
      *
      * @return Database
      */
     protected function getHandler($config = null, $client = null)
     {
         $handler = new Memcache($config, $client);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }

@@ -31,7 +31,8 @@ namespace VuFind\Search;
 
 use Laminas\Http\Request;
 use Laminas\Session\Container;
-use VuFind\Db\Table\Search;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function array_key_exists;
@@ -57,41 +58,6 @@ class Memory
     protected $active = true;
 
     /**
-     * Session container
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
-     * Session ID
-     *
-     * @var string
-     */
-    protected $sessionId;
-
-    /**
-     * Current request
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Search table
-     *
-     * @var Search
-     */
-    protected $searchTable;
-
-    /**
-     * Results plugin manager
-     *
-     * @var ResultsManager $resultsManager
-     */
-    protected $resultsManager;
-
-    /**
      * Cached searches
      *
      * @var array
@@ -101,24 +67,19 @@ class Memory
     /**
      * Constructor
      *
-     * @param Container      $session        Session container for storing URLs
-     * @param string         $sessionId      Current session ID
-     * @param Request        $request        Request
-     * @param Search         $searchTable    Search table
-     * @param ResultsManager $resultsManager Results plugin manager
+     * @param Container              $session        Session container for storing URLs
+     * @param string                 $sessionId      Current session ID
+     * @param Request                $request        Request
+     * @param SearchServiceInterface $searchService  Search service
+     * @param ResultsManager         $resultsManager Results plugin manager
      */
     public function __construct(
-        Container $session,
-        string $sessionId,
-        Request $request,
-        Search $searchTable,
-        ResultsManager $resultsManager
+        protected Container $session,
+        protected string $sessionId,
+        protected Request $request,
+        protected SearchServiceInterface $searchService,
+        protected ResultsManager $resultsManager
     ) {
-        $this->session = $session;
-        $this->sessionId = $sessionId;
-        $this->request = $request;
-        $this->searchTable = $searchTable;
-        $this->resultsManager = $resultsManager;
     }
 
     /**
@@ -294,22 +255,19 @@ class Memory
     /**
      * Get a search by id
      *
-     * @param int $id Search ID
+     * @param int                  $id   Search ID
+     * @param ?UserEntityInterface $user Currently logged-in user to also check saved searches
      *
      * @return ?\VuFind\Search\Base\Results
      */
-    protected function getSearchById(int $id): ?\VuFind\Search\Base\Results
+    public function getSearchById(int $id, ?UserEntityInterface $user = null): ?\VuFind\Search\Base\Results
     {
-        if (!array_key_exists($id, $this->searchCache)) {
-            $search
-                = $this->searchTable->getOwnedRowById($id, $this->sessionId, null);
-            if ($search) {
-                $minSO = $search->getSearchObject();
-                $this->searchCache[$id] = $minSO->deminify($this->resultsManager);
-            } else {
-                $this->searchCache[$id] = null;
-            }
+        $userId = $user?->getId();
+        $cacheKey = $userId ? "{$id}_$userId" : $id;
+        if (!array_key_exists($cacheKey, $this->searchCache)) {
+            $search = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, $user);
+            $this->searchCache[$cacheKey] = $search?->getSearchObject()?->deminify($this->resultsManager);
         }
-        return $this->searchCache[$id];
+        return $this->searchCache[$cacheKey];
     }
 }

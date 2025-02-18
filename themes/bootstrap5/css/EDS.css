@@ -1,0 +1,98 @@
+/* publication type css */
+
+.pt-icon { margin: auto; width: 70px; display: block; background-image: url('../images/EDS/PT_Sprite.png'); background-repeat: no-repeat; }
+.pt-serialPeriodical { background-position: -30px -30px; height: 59px; }
+.pt-newspaperArticle { background-position: -140px -30px; height: 51px; }
+.pt-image { background-position: -245px -30px; height: 47px; }
+.pt-videoRecording { background-position: -345px -30px; height: 63px; }
+.pt-score { background-position: -445px -30px; height: 57px; }
+.pt-audio { background-position: -545px -30px; height: 49px; }
+.pt-map { background-position: -35px -120px; height: 45px; }
+.pt-book { background-position: -140px -120px; height: 59px; }
+.pt-kitObject { background-position: -245px -120px; height: 50px; }
+.pt-academicJournal, .pt-unknown { background-position: -345px -120px; height: 57px; }
+.pt-dissertation { background-position: -445px -120px; height: 63px; }
+.pt-literaryMaterial, .pt-authors { background-position: -35px -215px; height: 55px; }
+.pt-tableChart { background-position: -140px -215px; height: 49px; }
+.pt-patent { background-position: -245px -215px; height: 56px; }
+.pt-report { background-position: -345px -215px; height: 63px; }
+.pt-reference, .pt-readersAdvisory { background-position: -445px -215px; height: 52px; }
+.pt-governmentDocument { background-position: -545px -215px; height: 60px; }
+.pt-editorialOpinion { background-position: -35px -305px; height: 47px; }
+.pt-transcript { background-position: -140px -305px; height: 63px; }
+.pt-review { background-position: -245px -305px; height: 48px; }
+.pt-biography { background-position: -345px -305px; height: 53px; }
+.pt-electronicResource { 	background-position: -445px -305px; height: 63px; }
+.pt-recommendedReadsList { background-position: -540px -305px; height: 61px; }
+.pt-pictureBookExtender { background-position: -35px -400px; height: 65px; }
+.pt-grabAndGo { background-position: -140px -400px; height: 51px; }
+.pt-featureArticle { background-position: -245px -400px; height: 65px; }
+.pt-curricularConnection { background-position: -345px -400px; height: 65px; }
+.pt-bookTalk { background-position: -455px -400px; height: 55px; }
+.pt-bookDiscussionGuides { background-position: -545px -400px; height: 55px; }
+.pt-awardWinner { background-position: -34px -500px; height: 70px; }
+.pt-authorReadalike { background-position: -140px -500px; height: 60px; }
+.pt-series { background-position: -245px -495px; height: 75px; }
+.pt-ebook { background-position: -350px -510px; height: 60px; }
+.pt-audiobook { background-position: -440px -510px; height: 60px; }
+.pt-conference { background-position: -545px -505px; height: 70px; }
+.pt-Poem { background-position: -35px -615px; height: 60px; }
+.pt-ShortStory { background-position: -141px -620px; height: 55px; }
+.pt-play{ background-position: -245px -620px; height: 50px; }
+
+/* full text icons */
+/* Icons */
+.icon--eds {
+    background: url("../images/EDS/sprites_32.png") no-repeat top left;
+    height: 32px;
+    line-height: 32px;
+    display: inline-block;
+    padding-left: 36px;
+}
+
+.icon--eds.ebook {
+    background-position: 0 0;
+}
+
+.icon--eds.html {
+    background-position: 0 -42px;
+}
+
+.icon--eds.pdf {
+    background-position: 0 -84px;
+}
+
+.icon13 {
+    background: url("../images/EDS/sprites_32.png") no-repeat top left;
+    padding-left: 18px;
+    width: 13px;
+    height: 13px;
+}
+
+.icon13.collapsed {
+    background-position: 0 -126px;
+}
+
+.icon13.expanded {
+    background-position: 0 -149px;
+}
+
+/* media component links */
+.media-left .external-links > span {
+    display: block;
+    margin-top: 1rem;
+}
+.media-left .external-links > span a.icon--eds {
+    line-height: unset;
+    white-space: normal;
+}
+
+/* Author name delimiters */
+/* On EDS search result page */
+.search-results-eds .result .author:not(:last-of-type):after,
+/* On combined result page */
+#combined_EDS .record-list .author:not(:last-of-type):after,
+/* On EDS item detail page */
+.record__biblio-value .author:not(:last-of-type):after {
+    content: '; ';
+}

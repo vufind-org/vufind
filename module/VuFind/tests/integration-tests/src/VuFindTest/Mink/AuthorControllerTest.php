@@ -41,6 +41,25 @@ namespace VuFindTest\Mink;
 class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Standard setup method that runs before each test.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        // Setup config
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Content' => ['authors' => false], // turn off Wikipedia for testing
+                ],
+            ]
+        );
+    }
+
+    /**
      * Test searching for an author in the author module
      *
      * @return void

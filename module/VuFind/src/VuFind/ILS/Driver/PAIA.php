@@ -880,7 +880,7 @@ class PAIA extends DAIA
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -1075,7 +1075,7 @@ class PAIA extends DAIA
      * PAIA helper function to map session data to return value of patronLogin()
      *
      * @param array  $details  Patron details returned by patronLogin
-     * @param string $password Patron cataloge password
+     * @param string $password Patron catalogue password
      *
      * @return mixed
      */
@@ -1746,7 +1746,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Helper function for PAIA to uniformely parse JSON
+     * Helper function for PAIA to uniformly parse JSON
      *
      * @param string $file JSON data
      *

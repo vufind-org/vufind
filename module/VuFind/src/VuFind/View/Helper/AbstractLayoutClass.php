@@ -41,29 +41,17 @@ namespace VuFind\View\Helper;
 abstract class AbstractLayoutClass extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Does the sidebar go on the left?
-     *
-     * @var bool
-     */
-    protected $sidebarOnLeft;
-
-    /**
-     * Is the sidebar offcanvas?
-     *
-     * @var bool
-     */
-    protected $offcanvas;
-
-    /**
      * Constructor
      *
-     * @param bool $left      Does the sidebar go on the left?
-     * @param bool $offcanvas Is offcanvas menu active?
+     * @param bool $sidebarOnLeft Does the sidebar go on the left?
+     * @param bool $offcanvas     Is offcanvas menu active?
+     * @param bool $rtl           Are we in right-to-left mode?
      */
-    public function __construct($left = false, $offcanvas = false)
-    {
-        $this->sidebarOnLeft = $left;
-        $this->offcanvas = $offcanvas;
+    public function __construct(
+        protected bool $sidebarOnLeft = false,
+        protected bool $offcanvas = false,
+        protected bool $rtl = false
+    ) {
     }
 
     /**
@@ -75,5 +63,5 @@ abstract class AbstractLayoutClass extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string       CSS classes to apply
      */
-    abstract public function __invoke($class);
+    abstract public function __invoke(string $class);
 }

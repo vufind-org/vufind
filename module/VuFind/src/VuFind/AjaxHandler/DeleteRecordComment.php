@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,8 +30,8 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\Comments;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -48,38 +48,17 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Comments database table
-     *
-     * @var Comments
-     */
-    protected $table;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * Are comments enabled?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
      * Constructor
      *
-     * @param Comments  $table   Comments database table
-     * @param User|bool $user    Logged in user (or false)
-     * @param bool      $enabled Are comments enabled?
+     * @param CommentsServiceInterface $commentsService Comments database service
+     * @param ?UserEntityInterface     $user            Logged in user (or null)
+     * @param bool                     $enabled         Are comments enabled?
      */
-    public function __construct(Comments $table, $user, $enabled = true)
-    {
-        $this->table = $table;
-        $this->user = $user;
-        $this->enabled = $enabled;
+    public function __construct(
+        protected CommentsServiceInterface $commentsService,
+        protected ?UserEntityInterface $user,
+        protected bool $enabled = true
+    ) {
     }
 
     /**
@@ -99,7 +78,7 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
             );
         }
 
-        if ($this->user === false) {
+        if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
                 self::STATUS_HTTP_NEED_AUTH
@@ -113,7 +92,8 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
-        if (!$this->table->deleteIfOwnedByUser($id, $this->user)) {
+
+        if (!$this->commentsService->deleteIfOwnedByUser($id, $this->user)) {
             return $this->formatResponse(
                 $this->translate('edit_list_fail'),
                 self::STATUS_HTTP_FORBIDDEN

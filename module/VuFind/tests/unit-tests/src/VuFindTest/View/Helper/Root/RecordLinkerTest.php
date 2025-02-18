@@ -29,7 +29,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Record\Router;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\View\Helper\Root\Url;

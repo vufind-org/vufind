@@ -94,7 +94,19 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testDisabledSearch()
     {
+        // Disable logging of a known exception:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
         $session = $this->getMinkSession();
+        // We expect an error, so let's act like production mode for realistic testing:
+        $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/Blender/Results');
         $page = $session->getPage();
         $this->assertEquals(
@@ -182,7 +194,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Blended',
-            $this->findCssAndGetText($page, '.searchbox li.active')
+            $this->findCssAndGetText($page, '.searchbox li a.active')
         );
     }
 

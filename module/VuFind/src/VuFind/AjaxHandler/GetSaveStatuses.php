@@ -31,11 +31,12 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Mvc\Controller\Plugin\Url;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserResourceEntityInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
 
-use function count;
 use function is_array;
 
 /**
@@ -54,46 +55,36 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $urlHelper;
-
-    /**
      * Constructor
      *
-     * @param SessionSettings $ss        Session settings
-     * @param User|bool       $user      Logged in user (or false)
-     * @param Url             $urlHelper URL helper
+     * @param SessionSettings              $ss                  Session settings
+     * @param ?UserEntityInterface         $user                Logged in user (or null)
+     * @param Url                          $urlHelper           URL helper
+     * @param UserResourceServiceInterface $userResourceService User resource database service
      */
-    public function __construct(SessionSettings $ss, $user, Url $urlHelper)
-    {
+    public function __construct(
+        SessionSettings $ss,
+        protected ?UserEntityInterface $user,
+        protected Url $urlHelper,
+        protected UserResourceServiceInterface $userResourceService
+    ) {
         $this->sessionSettings = $ss;
-        $this->user = $user;
-        $this->urlHelper = $urlHelper;
     }
 
     /**
-     * Format list object into array.
+     * Format UserResourceEntityInterface object into array.
      *
-     * @param array $list List data
+     * @param UserResourceEntityInterface $data UserResourceEntityInterface object
      *
      * @return array
      */
-    protected function formatListData($list)
+    protected function formatListData(UserResourceEntityInterface $data): array
     {
-        return [
+        $list = $data->getUserList();
+        return !$list ? [] : [
             'list_url' =>
-                $this->urlHelper->fromRoute('userList', ['id' => $list['list_id']]),
-            'list_title' => $list['list_title'],
+                $this->urlHelper->fromRoute('userList', ['id' => $list->getId()]),
+            'list_title' => $list->getTitle(),
         ];
     }
 
@@ -117,9 +108,8 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
             if (!isset($checked[$selector])) {
                 $checked[$selector] = true;
 
-                $data = $this->user->getSavedData($id, null, $source);
-                $result[$selector] = ($data && count($data) > 0)
-                    ? array_map([$this, 'formatListData'], $data->toArray()) : [];
+                $data = $this->userResourceService->getFavoritesForRecord($id, $source, null, $this->user);
+                $result[$selector] = array_filter(array_map([$this, 'formatListData'], $data));
             }
         }
         return $result;

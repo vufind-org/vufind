@@ -57,7 +57,7 @@ class ChangeTracker extends Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param ?RowGateway   $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(
@@ -77,7 +77,7 @@ class ChangeTracker extends Gateway
      * @param string $core The Solr core holding the record.
      * @param string $id   The ID of the record being indexed.
      *
-     * @return \VuFind\Db\Row\ChangeTracker|null
+     * @return ?\VuFind\Db\Row\ChangeTracker
      */
     public function retrieve($core, $id)
     {

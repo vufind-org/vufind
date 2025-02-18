@@ -182,20 +182,14 @@ class Holds extends AbstractRequestBase
                     }
                 }
                 if ($failed) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'hold_cancel_fail_items',
-                            ['%%count%%' => $failed]
-                        );
-                    $flashMsg->addErrorMessage($msg);
+                    $flashMsg->addErrorMessage(
+                        ['msg' => 'hold_cancel_fail_items', 'tokens' => ['%%count%%' => $failed]]
+                    );
                 }
                 if ($cancelResults['count'] > 0) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'hold_cancel_success_items',
-                            ['%%count%%' => $cancelResults['count']]
-                        );
-                    $flashMsg->addSuccessMessage($msg);
+                    $flashMsg->addSuccessMessage(
+                        ['msg' => 'hold_cancel_success_items', 'tokens' => ['%%count%%' => $cancelResults['count']]]
+                    );
                 }
                 return $cancelResults;
             }

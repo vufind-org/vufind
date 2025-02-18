@@ -32,6 +32,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,15 +48,12 @@ use Symfony\Component\Console\Question\Question;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/dedupe',
+    description: 'Tool for deduplicating lines in a sorted file'
+)]
 class DedupeCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/dedupe';
-
     /**
      * Configure the command.
      *
@@ -64,7 +62,6 @@ class DedupeCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Tool for deduplicating lines in a sorted file')
             ->setHelp('Deduplicates lines in a sorted file.')
             ->addArgument(
                 'input',

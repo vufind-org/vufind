@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\SolrCollection;
 
+use function sprintf;
+
 /**
  * Solr Collection Search Options
  *
@@ -67,7 +69,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function initFromRecordDriver($driver, bool $hasSearch = false)
     {
-        $this->collectionID = $driver->getUniqueID();
+        $this->collectionID = $driver->tryMethod('getCollectionSearchId') ?? $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
             $this->collectionField = $hierarchyDriver->getCollectionField($hasSearch);
         }

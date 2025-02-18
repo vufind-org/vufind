@@ -30,7 +30,7 @@
 namespace VuFind\UrlShortener;
 
 use Exception;
-use VuFind\Db\Table\Shortlinks as ShortlinksTable;
+use VuFind\Db\Service\ShortlinksServiceInterface;
 
 /**
  * Local database-driven URL shortener.
@@ -44,34 +44,6 @@ use VuFind\Db\Table\Shortlinks as ShortlinksTable;
  */
 class Database implements UrlShortenerInterface
 {
-    /**
-     * Hash algorithm to use
-     *
-     * @var string
-     */
-    protected $hashAlgorithm;
-
-    /**
-     * Base URL of current VuFind site
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
-    /**
-     * Table containing shortlinks
-     *
-     * @var ShortlinksTable
-     */
-    protected $table;
-
-    /**
-     * HMacKey from config
-     *
-     * @var string
-     */
-    protected $salt;
-
     /**
      * When using a hash algorithm other than base62, the preferred number of
      * characters to use from the hash in the URL (more may be used for
@@ -93,21 +65,17 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param string          $baseUrl       Base URL of current VuFind site
-     * @param ShortlinksTable $table         Shortlinks database table
-     * @param string          $salt          HMacKey from config
-     * @param string          $hashAlgorithm Hash algorithm to use
+     * @param string                     $baseUrl       Base URL of current VuFind site
+     * @param ShortlinksServiceInterface $service       Shortlinks database service
+     * @param string                     $salt          HMacKey from config
+     * @param string                     $hashAlgorithm Hash algorithm to use
      */
     public function __construct(
-        string $baseUrl,
-        ShortlinksTable $table,
-        string $salt,
-        string $hashAlgorithm = 'md5'
+        protected string $baseUrl,
+        protected ShortlinksServiceInterface $service,
+        protected string $salt,
+        protected string $hashAlgorithm = 'md5'
     ) {
-        $this->baseUrl = $baseUrl;
-        $this->table = $table;
-        $this->salt = $salt;
-        $this->hashAlgorithm = $hashAlgorithm;
     }
 
     /**
@@ -120,13 +88,12 @@ class Database implements UrlShortenerInterface
      */
     protected function getBase62Hash(string $path): string
     {
-        $this->table->insert(['path' => $path]);
-        $id = $this->table->getLastInsertValue();
-        $row = $this->table->select(['id' => $id])->current();
+        $row = $this->service->createAndPersistEntityForPath($path);
         $b62 = new \VuFind\Crypt\Base62();
-        $row->hash = $b62->encode($id);
-        $row->save();
-        return $row->hash;
+        $hash = $b62->encode($row->getId());
+        $row->setHash($hash);
+        $this->service->persistEntity($row);
+        return $hash;
     }
 
     /**
@@ -138,6 +105,7 @@ class Database implements UrlShortenerInterface
      * @param int    $length Minimum number of characters from hash to use for
      * lookups (may be increased to enforce uniqueness)
      *
+     * @throws Exception
      * @return string
      */
     protected function saveAndShortenHash($path, $hash, $length)
@@ -150,17 +118,18 @@ class Database implements UrlShortenerInterface
             );
         }
         $shorthash = str_pad(substr($hash, 0, $length), $length, '_');
-        $results = $this->table->select(['hash' => $shorthash]);
+        $match = $this->service->getShortLinkByHash($shorthash);
 
         // Brand new hash? Create row and return:
-        if ($results->count() == 0) {
-            $this->table->insert(['path' => $path, 'hash' => $shorthash]);
+        if (!$match) {
+            $newEntity = $this->service->createEntity()->setPath($path)->setHash($shorthash);
+            $this->service->persistEntity($newEntity);
             return $shorthash;
         }
 
         // If we got this far, the hash already exists; let's check if it matches
         // the path...
-        if ($results->current()['path'] === $path) {
+        if ($match->getHash() === $path) {
             return $shorthash;
         }
 
@@ -182,11 +151,14 @@ class Database implements UrlShortenerInterface
         $hash = hash($this->hashAlgorithm, $path . $this->salt);
         // Generate short hash within a transaction to avoid odd timing-related
         // problems:
-        $connection = $this->table->getAdapter()->getDriver()->getConnection();
-        $connection->beginTransaction();
-        $shortHash = $this
-            ->saveAndShortenHash($path, $hash, $this->preferredHashLength);
-        $connection->commit();
+        $this->service->beginTransaction();
+        try {
+            $shortHash = $this->saveAndShortenHash($path, $hash, $this->preferredHashLength);
+        } catch (Exception $e) {
+            $this->service->rollBackTransaction();
+            throw $e;
+        }
+        $this->service->commitTransaction();
         return $shortHash;
     }
 
@@ -228,16 +200,15 @@ class Database implements UrlShortenerInterface
      * @param string $input hash
      *
      * @return string
-     *
      * @throws Exception
      */
     public function resolve($input)
     {
-        $results = $this->table->select(['hash' => $input]);
-        if ($results->count() !== 1) {
+        $match = $this->service->getShortLinkByHash($input);
+        if (!$match) {
             throw new Exception('Shortlink could not be resolved: ' . $input);
         }
 
-        return $this->baseUrl . $results->current()['path'];
+        return $this->baseUrl . $match->getPath();
     }
 }

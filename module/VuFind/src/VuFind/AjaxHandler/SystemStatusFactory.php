@@ -64,17 +64,19 @@ class SystemStatusFactory implements \Laminas\ServiceManager\Factory\FactoryInte
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $servicePluginManager = $container->get(
+            \VuFind\Db\Service\PluginManager::class
+        );
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $tablePluginManager->get(\VuFind\Db\Table\Session::class)
+            $servicePluginManager->get(\VuFind\Db\Service\SessionServiceInterface::class)
         );
     }
 }

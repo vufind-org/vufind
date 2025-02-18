@@ -1,0 +1,35 @@
+<add>
+  <doc>
+    <field name="id">001</field>
+    <field name="fulltext">This is the content of the first record.</field>
+    <field name="description">This is the description of record number one.</field>
+    <field name="keywords">one first</field>
+    <field name="title">First Web Page</field>
+    <field name="url">http://localhost/1</field>
+    <field name="category">Test Pages</field>
+    <field name="linktype">Fake Link</field>
+    <field name="subject">Fiction</field>
+  </doc>
+  <doc>
+    <field name="id">002</field>
+    <field name="fulltext">This is the content of the second record.</field>
+    <field name="description">This is the description of record number two.</field>
+    <field name="keywords">two second</field>
+    <field name="title">Second Web Page</field>
+    <field name="url">http://localhost/2</field>
+    <field name="category">Test Pages</field>
+    <field name="linktype">Fake Link</field>
+    <field name="subject">Fact</field>
+  </doc>
+  <doc>
+    <field name="id">003</field>
+    <field name="fulltext">This is the content of the third record.</field>
+    <field name="description">This is the description of record number three.</field>
+    <field name="keywords">three third</field>
+    <field name="title">Third Web Page</field>
+    <field name="url">http://localhost/3</field>
+    <field name="category">Test Pages</field>
+    <field name="linktype">Fake Link</field>
+    <field name="subject">Fantasy</field>
+  </doc>
+</add>

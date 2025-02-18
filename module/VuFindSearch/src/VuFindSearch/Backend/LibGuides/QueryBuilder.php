@@ -55,47 +55,47 @@ class QueryBuilder
      *
      * @var string
      */
-    protected $defaultWidgetType = '1';
+    protected $widgetType = '1';
 
     /// Public API
 
     /**
      * Return LibGuides search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Send back results
-        $params = new ParamBag();
+        $newParams = new ParamBag();
 
         // Convert the query to an array, then flatten that to a string
         // (right now, we're ignoring a lot of data -- we may want to
         // revisit this and see if more detail can be utilized).
         $array = $this->abstractQueryToArray($query);
         if (isset($array[0]['lookfor'])) {
-            $params->set('search', $array[0]['lookfor']);
+            $newParams->set('search', $array[0]['lookfor']);
         }
+        $newParams->set('widget_type', $this->widgetType);
 
-        if (!$params->hasParam('widget_type')) {
-            $params->set('widget_type', $this->defaultWidgetType);
-        }
-
-        return $params;
+        return $newParams;
     }
 
     /**
-     * Set the default widget type for this QueryBuilder instance.  See $defaultWidgetType.
+     * Set the widget type for this QueryBuilder instance.  See $widgetType.
      *
-     * @param string $type default widget type
+     * @param string $type Widget type
      *
      * @return void
      */
     public function setDefaultWidgetType($type)
     {
-        $this->defaultWidgetType = $type;
+        $this->widgetType = $type;
     }
 
     /// Internal API

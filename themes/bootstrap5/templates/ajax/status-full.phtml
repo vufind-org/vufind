@@ -1,0 +1,68 @@
+<table class="table table-condensed">
+  <tr>
+    <th><?=$this->transEsc('Location')?></th>
+    <th><?=$this->transEsc('Call Number')?></th>
+    <th><?=$this->transEsc('Status')?></th>
+  </tr>
+  <?php $i = 0; ?>
+  <?php foreach ($this->statusItems as $item): ?>
+    <?php
+      if (++$i == 5) {
+        // Show no more than 5 items
+        break;
+      }
+      $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';
+
+      $itemHasAdditionalHoldingsFields = false;
+      foreach ($this->holdingsTextFieldNames as $holdingsTextField) {
+        if (!empty($item[$holdingsTextField])) {
+          $itemHasAdditionalHoldingsFields = true;
+          break;
+        }
+      }
+    ?>
+    <tr<?=$itemHasAdditionalHoldingsFields ? $this->htmlAttributes(['class' => 'itemWithAdditionalHoldingFields']) : ''?>>
+      <td class="fullLocation">
+        <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
+        <?php if ($item['locationhref'] ?? false): ?>
+          <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
+        <?php else: ?>
+          <?=$locationText?>
+        <?php endif; ?>
+      </td>
+      <td class="fullCallnumber">
+        <?php if ($this->callnumberHandler): ?>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($item['callnumber']) ?>"><?=$this->escapeHtml($callNumPrefix)?><?=$this->escapeHtml($item['callnumber'])?></a>
+        <?php else: ?>
+          <?=$this->escapeHtml($callNumPrefix)?><?=$this->escapeHtml($item['callnumber'])?>
+        <?php endif; ?>
+      </td>
+      <td class="fullAvailability">
+        <?php $availabilityStatus = $item['availability']; ?>
+          <?php
+            $statusClass = $this->availabilityStatus()->getClass($availabilityStatus);
+            if ($availabilityStatus->isAvailable() && $item['reserve'] === 'Y') {
+              $statusDescription = 'On Reserve';
+            } else {
+              $statusDescription = $availabilityStatus->getStatusDescription();
+            }
+            $statusDescriptionTokens = $availabilityStatus->getStatusDescriptionTokens();
+          ?>
+          <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription, $statusDescriptionTokens)?></span>
+      </td>
+    </tr>
+
+    <?php foreach ($this->holdingsTextFieldNames as $holdingsTextField): ?>
+      <?php if (!empty($item[$holdingsTextField])): ?>
+        <tr>
+          <td colspan="3" class="statusItemsHoldingsTextFields">
+            <strong><?= $this->transEsc(ucfirst($holdingsTextField)) ?>: </strong><span><?= $this->escapeHtml(implode('; ', ((array)$item[$holdingsTextField]))); ?></span>
+          </td>
+        </tr>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  <?php endforeach; ?>
+<?php if (count($this->statusItems) > 5): ?>
+  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']], ['query' => ['sid' => $this->searchId]])?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more_ellipsis')?></a></td></tr>
+<?php endif; ?>
+</table>

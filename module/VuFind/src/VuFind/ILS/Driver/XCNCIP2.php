@@ -307,11 +307,11 @@ class XCNCIP2 extends AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
-     * @param PathResolver           $pathResolver  Config file path resolver
+     * @param ?PathResolver          $pathResolver  Config file path resolver
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        PathResolver $pathResolver = null
+        ?PathResolver $pathResolver = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->pathResolver = $pathResolver;
@@ -392,7 +392,8 @@ class XCNCIP2 extends AbstractBase implements
             $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
 
-        $this->itemUseRestrictionTypesForStatus = $this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? [];
+        $this->itemUseRestrictionTypesForStatus
+            = (array)($this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? []);
     }
 
     /**
@@ -434,7 +435,7 @@ class XCNCIP2 extends AbstractBase implements
             );
         }
         if (($handle = fopen($pickupLocationsFile, 'r')) !== false) {
-            while (($data = fgetcsv($handle)) !== false) {
+            while (($data = fgetcsv($handle, escape: '\\')) !== false) {
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
                     'locationID' => $agencyId,
@@ -921,8 +922,8 @@ class XCNCIP2 extends AbstractBase implements
      * consortial record.
      *
      * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     * @param array  $ids    The (consortial) source records for the record id
+     * @param ?array $patron Patron data
+     * @param ?array $ids    The (consortial) source records for the record id
      *
      * @throws DateException
      * @throws ILSException
@@ -934,8 +935,8 @@ class XCNCIP2 extends AbstractBase implements
      */
     public function getConsortialHoldings(
         $id,
-        array $patron = null,
-        array $ids = null
+        ?array $patron = null,
+        ?array $ids = null
     ) {
         $aggregateId = $id;
 
@@ -1019,7 +1020,7 @@ class XCNCIP2 extends AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -1030,7 +1031,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $ids = null;
         if (! $this->consortium) {
@@ -1599,7 +1600,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Public Function which retrieves Holds, StorageRetrivalRequests, and
+     * Public Function which retrieves Holds, StorageRetrievalRequests, and
      * Consortial settings from the driver ini file.
      *
      * @param string $function The name of the feature to be checked
@@ -2132,7 +2133,7 @@ class XCNCIP2 extends AbstractBase implements
             },
             $blocks
         );
-        return empty($blocks) ? false : array_unique($blocks);
+        return empty($blocks) ? false : array_values(array_unique($blocks));
     }
 
     /**
@@ -2472,7 +2473,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @param string $id Bibliographic item id
      *
-     * @return string Get BibiographicId XML element string
+     * @return string Get BibliographicId XML element string
      */
     protected function getBibliographicId($id)
     {
@@ -2774,7 +2775,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @param \SimpleXMLElement $xml              XML response
      * @param array|string[]    $elements         Which of Problem subelements
-     * return in desription - defaulting to full list: ProblemType, ProblemDetail,
+     * return in description - defaulting to full list: ProblemType, ProblemDetail,
      * ProblemElement and ProblemValue
      * @param bool              $withElementNames Whether to add element names as
      * value labels (for example for debug purposes)
@@ -2890,7 +2891,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Invalidate L1 cache for responses
      *
-     * @param string $message NCIP message type - curently only 'LookupUser'
+     * @param string $message NCIP message type - currently only 'LookupUser'
      * @param string $key     Cache key (For LookupUser its cat_username)
      *
      * @return void
@@ -2906,7 +2907,7 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $idList     List of bibliographic IDs.
      * @param array $agencyList List of possible toAgency values
      *
-     * @return array|false|\SimpleXMLElement[]
+     * @return \SimpleXMLElement[]
      * @throws ILSException
      */
     protected function getBibs(array $idList, array $agencyList): array

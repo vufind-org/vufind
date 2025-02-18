@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Compile;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,15 +46,12 @@ use VuFindTheme\ThemeCompiler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'compile/theme',
+    description: 'Theme compiler'
+)]
 class ThemeCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'compile/theme';
-
     /**
      * Theme compiler
      *
@@ -82,7 +80,6 @@ class ThemeCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Theme compiler')
             ->setHelp('Flattens a theme hierarchy for improved performance.')
             ->addArgument(
                 'source',

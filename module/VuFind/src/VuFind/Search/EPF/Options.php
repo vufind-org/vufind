@@ -57,7 +57,7 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Search configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $searchSettings;
 
@@ -75,7 +75,6 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
 
         $this->setOptionsFromConfig();
-        $facetConf = $configLoader->get($this->facetsIni);
     }
 
     /**

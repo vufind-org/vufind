@@ -1,0 +1,8 @@
+<?php $loggedin = $this->auth()->getUserObject(); ?>
+<?php if ($this->usertags()->getMode() !== 'disabled'): ?>
+  <?php $tagList = $this->record($this->driver)->getTags(null, null, 'count', $loggedin); ?>
+    <a class="tag-record btn btn-default" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddTag'))?>" data-lightbox>
+      <?=$this->icon('tag-add') ?> <?=$this->transEsc('Add Tag') ?>
+    </a>
+    <?=$this->context($this)->renderInContext('record/taglist', ['tagList' => $tagList, 'loggedin' => (bool)$loggedin]) ?>
+<?php endif; ?>

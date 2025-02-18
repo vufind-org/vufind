@@ -107,7 +107,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     public function testThemeDoesntExist()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('emplate not found in missing: file.phtml');
+        $this->expectExceptionMessage('Template not found in missing: file.phtml');
 
         $helper = $this->getHelper();
         $helper('file.phtml', 'missing');
@@ -121,7 +121,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     public function testFileDoesntExist()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('emplate not found in parent: missing.phtml');
+        $this->expectExceptionMessage('Template not found in parent: missing.phtml');
 
         $helper = $this->getHelper();
         $helper('missing.phtml', 'parent');

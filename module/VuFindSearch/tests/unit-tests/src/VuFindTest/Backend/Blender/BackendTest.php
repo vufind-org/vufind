@@ -29,12 +29,12 @@
 
 namespace VuFindTest\Backend\Blender;
 
-use Laminas\Config\Config;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
 use Laminas\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
@@ -909,12 +909,12 @@ class BackendTest extends TestCase
         };
 
         $this->sharedEventManager->attach(
-            'VuFind\Search',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_PRE,
             $onSearchPre
         );
         $this->sharedEventManager->attach(
-            'VuFind\Search',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_POST,
             $onSearchPost
         );
@@ -930,12 +930,12 @@ class BackendTest extends TestCase
             ]
         );
         $this->sharedEventManager->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_PRE,
             [$backend, 'onSearchPre']
         );
         $this->sharedEventManager->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_POST,
             [$backend, 'onSearchPost']
         );
@@ -954,7 +954,7 @@ class BackendTest extends TestCase
             'params' => $params,
         ];
         $eventManager = new EventManager($this->sharedEventManager);
-        $eventManager->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
+        $eventManager->setIdentifiers([\VuFindSearch\Service::class]);
         $eventManager->trigger(
             \VuFindSearch\Service::EVENT_PRE,
             $backend,
@@ -1043,14 +1043,14 @@ class BackendTest extends TestCase
     /**
      * Return search params
      *
-     * @param array $filters Blender filters
-     * @param Query $query   Query
+     * @param array  $filters Blender filters
+     * @param ?Query $query   Query
      *
      * @return ParamBag
      */
     protected function getSearchParams(
         array $filters,
-        Query $query = null
+        ?Query $query = null
     ): ParamBag {
         return new ParamBag(
             [

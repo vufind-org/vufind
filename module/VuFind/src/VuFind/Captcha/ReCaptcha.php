@@ -71,7 +71,7 @@ class ReCaptcha extends AbstractBase
     }
 
     /**
-     * Get list of URLs with JS dependancies to load for the active CAPTCHA type.
+     * Get list of URLs with JS dependencies to load for the active CAPTCHA type.
      *
      * @return array
      */

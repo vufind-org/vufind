@@ -171,10 +171,8 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     public function testFetching(): void
     {
-        $context1 = ['offset' => null, 'countPerPage' => $this->countPerPage];
         $expectedIds1 = range(0, $this->countPerPage - 1);
         $expectedResponse1 = $this->getTermsResponse($expectedIds1);
-        $context2 = ['offset' => 99, 'countPerPage' => $this->countPerPage];
         $expectedIds2 = [];
         $expectedResponse2 = $this->getTermsResponse($expectedIds2);
         $service = $this->getMockService();

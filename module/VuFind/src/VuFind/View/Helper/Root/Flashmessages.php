@@ -133,7 +133,7 @@ class Flashmessages extends AbstractHelper
                         $default = $msg['default'] ?? null;
 
                         // Translate the message:
-                        $message = $translate($message, $tokens, $default);
+                        $message = $translate($message, $tokens, $default, $msg['icu'] ?? false);
                     }
                     // Escape the message unless requested not to:
                     if (!$msgHtml) {

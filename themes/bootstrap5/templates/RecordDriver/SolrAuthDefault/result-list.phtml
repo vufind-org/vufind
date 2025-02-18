@@ -1,0 +1,55 @@
+<?php
+  $heading = $this->driver->getTitle();
+  if (empty($heading)) {
+    $heading = $this->translate('Heading unavailable.');
+  }
+  $seeAlso = $this->driver->getSeeAlso();
+  $useFor = $this->driver->getUseFor();
+  $recordLinker = $this->recordLinker($this->results);
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  $largeImage = $this->record($this->driver)->getThumbnail('large');
+  $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $linkAttributes);
+  $cover = $coverDetails['html'];
+?>
+<?php if ($cover): ?>
+  <?php ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+    <?=$cover ?>
+  </div>
+  <?php $thumbnail = ob_get_clean(); ?>
+<?php endif; ?>
+<div class="media authority-record">
+  <?php if ($thumbnail && $thumbnailAlignment === 'left'): ?>
+    <?=$thumbnail ?>
+  <?php endif ?>
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <h2>
+        <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title"><?=$this->escapeHtml($heading)?></a>
+      </h2>
+    </div>
+
+    <div class="resultItemLine2">
+      <?php if (!empty($seeAlso)): ?>
+        <?=$this->transEsc('See also')?>:<br>
+        <?php foreach ($seeAlso as $current): ?>
+          <a href="<?=$this->url('authority-search')?>?lookfor=%22<?=urlencode($current)?>%22&amp;type=MainHeading"><?=$this->escapeHtml($current)?></a><br>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+
+    <div class="resultItemLine3">
+      <?php if (!empty($useFor)): ?>
+        <?=$this->transEsc('Use for')?>:<br>
+        <?php foreach ($useFor as $current): ?>
+          <?=$this->escapeHtml($current)?><br>
+        <?php endforeach; ?>
+      <?php endif; ?>
+      <?=$this->record($this->driver)->getLabelList() ?>
+    </div>
+  </div>
+  <?php if ($thumbnail && $thumbnailAlignment === 'right'): ?>
+    <?=$thumbnail ?>
+  <?php endif ?>
+</div>

@@ -59,7 +59,7 @@ class None implements UrlShortenerInterface
      * @param string $id ID to resolve
      *
      * @return string
-     * @throws Exception because this class is not meant to resolve shortlinks.
+     * @throws \Exception because this class is not meant to resolve shortlinks.
      */
     public function resolve($id)
     {

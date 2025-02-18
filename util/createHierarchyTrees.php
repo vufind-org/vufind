@@ -1,6 +1,6 @@
 <?php
 /**
- * Create all the hierarchy files which are used for looking up hierarchichal trees.
+ * Create all the hierarchy files which are used for looking up hierarchical trees.
  * This script will search the Solr index and create the files needed so they don't
  * need to be built at runtime. If this script is run after every index, the caching
  * time for hierarchy trees can be set to -1 so that trees are always assumed to be

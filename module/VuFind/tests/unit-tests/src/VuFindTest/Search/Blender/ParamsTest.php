@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Config\Config;
 use Laminas\Stdlib\Parameters;
+use VuFind\Config\Config;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -141,7 +141,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                             'Field' => 'creationdate',
                         ],
                         'EDS' => [
-                            'Field' => 'PublishDate',
+                            'Field' => 'PublicationDate',
                         ],
                     ],
                 ],
@@ -583,7 +583,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $primoParams->get('filterList')
         );
         $this->assertEquals(
-            ['PublishDate:[2020 TO 2022]'],
+            ['PublicationDate:[2020 TO 2022]'],
             $edsParams->get('filters')
         );
     }
@@ -878,7 +878,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'brief',
                 ],
                 'filters' => [
-                    'building:main',
+                    'building:OR:main',
                 ],
             ],
             $edsParams->getArrayCopy()
@@ -899,7 +899,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
 
         $edsParams = $backendParams->get('params_EDS')[0];
-        $this->assertEquals(['building:sub'], $edsParams->get('filters'));
+        $this->assertEquals(['building:OR:sub'], $edsParams->get('filters'));
     }
 
     /**

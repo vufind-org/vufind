@@ -52,7 +52,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     /**
      * Our brave test subject
      *
-     * @var $extCompiler
+     * @var object
      */
     protected $compiler;
 
@@ -110,9 +110,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
         );
         file_put_contents(
             $testDest . "themes/child/$ext/compiled.$ext",
-            $ext == 'less'
-                ? '@import "parent"; @black: #000; div {border:1px solid @black;}'
-                : '@import "parent"; $black: #000; div {border:1px solid $black;}'
+            '@import "parent"; $black: #000; div {border:1px solid $black;}'
         );
     }
 

@@ -72,7 +72,7 @@ class Holds
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -89,13 +89,13 @@ class Holds
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $ils     A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \Laminas\Config\Config        $config  VuFind configuration
+     * @param \VuFind\Config\Config         $config  VuFind configuration
      */
     public function __construct(
         \VuFind\Auth\ILSAuthenticator $ilsAuth,
         ILSConnection $ils,
         \VuFind\Crypt\HMAC $hmac,
-        \Laminas\Config\Config $config
+        \VuFind\Config\Config $config
     ) {
         $this->ilsAuth = $ilsAuth;
         $this->hmac = $hmac;
@@ -346,7 +346,7 @@ class Holds
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
                     // Are any copies available?
-                    if ($copy['availability'] == true) {
+                    if ($copy['availability']->isAvailable()) {
                         $any_available = true;
                     }
                 }
@@ -368,13 +368,13 @@ class Holds
                                 $addlink = true; // always provide link
                                 break;
                             case 'holds':
-                                $addlink = $copy['availability'];
+                                $addlink = $copy['availability']->isAvailable();
                                 break;
                             case 'recalls':
-                                $addlink = !$copy['availability'];
+                                $addlink = !$copy['availability']->isAvailable();
                                 break;
                             case 'availability':
-                                $addlink = !$copy['availability']
+                                $addlink = !$copy['availability']->isAvailable()
                                     && ($any_available == false);
                                 break;
                             default:
@@ -533,6 +533,13 @@ class Holds
     {
         // Include request type in the details
         $details['requestType'] = $action;
+
+        if (
+            ($details['availability'] ?? null) instanceof AvailabilityStatusInterface
+            && empty($details['status'])
+        ) {
+            $details['status'] = $details['availability']->getStatusDescription();
+        }
 
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $details);

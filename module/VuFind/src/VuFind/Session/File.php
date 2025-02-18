@@ -29,7 +29,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function function_exists;
 use function strlen;
@@ -55,10 +55,10 @@ class File extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param ?Config $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(?Config $config = null)
     {
         parent::__construct($config);
 
@@ -131,17 +131,18 @@ class File extends AbstractBase
      *
      * @param int $maxlifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      */
-    #[\ReturnTypeWillChange]
-    public function gc($maxlifetime)
+    public function gc($maxlifetime): int|false
     {
+        $count = 0;
         foreach (glob($this->path . '/sess_*') as $filename) {
             if (filemtime($filename) + $maxlifetime < time()) {
                 unlink($filename);
+                $count++;
             }
         }
-        return true;
+        return $count;
     }
 
     /**

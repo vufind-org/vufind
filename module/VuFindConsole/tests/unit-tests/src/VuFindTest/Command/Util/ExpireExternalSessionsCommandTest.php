@@ -50,11 +50,11 @@ class ExpireExternalSessionsCommandTest extends AbstractExpireCommandTest
     protected $targetClass = ExpireExternalSessionsCommand::class;
 
     /**
-     * Name of a valid table class to test with
+     * Name of a valid service class (or interface) to test with
      *
      * @var string
      */
-    protected $validTableClass = \VuFind\Db\Table\ExternalSession::class;
+    protected $validServiceClass = \VuFind\Db\Service\ExternalSessionService::class;
 
     /**
      * Label to use for rows in help messages.

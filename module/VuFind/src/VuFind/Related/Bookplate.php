@@ -71,7 +71,7 @@ class Bookplate implements RelatedInterface
     protected $fullUrlTemplate;
 
     /**
-     * URL temlate for thumbnail
+     * URL template for thumbnail
      */
     protected $thumbUrlTemplate;
 

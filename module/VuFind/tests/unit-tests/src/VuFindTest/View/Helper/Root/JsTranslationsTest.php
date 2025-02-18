@@ -36,7 +36,7 @@ use VuFindTest\Feature\TranslatorTrait;
 use VuFindTest\Feature\ViewTrait;
 
 /**
- * ShortenUrl view helper Test Class
+ * JsTranslations view helper Test Class
  *
  * @category VuFind
  * @package  Tests

@@ -1,0 +1,72 @@
+<?php if (empty($this->cluster['list'])): ?>
+  <div class="facet"><?=$this->transEsc('facet_list_empty')?></div>
+  <?php return; // We're done if the list is empty! ?>
+<?php endif; ?>
+
+<?php
+  // If we always use the lightbox, we don't want to turn on truncation.
+  $facetLightbox = $this->options->getFacetListAction();
+  $alwaysUseLightbox = ($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox;
+  $truncateSettings = $alwaysUseLightbox ? false : [
+    'rows' => $this->facets_before_more,
+    'btn-class' => 'facet',
+    'more-label' => $this->transEsc('more_ellipsis'),
+    'less-label' => $this->transEsc('less_ellipsis'),
+    'wrapper-class' => false,
+    'wrapper-tagname' => 'li',
+  ];
+  $facetLightboxParams = http_build_query(
+      [
+          'facet' => $this->title,
+          'facetop' => $this->cluster['list'][0]['operator'] ?? 'AND',
+          'facetexclude' => $this->allowExclude ? 1 : 0,
+      ],
+      '',
+      '&amp;'
+  );
+  $moreUrl = '#';
+  if ($facetLightbox) {
+    $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+    if (!empty($this->baseUriExtra)) {
+      $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
+    }
+  }
+  $ulAttrs = $this->htmlAttributes(['class' => 'facet__list']);
+  if ($truncateSettings) {
+    $ulAttrs->add('class', 'truncate-facets');
+    $ulAttrs->add('data-truncate', $this->htmlSafeJsonEncode($truncateSettings, null));
+  }
+?>
+<ul<?=$ulAttrs?>>
+  <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
+    <li class="facet__list__item">
+      <?php if ($i == $this->facets_before_more): ?>
+        <?php if ($alwaysUseLightbox): ?>
+          <a class="facet narrow-toggle more-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+            <span class="text"><?=$this->transEsc('more_ellipsis')?></span>
+          </a>
+          <?php break; ?>
+        <?php endif; ?>
+      <?php endif; ?>
+
+      <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+        'exclude' => $this->allowExclude,
+        'facet' => $thisFacet,
+        'group' => $this->title,
+        'url' => $this->results->getUrlQuery(),
+        'urlBase' => '',
+      ]) ?>
+    </li>
+  <?php endforeach; ?>
+
+  <?php /* LESS and SEE MORE links */ ?>
+  <?php if (isset($i) && $i >= $this->facets_before_more): ?>
+    <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox): ?>
+      <li class="facet__list__item">
+        <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+          <span class="text"><?=$this->transEsc('see_all_ellipsis')?></span>
+        </a>
+      </li>
+    <?php endif; ?>
+  <?php endif; ?>
+</ul>

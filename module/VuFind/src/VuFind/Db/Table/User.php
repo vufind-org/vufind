@@ -29,9 +29,9 @@
 
 namespace VuFind\Db\Table;
 
-use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container;
+use VuFind\Config\Config;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Row\User as UserRow;
 
@@ -66,9 +66,9 @@ class User extends Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param ?RowGateway   $rowObj  Row prototype object (null for default)
      * @param Config        $config  VuFind configuration
-     * @param Container     $session Session container to inject into rows
+     * @param ?Container    $session Session container to inject into rows
      * (optional; used for privacy mode)
      * @param string        $table   Name of database table to interface with
      */
@@ -78,7 +78,7 @@ class User extends Gateway
         $cfg,
         ?RowGateway $rowObj,
         Config $config,
-        Container $session = null,
+        ?Container $session = null,
         $table = 'user'
     ) {
         $this->config = $config;
@@ -107,9 +107,9 @@ class User extends Gateway
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param string $id ID.
+     * @param int $id ID.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getById($id)
     {
@@ -135,7 +135,7 @@ class User extends Gateway
      * @param string $username Username to use for retrieval.
      * @param bool   $create   Should we create users that don't already exist?
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByUsername($username, $create = true)
     {
@@ -152,7 +152,7 @@ class User extends Gateway
      *
      * @param string $email email to use for retrieval.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByEmail($email)
     {
@@ -180,7 +180,7 @@ class User extends Gateway
      *
      * @param string $hash User-unique hash string
      *
-     * @return mixed
+     * @return ?UserRow
      */
     public function getByVerifyHash($hash)
     {

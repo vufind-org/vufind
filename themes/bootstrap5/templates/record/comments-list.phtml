@@ -1,0 +1,29 @@
+<?php $comments = $this->record($this->driver)->getComments(); ?>
+<?php if (empty($comments)): ?>
+  <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
+<?php else: ?>
+  <?php foreach ($comments as $comment): ?>
+    <div class="comment">
+      <div class="comment-name">
+        <strong><?=null === $comment->getUser()->getId() ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($comment->getUser()->getFirstName() . ' ' . $comment->getUser()->getLastName()))?></strong><br>
+        <small>
+          <?=$this->escapeHtml($comment->getCreated()->format($this->config()->dateTimeFormat()))?>
+          <?php if (($user = $this->auth()->getUserObject()) && $comment->getUser()->getId() == $user->getId()): ?>
+            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'DeleteComment', ['delete' => $comment->getId()]))?>" id="recordComment<?=$this->escapeHtml($comment->getId())?>" class="delete"><?=$this->transEsc('Delete')?></a>
+          <?php endif; ?>
+        </small>
+      </div>
+      <div class="comment-text">
+        <?=$this->escapeHtml($comment->getComment())?>
+      </div>
+      <?php if ($this->driver->isRatingAllowed()): ?>
+        <div class="comment-rating">
+          <?php $ratingData = $this->ratings()->getRatingData($this->driver, $comment->getUser()->getId()); ?>
+          <?php if ($ratingData['count']): ?>
+            <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData]);?>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>

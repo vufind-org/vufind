@@ -139,7 +139,6 @@ class SearchCommandTest extends TestCase
      */
     public function testCommandContext()
     {
-        $backendId = 'bar';
         $command = $this->getCommand();
         $this->assertEquals('search', $command->getContext());
         $command->setContext('search2');

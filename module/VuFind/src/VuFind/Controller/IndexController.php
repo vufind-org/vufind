@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\Config;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -78,7 +78,7 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
     public function homeAction()
     {
         // Load different configurations depending on whether we're logged in or not:
-        if ($this->authManager->isLoggedIn()) {
+        if ($this->authManager->getIdentity()) {
             $controller = $this->config->Site->defaultLoggedInModule ?? 'MyResearch';
             $actionConfig = 'defaultLoggedInAction';
         } else {

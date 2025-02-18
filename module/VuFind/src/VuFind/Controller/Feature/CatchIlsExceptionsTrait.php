@@ -30,6 +30,7 @@
 
 namespace VuFind\Controller\Feature;
 
+use Laminas\Mvc\Exception\DomainException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -59,7 +60,7 @@ trait CatchIlsExceptionsTrait
      * @param \Laminas\Mvc\MvcEvent $event Event
      *
      * @return mixed
-     * @throws Exception\DomainException
+     * @throws DomainException
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $event)
     {
@@ -80,7 +81,9 @@ trait CatchIlsExceptionsTrait
             if ('development' == APPLICATION_ENV) {
                 $this->flashMessenger()->addErrorMessage($exception->getMessage());
             }
-            return $this->ilsExceptionResponse ?? $this->createViewModel();
+            $actionResponse = $this->ilsExceptionResponse ?? $this->createViewModel();
+            $event->setResult($actionResponse);
+            return $actionResponse;
         }
     }
 }

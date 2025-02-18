@@ -30,6 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use VuFind\Account\AccountStatusLevelType;
 
 /**
  * Abstract base class for fetching information about user requests.
@@ -40,7 +41,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
+abstract class AbstractUserRequestAction extends AbstractIlsUserAndRendererAction
 {
     use \VuFind\ILS\Logic\SummaryTrait;
 
@@ -69,6 +70,25 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $requests = $this->ils->{$this->lookupMethod}($patron);
-        return $this->formatResponse($this->getRequestSummary($requests));
+        $result = $this->getRequestSummary($requests);
+        $result['level'] = $this->getAccountStatusLevel($result);
+        $result['html'] = $this->renderer->render('ajax/account/requests.phtml', $result);
+        return $this->formatResponse($result);
+    }
+
+    /**
+     * Get account status level for notification icon
+     *
+     * @param array $status Status information
+     *
+     * @return AccountStatusLevelType
+     */
+    protected function getAccountStatusLevel(array $status): AccountStatusLevelType
+    {
+        if ($status['available']) {
+            // This is equivalent to the GOOD level in account_ajax.js, though e.g. ActionRequired could also make sense
+            return AccountStatusLevelType::Good;
+        }
+        return AccountStatusLevelType::Normal;
     }
 }

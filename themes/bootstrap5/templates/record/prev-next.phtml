@@ -1,0 +1,76 @@
+<nav aria-label="<?=$this->transEscAttr('Search Results')?>">
+  <ul class="pager hidden-print">
+    <span class="pager-direction">
+      <?php if ($this->scrollData['previousRecord']): ?>
+        <?php if ($this->scrollData['firstRecord']): ?>
+          <li role="none">
+            <a class="icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['firstRecord']))?>" aria-label="<?=$this->transEscAttr('First Search Result')?>" rel="nofollow">
+              <?=$this->icon('page-first', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('First')?></span>
+            </a>
+          </li>
+        <?php endif; ?>
+        <li role="none">
+          <a class="icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['previousRecord']))?>" aria-label="<?=$this->transEscAttr('Previous Search Result')?>" rel="nofollow">
+            <?=$this->icon('page-prev', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Prev')?></span>
+          </a>
+        </li>
+      <?php else: ?>
+        <?php if ($this->scrollData['firstRecord']): ?>
+          <li class="disabled" aria-hidden="true" role="none">
+            <a class="icon-link" disabled>
+              <?=$this->icon('page-first', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('First')?>
+            </a>
+          </li>
+        <?php endif; ?>
+        <li class="disabled" aria-hidden="true" role="none">
+          <a class="icon-link" disabled>
+            <?=$this->icon('page-prev', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Prev')?></span>
+          </a>
+        </li>
+      <?php endif; ?>
+    </span>
+
+    <?=$this->transEsc('of_num_results', [
+      '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
+      '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal']),
+    ]) ?>
+
+    <span class="pager-direction">
+      <?php if ($this->scrollData['nextRecord']): ?>
+        <li role="none">
+          <a class="icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['nextRecord']))?>" aria-label="<?=$this->transEscAttr('Next Search Result')?>" rel="nofollow">
+            <span class="icon-link__label"><?=$this->transEsc('Next')?></span>
+            <?=$this->icon('page-next', 'icon-link__icon') ?>
+          </a>
+        </li>
+        <?php if ($this->scrollData['lastRecord']): ?>
+          <li role="none">
+            <a class="icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['lastRecord']))?>" aria-label="<?=$this->transEscAttr('Last Search Result')?>" rel="nofollow">
+              <span class="icon-link__label"><?=$this->transEsc('Last')?></span>
+              <?=$this->icon('page-last', 'icon-link__icon') ?>
+            </a>
+          </li>
+        <?php endif; ?>
+      <?php else: ?>
+        <li class="disabled" aria-hidden="true" role="none">
+          <a class="icon-link" disabled>
+            <span class="icon-link__label"><?=$this->transEsc('Next')?></span>
+            <?=$this->icon('page-next', 'icon-link__icon') ?>
+          </a>
+        </li>
+        <?php if ($this->scrollData['lastRecord']): ?>
+          <li class="disabled" aria-hidden="true" role="none">
+            <a class="icon-link" disabled>
+              <span class="icon-link__label"><?=$this->transEsc('Last')?></span>
+              <?=$this->icon('page-last', 'icon-link__icon') ?>
+            </a>
+          </li>
+        <?php endif; ?>
+      <?php endif; ?>
+    </span>
+  </ul>
+</nav>

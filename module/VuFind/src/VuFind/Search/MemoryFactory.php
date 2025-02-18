@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Session\Container;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
  * Search memory factory.
@@ -64,7 +65,7 @@ class MemoryFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
@@ -78,7 +79,7 @@ class MemoryFactory implements FactoryInterface
             $session,
             $sessionManager->getId(),
             $container->get('Request'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Search'),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
             $container->get(\VuFind\Search\Results\PluginManager::class)
         );
     }

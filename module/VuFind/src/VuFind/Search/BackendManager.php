@@ -39,6 +39,7 @@ use VuFindSearch\Service;
 
 use function gettype;
 use function is_object;
+use function sprintf;
 
 /**
  * Manager for search backends.
@@ -161,7 +162,7 @@ class BackendManager
     {
         if (!$this->listeners->offsetExists($events)) {
             $listener = [$this, 'onResolve'];
-            $events->attach('VuFind\Search', Service::EVENT_RESOLVE, $listener);
+            $events->attach(Service::class, Service::EVENT_RESOLVE, $listener);
             $this->listeners->attach($events, $listener);
         }
     }
@@ -177,7 +178,7 @@ class BackendManager
     {
         if ($this->listeners->offsetExists($events)) {
             $listener = $this->listeners->offsetGet($events);
-            $events->detach($listener, 'VuFind\Search');
+            $events->detach($listener, Service::class);
             $this->listeners->detach($events);
         }
     }

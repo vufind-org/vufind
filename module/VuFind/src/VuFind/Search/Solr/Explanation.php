@@ -108,6 +108,13 @@ class Explanation extends \VuFind\Search\Base\Explanation
     protected $explanationForRest = [];
 
     /**
+     * Raw explanation.
+     *
+     * @var string
+     */
+    protected $rawExplanation = null;
+
+    /**
      * Get relevance value of best scoring title.
      *
      * @return float
@@ -185,6 +192,16 @@ class Explanation extends \VuFind\Search\Base\Explanation
     public function getExplanationForRest()
     {
         return $this->explanationForRest;
+    }
+
+    /**
+     * Get the raw explanation.
+     *
+     * @return string
+     */
+    public function getRawExplanation()
+    {
+        return $this->rawExplanation;
     }
 
     /**
@@ -280,7 +297,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
             );
         }
 
-        $this->debug($lines);
+        $this->rawExplanation = $lines;
         $lines = $this->cleanLines($lines);
 
         // get basic values
@@ -405,7 +422,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         if (
             (
                 (str_contains($description, 'product of:') || str_contains($description, 'sum of') || $isMaxPlusOthers)
-                && !str_contains($description, 'weight')
+                && !str_contains($description, 'weight') && !str_contains($description, 'FunctionQuery')
             )
             || str_contains($description, 'weight(FunctionScoreQuery')
         ) {
@@ -418,7 +435,10 @@ class Explanation extends \VuFind\Search\Base\Explanation
                 }
             }
             // match in field
-        } elseif (str_contains($description, 'weight') && !str_contains($description, 'FunctionScoreQuery')) {
+        } elseif (
+            (str_contains($description, 'weight') || str_contains($description, 'FunctionQuery'))
+            && !str_contains($description, 'FunctionScoreQuery')
+        ) {
             // parse explaining element
             $currentValue = $value * $modifier;
             if ($this->baseScore > 0) {
@@ -553,6 +573,14 @@ class Explanation extends \VuFind\Search\Base\Explanation
             $res['fieldValue'] = [$fieldValue];
             // extra space to only exact match whole words
             $res['exactMatch'] = [str_contains($this->lookfor . ' ', $fieldValue . ' ') ? 'exact' : 'inexact'];
+        } elseif (
+            preg_match(
+                '/FunctionQuery\((?<function>.*)\), product of:/',
+                $description,
+                $matches
+            )
+        ) {
+            $res['function'] = $matches['function'];
         }
         if ($fieldModifier !== null) {
             $res['fieldModifier'] = $fieldModifier;

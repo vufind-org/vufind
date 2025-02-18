@@ -99,6 +99,11 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
         // Check that url no longer contains the page parameter:
         $this->assertStringNotContainsString('&page', $this->getCurrentQueryString());
+
+        // Change sort back to relevance (first option) and verify:
+        $this->clickCss($page, $this->sortControlSelector . ' option');
+        $this->waitForPageLoad($page);
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
     }
 
     /**
@@ -138,6 +143,35 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check expected first and last record:
         $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
+    }
+
+    /**
+     * Test sort stickiness
+     *
+     * @return void
+     */
+    public function testSortStickiness(): void
+    {
+        // Call number has a custom default sort; if we do a regular search and leave
+        // the sort at default, then do a call number search, we expect the sort to
+        // change accordingly. We also expect it to change back if we do a non-call-no
+        // search.
+        $page = $this->performSearch('*:*');
+        $this->assertSelectedSort($page, 'relevance');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'callnumber-sort');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'relevance');
+
+        // However, if we choose a non-default sort, we expect it to stick across
+        // all search types:
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, 2);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'year asc');
     }
 
     /**

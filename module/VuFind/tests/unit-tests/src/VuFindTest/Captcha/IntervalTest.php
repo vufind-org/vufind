@@ -45,14 +45,14 @@ namespace VuFindTest\Captcha;
 class IntervalTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test Interval captchs
+     * Test Interval captchas
      *
      * @return void
      */
     public function testIntervalCaptcha(): void
     {
         $session = new \Laminas\Session\Container('SessionState');
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'Captcha' => [
                     'time_from_session_start' => 20,

@@ -54,7 +54,7 @@ class DefaultParametersListener
     protected $backend;
 
     /**
-     * Default parameteres
+     * Default parameters
      *
      * @var array
      */
@@ -95,7 +95,7 @@ class DefaultParametersListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach(\VuFindSearch\Service::class, 'pre', [$this, 'onSearchPre']);
     }
 
     /**

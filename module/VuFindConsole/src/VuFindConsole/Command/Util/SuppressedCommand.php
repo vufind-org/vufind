@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,15 +45,12 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/suppressed',
+    description: 'Remove ILS-suppressed records from Solr'
+)]
 class SuppressedCommand extends AbstractSolrAndIlsCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/suppressed';
-
     /**
      * Configure the command.
      *
@@ -61,7 +59,6 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
     protected function configure()
     {
         $this
-            ->setDescription('Remove ILS-suppressed records from Solr')
             ->setHelp(
                 'This tool removes ILS-suppressed records from Solr.'
             )->addOption(

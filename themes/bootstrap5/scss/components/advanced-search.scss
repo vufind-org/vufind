@@ -1,0 +1,205 @@
+.searchForm .advanced-search-link {
+  text-decoration: underline;
+}
+
+// Group of multiple searches
+.adv-group {
+  @include clearfix();
+  position: relative;
+  margin-bottom: .5rem;
+  padding: 1rem;
+  border: 1px solid $panel-default-border;
+  border-radius: $border-radius-base;
+
+  & ~ & { margin-top: 1rem; } // Spacing between groups
+
+  .add_search_link {
+    display: inline-block;
+    margin-top: 4px;
+  }
+}
+.add_search_link,
+.adv-group-close {
+  display: inline-block;
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+}
+.adv-group-close { color: $state-danger-text; }
+.adv-search,
+.adv-search .input-group { width: 100%; }
+.adv-search {
+  @include clearfix();
+  margin-bottom: 1.5rem;
+}
+
+.adv-term-input { margin-bottom: .5rem; }
+.adv-term-type {
+  float: left;
+  max-width: 80%;
+}
+.adv-term-remove {
+  color: #000;
+  font-size: 1.2rem;
+  float: left;
+  width: 20%;
+  height: 30px;
+  line-height: 1.7;
+  text-align: center;
+  opacity: .4;
+  .icon--image {
+    vertical-align: middle;
+  }
+}
+.adv-submit { @include clearfix(); }
+.adv-submit .clear-btn { float: right; }
+
+@media (min-width: 768px) {
+  .adv-group-terms {
+    float: left;
+    width: 75%;
+    padding-right: 1rem;
+  }
+  .adv-group-match {
+    float: right;
+    width: 25%;
+  }
+  .adv-group-close {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    min-width: calc(25% - 1rem);
+  }
+  .adv-search {
+    margin-bottom: 0;
+
+    .adv-term-input,
+    .adv-term-type { float: left; }
+    .adv-term-input {
+      width: 60%;
+      margin-right: 2%;
+    }
+    .adv-term-type { max-width: 30%; }
+    .adv-term-remove { width: 8%; }
+  }
+}
+
+#groupPlaceHolder {
+  display: block;
+  padding: 1rem;
+}
+
+/* --- Fieldsets --- */
+@media (min-width: 768px) {
+  fieldset,
+  .fieldset {
+    float: left;
+    width: 33%;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
+  }
+  .solr-facets,
+  .summon-facets {
+    float: none;
+    width: auto;
+    margin-top: 1rem;
+  }
+  .summon-facets .facet-fieldset {
+    float: left;
+    width: 50%;
+    padding-right: 1rem;
+  }
+}
+
+/* --- EDS --- */
+.adv-term-input,
+.adv-term-op { margin-bottom: .25rem; }
+.adv-search:first-of-type .adv-term-op { display: none; }
+@media (min-width: 768px) {
+  .eds-adv .adv-term-op {
+    float: left;
+    width: 16%;
+    margin-right: 1%;
+
+    body.rtl & {
+      float: right;
+      margin-left: 0;
+      margin-right: 1%;
+    }
+  }
+  .eds-adv .adv-search:first-of-type .adv-term-input { margin-left: 17%; }
+  .eds-adv .adv-term-input {
+    width: 39%;
+    margin-right: 0;
+  }
+  .eds-adv .help-block {
+    float: left;
+    width: 6%;
+    text-align: center;
+  }
+}
+
+/* --- Primo --- */
+.primo-adv-search .search {
+  margin-bottom: .5rem;
+
+  .adv-term-type {
+    margin-bottom: .25rem;
+  }
+}
+.primo-adv-search .search-container { width: 100%; }
+.primo-adv-label {
+  line-height: $input-height-base;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .primo.adv-group,
+  .primo-adv-search .search {
+    display: flex;
+
+    select {
+      flex-shrink: 1.5;
+      margin-right: .5rem;
+    }
+    .primo-adv-input { flex-grow: 1; }
+  }
+  .primo-adv-label { flex-shrink: 0; }
+}
+
+/* --- Solr --- */
+@media (min-width: 768px) {
+  .solr-facet-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .solr-adv-facet { flex: 1 25%; }
+}
+
+/* -- Right to left --- */
+body.rtl {
+  fieldset,
+  .fieldset,
+  .adv-search .adv-term-input,
+  .adv-search .adv-term-type,
+  .eds-adv .help-block,
+  .summon-facets .facet-fieldset { float: right; }
+  .adv-submit .clear-btn,
+  .adv-group-match { float: left; }
+  .adv-search .adv-term-input {
+    margin-left: 2%;
+    margin-right: 0;
+  }
+  .date-from {
+    padding-left: .25rem;
+    padding-right: 0;
+  }
+  .date-to {
+    padding-left: 0;
+    padding-right: .25rem;
+  }
+}
+
+#advSearchForm {
+  .facet-group .facet {
+    display: block;
+  }
+}

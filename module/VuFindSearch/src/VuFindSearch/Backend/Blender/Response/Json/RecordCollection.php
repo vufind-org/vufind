@@ -52,7 +52,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     /**
      * Blender configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -80,8 +80,8 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config   Configuration
-     * @param array                  $mappings Mappings configuration
+     * @param \VuFind\Config\Config $config   Configuration
+     * @param array                 $mappings Mappings configuration
      */
     public function __construct($config = null, $mappings = [])
     {
@@ -412,7 +412,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get parent hierachy keys for a facet value
+     * Get parent hierarchy keys for a facet value
      *
      * For example with '2/Main/Sub/Shelf/' the result is:
      * [

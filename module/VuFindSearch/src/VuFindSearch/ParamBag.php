@@ -32,6 +32,7 @@ namespace VuFindSearch;
 use function count;
 use function in_array;
 use function is_array;
+use function sprintf;
 
 /**
  * Lightweight wrapper for request parameters.
@@ -151,20 +152,30 @@ class ParamBag implements \Countable
     /**
      * Add parameter value.
      *
-     * @param string $name  Parameter name
-     * @param mixed  $value Parameter value
+     * @param string $name        Parameter name
+     * @param mixed  $value       Parameter value
+     * @param bool   $deduplicate Deduplicate parameter values
      *
      * @return void
      */
-    public function add($name, $value)
+    public function add($name, $value, $deduplicate = true)
     {
         if (!isset($this->params[$name])) {
             $this->params[$name] = [];
         }
         if (is_array($value)) {
-            $this->params[$name] = array_merge($this->params[$name], $value);
+            $this->params[$name] = array_merge_recursive($this->params[$name], $value);
         } else {
             $this->params[$name][] = $value;
+        }
+        if ($deduplicate) {
+            // Avoid deduplicating associative array params (like Primo filterList):
+            foreach ($this->params[$name] as $key => $current) {
+                if (!is_numeric($key) || is_array($current)) {
+                    return;
+                }
+            }
+            $this->params[$name] = array_values(array_unique($this->params[$name]));
         }
     }
 

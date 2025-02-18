@@ -121,7 +121,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertEquals(
-            "&amp;$expected",
+            $expected ? "&amp;$expected" : '',
             $helper->getCurrentHiddenFilterParams('Solr')
         );
         $this->assertEquals(

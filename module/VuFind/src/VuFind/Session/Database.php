@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,7 @@
 
 namespace VuFind\Session;
 
+use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
@@ -54,8 +55,7 @@ class Database extends AbstractBase
     {
         // Try to read the session, but destroy it if it has expired:
         try {
-            return $this->getTable('Session')
-                ->readSession($sessId, $this->lifetime);
+            return $this->getSessionService()->readSession($sessId, $this->lifetime);
         } catch (SessionExpiredException $e) {
             $this->destroy($sessId);
             return '';
@@ -76,7 +76,7 @@ class Database extends AbstractBase
         parent::destroy($sessId);
 
         // Now do database-specific destruction:
-        $this->getTable('Session')->destroySession($sessId);
+        $this->getSessionService()->destroySession($sessId);
 
         return true;
     }
@@ -87,13 +87,11 @@ class Database extends AbstractBase
      *
      * @param int $sessMaxLifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      */
-    #[\ReturnTypeWillChange]
-    public function gc($sessMaxLifetime)
+    public function gc($sessMaxLifetime): int|false
     {
-        $this->getTable('Session')->garbageCollect($sessMaxLifetime);
-        return true;
+        return $this->getSessionService()->garbageCollect($sessMaxLifetime);
     }
 
     /**
@@ -106,7 +104,16 @@ class Database extends AbstractBase
      */
     protected function saveSession($sessId, $data): bool
     {
-        $this->getTable('Session')->writeSession($sessId, $data);
-        return true;
+        return $this->getSessionService()->writeSession($sessId, $data);
+    }
+
+    /**
+     * Get a session service object
+     *
+     * @return SessionServiceInterface
+     */
+    protected function getSessionService(): SessionServiceInterface
+    {
+        return $this->getDbService(SessionServiceInterface::class);
     }
 }

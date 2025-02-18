@@ -31,6 +31,7 @@ namespace VuFind\ILS\Driver;
 
 use PDO;
 use PDOException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
@@ -88,10 +89,10 @@ class NewGenLib extends AbstractBase
      * record.
      *
      * @param string $RecordID The record id to retrieve the holdings for
-     * @param array  $patron   Patron data
+     * @param ?array $patron   Patron data
      * @param array  $options  Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array           On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -99,7 +100,7 @@ class NewGenLib extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($RecordID, array $patron = null, array $options = [])
+    public function getHolding($RecordID, ?array $patron = null, array $options = [])
     {
         $holding = $this->getItemStatus($RecordID);
         for ($i = 0; $i < count($holding); $i++) {
@@ -137,7 +138,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -205,7 +206,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -343,7 +344,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */

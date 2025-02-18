@@ -1,0 +1,36 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
+?>
+
+<div class="comment-list">
+  <?=$this->render('record/comments-list.phtml')?>
+</div>
+<form class="comment-form" name="commentRecord" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddComment')) ?>" method="post"<?php if ($this->driver->isRatingAllowed()): ?> data-rating-removal="<?=$this->accountCapabilities()->isRatingRemovalAllowed() ? 'true' : 'false'?>"<?php endif; ?>>
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <label class="comment-label"><?=$this->transEsc('Your Comment')?></label>
+  <?php $user = $this->auth()->getUserObject() ?>
+  <?php if ($user): ?>
+    <div class="text-form">
+      <textarea name="comment" class="form-control" rows="3" required></textarea>
+      <?php if ($this->driver->isRatingAllowed()): ?>
+        <div class="comment-rating">
+          <?php $ratingData = $this->ratings()->getRatingData($this->driver, $user->getId()); ?>
+          <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $ratingData, 'allowClear' => 0 === $ratingData['count'] || $this->accountCapabilities()->isRatingRemovalAllowed()]);?>
+        </div>
+      <?php endif; ?>
+      <?php if ($this->tab->isCaptchaActive()): ?>
+        <?=$this->captcha()->html(true, false) ?>
+      <?php endif; ?>
+      <div class="clearfix"></div>
+      <input class="btn btn-primary" data-loading-text="<?=$this->transEscAttr('Submitting') ?>" type="submit" value="<?=$this->transEscAttr('Add your comment')?>">
+    </div>
+  <?php else: ?>
+    <?php $singleSignOn = $this->auth()->getManager()->getSessionInitiator($this->serverUrl(true)); ?>
+    <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary"<?php if (!$singleSignOn): ?> data-lightbox<?php endif; ?> title="<?=$this->transEscAttr('Login')?>">
+      <?=$this->icon('sign-in') ?>
+      <?=$this->transEsc('You must be logged in first') ?>
+    </a>
+  <?php endif; ?>
+</form>

@@ -29,7 +29,7 @@
 
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use VuFindSearch\Response\RecordInterface;
+use VuFindSearch\Response\JsonRecord;
 
 /**
  * Simple, schema-less SOLR record.
@@ -43,17 +43,8 @@ use VuFindSearch\Response\RecordInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Record implements RecordInterface
+class Record extends JsonRecord
 {
-    use \VuFindSearch\Response\RecordTrait;
-
-    /**
-     * SOLR fields.
-     *
-     * @var array
-     */
-    protected $fields;
-
     /**
      * Constructor.
      *
@@ -63,19 +54,6 @@ class Record implements RecordInterface
      */
     public function __construct(array $fields)
     {
-        $this->fields = $fields;
-        $this->setSourceIdentifiers('Solr');
-    }
-
-    /**
-     * __get()
-     *
-     * @param string $name Field name
-     *
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return $this->fields[$name] ?? null;
+        parent::__construct($fields, 'Solr');
     }
 }

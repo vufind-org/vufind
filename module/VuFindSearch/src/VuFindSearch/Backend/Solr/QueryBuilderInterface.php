@@ -48,13 +48,14 @@ use VuFindSearch\Query\AbstractQuery;
 interface QueryBuilderInterface
 {
     /**
-     * Build SOLR query based on VuFind query object.
+     * Build query based on VuFind query object.
      *
-     * @param AbstractQuery $query Query object
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
      */
-    public function build(AbstractQuery $query);
+    public function build(AbstractQuery $query, ?ParamBag $params = null);
 
     /**
      * Control whether or not the QueryBuilder should create a spellcheck.q

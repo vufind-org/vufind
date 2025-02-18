@@ -99,7 +99,7 @@ class HideFacetValueListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_POST,
             [$this, 'onSearchPost']
         );

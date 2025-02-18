@@ -29,11 +29,13 @@
 
 namespace VuFind\ILS\Driver;
 
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
 use function in_array;
 use function is_array;
+use function sprintf;
 use function strlen;
 
 /**
@@ -332,10 +334,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -343,7 +345,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         // Strip off the prefix from vtls exports
         $db_id = str_replace('vtls', '', $id);
@@ -479,7 +481,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *   - Return the holdings array with true/false and a reason.
      *
      * Because of the location comparisons with the patron's
-     *   location that occur here we also take the oppurtunity
+     *   location that occur here we also take the opportunity
      *   to push their "Home" location to the top.
      *
      * @param string $patron_id ID of patron
@@ -1263,7 +1265,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -1304,7 +1306,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -1343,7 +1345,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */

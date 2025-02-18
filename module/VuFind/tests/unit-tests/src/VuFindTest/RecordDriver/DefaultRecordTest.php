@@ -30,7 +30,7 @@
 
 namespace VuFindTest\RecordDriver;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
@@ -91,6 +91,17 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     {
         $geoLoc = [];
         $this->assertEquals($geoLoc, $this->getDriver()->getGeoLocation());
+    }
+
+    /**
+     * Test getSchemaOrgFormatsArray for a record.
+     *
+     * @return void
+     */
+    public function testGetSchemaOrgFormatsArray()
+    {
+        $formats = ['Book'];
+        $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormatsArray());
     }
 
     /**
@@ -541,7 +552,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test whether author deduplication works corrrectly.
+     * Test whether author deduplication works correctly.
      *
      * @return void
      */
@@ -577,12 +588,12 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a record driver with fake data.
      *
-     * @param array  $overrides  Fixture fields to override.
-     * @param Config $mainConfig Main configuration (optional).
+     * @param array   $overrides  Fixture fields to override.
+     * @param ?Config $mainConfig Main configuration (optional).
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [], Config $mainConfig = null)
+    protected function getDriver($overrides = [], ?Config $mainConfig = null)
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);

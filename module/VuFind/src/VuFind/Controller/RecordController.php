@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 
 /**
  * Record Controller
@@ -69,8 +69,7 @@ class RecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
         return $config->Record->next_prev_navigation ?? false;
     }
 }

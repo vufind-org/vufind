@@ -31,10 +31,10 @@
 
 namespace VuFind\Resolver\Driver;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for Alma resolver driver.
@@ -65,7 +65,7 @@ class AlmaFactory extends DriverWithHttpClientFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $configs = [$container->get(\VuFind\Config\PluginManager::class)
             ->get('config')->OpenURL->toArray()];

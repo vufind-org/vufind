@@ -64,7 +64,7 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
@@ -74,7 +74,8 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer'),
-            $container->get(\VuFind\ILS\Logic\Holds::class)
+            $container->get(\VuFind\ILS\Logic\Holds::class),
+            $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class)
         );
         $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $handler;

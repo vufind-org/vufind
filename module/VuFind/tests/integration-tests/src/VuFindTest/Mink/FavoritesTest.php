@@ -36,6 +36,7 @@ use Behat\Mink\Exception\UnsupportedDriverActionException;
 use InvalidArgumentException;
 
 use function count;
+use function in_array;
 
 /**
  * Mink favorites test class.
@@ -157,6 +158,18 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $recordURL = $this->stripHash($this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.savedLists a');
         $this->waitForPageLoad($page);
+        // Did tags show up as expected?
+        $tags = [
+            $this->findCssAndGetText($page, '.last a'),
+            $this->findCssAndGetText($page, '.last a', index: 1),
+            $this->findCssAndGetText($page, '.last a', index: 2),
+        ];
+        // The order of tags may differ by database platform, but as long as they
+        // all show up, it is okay:
+        foreach (['test1', 'test2', 'test 3'] as $tag) {
+            $this->assertTrue(in_array($tag, $tags));
+        }
+        // Now make sure link circles back to record:
         $this->clickCss($page, '.resultItemLine1 a');
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -424,6 +437,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can sort lists.
      *
      * @return void
+     *
+     * @depends testAddSearchItemToFavoritesLoggedIn
      */
     public function testListSorting(): void
     {
@@ -445,6 +460,60 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             ['Dewey browse test', 'Fake Record 1 with multiple relators/']
         );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Fake Record 1 with multiple relators/', 'Dewey browse test']
+        );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved DESC', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Dewey browse test', 'Fake Record 1 with multiple relators/']
+        );
+    }
+
+    /**
+     * Test that we can facet filters by tag.
+     *
+     * @return void
+     *
+     * @depends testAddSearchItemToFavoritesLoggedIn
+     */
+    public function testFavoriteFaceting(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Make sure we have a facet list:
+        $facetLinks = $page->findAll('css', 'nav[aria-labelledby="acc-menu-favs-header"] a');
+        $linkToClick = null;
+        $allText = [];
+        foreach ($facetLinks as $link) {
+            $allText[] = $link->getText();
+            if ($link->getText() === '1 test 3') {
+                $linkToClick = $link;
+            }
+        }
+        // Facet order may vary by database engine, but let's make sure all the values are there:
+        $this->assertCount(3, $allText);
+        $expectedLinks = [
+            '1 test 3',
+            '1 test1',
+            '1 test2',
+        ];
+        $this->assertEmpty(array_diff($expectedLinks, $allText));
+
+        // Now click on one and confirm that it filters the list down to just one item:
+        $this->assertEquals('1 test 3', $linkToClick?->getText());
+        $linkToClick->click();
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder($page, ['Fake Record 1 with multiple relators/']);
     }
 
     /**
@@ -616,7 +685,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->assertEquals('Download File', $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn'));
     }
@@ -669,7 +738,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button = $this->findAndAssertLink($page, 'Edit List');
         $button->click();
         $this->clickCss($page, '#list_public_1'); // radio button
-        $this->clickCss($page, 'input[name="submit"]'); // submit button
+        $this->clickCss($page, 'input[name="submitButton"]'); // submit button
 
         // Now log out:
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -694,6 +763,34 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal .alert-success')
         );
+    }
+
+    /**
+     * Test that a public list can be displayed as a channel.
+     *
+     * @return void
+     *
+     * @depends testEmailPublicList
+     */
+    public function testPublicListChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['listitems'],
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Channels');
+        $page = $session->getPage();
+        $this->assertEquals('Test List', $this->findCss($page, '.channel-title')->getText());
+        $this->assertEquals('Dewey browse test', $this->findCss($page, '.channel-record-title')->getText());
     }
 
     /**
@@ -796,7 +893,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button = $this->findAndAssertLink($page, 'Edit List');
         $button->click();
         $this->findCssAndSetValue($page, '#list_tags', $listTags);
-        $this->clickCss($page, 'input[name="submit"]'); // submit button
+        $this->clickCss($page, 'input[name="submitButton"]'); // submit button
 
         // Now go to the channel page, where the tagged public list should appear:
         $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');

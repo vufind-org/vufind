@@ -227,7 +227,7 @@ trait HoldsTrait
         }
 
         // Set default start date to today:
-        $dateConverter = $this->serviceLocator->get(\VuFind\Date\Converter::class);
+        $dateConverter = $this->getService(\VuFind\Date\Converter::class);
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
@@ -258,7 +258,7 @@ trait HoldsTrait
 
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
-            ? $this->getUser()->home_library : '';
+            ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility:
         $helpText = $helpTextHtml = $checkHolds['helpText'];
 

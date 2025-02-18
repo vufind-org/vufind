@@ -30,6 +30,8 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\Db\Service\ResourceServiceInterface;
+
 /**
  * Model for missing records -- used for saved favorites that have been deleted
  * from the index.
@@ -45,9 +47,9 @@ class Missing extends DefaultRecord
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig   VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig Record-specific configuration file
+     * @param \VuFind\Config\Config $recordConfig Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)
@@ -70,13 +72,11 @@ class Missing extends DefaultRecord
         }
 
         // If available, load title from database:
-        $id = $this->getUniqueId();
-        if ($id) {
-            $table = $this->getDbTable('Resource');
-            $resource = $table
-                ->findResource($id, $this->getSourceIdentifier(), false);
-            if (!empty($resource) && !empty($resource->title)) {
-                return $resource->title;
+        if ($id = $this->getUniqueID()) {
+            $resourceService = $this->getDbService(ResourceServiceInterface::class);
+            $resource = $resourceService->getResourceByRecordId($id, $this->getSourceIdentifier());
+            if ($title = $resource?->getTitle()) {
+                return $title;
             }
         }
 

@@ -1,0 +1,90 @@
+<?php /* Global context translations only */
+
+// Add translation strings
+$this->jsTranslations()->addStrings(
+    [
+      'add_tag_success' => 'add_tag_success',
+      'bulk_email_success' => 'bulk_email_success',
+      'bulk_limit_exceeded' => 'bulk_limit_exceeded',
+      'bulk_noitems_advice' => 'bulk_noitems_advice',
+      'bulk_save_success' => 'bulk_save_success',
+      'clear_selection' => 'clear_selection',
+      'close' => 'close',
+      'collection_empty' => 'collection_empty',
+      'del_search_num' => 'del_search_num',
+      'eol_ellipsis' => 'eol_ellipsis',
+      'error_occurred' => 'An error has occurred',
+      'go_to_list' => 'go_to_list',
+      'hold_available' => 'hold_available',
+      'less_ellipsis' => 'less_ellipsis',
+      'libphonenumber_invalid' => 'libphonenumber_invalid',
+      'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
+      'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
+      'libphonenumber_notanumber' => 'libphonenumber_notanumber',
+      'libphonenumber_toolong' => 'libphonenumber_toolong',
+      'libphonenumber_tooshort' => 'libphonenumber_tooshort',
+      'libphonenumber_tooshortidd' => 'libphonenumber_tooshortidd',
+      'loading_ellipsis' => 'loading_ellipsis',
+      'more_ellipsis' => 'more_ellipsis',
+      'no_description' => 'no_description',
+      'number_thousands_separator' => [
+        'number_thousands_separator', [], ',',
+      ],
+      'sms_success' => 'sms_success',
+      'toggle_dropdown' => 'toggle_dropdown',
+      'No pickup locations available' => 'No pickup locations available',
+    ]
+);
+
+// Add libphonenumber.js strings
+$this->jsTranslations()->addStrings(
+    [
+      'Phone number invalid' => 'libphonenumber_invalid',
+      'Invalid country calling code' => 'libphonenumber_invalidcountry',
+      'Invalid region code' => 'libphonenumber_invalidregion',
+      'The string supplied did not seem to be a phone number' => 'libphonenumber_notanumber',
+      'The string supplied is too long to be a phone number' => 'libphonenumber_toolong',
+      'The string supplied is too short to be a phone number' => 'libphonenumber_tooshort',
+      'Phone number too short after IDD' => 'libphonenumber_tooshortidd',
+    ]
+);
+
+$cart = $this->cart();
+if ($cart->isActive()) {
+  // Add cart strings
+  $this->jsTranslations()->addStrings(
+      [
+        'bookbag' => 'Book Bag',
+        'bookbagFull' => 'bookbag_full_msg',
+        'bookbagMax' => $cart->getMaxSize(),
+        'bookbagStatusFull' => 'bookbag_full',
+        'itemsAddBag' => 'items_added_to_bookbag',
+        'itemsInBag' => 'items_already_in_bookbag',
+      ]
+  );
+}
+
+$account = $this->auth()->getManager();
+if ($account->ajaxEnabled()) {
+  $this->jsTranslations()->addStrings(
+      [
+        'account_checkouts_due' => 'account_checkouts_due',
+        'account_checkouts_overdue' => 'account_checkouts_overdue',
+        'account_has_alerts' => 'account_has_alerts',
+        'account_normal_checkouts' => 'account_normal_checkouts',
+        'account_requests_available' => 'account_requests_available',
+        'account_requests_in_transit' => 'account_requests_in_transit',
+        'account_requests_other' => 'account_requests_other',
+      ]
+  );
+}
+
+if ($this->config()->ajaxCoversEnabled()) {
+  $this->jsTranslations()->addStrings(
+      [
+        'cover_source_label' => 'cover_source_label',
+      ]
+  );
+}
+
+echo $this->jsTranslations()->getJSON();

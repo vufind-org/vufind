@@ -62,19 +62,9 @@ class UserFactory extends GatewayFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $session = null;
-        if (
-            isset($config->Authentication->privacy)
-            && $config->Authentication->privacy
-        ) {
-            $sessionManager = $container
-                ->get(\Laminas\Session\SessionManager::class);
-            $session = new \Laminas\Session\Container('Account', $sessionManager);
-        }
-        return parent::__invoke($container, $requestedName, [$config, $session]);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        return parent::__invoke($container, $requestedName, [$config]);
     }
 }

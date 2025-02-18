@@ -1,0 +1,69 @@
+<?php
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $advSearch = $options->getAdvancedSearchAction();
+  $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
+  $format = '%%displayText%%'; // change to '%%displayText%% (%%count%%)' if you want to show counts
+?>
+<?php if (!empty($facetList)): ?>
+  <div class="search-home-facets">
+    <?php foreach ($facetList as $field => $details): ?>
+      <?php $isHierarchy = in_array($field, $hierarchicalFacets ?? []); ?>
+      <?php $labelHeading = $this->transEsc('home_browse_by_facet', ['%%facet%%' => $this->translate($details['label'])]); ?>
+      <div class="home-facet <?=$this->escapeHtmlAttr($field) ?><?=$isHierarchy ? ' facet-tree' : ''?>">
+        <h2><?=$labelHeading?></h2>
+        <div class="home-facet-container">
+          <ul class="home-facet-list">
+            <?php if ($isHierarchy): ?>
+              <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
+                'exclude' => false,
+                'facetList' => $details['list'],
+                'group' => $field,
+                'url' => $results->getUrlQuery(),
+                'urlBase' => $this->url($options->getSearchAction()),
+              ]) ?>
+            <?php else: ?>
+              <?php
+                $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch, $format);
+
+                // Special case: two columns for LC call numbers...
+                $maxListLength = $field == 'callnumber-first'
+                  ? $columnSize * 2 : $columnSize;
+
+                // Special case: custom URLs for collections...
+                $moreUrl = $field == 'hierarchy_top_title'
+                  ? $this->url('collections-home') : $this->url($advSearch);
+
+                // Convenience variable:
+                $currentListLength = count($sortedList);
+                $i = 0;
+              ?>
+              <?php foreach ($sortedList as $url => $value): ?>
+                <?php
+                  // Special case: custom URLs for collections...
+                  if ($field == 'hierarchy_top_title') {
+                      $url = $this->url('collections-bytitle') . '?title=' . urlencode($value);
+                  }
+                ?>
+                <li><a href="<?=$url?>"><?=$this->escapeHtml(empty($value) ? '-' : $value)?></a></li>
+                <?php
+                  if (++$i >= $currentListLength) {
+                    // end of list? bail out!
+                    break;
+                  }
+                ?>
+                <?php if ($i >= $maxListLength): // list too long? show more link! ?>
+                  <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc('more_options_ellipsis')?></strong></a></li>
+                  <?php break; ?>
+                <?php elseif ($i % $columnSize === 0): // end of column? insert break! ?>
+                  </ul><ul class="home-facet-list">
+                <?php endif; ?>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </ul>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>

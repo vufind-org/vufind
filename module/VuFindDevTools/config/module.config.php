@@ -24,9 +24,9 @@ $config = [
                 ],
             ],
             'devtools-home' => [
-                'type' => 'Laminas\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Segment',
                 'options' => [
-                    'route'    => '/devtools/home',
+                    'route'    => '/devtools[/home]',
                     'defaults' => [
                         'controller' => 'DevTools',
                         'action'     => 'Home',
@@ -50,6 +50,16 @@ $config = [
                     'defaults' => [
                         'controller' => 'DevTools',
                         'action'     => 'Language',
+                    ],
+                ],
+            ],
+            'devtools-permissions' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/devtools/permissions',
+                    'defaults' => [
+                        'controller' => 'DevTools',
+                        'action'     => 'Permissions',
                     ],
                 ],
             ],

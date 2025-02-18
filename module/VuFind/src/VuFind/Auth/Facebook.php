@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -97,7 +98,7 @@ class Facebook extends AbstractBase implements
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -115,19 +116,20 @@ class Facebook extends AbstractBase implements
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($details->id);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($details->id);
         if (isset($details->first_name)) {
-            $user->firstname = $details->first_name;
+            $user->setFirstname($details->first_name);
         }
         if (isset($details->last_name)) {
-            $user->lastname = $details->last_name;
+            $user->setLastname($details->last_name);
         }
         if (isset($details->email)) {
-            $user->updateEmail($details->email);
+            $userService->updateUserEmail($user, $details->email);
         }
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 
@@ -179,7 +181,7 @@ class Facebook extends AbstractBase implements
      *
      * @param string $accessToken Access token
      *
-     * @return array
+     * @return object
      */
     protected function getDetailsFromAccessToken($accessToken)
     {

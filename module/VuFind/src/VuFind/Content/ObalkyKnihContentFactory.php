@@ -63,7 +63,7 @@ class ObalkyKnihContentFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new ServiceNotCreatedException(
@@ -72,7 +72,6 @@ class ObalkyKnihContentFactory implements FactoryInterface
         }
 
         $service = $container->get(\VuFind\Content\ObalkyKnihService::class);
-        $covers = new $requestedName($service);
-        return $covers;
+        return new $requestedName($service);
     }
 }

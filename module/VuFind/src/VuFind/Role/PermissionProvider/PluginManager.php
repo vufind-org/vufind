@@ -46,10 +46,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'insecureCookie' => InsecureCookie::class,
         'ipRange' => IpRange::class,
         'ipRegEx' => IpRegEx::class,
         'role' => Role::class,
         'serverParam' => ServerParam::class,
+        'sessionKey' => SessionKey::class,
         'shibboleth' => Shibboleth::class,
         'user' => User::class,
         'username' => Username::class,
@@ -61,10 +63,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        InsecureCookie::class => InsecureCookieFactory::class,
         IpRange::class => IpRangeFactory::class,
         IpRegEx::class => IpRegExFactory::class,
         Role::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         ServerParam::class => InjectRequestFactory::class,
+        SessionKey::class => SessionKeyFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
         User::class => InjectAuthorizationServiceFactory::class,
         Username::class => InjectAuthorizationServiceFactory::class,

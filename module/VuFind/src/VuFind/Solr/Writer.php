@@ -29,7 +29,7 @@
 
 namespace VuFind\Solr;
 
-use VuFind\Db\Table\ChangeTracker;
+use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
@@ -52,29 +52,15 @@ use function func_get_args;
 class Writer
 {
     /**
-     * Search service
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
-     * Change tracker database table gateway
-     *
-     * @var ChangeTracker
-     */
-    protected $changeTracker;
-
-    /**
      * Constructor
      *
-     * @param Service       $service Search service
-     * @param ChangeTracker $tracker Change tracker database table gateway
+     * @param Service                       $searchService Search service
+     * @param ChangeTrackerServiceInterface $changeTracker Change tracker database service
      */
-    public function __construct(Service $service, ChangeTracker $tracker)
-    {
-        $this->searchService = $service;
-        $this->changeTracker = $tracker;
+    public function __construct(
+        protected Service $searchService,
+        protected ChangeTrackerServiceInterface $changeTracker
+    ) {
     }
 
     /**
@@ -161,7 +147,7 @@ class Writer
      * @param string            $backend Backend ID
      * @param DocumentInterface $doc     Document(s) to save
      * @param string            $handler Update handler
-     * @param ParamBag          $params  Update handler parameters
+     * @param ?ParamBag         $params  Update handler parameters
      *
      * @return void
      */
@@ -169,7 +155,7 @@ class Writer
         $backend,
         DocumentInterface $doc,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $this->write($backend, $doc, null, $handler, $params);
     }

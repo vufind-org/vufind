@@ -1,0 +1,15 @@
+<?php
+echo htmlspecialchars(
+    $this->url(
+        $this->searchOptions($this->driver->getSearchBackendIdentifier())->getCitesAction(),
+        [],
+        [
+            'query' => [
+                'lookfor' => '"' . $this->driver->getUniqueID() . '"',
+                'filter' => [
+                    "citing:\"$lookfor\"",
+                ],
+            ],
+        ]
+    )
+);

@@ -1,0 +1,89 @@
+.keyboard-selection {
+  display: inline-block;
+
+  button.dropdown-toggle {
+    color: $input-color;
+    background-color: white;
+  }
+
+  button.dropdown-toggle:hover,
+  button.dropdown-toggle:focus,
+  &.open > button.dropdown-toggle {
+    color: white;
+    background-color: $brand-primary;
+    border-color: $brand-primary;
+    outline: none;
+  }
+
+  &:not(.open) {
+    .activated:not(:hover){
+      background: lighten($brand-primary, 55%);
+    }
+  }
+
+  > .dropdown-menu {
+    min-width: 20px;
+    > li > a {
+      padding: 3px 10px;
+    }
+  }
+
+  #keyboard-selection-button {
+    padding: 0 2px 0 4px;
+    .icon {
+      margin: 0;
+    }
+  }
+}
+
+.keyboard-box {
+  position: fixed;
+  bottom: 250px;
+  height: 0;
+  z-index: 60;
+  width: 95%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  @media (min-width: 768px) {
+    width: 720px;
+  }
+
+  @media (min-width: 992px) {
+    width: 940px;
+  }
+
+  @media (min-width: 1200px) {
+    width: 1040px;
+  }
+}
+
+.simple-keyboard {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  &.hg-theme-default {
+    background-color: #dddddd;
+  }
+
+  .hg-button.hg-functionBtn {
+    font-weight: bold;
+    font-size: 30px;
+    background-color: #f4f4f4;
+    span {
+      padding-top: 5px;
+    }
+
+    &.hg-button-space {
+      background-color: white;
+    }
+  }
+
+  .hg-standardBtn {
+    font-size: 18px;
+  }
+}
+
+.show-keyboard {
+  display: block;
+}

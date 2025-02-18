@@ -29,6 +29,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
+
 /**
  * Console command: expire sessions.
  *
@@ -38,6 +40,9 @@ namespace VuFindConsole\Command\Util;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/expire_external_sessions'
+)]
 class ExpireExternalSessionsCommand extends AbstractExpireCommand
 {
     /**
@@ -53,11 +58,4 @@ class ExpireExternalSessionsCommand extends AbstractExpireCommand
      * @var string
      */
     protected $rowLabel = 'external sessions';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/expire_external_sessions';
 }

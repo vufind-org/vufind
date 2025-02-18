@@ -49,7 +49,7 @@ trait ConfigPathTrait
      */
     protected function getBaseConfigFilePath(string $filename): string
     {
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         return $resolver->getBaseConfigPath($filename);
     }
 
@@ -62,7 +62,7 @@ trait ConfigPathTrait
      */
     protected function getForcedLocalConfigPath(string $filename): string
     {
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         return $resolver->getLocalConfigPath($filename, null, true);
     }
 }

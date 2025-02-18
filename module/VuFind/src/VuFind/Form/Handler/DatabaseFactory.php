@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -65,18 +66,18 @@ class DatabaseFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $dbTableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $router = $container->get('HttpRouter');
         $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         return new $requestedName(
-            $dbTableManager->get(\VuFind\Db\Table\Feedback::class),
+            $dbServiceManager->get(\VuFind\Db\Service\FeedbackServiceInterface::class),
             $baseUrl
         );
     }

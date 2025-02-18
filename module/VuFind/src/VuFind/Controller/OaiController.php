@@ -103,13 +103,13 @@ class OaiController extends AbstractBase
                 $this->getRequest()->getQuery()->toArray(),
                 $this->getRequest()->getPost()->toArray()
             );
-            $server = $this->serviceLocator->get($serverClass);
+            $server = $this->getService($serverClass);
             $server->init($config, $baseURL, $params);
             $server->setRecordLinkerHelper(
                 $this->getViewRenderer()->plugin('recordLinker')
             );
             $server->setRecordFormatter(
-                $this->serviceLocator->get(RecordFormatter::class)
+                $this->getService(RecordFormatter::class)
             );
             $xml = $server->getResponse();
         } catch (\Exception $e) {

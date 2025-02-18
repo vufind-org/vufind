@@ -29,6 +29,8 @@
 
 namespace VuFind\Content\TOC;
 
+use function sprintf;
+
 /**
  * Syndetics TOC content loader.
  *
@@ -89,7 +91,6 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
             throw new \Exception('Invalid XML');
         }
 
-        $i = 0;
         foreach ($this->sourceList as $source => $sourceInfo) {
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
@@ -136,7 +137,6 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         );
                     }
                 }
-                $i++;
             }
         }
 

@@ -1,0 +1,62 @@
+<?php
+$isError = false;
+$loginForAvail = false;
+$noshow = false;
+$code = $this->result->code ?? null;
+if ($code == 'od_code_login_for_avail') {
+    $loginForAvail = true;
+} elseif ($code == 'od_account_noaccess') {
+    $noshow = true;
+} elseif ($code == 'od_code_resource_not_found' || empty($this->result->status)) {
+    // we must have had a connection error.
+    $isError = true;
+}
+
+$data = [];
+foreach ($ids as $id) {
+    $current = [];
+    $current['status'] = 'OK';
+    $current['id'] = $id;
+    $avail = $this->result->data[$id] ?? (object)['code' => ''];
+    $current['full_status'] = '';
+
+    $availabilityStatus = null;
+    if ($noshow) {
+        // Patron does not have access to OverDrive. Don't show availability info.
+    } elseif ((isset($avail->code) && $avail->code == 'od_code_resource_not_found') || $isError) {
+        $current['error'] = $this->transEsc('status_unknown_message');
+        $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
+    } elseif ($loginForAvail) {
+        $current['full_status'] = "<p class='alert-info'>"
+            . $this->transEsc('od_code_login_for_avail') . '</p>';
+        $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
+    } else {
+        $current['full_status'] .= '<div class="availability"><p>';
+        if ($avail->copiesAvailable > 0) {
+            $current['full_status'] .= '<span class="text-success">';
+            $current['full_status'] .= $this->icon('status-available', 'icon-link__icon');
+            $current['full_status'] .= '</span> ';
+            $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE;
+        } else {
+            $current['full_status'] .= '<span class="text-danger">';
+            $current['full_status'] .= $this->icon('status-unavailable', 'icon-link__icon');
+            $current['full_status'] .= '</span> ';
+            $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE;
+        }
+        $copies = $avail->availabilityType == 'AlwaysAvailable'
+            ? $this->transEsc('od_unlimited')
+            : ($avail->copiesAvailable . ' / ' . $avail->copiesOwned);
+        $current['full_status'] .= ' ' . $this->transEsc('od_copies_available', ['%%copies%%' => $copies]);
+        if ($avail->numberOfHolds > 0) {
+            $current['full_status'] .= '; ' . $this->transEsc('od_waiting', ['holds' => $avail->numberOfHolds], null, true);
+        }
+    }
+    $current['availability_message'] = $availabilityStatus ? $this->render(
+        'ajax/status.phtml',
+        ['availabilityStatus' => new \VuFind\ILS\Logic\AvailabilityStatus($availabilityStatus)]
+    ) : '';
+
+    $data[] = $current;
+}
+// JSON response. Array of HTML strings.
+echo json_encode(['data' => ['statuses' => $data]]);

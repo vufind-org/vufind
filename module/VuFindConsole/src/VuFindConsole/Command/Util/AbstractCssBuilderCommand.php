@@ -80,7 +80,6 @@ abstract class AbstractCssBuilderCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription($this->format . ' compiler')
             ->setHelp('Compiles CSS files from ' . $this->format . '.')
             ->addArgument(
                 'themes',

@@ -1,0 +1,166 @@
+<?php
+    // Set up convenience variables:
+    $account = $this->auth()->getManager();
+    $user = $account->getUserObject();
+    $openUrl = $this->openUrl($this->driver, 'holdings');
+    $openUrlActive = $openUrl->isActive();
+    $doi = $this->doi($this->driver, 'holdings');
+    $doiActive = $doi->isActive();
+    // Account for replace_other_urls setting
+    $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+    $offlineMode = $this->ils()->getOfflineMode();
+    try {
+        $holdings = $this->driver->getRealTimeHoldings();
+    } catch (\VuFind\Exception\ILS $e) {
+        $holdings = [
+          'holdings' => [],
+          'electronic_holdings' => [],
+          'total' => 0,
+          'page' => 0,
+          'itemLimit' => 0,
+        ];
+        $offlineMode = 'ils-offline';
+    }
+    // Set page title.
+    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+?>
+
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', compact('user')); ?>
+
+<?php if (!empty($holdings['blocks'])):?>
+  <div id="account-block-msg" class="alert alert-danger">
+    <?=$this->transEsc('account_block_options_missing', ['%%details%%' => implode('; ', array_map([$this, 'translate'], $holdings['blocks']))]) ?>
+  </div>
+<?php endif; ?>
+
+<?=($offlineMode == 'ils-offline') ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
+
+<?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
+  <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+    <?php if (!$user): ?>
+      <div class="alert alert-info">
+        <a id="hold-login" href="<?=$this->serverUrl($this->url('myresearch-completelogin'))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
+      </div>
+    <?php elseif (!$user->getCatUsername()): ?>
+      <div class="alert alert-info">
+        <?php
+          // Add a data-lightbox attribute to the link in the translation; we do this here to keep
+          // the HTML in the language files as simple/generic/future-proof as possible.
+          $catalogLoginUrl = $this->recordLinker()
+            ->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true']);
+          $tokens = ['%%url%%' => $this->escapeHtmlAttr($catalogLoginUrl)];
+          echo str_replace('<a ', '<a data-lightbox ', $this->translate('hold_profile_html', $tokens));
+        ?>
+      </div>
+    <?php endif; ?>
+  <?php endif; ?>
+<?php endif; ?>
+<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); ?>
+<?php if (!empty($holdingTitleHold)): ?>
+  <a class="placehold icon-link" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
+    <?=$this->icon('place-hold', 'icon-link__icon') ?>
+    <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
+  </a>
+<?php endif; ?>
+<?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
+  <h2><?=$this->transEsc('Internet')?></h2>
+  <?php if (!empty($urls)): ?>
+    <?php foreach ($urls as $current): ?>
+      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br>
+    <?php endforeach; ?>
+  <?php endif; ?>
+  <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
+  <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>
+<?php endif; ?>
+
+<?php if (!empty($holdings['electronic_holdings'])): ?>
+  <?=
+    $this->context($this)->renderInContext(
+        'RecordTab/holdingsils/electronic.phtml',
+        ['holdings' => $holdings['electronic_holdings']]
+    );
+  ?>
+<?php endif; ?>
+
+<?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
+<h2>
+  <?php $locationTextEsc = $this->transEscWithPrefix('location_', $holding['location']); ?>
+  <?php if ($holding['locationhref'] ?? false): ?>
+    <a href="<?=$this->escapeHtmlAttr($holding['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
+  <?php else: ?>
+    <?=$locationTextEsc?>
+  <?php endif; ?>
+</h2>
+<?php
+  $truncateSettings = [
+    'rows' => $this->config()->getHoldingsItemLimit(),
+  ];
+?>
+<table class="table table-striped truncate-field holdings-table" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
+  <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); ?>
+  <?php if (!empty($callNos)): ?>
+  <tr>
+    <th><?=$this->transEsc('Call Number')?>: </th>
+    <td>
+      <?php foreach ($callNos as $callNo): ?>
+        <?php if ($this->callnumberHandler): ?>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo['callnumber']) ?>"><?=$this->escapeHtml($callNo['display'])?></a>
+        <?php else: ?>
+          <?=$this->escapeHtml($callNo['display'])?>
+        <?php endif; ?>
+        <br>
+      <?php endforeach; ?>
+    </td>
+  </tr>
+  <?php endif; ?>
+  <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
+    <tr>
+      <?php // Translation for summary is a special case for backwards-compatibility ?>
+      <th><?=$textFieldName == 'summary' ? $this->transEsc('Volume Holdings') : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <td>
+        <?php foreach ($textFields as $current): ?>
+          <?=$this->linkify($this->escapeHtml($current))?><br>
+        <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+  <?php foreach ($holding['items'] as $row): ?>
+    <?php
+        try {
+            echo $this->context($this)->renderInContext(
+                'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
+                ['holding' => $row, 'callNos' => $callNos]
+            );
+        } catch (Exception $e) {
+            echo $this->context($this)->renderInContext(
+                'RecordTab/holdingsils/standard.phtml',
+                ['holding' => $row, 'callNos' => $callNos]
+            );
+        }
+    ?>
+  <?php endforeach; ?>
+  <?php if (!empty($holding['purchase_history'])): ?>
+    <tr>
+      <th><?=$this->transEsc('Most Recent Received Issues')?>:</th>
+      <td>
+        <?php foreach ($holding['purchase_history'] as $current): ?>
+          <?=$this->escapeHtml($current['issue'])?><br>
+        <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endif; ?>
+</table>
+<?php endforeach; ?>
+<?php if (!empty($holdings['total']) && $paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
+  <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $holdings['page']])?>
+<?php endif; ?>
+<?php $history = $this->driver->getRealTimeHistory(); ?>
+<?php if (is_array($history) && !empty($history)): ?>
+  <h2><?=$this->transEsc('Most Recent Received Issues')?></h2>
+  <table class="table table-striped">
+    <?php foreach ($history as $row): ?>
+      <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
+    <?php endforeach; ?>
+  </table>
+<?php endif; ?>

@@ -110,8 +110,7 @@ class NamedList implements Countable, Iterator
      *
      * @return mixed
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->valid() ? $this->current[1] : null;
     }
@@ -121,8 +120,7 @@ class NamedList implements Countable, Iterator
      *
      * @return string
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->valid() ? $this->current[0] : null;
     }

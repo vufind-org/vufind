@@ -121,6 +121,34 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that importer injects dependencies into static callback classes
+     * when appropriate.
+     *
+     * @return void
+     */
+    public function testCallbackDependencyInjection(): void
+    {
+        // Before running the test, there will be no dependencies injected
+        // into the static callback container, and trying to call getConfig
+        // will throw an exception due to the missing dependency.
+        $errorMsg = '';
+        try {
+            \VuFind\XSLT\Import\VuFind::getConfig();
+        } catch (\Throwable $t) {
+            $errorMsg = $t->getMessage();
+        }
+        $this->assertEquals('Call to a member function get() on null', $errorMsg);
+        $this->runTestModeTest(
+            [
+                'ini' => 'test-injection.ini',
+            ]
+        );
+        // After running the test, dependencies will have been injected, so
+        // we can now call the same method without errors:
+        \VuFind\XSLT\Import\VuFind::getConfig();
+    }
+
+    /**
      * Test skipping the header row in the CSV
      *
      * @return void

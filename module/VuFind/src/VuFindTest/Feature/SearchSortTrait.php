@@ -80,6 +80,11 @@ trait SearchSortTrait
         $this->assertCount($count, $titles);
         $this->assertEquals($first, $titles[0]->getText());
         $this->assertEquals($last, $titles[$count - 1]->getText());
+        // Check that record links contain sid parameter:
+        $url = $titles[0]->getAttribute('href');
+        parse_str(parse_url($url, PHP_URL_QUERY), $urlParams);
+        $this->assertArrayHasKey('sid', $urlParams);
+        $this->assertNotEmpty($urlParams['sid']);
     }
 
     /**

@@ -29,15 +29,6 @@
 
 namespace VuFindSearch\Backend\Summon\Response;
 
-use VuFindSearch\Backend\Solr\Response\Json\Record;
-use VuFindSearch\Exception\InvalidArgumentException;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
-use function call_user_func;
-use function gettype;
-use function is_array;
-use function is_callable;
-
 /**
  * Simple factory for record collection.
  *
@@ -47,65 +38,27 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactory implements RecordCollectionFactoryInterface
+class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordCollectionFactory
 {
     /**
-     * Factory to turn data into a record object.
+     * Get the class name of the record collection to use by default.
      *
-     * @var callable
+     * @return string
      */
-    protected $recordFactory;
-
-    /**
-     * Class of collection.
-     *
-     * @var string
-     */
-    protected $collectionClass;
-
-    /**
-     * Constructor.
-     *
-     * @param callable $recordFactory   Record factory callback (null for default)
-     * @param string   $collectionClass Class of collection
-     *
-     * @return void
-     */
-    public function __construct($recordFactory = null, $collectionClass = null)
+    protected function getDefaultRecordCollectionClass(): string
     {
-        // Set default record factory if none provided:
-        if (null === $recordFactory) {
-            $recordFactory = function ($i) {
-                return new Record($i);
-            };
-        } elseif (!is_callable($recordFactory)) {
-            throw new InvalidArgumentException('Record factory must be callable.');
-        }
-        $this->recordFactory = $recordFactory;
-        $this->collectionClass = $collectionClass ?? RecordCollection::class;
+        return RecordCollection::class;
     }
 
     /**
-     * Return record collection.
+     * Given a backend response, return an array of documents.
      *
-     * @param array $response Summon response
+     * @param array $response Backend response
      *
-     * @return RecordCollection
+     * @return array
      */
-    public function factory($response)
+    protected function getDocumentListFromResponse($response): array
     {
-        if (!is_array($response)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Unexpected type of value: Expected array, got %s',
-                    gettype($response)
-                )
-            );
-        }
-        $collection = new $this->collectionClass($response);
-        foreach ($response['documents'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
-        }
-        return $collection;
+        return $response['documents'];
     }
 }

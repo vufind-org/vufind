@@ -48,13 +48,15 @@ class TranslationEmpty extends AbstractHelper implements TranslatorAwareInterfac
     /**
      * Check if a translation is empty
      *
-     * @param string|object $str String to translate
+     * @param string|object $str             String to translate
+     * @param string[]      $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return bool
      */
-    public function __invoke($str)
+    public function __invoke($str, $fallbackDomains = [])
     {
-        $result = $this->translate($str, [], '');
+        $result = $this->translate($str, [], '', false, $fallbackDomains);
         // Existing empty translations will result in &#x200C, otherwise the default
         // '' is returned
         return $result === ''

@@ -36,6 +36,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
 use function count;
+use function sprintf;
 
 /**
  * Hierarchy Tree Data Source (Solr)

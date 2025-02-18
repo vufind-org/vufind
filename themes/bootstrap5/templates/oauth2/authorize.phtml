@@ -1,0 +1,52 @@
+<?php
+    // Set page title
+    $this->headTitle($this->translate('external_auth_access_heading'));
+
+    $scopes = [];
+    $ilsNeeded = false;
+    if ($this->userIdentifierField != 'id') {
+      $scopes[] = $this->translate('external_auth_sub_' . $this->userIdentifierField);
+    }
+    foreach ($this->authRequest->getScopes() as $scope) {
+      if ($scope->getHidden()) {
+        continue;
+      }
+      $ilsNeeded = $ilsNeeded || $scope->getILSNeeded();
+      $scopes[] = $this->translate($scope->getDescription() ?: $scope->getIdentifier());
+    }
+    $scopes = array_unique($scopes);
+    if (!$scopes) {
+      $scopes[] = $this->translate('external_auth_scopes_none');
+    }
+    $clientName = $this->authRequest->getClient()->getName();
+?>
+
+<div class="external-content-access">
+  <h2><?=$this->escapeHtml($clientName)?></h2>
+  <?=$this->flashmessages()?>
+  <div class="oauth2-prompt">
+    <?=$this->translate('external_auth_prompt_html')?>
+    <ul>
+      <?php foreach ($scopes as $scope): ?>
+        <li><?=$this->escapeHtml($scope)?></li>
+      <?php endforeach; ?>
+    </ul>
+    <?php if ($ilsNeeded): ?>
+      <div class="oauth2-ils-selection">
+        <?=$this->transEsc('external_auth_ils_prompt')?>
+        <?php if (count($this->libraryCards()->getCardsForUser($this->user)) > 1): ?>
+          <?=$this->partial('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
+        <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
+          <?=$this->partial($this->patronLoginView)?>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
+    <form method="POST" class="form-oauth2-authorize">
+      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+      <div class="form-group">
+        <button type="submit" name="deny" value="deny" class="btn btn-default"><?=$this->transEsc('external_auth_deny_access')?></button>
+        <button type="submit" name="allow" value="allow" class="btn btn-primary"><?=$this->transEsc('external_auth_allow_access')?></button>
+      </div>
+    </form>
+  </div>
+</div>

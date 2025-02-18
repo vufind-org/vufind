@@ -1,0 +1,143 @@
+/**
+ * Basic alignment and styling for icons
+ * generated through the Icon view helper.
+ */
+
+.icon-link:not(.dropdown-toggle) {
+  display: inline-flex;
+  gap: 0.25rem;
+  vertical-align: middle;
+}
+.icon-link,
+.icon-link:active,
+.icon-link:focus,
+.icon-link:hover {
+  text-decoration: none;
+}
+.icon-link__icon {
+  flex: none;
+  padding: 0;
+  line-height: inherit;
+  color: inherit;
+}
+.icon-link__label {
+  text-decoration: $link-hover-decoration;
+}
+span.icon-link .icon-link__label,
+.disabled .icon-link__label,
+[disabled] .icon-link__label {
+  text-decoration: none;
+}
+.icon-link.active .icon-link__icon,
+.icon-link.active .icon-link__label {
+  color: #fff;
+}
+
+// Exceptions
+.banner .icon-link__label,
+.pager .icon-link__label,
+.action-toolbar .icon-link__label {
+  text-decoration: none;
+}
+
+/**
+ * Styling by type
+ */
+
+.icon--font {
+    display: inline-block;
+    max-width: 1.25em;
+    height: min-content; /* FF */
+    height: fit-content;
+    line-height: inherit;
+    text-align: center;
+    vertical-align: top;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon--img {
+    display: inline-block;
+    max-width: 1.25em;
+    height: min-content; /* FF */
+    height: fit-content;
+    text-align: center;
+    vertical-align: top;
+}
+
+.icon--svg {
+    display: inline-block;
+    max-width: 1.25em;
+    max-height: 1.25em;
+    fill: currentColor;
+    vertical-align: text-bottom;
+}
+
+.icon--unicode:before {
+    content: attr(data-icon);
+}
+
+.show--closed,
+.collapsed .show--open {
+    display: none;
+}
+.collapsed .show--closed {
+    display: inline;
+}
+
+/**
+ * Assign catalog formats to Font Awesome icons
+ */
+.doi-icon {
+  height: 1em;
+  width: 14px;
+  filter: brightness(50%);
+}
+
+/**
+ * Animations and Effects
+ *
+ * Borrowed from Tailwind CSS (https://tailwindcss.com/docs/animation)
+ */
+
+/* Rotate 360 degrees */
+.icon--spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fade opacity in and out */
+.icon--pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Slow, gentle bounce */
+.icon--bounce {
+    animation: bounce 1s infinite;
+}
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+

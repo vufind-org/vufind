@@ -1,0 +1,28 @@
+<?php /* Global context config only */
+
+// You can insert configs that should be accessible via Javascript here.
+// WARNING: Any settings here are exposed to all users in plain text, so do not include any secrets.
+
+// Examples:
+//$this->jsConfigs()->add('myConfig', true);
+//$this->jsConfigs()->add('siteTitle', $this->config()->get('config')->Site->title);
+
+$themeConfig = $this->themeConfig();
+$this->jsConfigs()->add(
+    'sticky-elements',
+    $themeConfig['stickyElements'] ?? []
+);
+$this->jsConfigs()->add(
+    'sticky-children-classes',
+    $themeConfig['stickyChildrenClasses'] ?? $themeConfig['hiddenStickyElements'] ?? []
+);
+$this->jsConfigs()->add(
+    'item-status:load-batch-wise',
+    $this->config()->get('config')->Item_Status->load_batch_wise ?? true
+);
+$this->jsConfigs()->add(
+    'item-status:load-observable-only',
+    $this->config()->get('config')->Item_Status->load_observable_only ?? true
+);
+
+echo $this->jsConfigs()->getJSON();

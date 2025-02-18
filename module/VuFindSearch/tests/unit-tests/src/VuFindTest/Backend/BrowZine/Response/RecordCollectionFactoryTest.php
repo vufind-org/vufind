@@ -67,6 +67,6 @@ class RecordCollectionFactoryTest extends TestCase
         $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
 
         $fact = new RecordCollectionFactory();
-        $coll = $fact->factory('garbage');
+        $fact->factory('garbage');
     }
 }

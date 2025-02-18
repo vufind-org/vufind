@@ -1,0 +1,64 @@
+// From a11y:
+$primary:         #265680 !default;
+$success:         #028302 !default;
+$info:            #1C5F74 !default;
+$warning:         #A56100 !default;
+$danger:          #A41915 !default;
+$link-color:      #12538B !default;
+
+$success-bg-subtle:         #dff0d8 !default;
+$success-border-subtle:     darken(adjust-hue($success-bg-subtle, -10), 5%) !default;
+
+$info-bg-subtle:            #d9edf7 !default;
+$info-border-subtle:        darken(adjust-hue($info-bg-subtle, -10), 5%) !default;
+
+$warning-bg-subtle:         #fcf8e3 !default;
+$warning-border-subtle:     darken(adjust-hue($warning-bg-subtle, -10), 5%) !default;
+
+$danger-bg-subtle:          #f2dede !default;
+$danger-border-subtle:      darken(adjust-hue($danger-bg-subtle, -10), 5%) !default;
+
+$breadcrumb-bg:                     #f5f5f5 !default;
+$breadcrumb-padding-y:              8px !default;
+$breadcrumb-padding-x:              15px !default;
+
+$nav-link-padding-y:                1rem !default;
+$navbar-nav-link-padding-x:         1rem !default;
+$navbar-light-color:                $primary !default;
+$navbar-light-active-color:         #fff !default;
+$navbar-light-brand-color:          $primary !default;
+$navbar-light-brand-hover-color:    $primary !default;
+
+$navbar-padding-x:                  15px !default;
+$navbar-padding-y:                  0 !default;
+
+// Disable !important utilities by default:
+$enable-important-utilities:        false !default;
+
+// Disable several default icons:
+$accordion-button-active-icon:      none !default;
+$accordion-button-active-icon-dark: none !default;
+$accordion-button-icon:             none !default;
+$accordion-button-icon-dark:        none !default;
+$form-select-indicator:             none !default;
+$form-select-indicator-dark:        none !default;
+$form-switch-bg-image:              none !default;
+$form-switch-bg-image-dark:         none !default;
+$navbar-dark-toggler-icon-bg:       none !default;
+$navbar-light-toggler-icon-bg:      none !default;
+
+$link-hover-decoration:             underline !default;
+$icon-link-underline-offset:        inherit !default;
+
+// Disable dark mode for now:
+$enable-dark-mode:                  false !default;
+
+// Disable smooth scroll for now (doesn't interact well with Mink tests):
+$enable-smooth-scroll:              false !default;
+
+// Disable validation icons that take a lot of room e.g. in select fields:
+$enable-validation-icons:           false !default;
+$form-select-indicator-padding:     .75rem !default;
+
+$table-bg-accent:                   #f9f9f9 !default;
+$table-striped-bg:                  #f9f9f9 !default;

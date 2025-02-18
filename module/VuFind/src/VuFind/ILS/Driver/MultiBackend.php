@@ -166,7 +166,7 @@ class MultiBackend extends AbstractMultiDriver
             $status = $driver->getStatus($this->getLocalId($id));
             return $this->addIdPrefixes($status, $source);
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
@@ -240,7 +240,7 @@ class MultiBackend extends AbstractMultiDriver
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
@@ -249,7 +249,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
         if ($driver = $this->getDriver($source)) {
@@ -269,7 +269,7 @@ class MultiBackend extends AbstractMultiDriver
             );
             return $this->addIdPrefixes($holdings, $source);
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
@@ -291,7 +291,7 @@ class MultiBackend extends AbstractMultiDriver
         if ($driver = $this->getDriver($source)) {
             return $driver->getPurchaseHistory($this->getLocalId($id));
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
@@ -439,7 +439,7 @@ class MultiBackend extends AbstractMultiDriver
                 $source
             );
         }
-        // Return an empy array if driver is not available; cat_username can point
+        // Return an empty array if driver is not available; cat_username can point
         // to an ILS that's not currently configured.
         return [];
     }

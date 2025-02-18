@@ -29,7 +29,7 @@
 
 namespace VuFindConsole\Command\Generate;
 
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Attribute\AsCommand;
 
 /**
  * Theme mixin generator command.
@@ -40,15 +40,11 @@ use Symfony\Component\Console\Command\Command;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/thememixin'
+)]
 class ThemeMixinCommand extends AbstractThemeCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/thememixin';
-
     /**
      * Type of resource being generated (used in help messages)
      *

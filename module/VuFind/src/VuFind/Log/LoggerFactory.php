@@ -29,13 +29,14 @@
 
 namespace VuFind\Log;
 
-use Laminas\Config\Config;
 use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
+use VuFind\Config\Feature\EmailSettingsTrait;
 
 use function count;
 use function is_array;
@@ -54,6 +55,8 @@ use function is_int;
  */
 class LoggerFactory implements FactoryInterface
 {
+    use EmailSettingsTrait;
+
     /**
      * Configure database writers.
      *
@@ -109,16 +112,14 @@ class LoggerFactory implements FactoryInterface
         $email = $parts[0];
         $error_types = $parts[1] ?? '';
 
-        // use smtp
-        $mailer = $container->get(\VuFind\Mailer\Mailer::class);
-        $msg = $mailer->getNewMessage()
-            ->addFrom($config->Site->email)
-            ->addTo($email)
-            ->setSubject('VuFind Log Message');
-
         // Make Writers
         $filters = explode(',', $error_types);
-        $writer = new Writer\Mail($msg, $mailer->getTransport());
+        $writer = new Writer\Mail(
+            $container->get(\VuFind\Mailer\Mailer::class),
+            $this->getEmailSenderAddress($config),
+            $email,
+            'VuFind Log Message'
+        );
         $this->addWriters($logger, $writer, $filters);
     }
 
@@ -309,7 +310,7 @@ class LoggerFactory implements FactoryInterface
         if ($referenceId = $config->Logging->reference_id ?? false) {
             if ('username' === $referenceId) {
                 $authManager = $container->get(\VuFind\Auth\Manager::class);
-                if ($user = $authManager->isLoggedIn()) {
+                if ($user = $authManager->getUserObject()) {
                     $processor = new \Laminas\Log\Processor\ReferenceId();
                     $processor->setReferenceId($user->username);
                     $logger->addProcessor($processor);
@@ -337,7 +338,9 @@ class LoggerFactory implements FactoryInterface
         $hasDebugWriter = true;
         $writer = new Writer\Stream('php://output');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
+            PHP_SAPI === 'cli'
+                ? '%timestamp% %priorityName%: %message%'
+                : '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
         );
         $writer->setFormatter($formatter);
         $level = (is_int($debug) ? $debug : '5');
@@ -461,7 +464,7 @@ class LoggerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');

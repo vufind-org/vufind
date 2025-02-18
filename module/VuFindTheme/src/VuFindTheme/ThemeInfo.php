@@ -30,6 +30,7 @@
 namespace VuFindTheme;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Webmozart\Glob\Glob;
 
 use function is_array;
 use function strlen;
@@ -188,6 +189,7 @@ class ThemeInfo
     {
         // Load theme configuration...
         $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        $this->allThemeInfo[$theme]['themeName'] = $theme;
         // ..and if there are mixins, load those too!
         if (isset($this->allThemeInfo[$theme]['mixins'])) {
             foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {
@@ -354,7 +356,7 @@ class ThemeInfo
             $themePath = "$basePath/$theme/";
             foreach ($allPaths as $currentPath) {
                 $path = $themePath . $currentPath;
-                foreach (glob($path) as $file) {
+                foreach (Glob::glob($path) as $file) {
                     if (filetype($file) === 'dir') {
                         continue;
                     }

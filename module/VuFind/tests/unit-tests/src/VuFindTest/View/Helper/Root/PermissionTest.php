@@ -47,7 +47,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Sample configuration with varios config options.
+     * Sample configuration with various config options.
      *
      * @var array
      */

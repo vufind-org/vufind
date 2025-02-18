@@ -60,8 +60,7 @@ class LibGuidesController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('LibGuides');
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('LibGuides');
         return $config->Record->next_prev_navigation ?? false;
     }
 }

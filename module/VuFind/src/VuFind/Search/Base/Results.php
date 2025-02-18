@@ -79,7 +79,7 @@ abstract class Results
     /**
      * Override (only for use in very rare cases)
      *
-     * @var int
+     * @var ?int
      */
     protected $startRecordOverride = null;
 
@@ -188,6 +188,13 @@ abstract class Results
      * @var HierarchicalFacetHelperInterface
      */
     protected $hierarchicalFacetHelper = null;
+
+    /**
+     * If the results provide only a restricted view.
+     *
+     * @var bool
+     */
+    protected bool $restrictedView = false;
 
     /**
      * Extra search details.
@@ -367,7 +374,7 @@ abstract class Results
     /**
      * Manually override the start record number.
      *
-     * @param int $rec Record number to use.
+     * @param ?int $rec Record number to use.
      *
      * @return void
      */
@@ -472,9 +479,8 @@ abstract class Results
      */
     public function isSavedSearch()
     {
-        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called... blow up if somebody tries to get data that is not yet
-        // available.
+        // This data is not available until the search has been saved; blow up if somebody
+        // tries to get data that is not yet available.
         if (null === $this->savedSearch) {
             throw new \Exception(
                 'Cannot retrieve save status before updateSaveStatus is called.'
@@ -492,13 +498,11 @@ abstract class Results
      */
     public function getNotificationFrequency(): int
     {
-        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called... blow up if somebody tries to get data that is not yet
-        // available.
+        // This data is not available until the search has been saved; blow up if somebody
+        // tries to get data that is not yet available.
         if (null === $this->notificationFrequency) {
             throw new \Exception(
-                'Cannot retrieve notification frequency before '
-                . 'updateSaveStatus is called.'
+                'Cannot retrieve notification frequency before updateSaveStatus is called.'
             );
         }
         return $this->notificationFrequency;
@@ -508,16 +512,18 @@ abstract class Results
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
-     * @param \VuFind\Db\Row\Search $row Relevant database row.
+     * @param SearchEntityInterface $row Relevant database row.
      *
      * @return void
      */
     public function updateSaveStatus($row)
     {
-        $this->searchId = $row->id;
-        $this->savedSearch = ($row->saved == true);
-        $this->notificationFrequency = $this->savedSearch
-            ? $row->notification_frequency : 0;
+        $this->searchId = $row->getId();
+        foreach ($this->results as $driver) {
+            $driver->setExtraDetail('searchId', $this->searchId);
+        }
+        $this->savedSearch = $row->getSaved();
+        $this->notificationFrequency = $this->savedSearch ? $row->getNotificationFrequency() : 0;
     }
 
     /**
@@ -845,6 +851,16 @@ abstract class Results
     }
 
     /**
+     * Check if the results provide only a restricted view.
+     *
+     * @return bool
+     */
+    public function isRestrictedView()
+    {
+        return $this->restrictedView;
+    }
+
+    /**
      * Get the extra search details
      *
      * @return ?array
@@ -858,13 +874,13 @@ abstract class Results
      * A helper method that converts the list of facets for the last search from
      * RecordCollection's facet list.
      *
-     * @param array $facetList Facet list
-     * @param array $filter    Array of field => on-screen description listing
+     * @param array  $facetList Facet list
+     * @param ?array $filter    Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array Facets data arrays
      */
-    protected function buildFacetList(array $facetList, array $filter = null): array
+    protected function buildFacetList(array $facetList, ?array $filter = null): array
     {
         // If there is no filter, we'll use all facets as the filter:
         if (null === $filter) {

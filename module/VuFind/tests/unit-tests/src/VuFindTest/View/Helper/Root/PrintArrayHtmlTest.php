@@ -110,10 +110,10 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
             ],
             [ // Set 5
                 [
-                    0 => "Escaped vals <>&'\"",
+                    0 => "Escaped values <>&'\"",
                 ],
                 <<<END
-                    <span class="detail">Escaped vals &lt;&gt;&amp;&#039;&quot;</span><br>
+                    <span class="detail">Escaped values &lt;&gt;&amp;&#039;&quot;</span><br>
 
                     END,
             ],

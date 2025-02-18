@@ -66,7 +66,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     /**
      * LibGuides configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $libGuidesConfig;
 
@@ -81,14 +81,13 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
         $this->libGuidesConfig = $configReader->get($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -164,8 +163,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get($this->getServiceName());
             $driver->setRawData($data);

@@ -43,6 +43,7 @@ use function get_class;
 trait LoggerAwareTrait
 {
     use \Laminas\Log\LoggerAwareTrait;
+    use VarDumperTrait;
 
     /**
      * Log an error message.

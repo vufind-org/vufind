@@ -100,7 +100,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
         // overridden via rawData (but also allow the "normal" method as a
         // fallback):
         return isset($this->fields['SourceIdentifier'])
-            ? $this->__call('getSourceIdentifier', $this->sourceIdentifier)
+            ? $this->__call('getSourceIdentifier', [])
             : parent::getSourceIdentifier();
     }
 }

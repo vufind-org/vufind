@@ -31,6 +31,8 @@ declare(strict_types=1);
 
 namespace VuFind\I18n;
 
+use function sprintf;
+
 /**
  * Class Sorter
  *

@@ -32,6 +32,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Driver\MultiBackend;
 
@@ -57,7 +58,7 @@ class MultiILS extends ILS
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {

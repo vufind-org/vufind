@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function sprintf;
+
 /**
  * Prints a human readable format from a number of milliseconds
  *
@@ -56,7 +58,6 @@ class Printms extends AbstractHelper
             return $ms;
         }
         $seconds = floor($ms / 1000);
-        $ms = ($ms % 1000);
 
         $minutes = floor($seconds / 60);
         $seconds = ($seconds % 60);

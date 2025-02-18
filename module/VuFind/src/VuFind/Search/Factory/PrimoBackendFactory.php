@@ -40,6 +40,8 @@ use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 use VuFindSearch\Backend\Primo\RestConnector;
 
+use function in_array;
+
 /**
  * Factory for Primo Central backends.
  *
@@ -63,7 +65,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     /**
      * Primo configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $primoConfig;
 
@@ -89,6 +91,42 @@ class PrimoBackendFactory extends AbstractBackendFactory
     protected $restConnectorClass = RestConnector::class;
 
     /**
+     * CDI attribute mappings
+     *
+     * @var array
+     */
+    protected $attributeLabelTypeMappings = [
+        'review_article' => [
+            'display' => 'RecordAttribute::Review Article',
+            'type' => 'notice',
+        ],
+        'primary_source' => [
+            'display' => 'RecordAttribute::Primary Source',
+            'type' => 'notice',
+        ],
+        'preprint' => [
+            'display' => 'RecordAttribute::Preprint',
+            'type' => 'notice',
+        ],
+        'retracted_publication' => [
+            'display' => 'RecordAttribute::Retracted Publication',
+            'type' => 'warning',
+        ],
+        'retraction_notice' => [
+            'display' => 'RecordAttribute::Retraction Notice',
+            'type' => 'warning',
+        ],
+        'publication_with_addendum' => [
+            'display' => 'RecordAttribute::Publication with Addendum',
+            'type' => 'warning',
+        ],
+        'publication_with_corrigendum' => [
+            'display' => 'RecordAttribute::Publication with Corrigendum',
+            'type' => 'warning',
+        ],
+    ];
+
+    /**
      * Create service
      *
      * @param ContainerInterface $sm      Service manager
@@ -99,14 +137,13 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
         $this->primoConfig = $configReader->get('Primo');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
 
         if (($this->primoConfig->General->api ?? 'legacy') === 'rest') {
@@ -148,7 +185,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function createListeners(Backend $backend)
     {
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->getService('SharedEventManager');
 
         $this->getInjectOnCampusListener()->attach($events);
 
@@ -211,7 +248,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
 
         $session = new \Laminas\Session\Container(
             'Primo',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
 
         // Create connector:
@@ -254,11 +291,17 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);
+            if ($this->primoConfig->display_cdi_attributes ?? true) {
+                foreach ($this->attributeLabelTypeMappings as $key => $config) {
+                    if (in_array($key, $data['attributes'] ?? [])) {
+                        $driver->addLabel($config['display'], $config['type']);
+                    }
+                }
+            }
             return $driver;
         };
         return new RecordCollectionFactory($callback);
@@ -287,7 +330,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
                 $this->primoConfig->Institutions
             );
             $permHandler->setAuthorizationService(
-                $this->serviceLocator->get(AuthorizationService::class)
+                $this->getService(AuthorizationService::class)
             );
             return $permHandler;
         }

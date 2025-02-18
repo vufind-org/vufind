@@ -107,13 +107,13 @@ class Context extends AbstractHelper
     }
 
     /**
-     * Grab the helper object so we can call methods on it.
+     * Grab the helper object, so we can call methods on it.
      *
-     * @param Renderer $view View object to modify.
+     * @param ?RendererInterface $view View object to modify.
      *
      * @return Context
      */
-    public function __invoke(RendererInterface $view = null)
+    public function __invoke(?RendererInterface $view = null)
     {
         if (null !== $view) {
             $this->setView($view);

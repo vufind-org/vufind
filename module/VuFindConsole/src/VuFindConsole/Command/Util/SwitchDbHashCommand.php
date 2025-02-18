@@ -29,17 +29,23 @@
 
 namespace VuFindConsole\Command\Util;
 
-use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
+use Closure;
+use InvalidArgumentException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Config\Config;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Crypt\BlockCipher;
+use VuFind\Db\Entity\UserCardEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function count;
 
@@ -52,54 +58,32 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/switch_db_hash',
+    description: 'Encryption algorithm switcher'
+)]
 class SwitchDbHashCommand extends Command
 {
     /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/switch_db_hash';
-
-    /**
-     * VuFind configuration.
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * User table gateway
-     *
-     * @var UserTable
-     */
-    protected $userTable;
-
-    /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
-     * @param Config       $config       VuFind configuration
-     * @param UserTable    $userTable    User table gateway
-     * @param string|null  $name         The name of the command; passing null means
+     * @param Config                   $config          VuFind configuration
+     * @param UserServiceInterface     $userService     User database service
+     * @param UserCardServiceInterface $userCardService UserCard database service
+     * @param Closure                  $cipherFactory   Callback to generate a BlockCipher object (must
+     * take two arguments: algorithm and key)
+     * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
-     * @param PathResolver $pathResolver Config file path resolver
+     * @param ?PathResolver            $pathResolver    Config file path resolver
      */
     public function __construct(
-        Config $config,
-        UserTable $userTable,
-        $name = null,
-        PathResolver $pathResolver = null
+        protected Config $config,
+        protected UserServiceInterface $userService,
+        protected UserCardServiceInterface $userCardService,
+        protected Closure $cipherFactory,
+        ?string $name = null,
+        protected ?PathResolver $pathResolver = null
     ) {
-        $this->config = $config;
-        $this->userTable = $userTable;
-        $this->pathResolver = $pathResolver;
         parent::__construct($name);
     }
 
@@ -111,7 +95,6 @@ class SwitchDbHashCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Encryption algorithm switcher')
             ->setHelp(
                 'Switches the encryption algorithm in the database '
                 . 'and config. Expects new algorithm and (optional) new key as'
@@ -133,16 +116,29 @@ class SwitchDbHashCommand extends Command
     }
 
     /**
-     * Get an OpenSsl object for the specified algorithm (or return null if the
-     * algorithm is 'none').
+     * Re-encrypt an entity.
      *
-     * @param string $algorithm Encryption algorithm
+     * @param AbstractDbService                           $service   Database service
+     * @param UserEntityInterface|UserCardEntityInterface $entity    Row to update
+     * @param ?BlockCipher                                $oldcipher Old cipher (null for none)
+     * @param BlockCipher                                 $newcipher New cipher
      *
-     * @return Openssl
+     * @return void
+     * @throws InvalidArgumentException
      */
-    protected function getOpenSsl($algorithm)
-    {
-        return ($algorithm == 'none') ? null : new Openssl(compact('algorithm'));
+    protected function fixEntity(
+        DbServiceInterface $service,
+        UserEntityInterface|UserCardEntityInterface $entity,
+        ?BlockCipher $oldcipher,
+        BlockCipher $newcipher
+    ): void {
+        $oldEncrypted = $entity->getCatPassEnc();
+        $pass = ($oldcipher && $oldEncrypted !== null)
+            ? $oldcipher->decrypt($oldEncrypted)
+            : $entity->getRawCatPassword();
+        $entity->setRawCatPassword(null);
+        $entity->setCatPassEnc($pass === null ? null : $newcipher->encrypt($pass));
+        $service->persistEntity($entity);
     }
 
     /**
@@ -186,11 +182,10 @@ class SwitchDbHashCommand extends Command
             return 0;
         }
 
-        // Initialize Openssl first, so we can catch any illegal algorithms before
-        // making any changes:
+        // Initialize ciphers first, so we can catch any illegal algorithms before making any changes:
         try {
-            $oldCrypt = $this->getOpenSsl($oldhash);
-            $newCrypt = $this->getOpenSsl($newhash);
+            $oldcipher = ($oldhash === 'none') ? null : ($this->cipherFactory)($oldhash, $oldkey);
+            $newcipher = ($this->cipherFactory)($newhash, $newkey);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
@@ -212,31 +207,25 @@ class SwitchDbHashCommand extends Command
         }
 
         // Now do the database rewrite:
-        $users = $this->userTable->select(
-            function ($select) {
-                $select->where->isNotNull('cat_username');
-            }
-        );
+        $users = $this->userService->getAllUsersWithCatUsernames();
+        $cards = $this->userCardService->getAllRowsWithUsernames();
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
-            $pass = null;
-            if ($oldhash != 'none' && $row['cat_pass_enc'] ?? null !== null) {
-                try {
-                    $oldcipher = new BlockCipher($oldCrypt);
-                    $oldcipher->setKey($oldkey);
-                    $pass = $oldcipher->decrypt($row['cat_pass_enc']);
-                } catch (\Exception $e) {
-                    $output->writeln("Problem with user {$row['username']}: " . (string)$e);
-                    continue;
-                }
-            } else {
-                $pass = $row['cat_password'];
+            try {
+                $this->fixEntity($this->userService, $row, $oldcipher, $newcipher);
+            } catch (\Exception $e) {
+                $output->writeln("Problem with user {$row->getUsername()}: " . (string)$e);
             }
-            $newcipher = new BlockCipher($newCrypt);
-            $newcipher->setKey($newkey);
-            $row['cat_password'] = null;
-            $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
-            $row->save();
+        }
+        if (count($cards) > 0) {
+            $output->writeln("\tConverting hashes for " . count($cards) . ' card(s).');
+            foreach ($cards as $entity) {
+                try {
+                    $this->fixEntity($this->userCardService, $entity, $oldcipher, $newcipher);
+                } catch (\Exception $e) {
+                    $output->writeln("Problem with card {$entity->getId()}: " . (string)$e);
+                }
+            }
         }
 
         // If we got this far, all went well!

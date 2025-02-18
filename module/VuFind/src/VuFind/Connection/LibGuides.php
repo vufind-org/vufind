@@ -223,7 +223,7 @@ class LibGuides implements
         $body = $response->getBody();
         $returnVal = json_decode($body);
         $this->debug(
-            'Return from LibGuides API Call: ' . print_r($returnVal, true)
+            'Return from LibGuides API Call: ' . $this->varDump($returnVal)
         );
         if ($returnVal != null) {
             if (isset($returnVal->errorCode)) {
@@ -236,7 +236,7 @@ class LibGuides implements
                 'LibGuides API Error: Nothing returned from API call.'
             );
             $this->debug(
-                'Body return from LibGuides API Call: ' . print_r($body, true)
+                'Body return from LibGuides API Call: ' . $this->varDump($body)
             );
         }
         return null;

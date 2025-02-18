@@ -426,7 +426,6 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     {
         // Build settings:
         $handlers = [];
-        $selectedFound = false;
         $backupSelectedIndex = false;
         $addedBrowseHandlers = false;
         $settings = $this->getCombinedHandlerConfig($activeSearchClass);
@@ -447,10 +446,9 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                     $j++;
                     $selected = $target == $activeSearchClass
                         && $activeHandler == $searchVal;
-                    if ($selected) {
-                        $selectedFound = true;
-                    } elseif (
-                        $backupSelectedIndex === false
+                    if (
+                        !$selected
+                        && $backupSelectedIndex === false
                         && $target == $activeSearchClass
                     ) {
                         $backupSelectedIndex = count($handlers);
@@ -503,7 +501,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         }
 
         // If we didn't find an exact match for a selected index, use a fuzzy
-        // match:
+        // match (do the check here since it could be an AlphaBrowse index too):
+        $selectedFound = in_array(true, array_column($handlers, 'selected'), true);
         if (!$selectedFound && $backupSelectedIndex !== false) {
             $handlers[$backupSelectedIndex]['selected'] = true;
         }

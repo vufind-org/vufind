@@ -99,14 +99,9 @@ class InjectHighlightingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
-        );
-        $manager->attach(
-            'VuFind\Search',
-            Service::EVENT_POST,
-            [$this, 'onSearchPost']
         );
     }
 
@@ -141,35 +136,6 @@ class InjectHighlightingListener
                     // Turn on hl.q generation in query builder:
                     $this->backend->getQueryBuilder()
                         ->setFieldsToHighlight($this->fieldList);
-                }
-            }
-        }
-        return $event;
-    }
-
-    /**
-     * Inject highlighting results.
-     *
-     * @param EventInterface $event Event
-     *
-     * @return EventInterface
-     */
-    public function onSearchPost(EventInterface $event)
-    {
-        // Do nothing if highlighting is disabled or context is wrong
-        $command = $event->getParam('command');
-        if (!$this->active || $command->getContext() != 'search') {
-            return $event;
-        }
-
-        // Inject highlighting details into record objects:
-        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
-            $result = $command->getResult();
-            $hlDetails = $result->getHighlighting();
-            foreach ($result->getRecords() as $record) {
-                $id = $record->getUniqueId();
-                if (isset($hlDetails[$id])) {
-                    $record->setHighlightDetails($hlDetails[$id]);
                 }
             }
         }

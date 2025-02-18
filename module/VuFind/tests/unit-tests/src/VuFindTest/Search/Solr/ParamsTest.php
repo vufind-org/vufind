@@ -204,16 +204,126 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testSortList
+     *
+     * @return array
+     */
+    public static function sortListDataProvider(): array
+    {
+        $searchConfig = [
+            'Sorting' => [
+                'relevance' => 'Relevance',
+                'title' => 'Title',
+            ],
+            'HiddenSorting' => [
+                'pattern' => [
+                    '[Tt]est',
+                ],
+            ],
+        ];
+
+        return [
+            'relevance' => [
+                $searchConfig,
+                'relevance',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => true,
+                        'default' => true,
+                    ],
+                    'title' => [
+                        'desc' => 'Title',
+                        'selected' => false,
+                        'default' => false,
+                    ],
+                ],
+            ],
+            'title' => [
+                $searchConfig,
+                'title',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => false,
+                        'default' => true,
+                    ],
+                    'title' => [
+                        'desc' => 'Title',
+                        'selected' => true,
+                        'default' => false,
+                    ],
+                ],
+            ],
+            'hidden' => [
+                $searchConfig,
+                'footestbar',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => false,
+                        'default' => true,
+                    ],
+                    'title' => [
+                        'desc' => 'Title',
+                        'selected' => false,
+                        'default' => false,
+                    ],
+                    'footestbar' => [
+                        'desc' => 'unrecognized_sort_option',
+                        'selected' => true,
+                        'default' => false,
+                    ],
+                ],
+            ],
+            'invalid' => [
+                $searchConfig,
+                'foobar',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => true,
+                        'default' => true,
+                    ],
+                    'title' => [
+                        'desc' => 'Title',
+                        'selected' => false,
+                        'default' => false,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test sort option list handling
+     *
+     * @param array  $searchConfig     Search configuration
+     * @param string $sort             Selected sort option
+     * @param string $expectedSortList Expected sort list
+     *
+     * @return void
+     *
+     * @dataProvider sortListDataProvider
+     */
+    public function testSortList(array $searchConfig, string $sort, array $expectedSortList): void
+    {
+        $params = $this->getParams(mockConfig: $this->getMockConfigPluginManager(['searches' => $searchConfig]));
+        $params->setSort($sort);
+        $this->assertEquals($expectedSortList, $params->getSortList());
+    }
+
+    /**
      * Get Params object
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options       $options    Options object (null to create)
+     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
      *
      * @return Params
      */
     protected function getParams(
-        Options $options = null,
-        PluginManager $mockConfig = null
+        ?Options $options = null,
+        ?PluginManager $mockConfig = null
     ): Params {
         $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(

@@ -1,0 +1,86 @@
+<?php
+  // Sanitize inputs:
+  $sanitize = match($this->facet['type']) {
+    'date' => fn ($val) => preg_replace('/[^\d]*/', '', $val), // digits only for year-only dates
+    'fulldate' => fn ($val) => substr($val, 0, 10),
+    'numeric' => fn ($val) => preg_replace('/[^\d.]*/', '', $val), // digits/decimal points only for numeric
+    default => fn ($val) => $val, // no sanitization for "generic" ranges
+  };
+  $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);
+  $safeBaseId = $this->escapeHtmlAttr($this->title);
+?>
+<div class="facet">
+  <form class="facet-range-form" name="<?=$safeBaseId?>Filter" id="<?=$safeBaseId?>Filter" data-name="<?=$safeBaseId?>" data-filter-field="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]">
+    <?=$results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$this->title}:.*/"])?>
+    <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>">
+    <div class="date-fields">
+      <?php $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
+      <div class="date-from">
+        <label id="<?=$safeBaseId?>from-label" for="<?=$safeBaseId?>from">
+          <?=$this->transEsc('date_from')?>:
+        </label>
+        <input type="text" class="form-control" name="<?=$safeBaseId?>from" id="<?=$safeBaseId?>from" value="<?=$this->escapeHtmlAttr($cleanValues[0] ?? '')?>" <?=$extraInputAttribs?>>
+      </div>
+      <div class="date-to">
+        <label id="<?=$safeBaseId?>to-label" for="<?=$safeBaseId?>to">
+          <?=$this->transEsc('date_to')?>:
+        </label>
+        <input type="text" class="form-control" name="<?=$safeBaseId?>to" id="<?=$safeBaseId?>to" value="<?=$this->escapeHtmlAttr($cleanValues[1] ?? '')?>" <?=$extraInputAttribs?>>
+      </div>
+    </div>
+    <?php if ($this->facet['type'] == 'date'): ?>
+      <div class="slider-container"><input type="text" class="hidden" id="<?=$safeBaseId?><?=$this->escapeHtml($this->facet['type'])?>Slider" aria-label="<?=$this->transEsc('slider_label', ['%%title%%' => $this->translate($this->cluster['label'])])?>"></div>
+    <?php endif; ?>
+    <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>">
+  </form>
+</div>
+<?php if ($this->facet['type'] == 'date'): ?>
+  <?php $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
+  <?php $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
+  <?php
+    $min = !empty($cleanValues[0]) ? min($cleanValues[0], 1400) : 1400;
+    $future = date('Y', time() + 31536000); // next year
+    $max = !empty($cleanValues[1]) ? max($future, $cleanValues[1]) : $future;
+    $low = !empty($cleanValues[0]) ? $cleanValues[0] : $min;
+    $high = !empty($cleanValues[1]) ? $cleanValues[1] : $max;
+    $sliderOptions = [
+      'min' => (int)$min,
+      'max' => (int)$max,
+      'handle' => 'square',
+      'tooltip' => 'hide',
+      'value' => [(int)$low, (int)$high],
+      'id' => $safeBaseId . '_slider_control',
+    ];
+    $sliderOptionsJson = json_encode($sliderOptions);
+    $script = <<<JS
+        $(document).ready(function() {
+          var fillTexts = function() {
+            var v = {$safeBaseId}dateSlider.getValue();
+            $('#{$safeBaseId}from').val(v[0]);
+            $('#{$safeBaseId}to').val(v[1]);
+          };
+          var {$safeBaseId}dateSlider = $('#{$safeBaseId}dateSlider')
+            .slider($sliderOptionsJson)
+            .on('change', fillTexts)
+            .data('slider');
+
+            $("#{$safeBaseId}Filter .slider-handle.min-slider-handle").attr("aria-labelledby", "{$safeBaseId}from-label");
+            $("#{$safeBaseId}Filter .slider-handle.max-slider-handle").attr("aria-labelledby", "{$safeBaseId}to-label");
+        });
+
+        $('#{$safeBaseId}from, #{$safeBaseId}to').change(function () {
+          var fromValue = Number($('#{$safeBaseId}from').val());
+          var toValue = Number($('#{$safeBaseId}to').val());
+          $('#{$safeBaseId}dateSlider').slider(
+            'setValue',
+            [
+              isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+              isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+            ],
+            true
+          );
+        });
+        JS;
+  ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<?php endif; ?>

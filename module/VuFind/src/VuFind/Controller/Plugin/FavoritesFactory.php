@@ -63,16 +63,13 @@ class FavoritesFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Record\Cache::class),
-            $container->get(\VuFind\Tags::class),
-            $container->get(\VuFind\Favorites\FavoritesService::class)
+            $container->get(\VuFind\Favorites\FavoritesService::class),
         );
     }
 }

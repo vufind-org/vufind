@@ -41,6 +41,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 use function count;
+use function sprintf;
 
 /**
  * VuFind Markdown Service factory.
@@ -119,7 +120,7 @@ class MarkdownFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $this->config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('markdown')->toArray();

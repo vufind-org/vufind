@@ -56,7 +56,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -71,14 +71,12 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->config = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class)
-            ->get('Pazpar2');
+        $this->config = $this->getService(\VuFind\Config\PluginManager::class)->get('Pazpar2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -140,8 +138,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Pazpar2');
             $driver->setRawData($data);

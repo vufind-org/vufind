@@ -54,12 +54,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     protected function getMockContainer()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $tableManager = new \VuFindTest\Container\MockDbTablePluginManager($this);
-        $tableManager->set(
-            'ChangeTracker',
-            $tableManager->get(\VuFind\Db\Table\ChangeTracker::class)
-        );
-        $container->set(\VuFind\Db\Table\PluginManager::class, $tableManager);
+        $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
+        $container->set(\VuFind\Db\Service\PluginManager::class, $serviceManager);
         return $container;
     }
 
@@ -72,7 +68,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     {
         VuFind::setServiceLocator($this->getMockContainer());
         $this->assertTrue(
-            VuFind::getChangeTracker() instanceof \VuFind\Db\Table\ChangeTracker
+            VuFind::getChangeTracker() instanceof \VuFind\Db\Service\ChangeTrackerServiceInterface
         );
     }
 
@@ -85,7 +81,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     {
         $container = $this->getMockContainer();
         $this->addPathResolverToContainer($container);
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
             ->method('get')->with('config')->will($this->returnValue($config));
         VuFind::setServiceLocator($container);

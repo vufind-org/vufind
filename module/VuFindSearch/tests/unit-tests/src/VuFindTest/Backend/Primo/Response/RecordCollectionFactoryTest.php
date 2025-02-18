@@ -53,7 +53,7 @@ class RecordCollectionFactoryTest extends TestCase
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Record factory must be callable.');
 
-        $factory = new RecordCollectionFactory(12345);
+        new RecordCollectionFactory(12345);
     }
 
     /**
@@ -67,6 +67,6 @@ class RecordCollectionFactoryTest extends TestCase
         $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
 
         $fact = new RecordCollectionFactory();
-        $coll = $fact->factory('garbage');
+        $fact->factory('garbage');
     }
 }

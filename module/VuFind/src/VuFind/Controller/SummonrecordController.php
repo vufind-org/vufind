@@ -65,8 +65,7 @@ class SummonrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('Summon');
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('Summon');
         return $config->Record->next_prev_navigation ?? false;
     }
 

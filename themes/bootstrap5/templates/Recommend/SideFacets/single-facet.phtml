@@ -1,0 +1,57 @@
+<?php
+  $toggleUrl = $this->facet['isApplied']
+    ? $this->urlBase . $this->url->removeFacet($this->group, $this->facet['value'], $this->facet['operator'])
+    : $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], $this->facet['operator']);
+
+  $hasCheckbox = $this->facet['operator'] === 'OR';
+
+  $classList = ['facet', 'js-facet-item'];
+  if ($this->facet['isApplied']) {
+    $classList[] = 'active';
+  }
+  if ($this->facet['operator'] == 'OR') {
+    $classList[] = 'facetOR';
+  }
+  if ($this->facet['operator'] == 'AND') {
+    $classList[] = 'facetAND';
+  }
+  $displayText = '-';
+  if ('' !== (string)($this->facet['displayText'] ?? '')) {
+    $displayText = $this->escapeHtml($this->facet['displayText']);
+  } elseif ('' !== (string)($this->facet['value'] ?? '')) {
+    $displayText = $this->escapeHtml($this->facet['value']);
+  }
+  $displayText = '<span class="facet-value' . ($hasCheckbox ? ' icon-link__label' : '') . '">' . $displayText . '</span>';
+
+  if ($hasCheckbox) {
+    $displayText = $this->icon(
+        $this->facet['isApplied'] ? 'facet-checked' : 'facet-unchecked',
+        [
+          'class' => 'icon-link__icon',
+          'data-checked' => $this->facet['isApplied'] ? 'true' : 'false',
+        ]
+    ) . $displayText;
+  }
+?>
+
+<span class="<?=implode(' ', $classList) ?>">
+  <a class="text<?=$hasCheckbox ? ' icon-link' : ''?>" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
+    <span class="text">
+      <?=$displayText ?>
+    </span>
+    <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
+      <span class="badge">
+        <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
+        <span class="sr-only"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
+        <span aria-hidden="true"><?=$currentCount ?></span>
+      </span>
+    <?php endif; ?>
+  </a>
+  <?php if ($this->exclude && !$this->facet['isApplied']): ?>
+    <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
+    <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
+      <?=$this->icon('facet-exclude') ?>
+      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+    </a>
+  <?php endif; ?>
+</span>

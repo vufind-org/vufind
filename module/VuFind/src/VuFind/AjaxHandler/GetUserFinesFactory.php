@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetUserFinesFactory extends AbstractIlsAndUserActionFactory implements FactoryInterface
+class GetUserFinesFactory extends AbstractIlsUserAndRendererActionFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,7 +65,7 @@ class GetUserFinesFactory extends AbstractIlsAndUserActionFactory implements Fac
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');

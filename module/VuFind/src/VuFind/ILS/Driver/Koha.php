@@ -32,6 +32,7 @@ namespace VuFind\ILS\Driver;
 
 use PDO;
 use PDOException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
@@ -180,10 +181,10 @@ class Koha extends AbstractBase
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -191,7 +192,7 @@ class Koha extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
         $available = true;
@@ -310,7 +311,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -356,7 +357,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -438,7 +439,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -522,7 +523,7 @@ class Koha extends AbstractBase
      * @param array $patron The patron array from patronLogin
      * @param array $params Parameters
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */

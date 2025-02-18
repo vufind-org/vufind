@@ -58,7 +58,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
         $listener = new DefaultParametersListener($backend, ['foo' => 'bar']);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo('VuFind\Search'),
+            $this->equalTo(\VuFindSearch\Service::class),
             $this->equalTo('pre'),
             $this->equalTo([$listener, 'onSearchPre'])
         );

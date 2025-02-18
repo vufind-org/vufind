@@ -1,6 +1,86 @@
 [
     {
-        "comment": "Initial token check"
+        "expectedMethod": "GET",
+        "expectedPath": "\/instance-storage\/instances",
+        "expectedParams": {
+            "query": "(id==\"instanceid\")"
+        },
+        "body": {
+            "instances": [
+                {
+                    "id": "instanceid",
+                    "_version": 1,
+                    "hrid": "foo",
+                    "source": "MARC",
+                    "title": "The bride of the tomb; or, Lancelot Darling's betrothed \/ By Mrs. Alex. McVeigh Miller.",
+                    "indexTitle": "Bride of the tomb; or, lancelot darling's betrothed",
+                    "editions": [],
+                    "series": [
+                        "Munro's library ; v. 1, no. 2"
+                    ],
+                    "identifiers": [],
+                    "contributors": [
+                        {
+                            "name": "Miller, Alex. McVeigh, Mrs",
+                            "contributorTypeId": "contypeID",
+                            "contributorTypeText": "Contributor",
+                            "contributorNameTypeId": "conNameTypeID",
+                            "primary": true
+                        }
+                    ],
+                    "subjects": [
+                        "Dime novels Specimens",
+                        "Genre: Popular literature Specimens",
+                        "Genre: Mystery and detective fiction"
+                    ],
+                    "classifications": [
+                        {
+                            "classificationNumber": "PS2394 .M643 1883",
+                            "classificationTypeId": "ctypeId"
+                        }
+                    ],
+                    "publication": [
+                        {
+                            "publisher": "Norman L. Munro",
+                            "place": "New York",
+                            "dateOfPublication": "1883"
+                        }
+                    ],
+                    "publicationFrequency": [],
+                    "publicationRange": [],
+                    "publicationPeriod": {
+                        "start": 1883
+                    },
+                    "electronicAccess": [],
+                    "instanceTypeId": "insttypeID",
+                    "instanceFormatIds": [],
+                    "instanceFormats": [],
+                    "physicalDescriptions": [
+                        "144 p.  ; 19 cm."
+                    ],
+                    "languages": [
+                        "eng"
+                    ],
+                    "notes": [],
+                    "modeOfIssuanceId": "moiid",
+                    "previouslyHeld": false,
+                    "staffSuppress": false,
+                    "discoverySuppress": false,
+                    "statisticalCodeIds": [],
+                    "statusUpdatedDate": "2022-12-22T23:34:26.209+0000",
+                    "holdingsRecords2": [],
+                    "natureOfContentTermIds": []
+                }
+            ],
+            "totalRecords": 1,
+            "resultInfo": {
+                "totalRecords": 1,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "status": 200
     },
     {
         "comment": "Version check",
@@ -8,6 +88,21 @@
         "expectedPath": "\/_\/proxy\/tenants\/config_tenant\/modules?filter=mod-circulation&latest=1",
         "expectedParams": [],
         "body": [ {"id":"mod-circulation-23.5.7"} ],
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/requests\/allowed-service-points?instanceId=instanceid&requesterId=foo&operation=create",
+        "expectedParams": [],
+        "body": {
+            "Page": [
+                {
+                    "id": "desk1",
+                    "name": "Main Service Desk"
+                }
+            ]
+        },
         "bodyType": "json",
         "status": 200
     },

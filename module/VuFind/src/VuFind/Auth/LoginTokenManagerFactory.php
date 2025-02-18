@@ -36,6 +36,8 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\LoginTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Factory for login token authentication
@@ -72,20 +74,18 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         $this->container = $container;
 
+        $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)
-                ->get('config'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get('user'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get('logintoken'),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $dbServiceManager->get(UserServiceInterface::class),
+            $dbServiceManager->get(LoginTokenServiceInterface::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
             $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Mailer\Mailer::class),

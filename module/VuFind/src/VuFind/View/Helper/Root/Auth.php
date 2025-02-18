@@ -29,6 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use LmcRbacMvc\Identity\IdentityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -40,9 +45,10 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Auth extends \Laminas\View\Helper\AbstractHelper
+class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Authentication manager
@@ -102,12 +108,34 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     /**
      * Checks whether the user is logged in.
      *
-     * @return \VuFind\Db\Row\User|bool Object if user is logged in, false
+     * @return UserEntityInterface|bool Object if user is logged in, false
      * otherwise.
+     *
+     * @deprecated Use getIdentity() or getUserObject() instead.
      */
     public function isLoggedIn()
     {
         return $this->getManager()->isLoggedIn();
+    }
+
+    /**
+     * Checks whether the user is logged in.
+     *
+     * @return ?UserEntityInterface Object if user is logged in, null otherwise.
+     */
+    public function getUserObject(): ?UserEntityInterface
+    {
+        return $this->getManager()->getUserObject();
+    }
+
+    /**
+     * Get the logged-in user's identity (null if not logged in)
+     *
+     * @return ?IdentityInterface
+     */
+    public function getIdentity(): ?IdentityInterface
+    {
+        return $this->getManager()->getIdentity();
     }
 
     /**
@@ -170,6 +198,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     public function getLoginDesc($context = [])
     {
         return $this->renderTemplate('logindesc.phtml', $context);
+    }
+
+    /**
+     * Get login token data
+     *
+     * @param int $userId user identifier
+     *
+     * @return array
+     */
+    public function getLoginTokens(int $userId): array
+    {
+        return $this->getDbService(LoginTokenServiceInterface::class)->getByUser($userId);
     }
 
     /**

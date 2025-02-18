@@ -29,12 +29,13 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\I18n\Translator;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
 use function extension_loaded;
@@ -72,8 +73,9 @@ class TranslatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ) {
+        $this->setPathResolver($container->get(PathResolver::class));
         $translator = $callback();
         if (!extension_loaded('intl')) {
             error_log(
@@ -92,13 +94,13 @@ class TranslatorFactory implements DelegatorFactoryInterface
     /**
      * Add caching to a translator object
      *
-     * @param TranslatorInterface $translator Translator object
-     * @param ContainerInterface  $container  Service manager
+     * @param Translator         $translator Translator object
+     * @param ContainerInterface $container  Service manager
      *
      * @return void
      */
     protected function enableCaching(
-        TranslatorInterface $translator,
+        Translator $translator,
         ContainerInterface $container
     ): void {
         // Set up language caching for better performance:

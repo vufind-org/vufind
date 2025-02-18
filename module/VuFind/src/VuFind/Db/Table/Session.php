@@ -57,7 +57,7 @@ class Session extends Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param ?RowGateway   $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(
@@ -151,7 +151,7 @@ class Session extends Gateway
      *
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return int
      */
     public function garbageCollect($sess_maxlifetime)
     {
@@ -159,7 +159,7 @@ class Session extends Gateway
             $select->where
                 ->lessThan('last_used', time() - intval($sess_maxlifetime));
         };
-        $this->delete($callback);
+        return $this->delete($callback);
     }
 
     /**

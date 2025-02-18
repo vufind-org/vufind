@@ -29,8 +29,8 @@
 
 namespace VuFind\Search\Factory;
 
-use Laminas\Config\Config;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
@@ -55,6 +55,7 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use function count;
 use function is_object;
+use function sprintf;
 
 /**
  * Abstract factory for SOLR backends.
@@ -197,13 +198,12 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->config = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $this->config = $this->getService(\VuFind\Config\PluginManager::class);
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -308,7 +308,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function createListeners(Backend $backend)
     {
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->getService('SharedEventManager');
 
         // Load configurations:
         $config = $this->config->get($this->mainConfig);
@@ -332,13 +332,17 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             isset($search->ConditionalHiddenFilters)
             && $search->ConditionalHiddenFilters->count() > 0
         ) {
-            $this->getInjectConditionalFilterListener($search)->attach($events);
+            $this->getInjectConditionalFilterListener($backend, $search)->attach($events);
         }
 
         // Spellcheck
         if ($config->Spelling->enabled ?? true) {
-            $dictionaries = ($config->Spelling->simple ?? false)
-                ? ['basicSpell'] : ['default', 'basicSpell'];
+            $dictionaries = $config->Spelling->dictionaries?->toArray() ?? [];
+            if (empty($dictionaries)) {
+                // Respect the deprecated 'simple' configuration setting.
+                $dictionaries = ($config->Spelling->simple ?? false)
+                    ? ['basicSpell'] : ['default', 'basicSpell'];
+            }
             $spellingListener = new InjectSpellingListener(
                 $backend,
                 $dictionaries,
@@ -612,8 +616,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function loadSpecs()
     {
-        return $this->serviceLocator->get(\VuFind\Config\SearchSpecsReader::class)
-            ->get($this->searchYaml);
+        return $this->getService(\VuFind\Config\SearchSpecsReader::class)->get($this->searchYaml);
     }
 
     /**
@@ -697,18 +700,19 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Get a Conditional Filter Listener
      *
-     * @param Config $search Search configuration
+     * @param BackendInterface $backend Search backend
+     * @param Config           $search  Search configuration
      *
      * @return InjectConditionalFilterListener
      */
-    protected function getInjectConditionalFilterListener(Config $search)
+    protected function getInjectConditionalFilterListener(BackendInterface $backend, Config $search)
     {
         $listener = new InjectConditionalFilterListener(
+            $backend,
             $search->ConditionalHiddenFilters->toArray()
         );
         $listener->setAuthorizationService(
-            $this->serviceLocator
-                ->get(\LmcRbacMvc\Service\AuthorizationService::class)
+            $this->getService(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $listener;
     }

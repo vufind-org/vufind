@@ -72,6 +72,7 @@ class Holdings extends \Laminas\View\Helper\AbstractHelper
         $catalogConfig = $this->config['Catalog'] ?? [];
         $showEmptyBarcodes
             = (bool)($catalogConfig['display_items_without_barcodes'] ?? true);
-        return $showEmptyBarcodes || strlen($holding['barcode'] ?? '') > 0;
+        return $holding['availability']->isVisibleInHoldings()
+            && ($showEmptyBarcodes || strlen($holding['barcode'] ?? '') > 0);
     }
 }

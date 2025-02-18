@@ -87,9 +87,9 @@ class ObalkyKnihService implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration for service
+     * @param \VuFind\Config\Config $config Configuration for service
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         if (
             !isset($config->base_url) || count($config->base_url) < 1
@@ -116,11 +116,11 @@ class ObalkyKnihService implements
     /**
      * Get an HTTP client
      *
-     * @param string $url URL for client to use
+     * @param ?string $url URL for client to use
      *
      * @return \Laminas\Http\Client
      */
-    protected function getHttpClient(string $url = null)
+    protected function getHttpClient(?string $url = null)
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
@@ -142,7 +142,7 @@ class ObalkyKnihService implements
      */
     protected function createCacheKey(array $ids)
     {
-        $key = $ids['recordid'];
+        $key = $ids['recordid'] ?? '';
         $key = !empty($key) ? $key
             : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
         $key = !empty($key) ? $key : sha1(json_encode($ids));

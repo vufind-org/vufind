@@ -1,0 +1,17 @@
+<?php foreach ($data as $field): ?>
+  <span<?=$this->schemaOrg()->getAttributes(['property' => 'publisher', 'typeof' => 'Organization'])?>>
+  <?php $pubPlace = $field->getPlace(); ?>
+  <?php if (!empty($pubPlace)): ?>
+    <span<?=$this->schemaOrg()->getAttributes(['property' => 'location'])?>><?=$this->escapeHtml($pubPlace)?></span>
+  <?php endif; ?>
+  <?php $pubName = $field->getName(); ?>
+  <?php if (!empty($pubName)): ?>
+    <a<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?> href="<?=$this->record($this->driver)->getLink('publisher', $pubName)?>"><?=$this->escapeHtml($pubName)?></a>
+  <?php endif; ?>
+  </span>
+  <?php $pubDate = $field->getDate(); ?>
+  <?php if (!empty($pubDate)): ?>
+    <span<?=$this->schemaOrg()->getAttributes(['property' => 'datePublished'])?>><?=$this->escapeHtml($pubDate)?></span>
+  <?php endif; ?>
+  <br>
+<?php endforeach; ?>

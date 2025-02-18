@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Record\RecordIdUpdater;
 
 /**
  * Abstract record fallback loader factory
@@ -63,10 +65,11 @@ class AbstractFallbackLoaderFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),
+            $container->get(RecordIdUpdater::class),
             $container->get(\VuFindSearch\Service::class),
             ...$options ?? []
         );

@@ -1,0 +1,53 @@
+<?php if ($this->recommend->getSearchResultCoordinates()) :?>
+  <?php
+    // Add translation strings
+    $this->jsTranslations()->addStrings([
+      'rectangle_center_message' => 'rectangle_center_message',
+    ]);
+
+    $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
+    $this->headScript()->appendFile('vendor/leaflet/leaflet.draw.js');
+    $this->headScript()->appendFile('vendor/leaflet/leaflet.markercluster.js');
+    $this->headScript()->appendFile('map_selection_leaflet.js');
+    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
+    $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
+    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
+    $this->headLink()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
+    $this->headLink()->appendStylesheet('geofeatures.css');
+
+    $basemap = $this->recommend->getBasemap();
+    $geoField = $this->recommend->getGeoField();
+    $height = $this->recommend->getHeight();
+    $baseUrl = $this->url('home');
+    $urlpath = $this->url('search-results');
+    $searchParams = $this->recommend->getSearchParams();
+    $coordinates = $this->recommend->getSelectedCoordinates()
+        ?? $this->recommend->getDefaultCoordinates();
+
+    $resultsCoords = $this->recommend->getMapResultCoordinates();
+    $params = [
+      json_encode($geoField), json_encode($coordinates),
+      json_encode($urlpath), json_encode($baseUrl),
+      json_encode($searchParams), json_encode($resultsCoords),
+      json_encode($basemap),
+    ];
+
+    $jsParams = implode(', ', $params);
+    $jsLoad = 'loadMapSelection(' . $jsParams . ');';
+  ?>
+  <div class="authorbox">
+    <div id="geo_search" style="display: none;">
+      <button id="draw_box"><?php echo $this->transEsc('Draw Search Box')?></button>
+      <span class="geo_maphelp">&nbsp;<a href="<?php echo $this->url('help', ['topic' => 'geosearch'])?>" data-lightbox class="help-link"><?php echo $this->transEsc('link_text_need_help')?></a></span>
+      <div id="geo_search_map" style="height: <?php echo $height?>px;"></div>
+    </div>
+    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET')?>
+  </div>
+  <?php
+    // Overwrite leaflet.draw.js tooltips with international translations
+    $loadTranslations
+      = 'L.drawLocal.draw.handlers.rectangle.tooltip.start = "' . $this->transEsc('draw_searchbox_start') . '";'
+      . 'L.drawLocal.draw.handlers.simpleshape.tooltip.end = "' . $this->transEsc('draw_searchbox_end') . '";'
+  ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadTranslations, 'SET')?>
+<?php endif; ?>

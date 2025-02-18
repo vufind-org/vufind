@@ -172,7 +172,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -298,7 +298,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -338,7 +338,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -390,7 +390,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -845,6 +845,41 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Function to get form action route test data
+     *
+     * @return array
+     */
+    public static function getFormActionRouteData(): array
+    {
+        return [
+            'with no route set' => [
+                'TestWithNoFormActionRouteSet',
+                'feedback-form',
+            ],
+            'with route set' => [
+                'TestWithFormActionRouteSet',
+                'test-action',
+            ],
+        ];
+    }
+
+    /**
+     * Test formActionRoute setting
+     *
+     * @param string $id       Form id
+     * @param string $expected Expected value
+     *
+     * @return void
+     *
+     * @dataProvider getFormActionRouteData
+     */
+    public function testFormActionRoute(string $id, string $expected): void
+    {
+        $form = $this->getMockTestForm($id);
+        $this->assertEquals($expected, $form->getFormActionRoute());
+    }
+
+    /**
      * Test prefilling values for inputs from form configuration
      *
      * @return void
@@ -901,7 +936,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -956,7 +991,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],

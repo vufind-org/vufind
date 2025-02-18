@@ -29,6 +29,8 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -43,20 +45,6 @@ use VuFind\Exception\Auth as AuthException;
  */
 class AlmaDatabase extends Database
 {
-    /**
-     * ILS Authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $authenticator;
-
-    /**
-     * Catalog connection
-     *
-     * @var \VuFind\ILS\Connection
-     */
-    protected $catalog = null;
-
     /**
      * Alma driver
      *
@@ -74,26 +62,23 @@ class AlmaDatabase extends Database
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection        $connection    The ILS connection
+     * @param \VuFind\ILS\Connection        $catalog       The ILS connection
      * @param \VuFind\Auth\ILSAuthenticator $authenticator The ILS authenticator
      */
     public function __construct(
-        \VuFind\ILS\Connection $connection,
-        \VuFind\Auth\ILSAuthenticator $authenticator
+        protected \VuFind\ILS\Connection $catalog,
+        protected \VuFind\Auth\ILSAuthenticator $authenticator
     ) {
-        $this->catalog = $connection;
-        $this->authenticator = $authenticator;
-        $this->almaDriver = $connection->getDriver();
-        $this->almaConfig = $connection->getDriverConfig();
+        $this->almaDriver = $catalog->getDriver();
+        $this->almaConfig = $catalog->getDriverConfig();
     }
 
     /**
      * Create a new user account in Alma AND in the VuFind Database.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     *                                                   new account details.
+     * @param Request $request Request object containing new account details.
      *
-     * @return NULL|\VuFind\Db\Row\User New user row.
+     * @return UserEntityInterface New user entity.
      */
     public function create($request)
     {
@@ -103,9 +88,6 @@ class AlmaDatabase extends Database
             return parent::create($request);
         }
 
-        // User variable
-        $user = null;
-
         // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
 
@@ -113,11 +95,11 @@ class AlmaDatabase extends Database
         $this->validateUsername($params);
         $this->validatePassword($params);
 
-        // Get the user table
-        $userTable = $this->getUserTable();
+        // Get the user service
+        $userService = $this->getUserService();
 
         // Make sure parameters are correct
-        $this->validateParams($params, $userTable);
+        $this->validateParams($params, $userService);
 
         // Create user account in Alma
         $almaAnswer = $this->almaDriver->createAlmaUser($params);
@@ -125,17 +107,17 @@ class AlmaDatabase extends Database
         // Create user account in VuFind user table if Alma gave us an answer
         if ($almaAnswer !== null) {
             // If we got this far, we're ready to create the account:
-            $user = $this->createUserFromParams($params, $userTable);
+            $user = $this->createUserFromParams($params, $userService);
 
             // Add the Alma primary ID as cat_id to the VuFind user table
-            $user->cat_id = $almaAnswer->primary_id ?? null;
+            $user->setCatId($almaAnswer->primary_id ?? null);
 
             // Save the new user to the user table
-            $user->save();
+            $this->getUserService()->persistEntity($user);
 
             // Save the credentials to cat_username and cat_password to bypass
             // the ILS login screen from VuFind
-            $user->saveCredentials($params['username'], $params['password']);
+            $this->authenticator->saveUserCatalogCredentials($user, $params['username'], $params['password']);
         } else {
             throw new AuthException($this->translate('ils_account_create_error'));
         }

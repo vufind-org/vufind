@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 
 /**
  * Factory for Util/ExpireExternalSessionsCommand.
@@ -63,11 +64,11 @@ class ExpireExternalSessionsCommandFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $tableManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $tableManager->get(\VuFind\Db\Table\ExternalSession::class),
+            $tableManager->get(ExternalSessionServiceInterface::class),
             ...($options ?? [])
         );
     }

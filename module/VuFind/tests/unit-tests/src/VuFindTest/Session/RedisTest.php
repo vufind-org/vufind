@@ -112,7 +112,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $client->expects($this->once())->method('unlink')
             ->with($this->equalTo('vufind_sessions/foo'))
             ->will($this->returnValue(1));
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             ['redis_version' => 4]
         );
         $handler = $this->getHandler($client, $config);
@@ -124,15 +124,15 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Credis_Client         $client Client object
-     * @param \Laminas\Config\Config $config Optional configuration
+     * @param \Credis_Client        $client Client object
+     * @param \VuFind\Config\Config $config Optional configuration
      *
      * @return Database
      */
     protected function getHandler($client, $config = null)
     {
         $handler = new Redis($client, $config);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }

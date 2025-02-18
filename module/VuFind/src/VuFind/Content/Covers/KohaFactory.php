@@ -29,10 +29,10 @@
 
 namespace VuFind\Content\Covers;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Koha cover loader factory
@@ -64,7 +64,7 @@ class KohaFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');

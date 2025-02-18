@@ -32,10 +32,10 @@ namespace VuFindSearch\Backend\EDS\Response;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use function call_user_func;
 use function gettype;
 use function is_array;
 use function is_callable;
+use function sprintf;
 
 /**
  * Factory for record collection.
@@ -103,7 +103,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             ?? $response['Records'] ?? [];
 
         foreach ($records as $record) {
-            $collection->add(call_user_func($this->recordFactory, $record), false);
+            $collection->add(($this->recordFactory)($record), false);
         }
         return $collection;
     }

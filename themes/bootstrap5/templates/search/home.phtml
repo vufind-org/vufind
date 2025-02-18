@@ -1,0 +1,24 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Search Home'));
+
+  // Disable top search box -- this page has a special layout.
+  $this->layout()->searchbox = false;
+
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $config = $this->config()->get('config');
+    $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
+  }
+
+  $this->layout()->breadcrumbs = false;
+?>
+
+<div class="searchHomeContent">
+  <?php $this->slot('search-home-hero')->start() ?>
+    <?=$this->render('search/searchbox.phtml')?>
+    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
+  <?=$this->slot('search-home-hero')->end() ?>
+</div>
+
+<?=implode('', array_map([$this, 'contentBlock'], $blocks ?? []))?>

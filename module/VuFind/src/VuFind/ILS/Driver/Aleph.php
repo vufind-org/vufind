@@ -39,7 +39,7 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\I18n\Translator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -77,27 +77,6 @@ class Aleph extends AbstractBase implements
      * @var Aleph\Translator
      */
     protected $alephTranslator = false;
-
-    /**
-     * Cache manager
-     *
-     * @var \VuFind\Cache\Manager
-     */
-    protected $cacheManager;
-
-    /**
-     * Translator
-     *
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
-     * Date converter object
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter = null;
 
     /**
      * The base URL, where the REST DLF API is running
@@ -170,7 +149,7 @@ class Aleph extends AbstractBase implements
     protected $dlfport;
 
     /**
-     * Statuse considered as available
+     * Statuses considered as available
      *
      * @var array
      */
@@ -239,17 +218,14 @@ class Aleph extends AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
-     * @param \VuFind\Cache\Manager  $cacheManager  Cache manager (optional)
-     * @param TranslatorInterface    $translator    Translator (optional)
+     * @param ?\VuFind\Cache\Manager $cacheManager  Cache manager (optional)
+     * @param ?Translator            $translator    Translator (optional)
      */
     public function __construct(
-        \VuFind\Date\Converter $dateConverter,
-        \VuFind\Cache\Manager $cacheManager = null,
-        TranslatorInterface $translator = null
+        protected \VuFind\Date\Converter $dateConverter,
+        protected ?\VuFind\Cache\Manager $cacheManager = null,
+        protected ?Translator $translator = null
     ) {
-        $this->dateConverter = $dateConverter;
-        $this->cacheManager = $cacheManager;
-        $this->translator = $translator;
     }
 
     /**
@@ -690,7 +666,7 @@ class Aleph extends AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -701,7 +677,7 @@ class Aleph extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
         [$bib, $sys_no] = $this->parseId($id);
@@ -1535,10 +1511,11 @@ class Aleph extends AbstractBase implements
                         false
                     );
                     $id = $result->xpath('//doc_number/text()');
+                    $idString = (string)$id[0];
                     if (count($this->bib) == 1) {
-                        return $id[0];
+                        return $idString;
                     } else {
-                        return $base . '-' . $id[0];
+                        return $base . '-' . $idString;
                     }
                 }
             } catch (\Exception $ex) {
@@ -1566,6 +1543,9 @@ class Aleph extends AbstractBase implements
         } elseif (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
             // 13/7/2012
             return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
+        } elseif (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{2}$/", $date) === 1) {
+            // 13/7/12
+            return $this->dateConverter->convertToDisplayDate('d/m/y', $date);
         } else {
             throw new \Exception("Invalid date: $date");
         }
@@ -1628,7 +1608,7 @@ class Aleph extends AbstractBase implements
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron   Patron information returned by the patronLogin method.

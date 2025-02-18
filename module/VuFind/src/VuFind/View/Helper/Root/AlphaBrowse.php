@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication view helper
+ * AlphaBrowse view helper
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\Url;
 
 /**
- * Authentication view helper
+ * AlphaBrowse view helper
  *
  * @category VuFind
  * @package  View_Helpers
@@ -84,7 +84,7 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
 
         $query = [
             'type' => ucwords($source) . 'Browse',
-            'lookfor' => $this->escapeForSolr($item['heading']),
+            'lookfor' => $this->escapeForSolr($item['sort_key']),
         ];
         if ($this->options['bypass_default_filters'] ?? true) {
             $query['dfApplied'] = 1;

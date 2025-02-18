@@ -447,16 +447,16 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Results object
      *
-     * @param Params        $params        Params object
-     * @param SearchService $searchService Search service
-     * @param Loader        $loader        Record loader
+     * @param ?Params        $params        Params object
+     * @param ?SearchService $searchService Search service
+     * @param ?Loader        $loader        Record loader
      *
      * @return Results
      */
     protected function getResults(
-        Params $params = null,
-        SearchService $searchService = null,
-        Loader $loader = null
+        ?Params $params = null,
+        ?SearchService $searchService = null,
+        ?Loader $loader = null
     ): Results {
         return new Results(
             $params ?? $this->getParams(),
@@ -490,9 +490,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         // No need to validate the parameters, just return the requested results:
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
@@ -512,14 +509,14 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options       $options    Options object (null to create)
+     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
      *
      * @return Params
      */
     protected function getParams(
-        Options $options = null,
-        PluginManager $mockConfig = null
+        ?Options $options = null,
+        ?PluginManager $mockConfig = null
     ): Params {
         $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(

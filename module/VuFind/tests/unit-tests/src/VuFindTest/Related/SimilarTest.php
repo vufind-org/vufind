@@ -54,25 +54,23 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->onlyMethods(['getUniqueId'])
             ->getMock();
-        $driver->expects($this->once())
-            ->method('getUniqueId')
-            ->will($this->returnValue('fakeid'));
+        $driver->expects($this->once())->method('getUniqueId')->willReturn('fakeid');
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue(['fakeresponse']));
+            ->willReturn(['fakeresponse']);
         $checkCommand = function ($command) {
-            return $command::class === \VuFindSearch\Command\SimilarCommand::class
-                    && $command->getTargetIdentifier() === 'Solr'
-                    && $command->getArguments()[0] === 'fakeid';
+            $this->assertEquals(\VuFindSearch\Command\SimilarCommand::class, $command::class);
+            $this->assertEquals('Solr', $command->getTargetIdentifier());
+            $this->assertEquals('fakeid', $command->getArguments()[0]);
+            return true;
         };
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $similar = new Similar($service);
         $similar->init('', $driver);
         $this->assertEquals(['fakeresponse'], $similar->getResults());

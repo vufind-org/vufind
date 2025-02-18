@@ -233,7 +233,7 @@ class CheckoutsController extends AbstractBase
             }
             $this->flashMessenger()->addMessage(
                 $result['status'],
-                $result['success'] ? 'info' : 'error'
+                $result['success'] ? 'success' : 'error'
             );
         }
         return $redirectResponse;

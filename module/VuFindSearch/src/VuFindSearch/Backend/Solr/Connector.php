@@ -46,6 +46,7 @@ use VuFindSearch\ParamBag;
 use function call_user_func_array;
 use function count;
 use function is_callable;
+use function sprintf;
 use function strlen;
 
 /**
@@ -193,12 +194,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Return document specified by id.
      *
-     * @param string   $id     The document to retrieve from Solr
-     * @param ParamBag $params Parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return string
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params
@@ -227,7 +228,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params, true);
+
+        try {
+            return $this->query($handler, $params, true);
+        } catch (RequestErrorException $e) {
+            // If Solr was unable to fetch the record, just act like we have no similar records:
+            if (str_contains($e->getMessage(), 'Could not fetch document with id')) {
+                return '{}';
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -264,14 +274,14 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param DocumentInterface $document Document to write
      * @param string            $handler  Update handler
-     * @param ParamBag          $params   Update handler parameters
+     * @param ?ParamBag         $params   Update handler parameters
      *
      * @return string Response body
      */
     public function write(
         DocumentInterface $document,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
@@ -366,8 +376,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function isRethrowableSolrException($ex)
     {
+        // Solr can return 404 when the instance hasn't completed startup, so allow that to be retried:
         return $ex instanceof TimeoutException
-            || $ex instanceof RequestErrorException;
+            || (($ex instanceof RequestErrorException) && $ex->getResponse()->getStatusCode() !== 404);
     }
 
     /**
@@ -395,10 +406,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Try all Solr URLs until we find one that works (or throw an exception).
      *
-     * @param string   $method    HTTP method to use
-     * @param string   $urlSuffix Suffix to append to all URLs tried
-     * @param callable $callback  Callback to configure client (null for none)
-     * @param bool     $cacheable Whether the request is cacheable
+     * @param string    $method    HTTP method to use
+     * @param string    $urlSuffix Suffix to append to all URLs tried
+     * @param ?callable $callback  Callback to configure client (null for none)
+     * @param bool      $cacheable Whether the request is cacheable
      *
      * @return string Response body
      *
@@ -494,6 +505,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         );
 
         if (!$response->isSuccess()) {
+            // Return a more detailed error message for a 400 error:
+            if ($response->getStatusCode() === 400) {
+                $json = json_decode($response->getBody(), true);
+                $msgParts = ['400', $response->getReasonPhrase()];
+                if ($msg = $json['error']['msg'] ?? '') {
+                    $msgParts[] = $msg;
+                }
+                throw new RequestErrorException(
+                    implode(' ', $msgParts),
+                    400,
+                    $response
+                );
+            }
             throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();
