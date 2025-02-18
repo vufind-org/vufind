@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Auth\OpenIDConnect;
 
@@ -117,7 +116,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $session = new SessionContainer();
-        $oidcConfig = new Config(empty($config) ? $defaultConfig : $config);
+        $oidcConfig = empty($config) ? $defaultConfig : $config;
         return new OpenIDConnect($session, $oidcConfig);
     }
 }

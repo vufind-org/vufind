@@ -96,9 +96,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * Constructor
      *
      * @param SessionContainer       $session    Session container for persisting state information.
-     * @param \Laminas\Config\Config $oidcConfig Configuration
+     * @param array                  $oidcConfig Configuration
      */
-    public function __construct(protected SessionContainer $session, protected \Laminas\Config\Config $oidcConfig)
+    public function __construct(protected SessionContainer $session, protected array $oidcConfig)
     {
         if (empty($this->session->oidc_state)) {
             $this->session->oidc_state = hash('sha256', random_bytes(32));
@@ -112,14 +112,16 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * Get configuration. Throw an exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \Laminas\Config\Config
+     * @return null|string|array
      */
-    public function getConfig(): \Laminas\Config\Config
+    public function getConfig(string $key = ''): null|string|array
     {
         // Validate configuration if not already validated:
         if (!$this->configValidated) {
             $this->validateConfig();
-            $this->configValidated = true;
+        }
+        if (!empty($key)) {
+            return $this->oidcConfig['OpenIDConnect'][$key] ?? null;
         }
         return $this->oidcConfig;
     }
@@ -133,7 +135,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     protected function getProvider(): object
     {
         if (!isset($this->provider)) {
-            $url = $this->getConfig()->OpenIDConnect->url;
+            $url = $this->getConfig('url');
             $url .= str_ends_with($url, '/') ? '' : '/';
             $url .= '.well-known/openid-configuration';
             try {
@@ -183,12 +185,13 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         $requiredParams = ['url', 'client_id', 'client_secret'];
         foreach ($requiredParams as $param) {
-            if (empty($this->oidcConfig?->OpenIDConnect?->$param ?? null)) {
+            if (empty($this->oidcConfig['OpenIDConnect'][$param] ?? null)) {
                 throw new AuthException(
                     'One or more OpenID Connect parameters are missing. Check your OpenIDConnect.ini!'
                 );
             }
         }
+        $this->configValidated = true;
     }
 
     /**
@@ -303,7 +306,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         $params = [
             'response_type' => 'code',
             'redirect_uri' => $targetUri,
-            'client_id' => $this->getConfig()->OpenIDConnect->client_id,
+            'client_id' => $this->getConfig('client_id'),
             'nonce' => $this->session->oidc_nonce,
             'state' => $this->session->oidc_state,
             'scope' => 'openid profile email',
@@ -330,16 +333,16 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
            'grant_type' => 'authorization_code',
            'code' => $code,
            'redirect_uri' => $this->session->oidcLastUri,
-           'client_id' => $this->getConfig()->OpenIDConnect->client_id,
-           'client_secret' => $this->getConfig()->OpenIDConnect->client_secret,
+           'client_id' => $this->getConfig('client_id'),
+           'client_secret' => $this->getConfig('client_secret'),
         ];
         $authMethods = $provider->token_endpoint_auth_methods_supported ?? null;
         $headers = [];
         if (in_array('client_secret_basic', $authMethods) || null === $authMethods) {
             $headers = [
                 'Authorization: Basic ' . base64_encode(
-                    urlencode($this->getConfig()->OpenIDConnect->client_id) . ':'
-                    . urlencode($this->getConfig()->OpenIDConnect->client_secret)
+                    urlencode($this->getConfig('client_id')) . ':'
+                    . urlencode($this->getConfig('client_secret'))
                 ),
             ];
             unset($params['client_secret']);
@@ -426,7 +429,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     protected function verifyJwtClaims(object $claims): bool
     {
         return (!isset($claims->nonce) || $claims->nonce === $this->session->oidc_nonce)
-            && ($claims->aud === $this->getConfig()->OpenIDConnect->client_id)
+            && ($claims->aud === $this->getConfig('client_id'))
             && (!isset($claims->exp) || (is_int($claims->exp) && ($claims->exp > time())));
     }
 
@@ -438,7 +441,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function getAttributesMappings(): array
     {
-        $configMappings = $this->getConfig()->OpenIDConnect?->attributes?->toArray() ?? [];
+        $configMappings = $this->getConfig('attributes') ?? [];
         return array_merge($this->defaultAttributesMappings, $configMappings);
     }
 
