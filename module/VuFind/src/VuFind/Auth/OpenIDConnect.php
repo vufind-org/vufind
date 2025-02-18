@@ -138,16 +138,42 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             $url .= str_ends_with($url, '/') ? '' : '/';
             $url .= '.well-known/openid-configuration';
             try {
-                $provider = json_decode($this->httpService->get($url)->getBody());
-            } catch (\Exception $e) {
-                throw new AuthException(
-                    'Cannot fetch provider configuration: ' . $e->getMessage()
-                );
+                $response = $this->httpService->get($url);
+                if ($response->getStatusCode() !== 200) {
+                    throw new AuthException('Failed to get provider metadata');
+                }
+                $provider = json_decode($response->getBody());
+            } catch (\Exception) {
+                $provider = $this->getProviderFromConfig();
             }
             $this->validateProviderMetadata($provider);
             $this->provider = $provider;
         }
         return $this->provider;
+    }
+
+    /**
+     * Get provider configuration from config
+     *
+     * @return object
+     */
+    protected function getProviderFromConfig(): object
+    {
+        $configKeys = [
+            'authorization_endpoint',
+            'token_endpoint',
+            'token_endpoint_auth_methods_supported',
+            'userinfo_endpoint',
+            'issuer',
+            'jwks_uri',
+        ];
+        $provider = new \stdClass();
+        foreach ($configKeys as $key) {
+            if (!empty($this->getConfig($key))) {
+                $provider->$key = $this->getConfig($key);
+            }
+        }
+        return $provider;
     }
 
     /**
