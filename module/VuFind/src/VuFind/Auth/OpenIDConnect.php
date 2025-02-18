@@ -116,10 +116,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     public function getConfig(string $key = ''): null|string|array
     {
-        // Validate configuration if not already validated:
-        if (!$this->configValidated) {
-            $this->validateConfig();
-        }
+        $this->validateConfig();
         if (!empty($key)) {
             return $this->oidcConfig['OpenIDConnect'][$key] ?? null;
         }
@@ -183,6 +180,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function validateConfig(): void
     {
+        if ($this->configValidated) {
+            return;
+        }
         $requiredParams = ['url', 'client_id', 'client_secret'];
         foreach ($requiredParams as $param) {
             if (empty($this->oidcConfig['OpenIDConnect'][$param] ?? null)) {
