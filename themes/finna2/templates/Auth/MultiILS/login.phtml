@@ -11,6 +11,7 @@
           <label>
             <input type="checkbox" name="remember_me"> <?=$this->transEsc('remember_me', ['%%days%%' => $account->getPersistentLoginLifetime()])?>
           </label>
+          <div class="remember-me-info"><?=$this->transEsc('remember_me_info')?></div>
         </div>
       </div>
     <?php endif; ?>
