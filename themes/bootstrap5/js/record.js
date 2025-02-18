@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, escapeHtmlAttr */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -23,8 +23,7 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
   }).then(response => response.json())
     .then(function checkValidDone(response) {
       if (response.data.status) {
-        element.classList.remove('disabled');
-        element.classList.remove('request-check');
+        element.classList.remove('disabled', 'request-check');
         element.title = response.data.msg;
         VuFind.setInnerHtml(element, VuFind.icon(icon) + '<span class="icon-link__label">' + VuFind.updateCspNonce(response.data.msg) + '</span>');
       } else {
@@ -51,7 +50,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'deleteRecordComment', id: commentId });
   fetch(url, {
     headers: {'Accept': 'application/json'}
-  }).then(function deleteCommentDone() {
+  }).then(() => {
     let comment = element.closest('.comment');
     comment.parentNode.removeChild(comment);
   });
@@ -66,11 +65,10 @@ function refreshCommentList(target, recordId, recordSource) {
   fetch(url, {
     headers: {'Accept': 'application/json'}
   }).then(response => response.json())
-    .then(function refreshCommentListDone(response) {
+    .then((response) => {
       // Update HTML
       let commentList = target.querySelector('.comment-list');
-      VuFind.setInnerHtml(commentList, '');
-      commentList.insertAdjacentHTML('beforeend', VuFind.updateCspNonce(response.data.html));
+      VuFind.setInnerHtml(commentList, VuFind.updateCspNonce(response.data.html));
       commentList.querySelectorAll('.delete')
         .forEach((deleteLink) => deleteLink.addEventListener('click', event => {
           event.preventDefault();
@@ -99,52 +97,56 @@ function refreshRecordRating(recordId, recordSource) {
     });
 }
 
+function postComment(event) {
+  event.preventDefault();
+  const form = event.target;
+  let id = form.id.value;
+  let recordSource = form.source.value;
+  let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'commentRecord' });
+  let data = {};
+  form.querySelectorAll('input,textarea').forEach((input) => {
+    if (input.type !== 'radio' || input.checked) {
+      data[input.name] = input.value;
+    }
+  });
+  fetch(url, {
+    method: 'POST',
+    headers: {'Accept': 'application/json'},
+    body: new URLSearchParams(data)
+  }).then((response) => {
+    if (!response.ok) {
+      return response.json();
+    }
+    return Promise.resolve();
+  })
+    .then((optionalError) => {
+      if (optionalError) {
+        VuFind.lightbox.alert(optionalError.data, 'danger');
+        return;
+      }
+      let tab = form.closest('.list-tab-content');
+      if (!tab) {
+        tab = form.closest('.tab-pane');
+      }
+      refreshCommentList(tab, id, recordSource);
+      refreshRecordRating(id, recordSource);
+      form.querySelector('textarea[name="comment"]').value = '';
+      if (form.dataset.ratingRemoval === "false" && Object.prototype.hasOwnProperty.call(data, 'rating') && '' !== data.rating) {
+        let link = form.querySelector('a[data-click-set-checked]');
+        if (link !== null) {
+          link.parentNode.removeChild(link);
+        }
+      }
+      resetCaptcha(form);
+    });
+}
+
 function registerAjaxCommentRecord(_context) {
   let context = typeof _context === "undefined" ? document : _context;
+
   // Form submission
   context.querySelectorAll('form.comment-form')
-    .forEach((form) => form.addEventListener('submit', event => {
-      event.preventDefault();
-      let id = form.id.value;
-      let recordSource = form.source.value;
-      let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'commentRecord' });
-      let data = {};
-      form.querySelectorAll('input,textarea').forEach((input) => {
-        if (input.type !== 'radio' || input.checked) {
-          data[input.name] = input.value;
-        }
-      });
-      fetch(url, {
-        method: 'POST',
-        headers: {'Accept': 'application/json'},
-        body: new URLSearchParams(data)
-      }).then((response) => {
-        if (!response.ok) {
-          return response.json();
-        }
-        return Promise.resolve();
-      })
-        .then((optionalError) => {
-          if (optionalError) {
-            VuFind.lightbox.alert(optionalError.data, 'danger');
-            return;
-          }
-          let tab = form.closest('.list-tab-content');
-          if (!tab) {
-            tab = form.closest('.tab-pane');
-          }
-          refreshCommentList(tab, id, recordSource);
-          refreshRecordRating(id, recordSource);
-          form.querySelector('textarea[name="comment"]').value = '';
-          if (form.dataset.ratingRemoval === "false" && Object.prototype.hasOwnProperty.call(data, 'rating') && '' !== data.rating) {
-            let link = form.querySelector('a[data-click-set-checked]');
-            if (link !== null) {
-              link.parentNode.removeChild(link);
-            }
-          }
-          resetCaptcha(form);
-        });
-    }));
+    .forEach((form) => form.addEventListener('submit', postComment));
 
   // Delete links
   context.querySelectorAll('.delete')
@@ -161,18 +163,21 @@ function registerAjaxCommentRecord(_context) {
 let ajaxLoadTab = function ajaxLoadTabForward() {
 };
 
+function handleAjaxTabLinkClick(event){
+  event.preventDefault();
+  const href = event.target.href;
+  const tabId = document.querySelector('.record-tabs .nav-tabs li.active').dataset.tab;
+  const tab = document.querySelector('.' + tabId + '-tab');
+  VuFind.setInnerHtml(tab, '<div role="tabpanel" class="tab-pane ' + tabId + '-tab">' + VuFind.loading() + '</div>');
+  ajaxLoadTab(tab, '', false, href);
+}
+
 function handleAjaxTabLinks() {
   // Form submission
-  document.querySelectorAll('a').forEach(function handleLink(a) {
+  document.querySelectorAll('a').forEach((a) => {
     let href = a.href;
     if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
-      a.addEventListener('click', event => {
-        event.preventDefault();
-        let tabId = document.querySelector('.record-tabs .nav-tabs li.active').dataset.tab;
-        let tab = document.querySelector('.' + tabId + '-tab');
-        VuFind.setInnerHtml(tab, '<div role="tabpanel" class="tab-pane ' + tabId + '-tab">' + VuFind.loading() + '</div>');
-        ajaxLoadTab(tab, '', false, href);
-      });
+      a.addEventListener('click', handleAjaxTabLinkClick);
     }
   });
 }
@@ -300,7 +305,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
       source: recordSource,
       remove: remove
     })
-  }).finally(function tagRecordAlways() {
+  }).finally(() => {
     refreshTagList(target, false);
   });
 }
@@ -308,8 +313,8 @@ function ajaxTagUpdate(_link, tag, _remove) {
 function getNewRecordTab(tabId) {
   let newRecordTab = document.createElement("div");
   newRecordTab.role = 'tabpanel';
-  newRecordTab.classList.add('tab-pane', escapeHtmlAttr(tabId) + '-tab');
-  newRecordTab.setAttribute('aria-labelledby', 'record-tab-' + escapeHtmlAttr(tabId));
+  newRecordTab.classList.add('tab-pane', tabId + '-tab');
+  newRecordTab.setAttribute('aria-labelledby', 'record-tab-' + tabId);
   VuFind.setInnerHtml(newRecordTab, VuFind.loading());
   return newRecordTab;
 }
@@ -363,7 +368,7 @@ function removeCheckRouteParam() {
 function recordDocReady() {
   removeCheckRouteParam();
   document.querySelectorAll('.record-tabs .nav-tabs a')
-    .forEach((tab) => tab.addEventListener('click', function recordTabsClick(event) {
+    .forEach((tab) => tab.addEventListener('click', (event) => {
       let li = tab.parentNode;
       // Don't change behavior of active tab.
       if (tab.classList.contains('active')) {
@@ -403,7 +408,7 @@ function recordDocReady() {
       }
     }));
 
-  document.querySelectorAll('[data-background]').forEach(function setupBackgroundTabs(el) {
+  document.querySelectorAll('[data-background]').forEach((el) => {
     backgroundLoadTab(el.dataset.tab);
   });
 

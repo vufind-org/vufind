@@ -788,21 +788,17 @@ function phoneNumberFormHandler(numID, regionCode) {
 
 // Setup captchas after Google script loads
 function recaptchaOnLoad(_context) {
-  let context = typeof _context === "undefined" ? document : _context;
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = context.querySelectorAll('.g-recaptcha:empty');
-    for (var i = 0; i < captchas.length; i++) {
-      var captchaElement = captchas[i];
-      var captchaData = captchaElement.dataset;
-      var captchaId = grecaptcha.render(captchaElement, captchaData);
-      captchaElement.dataset.captchaId = captchaId;
-    }
+    const context = typeof _context === "undefined" ? document : _context;
+    context.querySelectorAll('.g-recaptcha:empty').forEach((captchaElement) => {
+      captchaElement.dataset.captchaId = grecaptcha.render(captchaElement, captchaElement.dataset);
+    });
   }
 }
 
 function resetCaptcha(target) {
   if (typeof grecaptcha !== 'undefined') {
-    let captcha = target.querySelector('.g-recaptcha');
+    const captcha = target.querySelector('.g-recaptcha');
     if (captcha) {
       grecaptcha.reset(captcha.dataset.captchaId);
     }
