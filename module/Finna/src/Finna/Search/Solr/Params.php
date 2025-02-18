@@ -741,6 +741,13 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function setSort($sort, $force = false)
     {
+        // We used to include the tie breaker in all sort options, so strip it out before doing anything else so that
+        // any saved searches or links containing it still work properly and display the correct value:
+        if ($sort && ($tieBreaker = $this->getOptions()->getSortTieBreaker())) {
+            if (str_ends_with($sort, ",$tieBreaker")) {
+                $sort = substr($sort, 0, -strlen($tieBreaker) - 1);
+            }
+        }
         if (!$force) {
             // Check if we need to convert the sort to a currently valid option
             // (it must be a prefix of a currently valid option):
