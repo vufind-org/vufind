@@ -352,6 +352,19 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Should we use a global cache for FOLIO API tokens?
+     *
+     * @return bool
+     */
+    protected function useGlobalTokenCache(): bool
+    {
+        // If we're configured to store user-specific tokens, we can't use the global
+        // token cache.
+        $useUserToken = $this->config['User']['use_user_token'] ?? false;
+        return !$useUserToken && ($this->config['API']['global_token_cache'] ?? true);
+    }
+
+    /**
      * Initialize the driver.
      *
      * Check or renew our auth token
@@ -362,11 +375,19 @@ class Folio extends AbstractAPI implements
     {
         $factory = $this->sessionFactory;
         $this->sessionCache = $factory($this->tenant);
+        $cacheType = 'session';
+        if ($this->useGlobalTokenCache()) {
+            $globalTokenData = (array)($this->getCachedData('token') ?? []);
+            if (count($globalTokenData) === 2) {
+                $cacheType = 'global';
+                [$this->sessionCache->folio_token, $this->sessionCache->folio_token_expiration] = $globalTokenData;
+            }
+        }
         if ($this->sessionCache->folio_token ?? false) {
             $this->token = $this->sessionCache->folio_token;
             $this->tokenExpiration = $this->sessionCache->folio_token_expiration ?? null;
             $this->debug(
-                'Token taken from cache: ' . substr($this->token, 0, 30) . '...'
+                'Token taken from ' . $cacheType . ' cache: ' . substr($this->token, 0, 30) . '...'
             );
         }
         if ($this->token == null) {
@@ -1205,13 +1226,19 @@ class Folio extends AbstractAPI implements
         if ($this->useLegacyAuthentication()) {
             $this->token = $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
             $this->tokenExpiration = gmdate('D, d-M-Y H:i:s T', strtotime('now'));
+            $tokenCacheLifetime = 600; // cache old-fashioned tokens for 10 minutes
         } elseif ($cookie = $this->getCookieByName($response, 'folioAccessToken')) {
             $this->token = $cookie->getValue();
             $this->tokenExpiration = $cookie->getExpires();
+            // cache RTR tokens using their known lifetime:
+            $tokenCacheLifetime = strtotime($this->tokenExpiration) - strtotime('now');
         }
         if ($this->token != null && $this->tokenExpiration != null) {
             $this->sessionCache->folio_token = $this->token;
             $this->sessionCache->folio_token_expiration = $this->tokenExpiration;
+            if ($this->useGlobalTokenCache()) {
+                $this->putCachedData('token', [$this->token, $this->tokenExpiration], $tokenCacheLifetime);
+            }
         } else {
             throw new \Exception('Could not find token data in response');
         }
