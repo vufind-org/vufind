@@ -2161,11 +2161,13 @@ class Params
         if (null === $sort) {
             return [];
         }
-        return array_filter(
-            $this->getOptions()->getHiddenSortOptions(),
-            function ($option) use ($sort) {
-                return preg_match('/' . $option['pattern'] . '/', $sort);
-            }
+        return array_values(
+            array_filter(
+                $this->getOptions()->getHiddenSortOptions(),
+                function ($option) use ($sort) {
+                    return preg_match('/' . $option['pattern'] . '/', $sort);
+                }
+            )
         );
     }
 }

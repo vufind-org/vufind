@@ -217,7 +217,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ],
             'HiddenSorting' => [
                 'pattern' => [
-                    '[Tt]est',
+                    '[Ff]irst',
+                    '[Ss]econd',
                 ],
             ],
         ];
@@ -228,7 +229,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ],
             'HiddenSorting' => [
                 'pattern' => [
-                    'TEST' => '[Tt]est',
+                    'FIRST' => '[Ff]irst',
+                    'SECOND' => '[Ss]econd',
                 ],
             ],
         ];
@@ -239,10 +241,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ],
             'HiddenSorting' => [
                 'pattern' => [
-                    '[Tt]est',
+                    '[Ff]irst',
+                    '[Ss]econd',
                 ],
                 'label' => [
-                    'TEST',
+                    'FIRST',
+                    'SECOND',
                 ],
             ],
         ];
@@ -296,9 +300,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            'hidden' => [
+            'first hidden' => [
                 $searchConfig,
-                'footestbar',
+                'testfirst',
                 [
                     'relevance' => [
                         'desc' => 'Relevance',
@@ -310,40 +314,93 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'selected' => false,
                         'default' => false,
                     ],
-                    'footestbar' => [
+                    'testfirst' => [
                         'desc' => 'unrecognized_sort_option',
                         'selected' => true,
                         'default' => false,
                     ],
                 ],
             ],
-            'hidden with label in key' => [
-                $searchConfigKeyLabel,
-                'footestbar',
+            'second hidden' => [
+                $searchConfig,
+                'testsecond',
                 [
                     'relevance' => [
                         'desc' => 'Relevance',
                         'selected' => false,
                         'default' => true,
                     ],
-                    'footestbar' => [
-                        'desc' => 'TEST',
+                    'title' => [
+                        'desc' => 'Title',
+                        'selected' => false,
+                        'default' => false,
+                    ],
+                    'testsecond' => [
+                        'desc' => 'unrecognized_sort_option',
                         'selected' => true,
                         'default' => false,
                     ],
                 ],
             ],
-            'hidden with label in separate array' => [
-                $searchConfigLabel,
-                'footestbar',
+            'first hidden with label in key' => [
+                $searchConfigKeyLabel,
+                'testfirst',
                 [
                     'relevance' => [
                         'desc' => 'Relevance',
                         'selected' => false,
                         'default' => true,
                     ],
-                    'footestbar' => [
-                        'desc' => 'TEST',
+                    'testfirst' => [
+                        'desc' => 'FIRST',
+                        'selected' => true,
+                        'default' => false,
+                    ],
+                ],
+            ],
+            'second hidden with label in key' => [
+                $searchConfigKeyLabel,
+                'testsecond',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => false,
+                        'default' => true,
+                    ],
+                    'testsecond' => [
+                        'desc' => 'SECOND',
+                        'selected' => true,
+                        'default' => false,
+                    ],
+                ],
+            ],
+            'first hidden with label in separate array' => [
+                $searchConfigLabel,
+                'firsttest',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => false,
+                        'default' => true,
+                    ],
+                    'firsttest' => [
+                        'desc' => 'FIRST',
+                        'selected' => true,
+                        'default' => false,
+                    ],
+                ],
+            ],
+            'second hidden with label in separate array' => [
+                $searchConfigLabel,
+                'secondtest',
+                [
+                    'relevance' => [
+                        'desc' => 'Relevance',
+                        'selected' => false,
+                        'default' => true,
+                    ],
+                    'secondtest' => [
+                        'desc' => 'SECOND',
                         'selected' => true,
                         'default' => false,
                     ],
