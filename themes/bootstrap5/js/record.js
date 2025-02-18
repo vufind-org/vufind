@@ -222,7 +222,7 @@ function removeHashFromLocation() {
 ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
   // Request the tab via AJAX:
   let url = '';
-  // Needs to be passed to a const or it might be change in the fetch.then block
+  // Needs to be passed to a const or it might be changed in the fetch.then block
   const setHash = _setHash;
   let postData = {};
   // If tabUrl is defined, it overrides base URL and tabId
