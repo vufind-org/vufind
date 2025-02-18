@@ -5,11 +5,11 @@
  * Functions and event handlers specific to record pages.
  */
 function checkRequestIsValid(element, requestType, icon = 'place-hold') {
-  let recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
-  let vars = deparam(element.href);
+  const recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
+  const vars = deparam(element.href);
   vars.id = recordId;
 
-  let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
+  const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
     method: 'checkRequestIsValid',
     id: recordId,
     requestType: requestType,
@@ -34,7 +34,7 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
 }
 
 function setUpCheckRequest(_context) {
-  let context = typeof _context === "undefined" ? document : _context;
+  const context = typeof _context === "undefined" ? document : _context;
   context.querySelectorAll('.checkRequest').forEach(
     (element) => checkRequestIsValid(element, 'Hold', 'place-hold')
   );
@@ -47,17 +47,17 @@ function setUpCheckRequest(_context) {
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'deleteRecordComment', id: commentId });
+  const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'deleteRecordComment', id: commentId });
   fetch(url, {
     headers: {'Accept': 'application/json'}
   }).then(() => {
-    let comment = element.closest('.comment');
+    const comment = element.closest('.comment');
     comment.parentNode.removeChild(comment);
   });
 }
 
 function refreshCommentList(target, recordId, recordSource) {
-  let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
+  const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
     method: 'getRecordCommentsAsHTML',
     id: recordId,
     source: recordSource
@@ -67,12 +67,12 @@ function refreshCommentList(target, recordId, recordSource) {
   }).then(response => response.json())
     .then((response) => {
       // Update HTML
-      let commentList = target.querySelector('.comment-list');
+      const commentList = target.querySelector('.comment-list');
       VuFind.setInnerHtml(commentList, VuFind.updateCspNonce(response.data.html));
       commentList.querySelectorAll('.delete')
         .forEach((deleteLink) => deleteLink.addEventListener('click', event => {
           event.preventDefault();
-          let commentId = deleteLink.id.substring('recordComment'.length);
+          const commentId = deleteLink.id.substring('recordComment'.length);
           deleteRecordComment(deleteLink, recordId, recordSource, commentId);
         }));
       resetCaptcha(target);
@@ -80,7 +80,7 @@ function refreshCommentList(target, recordId, recordSource) {
 }
 
 function refreshRecordRating(recordId, recordSource) {
-  let rating = document.querySelector('.media-left .rating');
+  const rating = document.querySelector('.media-left .rating');
   if (!rating) {
     return;
   }
@@ -100,10 +100,10 @@ function refreshRecordRating(recordId, recordSource) {
 function postComment(event) {
   event.preventDefault();
   const form = event.target;
-  let id = form.id.value;
-  let recordSource = form.source.value;
-  let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'commentRecord' });
-  let data = {};
+  const id = form.id.value;
+  const recordSource = form.source.value;
+  const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'commentRecord' });
+  const data = {};
   form.querySelectorAll('input,textarea').forEach((input) => {
     if (input.type !== 'radio' || input.checked) {
       data[input.name] = input.value;
@@ -132,7 +132,7 @@ function postComment(event) {
       refreshRecordRating(id, recordSource);
       form.querySelector('textarea[name="comment"]').value = '';
       if (form.dataset.ratingRemoval === "false" && Object.prototype.hasOwnProperty.call(data, 'rating') && '' !== data.rating) {
-        let link = form.querySelector('a[data-click-set-checked]');
+        const link = form.querySelector('a[data-click-set-checked]');
         if (link !== null) {
           link.parentNode.removeChild(link);
         }
@@ -142,7 +142,7 @@ function postComment(event) {
 }
 
 function registerAjaxCommentRecord(_context) {
-  let context = typeof _context === "undefined" ? document : _context;
+  const context = typeof _context === "undefined" ? document : _context;
 
   // Form submission
   context.querySelectorAll('form.comment-form')
@@ -152,9 +152,9 @@ function registerAjaxCommentRecord(_context) {
   context.querySelectorAll('.delete')
     .forEach((deleteLink) => deleteLink.addEventListener('click', event => {
       event.preventDefault();
-      let commentId = deleteLink.id.substring('recordComment'.length);
-      let id = document.querySelector('.hiddenId').value;
-      let source = document.querySelector('.hiddenSource').value;
+      const commentId = deleteLink.id.substring('recordComment'.length);
+      const id = document.querySelector('.hiddenId').value;
+      const source = document.querySelector('.hiddenSource').value;
       deleteRecordComment(deleteLink, id, source, commentId);
     }));
 }
@@ -175,7 +175,7 @@ function handleAjaxTabLinkClick(event){
 function handleAjaxTabLinks() {
   // Form submission
   document.querySelectorAll('a').forEach((a) => {
-    let href = a.href;
+    const href = a.href;
     if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
       a.addEventListener('click', handleAjaxTabLinkClick);
     }
@@ -183,7 +183,7 @@ function handleAjaxTabLinks() {
 }
 
 function registerTabEvents(params) {
-  let container = params.container;
+  const container = params.container;
 
   // Logged in AJAX
   registerAjaxCommentRecord(container);
@@ -198,12 +198,12 @@ VuFind.listen('record-tab-init', registerTabEvents);
 
 // Update print button to correct tab prints
 function setPrintBtnHash(hash) {
-  let printBtn = document.querySelector(".print-record");
+  const printBtn = document.querySelector(".print-record");
   if (!printBtn) {
     return;
   }
-  let printHref = printBtn.getAttribute("href");
-  let printURL = new URL(printHref, window.location.origin);
+  const printHref = printBtn.href;
+  const printURL = new URL(printHref, window.location.origin);
   printURL.hash = hash === null ? "" : hash;
   printBtn.setAttribute("href", printURL.href);
 }
@@ -215,7 +215,7 @@ function addTabToURL(tabId) {
 
 function removeHashFromLocation() {
   if (window.history.replaceState) {
-    let href = window.location.href.split('#');
+    const href = window.location.href.split('#');
     window.history.replaceState({}, document.title, href[0]);
   } else {
     window.location.hash = '#';
@@ -229,7 +229,7 @@ ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
   let url = '';
   // Needs to be passed to a const or it might be change in the fetch.then block
   const setHash = _setHash;
-  let postData = {};
+  const postData = {};
   // If tabUrl is defined, it overrides base URL and tabId
   if (typeof tabUrl !== 'undefined') {
     url = tabUrl;
@@ -262,11 +262,11 @@ ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
 };
 
 function refreshTagList(_target, _loggedin) {
-  let loggedin = !!_loggedin || userIsLoggedIn;
-  let target = _target || document;
-  let recordId = target.querySelector('.hiddenId').value;
-  let recordSource = target.querySelector('.hiddenSource').value;
-  let tagList = target.querySelector('.tagList');
+  const loggedin = !!_loggedin || userIsLoggedIn;
+  const target = _target || document;
+  const recordId = target.querySelector('.hiddenId').value;
+  const recordSource = target.querySelector('.hiddenSource').value;
+  const tagList = target.querySelector('.tagList');
   if (tagList) {
     let url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
       method: 'getRecordTags',
@@ -291,11 +291,11 @@ function refreshTagListCallback() {
 }
 
 function ajaxTagUpdate(_link, tag, _remove) {
-  let link = _link || document;
-  let remove = _remove || false;
-  let target = link.closest('.record');
-  let recordId = target.querySelector('.hiddenId').value;
-  let recordSource = target.querySelector('.hiddenSource').value;
+  const link = _link || document;
+  const remove = _remove || false;
+  const target = link.closest('.record');
+  const recordId = target.querySelector('.hiddenId').value;
+  const recordSource = target.querySelector('.hiddenSource').value;
   fetch(VuFind.path + '/AJAX/JSON?method=tagRecord', {
     method: 'POST',
     headers: {'Accept': 'application/json'},
@@ -311,7 +311,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 }
 
 function getNewRecordTab(tabId) {
-  let newRecordTab = document.createElement("div");
+  const newRecordTab = document.createElement("div");
   newRecordTab.role = 'tabpanel';
   newRecordTab.classList.add('tab-pane', tabId + '-tab');
   newRecordTab.setAttribute('aria-labelledby', 'record-tab-' + tabId);
@@ -323,7 +323,7 @@ function backgroundLoadTab(tabId) {
   if (document.querySelector('.' + tabId + '-tab')) {
     return;
   }
-  let newTab = getNewRecordTab(tabId);
+  const newTab = getNewRecordTab(tabId);
   document.querySelector('[data-tab="' + tabId + '"]')
     .closest('.result,.record')
     .querySelector('.tab-content')
@@ -332,16 +332,16 @@ function backgroundLoadTab(tabId) {
 }
 
 function applyRecordTabHash(scrollToTabs) {
-  let activeLi = document.querySelector('.record-tabs li.active');
-  let activeTab = activeLi ? activeLi.dataset.tab : undefined;
-  let initiallyActiveTab = document.querySelector('.record-tabs li.initiallyActive a');
-  let newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase() : '';
+  const activeLi = document.querySelector('.record-tabs li.active');
+  const activeTab = activeLi ? activeLi.dataset.tab : undefined;
+  const initiallyActiveTab = document.querySelector('.record-tabs li.initiallyActive a');
+  const newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase() : '';
 
   // Open tab in url hash
   if (newTab.length <= 1 || newTab === '#tabnav') {
     initiallyActiveTab.dispatchEvent(new Event('click'));
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    let tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
+    const tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
     if (tabLink) {
       tabLink.dispatchEvent(new Event('click'));
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
@@ -358,7 +358,7 @@ window.addEventListener('hashchange', applyRecordTabHash);
 
 function removeCheckRouteParam() {
   if (window.location.search.indexOf('checkRoute=1') >= 0) {
-    let newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
+    const newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
     if (window.history && window.history.replaceState) {
       window.history.replaceState({}, '', newHref);
     }
@@ -369,13 +369,13 @@ function recordDocReady() {
   removeCheckRouteParam();
   document.querySelectorAll('.record-tabs .nav-tabs a')
     .forEach((tab) => tab.addEventListener('click', (event) => {
-      let li = tab.parentNode;
+      const li = tab.parentNode;
       // Don't change behavior of active tab.
       if (tab.classList.contains('active')) {
         return;
       }
-      let tabId = li.dataset.tab;
-      let top = tab.closest('.record-tabs');
+      const tabId = li.dataset.tab;
+      const top = tab.closest('.record-tabs');
       // if we're flagged to skip AJAX for this tab, we need special behavior:
       if (li.classList.contains('noajax')) {
         // if this was the initially active tab, we have moved away from it and
@@ -401,7 +401,7 @@ function recordDocReady() {
           addTabToURL(tabId);
         }
       } else {
-        let newTab = getNewRecordTab(tabId);
+        const newTab = getNewRecordTab(tabId);
         newTab.classList.add('active');
         top.querySelector('.tab-content').append(newTab);
         ajaxLoadTab(newTab, tabId, !li.classList.contains('initiallyActive'));
