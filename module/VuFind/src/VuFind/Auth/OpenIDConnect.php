@@ -284,7 +284,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'home_library',
         ];
         $userService = $this->getUserService();
-        $user = $this->getOrCreateUserByUsername($userInfo->sub);
+        $user = $this->getOrCreateUserByUsername(($this->getConfig('username_prefix') ?? '') . $userInfo->sub);
         $attrMappings = array_filter(
             $this->getAttributesMappings(),
             function ($key) use ($availableAttributes) {
