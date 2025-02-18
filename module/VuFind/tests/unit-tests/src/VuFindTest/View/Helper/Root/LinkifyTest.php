@@ -54,6 +54,13 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
     protected $urlHighlight;
 
     /**
+     * Mock URL highlighter except email
+     *
+     * @var UrlHighlight&MockObject
+     */
+    protected $urlHighlightExceptEmail;
+
+    /**
      * Linkify helper being tested
      *
      * @var Linkify
@@ -68,7 +75,8 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $this->urlHighlight = $this->createMock(UrlHighlight::class);
-        $this->linkify = new Linkify($this->urlHighlight);
+        $this->urlHighlightExceptEmail = $this->createMock(UrlHighlight::class);
+        $this->linkify = new Linkify($this->urlHighlight, $this->urlHighlightExceptEmail);
     }
 
     /**
@@ -84,7 +92,16 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('input text'))
             ->willReturn('Text with highlighted urls');
 
+        $this->urlHighlightExceptEmail
+            ->expects($this->once())
+            ->method('highlightUrls')
+            ->with($this->equalTo('input text'))
+            ->willReturn('Text with highlighted urls except emails');
+
         $actual = ($this->linkify)('input text');
         $this->assertSame('Text with highlighted urls', $actual);
+
+        $actual = ($this->linkify)('input text', false);
+        $this->assertSame('Text with highlighted urls except emails', $actual);
     }
 }
