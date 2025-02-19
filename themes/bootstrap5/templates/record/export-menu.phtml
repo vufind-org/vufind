@@ -14,7 +14,7 @@
   <ul>
   <?php foreach ($exportFormats as $exportFormat): ?>
     <li>
-      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export'))?>?style=<?=$this->escapeHtml($exportFormat)?>" rel="nofollow">
+      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', ['style' => $exportFormat], '', ['excludeSearchId' => true]))?>" rel="nofollow">
         <?=$this->transEsc('export_to', ['%%target%%' => $this->translate($this->export()->getLabelForFormat($exportFormat))])?>
       </a>
     </li>

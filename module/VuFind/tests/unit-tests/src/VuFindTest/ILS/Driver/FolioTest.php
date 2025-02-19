@@ -236,6 +236,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     public function testCheckInvalidToken(): void
     {
         $this->createConnector('check-invalid-token');
+        // Update the token expiration date to make it invalid
+        $this->setProperty($this->driver, 'tokenExpiration', null);
         $this->driver->getPickupLocations(['username' => 'whatever']);
     }
 
@@ -932,6 +934,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1012,6 +1016,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1058,6 +1064,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1102,6 +1110,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1148,6 +1158,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
                 1 => [
                     'callnumber_prefix' => '',
@@ -1173,6 +1185,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],

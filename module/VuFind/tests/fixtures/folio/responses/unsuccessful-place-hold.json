@@ -1,6 +1,4 @@
 [
-    { "comment": "Initial request for token"
-    },
     {
         "expectedMethod": "GET",
         "expectedPath": "\/instance-storage\/instances",

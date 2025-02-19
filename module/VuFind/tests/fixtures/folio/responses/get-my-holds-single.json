@@ -1,8 +1,5 @@
 [
   {
-    "comment": "Initial token check"
-  },
-  {
     "expectedPath": "/request-storage/requests",
     "expectedParams": {
       "query": "((requesterId == \"foo\" or proxyUserId == \"foo\") and status == Open*)",
