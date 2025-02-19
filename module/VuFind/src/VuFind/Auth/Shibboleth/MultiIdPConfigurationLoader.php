@@ -48,12 +48,12 @@ class MultiIdPConfigurationLoader implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config     Configuration
-     * @param \Laminas\Config\Config $shibConfig Shibboleth configuration for IdPs
+     * @param \VuFind\Config\Config $config     Configuration
+     * @param \VuFind\Config\Config $shibConfig Shibboleth configuration for IdPs
      */
     public function __construct(
-        \Laminas\Config\Config $config,
-        \Laminas\Config\Config $shibConfig
+        \VuFind\Config\Config $config,
+        \VuFind\Config\Config $shibConfig
     ) {
         $this->config = $config->toArray();
         $this->shibConfig = $shibConfig->toArray();

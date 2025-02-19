@@ -29,8 +29,8 @@
 
 namespace VuFind\Search\Factory;
 
-use Laminas\Config\Config;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
@@ -198,7 +198,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
         $this->config = $this->getService(\VuFind\Config\PluginManager::class);

@@ -1255,10 +1255,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public static function checkboxFacetsProvider(): array
     {
         return [
-            [false, false],
-            [false, true],
-            [true, false],
-            [true, true],
+            'non-deferred, no counts' => [false, false],
+            'non-deferred, with counts' => [false, true],
+            'deferred, no counts' => [true, false],
+            'deferred, with counts' => [true, true],
         ];
     }
 
@@ -1300,7 +1300,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $filter = $this->findCss($page, '.checkbox-filter');
         $this->assertNotNull($filter);
         $this->assertEquals('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
-        $this->assertEquals($counts ? '9' : '', $this->findCssAndGetText($filter->getParent(), '.avail-count'));
+        $this->assertEqualsWithTimeout(
+            $counts ? '9' : '',
+            function () use ($filter) {
+                return $this->findCssAndGetText($filter->getParent(), '.avail-count');
+            }
+        );
 
         // illustrated:Illustrated is only a checkbox facet:
         $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);
@@ -1446,5 +1451,97 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $reset = $page->findAll('css', '.reset-filters-btn');
         $this->assertCount(0, $reset);
+    }
+
+    /**
+     * Data provider for testMultiSelectOnAdvancedSearch()
+     *
+     * @return array[]
+     */
+    public static function multiSelectOnAdvancedSearchProvider(): array
+    {
+        return [
+            'with language switch / with checkbox' => [true, true],
+            'without language switch / with checkbox' => [false, true],
+            'with language switch / without checkbox' => [true, false],
+            'without language switch / without checkbox' => [false, false],
+        ];
+    }
+
+    /**
+     * Test applying multi-facet selection to advanced search results, with or without changing the
+     * language setting first and/or including a pre-existing checkbox filter.
+     *
+     * @param bool $changeLanguage  Should we change the language before applying the facets?
+     * @param bool $includeCheckbox Should we apply a checkbox prior to multi-selection?
+     *
+     * @dataProvider multiSelectOnAdvancedSearchProvider
+     *
+     * @return void
+     */
+    public function testMultiSelectOnAdvancedSearch(bool $changeLanguage, bool $includeCheckbox): void
+    {
+        $facets = [
+            'Results_Settings' => [
+                'multiFacetsSelection' => true,
+            ],
+        ];
+        if ($includeCheckbox) {
+            // Create a pointless checkbox filter that will not impact the result set size
+            // (we're just testing that it applies to the URL correctly):
+            $facets['CheckboxFacets']['title:*'] = 'Has Title';
+        }
+        $this->changeConfigs(compact('facets'));
+        $path = '/Search/Advanced';
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . $path);
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'test');
+        $this->findCssAndSetValue($page, '#search_lookfor0_1', 'history');
+        $this->findCss($page, '[type=submit]')->press();
+
+        if ($includeCheckbox) {
+            $link = $this->findAndAssertLink($page, 'Has Title');
+            $link->click();
+            $this->waitForPageLoad($page);
+        }
+
+        if ($changeLanguage) {
+            $this->flipflopLanguage($page);
+        }
+
+        // Activate the first two facet values (and the checkbox filter, if requested):
+        $this->clickCss($page, '.js-user-selection-multi-filters');
+        $this->clickCss($page, '.facet__list__item a');
+        $this->clickCss($page, '.facet__list__item a', index: 1);
+        $this->clickCss($page, '.js-apply-multi-facets-selection');
+
+        // A past bug would cause search terms to get duplicated after facets
+        // were applied; make sure the search remains as expected!
+        $this->assertEquals(
+            '(All Fields:test AND All Fields:history)',
+            $this->findCssAndGetText($page, '.adv_search_terms strong')
+        );
+
+        // Make sure we have the expected number of filters applied on screen and in the URL query:
+        $appliedFacetCount = $includeCheckbox ? 3 : 2;
+        $this->assertCount($appliedFacetCount, $page->findAll('css', '.facet.active'));
+        $query = parse_url($session->getCurrentUrl(), PHP_URL_QUERY);
+        parse_str($query, $queryArray);
+        $this->assertCount($appliedFacetCount, $queryArray['filter']);
+
+        // If configured, flip-flop language again to potentially modify filter params:
+        if ($changeLanguage) {
+            $this->flipflopLanguage($page);
+        }
+
+        // Let's also confirm that we can now remove the filters:
+        $this->clickCss($page, '.js-user-selection-multi-filters');
+        for ($i = 0; $i < $appliedFacetCount; $i++) {
+            $this->clickCss($page, '.facet.active');
+        }
+        $this->clickCss($page, '.js-apply-multi-facets-selection');
+        $this->assertCount(0, $page->findAll('css', '.facet.active'));
     }
 }

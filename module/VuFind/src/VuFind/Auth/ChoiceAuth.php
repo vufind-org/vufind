@@ -120,7 +120,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @throws AuthException
      * @return void
@@ -312,7 +312,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getUsernamePolicy()
     {
-        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args());
+        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args()) ?: [];
     }
 
     /**
@@ -322,7 +322,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getPasswordPolicy()
     {
-        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
+        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args()) ?: [];
     }
 
     /**

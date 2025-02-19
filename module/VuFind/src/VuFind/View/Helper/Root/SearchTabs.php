@@ -86,6 +86,13 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
     protected $cachedHiddenFilterParams = [];
 
     /**
+     * Should we force getCurrentHiddenFilterParams() to return an empty string?
+     *
+     * @var bool
+     */
+    protected $currentHiddenFilterParamsDisabled = false;
+
+    /**
      * Constructor
      *
      * @param PluginManager    $results Search results plugin manager
@@ -229,6 +236,9 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         $ignoreHiddenFilterMemory = false,
         $prepend = '&amp;'
     ) {
+        if ($this->currentHiddenFilterParamsDisabled) {
+            return '';
+        }
         if (!isset($this->cachedHiddenFilterParams[$searchClassId])) {
             $view = $this->getView();
             $hiddenFilters = $this->getHiddenFilters(
@@ -370,5 +380,16 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             );
         }
         return '';
+    }
+
+    /**
+     * Force getCurrentHiddenFilterParams() to return an empty string (used in contexts like
+     * New Items where we don't want to persist hidden filters through links).
+     *
+     * @return void
+     */
+    public function disableCurrentHiddenFilterParams(): void
+    {
+        $this->currentHiddenFilterParamsDisabled = true;
     }
 }

@@ -11,7 +11,7 @@
       <?=$this->icon($this->icon, 'icon-link__icon') ?>
     <?php endif; ?>
     <span class="icon-link__label"><?=$this->transEsc($this->label)?></span>
-    <?php if ($this->status ?? false): ?>
+    <?php if (($this->status ?? false) && $this->auth()->getManager()->ajaxEnabled()): ?>
       <span class="<?=strtolower($this->name)?>-status status hidden"><?=$this->icon('spinner') ?></span>
     <?php endif; ?>
   </a>

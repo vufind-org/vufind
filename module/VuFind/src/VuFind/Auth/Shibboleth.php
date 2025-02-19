@@ -120,7 +120,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     /**
      * Set configuration.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @return void
      */

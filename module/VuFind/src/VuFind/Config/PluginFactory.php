@@ -29,10 +29,8 @@
 
 namespace VuFind\Config;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Feature\IniReaderTrait;
 
 use function count;
 use function in_array;
@@ -49,8 +47,6 @@ use function is_array;
  */
 class PluginFactory implements AbstractFactoryInterface
 {
-    use IniReaderTrait;
-
     /**
      * Load the specified configuration file.
      *
@@ -70,7 +66,7 @@ class PluginFactory implements AbstractFactoryInterface
         // Retrieve and parse at least one configuration file, and possibly a whole
         // chain of them if the Parent_Config setting is used:
         do {
-            $configs[] = $this->getIniReader()->fromFile($filename);
+            $configs[] = parse_ini_file($filename, true);
 
             $i = count($configs) - 1;
             if (isset($configs[$i]['Parent_Config']['path'])) {
@@ -121,7 +117,7 @@ class PluginFactory implements AbstractFactoryInterface
                 } else {
                     foreach (array_keys($contents) as $key) {
                         // If a key is defined as key[] in the config file the key
-                        // remains a Laminas\Config\Config object. If the current
+                        // remains a VuFind\Config\Config object. If the current
                         // section is not configured as an override section we try to
                         // merge the key[] values instead of overwriting them.
                         if (
@@ -174,7 +170,7 @@ class PluginFactory implements AbstractFactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $pathResolver = $container->get(PathResolver::class);
         return $this->loadConfigFile(

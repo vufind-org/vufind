@@ -62,26 +62,12 @@
 }
 
 // Comma-separate formatting
+.record .format { display: inline-flex; }
 .record .format::after { content: ", "; }
 .record .format.badge::after,
 .record .result-formats .format::after,
 .record .format:last-child::after { content: ""; }
 .record-previews { margin-top: .5rem; }
-
-/* ------ Nav ------ */
-.record-nav.nav { margin-bottom: 1rem; }
-.record-nav > li,
-.btn-bookbag-toggle { width: 100%; }
-.record-nav > li > a { padding: .5rem; }
-.record-nav > li > a,
-.btn-bookbag-toggle { text-align: center; }
-@media(min-width: 768px) {
-  .record-nav > li,
-  .btn-bookbag-toggle { width: auto; }
-  .record-nav > li > a { padding: $nav-link-padding; }
-  .record-nav > li > a,
-  .btn-bookbag-toggle { text-align: left; }
-}
 
 /* ------ Comments ------ */
 .comment-label,
@@ -313,8 +299,10 @@
     margin-right: -0.6em;
     z-index: 2;
 
+    /* Display only half of the star and ensure that the remainder cannot be hovered over */
     .rating__icon--star {
       width: 0.5rem;
+      overflow: hidden;
     }
   }
 

@@ -65,7 +65,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ): HandlerInterface {
         /**
          * The wrapped session handler.

@@ -163,12 +163,60 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     return value.substring(0, p) + ':' + filterValue;
   }
 
-  for (const [key, value] of (new URLSearchParams(window.location.search))) {
-    initialParams.append(key, normalizeValue(key, value));
+  /**
+   * Normalize a single query key from a search
+   *
+   * @param {string} key Key name
+   *
+   * @returns string
+   */
+  function normalizeSearchQueryKey(key) {
+    // We normally use open-ended brackets to signify array-based query parameters.
+    // However, some server-side processing can occasionally inject explicit index
+    // values. We want to normalize out the index values for consistency.
+    return key.replace(/(.+)\[\d+\]/, '$1[]');
   }
 
-  // Update query params for every date range selector
+  /**
+   * Append a normalized value to a normalized key in a set of parameters
+   *
+   * @param {URLSearchParams} params Parameters to update
+   * @param {string}          key    Key name
+   * @param {string}          value  Value to set
+   */
+  function appendNormalizedValue(params, key, value) {
+    const normalizedKey = normalizeSearchQueryKey(key);
+    params.append(normalizedKey, normalizeValue(normalizedKey, value));
+  }
+
+  /**
+   * Normalize keys and values in a set of search parameters
+   *
+   * @param {URLSearchParams} params Parameters to normalize
+   *
+   * @returns URLSearchParams
+   */
+  function normalizeSearchQueryKeysAndValues(params) {
+    const normalized = new URLSearchParams();
+    for (const [key, value] of params) {
+      appendNormalizedValue(normalized, key, value);
+    }
+    return normalized;
+  }
+
+  for (const [key, value] of (new URLSearchParams(window.location.search))) {
+    appendNormalizedValue(initialParams, key, value);
+  }
+
+  /**
+   * Update query params for every date range selector
+   *
+   * @param {URLSearchParams} queryParams
+   *
+   * @returns {URLSearchParams}
+   */
   function processRangeSelector(queryParams) {
+    let newParams = new URLSearchParams(queryParams.toString());
     for (const form of rangeSelectorForms) {
       const rangeName = form.dataset.name;
       const rangeFilterField = form.dataset.filterField;
@@ -184,24 +232,25 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       if (valuesExist) {
         // Update query params:
         for (const input of dateInputs) {
-          queryParams.set(input.name, input.value);
+          newParams.set(input.name, input.value);
         }
-        queryParams.set(rangeFilterField, rangeName);
+        newParams.set(rangeFilterField, rangeName);
       } else {
         // Delete from query params:
         for (const input of dateInputs) {
-          queryParams.delete(input.name);
+          newParams.delete(input.name);
         }
-        queryParams.delete(rangeFilterField, rangeName);
+        newParams = VuFind.deleteKeyValueFromURLSearchParams(newParams, rangeFilterField, rangeName);
       }
       // Remove any filter[]=rangeName:... from query params:
       const paramStart = rangeName + ':';
-      for (const value of queryParams.getAll('filter[]')) {
+      for (const value of newParams.getAll('filter[]')) {
         if (value.startsWith(paramStart)) {
-          queryParams.delete('filter[]', value);
+          newParams = VuFind.deleteKeyValueFromURLSearchParams(newParams, 'filter[]', value);
         }
       }
     }
+    return newParams;
   }
 
   // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
@@ -211,18 +260,19 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     for (const elem of elems) {
       const href = elem.getAttribute('href');
       const p = href.indexOf('?');
-      const elemParams = new URLSearchParams(p >= 0 ? href.substring(p + 1) : '');
+      const elemParams = normalizeSearchQueryKeysAndValues(new URLSearchParams(p >= 0 ? href.substring(p + 1) : ''));
 
       // Add parameters that did not initially exist:
       for (const [key, value] of elemParams) {
-        if (!initialParams.has(key, value)) {
-          globalAddedParams.append(key, value);
+        // URLSearchParams.has(key, value) seems to be broken on iOS 16, so check with our own method:
+        if (!VuFind.inURLSearchParams(initialParams, key, value)) {
+          appendNormalizedValue(globalAddedParams, key, value);
         }
       }
       // Remove parameters that this URL no longer has:
       for (const [key, value] of initialParams) {
-        if (!elemParams.has(key, value)) {
-          globalRemovedParams.append(key, value);
+        if (!VuFind.inURLSearchParams(elemParams, key, value)) {
+          appendNormalizedValue(globalRemovedParams, key, value);
         }
       }
     }
@@ -232,19 +282,16 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   function getHrefWithNewParams() {
     processModifiedFacets();
 
-    const newParams = new URLSearchParams(initialParams);
-    // Remove parameters:
-    for (const [key, value] of globalRemovedParams) {
-      newParams.delete(key, value);
-    }
+    // Create params without the removed parameters:
+    const newParams = VuFind.deleteParamsFromURLSearchParams(initialParams, globalRemovedParams);
+    // Add newly added parameters:
     for (const [key, value] of globalAddedParams) {
       newParams.append(key, value);
     }
-    processRangeSelector(newParams);
 
     // Take base url from data attribute if present (standalone full facet list):
     const baseUrl = defaultContext.dataset.searchUrl || window.location.pathname;
-    return baseUrl + '?' + newParams.toString();
+    return baseUrl + '?' + processRangeSelector(newParams).toString();
   }
 
   function applyMultiFacetsSelection() {

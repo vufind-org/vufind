@@ -66,7 +66,7 @@ class Unpaywall implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config DOI section of main VuFind config
+     * @param \VuFind\Config\Config $config DOI section of main VuFind config
      *
      * @throws \Exception
      */

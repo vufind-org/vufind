@@ -125,7 +125,7 @@ class Backend extends AbstractBackend implements
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -133,7 +133,7 @@ class Backend extends AbstractBackend implements
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         if ($query instanceof WorkKeysQuery) {
             return $this->workKeysSearch($query, $offset, $limit, $params);
@@ -159,7 +159,7 @@ class Backend extends AbstractBackend implements
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -198,7 +198,7 @@ class Backend extends AbstractBackend implements
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -206,7 +206,7 @@ class Backend extends AbstractBackend implements
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -232,14 +232,14 @@ class Backend extends AbstractBackend implements
      *
      * @param AbstractQuery $query  Search query
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
     public function random(
         AbstractQuery $query,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -254,12 +254,12 @@ class Backend extends AbstractBackend implements
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -273,12 +273,12 @@ class Backend extends AbstractBackend implements
     /**
      * Retrieve a batch of documents.
      *
-     * @param array    $ids    Array of document identifiers
-     * @param ParamBag $params Search backend parameters
+     * @param array     $ids    Array of document identifiers
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieveBatch($ids, ParamBag $params = null)
+    public function retrieveBatch($ids, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
 
@@ -314,12 +314,12 @@ class Backend extends AbstractBackend implements
     /**
      * Return similar records.
      *
-     * @param string   $id     Id of record to compare with
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Id of record to compare with
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function similar($id, ParamBag $params = null)
+    public function similar($id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -434,7 +434,7 @@ class Backend extends AbstractBackend implements
      */
     public function writeDocument(
         DocumentInterface $doc,
-        int $timeout = null,
+        ?int $timeout = null,
         string $handler = 'update',
         ?ParamBag $params = null
     ) {
@@ -635,7 +635,7 @@ class Backend extends AbstractBackend implements
      * @param WorkKeysQuery $query         Search query
      * @param int           $offset        Search offset
      * @param int           $limit         Search limit
-     * @param ParamBag      $defaultParams Search backend parameters
+     * @param ?ParamBag     $defaultParams Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -643,7 +643,7 @@ class Backend extends AbstractBackend implements
         WorkKeysQuery $query,
         int $offset,
         int $limit,
-        ParamBag $defaultParams = null
+        ?ParamBag $defaultParams = null
     ): RecordCollectionInterface {
         $id = $query->getId();
         if ('' === $id) {

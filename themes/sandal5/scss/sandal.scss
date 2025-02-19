@@ -1,11 +1,4 @@
-/* #LESS>
-@import "../../bootstrap3/less/bootstrap";
-@import "colors";
-@import "variables";
-<#LESS */
-/* #SCSS> */
 @import "colors", "variables", "../../bootstrap5/scss/bootstrap";
-/* <#SCSS */
 
 @import "common";
 @import "search";
@@ -180,7 +173,6 @@ a:hover .login-dropdown-caret {
 .record-nav {
   display: table;
   margin-left: auto;
-  margin-top: 1rem;
   margin-right: auto;
 }
 .info-col h3 {
@@ -196,9 +188,7 @@ a:hover .login-dropdown-caret {
 
 /* --- Sidebar --- */
 .sidebar {
-  padding-top: 1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 1rem;
   font-size: $reduced-font-size;
   background-color: $light-gray;
 
@@ -261,5 +251,11 @@ a:hover .login-dropdown-caret {
       order: 1;
     }
     .exclude { order: 2; }
+  }
+}
+
+@media (max-width: 1399px) {
+  .sidebar {
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
   }
 }

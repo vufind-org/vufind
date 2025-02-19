@@ -40,7 +40,7 @@
       <?php endif; ?>
       </select>
     <?php endif; ?>
-    <button type="submit" name="newList" class="btn btn-link" id="make-list"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></button>
+    <button type="submit" name="newList" value="1" class="btn btn-link" id="make-list"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></button>
   </div>
 
   <?php if ($showLists): ?>

@@ -94,6 +94,7 @@ class Results extends \VuFind\Search\Base\Results
 
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
+            $this->restrictedView = $collection->isRestrictedView();
         }
     }
 

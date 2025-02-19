@@ -31,12 +31,12 @@ namespace VuFindConsole\Command\ScheduledSearch;
 
 use DateTime;
 use Exception;
-use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
