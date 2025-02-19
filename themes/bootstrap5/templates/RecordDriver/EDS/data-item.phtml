@@ -19,7 +19,7 @@
       }
       return $element['Link'] ?? $element['Data'];
     }, $this->data['Elements']);
-    $entries = array_map(fn ($element) => $prefix . $this->linkify($element) . $suffix, $entries);
+    $entries = array_map(fn ($element) => $prefix . $this->linkify($element, includeEmail: false) . $suffix, $entries);
     if ($limit !== null && count($entries) > $limit) {
       $entries = array_slice($entries, 0, $limit);
       $entries[] = $abbreviation;
@@ -27,5 +27,5 @@
     echo implode($separator, $entries);
   ?>
 <?php else: ?>
-  <?=$this->linkify($this->data['Data'])?>
+  <?=$this->linkify($this->data['Data'], includeEmail: false)?>
 <?php endif ?>
