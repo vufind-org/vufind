@@ -86,8 +86,8 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
           [
             'params' => [
               'param1' => 0,
-              'param2' => 'asd',
-              'param3' => 'tesfdfdfs',
+              'param2' => 'mainecoon',
+              'param3' => 'calico',
             ],
             'timestamp' => 1739870677 + 99999,
           ],
@@ -101,8 +101,8 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
           [
             'params' => [
               'param1' => 0,
-              'param2' => 'asd',
-              'param3' => 'tesfdfdfs',
+              'param2' => 'norwegianforestcat',
+              'param3' => 'turle',
             ],
             'timestamp' => 1739870677 + 99999,
           ],
