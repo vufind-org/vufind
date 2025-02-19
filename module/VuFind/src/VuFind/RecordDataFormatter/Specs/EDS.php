@@ -125,9 +125,9 @@ class EDS extends AbstractBase
         if (strtolower($format) === 'short') {
             $filter['Group']['exclude'] = ['AuInfo'];
         }
-        $spec->addItems($filter);
+        $spec->addItems($filter, ['separator' => '<br>']);
         $spec->setItemLine('Group', 'Au', $this->getAuthorOptions($format));
-        $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
+        $spec->setItemLine('Group', 'Su', ['useSearchLink' => true, 'separator' => ', ']);
         return $spec->getArray();
     }
 

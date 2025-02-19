@@ -218,7 +218,7 @@ class RecordDataFormatter extends AbstractHelper
                 $options = $itemSpecs['defaultOptions'] ?? [];
                 foreach (array_keys($item) as $itemKey) {
                     $itemValue = $item[$itemKey];
-                    $options = array_merge($itemSpecs['options'][$itemKey][$itemValue] ?? [], $options);
+                    $options = array_merge($options, $itemSpecs['options'][$itemKey][$itemValue] ?? []);
                 }
                 if (!isset($options['pos'])) {
                     $options['pos'] = $itemPos;
