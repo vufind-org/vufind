@@ -125,9 +125,7 @@
 
   <?php if (is_array($this->profile)): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
-    <p>
-      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
-    </p>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
     <table class="table table-striped catalog-profile">
       <?=
         $this->renderArray(
