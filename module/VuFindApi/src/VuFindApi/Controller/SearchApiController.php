@@ -34,7 +34,6 @@ use Exception;
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -141,9 +140,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm Service manager
-     * @param RecordFormatter         $rf Record formatter
-     * @param FacetFormatter          $ff Facet formatter
+     * @param ServiceLocatorInterface $sm              Service manager
+     * @param RecordFormatter         $recordFormatter Record formatter
+     * @param FacetFormatter          $facetFormatter  Facet formatter
      */
     public function __construct(
         ServiceLocatorInterface $sm,

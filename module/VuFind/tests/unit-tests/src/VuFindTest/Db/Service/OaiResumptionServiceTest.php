@@ -126,7 +126,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      * @param array  $randomTokenSequence Array containing strings to simulate duplicate tokens
      * @param string $error               If set, will expect this iteration to throw this error message
      *
-     * @return void
+     * @return       void
      * @dataProvider getTestDuplicatesData
      */
     public function testDuplicates(array $token, array $randomTokenSequence, string $error = ''): void
@@ -147,7 +147,10 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
                 return $row;
             }
         );
-        $oaiResumptionService = $this->container->createMock(OaiResumptionService::class, ['createRandomToken', 'createEntity']);
+        $oaiResumptionService = $this->container->createMock(
+            OaiResumptionService::class,
+            ['createRandomToken', 'createEntity']
+        );
         $oaiResumptionService->expects($this->any())->method('createRandomToken')->willReturnCallback(
             function () use (&$randomTokenSequence, $row) {
                 $newToken = array_shift($randomTokenSequence);
