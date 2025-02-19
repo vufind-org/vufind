@@ -488,7 +488,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             $nextCursorMark = $results->getCursorMark();
             $resumptionToken = $this->createResumptionToken($request, $nextCursor, $nextCursorMark);
             $response['resumptionToken'] = [
-                'token' => $resumptionToken->getHash(),
+                'token' => $resumptionToken->getToken(),
                 'expires' => $resumptionToken->getExpiry()->format('Y-m-d H:i:s'),
             ];
         }
