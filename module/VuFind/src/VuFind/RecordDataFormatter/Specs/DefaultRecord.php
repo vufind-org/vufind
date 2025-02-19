@@ -47,7 +47,7 @@ use function count;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class DefaultRecord extends AbstractBase
+class DefaultRecord extends BaseSpecs
 {
     /**
      * The order in which groups of authors are displayed.
@@ -339,58 +339,6 @@ class DefaultRecord extends AbstractBase
             'data-allRecordLinks.phtml'
         );
         $spec->setTemplateLine('Tags', true, 'data-tags.phtml');
-        return $spec->getArray();
-    }
-
-    /**
-     * Get default specifications for displaying data in the description tab.
-     *
-     * @return array
-     */
-    protected function getDefaultDescriptionSpecs(): array
-    {
-        $spec = new SpecBuilder();
-        $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
-        $spec->setLine('Abstract', 'getAbstractNotes');
-        $spec->setLine('Review', 'getReviewNotes');
-        $spec->setLine('Content Advice', 'getContentAdviceNotes');
-        $spec->setLine('Published', 'getDateSpan');
-        $spec->setLine('Item Description', 'getGeneralNotes');
-        $spec->setLine('Physical Description', 'getPhysicalDescriptions');
-        $spec->setLine('Publication Frequency', 'getPublicationFrequency');
-        $spec->setLine('Playing Time', 'getPlayingTimes');
-        $spec->setLine('Format', 'getSystemDetails');
-        $spec->setLine('Audience', 'getTargetAudienceNotes');
-        $spec->setLine('Awards', 'getAwards');
-        $spec->setLine('Production Credits', 'getProductionCredits');
-        $spec->setLine('Bibliography', 'getBibliographyNotes');
-        $spec->setLine(
-            'ISBN',
-            'getISBNs',
-            null,
-            ['itemPrefix' => '<span property="isbn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
-            'ISSN',
-            'getISSNs',
-            null,
-            ['itemPrefix' => '<span property="issn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
-            'DOI',
-            'getCleanDOI',
-            null,
-            [
-                'itemPrefix' => '<span property="identifier">',
-                'itemSuffix' => '</span>',
-            ]
-        );
-        $spec->setLine('Related Items', 'getRelationshipNotes');
-        $spec->setLine('Access', 'getAccessRestrictions');
-        $spec->setLine('Finding Aid', 'getFindingAids');
-        $spec->setLine('Publication_Place', 'getHierarchicalPlaceNames');
-        $spec->setLine('Source', 'getSource');
-        $spec->setTemplateLine('Author Notes', true, 'data-authorNotes.phtml');
         return $spec->getArray();
     }
 }

@@ -482,12 +482,13 @@ abstract class AbstractBase implements
     /**
      * Get class name for RecordDataFormatter spec.
      *
-     * @return ?string
+     * @return string
      */
-    public function getRecordDataFormatterSpecClass(): ?string
+    public function getRecordDataFormatterSpecClass(): string
     {
-        // Override this if the RecordDataFormatter view helper should be used to format this record driver's data.
-        return null;
+        // Override this if the RecordDataFormatter view helper should be
+        // used to format more of this record driver's data than the description tab.
+        return \VuFind\RecordDataFormatter\Specs\BaseSpecs::class;
     }
 
     /**

@@ -44,7 +44,7 @@ use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class EDS extends AbstractBase
+class EDS extends BaseSpecs
 {
     /**
      * Constructor
@@ -66,6 +66,7 @@ class EDS extends AbstractBase
     {
         $this->setDefaults('core', [$this, 'getDefaultCoreSpecs']);
         $this->setDefaults('result-list', [$this, 'getDefaultResultListSpecs']);
+        $this->setDefaults('description', [$this, 'getDefaultDescriptionSpecs']);
     }
 
     /**

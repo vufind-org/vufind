@@ -2,7 +2,7 @@
     // Set page title.
     $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb());
 
-    $formatter = $this->recordDataFormatter($driver);
+    $formatter = $this->recordDataFormatter($this->driver);
     $mainFields = $formatter->getData($formatter->getDefaults('description'));
 ?>
 <table class="table table-striped">

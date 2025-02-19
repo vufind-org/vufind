@@ -988,9 +988,9 @@ class EDS extends DefaultRecord
     /**
      * Get class name for RecordDataFormatter spec.
      *
-     * @return ?string
+     * @return string
      */
-    public function getRecordDataFormatterSpecClass(): ?string
+    public function getRecordDataFormatterSpecClass(): string
     {
         return \VuFind\RecordDataFormatter\Specs\EDS::class;
     }
