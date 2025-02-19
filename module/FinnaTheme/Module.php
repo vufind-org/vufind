@@ -41,16 +41,6 @@ namespace FinnaTheme;
 class Module
 {
     /**
-     * Get autoloader configuration
-     *
-     * @return void
-     */
-    public function getAutoloaderConfig()
-    {
-        return [];
-    }
-
-    /**
      * Return service configuration.
      *
      * @return array

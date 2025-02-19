@@ -2,6 +2,16 @@
     "__comment__": [
         "See https://github.com/wikimedia/composer-merge-plugin for more details."
     ],
+    "autoload": {
+        "psr-4": {
+            "Finna\\": "module/Finna/src/Finna",
+            "FinnaApi\\": "module/FinnaApi/src/FinnaApi",
+            "FinnaConsole\\": "module/FinnaConsole/src/FinnaConsole",
+            "FinnaCustom\\": "module/FinnaCustom/src/FinnaCustom",
+            "FinnaSearch\\": "module/FinnaSearch/src/FinnaSearch",
+            "FinnaTheme\\": "module/FinnaTheme/src/FinnaTheme"
+        }
+    },
     "require": {
         "ezyang/htmlpurifier": "4.17.0",
         "league/mime-type-detection": "1.9.0",

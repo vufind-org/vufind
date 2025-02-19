@@ -50,21 +50,4 @@ class Module
         return include APPLICATION_PATH
             . '/module/FinnaCustom/config/module.config.php';
     }
-
-    /**
-     * Get autoloader configuration
-     *
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => APPLICATION_PATH . '/module/FinnaCustom/src/'
-                        . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
 }
