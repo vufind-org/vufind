@@ -1,3 +1,5 @@
+@use "sass:map";
+
 $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 
 // Include Font Awesome
@@ -476,27 +478,30 @@ ul.list-group {
 }
 
 // Reduce the gap between the text and dropdown button:
-#account-home-nav.with-dropdown > a {
-  padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+#account-home-nav.dropdown {
+  > .nav-link:not(.account-dropdown-toggle) {
+    padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
 
-  body.rtl & {
+    body.rtl & {
+      padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+      padding-right: inherit;
+    }
+  }
+
+  > a.nav-link.account-dropdown-toggle {
     padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
-    padding-right: inherit;
-  }
-}
-#login-dropdown > a {
-  padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
-  padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
-  margin-right: .5rem;
+    padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+    margin-right: .5rem;
 
-  body.rtl & {
-    margin-left: .5rem;
-    margin-right: inherit;
+    body.rtl & {
+      margin-left: .5rem;
+      margin-right: inherit;
+    }
   }
 }
 
-#login-dropdown .dropdown-menu {
-  width: 250px;
+#account-home-nav .dropdown-menu {
+  width: 300px;
   padding: 0 0.5rem 0.5rem 0.5rem;
 
   .account-menu {
@@ -506,9 +511,11 @@ ul.list-group {
   h3 {
     margin-left: 0.5rem;
   }
+
+  @media (max-width: #{300px + 4 * $navbar-padding-x}) {
+    width: calc(100vw - #{4 * $navbar-padding-x});
+  }
 }
-#login-dropdown
-#login-dropdown .dropdown-menu .account-menu { display: block; }
 .login-tokens-table {
   margin-bottom: 0.5rem;
   tbody > tr > td {

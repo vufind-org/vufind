@@ -31,20 +31,18 @@
           <?php endif; ?>
           <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
             <?php if ($account->getIdentity()): ?>
-              <li id="account-home-nav" class="nav-item logoutOptions<?php if ($account->dropdownEnabled()): ?> with-dropdown<?php endif ?>">
+              <li id="account-home-nav" class="nav-item logoutOptions<?php if ($account->dropdownEnabled()): ?> dropdown<?php endif ?>">
                 <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" class="nav-link icon-link">
                   <span id="account-icon" class="icon-link__icon" role="link"><?=$this->icon('my-account') ?></span>
                   <span class="icon-link__label"><?=$this->transEsc('Your Account')?></span>
                 </a>
-              </li>
-              <?php if ($account->dropdownEnabled()): ?>
-                <li id="login-dropdown" class="nav-item dropdown hidden-xs">
-                  <a class="nav-link" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
+                <?php if ($account->dropdownEnabled()): ?>
+                  <a class="nav-link account-dropdown-toggle" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
                   <div class="dropdown-menu">
                     <?=$this->accountMenu()->render('', 'header_')?>
                   </div>
-                </li>
-              <?php endif; ?>
+                <?php endif; ?>
+              </li>
               <li class="nav-item logoutOptions">
                 <a href="<?=$this->url('myresearch-logout')?>" class="nav-link logout icon-link">
                   <?=$this->icon('sign-out', 'icon-link__icon') ?>
