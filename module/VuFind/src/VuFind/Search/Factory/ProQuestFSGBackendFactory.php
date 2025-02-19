@@ -57,14 +57,14 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * ProQuestFSG configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $proQuestFSGConfig;
 
