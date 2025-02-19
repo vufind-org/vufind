@@ -65,10 +65,8 @@ class Linkify extends AbstractHelper
      */
     public function __invoke(string $string, bool $includeEmail = true): string
     {
-        if ($includeEmail) {
-            return $this->urlHighlight->highlightUrls($string);
-        } else {
-            return $this->urlHighlightExceptEmail->highlightUrls($string);
-        }
+        return $includeEmail
+            ? $this->urlHighlight->highlightUrls($string)
+            : $this->urlHighlightExceptEmail->highlightUrls($string);
     }
 }

@@ -71,7 +71,7 @@ class LinkifyFactory implements FactoryInterface
 
         $highlighter = new VuFindHighlighter($proxyUrl);
         $encoder = new HtmlSpecialcharsEncoder();
-        $validatorExceptEmail = new Validator(true, [], [], false);
+        $validatorExceptEmail = new Validator(matchEmails: false);
         $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
         $urlHighlightExceptEmail = new UrlHighlight($validatorExceptEmail, $highlighter, $encoder);
         return new Linkify($urlHighlight, $urlHighlightExceptEmail);
