@@ -659,9 +659,12 @@ class EDS extends DefaultRecord
                 continue;
             }
             // Parse searchLinks
-            $link_xml = '/&lt;searchLink fieldCode=(&quot;|")(.*)(&quot;|") term=(&quot;|")(%22.*%22)(&quot;|")&gt;/';
-            if (!empty($type) && preg_match($link_xml, $elementData)) {
-                $link_html = '&lt;a href=&quot;../EDS/Search?lookfor=$5&amp;type=' . urlencode($type) . '&quot;&gt;';
+            $excludeQuotationMark = '(((?!&quot;)[^"])*)';
+            $link_xml = '/&lt;searchLink fieldCode=(&quot;|")' . $excludeQuotationMark
+                . '(&quot;|") term=(&quot;|")%22' . $excludeQuotationMark . '%22(&quot;|")&gt;/';
+            if (!empty($type) && preg_match($link_xml, $elementData, $matches)) {
+                $link_html = '&lt;a href=&quot;../EDS/Search?lookfor=%22$6%22&amp;type='
+                    . urlencode($type) . '&quot;&gt;';
                 $link = preg_replace($link_xml, $link_html, $elementData);
                 $link = str_replace('&lt;/searchLink&gt;', '&lt;/a&gt;', $link);
                 $element['SearchLink'] = $this->toHTML($link);
