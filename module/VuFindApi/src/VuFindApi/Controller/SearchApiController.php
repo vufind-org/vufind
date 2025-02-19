@@ -34,6 +34,7 @@ use Exception;
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -56,20 +57,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 {
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
-
-    /**
-     * Record formatter
-     *
-     * @var RecordFormatter
-     */
-    protected $recordFormatter;
-
-    /**
-     * Facet formatter
-     *
-     * @var FacetFormatter
-     */
-    protected $facetFormatter;
 
     /**
      * Default record fields to return if a request does not define the fields
@@ -160,14 +147,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        RecordFormatter $rf,
-        FacetFormatter $ff
+        protected RecordFormatter $recordFormatter,
+        protected FacetFormatter $facetFormatter
     ) {
         parent::__construct($sm);
         $this->setResumptionService($this->getDbService(\VuFind\Db\Service\OaiResumptionServiceInterface::class));
-        $this->recordFormatter = $rf;
-        $this->facetFormatter = $ff;
-        foreach ($rf->getRecordFields() as $fieldName => $fieldSpec) {
+        foreach ($recordFormatter->getRecordFields() as $fieldName => $fieldSpec) {
             if (!empty($fieldSpec['vufind.default'])) {
                 $this->defaultRecordFields[] = $fieldName;
             }
