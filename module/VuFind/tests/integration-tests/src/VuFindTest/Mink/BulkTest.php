@@ -339,7 +339,11 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // Select EndNote option
         try {
-            $select = $this->findCss($page, '#format', 100);
+            // We don't want to wait the full default timeout here since that wastes a lot
+            // of time if a click failed to register; however, we shouldn't wait for too
+            // short of a time, or else a slow response can break the test by causing a
+            // double form submission.
+            $select = $this->findCss($page, '#format', 1500);
         } catch (\Exception $e) {
             $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             $select = $this->findCss($page, '#format');
@@ -347,10 +351,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
-        $submit->click();
-        $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
-        $this->assertEquals('Download File', $result->getText());
+        $this->clickCss($page, '.form-cart-export input[name=submitButton]');
+        $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
+        $this->assertEquals('Download File', $buttonText);
     }
 
     /**
