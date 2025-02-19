@@ -136,14 +136,14 @@ class HtmlElement extends \Laminas\View\Helper\AbstractHelper
      * if identifier is set, try to find corresponding basedata for
      * that element
      *
-     * @param array  $data       attributes of element to create
-     * @param string $identifier key for the element in base data
+     * @param array   $data       attributes of element to create
+     * @param ?string $identifier key for the element in base data
      *
      * @throws OutOfBoundsException if the given key is not set in elementBase array
      *
      * @return string created attributes
      */
-    public function getAttributes(array $data, string $identifier = null)
+    public function getAttributes(array $data, ?string $identifier = null)
     {
         $identifierSet = isset($identifier);
         $hasBaseElement = $identifierSet && isset($this->elementBase[$identifier]);

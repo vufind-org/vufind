@@ -59,7 +59,7 @@ class UserFactory extends \VuFind\Db\Row\UserFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $result = parent::__invoke($container, $requestedName, $options);
         $ils = $container->get(\VuFind\ILS\Connection::class);

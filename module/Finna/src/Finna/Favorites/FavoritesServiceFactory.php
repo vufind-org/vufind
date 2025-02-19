@@ -60,13 +60,13 @@ class FavoritesServiceFactory implements FactoryInterface
      *
      * @param ContainerInterface $container Service container
      * @param string             $name      Requested service name (unused)
-     * @param array              $options   Extra options (unused)
+     * @param ?array             $options   Extra options (unused)
      *
      * @return FavoritesService
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $name, array $options = null)
+    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
     {
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);

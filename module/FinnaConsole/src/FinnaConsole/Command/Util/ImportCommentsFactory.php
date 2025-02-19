@@ -71,7 +71,7 @@ class ImportCommentsFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         // We need to initialize the theme so that the view renderer works:
         $configManager = $container->get(\VuFind\Config\PluginManager::class);

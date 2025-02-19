@@ -86,7 +86,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $this->translator = $container->get(
             \Laminas\I18n\Translator\TranslatorInterface::class

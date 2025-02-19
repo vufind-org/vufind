@@ -69,7 +69,7 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $config = $container->get(\VuFind\Config\PluginManager::class);
         return new $requestedName(

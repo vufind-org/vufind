@@ -62,7 +62,7 @@ class CommentsInappropriateFactory extends \VuFind\Db\Table\GatewayFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         return parent::__invoke($container, $requestedName, ['finna_comments_inappropriate', $sessionManager]);

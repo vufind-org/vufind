@@ -851,12 +851,12 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
      *          - resourceID    ID to which resource belongs to
      *          - url           Url of the image
      *
-     * @param string            $url          Url of the resourceset
-     * @param string            $type         Type of the image
-     * @param string            $language     Language to get information
-     * @param string            $id           ID of the resourceset
-     * @param string            $format       Format of the image
-     * @param \SimpleXmlElement $measurements Measurements SimpleXmlElement
+     * @param string             $url          Url of the resourceset
+     * @param string             $type         Type of the image
+     * @param string             $language     Language to get information
+     * @param string             $id           ID of the resourceset
+     * @param string             $format       Format of the image
+     * @param ?\SimpleXmlElement $measurements Measurements SimpleXmlElement
      *
      * @return array
      */
@@ -866,7 +866,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         string $language,
         string $id = '',
         string $format = '',
-        \SimpleXmlElement $measurements = null
+        ?\SimpleXmlElement $measurements = null
     ): array {
         // Check if the image is really an image
         // Original images can be any type and are not displayed

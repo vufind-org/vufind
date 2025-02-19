@@ -64,7 +64,7 @@ class CommentRecordFactory extends \VuFind\AjaxHandler\CommentRecordFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $result = parent::__invoke($container, $requestedName, $options);
         $result->setSearchRunner($container->get(\VuFind\Search\SearchRunner::class));

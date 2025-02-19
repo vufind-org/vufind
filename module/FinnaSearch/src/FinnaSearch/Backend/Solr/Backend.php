@@ -56,7 +56,7 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -64,7 +64,7 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         // Enforce a hard limit to avoid problems due to bad configuration
         if ($params->get('cursorMark')) {
@@ -80,12 +80,12 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
     /**
      * Return similar records.
      *
-     * @param string   $id            Id of record to compare with
-     * @param ParamBag $defaultParams Search backend parameters
+     * @param string    $id            Id of record to compare with
+     * @param ?ParamBag $defaultParams Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function similar($id, ParamBag $defaultParams = null)
+    public function similar($id, ?ParamBag $defaultParams = null)
     {
         // Hack to work around Solr bugs in the MLT Handlers
         if ($this->getSimilarBuilder()->mltHandlerActive()) {
@@ -118,7 +118,7 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
      * @param WorkKeysQuery $query         Search query
      * @param int           $offset        Search offset
      * @param int           $limit         Search limit
-     * @param ParamBag      $defaultParams Search backend parameters
+     * @param ?ParamBag     $defaultParams Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -126,7 +126,7 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
         WorkKeysQuery $query,
         int $offset,
         int $limit,
-        ParamBag $defaultParams = null
+        ?ParamBag $defaultParams = null
     ): RecordCollectionInterface {
         $params = $defaultParams ? clone $defaultParams
             : new \VuFindSearch\ParamBag();

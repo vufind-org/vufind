@@ -154,8 +154,8 @@ class Iframe extends \Laminas\View\Helper\AbstractHelper implements TranslatorAw
     public function vimeo(
         string $videoId,
         array $consentCategories,
-        string $width = null,
-        string $height = null,
+        ?string $width = null,
+        ?string $height = null,
         array $attributes = []
     ): string {
         if (!isset($attributes['allow'])) {
@@ -193,8 +193,8 @@ class Iframe extends \Laminas\View\Helper\AbstractHelper implements TranslatorAw
     public function youtube(
         string $videoId,
         array $consentCategories,
-        string $width = null,
-        string $height = null,
+        ?string $width = null,
+        ?string $height = null,
         array $attributes = []
     ): string {
         if (!isset($attributes['allow'])) {

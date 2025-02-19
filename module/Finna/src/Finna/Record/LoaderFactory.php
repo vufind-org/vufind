@@ -62,7 +62,7 @@ class LoaderFactory extends \VuFind\Record\LoaderFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $loader = parent::__invoke($container, $requestedName, $options);
         $loader->setPreferredLanguage(

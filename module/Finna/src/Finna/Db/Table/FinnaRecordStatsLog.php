@@ -50,14 +50,14 @@ class FinnaRecordStatsLog extends \VuFind\Db\Table\Gateway
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param ?RowGateway   $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(
         Adapter $adapter,
         PluginManager $tm,
         $cfg,
-        RowGateway $rowObj = null,
+        ?RowGateway $rowObj = null,
         $table = 'finna_record_stats_log'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);

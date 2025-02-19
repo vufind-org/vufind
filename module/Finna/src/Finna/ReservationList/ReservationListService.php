@@ -454,12 +454,12 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
     /**
      * Get resource list as an array containing formatted dates to be displayed in templates
      *
-     * @param int                 $listId List id
-     * @param UserEntityInterface $user   User entity object
+     * @param int                  $listId List id
+     * @param ?UserEntityInterface $user   User entity object
      *
      * @return FinnaResourceListEntityInterface
      */
-    public function getListById(int $listId, UserEntityInterface $user = null): FinnaResourceListEntityInterface
+    public function getListById(int $listId, ?UserEntityInterface $user = null): FinnaResourceListEntityInterface
     {
         $list = $this->resourceListService->getResourceListById($listId);
         // Validate incoming list ID:
@@ -538,15 +538,15 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
     /**
      * Get lists containing a specific record.
      *
-     * @param UserEntityInterface $user           User entity object or ID
-     * @param DefaultRecord       $record         Resource entity to look for
-     * @param string              $listIdentifier Identifier of the list used by institution
-     * @param string              $institution    Institution name
+     * @param ?UserEntityInterface $user           User entity object or ID
+     * @param DefaultRecord        $record         Resource entity to look for
+     * @param string               $listIdentifier Identifier of the list used by institution
+     * @param string               $institution    Institution name
      *
      * @return FinnaResourceListEntityInterface[]
      */
     public function getListsContainingRecord(
-        UserEntityInterface $user = null,
+        ?UserEntityInterface $user,
         DefaultRecord $record,
         string $listIdentifier = '',
         string $institution = ''

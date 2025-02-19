@@ -112,14 +112,13 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $searchConfig Search config
-     * @param string                $uniqueKey    Solr field used to store unique
-     *                                            identifier
+     * @param ?\VuFind\Config\Config $searchConfig Search config
+     * @param string                 $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
     public function __construct(
-        \VuFind\Config\Config $searchConfig = null,
+        ?\VuFind\Config\Config $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;

@@ -1971,7 +1971,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      *  - Add holdings for locations with no items.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Additional options
      *
      * @return array On success an array with the key "total" containing the total

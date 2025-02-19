@@ -64,7 +64,7 @@ class FormFactory extends \VuFind\Form\FormFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $config = $configManager->get('config')->toArray();

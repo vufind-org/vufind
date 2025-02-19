@@ -74,7 +74,7 @@ class UserPreferenceService
      */
     public function __construct(
         AuthManager $authManager,
-        CookieManager $cookieManager = null
+        ?CookieManager $cookieManager = null
     ) {
         $this->authManager = $authManager;
         $this->cookieManager = $cookieManager;

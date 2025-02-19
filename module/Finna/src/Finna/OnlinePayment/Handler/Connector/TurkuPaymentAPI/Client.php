@@ -228,20 +228,20 @@ class Client extends FinnaPaytrailClient
     /**
      * Format request headers.
      *
-     * @param string $method                 The request method. GET or POST.
-     * @param string $transactionId          Paytrail transaction ID when accessing
-     *                                       single transaction not required
-     *                                       for a new payment request.
-     * @param string $checkoutTokenizationId Paytrail tokenization ID
-     *                                       or getToken request
+     * @param string  $method                 The request method. GET or POST.
+     * @param ?string $transactionId          Paytrail transaction ID when accessing
+     *                                        single transaction not required
+     *                                        for a new payment request.
+     * @param ?string $checkoutTokenizationId Paytrail tokenization ID
+     *                                        or getToken request
      *
      * @return array
      * @throws \Exception
      */
     protected function getHeaders(
         string $method,
-        string $transactionId = null,
-        string $checkoutTokenizationId = null
+        ?string $transactionId = null,
+        ?string $checkoutTokenizationId = null
     ): array {
         return [
             'X-TURKU-SP' => $this->platformName,

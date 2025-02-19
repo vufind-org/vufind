@@ -69,7 +69,7 @@ class SolrAuthFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $config = $configManager->get('authority');

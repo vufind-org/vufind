@@ -52,7 +52,7 @@ class ReservationListServiceFactory implements FactoryInterface
      *
      * @return ReservationListService
      */
-    public function __invoke(ContainerInterface $container, $name, array $options = null)
+    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
     {
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);

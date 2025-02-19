@@ -69,7 +69,7 @@ class RecordFieldMarkdown extends \VuFind\View\Helper\Root\Markdown
      *
      * @return RecordFieldMarkdown|string
      */
-    public function __invoke(string $markdown = null)
+    public function __invoke(?string $markdown = null)
     {
         return null === $markdown ? $this : parent::__invoke($markdown);
     }

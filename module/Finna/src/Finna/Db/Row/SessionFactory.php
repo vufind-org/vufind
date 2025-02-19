@@ -65,7 +65,7 @@ class SessionFactory extends \VuFind\Db\Row\RowGatewayFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $result = parent::__invoke($container, $requestedName, $options);
         $result->setStatisticsEventHandler(

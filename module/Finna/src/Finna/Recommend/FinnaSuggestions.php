@@ -127,9 +127,9 @@ class FinnaSuggestions implements
     /**
      * FinnaSuggestions constructor.
      *
-     * @param Client $client HTTP client
+     * @param ?Client $client HTTP client
      */
-    public function __construct(Client $client = null)
+    public function __construct(?Client $client = null)
     {
         $this->client = $client;
         $this->resetSearch();

@@ -63,7 +63,7 @@ class LibraryCardsControllerFactory extends \VuFind\Controller\AbstractBaseFacto
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new \Laminas\Session\Container('LibraryCards', $sessionManager);

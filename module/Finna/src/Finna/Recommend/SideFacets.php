@@ -74,17 +74,14 @@ class SideFacets extends \VuFind\Recommend\SideFacets implements TranslatorAware
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager                $configLoader    Configu-
-     * ration loader
-     * @param \Finna\Search\Solr\AuthorityHelper          $authorityHelper Authority
-     * helper
-     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper     Helper for
-     * handling hierarchical facets
+     * @param \VuFind\Config\PluginManager                 $configLoader    Configuration loader
+     * @param \Finna\Search\Solr\AuthorityHelper           $authorityHelper Authority helper
+     * @param ?\VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper     Helper for handling hierarchical facets
      */
     public function __construct(
         \VuFind\Config\PluginManager $configLoader,
         \Finna\Search\Solr\AuthorityHelper $authorityHelper,
-        \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper = null
+        ?\VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper = null
     ) {
         parent::__construct($configLoader, $facetHelper);
         $this->authorityHelper = $authorityHelper;

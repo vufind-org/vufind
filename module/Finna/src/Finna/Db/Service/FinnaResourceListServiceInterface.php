@@ -77,7 +77,7 @@ interface FinnaResourceListServiceInterface extends DbServiceInterface
         ResourceEntityInterface $resource,
         string $listIdentifier = '',
         string $institution = '',
-        string $listType = null
+        ?string $listType = null
     ): array;
 
     /**
@@ -104,7 +104,7 @@ interface FinnaResourceListServiceInterface extends DbServiceInterface
         UserEntityInterface $user,
         string $listIdentifier = '',
         string $institution = '',
-        string $listType = null
+        ?string $listType = null
     ): array;
 
     /**
@@ -123,6 +123,6 @@ interface FinnaResourceListServiceInterface extends DbServiceInterface
         ResourceEntityInterface $resource,
         string $listIdentifier = '',
         string $institution = '',
-        string $listType = null
+        ?string $listType = null
     ): array;
 }

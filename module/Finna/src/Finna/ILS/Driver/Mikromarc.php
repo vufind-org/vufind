@@ -243,7 +243,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options
      *
      * @throws \VuFind\Exception\ILS
@@ -253,7 +253,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $data = $this->getItemStatusesForBiblio($id, $patron);
         if (!empty($data)) {
@@ -1609,7 +1609,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      * @param integer $bibId       BIB ID
      * @param array   $patronId    Patron information returned by the patronLogin
      * method.
-     * @param array   $holdDetails Optional array, only passed in when getting a list
+     * @param ?array  $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
@@ -1619,7 +1619,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     public function getRequestGroups(
         int $bibId,
         array $patronId,
-        array $holdDetails = null
+        ?array $holdDetails = null
     ): array {
         return [
             [
@@ -1638,9 +1638,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * Returns the default request group
      *
-     * @param array $patron      Patron information returned by the patronLogin
+     * @param array  $patron      Patron information returned by the patronLogin
      * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data.
      * May be used to limit the request group options or may be ignored.
@@ -1649,7 +1649,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getDefaultRequestGroup(
         array $patron = [],
-        array $holdDetails = null
+        ?array $holdDetails = null
     ): string {
         return $this->defaultRequestGroup;
     }

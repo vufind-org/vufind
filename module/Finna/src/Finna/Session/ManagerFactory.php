@@ -64,7 +64,7 @@ class ManagerFactory extends \VuFind\Session\ManagerFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $sessionManager = parent::__invoke($container, $requestedName, $options);
 

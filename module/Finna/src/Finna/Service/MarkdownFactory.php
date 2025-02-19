@@ -68,7 +68,7 @@ class MarkdownFactory extends \VuFind\Service\MarkdownFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $this->container = $container;
         return parent::__invoke($container, $requestedName, $options);

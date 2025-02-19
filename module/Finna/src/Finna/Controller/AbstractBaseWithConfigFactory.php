@@ -64,7 +64,7 @@ class AbstractBaseWithConfigFactory extends \VuFind\Controller\AbstractBaseWithC
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $result = parent::__invoke($container, $requestedName, $options);
         if (is_callable([$result, 'setStatisticsEventHandler'])) {
