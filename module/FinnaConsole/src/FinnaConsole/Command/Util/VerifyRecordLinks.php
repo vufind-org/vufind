@@ -60,13 +60,13 @@ class VerifyRecordLinks extends AbstractUtilCommand
      * @param FinnaRecordServiceInterface        $recordService Record database service
      * @param \VuFindSearch\Backend\Solr\Backend $solr          Search backend
      * @param \VuFind\Record\Loader              $recordLoader  Record loader
-     * @param \Laminas\Config\Config             $searchConfig  Search config
+     * @param \VuFind\Config\Config              $searchConfig  Search config
      */
     public function __construct(
         protected FinnaRecordServiceInterface $recordService,
         protected \VuFindSearch\Backend\Solr\Backend $solr,
         protected \VuFind\Record\Loader $recordLoader,
-        protected \Laminas\Config\Config $searchConfig
+        protected \VuFind\Config\Config $searchConfig
     ) {
         $recordLoader->setCacheContext(\VuFind\Record\Cache::CONTEXT_DISABLED);
 

@@ -91,7 +91,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
     /**
      * Config
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
@@ -103,14 +103,14 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
      * @param \Finna\Search\Solr\AuthorityHelper   $authorityHelper Authority helper
      * @param \Laminas\Session\Container           $session         Session
      * @param \VuFind\Cookie\CookieManager         $cookieManager   Cookiemanager
-     * @param \Laminas\Config\Config               $config          Configuration
+     * @param \VuFind\Config\Config                $config          Configuration
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,
         \Finna\Search\Solr\AuthorityHelper $authorityHelper,
         \Laminas\Session\Container $session,
         \VuFind\Cookie\CookieManager $cookieManager,
-        \Laminas\Config\Config $config
+        \VuFind\Config\Config $config
     ) {
         $this->resultsManager = $results;
         $this->authorityHelper = $authorityHelper;

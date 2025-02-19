@@ -65,7 +65,7 @@ class OrganisationInfo implements
     /**
      * Organisation info configuration
      *
-     * @var Laminas\Config\Config
+     * @var VuFind\Config\Config
      */
     protected $config = null;
 
@@ -114,7 +114,7 @@ class OrganisationInfo implements
     /**
      * Constructor.
      *
-     * @param \Laminas\Config\Config  $config         Organisation info configuration
+     * @param \VuFind\Config\Config   $config         Organisation info configuration
      * @param \VuFind\Cache\Manager   $cacheManager   Cache manager
      * @param PluginManager           $resultsManager Results manager
      * @param HierarchicalFacetHelper $facetHelper    Hierarchical facet helper
@@ -122,7 +122,7 @@ class OrganisationInfo implements
      * @param MuseotFi                $museotFi       MuseotFi provider
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \VuFind\Cache\Manager $cacheManager,
         PluginManager $resultsManager,
         HierarchicalFacetHelper $facetHelper,

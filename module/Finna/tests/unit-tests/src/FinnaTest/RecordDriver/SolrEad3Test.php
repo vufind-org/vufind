@@ -513,7 +513,7 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
         $record = new SolrEad3(
             null,
             null,
-            new \Laminas\Config\Config($searchConfig)
+            new \VuFind\Config\Config($searchConfig)
         );
         $record->setTranslator(
             $this->getMockTranslator(

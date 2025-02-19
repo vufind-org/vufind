@@ -30,7 +30,7 @@
 
 namespace Finna\Search\Solr;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Solr\Utils;
 
 use function in_array;

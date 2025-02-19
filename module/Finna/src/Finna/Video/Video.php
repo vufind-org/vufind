@@ -54,19 +54,19 @@ class Video
     /**
      * Data source configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor.
      *
-     * @param HandlerPluginManager   $pluginManager Instanciated Handler
-     * @param \Laminas\Config\Config $config        Datasource config
+     * @param HandlerPluginManager  $pluginManager Instanciated Handler
+     * @param \VuFind\Config\Config $config        Datasource config
      */
     public function __construct(
         HandlerPluginManager $pluginManager,
-        \Laminas\Config\Config $config
+        \VuFind\Config\Config $config
     ) {
         $this->pluginManager = $pluginManager;
         $this->config = $config;

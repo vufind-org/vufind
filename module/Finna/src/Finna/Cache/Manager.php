@@ -32,7 +32,7 @@
 namespace Finna\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * Finna Cache Manager

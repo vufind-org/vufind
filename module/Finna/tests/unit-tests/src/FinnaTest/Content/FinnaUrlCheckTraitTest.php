@@ -309,11 +309,11 @@ class FinnaUrlCheckTraitTest extends \PHPUnit\Framework\TestCase
             /**
              * Get configuration
              *
-             * @return \Laminas\Config\Config
+             * @return \VuFind\Config\Config
              */
-            protected function getConfig(): \Laminas\Config\Config
+            protected function getConfig(): \VuFind\Config\Config
             {
-                return new \Laminas\Config\Config($this->config);
+                return new \VuFind\Config\Config($this->config);
             }
 
             /**

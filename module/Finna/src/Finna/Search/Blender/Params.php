@@ -62,7 +62,7 @@ class Params extends \VuFind\Search\Blender\Params
      * @param \VuFind\Config\PluginManager $configLoader  Config loader
      * @param HierarchicalFacetHelper      $facetHelper   Hierarchical facet helper
      * @param array                        $searchParams  Search params for backends
-     * @param \Laminas\Config\Config       $blenderConfig Blender configuration
+     * @param \VuFind\Config\Config        $blenderConfig Blender configuration
      * @param array                        $mappings      Blender mappings,
      * @param AuthorityHelper              $authHelper    Authority helper
      */
@@ -71,7 +71,7 @@ class Params extends \VuFind\Search\Blender\Params
         \VuFind\Config\PluginManager $configLoader,
         HierarchicalFacetHelper $facetHelper,
         array $searchParams,
-        \Laminas\Config\Config $blenderConfig,
+        \VuFind\Config\Config $blenderConfig,
         array $mappings,
         AuthorityHelper $authHelper
     ) {

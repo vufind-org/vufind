@@ -88,7 +88,7 @@ class OnlinePaymentMonitor extends AbstractUtilCommand
      * @param UserServiceInterface                     $userService        User database service
      * @param UserCardServiceInterface                 $userCardService    User card database service (for
      * OnlinePaymentHandlerTrait)
-     * @param \Laminas\Config\Config                   $datasourceConfig   Data source config
+     * @param \VuFind\Config\Config                    $datasourceConfig   Data source config
      * @param \Laminas\View\Renderer\PhpRenderer       $viewRenderer       View renderer
      * @param \VuFind\Mailer\Mailer                    $mailer             Mailer
      * @param FinnaTransactionEventLogServiceInterface $eventLogService    Transaction event log database service
@@ -99,7 +99,7 @@ class OnlinePaymentMonitor extends AbstractUtilCommand
         protected FinnaTransactionServiceInterface $transactionService,
         protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
-        protected \Laminas\Config\Config $datasourceConfig,
+        protected \VuFind\Config\Config $datasourceConfig,
         protected \Laminas\View\Renderer\PhpRenderer $viewRenderer,
         protected \VuFind\Mailer\Mailer $mailer,
         FinnaTransactionEventLogServiceInterface $eventLogService

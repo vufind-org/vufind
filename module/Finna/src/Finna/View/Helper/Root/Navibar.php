@@ -59,7 +59,7 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
     /**
      * Menu configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -94,12 +94,12 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config           Menu configuration
-     * @param OrganisationInfo       $organisationInfo Organisation info
-     * @param TreeRouteStack         $router           Route helper
+     * @param \VuFind\Config\Config $config           Menu configuration
+     * @param OrganisationInfo      $organisationInfo Organisation info
+     * @param TreeRouteStack        $router           Route helper
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \Finna\OrganisationInfo\OrganisationInfo $organisationInfo,
         TreeRouteStack $router
     ) {

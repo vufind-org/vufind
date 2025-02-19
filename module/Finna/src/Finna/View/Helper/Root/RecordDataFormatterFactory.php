@@ -107,7 +107,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
      *
      * @return array
      */
-    public function getDefaultCoreSpecs()
+    public function getDefaultCoreSpecs(): array
     {
         $spec = new SpecBuilder();
 
@@ -1766,7 +1766,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
      *
      * @return array
      */
-    public function getDefaultDescriptionSpecs()
+    public function getDefaultDescriptionSpecs(): array
     {
         $spec = new SpecBuilder();
         $spec->setLine('Summary', 'getSummary');

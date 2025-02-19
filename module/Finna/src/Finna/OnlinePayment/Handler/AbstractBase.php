@@ -79,7 +79,7 @@ abstract class AbstractBase implements
     /**
      * Configuration.
      *
-     * @var ?\Laminas\Config\Config
+     * @var ?\VuFind\Config\Config
      */
     protected $config = null;
 
@@ -105,11 +105,11 @@ abstract class AbstractBase implements
     /**
      * Initialize the handler
      *
-     * @param \Laminas\Config\Config $config Online payment configuration
+     * @param \VuFind\Config\Config $config Online payment configuration
      *
      * @return void
      */
-    public function init(\Laminas\Config\Config $config): void
+    public function init(\VuFind\Config\Config $config): void
     {
         $this->config = $config;
     }

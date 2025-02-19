@@ -40,7 +40,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Search extends \VuFind\View\Helper\Bootstrap3\Search
+class Search extends \VuFind\View\Helper\Bootstrap5\Search
 {
     /**
      * Get number of active filters

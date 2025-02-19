@@ -43,16 +43,16 @@ class EDS extends \Laminas\View\Helper\AbstractHelper
     /**
      * EDS configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config EDS configuration
+     * @param \VuFind\Config\Config $config EDS configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

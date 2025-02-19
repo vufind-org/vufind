@@ -43,16 +43,16 @@ class Browse extends \VuFind\View\Helper\Root\Browse
     /**
      * Browser configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Browse configuration
+     * @param \VuFind\Config\Config $config Browse configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

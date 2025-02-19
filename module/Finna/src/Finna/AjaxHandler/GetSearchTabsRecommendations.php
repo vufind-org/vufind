@@ -29,10 +29,10 @@
 
 namespace Finna\AjaxHandler;
 
-use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\Config;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchRunner;

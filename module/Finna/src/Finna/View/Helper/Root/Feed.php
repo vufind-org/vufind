@@ -43,17 +43,17 @@ class Feed extends \Laminas\View\Helper\AbstractHelper
     /**
      * Feed configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param Laminas\Config\Config $config Feed configuration
+     * @param VuFind\Config\Config $config Feed configuration
      * custom variables
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

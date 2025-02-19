@@ -31,8 +31,8 @@
 
 namespace Finna\AjaxHandler;
 
-use Laminas\Config\Config;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Config\Config;
 
 use function is_string;
 

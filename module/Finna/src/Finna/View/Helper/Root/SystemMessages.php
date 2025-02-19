@@ -31,8 +31,8 @@
 
 namespace Finna\View\Helper\Root;
 
-use Laminas\Config\Config;
 use Laminas\Session\Container;
+use VuFind\Config\Config;
 
 /**
  * Helper class for system messages

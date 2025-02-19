@@ -29,9 +29,9 @@
 
 namespace Finna\Connection;
 
-use Laminas\Config\Config;
 use Laminas\Http\Client;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
 use VuFind\Log\LoggerAwareTrait;
 
 use function count;

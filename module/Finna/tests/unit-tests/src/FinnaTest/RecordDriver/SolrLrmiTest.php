@@ -237,7 +237,7 @@ class SolrLrmiTest extends \PHPUnit\Framework\TestCase
         $record = new SolrLrmi(
             null,
             null,
-            new \Laminas\Config\Config($searchConfig)
+            new \VuFind\Config\Config($searchConfig)
         );
         $localeConfig = [
             'Site' => [
@@ -253,7 +253,7 @@ class SolrLrmiTest extends \PHPUnit\Framework\TestCase
                 'se' => 'Northern Sámi',
             ],
         ];
-        $localeConfig = new \Laminas\Config\Config($localeConfig);
+        $localeConfig = new \VuFind\Config\Config($localeConfig);
         $record->attachLocaleSettings(new \VuFind\I18n\Locale\LocaleSettings($localeConfig));
         $record->setRawData(['fullrecord' => $fixture]);
         return $record;

@@ -54,19 +54,19 @@ class OnlinePayment
     /**
      * Data source configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor.
      *
-     * @param HandlerPluginManager   $handlerManager Handler plugin manager
-     * @param \Laminas\Config\Config $config         Data source configuration
+     * @param HandlerPluginManager  $handlerManager Handler plugin manager
+     * @param \VuFind\Config\Config $config         Data source configuration
      */
     public function __construct(
         HandlerPluginManager $handlerManager,
-        \Laminas\Config\Config $config
+        \VuFind\Config\Config $config
     ) {
         $this->handlerManager = $handlerManager;
         $this->config = $config;

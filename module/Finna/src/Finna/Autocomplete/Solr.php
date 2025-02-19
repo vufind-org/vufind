@@ -59,7 +59,7 @@ class Solr extends \VuFind\Autocomplete\Solr implements \VuFind\I18n\Translator\
     /**
      * Facet configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $facetConfig;
 
@@ -87,7 +87,7 @@ class Solr extends \VuFind\Autocomplete\Solr implements \VuFind\I18n\Translator\
     /**
      * Search configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $searchConfig;
 
@@ -115,10 +115,10 @@ class Solr extends \VuFind\Autocomplete\Solr implements \VuFind\I18n\Translator\
     /**
      * Constructor
      *
-     * @param PluginManager          $results      Results plugin manager
-     * @param \Laminas\Config\Config $facetConfig  Facet configuration
-     * @param \Laminas\Config\Config $searchConfig Search configuration
-     * @param Url                    $urlHelper    Url helper
+     * @param PluginManager         $results      Results plugin manager
+     * @param \VuFind\Config\Config $facetConfig  Facet configuration
+     * @param \VuFind\Config\Config $searchConfig Search configuration
+     * @param Url                   $urlHelper    Url helper
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,

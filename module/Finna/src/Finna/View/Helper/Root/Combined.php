@@ -43,16 +43,16 @@ class Combined extends \Laminas\View\Helper\AbstractHelper
     /**
      * Combined search configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Combined configuration
+     * @param \VuFind\Config\Config $config Combined configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

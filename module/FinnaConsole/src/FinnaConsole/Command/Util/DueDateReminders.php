@@ -124,8 +124,8 @@ class DueDateReminders extends AbstractUtilCommand
      * @param FinnaDueDateReminderServiceInterface $dueDateReminderService Due date reminder database service
      * @param \VuFind\ILS\Connection               $catalog                ILS connection
      * @param \VuFind\Auth\ILSAuthenticator        $ilsAuthenticator       ILS authenticator
-     * @param \Laminas\Config\Config               $mainConfig             Main config
-     * @param \Laminas\Config\Config               $datasourceConfig       Data source config
+     * @param \VuFind\Config\Config                $mainConfig             Main config
+     * @param \VuFind\Config\Config                $datasourceConfig       Data source config
      * @param PhpRenderer                          $viewRenderer           View renderer
      * @param \VuFind\Record\Loader                $recordLoader           Record loader
      * @param Mailer                               $mailer                 Mailer
@@ -138,8 +138,8 @@ class DueDateReminders extends AbstractUtilCommand
         protected FinnaDueDateReminderServiceInterface $dueDateReminderService,
         protected \VuFind\ILS\Connection $catalog,
         protected \VuFind\Auth\ILSAuthenticator $ilsAuthenticator,
-        protected \Laminas\Config\Config $mainConfig,
-        protected \Laminas\Config\Config $datasourceConfig,
+        protected \VuFind\Config\Config $mainConfig,
+        protected \VuFind\Config\Config $datasourceConfig,
         protected PhpRenderer $viewRenderer,
         protected \VuFind\Record\Loader $recordLoader,
         Mailer $mailer,

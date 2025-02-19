@@ -45,14 +45,14 @@ class LocationService
     /**
      * Location service configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor.
      *
-     * @param \Laminas\Config\Config $config Configuration
+     * @param \VuFind\Config\Config $config Configuration
      */
     public function __construct($config)
     {

@@ -32,13 +32,13 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Feed\Feed as FeedService;
-use Laminas\Config\Config;
 use Laminas\Escaper\Escaper;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\Config;
 use VuFind\Exception\BadRequest;
 use VuFind\ILS\Connection;
 use VuFind\Record\Loader;

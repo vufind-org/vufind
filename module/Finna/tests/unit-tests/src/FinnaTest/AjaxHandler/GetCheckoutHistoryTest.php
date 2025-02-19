@@ -31,9 +31,9 @@ namespace FinnaTest\AjaxHandler;
 
 use Finna\AjaxHandler\GetCheckoutHistory;
 use Finna\AjaxHandler\GetCheckoutHistoryFactory;
-use Laminas\Config\Config;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
 

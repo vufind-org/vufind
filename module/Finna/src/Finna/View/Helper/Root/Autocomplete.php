@@ -46,16 +46,16 @@ class Autocomplete extends \Laminas\View\Helper\AbstractHelper
     /**
      * Search configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $searchConfig = null;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $searchConfig Search configiration.
+     * @param \VuFind\Config\Config $searchConfig Search configiration.
      */
-    public function __construct(\Laminas\Config\Config $searchConfig)
+    public function __construct(\VuFind\Config\Config $searchConfig)
     {
         $this->searchConfig = $searchConfig;
     }

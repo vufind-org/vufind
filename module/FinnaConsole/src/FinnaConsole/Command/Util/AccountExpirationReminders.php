@@ -159,7 +159,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
      * @param UserListServiceInterface           $userListService  User list database service
      * @param TagServiceInterface                $tagService       Tag database service
      * @param \Laminas\View\Renderer\PhpRenderer $renderer         View renderer
-     * @param \Laminas\Config\Config             $datasourceConfig Data source config
+     * @param \VuFind\Config\Config              $datasourceConfig Data source config
      * @param Mailer                             $mailer           Mailer
      * @param TranslatorInterface                $translator       Translator
      * @param \VuFind\Config\PluginManager       $configManager    Config manager
@@ -171,7 +171,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
         protected UserListServiceInterface $userListService,
         protected TagServiceInterface $tagService,
         protected \Laminas\View\Renderer\PhpRenderer $renderer,
-        protected \Laminas\Config\Config $datasourceConfig,
+        protected \VuFind\Config\Config $datasourceConfig,
         Mailer $mailer,
         TranslatorInterface $translator,
         protected \VuFind\Config\PluginManager $configManager

@@ -211,11 +211,11 @@ class SolrQdcInstitutionalRepositoryTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $config = new \Laminas\Config\Config($config);
+        $config = new \VuFind\Config\Config($config);
         $record = new SolrQdc(
             $config,
             $config,
-            new \Laminas\Config\Config($searchConfig)
+            new \VuFind\Config\Config($searchConfig)
         );
         $localeConfig = [
             'Site' => [
@@ -230,7 +230,7 @@ class SolrQdcInstitutionalRepositoryTest extends \PHPUnit\Framework\TestCase
                 'en-gb' => 'British English',
             ],
         ];
-        $localeConfig = new \Laminas\Config\Config($localeConfig);
+        $localeConfig = new \VuFind\Config\Config($localeConfig);
         $record->attachLocaleSettings(new \VuFind\I18n\Locale\LocaleSettings($localeConfig));
         $record->setRawData(
             [

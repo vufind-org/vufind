@@ -886,7 +886,7 @@ class SolrForwardTest extends \PHPUnit\Framework\TestCase
         $record = new SolrForward(
             null,
             null,
-            new \Laminas\Config\Config($searchConfig)
+            new \VuFind\Config\Config($searchConfig)
         );
         $record->setRawData(['fullrecord' => $fixture]);
         return $record;

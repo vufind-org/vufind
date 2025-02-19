@@ -46,10 +46,10 @@ class SolrAuth extends Solr
     /**
      * Constructor
      *
-     * @param PluginManager          $results      Results plugin manager
-     * @param \Laminas\Config\Config $facetConfig  Facet configuration
-     * @param \Laminas\Config\Config $searchConfig Search configuration
-     * @param Url                    $urlHelper    Url helper
+     * @param PluginManager         $results      Results plugin manager
+     * @param \VuFind\Config\Config $facetConfig  Facet configuration
+     * @param \VuFind\Config\Config $searchConfig Search configuration
+     * @param Url                   $urlHelper    Url helper
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,

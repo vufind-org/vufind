@@ -31,9 +31,9 @@
 namespace Finna\Feed;
 
 use Finna\View\Helper\Root\CleanHtml;
-use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\Config;
 
 use function is_array;
 use function strlen;
@@ -131,7 +131,7 @@ class LinkedEvents implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config        OrganisationInfo config
+     * @param \VuFind\Config\Config  $config        OrganisationInfo config
      * @param \VuFind\Date\Converter $dateConverter Date converter
      * @param Url                    $url           Url helper
      * @param CleanHtml              $cleanHtml     cleanHtml helper
@@ -139,7 +139,7 @@ class LinkedEvents implements
      * @param Config                 $mainConfig    Main configuration
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \VuFind\Date\Converter $dateConverter,
         Url $url,
         CleanHtml $cleanHtml,

@@ -43,16 +43,16 @@ class Summon extends \Laminas\View\Helper\AbstractHelper
     /**
      * Summon configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Summon configuration
+     * @param \VuFind\Config\Config $config Summon configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

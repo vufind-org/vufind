@@ -30,9 +30,9 @@
 namespace Finna\File;
 
 use GuzzleHttp\RequestOptions;
-use Laminas\Config\Config;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\Config;
 use VuFind\Http\GuzzleService;
 
 /**

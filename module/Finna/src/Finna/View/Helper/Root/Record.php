@@ -39,7 +39,7 @@ use Finna\RecordDriver\SolrAipa;
 use Finna\RecordTab\TabManager;
 use Finna\Search\Solr\AuthorityHelper;
 use Finna\Service\UserPreferenceService;
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Record\Loader;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\Tags\TagsService;

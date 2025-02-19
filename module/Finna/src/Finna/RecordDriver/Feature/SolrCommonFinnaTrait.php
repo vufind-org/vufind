@@ -256,7 +256,7 @@ trait SolrCommonFinnaTrait
     /**
      * Get the VuFind configuration.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getConfig()
     {

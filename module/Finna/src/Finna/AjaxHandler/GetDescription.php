@@ -31,9 +31,9 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Content\Description\PluginManager as DescriptionPluginManager;
-use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Session\Settings as SessionSettings;

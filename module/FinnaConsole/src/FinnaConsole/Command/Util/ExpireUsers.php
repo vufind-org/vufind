@@ -85,12 +85,12 @@ class ExpireUsers extends AbstractUtilCommand
      *
      * @param FinnaUserServiceInterface $userService        User database service
      * @param UserAccountService        $userAccountService User account database service
-     * @param \Laminas\Config\Config    $config             Main configuration
+     * @param \VuFind\Config\Config     $config             Main configuration
      */
     public function __construct(
         protected FinnaUserServiceInterface $userService,
         protected UserAccountService $userAccountService,
-        \Laminas\Config\Config $config
+        \VuFind\Config\Config $config
     ) {
         $this->removeComments = $config->Authentication->delete_comments_with_user ?? true;
         $this->removeRatings = $config->Authentication->delete_ratings_with_user ?? true;

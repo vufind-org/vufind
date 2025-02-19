@@ -43,16 +43,16 @@ class Primo extends \Laminas\View\Helper\AbstractHelper
     /**
      * Primo configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Primo configuration
+     * @param \VuFind\Config\Config $config Primo configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

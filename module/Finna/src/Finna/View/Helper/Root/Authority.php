@@ -47,7 +47,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     /**
      * Authority configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -61,11 +61,11 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config          Authority configuration
-     * @param AuthorityHelper        $authorityHelper Authority helper
+     * @param \VuFind\Config\Config $config          Authority configuration
+     * @param AuthorityHelper       $authorityHelper Authority helper
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         AuthorityHelper $authorityHelper
     ) {
         $this->config = $config;

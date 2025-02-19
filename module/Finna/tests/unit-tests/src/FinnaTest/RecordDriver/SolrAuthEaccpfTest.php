@@ -113,7 +113,7 @@ class SolrAuthEaccpfTest extends \PHPUnit\Framework\TestCase
         $record = new SolrAuthEaccpf(
             null,
             null,
-            new \Laminas\Config\Config($searchConfig)
+            new \VuFind\Config\Config($searchConfig)
         );
         $record->attachDateConverter($dateConverter);
         $record->setRawData(['fullrecord' => $fixture]);

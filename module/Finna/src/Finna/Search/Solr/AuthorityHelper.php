@@ -126,14 +126,14 @@ class AuthorityHelper
     /**
      * Authority config
      *
-     * @var \Laminas\Config\Config|null
+     * @var \VuFind\Config\Config|null
      */
     protected $authorityConfig;
 
     /**
      * Authority search config
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $authoritySearchConfig;
 
@@ -144,17 +144,18 @@ class AuthorityHelper
      * @param \VuFind\Search\SearchRunner        $searchRunner          Search runner
      * @param \VuFind\View\Helper\Root\Translate $translator            Translator
      * view helper
-     * @param \Laminas\Config\Config             $config                Config
-     * config
-     * @param \Laminas\Config\Config             $authoritySearchConfig Authority
-     * search config
+     * @param \VuFind\Config\Config              $config                Config
+     *                                                                  config
+     * @param \VuFind\Config\Config              $authoritySearchConfig Authority
+     *                                                                  search
+     *                                                                  config
      */
     public function __construct(
         \VuFind\Record\Loader $recordLoader,
         \VuFind\Search\SearchRunner $searchRunner,
         \VuFind\View\Helper\Root\Translate $translator,
-        \Laminas\Config\Config $config,
-        \Laminas\Config\Config $authoritySearchConfig
+        \VuFind\Config\Config $config,
+        \VuFind\Config\Config $authoritySearchConfig
     ) {
         $this->recordLoader = $recordLoader;
         $this->searchRunner = $searchRunner;

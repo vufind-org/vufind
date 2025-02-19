@@ -86,7 +86,7 @@ abstract class AbstractProvider implements
     /**
      * Organisation info configuration
      *
-     * @var Laminas\Config\Config
+     * @var VuFind\Config\Config
      */
     protected $config;
 
@@ -135,7 +135,7 @@ abstract class AbstractProvider implements
     /**
      * Constructor.
      *
-     * @param \Laminas\Config\Config  $config         Configuration
+     * @param \VuFind\Config\Config   $config         Configuration
      * @param \VuFind\Cache\Manager   $cacheManager   Cache manager
      * @param \VuFind\Date\Converter  $dateConverter  Date converter
      * @param Url                     $url            URL plugin
@@ -144,7 +144,7 @@ abstract class AbstractProvider implements
      * @param Sorter                  $sorter         Sorter
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \VuFind\Cache\Manager $cacheManager,
         \VuFind\Date\Converter $dateConverter,
         Url $url,

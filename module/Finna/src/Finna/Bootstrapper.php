@@ -49,7 +49,7 @@ class Bootstrapper
     /**
      * Main VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 

@@ -861,7 +861,7 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
         $record = new SolrLido(
             [],
             [],
-            new \Laminas\Config\Config([])
+            new \VuFind\Config\Config([])
         );
         $record->setRawData(
             [
@@ -1185,11 +1185,11 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $config = new \Laminas\Config\Config($config);
+        $config = new \VuFind\Config\Config($config);
         $record = new SolrLido(
             $config,
             $config,
-            new \Laminas\Config\Config($searchConfig)
+            new \VuFind\Config\Config($searchConfig)
         );
         $defaultData = [
             'id' => 'knp-247394',
