@@ -45,7 +45,7 @@ use VuFind\Db\Entity\OaiResumptionEntityInterface;
  *
  * @property int    $id
  * @property string $params
- * @property string $hash
+ * @property string $token
  * @property string $expires
  */
 class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
@@ -133,26 +133,26 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
     }
 
     /**
-     * Set hash used to identify the token
+     * Set token used for identifying.
      *
-     * @param string $hash Generated hash
+     * @param string $token Generated token.
      *
      * @return static
      */
-    public function setHash(string $hash): static
+    public function setToken(string $token): static
     {
-        $this->hash = $hash;
+        $this->token = $token;
         return $this;
     }
 
     /**
-     * Get hash used to identify the token
+     * Get token used for identifying.
      *
      * @return ?string
      */
-    public function getHash(): ?string
+    public function getToken(): ?string
     {
-        return $this->hash;
+        return $this->token;
     }
 
     /**

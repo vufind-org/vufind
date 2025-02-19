@@ -68,24 +68,48 @@ class OaiResumptionService extends AbstractDbService implements
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return ?OaiResumptionEntityInterface
+     * @return     ?OaiResumptionEntityInterface
+     * @deprecated Use OaiResumptionService::findWithId
      */
     public function findToken(string $token): ?OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->findToken($token);
+        return $this->findWithId($token);
     }
 
     /**
-     * Retrieve a row from the database based on hash; return null if it
+     * Retrieve a row from the database based on primary key; return null if it
      * is not found.
      *
-     * @param string $hash Hash used to search for a resumption token.
+     * @param string $id Id to use for the search.
      *
      * @return ?OaiResumptionEntityInterface
      */
-    public function findTokenWithHash(string $hash): ?OaiResumptionEntityInterface
+    public function findWithId(string $id): ?OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->findTokenWithHash($hash);
+        return $this->getDbTable('oairesumption')->findWithId($id);
+    }
+
+    /**
+     * Retrieve a row from the database based on token; return null if it
+     * is not found.
+     *
+     * @param string $token Token used for the search.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findWithToken(string $token): ?OaiResumptionEntityInterface
+    {
+        return $this->getDbTable('oairesumption')->findWithToken($token);
+    }
+
+    /**
+     * Generate a random token using random_bytes and bin2hex
+     *
+     * @return string
+     */
+    protected function createRandomToken(): string
+    {
+        return bin2hex(random_bytes(32));
     }
 
     /**
@@ -99,15 +123,24 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface
     {
-        $row = $this->createEntity()
-            ->setHash(bin2hex(random_bytes(32)))
-            ->setResumptionParameters($this->encodeParams($params))
-            ->setExpiry(\DateTime::createFromFormat('U', $expire));
-        try {
-            $this->persistEntity($row);
-        } catch (\Exception $e) {
-            $this->logError('Could not save token: ' . $e->getMessage());
-            throw $e;
+        $row = null;
+        // In extremely rare cases it might be possible that the generated random token already exists in the
+        // database. Try 5 times, but the possibility for this to happen is close to 0.
+        for ($i = 1; $i <= 5; $i++) {
+            try {
+                $row = $this->createEntity()
+                    ->setToken($this->createRandomToken())
+                    ->setResumptionParameters($this->encodeParams($params))
+                    ->setExpiry(\DateTime::createFromFormat('U', $expire));
+                $this->persistEntity($row);
+                break;
+            } catch (\Exception $e) {
+                $this->logError('Could not save token: ' . $e->getMessage() . ', attempt: ' . $i);
+                // Actually throw the error if this is the last attempt and it still did not work.
+                if ($i >= 5) {
+                    throw $e;
+                }
+            }
         }
         return $row;
     }

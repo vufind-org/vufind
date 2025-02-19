@@ -66,20 +66,20 @@ interface OaiResumptionEntityInterface extends EntityInterface
     public function getResumptionParameters(): ?string;
 
     /**
-     * Set hash used to identify the token
+     * Set token used for identifying.
      *
-     * @param string $hash Generated hash
+     * @param string $token Generated token.
      *
      * @return static
      */
-    public function setHash(string $hash): static;
+    public function setToken(string $token): static;
 
     /**
-     * Get hash used to identify the token
+     * Get token used for identifying.
      *
      * @return ?string
      */
-    public function getHash(): ?string;
+    public function getToken(): ?string;
 
     /**
      * Expiry date setter.

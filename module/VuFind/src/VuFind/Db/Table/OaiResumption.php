@@ -86,24 +86,38 @@ class OaiResumption extends Gateway implements DbServiceAwareInterface
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return ?\VuFind\Db\Row\OaiResumption
+     * @return     ?\VuFind\Db\Row\OaiResumption
+     * @deprecated Use OaiResumption::findWithId
      */
     public function findToken($token)
     {
-        return $this->select(['id' => $token])->current();
+        return $this->findWithId($token);
     }
 
     /**
-     * Retrieve a row from the database based on hash; return null if it
+     * Retrieve a row from the database based on primary key; return null if it
      * is not found.
      *
-     * @param string $hash Hash used to search for a resumption token.
+     * @param string $id Id used for the search.
+     *
+     * @return ?\VuFind\Db\Row\OaiResumption
+     */
+    public function findWithId(string $id): ?OaiResumptionEntityInterface
+    {
+        return $this->select(['id' => $id])->current();
+    }
+
+    /**
+     * Retrieve a row from the database based on token; return null if it
+     * is not found.
+     *
+     * @param string $token Token used for the search.
      *
      * @return ?OaiResumptionEntityInterface
      */
-    public function findTokenWithHash(string $hash): ?OaiResumptionEntityInterface
+    public function findWithToken(string $token): ?OaiResumptionEntityInterface
     {
-        return $this->select(['hash' => $hash])->current();
+        return $this->select(['token' => $token])->current();
     }
 
     /**
