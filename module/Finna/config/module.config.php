@@ -803,6 +803,16 @@ $config = [
                     'sidefacetsdeferred' => 'Finna\Recommend\SideFacetsDeferred',
                 ],
             ],
+            'recorddataformatter_specs' => [
+                'factories' => [
+                    \Finna\RecordDataFormatter\Specs\DefaultRecord::class
+                        => \VuFind\RecordDataFormatter\Specs\DefaultRecordFactory::class,
+                ],
+                'aliases' => [
+                    \VuFind\RecordDataFormatter\Specs\DefaultRecord::class
+                        => \Finna\RecordDataFormatter\Specs\DefaultRecord::class,
+                ],
+            ],
             'resolver_driver' => [
                 'factories' => [
                     'Finna\Resolver\Driver\Sfx' => 'VuFind\Resolver\Driver\DriverWithHttpClientFactory',

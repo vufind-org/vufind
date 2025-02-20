@@ -52,7 +52,7 @@ return [
             'Finna\View\Helper\Root\ProxyUrl' => 'Finna\View\Helper\Root\ProxyUrlFactory',
             'Finna\View\Helper\Root\R2' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Record' => 'Finna\View\Helper\Root\RecordFactory',
-            'Finna\View\Helper\Root\RecordDataFormatter' => 'Finna\View\Helper\Root\RecordDataFormatterFactory',
+            'Finna\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
             'Finna\View\Helper\Root\RecordFieldMarkdown' => 'Finna\View\Helper\Root\RecordFieldMarkdownFactory',
             'Finna\View\Helper\Root\RecordImage' => 'Finna\View\Helper\Root\RecordImageFactory',
             'Finna\View\Helper\Root\RecordLink' => 'Finna\View\Helper\Root\RecordLinkFactory',
