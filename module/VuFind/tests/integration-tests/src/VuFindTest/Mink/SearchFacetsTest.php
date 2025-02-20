@@ -1490,6 +1490,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $filters = $filterArea->findAll('css', '.filter-value');
         $this->assertCount(3, $filters);
 
+        // Save the current URL so we can return to it:
+        $urlWithSid = $session->getCurrentUrl();
+
         // Remove the first filter:
         $filters[0]->click();
         $this->waitForPageLoad($page);
@@ -1502,5 +1505,19 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#searchForm .btn-primary');
         $this->waitForPageLoad($page);
         $this->assertCount(2, $page->findAll('css', '.facet.active'));
+
+        // Now go back to the original record page with the SID in the URL and
+        // confirm the return of the filters:
+        $session->visit($urlWithSid);
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(3, $filters);
+
+        // Remove the second filter:
+        $filters[1]->click();
+        $this->waitForPageLoad($page);
+
+        // There should now be fewer filters:
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(2, $filters);
     }
 }
