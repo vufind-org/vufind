@@ -476,8 +476,14 @@ class Folio extends AbstractAPI implements
      */
     public function getStatus($itemId)
     {
-        $holding = $this->getHolding($itemId);
-        return $holding['holdings'] ?? [];
+		
+		return $this->getHolding($itemId);
+
+//		Not sure why this is not working for VuFind10 - Revert to what was in VuFind9. DCH 02-20-2025
+//		There is no holdings in the json object returned from FOLIO that I can see.
+
+//        $holding = $this->getHolding($itemId);
+//        return $holding['holdings'] ?? [];
     }
 
     /**
