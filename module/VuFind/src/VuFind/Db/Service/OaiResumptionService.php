@@ -126,7 +126,7 @@ class OaiResumptionService extends AbstractDbService implements
         $row = null;
         // In extremely rare cases it might be possible that the generated random token already exists in the
         // database. Try 5 times, but the possibility for this to happen is close to 0.
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= $this->retryCount; $i++) {
             try {
                 $row = $this->createEntity()
                     ->setToken($this->createRandomToken())
@@ -137,7 +137,7 @@ class OaiResumptionService extends AbstractDbService implements
             } catch (\Exception $e) {
                 $this->logError('Could not save token: ' . $e->getMessage() . ', attempt: ' . $i);
                 // Actually throw the error if this is the last attempt and it still did not work.
-                if ($i >= 5) {
+                if ($i >= $this->retryCount) {
                     throw $e;
                 }
             }
