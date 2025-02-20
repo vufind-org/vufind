@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
 use VStelmakh\UrlHighlight\UrlHighlight;
+use VStelmakh\UrlHighlight\Validator\Validator;
 use VuFind\View\Helper\Root\Linkify;
 
 /**
@@ -72,8 +73,9 @@ class LinkifyFactory implements FactoryInterface
 
         $highlighter = new FinnaHighlighter($proxyUrl, $truncateUrl);
         $encoder = new HtmlSpecialcharsEncoder();
+        $validatorExceptEmail = new Validator(matchEmails: false);
         $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
-
-        return new Linkify($urlHighlight);
+        $urlHighlightExceptEmail = new UrlHighlight($validatorExceptEmail, $highlighter, $encoder);
+        return new Linkify($urlHighlight, $urlHighlightExceptEmail);
     }
 }
