@@ -1,3 +1,5 @@
+@use "sass:map";
+
 $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 
 // Include Font Awesome
@@ -132,45 +134,6 @@ input[type="checkbox"] { cursor: pointer; }
     display: flex;
   }
 }
-.nav > li > a {
-  @extend .icon-link;
-  text-decoration: none;
-
-  &:hover,
-  &:focus {
-    /* borrowed from a11y accessibility */
-    color: $dropdown-bg;
-    text-decoration: none;
-    background-color: #333;
-    outline: dotted 1px #000;
-  }
-}
-.nav .dropdown-toggle {
-  padding-right: 8px;
-
-  .icon {
-    margin-left: 4px;
-    margin-right: 0;
-  }
-
-  body.rtl & {
-    padding-left: 8px;
-    padding-right: 10px;
-
-    .icon {
-      margin-left: 0;
-      margin-right: 4px;
-    }
-  }
-}
-.navbar-nav button.dropdown-toggle {
-  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
-  appearance: none;
-  padding: $navbar-padding-y;
-  border: 0;
-  color: inherit;
-  background-color: transparent;
-}
 
 // Normalize highlighting
 .highlight,
@@ -274,6 +237,40 @@ footer {
 .rtl .flex { flex-direction: row-reverse; }
 .flex-col { flex: 0 1 100%; }
 .flex-none { flex: none; }
+
+.nav.searchbox,
+#searchForm {
+  .nav-tabs {
+    margin-bottom: 1rem;
+  }
+}
+
+body.rtl .dropdown-menu {
+  text-align: right;
+}
+
+/* ------ Navigation ------ */
+.navbar-brand {
+  font-size: 1.4rem;
+  text-decoration: underline;
+}
+
+.nav > li > a, .nav > li > button {
+  @extend .icon-link;
+  text-decoration: none;
+  // Force padding in collapsed menu navbar as well as tabs:
+  padding-right: $nav-link-padding-x;
+  padding-left: $nav-link-padding-x;
+
+  &:hover,
+  &:focus {
+    /* borrowed from a11y accessibility */
+    color: $dropdown-bg;
+    text-decoration: none;
+    background-color: #333;
+    outline: dotted 1px #000;
+  }
+}
 
 /* ------ Admin ------ */
 .form-admin-maintenance .form-control {
@@ -397,6 +394,11 @@ footer {
     list-style: none;
     margin-bottom: $myresearch-menu-ul-margin-bottom;
     padding-left: $myresearch-menu-ul-padding-left;
+
+    body.rtl & {
+      padding-left: inherit;
+      padding-right: $myresearch-menu-ul-padding-left;
+    }
   }
   a {
     display: inline-flex;
@@ -475,27 +477,45 @@ ul.list-group {
   min-width: 200px;
 }
 
-.logoutOptions.with-dropdown a { padding-right: .5rem; }
-#login-dropdown {
-  a {
-    margin-right: .5rem;
+// Reduce the gap between the text and dropdown button:
+#account-home-nav.dropdown {
+  > .nav-link:not(.account-dropdown-toggle) {
+    padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+
+    body.rtl & {
+      padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+      padding-right: inherit;
+    }
   }
 
-  .dropdown-menu {
-    width: 250px;
-    padding: 0 0.5rem 0.5rem 0.5rem;
+  > a.nav-link.account-dropdown-toggle {
+    padding-left: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+    padding-right: calc(var(--bs-navbar-nav-link-padding-x) / 2);
+    margin-right: .5rem;
 
-    .account-menu {
-      display: block;
-    }
-
-    h3 {
-      margin-left: 0.5rem;
+    body.rtl & {
+      margin-left: .5rem;
+      margin-right: inherit;
     }
   }
 }
-#login-dropdown
-#login-dropdown .dropdown-menu .account-menu { display: block; }
+
+#account-home-nav .dropdown-menu {
+  width: 300px;
+  padding: 0 0.5rem 0.5rem 0.5rem;
+
+  .account-menu {
+    display: block;
+  }
+
+  h3 {
+    margin-left: 0.5rem;
+  }
+
+  @media (max-width: #{300px + 4 * $navbar-padding-x}) {
+    width: calc(100vw - #{4 * $navbar-padding-x});
+  }
+}
 .login-tokens-table {
   margin-bottom: 0.5rem;
   tbody > tr > td {
