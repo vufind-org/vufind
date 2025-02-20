@@ -12,7 +12,7 @@
   "scripts": {
     "finna:build:scss": "grunt finna:scss",
     "finna:lessToSass": "grunt finna:lessToSass",
-    "finna:check:scss": "grunt finna:check:scss",
+    "finna:check:scss": "npm run install:scss-dependencies && grunt finna:check:scss",
 
     "build": "npm run build:css",
     "watch": "npm run watch:css",
