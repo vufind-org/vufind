@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Unpaywall DOI linker factory
+ * IdentifierLinker helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Moravian library 2019
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  DOI
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * BrowZine DOI linker factory
+ * IdentifierLinker helper factory.
  *
  * @category VuFind
- * @package  DOI
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class IdentifierLinkerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,8 +59,6 @@ class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -67,10 +66,12 @@ class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->DOI;
-        return new $requestedName($config);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $helpers = $container->get('ViewHelperManager');
+        // DOI config section is supported as a fallback for back-compatibility:
+        $idConfig = $config?->IdentifierLinks?->toArray() ?? $config?->DOI?->toArray() ?? [];
+        return new $requestedName($helpers->get('context'), $idConfig);
     }
 }

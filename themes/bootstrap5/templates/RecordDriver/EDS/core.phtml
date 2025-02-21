@@ -165,9 +165,9 @@
       <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php $doi = $this->doi($this->driver, 'record'); ?>
-    <?php if ($doi->isActive()): ?>
-      <div><?=$doi->renderTemplate()?></div>
+    <?php $identifierLinksHtml = $this->identifierLinker($this->driver, 'record'); ?>
+    <?php if ($identifierLinksHtml): ?>
+      <div><?=$identifierLinksHtml?></div>
     <?php endif; ?>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI linker interface
+ * DOI linker plugin manager
  *
  * PHP version 8
  *
@@ -27,10 +27,12 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\IdentifierLinker;
+
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * DOI linker interface
+ * DOI linker plugin manager
  *
  * @category VuFind
  * @package  DOI
@@ -38,18 +40,38 @@ namespace VuFind\DoiLinker;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-interface DoiLinkerInterface
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Given an array of DOIs, perform a lookup and return an associative array
-     * of arrays, keyed by DOI. Each array contains one or more associative arrays
-     * with required 'link' (URL to related resource) and 'label' (display text)
-     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of
-     * configured icon in theme) key.
+     * Default plugin aliases.
      *
-     * @param array $doiArray DOIs to look up
-     *
-     * @return array
+     * @var array
      */
-    public function getLinks(array $doiArray);
+    protected $aliases = [
+        'browzine' => BrowZine::class,
+        'demo' => Demo::class,
+        'unpaywall' => Unpaywall::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        BrowZine::class => BrowZineFactory::class,
+        Demo::class => InvokableFactory::class,
+        Unpaywall::class => UnpaywallFactory::class,
+    ];
+
+    /**
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
+     *
+     * @return string
+     */
+    protected function getExpectedInterface()
+    {
+        return IdentifierLinkerInterface::class;
+    }
 }

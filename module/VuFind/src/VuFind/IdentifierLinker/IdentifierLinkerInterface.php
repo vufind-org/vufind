@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI linker plugin manager
+ * DOI linker interface
  *
  * PHP version 8
  *
@@ -27,12 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\DoiLinker;
-
-use Laminas\ServiceManager\Factory\InvokableFactory;
+namespace VuFind\IdentifierLinker;
 
 /**
- * DOI linker plugin manager
+ * DOI linker interface
  *
  * @category VuFind
  * @package  DOI
@@ -40,38 +38,18 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+interface IdentifierLinkerInterface
 {
     /**
-     * Default plugin aliases.
+     * Given an array of identifier arrays, perform a lookup and return an associative array
+     * of arrays, matching the keys of the input array. Each output array contains one or more
+     * associative arrays with required 'link' (URL to related resource) and 'label' (display text)
+     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of configured icon in
+     * theme) key.
      *
-     * @var array
-     */
-    protected $aliases = [
-        'browzine' => BrowZine::class,
-        'demo' => Demo::class,
-        'unpaywall' => Unpaywall::class,
-    ];
-
-    /**
-     * Default plugin factories.
+     * @param array[] $idArray Identifiers to look up
      *
-     * @var array
+     * @return array
      */
-    protected $factories = [
-        BrowZine::class => BrowZineFactory::class,
-        Demo::class => InvokableFactory::class,
-        Unpaywall::class => UnpaywallFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
-    {
-        return DoiLinkerInterface::class;
-    }
+    public function getLinks(array $idArray): array;
 }

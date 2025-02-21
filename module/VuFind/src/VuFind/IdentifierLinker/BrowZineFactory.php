@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI helper factory.
+ * BrowZine DOI linker factory
  *
  * PHP version 8
  *
@@ -21,31 +21,59 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  DOI
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\IdentifierLinker;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * DOI helper factory.
+ * BrowZine DOI linker factory
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  DOI
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class DoiFactory implements FactoryInterface
+class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    /**
+     * Default DOI services to return if no configuration is provided.
+     *
+     * @var array
+     */
+    protected array $defaultDoiServices;
+
+    /**
+     * Default ISSN services to return if no configuration is provided.
+     *
+     * @var array
+     */
+    protected array $defaultIssnServices;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
+        $this->defaultDoiServices = [
+            'browzineWebLink' => "View Complete Issue|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
+            'fullTextFile' => "PDF Full Text|browzine-pdf|{$baseIconUrl}browzine-pdf-download-icon.svg",
+        ];
+        $this->defaultIssnServices = [
+            'browzineWebLink' => "Browse Available Issues|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
+        ];
+    }
+
     /**
      * Create an object
      *
@@ -59,6 +87,8 @@ class DoiFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -66,11 +96,18 @@ class DoiFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $helpers = $container->get('ViewHelperManager');
-        return new $requestedName($helpers->get('context'), $config->DOI ?? null);
+        $search = $container->get(\VuFindSearch\Service::class);
+        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)->get('BrowZine')->toArray();
+        // DOI config section is supported as a fallback for back-compatibility:
+        $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
+
+        return new $requestedName(
+            $search,
+            $config,
+            $fullConfig['DOIServices'] ?? $this->defaultDoiServices,
+            $fullConfig['ISSNServices'] ?? $this->defaultIssnServices
+        );
     }
 }

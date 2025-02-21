@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for DoiLookup AJAX handler.
+ * Unpaywall DOI linker factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Moravian library 2019
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  DOI
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\IdentifierLinker;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,15 +35,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for DoiLookup AJAX handler.
+ * BrowZine DOI linker factory
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  DOI
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
-class DoiLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -70,11 +70,7 @@ class DoiLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->toArray();
-        return new $requestedName(
-            $container->get(\VuFind\DoiLinker\PluginManager::class),
-            $container->get('ViewRenderer'),
-            $config
-        );
+            ->get('config')->DOI;
+        return new $requestedName($config);
     }
 }
