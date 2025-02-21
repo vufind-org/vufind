@@ -413,7 +413,6 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
             if (preg_match('/^__(.*)_sort__$/', $menuKey, $matches)) {
                 // Sort section
                 $menuKey = $matches[1];
-                $items = $items->toArray();
                 // Re-order menu-level sort entries in descending order
                 asort($items);
                 $sortData[$menuKey] = $items;
