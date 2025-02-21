@@ -327,6 +327,11 @@ nav ul{
   background: #ffffff;
   padding-top: 20px;
 }
+
+.searchHomeContent {
+  padding-top: 20px;
+}
+
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {
   color: #262626;
