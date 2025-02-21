@@ -79,7 +79,7 @@ CREATE TABLE `oai_resumption` (
   `params` text,
   `expires` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY (`token`),
+  UNIQUE KEY (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
