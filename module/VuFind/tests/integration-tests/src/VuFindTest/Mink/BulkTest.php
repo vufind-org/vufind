@@ -30,7 +30,6 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
-use Behat\Mink\Session;
 
 /**
  * Mink bulk action test class.
@@ -46,6 +45,7 @@ use Behat\Mink\Session;
 final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\RetryClickTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -291,25 +291,6 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             'top button' => [''],
             'bottom button' => ['bottom_'],
         ];
-    }
-
-    /**
-     * After a failed button click has been detected, resize the window and try again.
-     *
-     * @param Session $session  Mink session
-     * @param Element $page     Current page element
-     * @param string  $selector Selector to click
-     *
-     * @return void
-     */
-    protected function retryClickWithResizedWindow(Session $session, Element $page, string $selector): void
-    {
-        // For some reason, the click action does not always succeed here; resizing
-        // the window and retrying seems to prevent intermittent test failures.
-        echo "\n\nMink click failed; retrying with resized window!\n";
-        $session->resizeWindow(1280, 200, 'current');
-        $this->clickCss($page, $selector);
-        $session->resizeWindow(1280, 768, 'current');
     }
 
     /**
