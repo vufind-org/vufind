@@ -12,10 +12,6 @@ $btn-primary-color:      $body-bg !default;
 $btn-primary-bg:         $primary !default;
 $btn-primary-border:     shade-color($primary, $btn-active-bg-shade-amount) !default;
 
-$nav-link-hover-bg:       $gray-lighter !default;
-$nav-link-active-bg:      $primary !default;
-$nav-link-padding:        $nav-link-padding-y !default;
-
 $nav-tabs-active-link-hover-color: $gray !default;
 $navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
 $navbar-nav-link-hover-color:      $body-bg !default;
