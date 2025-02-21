@@ -75,7 +75,7 @@
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 
 <?php
-$sort_holding_id = array_column($holding['items'], "holding_id");
+$sort_holding_id = array_column($holding['items'], "holdings_id");
 $sort_enumeration_id = array_column($holding['items'], "enumeration");
 array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SORT_NATURAL, $holding['items']);
 
@@ -135,7 +135,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
 
   <?php foreach ($holding['items'] as $item): ?>
   <?php
-    $hold_id = $item['holding_id'];
+    $hold_id = $item['holdings_id'];
     $fullCallNumber = $item['callnumber_prefix'] . " " . $item['callnumber'];
   ?>
   <?php
