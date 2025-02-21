@@ -83,6 +83,16 @@ interface OaiResumptionServiceInterface
     public function findWithToken(string $token): ?OaiResumptionEntityInterface;
 
     /**
+     * Try to find with token first, if not found then try to find with id where the token is null.
+     *
+     * @param string $tokenOrId Token or id
+     *
+     * @return     ?OaiResumptionEntityInterface
+     * @deprecated This function is for BC and can be removed in the future.
+     */
+    public function findWithIdOrTokenBc(string $tokenOrId): ?OaiResumptionEntityInterface;
+
+    /**
      * Create and persist a new resumption token.
      *
      * @param array $params Parameters associated with the token.

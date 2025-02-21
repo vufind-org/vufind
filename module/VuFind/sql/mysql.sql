@@ -75,7 +75,7 @@ CREATE TABLE `ratings` (
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `oai_resumption` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `token` varchar(255) NOT NULL,
+  `token` varchar(255) DEFAULT NULL,
   `params` text,
   `expires` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),

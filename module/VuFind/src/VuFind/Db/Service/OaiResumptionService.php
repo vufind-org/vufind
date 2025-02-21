@@ -103,6 +103,19 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
+     * Try to find with token first, if not found then try to find with id where the token is null.
+     *
+     * @param string $tokenOrId Token or id
+     *
+     * @return     ?OaiResumptionEntityInterface
+     * @deprecated This function is for BC and can be removed in the future.
+     */
+    final public function findWithIdOrTokenBc(string $tokenOrId): ?OaiResumptionEntityInterface
+    {
+        return $this->findWithToken($tokenOrId) ?? $this->getDbTable('oairesumption')->findWithIdBc($tokenOrId);
+    }
+
+    /**
      * Generate a random token using random_bytes and bin2hex
      *
      * @return string
