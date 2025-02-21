@@ -50,25 +50,6 @@ $panel-default-border:   $primary-border-subtle !default;
 $panel-bg:               #f5f5f5 !default;
 $panel-footer-bg:        $panel-bg !default;
 
-$screen-xs:              map-get($grid-breakpoints, "xs");
-$screen-xs-min:          $screen-xs;
-$screen-sm:              map-get($grid-breakpoints, "sm");
-$screen-sm-min:          $screen-sm;
-$screen-md:              map-get($grid-breakpoints, "md");
-$screen-md-min:          $screen-md;
-$screen-lg:              map-get($grid-breakpoints, "lg");
-$screen-lg-min:          $screen-lg;
-$screen-xl:              map-get($grid-breakpoints, "xl");
-$screen-xl-min:          $screen-xl;
-
-$screen-xs-max:          ($screen-sm-min - 1);
-$screen-sm-max:          ($screen-md-min - 1);
-$screen-md-max:          ($screen-lg-min - 1);
-$screen-lg-max:          ($screen-xl-min - 1);
-
-$grid-float-breakpoint:     $screen-sm-min !default;
-$grid-float-breakpoint-max: ($grid-float-breakpoint - 1) !default;
-
 $state-danger-text:           var(--#{$prefix}danger) !default;
 $state-danger-bg:             var(--#{$prefix}danger-bg-subtle) !default;
 $state-info-text:             var(--#{$prefix}info) !default;
@@ -243,7 +224,7 @@ button.list-group-item {
     display: block;
     width: 100%;
 
-    @media (min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       display: inline-block;
       width: auto;
     }
@@ -272,7 +253,7 @@ textarea.form-control {
   height: auto;
 }
 
-@media (min-width: map-get($grid-breakpoints, "sm")) {
+@include media-breakpoint-up(sm) {
   .form-inline {
     .control-label {
       margin-bottom: 0;
@@ -342,7 +323,7 @@ h6, .h6 {
 #modal .modal-dialog .modal-content > .close {
   border: 0;
 
-  @media (max-width: 767px) {
+  @include media-breakpoint-down(sm) {
     font-size: 1.5rem;
     background-color: var(--#{$prefix}modal-bg);
     top: 0.5rem;
@@ -361,49 +342,6 @@ h6, .h6 {
 .media-body {
   width: 10000px;
 }
-
-// Responsive utilities (that avoid `display: *` that would override any existing value)
-@media(max-width: $screen-xs-max) {
-  .hidden-xs {
-    display: none !important;
-  }
-  :not(.visible-xs) {
-    &.visible-sm, &.visible-md, &.visible-lg {
-      display: none !important;
-    }
-  }
-}
-@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
-  .hidden-sm {
-    display: none !important;
-  }
-  :not(.visible-sm) {
-    &.visible-xs, &.visible-md, &.visible-lg {
-      display: none !important;
-    }
-  }
-}
-@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
-  .hidden-md {
-    display: none !important;
-  }
-  :not(.visible-md) {
-    &.visible-xs, &.visible-sm, &.visible-lg {
-      display: none !important;
-    }
-  }
-}
-@media (min-width: $screen-lg-min) {
-  .hidden-lg {
-    display: none !important;
-  }
-  :not(.visible-lg) {
-    &.visible-xs, &.visible-sm, &.visible-md {
-      display: none !important;
-    }
-  }
-}
-
 
 .hidden-print {
   @extend .d-print-none;
@@ -528,13 +466,15 @@ h6, .h6 {
   @include border-radius(var(--#{$prefix}btn-border-radius));
 }
 
-@media screen and (max-width: 768px) {
-  .table-responsive {
-    > :not(caption) > * > * {
-      box-shadow: none;
-    }
-    > tbody > tr > *:first-child {
-      border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
+@include media-breakpoint-down(sm) {
+  @media screen {
+    .table-responsive {
+      > :not(caption) > * > * {
+        box-shadow: none;
+      }
+      > tbody > tr > *:first-child {
+        border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
+      }
     }
   }
 }

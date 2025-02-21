@@ -126,7 +126,7 @@
     }
   ?>
   <?php // Normal view ?>
-  <div class="active-filters hidden-xs">
+  <div class="active-filters active-filters--uncollapsible">
     <span class="sr-only"><?=$this->transEsc('page_reload_on_deselect_hint') ?></span>
     <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
       <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
@@ -140,7 +140,7 @@
     <div class="clearfix"></div>
   </div>
   <?php // Narrow view ?>
-  <div class="active-filters visible-xs">
+  <div class="active-filters active-filters--collapsible">
     <span class="sr-only"><?=$this->transEsc('page_reload_on_deselect_hint') ?></span>
     <div class="filters-toggle-bar">
       <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
