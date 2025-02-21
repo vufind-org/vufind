@@ -360,17 +360,10 @@ function removeCheckRouteParam() {
 
 function recordDocReady() {
   removeCheckRouteParam();
-  $('.record-tabs .nav-tabs a').attr('aria-selected', 'false');
-  $('.record-tabs .nav-tabs .initiallyActive a').attr('aria-selected', 'true');
-  // update aria-selected attributes after a tab has been shown
-  $('.record-tabs .nav-tabs a').on('shown.bs.tab', function shownTab(e) {
-    $('.record-tabs .nav-tabs a').attr('aria-selected', 'false');
-    $(e.target).attr('aria-selected', 'true');
-  });
   $('.record-tabs .nav-tabs a').on('click', function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
-    if ($li.hasClass('active')) {
+    if ($(this).hasClass('active')) {
       return true;
     }
     var tabid = $li.attr('data-tab');

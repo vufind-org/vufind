@@ -32,6 +32,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\RecordDataFormatter\Specs\PluginManager as SpecsManager;
+use VuFind\RecordDataFormatter\Specs\SpecInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 use function call_user_func;
@@ -53,34 +55,19 @@ use function is_callable;
 class RecordDataFormatter extends AbstractHelper
 {
     /**
-     * Default settings.
-     *
-     * @var array
-     */
-    protected $defaults = [];
-
-    /**
      * Record driver object.
      *
-     * @var RecordDriver
+     * @var ?RecordDriver
      */
-    protected $driver = null;
-
-    /**
-     * Config.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
+    protected ?RecordDriver $driver = null;
 
     /**
      * Constructor
      *
-     * @param ?\VuFind\Config\Config $config Config
+     * @param SpecsManager $specsManager Specs Plugin Manager
      */
-    public function __construct($config = null)
+    public function __construct(protected SpecsManager $specsManager)
     {
-        $this->config = $config;
     }
 
     /**
@@ -105,7 +92,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return int
      */
-    protected function sortCallback($a, $b)
+    protected function sortCallback(array $a, array $b): int
     {
         // Sort on 'pos' with 'label' as tie-breaker.
         return ($a['pos'] == $b['pos'])
@@ -119,11 +106,11 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @param mixed $value            Data to check for zero value.
      * @param array $options          Rendering options.
-     * @param array $ignoreCombineAlt If value should always be allowed when renderType is CombineAlt
+     * @param bool  $ignoreCombineAlt If value should always be allowed when renderType is CombineAlt
      *
      * @return bool
      */
-    protected function allowValue($value, $options, $ignoreCombineAlt = false)
+    protected function allowValue(mixed $value, array $options, bool $ignoreCombineAlt = false): bool
     {
         if (!empty($value) || ($ignoreCombineAlt && ($options['renderType'] ?? 'Simple') == 'CombineAlt')) {
             return true;
@@ -141,7 +128,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return ?array
      */
-    protected function render($field, $data, $options)
+    protected function render(string $field, mixed $data, array $options): ?array
     {
         if (!($options['enabled'] ?? true)) {
             return null;
@@ -190,7 +177,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return array
      */
-    public function getData(...$args)
+    public function getData(...$args): array
     {
         if ($args[0] instanceof RecordDriver) {
             $this->driver = $args[0];
@@ -227,29 +214,13 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return array
      */
-    public function getDefaults($key)
+    public function getDefaults(string $key): array
     {
-        // No value stored? Return empty array:
-        if (!isset($this->defaults[$key])) {
-            return [];
+        $specs = $this->getSpecPluginForDriver();
+        if ($specs === null) {
+            throw new \Exception('Using the RecordDataFormatter view helper with a driver that is not supported.');
         }
-        // Callback stored? Resolve to array on demand:
-        if (is_callable($this->defaults[$key])) {
-            $this->defaults[$key] = $this->defaults[$key]();
-            if (!is_array($this->defaults[$key])) {
-                throw new \Exception('Callback for ' . $key . ' must return array');
-            }
-        }
-        // Adding defaults from config
-        foreach ($this->config->Defaults->$key ?? [] as $field) {
-            $this->defaults[$key][$field] = [];
-        }
-        // Adding options from config
-        foreach ($this->defaults[$key] as $field => $options) {
-            $this->defaults[$key][$field] = $this->addOptions($key, $field, $options);
-        }
-        // Send back array:
-        return $this->defaults[$key];
+        return $specs->getDefaults($key);
     }
 
     /**
@@ -260,52 +231,32 @@ class RecordDataFormatter extends AbstractHelper
      * callable returning an array).
      *
      * @return void
+     *
+     * @deprecated Set defaults on spec class directly
      */
-    public function setDefaults($key, $values)
+    public function setDefaults(string $key, array|callable $values): void
     {
-        if (!is_array($values) && !is_callable($values)) {
-            throw new \Exception('$values must be array or callable');
+        $specs = $this->getSpecPluginForDriver();
+        if ($specs !== null && method_exists($specs, 'setDefaults')) {
+            $specs->setDefaults($key, $values);
         }
-        $this->defaults[$key] = $values;
     }
 
     /**
-     * Add global and configured options to options of a field.
+     * Get matching spec plugin for the driver.
      *
-     * @param string $context Context of the field.
-     * @param string $field   Field
-     * @param array  $options Options of a field.
-     *
-     * @return ?array
+     * @return ?SpecInterface
      */
-    protected function addOptions($context, $field, $options)
+    protected function getSpecPluginForDriver(): ?SpecInterface
     {
-        if ($globalOptions = ($this->config->Global ?? false)) {
-            $options = array_filter($options, function ($val) {
-                return $val !== null;
-            });
-            $options = array_merge($globalOptions->toArray(), $options);
+        $specClass = \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
+        if ($this->driver !== null) {
+            $specClass = $this->driver->getRecordDataFormatterSpecClass();
         }
-
-        $section = 'Field_' . $field;
-        if ($fieldOptions = ($this->config->$section ?? false)) {
-            $fieldOptions = array_filter($fieldOptions->toArray(), function ($val) {
-                return $val !== null;
-            });
-            $options = array_merge($options, $fieldOptions);
+        if ($specClass === null) {
+            return null;
         }
-
-        $contextSection = $options['overrideContext'][$context] ?? false;
-        if (
-            $contextOptions = $this->config->$contextSection ?? false
-        ) {
-            $contextOptions = array_filter($contextOptions->toArray(), function ($val) {
-                return $val !== null;
-            });
-            $options = array_merge($options, $contextOptions);
-        }
-
-        return $options;
+        return $this->specsManager->get($specClass);
     }
 
     /**
@@ -315,7 +266,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return mixed
      */
-    protected function extractData(array $options)
+    protected function extractData(array $options): mixed
     {
         // Static cache for persisting data.
         static $cache = [];
@@ -356,9 +307,9 @@ class RecordDataFormatter extends AbstractHelper
      * @return array
      */
     protected function renderMulti(
-        $data,
+        mixed $data,
         array $options
-    ) {
+    ): array {
         // Make sure we have a callback for sorting the $data into groups...
         $callback = $options['multiFunction'] ?? null;
         if (!is_callable($callback)) {
@@ -394,9 +345,9 @@ class RecordDataFormatter extends AbstractHelper
      * @return string
      */
     protected function renderRecordHelper(
-        $data,
+        mixed $data,
         array $options
-    ) {
+    ): string {
         $method = $options['helperMethod'] ?? null;
         $plugin = $this->getView()->plugin('record');
         if (empty($method) || !is_callable([$plugin, $method])) {
@@ -414,9 +365,9 @@ class RecordDataFormatter extends AbstractHelper
      * @return string
      */
     protected function renderRecordDriverTemplate(
-        $data,
+        mixed $data,
         array $options
-    ) {
+    ): string {
         if (!isset($options['template'])) {
             throw new \Exception('Template option missing.');
         }
@@ -424,6 +375,7 @@ class RecordDataFormatter extends AbstractHelper
         $context = $options['context'] ?? [];
         $context['driver'] = $this->driver;
         $context['data'] = $data;
+        $context['options'] = $options;
         return trim(
             $helper($this->driver)->renderTemplate($options['template'], $context)
         );
@@ -438,7 +390,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return string|bool
      */
-    protected function getLink($value, $options)
+    protected function getLink(string $value, array $options): string|bool
     {
         if ($options['recordLink'] ?? false) {
             $helper = $this->getView()->plugin('record');
@@ -453,12 +405,12 @@ class RecordDataFormatter extends AbstractHelper
      * @param mixed $data    Data to render
      * @param array $options Rendering options.
      *
-     * @return string
+     * @return ?string
      */
     protected function renderCombineAlt(
-        $data,
+        mixed $data,
         array $options
-    ) {
+    ): ?string {
         // Determine the rendering method to use, and bail out if it's illegal:
         $method = empty($options['combineAltRenderType'])
             ? 'renderSimple' : 'render' . $options['combineAltRenderType'];
@@ -506,7 +458,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function renderSimple($data, array $options)
+    protected function renderSimple(mixed $data, array $options): string
     {
         $view = $this->getView();
         $escaper = ($options['translate'] ?? false)

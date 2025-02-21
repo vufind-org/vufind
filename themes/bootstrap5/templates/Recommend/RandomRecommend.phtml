@@ -4,7 +4,7 @@
     <li class="list-group-item title" data-bs-toggle="collapse" data-bs-target="#side-collapse-randomrecommend">
       <?=$this->transEsc('random_recommendation_title')?>
     </li>
-    <div id="side-collapse-randomrecommend" class="collapse in">
+    <div id="side-collapse-randomrecommend" class="collapse show">
     <?php foreach ($recommend as $driver): ?>
       <li class="list-group-item">
         <?php if ($this->recommend->getDisplayMode() === 'images' || $this->recommend->getDisplayMode() === 'mixed'): ?>

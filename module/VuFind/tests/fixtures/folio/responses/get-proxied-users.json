@@ -1,5 +1,4 @@
 [
-  { "comment": "Initial request for token" },
   {
     "expectedPath": "/proxiesfor",
     "expectedParams": {

@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('New Item Search'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('New Items') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('New Items') . '</li>';
 
     // Load advanced search Javascript to activate the clear button:
     $this->headScript()->appendFile('advanced_search.js');
@@ -34,7 +34,7 @@
   <?php if (is_array($this->fundList) && !empty($this->fundList)): ?>
     <div class="form-group">
       <label class="control-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
-      <select id="newitem_department" name="department" size="10" class="form-control">
+      <select id="newitem_department" name="department" size="10" class="form-control form-select form-select">
       <?php foreach ($this->fundList as $fundId => $fund): ?>
         <option value="<?=$this->escapeHtmlAttr($fundId)?>"><?=$this->transEsc($fund)?></option>
       <?php endforeach; ?>

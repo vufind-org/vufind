@@ -3,9 +3,9 @@
   $this->headTitle($this->translate('email_selected_favorites'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
     . '<li><a href="' . $this->url('cart-home') . '">' . $this->transEsc('Cart') . '</a></li> '
-    . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
+    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('email_selected_favorites') . '</li>';
 ?>
 <h2><?=$this->transEsc('bulk_email_cart') ?></h2>
 <?=$this->flashmessages()?>
@@ -20,7 +20,7 @@
         <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
         </button>
-        <div id="itemhide" class="collapse in">
+        <div id="itemhide" class="collapse show">
           <ul>
             <?php foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
@@ -37,7 +37,7 @@
 <?php
   $script = <<<JS
       $('button.btn.hidden').removeClass('hidden');
-      $('#itemhide').removeClass('in');
+      $('#itemhide').removeClass('show');
       JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

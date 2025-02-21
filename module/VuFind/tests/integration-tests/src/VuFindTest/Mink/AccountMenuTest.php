@@ -174,7 +174,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->login('catuser', 'catpass')->getPage();
-        $menu = $page->findAll('css', '#login-dropdown');
+        $menu = $page->findAll('css', '#account-home-nav .dropdown-menu');
         $this->assertCount($dropdown ? 1 : 0, $menu);
         $this->findCss($page, '.account-menu .fines');
         $this->assertEqualsWithTimeout(
