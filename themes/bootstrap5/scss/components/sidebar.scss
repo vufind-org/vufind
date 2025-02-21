@@ -196,10 +196,11 @@
   margin-top: .25rem;
   margin-left: 0.5rem;
 }
+
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
 .full-facet-controls .form-group {
   margin: 0;
-  padding: $padding-base-vertical 0;
+  padding: $btn-padding-y 0;
 }
 
 .truncate-done {

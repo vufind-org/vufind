@@ -8,7 +8,7 @@
   position: relative;
   margin-bottom: .5rem;
   padding: 1rem;
-  border: 1px solid $panel-default-border;
+  border: 1px solid $primary-border-subtle;
   border-radius: $border-radius;
 
   & ~ & { margin-top: 1rem; } // Spacing between groups

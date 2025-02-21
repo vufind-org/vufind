@@ -45,7 +45,7 @@
     --cc-webkit-scrollbar-bg: #{$gray-lighter};
     --cc-webkit-scrollbar-hover-bg: #{$btn-primary-color};
 
-    --cc-footer-bg: #{$panel-footer-bg};
+    --cc-footer-bg: #{$gray-lighter};
     --cc-footer-color: #{$text-color};
-    --cc-footer-border-color: #{$panel-default-border};
+    --cc-footer-border-color: #{$primary-border-subtle};
 }
