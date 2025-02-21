@@ -184,6 +184,15 @@ nav ul{
   }
 }
 
+@media (min-width: 1400px){
+.container-xl, .container-lg, .container-md, .container-sm, .container, footer {
+max-width: 1299px;
+}
+}
+
+
+
+
 .navbar {
   
   border-radius: 0px;
