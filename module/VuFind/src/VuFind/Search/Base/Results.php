@@ -79,7 +79,7 @@ abstract class Results
     /**
      * Override (only for use in very rare cases)
      *
-     * @var int
+     * @var ?int
      */
     protected $startRecordOverride = null;
 
@@ -374,7 +374,7 @@ abstract class Results
     /**
      * Manually override the start record number.
      *
-     * @param int $rec Record number to use.
+     * @param ?int $rec Record number to use.
      *
      * @return void
      */

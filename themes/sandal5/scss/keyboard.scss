@@ -11,8 +11,8 @@
     }
   }
 
-  .dropdown-menu .active a,
-  .dropdown-menu .active a:hover { background-color: $header-bg; }
+  .dropdown-menu a.active,
+  .dropdown-menu a.active:hover { background-color: $header-bg; }
 
   .btn-primary{
     height: 20px;

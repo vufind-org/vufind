@@ -1,14 +1,7 @@
 // Thumbnail sizes for media items: search results, list entries, record views
-/* #LESS>
-$thumbnail-width-small:   60px;
-$thumbnail-width-medium: 100px;
-$thumbnail-width-large:  160px;
-<#LESS */
-/* #SCSS> */
 $thumbnail-width-small:   60px !default;
 $thumbnail-width-medium: 100px !default;
 $thumbnail-width-large:  160px !default;
-/* <#SCSS */
 
 // record result list ol, ul that contains li.result
 .record-list {
@@ -54,10 +47,8 @@ $thumbnail-width-large:  160px !default;
   #datevispublishDatexWrapper,
   // Bulk action checkboxes:
   #search-cart-form .result .checkbox,
-  // Search result bulk action buttons:
-  #search-cart-form .bulkActionButtons,
-  // Favorites bulk action buttons:
-  form[name="bulkActionForm"] .bulkActionButtons { display: none; }
+  // Search result and favorites bulk action buttons:
+  .bulkActionButtons { display: none; }
 }
 
 .searchHomeContent { @include clearfix(); }
@@ -170,8 +161,8 @@ header .container.navbar { margin-bottom: 0; }
     padding-left: 1em;
   }
 }
-.action-toolbar li,
-.selection-controls-bar li {
+.action-toolbar > li,
+.selection-controls-bar > li {
   display: inline-block;
 
   .popover li {
@@ -324,15 +315,12 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.btn-bookbag-toggle,
 .result-links a {
   line-height: 1.5;
 }
 
 .result-links .alert { margin: 0; }
 .result-formats { margin-bottom: .5rem; }
-
-.btn-bookbag-toggle form { display: inline; }
 
 .savedLists {
   @extend .alert;
@@ -616,7 +604,7 @@ body.rtl {
 
     .collapse {
       display: none;
-      .in {
+      .show {
         display: inline-block;
       }
     }
@@ -662,8 +650,6 @@ body.rtl {
 }
 
 .toolbar-btn,
-.record-nav .cart-add,
-.record-nav .cart-remove,
 .reset-filters-btn,
 .clear-selection {
   border: 0;
@@ -678,8 +664,6 @@ body.rtl {
 }
 
 .toolbar-btn,
-.record-nav .cart-add,
-.record-nav .cart-remove,
 .reset-filters-btn {
   @extend .icon-link;
   gap: 0.25rem;
@@ -707,7 +691,7 @@ body.rtl {
   }
 
   input[type="checkbox"] {
-    margin-right: .4rem;
+    margin-inline-end: .4rem;
   }
 }
 

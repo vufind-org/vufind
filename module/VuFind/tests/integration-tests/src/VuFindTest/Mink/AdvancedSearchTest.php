@@ -284,7 +284,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
@@ -320,7 +320,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(

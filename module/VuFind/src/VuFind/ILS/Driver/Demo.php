@@ -864,6 +864,20 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
+     * Get loan type data for inclusion in a holding entry.
+     *
+     * @return array
+     */
+    protected function getLoanTypeForHolding(): array
+    {
+        $id = rand(1, 5);
+        return [
+            'loan_type_id' => $id,
+            'loan_type_name' => "Loan Type $id",
+        ];
+    }
+
+    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
@@ -892,10 +906,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $status = $this->getSimulatedStatus($id, $patron);
 
         $issue = 1;
-        // Add notes and summary:
+        // Add notes, summary and other details:
         foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
             $status[$i] += $this->getNotesAndSummary($itemNum);
+            $status[$i] += $this->getLoanTypeForHolding();
             $volume = intdiv($issue, 4) + 1;
             $seriesIssue = $issue % 4;
             $issue = $issue + 1;

@@ -3,5 +3,5 @@
   $this->slot('head-title')->set($this->translate('New Items'));
   $this->slot('search-heading')->set($this->transEsc('New Items'));
   $this->slot('empty-message')->set($this->transEsc('No new item information is currently available.'));
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('search-newitem') . '">' . $this->transEsc('Find New Items') . '</a></li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('search-newitem') . '">' . $this->transEsc('Find New Items') . '</a></li>';
   echo $this->render('search/results.phtml');

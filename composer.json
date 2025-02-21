@@ -154,7 +154,6 @@
         "show-outdated": "composer show -oD --ignore-platform-req=ext-oci8",
         "update-npm-deps": [
             "npm update",
-            "cd themes/bootstrap3 && npm run updateDeps",
             "cd themes/bootstrap5 && npm run updateDeps"
         ],
         "install-build-deps": [

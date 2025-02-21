@@ -219,10 +219,9 @@ class VuFindSitemap extends VuFind
     }
 
     /**
-     * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
-     * This method will only work if Aperture is properly configured in the
-     * web/conf/fulltext.ini file. Without proper configuration, this will
-     * simply return an empty string.
+     * Harvest the contents of a document file (PDF, Word, etc.). This method will
+     * only work if a full text extractor is properly configured in the fulltext.ini
+     * file. Without proper configuration, this will simply return an empty string.
      *
      * @param string $url URL of file to retrieve.
      *
