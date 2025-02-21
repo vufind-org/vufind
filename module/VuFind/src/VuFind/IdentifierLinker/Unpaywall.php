@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Unpaywall DOI linker
+ * Unpaywall identifier linker
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2019-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,10 +21,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  DOI
+ * @package  IdentifierLinker
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:identifier_linkers Wiki
  */
 
 namespace VuFind\IdentifierLinker;
@@ -33,13 +33,13 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
 /**
- * Unpaywall DOI linker
+ * Unpaywall identifier linker
  *
  * @category VuFind
- * @package  DOI
+ * @package  IdentifierLinker
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:identifier_linkers Wiki
  */
 class Unpaywall implements
     IdentifierLinkerInterface,

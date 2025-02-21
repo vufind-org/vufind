@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unpaywall DOI linker factory
+ * Unpaywall identifier linker factory
  *
  * PHP version 8
  *
@@ -21,10 +21,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  DOI
+ * @package  IdentifierLinker
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:identifier_linkers Wiki
  */
 
 namespace VuFind\IdentifierLinker;
@@ -35,13 +35,13 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * BrowZine DOI linker factory
+ * BrowZine identifier linker factory
  *
  * @category VuFind
- * @package  DOI
+ * @package  IdentifierLinker
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:identifier_linkers Wiki
  */
 class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
