@@ -961,13 +961,11 @@ class SolrEad3 extends SolrEad
         ];
         $xml = $this->getXmlRecord();
         $addToResults = function ($imageData) use (&$result) {
+            $imageData = $this->ensureImageSizes($imageData);
             $sizes = ['small', 'medium', 'large'];
             $formatted = $imageData;
             if (!empty($imageData['urls'])) {
                 foreach ($sizes as $size) {
-                    if (!isset($imageData['urls'][$size])) {
-                        $formatted['urls'][$size] = reset($imageData['urls']);
-                    }
                     if (!isset($imageData['pdf'][$size])) {
                         $formatted['pdf'][$size] = reset($imageData['pdf']);
                     }

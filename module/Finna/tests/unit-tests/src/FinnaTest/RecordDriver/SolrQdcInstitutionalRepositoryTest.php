@@ -74,6 +74,9 @@ class SolrQdcInstitutionalRepositoryTest extends \PHPUnit\Framework\TestCase
                         ],
                         'pdf' => true,
                         'downloadable' => true,
+                        'cacheSizes' => [
+                            'medium' => 'small',
+                        ],
                     ],
                 ],
             ],

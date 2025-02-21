@@ -213,6 +213,9 @@ class Loader extends \VuFind\Cover\Loader
             $this->id = $driver->getUniqueID();
             $this->url = $params['url'];
             $this->imageParams = $params;
+            // Sometimes records only contain 1 size of an image, so check if the current requested image
+            // is actually different size image. This helps to reduce amount of images cached.
+            $this->size = $params['cacheSize'] ?? $size;
             return $this->fetchFromAPI();
         }
     }

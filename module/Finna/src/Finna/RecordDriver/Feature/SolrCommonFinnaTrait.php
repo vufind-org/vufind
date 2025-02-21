@@ -210,7 +210,9 @@ trait SolrCommonFinnaTrait
     public function getRecordImage($size = 'small', $index = 0)
     {
         if ($images = $this->getAllImages()) {
-            if (isset($images[$index]['urls'][$size])) {
+            $image = $images[$index]['urls'][$size] ?? null;
+            $cacheSize = $images[$index]['cacheSizes'][$size] ?? $size;
+            if ($image) {
                 $params = $images[$index]['urls'][$size];
                 if (!is_array($params)) {
                     $params = [
@@ -223,6 +225,7 @@ trait SolrCommonFinnaTrait
                 $params['id'] = $this->getUniqueId();
                 $params['pdf'] = !empty($images[$index]['pdf'][$size])
                     || true === ($images[$index]['pdf'] ?? false);
+                $params['cacheSize'] = $cacheSize;
                 return $params;
             }
         }

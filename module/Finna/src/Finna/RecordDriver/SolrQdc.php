@@ -242,12 +242,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\L
                     ?? $imageData['urls']['large']
                     ?? $imageData['urls']['original'];
             }
-            if (!isset($imageData['urls']['medium'])) {
-                $imageData['urls']['medium'] = $imageData['urls']['small'];
-            }
-            if (!isset($imageData['urls']['large'])) {
-                $imageData['urls']['large'] = $imageData['urls']['medium'];
-            }
+            $imageData = $this->ensureImageSizes($imageData);
             $imageData['downloadable'] = $this->allowRecordImageDownload($imageData);
             $results[] = $imageData;
         };

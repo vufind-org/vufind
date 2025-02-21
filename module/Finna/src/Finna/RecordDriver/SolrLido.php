@@ -506,16 +506,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
             array $documents = []
         ) use (&$results) {
             if ($images) {
-                if (!isset($images['urls']['small'])) {
-                    $images['urls']['small'] = $images['urls']['medium']
-                        ?? $images['urls']['large'];
-                }
-                if (!isset($images['urls']['medium'])) {
-                    $images['urls']['medium'] = $images['urls']['small'];
-                }
-                if (!isset($images['urls']['large'])) {
-                    $images['urls']['large'] = $images['urls']['medium'];
-                }
+                $images = $this->ensureImageSizes($images);
                 $images['downloadable'] = $this->allowRecordImageDownload($images);
             }
             $results[] = compact(
@@ -567,8 +558,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
                         );
                         $imageUrls = [];
                     }
-                    $imageUrls['small'] = $imageUrls['medium']
-                        = $imageUrls['large'] = $url;
+                    $imageUrls['large'] = $url;
                     continue;
                 }
 
