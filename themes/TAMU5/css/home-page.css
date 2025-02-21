@@ -65,6 +65,10 @@ a:focus,
   line-height: 2rem;
 }
 
+.searchHomeContent{
+  margin-top:40px;
+}
+
 
 .active-filters .filters .filter-value .icon{
   color:#626262;
