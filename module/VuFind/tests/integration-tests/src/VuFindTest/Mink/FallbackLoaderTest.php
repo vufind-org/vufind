@@ -48,6 +48,7 @@ use VuFind\Db\Service\ResourceService;
 final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\RetryClickTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -128,7 +129,19 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
         $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', $comment);
-        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $buttonSelector = 'form.comment-form .btn-primary';
+        $this->clickCss($page, $buttonSelector);
+        $commentSelector = '.comment-text';
+        try {
+            // We don't want to wait the full default timeout here since that wastes a lot
+            // of time if a click failed to register; however, we shouldn't wait for too
+            // short of a time, or else a slow response can break the test by causing a
+            // double form submission.
+            $this->findCss($page, $commentSelector, 1500);
+        } catch (\Exception $e) {
+            $this->retryClickWithResizedWindow($this->getMinkSession(), $page, $buttonSelector);
+        }
+        $this->assertEquals($comment, $this->findCssAndGetText($page, $commentSelector));
     }
 
     /**
