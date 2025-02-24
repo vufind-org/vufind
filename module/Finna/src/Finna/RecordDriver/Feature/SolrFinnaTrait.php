@@ -760,7 +760,7 @@ trait SolrFinnaTrait
      */
     public function getFirstIndexed()
     {
-        return $this->fields['first_indexed'] ?? '';
+        return $this->fields['catalog_date'] ?? $this->fields['first_indexed'] ?? '';
     }
 
     /**

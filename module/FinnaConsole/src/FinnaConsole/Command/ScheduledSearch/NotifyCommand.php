@@ -287,10 +287,24 @@ class NotifyCommand extends \VuFindConsole\Command\ScheduledSearch\NotifyCommand
                 !$this->validateSchedule($todayTime, $lastTime, $s)
                 || !($user = $this->getUserForSearch($s))
                 || !($searchObject = $this->getObjectForSearch($s))
-                || !($newRecords = $this->getNewRecords($searchObject, $lastTime))
             ) {
                 continue;
             }
+
+            // Use catalog_date if available as sort option:
+            $this->sort = 'first_indexed desc';
+            $sortOptions = $searchObject->getOptions()->getSortOptions();
+            foreach (array_keys($sortOptions) as $key) {
+                if (str_starts_with($key, 'catalog_date desc')) {
+                    $this->sort = $key;
+                    break;
+                }
+            }
+
+            if (!($newRecords = $this->getNewRecords($searchObject, $lastTime))) {
+                continue;
+            }
+
             // Set email language
             $this->setLanguage($user->getLastLanguage());
 

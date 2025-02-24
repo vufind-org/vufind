@@ -4,7 +4,7 @@ relative_path = ../finna/facets.ini
 override_full_sections = "CheckboxFacets,BrowseDatabase,BrowseJournal"
 
 [Results_Settings]
-collapsedFacets = author2Str,genre_facet,language,topic_facet,first_indexed
+collapsedFacets = author2Str,genre_facet,language,topic_facet,first_indexed,catalog_date
 
 [CheckboxFacets]
 
@@ -17,5 +17,5 @@ genre_facet            = Genre
 category_str_mv        = category_facet_heading
 language               = Language
 topic_facet            = Topic
-first_indexed          = "New Items in Index"
+catalog_date           = "New Items in Index"
 

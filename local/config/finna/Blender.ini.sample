@@ -166,6 +166,7 @@ hierarchicalFacetSortOptions[building] = top
 hierarchicalFacetSeparators[format] = " > "
 ; Any fields listed below will be treated as new items facets
 newItems[] = first_indexed
+newItems[] = catalog_date
 ; Date visualisations
 dateVis[] = main_date_str
 dateRangeVis = search_daterange_mv:main_date_str

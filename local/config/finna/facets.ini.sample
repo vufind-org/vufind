@@ -30,7 +30,7 @@ topic_facet         = Topic
 ;usage_rights_str_mv = "Usage Rights"
 usage_rights_ext_str_mv = usage_rights_ext
 hierarchy_parent_title = component_part_is_part_of
-first_indexed       = "New Items in Index"
+catalog_date       = "New Items in Index"
 category_str_mv     = category_facet_heading
 
 ; Facets that will appear at the top of search results when the TopFacets
