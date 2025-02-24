@@ -747,14 +747,10 @@ class Params
         // Validate and assign the sort value:
         $valid = array_keys($this->getOptions()->getSortOptions());
 
-        $matchedHiddenPatterns = array_filter(
-            $this->getOptions()->getHiddenSortOptions(),
-            function ($pattern) use ($sort) {
-                return preg_match('/' . $pattern . '/', $sort);
-            }
-        );
-
-        if (!empty($sort) && (in_array($sort, $valid) || count($matchedHiddenPatterns) > 0)) {
+        if (
+            !empty($sort)
+            && (in_array($sort, $valid) || $this->getMatchingHiddenSortingPatterns($sort))
+        ) {
             $this->sort = $sort;
         } else {
             $this->sort = $this->getDefaultSort();
@@ -1865,11 +1861,21 @@ class Params
         $valid = $this->getOptions()->getSortOptions();
         $defaultSort = $this->getDefaultSort();
         $list = [];
+        $currentSort = $this->getSort();
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
-                'selected' => ($sort == $this->getSort()),
+                'selected' => ($sort == $currentSort),
                 'default' => $sort == $defaultSort,
+            ];
+        }
+        if (!isset($list[$currentSort])) {
+            $matchingHiddenSortingPatterns = $this->getMatchingHiddenSortingPatterns($currentSort);
+            // Add selected sort with a generic description so that we display it:
+            $list[$currentSort] = [
+                'desc' => $matchingHiddenSortingPatterns[0]['label'] ?? 'unrecognized_sort_option',
+                'selected' => true,
+                'default' => false,
             ];
         }
         return $list;
@@ -2141,5 +2147,27 @@ class Params
     public function isSpecializedSearch(): bool
     {
         return $this->isSpecializedSearch;
+    }
+
+    /**
+     * Get HiddenSorting patterns matching the given sort
+     *
+     * @param ?string $sort Sort
+     *
+     * @return array Array of associative arrays with keys 'label' and 'pattern'
+     */
+    protected function getMatchingHiddenSortingPatterns(?string $sort): array
+    {
+        if (null === $sort) {
+            return [];
+        }
+        return array_values(
+            array_filter(
+                $this->getOptions()->getHiddenSortOptions(),
+                function ($option) use ($sort) {
+                    return preg_match('/' . $option['pattern'] . '/', $sort);
+                }
+            )
+        );
     }
 }

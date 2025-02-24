@@ -111,7 +111,9 @@ class SearchController extends AbstractSolrSearch
                 ->rememberSearch($base . $query->getParams(false));
         }
 
-        // Send the user back where they came from:
+        // Send the user back where they came from (but strip off the SID
+        // so we don't override the modified search with an older version):
+        $from = rtrim(preg_replace('/([?&])sid=\d+/', '$1', $from), '&?');
         return $this->redirect()->toUrl($from);
     }
 
