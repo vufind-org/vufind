@@ -165,7 +165,10 @@ deleteGroup = function _deleteGroup(group) {
 
 $(function advSearchReady() {
   $('.clear-btn').on("click", function clearBtnClick() {
-    $('input[type="text"]').val('');
+    document.querySelectorAll('input[type="text"],input[type="number"]').forEach(input => {
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
+    })
     $('input[type="checkbox"],input[type="radio"]').each(function onEachCheckbox() {
       var checked = $(this).data('checked-by-default');
       checked = (checked == null) ? false : checked;

@@ -57,6 +57,12 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
     function setRangeToInput() {
       let selectionMin = _parseInput(inputMin);
       let selectionMax = _parseInput(inputMax);
+      if (isNaN(selectionMin)) {
+        selectionMin = options.start[0];
+      }
+      if (isNaN(selectionMax)) {
+        selectionMax = options.start[1];
+      }
       if (selectionMin > selectionMax) {
         [selectionMin, selectionMax] = [selectionMax, selectionMin];
       }
