@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015-2020.
+ * Copyright (C) The National Library of Finland 2015-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -92,6 +92,17 @@ class Options extends \VuFind\Search\Solr\Options
             = $facetSettings?->HierarchicalFacetFilters?->toArray()
             ?? $facetSettings?->FacetFilters?->toArray()
             ?? [];
+
+        // Back-compatibility for sort options that contain id,asc (and Sorting missing from override_full_sections):
+        $cleanSortOptions = [];
+        foreach ($this->sortOptions as $sort => $label) {
+            $sort = $this->convertLegacySort($sort);
+            if (!isset($cleanSortOptions[$sort])) {
+                $cleanSortOptions[$sort] = $label;
+            }
+        }
+        $this->sortOptions = $cleanSortOptions;
+        $this->defaultSort = $this->convertLegacySort($this->defaultSort);
     }
 
     /**
@@ -131,5 +142,20 @@ class Options extends \VuFind\Search\Solr\Options
             return $result;
         }
         return $this->translate("search_field_$field", null, $field);
+    }
+
+    /**
+     * Convert a legacy sort option to current one that excludes a tie breaker
+     *
+     * @param string $sort Sort string
+     *
+     * @return string
+     */
+    protected function convertLegacySort(string $sort): string
+    {
+        if (!$this->sortTieBreaker) {
+            return $sort;
+        }
+        return str_replace([',' . $this->sortTieBreaker, ', ' . $this->sortTieBreaker], '', $sort);
     }
 }

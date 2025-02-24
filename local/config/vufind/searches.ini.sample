@@ -1,6 +1,6 @@
 [Parent_Config]
 relative_path = "../finna/searches.ini"
-override_full_sections = "Views,Autocomplete_Sections"
+override_full_sections = "Views,Autocomplete_Sections,Sorting"
 
 ; Add any overrides below
 
