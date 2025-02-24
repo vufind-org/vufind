@@ -302,7 +302,7 @@ body.rtl .dropdown-menu {
   position: relative;
   display: block;
   padding: .5rem 1rem;
-  border: 1px solid $list-group-border;
+  border: 1px solid $list-group-border-color;
   border-bottom: 0;
   word-wrap: break-word;
 }
@@ -316,7 +316,7 @@ body.rtl .dropdown-menu {
   }
 }
 .browse-item:hover { background-color: $nav-link-hover-bg; }
-.browse-item:last-child { border-bottom: 1px solid $list-group-border; }
+.browse-item:last-child { border-bottom: 1px solid $list-group-border-color; }
 
 .browse-item.with-badge {
   padding-right: 3rem; // Prevent text from overlapping badge

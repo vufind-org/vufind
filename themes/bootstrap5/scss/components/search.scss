@@ -102,7 +102,7 @@ header .container.navbar { margin-bottom: 0; }
   label {
     flex: none;
     white-space: nowrap;
-    line-height: $input-height-base;
+    line-height: $input-height;
   }
 
   select.form-control {
@@ -395,7 +395,7 @@ header .container.navbar { margin-bottom: 0; }
   .long-view {
     margin-left: -.5rem;
     padding: .5rem;
-    border: 1px solid $list-group-border;
+    border: 1px solid $list-group-border-color;
     background-color: #fff;
     border-bottom-left-radius: $border-radius;
     border-bottom-right-radius: $border-radius;

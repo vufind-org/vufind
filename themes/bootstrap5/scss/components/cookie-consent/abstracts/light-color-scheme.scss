@@ -35,9 +35,9 @@
     --cc-section-category-border: #{$gray-lighter};
 
     --cc-cookie-category-block-bg: #{$gray-lighter};
-    --cc-cookie-category-block-border: #{$list-group-border};
+    --cc-cookie-category-block-border: #{$list-group-border-color};
     --cc-cookie-category-block-hover-bg: #{darken($gray-lighter, 10%)};
-    --cc-cookie-category-block-hover-border: #{$list-group-border};
+    --cc-cookie-category-block-hover-border: #{$list-group-border-color};
     --cc-cookie-category-expanded-block-bg: #{$gray-lighter};
     --cc-cookie-category-expanded-block-hover-bg: #{darken($gray-lighter, 10%)};
 
