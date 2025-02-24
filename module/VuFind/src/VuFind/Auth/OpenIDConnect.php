@@ -39,7 +39,7 @@ use Firebase\JWT\SignatureInvalidException;
 use InvalidArgumentException;
 use Laminas\Session\Container as SessionContainer;
 use UnexpectedValueException;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\PasswordSecurity as PasswordSecurityException;
 
@@ -97,9 +97,14 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      *
      * @param SessionContainer $session    Session container for persisting state information.
      * @param array            $oidcConfig Configuration
+     *
+     * @throws \Exception
      */
-    public function __construct(protected SessionContainer $session, protected array $oidcConfig)
-    {
+    public function __construct(
+        protected SessionContainer $session,
+        protected array $oidcConfig,
+        protected ILSAuthenticator $ilsAuthenticator
+    ) {
         if (empty($this->session->oidc_state)) {
             $this->session->oidc_state = hash('sha256', random_bytes(32));
         }
@@ -228,9 +233,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request): User
+    public function authenticate($request): UserEntityInterface
     {
         $code = $request->getQuery()->get('code');
 
@@ -266,11 +271,12 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      *
      * @param object $userInfo User info claim object
      *
-     * @return User
+     * @return UserEntityInterface
      * @throws AuthException
      * @throws PasswordSecurityException
+     * @throws \Exception
      */
-    protected function setUserAttributes(object $userInfo): User
+    protected function setUserAttributes(object $userInfo): UserEntityInterface
     {
         $availableAttributes = [
             'firstname',
@@ -304,13 +310,15 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
                     $catPassword = $attrValue;
                     continue;
                 }
-                $user->$userAttr = $attrValue;
+                $this->setUserValueByField($user, $userAttr, $attrValue);
             }
         }
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword ?? $user->getCatPassword());
+        $catUsername = $user->getCatUsername();
+        if (!empty($catUsername)) {
+            $currentPassword = $this->ilsAuthenticator->getCatPasswordForUser($user);
+            $this->ilsAuthenticator->setUserCatalogCredentials($user, $catUsername, $catPassword ?? $currentPassword);
         }
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 
