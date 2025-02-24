@@ -128,7 +128,7 @@ class EDS extends BaseSpecs
         }
         $spec->addItems($filter, ['separator' => '<br>']);
         $spec->setItemLine('Group', 'Au', $this->getAuthorOptions($format));
-        $spec->setItemLine('Group', 'Su', ['useSearchLink' => true, 'separator' => ', ']);
+        $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
         return $spec->getArray();
     }
 
