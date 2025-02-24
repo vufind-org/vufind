@@ -5,22 +5,6 @@
 
 // *** Variables ***
 
-$state-danger-text:           var(--#{$prefix}danger) !default;
-$state-danger-bg:             var(--#{$prefix}danger-bg-subtle) !default;
-$state-info-text:             var(--#{$prefix}info) !default;
-$state-info-bg:               var(--#{$prefix}body-bg) !default;
-$state-success-text:          var(--#{$prefix}success) !default;
-$state-success-bg:            var(--#{$prefix}success-bg-subtle) !default;
-$state-warning-text:          var(--#{$prefix}warning) !default;
-$state-warning-bg:            var(--#{$prefix}warning-bg-subtle) !default;
-
-$text-color: $body-color !default;
-
-$modal-title-padding: $modal-header-padding !default;
-
-$well-bg:                #f5f5f5 !default;
-$well-border:            darken($well-bg, 7%) !default;
-
 $pager-bg:                             $pagination-bg !default;
 $pager-border:                         $pagination-border-color !default;
 $pager-border-radius:                  15px !default;
@@ -73,7 +57,7 @@ legend {
 .btn {
   &:focus,
   &.focus {
-    outline: dotted 1px $text-color;
+    outline: dotted 1px $body-color;
   }
 }
 .btn.more-btn:not(.facet) {

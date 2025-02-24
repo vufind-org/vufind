@@ -896,9 +896,9 @@ table.search-history-table {
     span {
       border: 0;
       padding: 0;
-      color: $text-color;
+      color: $body-color;
       &:hover {
-        color: $text-color;
+        color: $body-color;
         background-color: transparent;
       }
     }

@@ -108,11 +108,11 @@
 }
 
 /* ------ Tags ------ */
-$tag-color:                       $text-color !default;
+$tag-color:                       $body-color !default;
 $tag-bg:                          $body-bg !default;
 $tag-border-color:                #ccc !default;
 $tag-badge-color:                 $body-bg !default;
-$tag-badge-bg:                    $text-color !default;
+$tag-badge-bg:                    $body-color !default;
 $tag-badge-border-color:          #ccc !default;
 
 $tag-selected-color:              color-contrast($primary) !default;

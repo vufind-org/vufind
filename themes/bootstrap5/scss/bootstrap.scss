@@ -67,8 +67,6 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "bs3-compat";
 
 @import "components/accessibility";
-@import "components/variables";
-
 @import "components/advanced-search";
 @import "components/alphabrowse";
 @import "components/autocomplete";
@@ -108,9 +106,10 @@ label,
 select,
 input[type="checkbox"] { cursor: pointer; }
 .alert.alert-info a { text-decoration: underline; }
+
 .alert-default {
-    border-color: $well-border;
-    background-color: $well-bg;
+    background-color: $alert-default-bg;
+    border-color: $alert-default-border-color;
 }
 
 // Improve contrast
@@ -447,7 +446,7 @@ body.rtl .dropdown-menu {
     flex: none;
     .badge {
       border-radius: 2px;
-      border: 1px solid; /* color inherited from bootstrap */
+      border: 1px solid; // Use main color for border too
       height: 20px;
 
       &.account-none {
@@ -455,16 +454,16 @@ body.rtl .dropdown-menu {
         background-color: $gray-lighter;
       }
       &.account-info {
-        color: $state-success-text;
-        background-color: $state-success-bg;
+        color: var(--#{$prefix}success);
+        background-color: var(--#{$prefix}success-bg-subtle);
       }
       &.account-warning {
-        color: $state-warning-text;
-        background-color: $state-warning-bg;
+        color: var(--#{$prefix}warning);
+        background-color: var(--#{$prefix}warning-bg-subtle);
       }
       &.account-alert {
-        color: $state-danger-text;
-        background-color: $state-danger-bg;
+        color: var(--#{$prefix}danger);
+        background-color: var(--#{$prefix}danger-bg-subtle);
       }
     }
   }

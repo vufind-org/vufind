@@ -1,8 +1,8 @@
 /** Light color-scheme **/
 :root{
     --cc-bg: #{$modal-content-bg};
-    --cc-primary-color: #{$text-color};
-    --cc-secondary-color: #{lighten($text-color, 10%)};
+    --cc-primary-color: #{$body-color};
+    --cc-secondary-color: #{lighten($body-color, 10%)};
 
     --cc-btn-primary-bg: #{$primary};
     --cc-btn-primary-color: #{color-contrast($primary)};
@@ -18,7 +18,7 @@
     --cc-btn-secondary-hover-color: #{$btn-default-bg};
     --cc-btn-secondary-hover-border-color: #{$btn-default-bg};
 
-    --cc-separator-border-color: #{$well-border};
+    --cc-separator-border-color: #{$alert-default-border-color};
 
     --cc-toggle-on-bg: #{$gray-light};
     --cc-toggle-off-bg: #{lighten($gray-light, 10%)};
@@ -46,6 +46,6 @@
     --cc-webkit-scrollbar-hover-bg: var(--cc-btn-primary-color);
 
     --cc-footer-bg: #{$gray-lighter};
-    --cc-footer-color: #{$text-color};
+    --cc-footer-color: #{$body-color};
     --cc-footer-border-color: #{$primary-border-subtle};
 }
