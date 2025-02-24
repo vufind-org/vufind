@@ -53,15 +53,4 @@ class Search2recordController extends AbstractRecord
         $this->fallbackDefaultTab = 'Description';
         parent::__construct($sm);
     }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('Search2');
-        return $config->Record->next_prev_navigation ?? false;
-    }
 }

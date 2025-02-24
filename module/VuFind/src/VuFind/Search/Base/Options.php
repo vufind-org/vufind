@@ -162,6 +162,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $limitOptions = [];
 
     /**
+     * If result scroller is used.
+     *
+     * @var bool
+     */
+    protected bool $resultScrollerActive = false;
+
+    /**
      * Default view option
      *
      * @var string
@@ -410,6 +417,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->setConfigLoader($configLoader);
 
         $id = $this->getSearchClassId();
+        $baseConfig = $configLoader->get('config');
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
             $sortArray = $facetSettings->AvailableFacetSortOptions[$id]->toArray();
@@ -431,6 +439,11 @@ abstract class Options implements TranslatorAwareInterface
         $searchSettings = $configLoader->get($this->searchIni);
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
         $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        $this->resultScrollerActive = (bool)(
+            $searchSettings->Record->next_prev_navigation
+            ?? $baseConfig->Record->next_prev_navigation
+            ?? false
+        );
         $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
         $this->topPaginatorStyle = $searchSettings->General->top_paginator
             ?? ($this->loadResultsWithJs ? 'simple' : false);
@@ -558,6 +571,16 @@ abstract class Options implements TranslatorAwareInterface
             $this->limitOptions = [$this->getDefaultLimit()];
         }
         return $this->limitOptions;
+    }
+
+    /**
+     * If result scroller is used.
+     *
+     * @return bool
+     */
+    public function resultScrollerActive(): bool
+    {
+        return $this->resultScrollerActive;
     }
 
     /**
