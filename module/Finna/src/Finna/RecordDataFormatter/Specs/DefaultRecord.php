@@ -56,16 +56,12 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
      */
     protected function init(): void
     {
+        parent::init();
+
         $this->setDefaults(
-            'collection-info',
-            [$this, 'getDefaultCollectionInfoSpecs']
+            'authority',
+            [$this, 'getDefaultAuthoritySpecs']
         );
-        $this->setDefaults(
-            'collection-record',
-            [$this, 'getDefaultCollectionRecordSpecs']
-        );
-        $this->setDefaults('core', [$this, 'getDefaultCoreSpecs']);
-        $this->setDefaults('description', [$this, 'getDefaultDescriptionSpecs']);
     }
 
     /**
