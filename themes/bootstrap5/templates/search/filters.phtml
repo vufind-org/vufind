@@ -29,7 +29,7 @@
   <?php foreach ($this->checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
       <?php
-        $removeLink = isset($urlQuery)
+        $removeLink = isset($urlQuery) && !$fromSearchMemory
           ? $urlQuery->removeFilter($filter['filter'])
           : $this->searchMemory()->getEditLink(
               $this->searchClassId,
@@ -90,7 +90,7 @@
           <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
         </span>
           <?php
-            $removeLink = isset($this->urlQuery)
+            $removeLink = isset($this->urlQuery) && !$fromSearchMemory
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
@@ -120,7 +120,7 @@
   <?php
     $resetLink = null;
     if (!$onlyDefaultsApplied) {
-      $resetLink = isset($urlQuery)
+      $resetLink = isset($urlQuery) && !$fromSearchMemory
         ? $urlQuery->removeAllFilters()->resetDefaultFilters()
         : $this->searchMemory()->getEditLink($this->searchClassId, 'removeAllFilters', 1);
     }

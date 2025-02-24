@@ -40,7 +40,6 @@ $nav-link-padding:        $nav-link-padding-y !default;
 
 $nav-tabs-active-link-hover-color: $gray !default;
 $navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
-$navbar-height:                    50px !default;
 $navbar-nav-link-hover-color:      $body-bg !default;
 $navbar-nav-link-hover-bg:         $body-color !default;
 
@@ -355,38 +354,6 @@ h6, .h6 {
   }
 }
 
-// See .nav > li > a in bootstrap.scss
-.nav.navbar-nav button.dropdown-toggle {
-  color: inherit;
-  padding: var(--#{$prefix}nav-link-padding-y) var(--#{$prefix}navbar-nav-link-padding-x);
-
-  &:hover,
-  &:focus {
-    color: $dropdown-bg;
-    background-color: #333;
-  }
-}
-.navbar nav {
-  width: 100%;
-  margin-bottom: 7.5px;
-
-  > li > .nav-link {
-    &.active {
-      background-color: $nav-link-active-bg;
-    }
-    &:not(.active):hover {
-      --#{$prefix}nav-link-hover-color: #{$navbar-nav-link-hover-color};
-      background-color: $navbar-nav-link-hover-bg;
-    }
-  }
-}
-.navbar-right {
-  justify-content: right;
-}
-.navbar-left {
-  justify-content: left;
-}
-
 .media-body, .media-left, .media-right {
   display: table-cell;
   vertical-align: top;
@@ -543,11 +510,6 @@ h6, .h6 {
       box-shadow: none;
     }
   }
-}
-
-.navbar-brand {
-  font-size: 1.4rem;
-  text-decoration: underline;
 }
 
 .pull-right {

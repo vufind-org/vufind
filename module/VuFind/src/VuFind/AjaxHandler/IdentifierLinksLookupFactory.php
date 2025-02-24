@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine DOI linker factory
+ * Factory for IdentifierLinksLookup AJAX handler.
  *
  * PHP version 8
  *
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  DOI
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\AjaxHandler;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,15 +35,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * BrowZine DOI linker factory
+ * Factory for IdentifierLinksLookup AJAX handler.
  *
  * @category VuFind
- * @package  DOI
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class IdentifierLinksLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -69,13 +69,12 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $search = $container->get(\VuFindSearch\Service::class);
-        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('BrowZine');
-        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
-        $doiServices = isset($fullConfig->DOIServices)
-            ? $fullConfig->DOIServices->toArray()
-            : [];
-        return new $requestedName($search, $config, $doiServices);
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config')->toArray();
+        return new $requestedName(
+            $container->get(\VuFind\IdentifierLinker\PluginManager::class),
+            $container->get('ViewRenderer'),
+            $config
+        );
     }
 }
