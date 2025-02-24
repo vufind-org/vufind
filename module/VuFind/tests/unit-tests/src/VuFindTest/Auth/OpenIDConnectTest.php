@@ -34,6 +34,7 @@ use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\Container as SessionContainer;
 use RuntimeException;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\OpenIDConnect;
 
 /**
@@ -237,7 +238,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
             'request_uri_parameter_supported' => false,
         ];
         $this->assertEquals($expected, $this->callMethod($openid, 'getProvider'));
-        // Test getting provider infor from config using fallback when no automatic discovery is available endpoint
+        // Test getting provider info from config using fallback when no automatic discovery is available endpoint
         $openid = $this->getOpenIDConnectObject();
         $config = [
             'OpenIDConnect' => [
@@ -281,7 +282,8 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
         ];
         $session = new SessionContainer();
         $oidcConfig = empty($config) ? $defaultConfig : $config;
-        $this->openid = new OpenIDConnect($session, $oidcConfig);
+        $ilsAuthenticator = $this->getMockILSAuthenticator();
+        $this->openid = new OpenIDConnect($session, $oidcConfig, $ilsAuthenticator);
         return $this->openid;
     }
 
@@ -294,7 +296,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
      * @throws InvalidArgumentException Fixture file could not be loaded as HTTP response
      * @throws RuntimeException         Fixture file does not exist
      */
-    protected function mockResponse(array $fixture)
+    protected function mockResponse(array $fixture): void
     {
         $adapter = new TestAdapter();
         if (!empty($fixture)) {
@@ -318,13 +320,26 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
      * @param string $filename File name of raw HTTP response
      *
      * @return HttpResponse Response object
+     *
      * @throws InvalidArgumentException Fixture file could not be loaded as HTTP response
      * @throws RuntimeException         Fixture file does not exist
      */
-    protected function loadResponse(string $filename)
+    protected function loadResponse(string $filename): HttpResponse
     {
         return HttpResponse::fromString(
             $this->getFixture("auth/$filename")
         );
+    }
+
+    /**
+     * Get a mock ILS authenticator
+     *
+     * @return ILSAuthenticator
+     */
+    protected function getMockILSAuthenticator(): ILSAuthenticator
+    {
+        return $this->getMockBuilder(ILSAuthenticator::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

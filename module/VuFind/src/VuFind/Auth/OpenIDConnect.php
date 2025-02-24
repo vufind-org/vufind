@@ -95,8 +95,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Constructor
      *
-     * @param SessionContainer $session    Session container for persisting state information.
-     * @param array            $oidcConfig Configuration
+     * @param SessionContainer $session          Session container for persisting state information.
+     * @param array            $oidcConfig       Configuration
+     * @param ILSAuthenticator $ilsAuthenticator ILS Authenticator
      *
      * @throws \Exception
      */
