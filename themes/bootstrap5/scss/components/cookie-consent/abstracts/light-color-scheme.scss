@@ -4,19 +4,19 @@
     --cc-primary-color: #{$text-color};
     --cc-secondary-color: #{lighten($text-color, 10%)};
 
-    --cc-btn-primary-bg: #{$btn-primary-bg};
-    --cc-btn-primary-color: #{$btn-primary-color};
-    --cc-btn-primary-border-color: #{$btn-primary-bg};
-    --cc-btn-primary-hover-bg: #{$btn-primary-color};
-    --cc-btn-primary-hover-color: #{$btn-primary-bg};
-    --cc-btn-primary-hover-border-color: #{darken($btn-primary-border, 12%)};
+    --cc-btn-primary-bg: #{$primary};
+    --cc-btn-primary-color: #{color-contrast($primary)};
+    --cc-btn-primary-border-color: #{$primary};
+    --cc-btn-primary-hover-bg: #{color-contrast($primary)};
+    --cc-btn-primary-hover-color: #{$primary};
+    --cc-btn-primary-hover-border-color: #{$primary};
 
     --cc-btn-secondary-bg: #{$btn-default-bg};
-    --cc-btn-secondary-color: #{$btn-default-color};
-    --cc-btn-secondary-border-color: #{$btn-default-border};
-    --cc-btn-secondary-hover-bg: #{$btn-default-color};
+    --cc-btn-secondary-color: #{color-contrast($btn-default-bg)};
+    --cc-btn-secondary-border-color: #{$btn-default-bg};
+    --cc-btn-secondary-hover-bg: #{color-contrast($btn-default-bg)};
     --cc-btn-secondary-hover-color: #{$btn-default-bg};
-    --cc-btn-secondary-hover-border-color: #{darken($btn-default-border, 12%)};
+    --cc-btn-secondary-hover-border-color: #{$btn-default-bg};
 
     --cc-separator-border-color: #{$well-border};
 
@@ -43,7 +43,7 @@
 
     --cc-overlay-bg: #{$modal-backdrop-bg};
     --cc-webkit-scrollbar-bg: #{$gray-lighter};
-    --cc-webkit-scrollbar-hover-bg: #{$btn-primary-color};
+    --cc-webkit-scrollbar-hover-bg: var(--cc-btn-primary-color);
 
     --cc-footer-bg: #{$gray-lighter};
     --cc-footer-color: #{$text-color};

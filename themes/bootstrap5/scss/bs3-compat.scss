@@ -4,13 +4,6 @@
 @use 'sass:math';
 
 // *** Variables ***
-$btn-border-radius-base: $btn-border-radius;
-$btn-default-color:      #333 !default;
-$btn-default-bg:         #fff !default;
-$btn-default-border:     #ccc !default;
-$btn-primary-color:      $body-bg !default;
-$btn-primary-bg:         $primary !default;
-$btn-primary-border:     shade-color($primary, $btn-active-bg-shade-amount) !default;
 
 $state-danger-text:           var(--#{$prefix}danger) !default;
 $state-danger-bg:             var(--#{$prefix}danger-bg-subtle) !default;
@@ -89,29 +82,6 @@ legend {
     background-color: revert;
     border-color: #999;
   }
-}
-.btn-default {
-  @include button-variant(
-    $btn-default-bg,
-    $btn-default-border,
-    $color: $btn-default-color,
-    $hover-background: $btn-default-color,
-    $hover-border: $btn-default-border,
-    $hover-color: $btn-default-bg,
-    $active-background: shade-color($btn-default-bg, $btn-active-bg-shade-amount),
-    $active-border: shade-color($btn-default-border, $btn-active-border-shade-amount),
-    $active-color: $btn-default-color,
-  );
-}
-.btn-primary {
-  @include button-variant(
-    $btn-primary-bg,
-    $btn-primary-border,
-    $color: $btn-primary-color,
-    $hover-background: $btn-primary-color,
-    $hover-border: $btn-primary-border,
-    $hover-color: $btn-primary-bg
-  );
 }
 .btn-group {
   display: inline-block;
