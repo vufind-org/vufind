@@ -194,7 +194,7 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function getLanguageFilename($locale, $domain)
     {
-        return empty($domain)
+        return (empty($domain) || $domain === 'default')
             ? $locale . '.ini'
             : $domain . '/' . $locale . '.ini';
     }

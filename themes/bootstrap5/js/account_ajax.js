@@ -84,8 +84,7 @@ VuFind.register('account', function Account() {
         accountIconEl.dataset.bsToggle = 'tooltip';
         accountIconEl.dataset.bsPlacement = 'bottom';
         accountIconEl.title = VuFind.translate('account_has_alerts');
-        const tooltip = bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
-        tooltip.show();
+        bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
       } else {
         const tooltip = bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
         tooltip.dispose();

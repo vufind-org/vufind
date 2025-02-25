@@ -143,85 +143,75 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   const deactivation_event = 'facet-selection-cancel';
   const apply_event = 'facet-selection-done';
 
-  function updateInitialParams(field, value) {
-    const count = initialRawParams.length;
-    for (let i = 0; i < count; i++) {
-      if (initialRawParams[i].startsWith(field + '=')) {
-        let returnValue = initialRawParams[i] !== encodeURI(field + '=' + value);
-        initialRawParams[i] = encodeURI(field + '=' + value);
-        return returnValue;
-      }
+  /**
+   * Normalize a filter value
+   *
+   * @param {string} key   Parameter name
+   * @param {string} value Value
+   *
+   * @returns string
+   */
+  function normalizeValue(key, value) {
+    if (key !== 'filter[]') {
+      return value;
     }
+    const p = value.indexOf(':');
+    if (p < 0) {
+      return value;
+    }
+    // Ensure that filter value is surrounded by quotes
+    let filterValue = value.substring(p + 1);
+    filterValue = (!filterValue.startsWith('"') ? '"' : '') + filterValue + (!filterValue.endsWith('"') ? '"' : '');
+    return value.substring(0, p) + ':' + filterValue;
   }
 
-  // Make sure NOT to have a specific range filter parameter in the final URL
-  function setRangeFilterToBeNotPresent(rangeName) {
-    const urlParameterStart = encodeURI("filter[]=" + rangeName) + encodeURIComponent(":");
-    for (const param of initialRawParams) {
-      if (param.startsWith(urlParameterStart)) {
-        globalRemovedParams.push(param);
-        return;
-      }
-    }
-    globalAddedParams = globalAddedParams.filter((elem) => {
-      return !elem.startsWith(urlParameterStart);
-    });
+  for (const [key, value] of (new URLSearchParams(window.location.search))) {
+    initialParams.append(key, normalizeValue(key, value));
   }
 
-  // Foe every date range selector, does a routine to deal with URL parameters
-  function handleRangeSelector() {
-    let addedRangeParams, rangeParams, allEmptyRangeParams, form, dfinputs, updated;
-    function filterParamsNotInArray(array) {
-      return function callback(elem) {
-        for (const arrayElement of array) {
-          if (elem.startsWith(encodeURI(arrayElement) + '=')) {
-            return false;
-          }
-        }
-        return true;
-      };
-    }
-    for (let rangeSelectorId of rangeSelectorIds) {
-      addedRangeParams = [];
-      rangeParams = [];
-      allEmptyRangeParams = true;
-      updated = false;
-      form = document.querySelector('form#' + rangeSelectorId);
-      dfinputs = form.querySelectorAll('.date-fields input');
-      for (const input of dfinputs) {
-        if (window.location.search.match(new RegExp("[&?]" + input.name + "="))) {
-          // If the parameter is already present we update it
-          updated = updated || updateInitialParams(input.name, input.value);
-        } else {
-          addedRangeParams.push(encodeURI(input.name + '=' + input.value));
-        }
-        rangeParams.push(input.name);
+  /**
+   * Update query params for every date range selector
+   *
+   * @param {URLSearchParams} queryParams
+   *
+   * @returns {URLSearchParams}
+   */
+  function processRangeSelector(queryParams) {
+    let newParams = new URLSearchParams(queryParams.toString());
+    for (const form of rangeSelectorForms) {
+      const rangeName = form.dataset.name;
+      const rangeFilterField = form.dataset.filterField;
+      let valuesExist = false;
+      const dateInputs = form.querySelectorAll('.date-fields input');
+      // Check if we have any non-empty inputs:
+      for (const input of dateInputs) {
         if (input.value !== '') {
-          allEmptyRangeParams = false;
+          valuesExist = true;
+          break;
         }
       }
-
-      const filter = rangeSelectorId.slice(0, -"Filter".length);
-      const input = form.querySelector(':scope > input[value="' + filter + '"]');
-      // If at least one parameter is not null we continue the routine for the final URL
-      if (allEmptyRangeParams) {
-        globalRemovedParams = globalRemovedParams.concat(addedRangeParams);
-        setRangeFilterToBeNotPresent(input.value);
-      } else {
-        globalAddedParams = globalAddedParams.concat(addedRangeParams);
-        const dateRangeParam = encodeURI(input.name + '=' + input.value);
-        rangeParams.push(input.name);
-        if (!window.location.search.match(new RegExp("[&?]" + dateRangeParam + "(&|$)"))) {
-          globalAddedParams.push(dateRangeParam);
-          updated = true;
+      if (valuesExist) {
+        // Update query params:
+        for (const input of dateInputs) {
+          newParams.set(input.name, input.value);
         }
-        if (updated) {
-          setRangeFilterToBeNotPresent(input.value);
-          // We prevent the parameter to be deleted
-          globalRemovedParams = globalRemovedParams.filter(filterParamsNotInArray(rangeParams));
+        newParams.set(rangeFilterField, rangeName);
+      } else {
+        // Delete from query params:
+        for (const input of dateInputs) {
+          newParams.delete(input.name);
+        }
+        newParams = VuFind.deleteKeyValueFromURLSearchParams(newParams, rangeFilterField, rangeName);
+      }
+      // Remove any filter[]=rangeName:... from query params:
+      const paramStart = rangeName + ':';
+      for (const value of newParams.getAll('filter[]')) {
+        if (value.startsWith(paramStart)) {
+          newParams = VuFind.deleteKeyValueFromURLSearchParams(newParams, 'filter[]', value);
         }
       }
     }
+    return newParams;
   }
 
   // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
@@ -236,30 +226,40 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       };
     }
     for (const elem of elems) {
-      // Get href attribute value
-      href = elem.getAttribute('href');
-      if (href[0] === '?') {
-        href = href.substring(1);
-      } else {
-        href = href.substring(window.location.pathname.length + 1);
+      const href = elem.getAttribute('href');
+      const p = href.indexOf('?');
+      const elemParams = new URLSearchParams(p >= 0 ? href.substring(p + 1) : '');
+
+      // Add parameters that did not initially exist:
+      for (const [key, value] of elemParams) {
+        // URLSearchParams.has(key, value) seems to be broken on iOS 16, so check with our own method:
+        if (!VuFind.inURLSearchParams(initialParams, key, value)) {
+          globalAddedParams.append(key, value);
+        }
       }
-      elemFilters = href.split('&');
-      addedParams = elemFilters.filter(filterAddedParams(initialRawParams));
-      removedParams = initialRawParams.filter(filterAddedParams(elemFilters));
-      globalAddedParams = globalAddedParams.concat(addedParams);
-      globalRemovedParams = globalRemovedParams.concat(removedParams);
+      // Remove parameters that this URL no longer has:
+      for (const [key, value] of initialParams) {
+        if (!VuFind.inURLSearchParams(elemParams, key, value)) {
+          globalRemovedParams.append(key, value);
+        }
+      }
     }
   }
 
   // Compile current parameters and newly added / removed to return the URL to redirect to
   function getHrefWithNewParams() {
-    setModifiedFacets();
-    handleRangeSelector();
-    // Removing parameters
-    initialRawParams = initialRawParams.filter(function tmp(obj) { return !globalRemovedParams.includes(obj); });
-    // Adding parameters
-    initialRawParams = initialRawParams.concat(globalAddedParams);
-    return window.location.pathname + '?' + initialRawParams.join('&');
+    processModifiedFacets();
+
+    // Create params without the removed parameters:
+    const newParams = VuFind.deleteParamsFromURLSearchParams(initialParams, globalRemovedParams);
+    // Add newly added parameters:
+    for (const [key, value] of globalAddedParams) {
+      newParams.append(key, value);
+    }
+
+    // Take base url from data attribute if present (standalone full facet list):
+    const baseUrl = defaultContext.dataset.searchUrl || window.location.pathname;
+    return baseUrl + '?' + processRangeSelector(newParams).toString();
   }
 
   function applyMultiFacetsSelection() {
