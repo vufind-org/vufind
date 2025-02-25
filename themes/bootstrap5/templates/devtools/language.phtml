@@ -58,7 +58,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
         </td>
         <td>
           <?php if (($row['countfiles'] > 0) && (in_array($row['lang'], $uLangs))):?>
-            <div class="btn-group">
+            <div class="dropdown">
               <button type="button" class="btn btn-default btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
                 <?=$this->escapeHtml($row['countfiles'])?>
               </button>
