@@ -602,7 +602,7 @@ ul.list-group {
       }
       tbody > tr {
         display: block;
-        margin-bottom: $line-height-computed;
+        margin-bottom: #{$line-height-base * $font-size-base};
         border-left: 1px solid $table-border-color;
         border-right: 1px solid $table-border-color;
         border-bottom: 4px solid $table-border-color;
@@ -620,7 +620,7 @@ ul.list-group {
         }
       }
       tbody > tr > td:nth-child(even) {
-        background-color: $table-bg-accent;
+        background-color: var(--bs-table-striped-bg);
       }
       tfoot > tr > td {
         border-top: none;
@@ -780,4 +780,11 @@ div.holding-notes {
 /* --- Confirm --- */
 .confirmDialog form {
   margin-right: 0.5rem;
+}
+
+/* --- Legend --- */
+legend {
+  float: none;
+  border: 0;
+  border-bottom: 1px solid $gray-lighter;
 }

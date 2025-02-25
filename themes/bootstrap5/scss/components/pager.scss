@@ -5,6 +5,7 @@ $pager-hover-bg:                       $pagination-hover-bg !default;
 $pager-active-bg:                      $pagination-active-bg !default;
 $pager-active-color:                   $pagination-active-color !default;
 $pager-disabled-color:                 $pagination-disabled-color !default;
+$pager-disabled-cursor:                not-allowed !default;
 
 .pager {
   padding-left: 0;
@@ -51,7 +52,7 @@ $pager-disabled-color:                 $pagination-disabled-color !default;
     > a:focus,
     > span {
       color: $pager-disabled-color;
-      cursor: $cursor-disabled;
+      cursor: $pager-disabled-cursor;
       background-color: $pager-bg;
     }
   }
