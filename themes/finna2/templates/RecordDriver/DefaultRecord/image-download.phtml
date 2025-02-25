@@ -14,7 +14,7 @@
             </button>
             <ul class="dropdown-menu download" aria-labelledby="downloadMenu-<?=$index?>">
                 <?php if (isset($urls['large'])): ?>
-                    <li class="display-image"><a href="<?=$this->escapeHtmlAttr($urls['large']['url'] ?? $urls['large'])?>" download target="_blank" rel="nofollow"><?=$this->transEsc('display_image') ?> <span class="image-dimensions"></span> jpg</a></li>
+                    <li class="display-image"><a class="dropdown-item" href="<?=$this->escapeHtmlAttr($urls['large']['url'] ?? $urls['large'])?>" download target="_blank" rel="nofollow"><?=$this->transEsc('display_image') ?> <span class="image-dimensions"></span> jpg</a></li>
                 <?php endif; ?>
                 <?php if (!$this->userAgent()->isBot()): ?>
                     <?php foreach ($hiRes as $size => $img): ?>
