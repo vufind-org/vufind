@@ -112,10 +112,10 @@ class OaiResumption extends Gateway implements DbServiceAwareInterface
      *
      * @param string $id Id used for the search.
      *
-     * @return     ?\VuFind\Db\Row\OaiResumption
-     * @deprecated This function is for BC and can be removed in the future.
+     * @return ?\VuFind\Db\Row\OaiResumption
+     * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
      */
-    final public function findWithIdBc(string $id): ?OaiResumptionEntityInterface
+    final public function findWithTokenOrLegacyIdToken(string $id): ?OaiResumptionEntityInterface
     {
         return $this->select(['id' => $id, 'token' => null])->current();
     }

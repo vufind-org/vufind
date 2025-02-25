@@ -107,12 +107,13 @@ class OaiResumptionService extends AbstractDbService implements
      *
      * @param string $tokenOrId Token or id
      *
-     * @return     ?OaiResumptionEntityInterface
-     * @deprecated This function is for BC and can be removed in the future.
+     * @return ?OaiResumptionEntityInterface
+     * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
      */
-    final public function findWithIdOrTokenBc(string $tokenOrId): ?OaiResumptionEntityInterface
+    final public function findWithTokenOrLegacyIdToken(string $tokenOrId): ?OaiResumptionEntityInterface
     {
-        return $this->findWithToken($tokenOrId) ?? $this->getDbTable('oairesumption')->findWithIdBc($tokenOrId);
+        return $this->findWithToken($tokenOrId)
+            ?? $this->getDbTable('oairesumption')->findWithTokenOrLegacyIdToken($tokenOrId);
     }
 
     /**

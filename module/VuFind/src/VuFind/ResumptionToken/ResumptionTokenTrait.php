@@ -97,7 +97,7 @@ trait ResumptionTokenTrait
         $this->resumptionService->removeExpired();
 
         // Load the requested token if it still exists:
-        if ($row = $this->resumptionService->findWithIdOrTokenBc($token)) {
+        if ($row = $this->resumptionService->findWithTokenOrLegacyIdToken($token)) {
             parse_str($row->getResumptionParameters(), $params);
             return $params;
         }
