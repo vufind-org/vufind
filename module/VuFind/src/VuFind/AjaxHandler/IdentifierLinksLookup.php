@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler to look up DOI data.
+ * AJAX handler to look up identifier-based link data.
  *
  * PHP version 8
  *
@@ -31,12 +31,12 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
-use VuFind\DoiLinker\PluginManager;
+use VuFind\IdentifierLinker\PluginManager;
 
 use function count;
 
 /**
- * AJAX handler to look up DOI data.
+ * AJAX handler to look up identifier-based link data.
  *
  * @category VuFind
  * @package  AJAX
@@ -44,24 +44,17 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiLookup extends AbstractBase
+class IdentifierLinksLookup extends AbstractBase
 {
     /**
-     * DOI Linker Plugin Manager
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager;
-
-    /**
-     * DOI resolver configuration value, exploded into an array of options
+     * Identifier link resolver configuration value, exploded into an array of options
      *
      * @var string[]
      */
     protected $resolvers;
 
     /**
-     * Behavior to use when multiple resolvers find results for the same DOI (may
+     * Behavior to use when multiple resolvers find results for the same identifier set (may
      * be 'first' -- use first match, or 'merge' -- use all results)
      *
      * @var string
@@ -83,35 +76,28 @@ class DoiLookup extends AbstractBase
     protected $openInNewWindow = false;
 
     /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $viewRenderer = null;
-
-    /**
      * Constructor
      *
-     * @param PluginManager     $pluginManager DOI Linker Plugin Manager
+     * @param PluginManager     $pluginManager Identifier Linker Plugin Manager
      * @param RendererInterface $viewRenderer  View renderer
      * @param array             $config        Main configuration
      */
     public function __construct(
-        PluginManager $pluginManager,
-        RendererInterface $viewRenderer,
+        protected PluginManager $pluginManager,
+        protected RendererInterface $viewRenderer,
         array $config
     ) {
-        $this->pluginManager = $pluginManager;
+        // DOI config section is supported as a fallback for back-compatibility:
+        $idConfig = $config['IdentifierLinks'] ?? $config['DOI'] ?? [];
         $this->resolvers
-            = array_map('trim', explode(',', $config['DOI']['resolver'] ?? ''));
+            = array_map('trim', explode(',', $idConfig['resolver'] ?? ''));
         // Behavior to use when multiple resolvers to find results for the same
-        // DOI (may be 'first' -- use first match, or 'merge' -- use all
+        // identifier set (may be 'first' -- use first match, or 'merge' -- use all
         // results):
         $this->multiMode
-            = trim(strtolower($config['DOI']['multi_resolver_mode'] ?? 'first'));
-        $this->proxyIcons = !empty($config['DOI']['proxy_icons']);
-        $this->openInNewWindow = !empty($config['DOI']['new_window']);
-        $this->viewRenderer = $viewRenderer;
+            = trim(strtolower($idConfig['multi_resolver_mode'] ?? 'first'));
+        $this->proxyIcons = !empty($idConfig['proxy_icons']);
+        $this->openInNewWindow = !empty($idConfig['new_window']);
     }
 
     /**
@@ -123,67 +109,77 @@ class DoiLookup extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
-        $response = [];
-        $dois = (array)$params->fromQuery('doi', []);
+        $gatheredData = [];
+        $ids = json_decode($params->getController()->getRequest()->getContent(), true);
         foreach ($this->resolvers as $resolver) {
             if ($this->pluginManager->has($resolver)) {
-                $next = $this->pluginManager->get($resolver)->getLinks($dois);
+                $next = $this->pluginManager->get($resolver)->getLinks($ids);
                 $next = $this->processIconLinks($next);
-                foreach ($next as $doi => $data) {
-                    foreach ($data as &$current) {
-                        $current['newWindow'] = $this->openInNewWindow;
-                    }
-                    unset($current);
-                    if (!isset($response[$doi])) {
-                        $response[$doi] = $data;
+                foreach ($next as $key => $data) {
+                    if (!isset($gatheredData[$key])) {
+                        $gatheredData[$key] = $data;
                     } elseif ($this->multiMode == 'merge') {
-                        $response[$doi] = array_merge($response[$doi], $data);
+                        $gatheredData[$key] = array_merge($gatheredData[$key], $data);
                     }
                 }
-                // If all DOIs have been found and we're not in merge mode, we
+                // If all keys have been found and we're not in merge mode, we
                 // can short circuit out of here.
                 if (
                     $this->multiMode !== 'merge'
-                    && count(array_diff($dois, array_keys($response))) == 0
+                    && count(array_diff(array_keys($ids), array_keys($gatheredData))) == 0
                 ) {
                     break;
                 }
             }
         }
+        $response = array_map([$this, 'renderResponseChunk'], $gatheredData);
         return $this->formatResponse($response);
     }
 
     /**
-     * Proxify external DOI icon links and render local icons
+     * Render the links for a single record.
      *
-     * @param array $dois DOIs
+     * @param array $data Data to render
+     *
+     * @return string
+     */
+    protected function renderResponseChunk(array $data): string
+    {
+        $newWindow = $this->openInNewWindow;
+        return $this->viewRenderer->render('ajax/identifierLinks.phtml', compact('data', 'newWindow'));
+    }
+
+    /**
+     * Proxify external icon links and render local icons
+     *
+     * @param array $data Identifier plugin data
      *
      * @return array
      */
-    protected function processIconLinks(array $dois): array
+    protected function processIconLinks(array $data): array
     {
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
         $iconHelper = $this->viewRenderer->plugin('icon');
 
-        foreach ($dois as &$doiLinks) {
-            foreach ($doiLinks as &$doi) {
-                if ($this->proxyIcons && !empty($doi['icon'])) {
-                    $doi['icon'] = $serverHelper(
+        foreach ($data as &$links) {
+            foreach ($links as &$link) {
+                if ($this->proxyIcons && !empty($link['icon'])) {
+                    $link['icon'] = $serverHelper(
                         $urlHelper(
                             'cover-show',
                             [],
-                            ['query' => ['proxy' => $doi['icon']]]
+                            ['query' => ['proxy' => $link['icon']]]
                         )
                     );
                 }
-                if (!empty($doi['localIcon'])) {
-                    $doi['localIcon'] = $iconHelper($doi['localIcon']);
+                if (!empty($link['localIcon'])) {
+                    $link['localIcon'] = $iconHelper($link['localIcon'], 'icon-link__icon');
                 }
             }
-            unset($doi);
+            unset($link);
         }
-        unset($doiLinks);
-        return $dois;
+        unset($links);
+        return $data;
     }
 }

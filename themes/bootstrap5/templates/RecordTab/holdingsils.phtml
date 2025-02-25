@@ -4,8 +4,7 @@
     $user = $account->getUserObject();
     $openUrl = $this->openUrl($this->driver, 'holdings');
     $openUrlActive = $openUrl->isActive();
-    $doi = $this->doi($this->driver, 'holdings');
-    $doiActive = $doi->isActive();
+    $identifierLinksHtml = $this->identifierLinker($this->driver, 'holdings');
     // Account for replace_other_urls setting
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
@@ -62,7 +61,7 @@
     <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
   </a>
 <?php endif; ?>
-<?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
+<?php if (!empty($urls) || $openUrlActive || $identifierLinksHtml): ?>
   <h2><?=$this->transEsc('Internet')?></h2>
   <?php if (!empty($urls)): ?>
     <?php foreach ($urls as $current): ?>
@@ -70,7 +69,7 @@
     <?php endforeach; ?>
   <?php endif; ?>
   <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
-  <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>
+  <?=$identifierLinksHtml?>
 <?php endif; ?>
 
 <?php if (!empty($holdings['electronic_holdings'])): ?>
