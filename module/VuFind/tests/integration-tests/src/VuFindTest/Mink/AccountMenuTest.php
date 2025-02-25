@@ -384,7 +384,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertEquals(
             'Items due later: 1 ,',
-            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden, .sr-only')
+            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden')
         );
 
         $this->assertEquals(
@@ -393,7 +393,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertEquals(
             'Items due soon: 2 ,',
-            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden, .sr-only', null, 1)
+            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden', null, 1)
         );
 
         $this->assertEquals(
@@ -402,7 +402,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertEquals(
             'Items overdue: 3 ,',
-            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden, .sr-only', null, 2)
+            $this->findCssAndGetText($checkoutsStatus, '.visually-hidden', null, 2)
         );
 
         // Holds
@@ -413,7 +413,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertEquals(
             'Available for Pickup: 1 ,',
-            $this->findCssAndGetText($holdsStatus, '.visually-hidden, .sr-only')
+            $this->findCssAndGetText($holdsStatus, '.visually-hidden')
         );
 
         $this->assertEquals(
@@ -422,7 +422,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertEquals(
             'In Transit: 2 ,',
-            $this->findCssAndGetText($holdsStatus, '.visually-hidden, .sr-only', null, 1)
+            $this->findCssAndGetText($holdsStatus, '.visually-hidden', null, 1)
         );
 
         $this->assertEquals(
@@ -431,7 +431,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertEquals(
             'Other Status: 3 ,',
-            $this->findCssAndGetText($holdsStatus, '.visually-hidden, .sr-only', null, 2)
+            $this->findCssAndGetText($holdsStatus, '.visually-hidden', null, 2)
         );
 
         // Fines

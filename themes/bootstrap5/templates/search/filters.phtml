@@ -39,7 +39,7 @@
       ?>
       <?php if ($removeLink): ?>
         <a class="filter-value" href="<?=$removeLink?>">
-          <span class="sr-only">
+          <span class="visually-hidden">
             <?=$this->translate('Remove filter') ?>
           </span>
           <span class="text"><?=$this->transEsc($filter['desc'])?></span>
@@ -95,7 +95,7 @@
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
         <a class="<?=$dropdown ? 'dropdown-item ' : ''?>filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
-          <span class="sr-only">
+          <span class="visually-hidden">
             <?=$this->translate('Remove filter') ?>
           </span>
           <span class="text">
@@ -127,21 +127,21 @@
   ?>
   <?php // Normal view ?>
   <div class="active-filters active-filters--uncollapsible">
-    <span class="sr-only"><?=$this->transEsc('page_reload_on_deselect_hint') ?></span>
+    <span class="visually-hidden"><?=$this->transEsc('page_reload_on_deselect_hint') ?></span>
     <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
       <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
     <?php elseif ($advancedSearch): ?>
       <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
     <?php endif; ?>
     <div class="filters">
-      <span class="sr-only"><?=$this->transEsc('applied_filters') ?></span>
+      <span class="visually-hidden"><?=$this->transEsc('applied_filters') ?></span>
       <?=$filters ?>
     </div>
     <div class="clearfix"></div>
   </div>
   <?php // Narrow view ?>
   <div class="active-filters active-filters--collapsible">
-    <span class="sr-only"><?=$this->transEsc('page_reload_on_deselect_hint') ?></span>
+    <span class="visually-hidden"><?=$this->transEsc('page_reload_on_deselect_hint') ?></span>
     <div class="filters-toggle-bar">
       <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
         <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>

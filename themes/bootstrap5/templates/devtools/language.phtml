@@ -44,7 +44,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
         <td>
           <div class="progress progress-border-<?=$this->escapeHtmlAttr($row['progresslevel'])?>">
             <div class="progress-bar progress-bar-<?=$this->escapeHtmlAttr($row['progresslevel'])?>" role="progressbar" aria-valuenow="<?=$this->escapeHtmlAttr($row['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$row['percent']?>%;">
-              <?=$this->escapeHtml($row['percent'])?>% <span class="sr-only">Complete</span>
+              <?=$this->escapeHtml($row['percent'])?>% <span class="visually-hidden">Complete</span>
             </div>
           </div>
         </td>

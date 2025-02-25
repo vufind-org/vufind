@@ -38,7 +38,7 @@
   <?php if ($this->multiFacetsSelection && $this->layout()->sideFacetsInstanceCounter === 1): ?>
     <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
   <?php endif; ?>
-  <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
+  <span class="visually-hidden"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
 <?php endif; ?>
 <?php if ($hasVisibleCheckboxes): ?>
   <div class="checkbox-filters">
