@@ -7,19 +7,6 @@
 
 // *** Styles ***
 
-.btn {
-  &:focus,
-  &.focus {
-    outline: dotted 1px $body-color;
-  }
-}
-.btn.more-btn:not(.facet) {
-  background-color: revert;
-  &:hover {
-    background-color: revert;
-    border-color: #999;
-  }
-}
 .btn-group {
   display: inline-block;
 }
