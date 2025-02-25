@@ -71,6 +71,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/advanced-search";
 @import "components/alphabrowse";
 @import "components/autocomplete";
+@import "components/badges";
 @import "components/buttons";
 @import "components/channels";
 @import "components/cookie-consent/index";
@@ -280,9 +281,6 @@ body.rtl .dropdown-menu {
   display: inline-block;
   width: 8rem;
 }
-
-/* ------ Badges - blend the links in ------ */
-.badge a { color: #fff; }
 
 /* ------ Browse ------ */
 // Layout

@@ -7,35 +7,6 @@
 
 // *** Styles ***
 
-button.list-group-item {
-  width: 100%;
-  text-align: left;
-}
-
-.badge {
-  background-color: #595959; // $badge-bg is not yet defined here
-}
-
-.label {
-  @extend .badge;
-  margin-bottom: 5px;
-}
-.label-info {
-  color: $body-bg;
-  background-color: $primary;
-}
-.label-success {
-  color: $body-bg;
-  background-color: $success;
-}
-.label-warning {
-  color: $body-bg;
-  background-color: $warning;
-}
-.label-danger {
-  color: $body-bg;
-  background-color: $danger;
-}
 
 .dropdown-toggle {
   display: inline-flex;
@@ -52,7 +23,6 @@ button.list-group-item {
 .dropdown-toggle .icon:last-child {
   display: none;
 }
-
 .navbar-form {
   .form-control {
     display: block;
