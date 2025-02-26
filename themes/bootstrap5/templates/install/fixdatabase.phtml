@@ -14,7 +14,7 @@
 <form class="form-fix-database" method="post">
   <div class="form-group">
     <label class="control-label" for="dbname">Select database type:</label>
-    <select name="driver" class="form-control form-select">
+    <select name="driver" class="form-select">
       <option value="mysql">MySQL</option>
       <option <?php if ($driver == 'mariadb'): ?>selected="selected" <?php endif; ?>value="mariadb">MariaDB</option>
       <option <?php if ($driver == 'pgsql'): ?>selected="selected" <?php endif; ?>value="pgsql">PostgreSQL</option>

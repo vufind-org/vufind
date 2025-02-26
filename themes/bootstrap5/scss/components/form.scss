@@ -1,10 +1,7 @@
 form {
-    .form-control {
-        border-color: #888;
-        &:focus {
-            border-color: #3F9AE4;
-        }
-      }
+    .form-control, .form-select {
+        height: $input-height;
+    }
     textarea:invalid,
     input:invalid {
         box-shadow: 0 0 2px 1px rgba(255, 0, 0, 0.9);
@@ -60,4 +57,22 @@ form {
             padding-top: 0;
         }
     }
+}
+
+.form-inline {
+    .form-control, .form-group, .form-select {
+        vertical-align: middle;
+    }
+}
+
+@include media-breakpoint-up(sm) {
+  .form-inline {
+    .control-label {
+      margin-bottom: 0;
+    }
+    .form-control, .form-group, .form-select {
+      display: inline-block;
+      width: auto;
+    }
+  }
 }

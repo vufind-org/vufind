@@ -54,7 +54,7 @@
         $hasBadge = $this->findby != 'alphabetical' && isset($secondary['count']);
       ?>
       <a href="<?=$url ?>" class="browse-item<?php if ($hasBadge): ?> with-badge<?php endif; ?><?php if ($this->query == $secondary['value'] . '' || $this->query == $secondary['value'] . '*'): ?> active<?php endif; ?>">
-        <?=$this->escapeHtml($secondary['displayText']) ?>
+        <?=$this->escapeHtml(trim($secondary['displayText'])) ?>
         <?php if ($hasBadge): ?>
           <span class="badge"><?=$this->localizedNumber($secondary['count']) ?></span>
         <?php else: ?>

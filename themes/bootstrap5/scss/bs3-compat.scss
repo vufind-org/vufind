@@ -6,53 +6,6 @@
 // *** Variables ***
 
 // *** Styles ***
-.navbar-form {
-  .form-control {
-    display: block;
-    width: 100%;
-
-    @include media-breakpoint-up(sm) {
-      display: inline-block;
-      width: auto;
-    }
-  }
-  .btn {
-    vertical-align: baseline;
-  }
-}
-
-.form-control:not([multiple]):not([size]) {
-  appearance: auto;
-  height: $input-height;
-}
-
-.form-select {
-  appearance: auto;
-}
-
-/* Hide browser's own X button in the search field (Safari, Chrome) */
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-textarea.form-control {
-  height: auto;
-}
-
-@include media-breakpoint-up(sm) {
-  .form-inline {
-    .control-label {
-      margin-bottom: 0;
-      vertical-align: middle;
-    }
-    .form-control, .form-group {
-      display: inline-block;
-      width: auto;
-      vertical-align: middle;
-    }
-  }
-}
 
 .control-label {
   @extend .form-label;

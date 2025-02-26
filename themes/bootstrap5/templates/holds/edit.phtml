@@ -23,7 +23,7 @@
   <?php if (in_array('frozen', $this->fields)): ?>
     <div class="form-group hold-frozen">
       <label for="frozen" class="control-label"><?=$this->transEsc('hold_edit_frozen')?>:</label>
-      <select id="frozen" name="gatheredDetails[frozen]" class="form-control form-select">
+      <select id="frozen" name="gatheredDetails[frozen]" class="form-select">
         <?php $current = $gatheredDetails['frozen'] ?? '';?>
         <option value=""<?=$current === '' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_no_change')?></option>
         <option value="1"<?=$current === '1' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_frozen_set')?></option>
@@ -65,7 +65,7 @@
       <?php $selected = $this->gatheredDetails['pickUpLocation'] ?? ''; ?>
       <div class="form-group hold-pickup-location">
         <label for="pickup_location" class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
-        <select id="pickup_location" name="gatheredDetails[pickUpLocation]" class="form-control form-select">
+        <select id="pickup_location" name="gatheredDetails[pickUpLocation]" class="form-select">
           <option value=""<?=$selected === '' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_no_change')?></option>
           <?php foreach ($this->pickupLocations as $loc): ?>
             <option value="<?=$this->escapeHtmlAttr($loc['locationID'])?>"<?=($selected === $loc['locationID']) ? ' selected' : ''?>>

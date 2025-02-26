@@ -22,7 +22,7 @@
   <?php if ($this->targets !== null): ?>
   <div class="form-group">
     <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-    <select id="login_target" name="target" class="form-control form-select">
+    <select id="login_target" name="target" class="form-select">
       <?php foreach ($this->targets as $target): ?>
         <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
       <?php endforeach; ?>

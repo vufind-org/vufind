@@ -18,6 +18,9 @@ $warning-border-subtle:     darken(adjust-hue($warning-bg-subtle, -10), 5%) !def
 $danger-bg-subtle:          #f2dede !default;
 $danger-border-subtle:      darken(adjust-hue($danger-bg-subtle, -10), 5%) !default;
 
+$input-border-color:        #888 !default;
+$form-select-border-color:  #888 !default;
+
 $breadcrumb-bg:                     #f5f5f5 !default;
 $breadcrumb-padding-y:              8px !default;
 $breadcrumb-padding-x:              15px !default;

@@ -108,6 +108,12 @@ a,
 label,
 select,
 input[type="checkbox"] { cursor: pointer; }
+
+// Use select field's native caret
+.form-select {
+  appearance: auto;
+}
+
 .alert.alert-info a { text-decoration: underline; }
 
 .alert-default {
@@ -187,8 +193,14 @@ h3 { font-size: 16px; }
     font-size: 20px;
     font-weight: normal;
   }
-  .form-control { max-width: 400px; }
-  #modal .form-control { max-width: none; }
+  .form-control, .form-select {
+    max-width: 400px;
+  }
+  #modal {
+    .form-control, .form-select {
+      max-width: none;
+    }
+  }
 }
 
 /* ------ Layout ------ */
@@ -277,13 +289,40 @@ body.rtl .dropdown-menu {
 }
 
 /* ------ Admin ------ */
-.form-admin-maintenance .form-control {
-  display: inline-block;
-  width: 8rem;
+.form-admin-maintenance {
+  .form-control, .form-select {
+    display: inline-block;
+    width: 8rem;
+  }
+}
+.form-feedback-search {
+  margin-bottom: 1rem;
+
+  label {
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  input {
+    display: block;
+  }
+}
+
+.form-feedback-list {
+  > input {
+    margin-top: 0.5rem;
+  }
+
+  table {
+    margin-top: 1rem;
+  }
 }
 
 /* ------ Browse ------ */
 // Layout
+.browse-container {
+  margin-top: 1rem;
+}
 @include media-breakpoint-up(sm) {
   .browse-container { display: flex; }
   .browse-list {
@@ -340,6 +379,10 @@ body.rtl .dropdown-menu {
   font-size: 85%;
   text-align: right;
   border-top: 0;
+}
+
+#alphaBrowseForm {
+  margin-top: 1rem;
 }
 
 /* ------ Cart ------ */
