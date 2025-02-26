@@ -35,7 +35,7 @@
 }
 
 .media-body h1 { margin-top: 0; }
-@media (max-width: 767px) {
+@include media-breakpoint-down(sm) {
   .record .media-left,
   .record .media-right { display: block; }
   .record .media-body { // Add a gap between the thumbnail and the info
@@ -74,7 +74,7 @@
 .comment-name { font-style: italic; }
 .comment { margin-bottom: 1rem; }
 .comment-name .delete { color: $state-danger-text; }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .comment-form,
   .comment {
     display: flex;
@@ -117,7 +117,7 @@
     text-decoration: none;
   }
 
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     margin-left: 0.5rem;
     padding: $padding-base-vertical calc(#{$padding-base-horizontal} / 2);
   }
@@ -347,5 +347,12 @@
 
   &.label-retraction {
     @extend .label-warning;
+  }
+}
+
+/* QRCode */
+@include media-breakpoint-down(sm) {
+  .collection-qrcode, .record-qrcode {
+    display: none;
   }
 }
