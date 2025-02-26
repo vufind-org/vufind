@@ -196,7 +196,7 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
      */
     public function getLanguageUrl($lng)
     {
-        $url = $this->router->getRequestUri();
+        $url = clone $this->router->getRequestUri();
         $params = $url->getQueryAsArray();
         $params['lng'] = $lng;
         $url->setQuery(http_build_query($params));
