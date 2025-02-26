@@ -374,6 +374,9 @@ abstract class AbstractProvider implements
      */
     protected function processDetails(array $result): array
     {
+        if (!$result) {
+            return $result;
+        }
         $isAlwaysClosed = true;
         $hasSelfServiceTimes = false;
         // empty() needed because we can't use null coalescing without breaking the reference:
