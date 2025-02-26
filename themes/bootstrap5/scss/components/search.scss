@@ -387,7 +387,9 @@ header .container.navbar { margin-bottom: 0; }
     .result-links { float: right; }
   }
 }
+
 /* ------ EMBEDDED RESULTS STYLE ------ */
+
 .result.embedded {
   .getFull {
     display: block;
@@ -397,10 +399,12 @@ header .container.navbar { margin-bottom: 0; }
   }
   .getFull.expanded {
     @extend .list-group-item;
+
     margin-top: -11px;
-    padding-left: .5rem;
-    border-top-left-radius: $border-radius;
-    border-top-right-radius: $border-radius;
+    margin-bottom: -1px;
+    padding: 10px 15px 10px 0.5rem;
+    border: 1px solid #ddd;
+
     &::before {
       content: '\25BC';
       position: absolute;

@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:math";
 
 $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 
@@ -83,6 +84,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/lightbox";
 @import "components/offcanvas";
 @import "components/pager";
+@import "components/panel";
 @import "components/record";
 @import "components/search";
 @import "components/sidebar";
@@ -98,9 +100,8 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
  * = The preferred method for writing code is to put generic and mobile styles first
  *   and surround desktop styling with media min-width queries.
  *
- * = Bootstrap 3 breakpoints: <768px, >=768px, >=992px, >=1200px
- *                                xs,      sm,      md,       lg
- * = Breakpoint of <=530px also used to target phones specifically
+ * = Bootstrap breakpoints: <768px, >=768px, >=992px, >=1200px
+ *                              xs,      sm,      md,       lg
  */
 
 html { font-size: 14px; } // Root font size from Bootstrap, allows consistent use of rem units
@@ -108,6 +109,20 @@ a,
 label,
 select,
 input[type="checkbox"] { cursor: pointer; }
+
+// Set up our own margins for headings
+h1, .h1,
+h2, .h2,
+h3:not(.popover-header), .h3 {
+  margin-top: $line-height-base * 1rem;
+  margin-bottom: math.div($line-height-base, 2) * 1rem;
+}
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-top: math.div($line-height-base, 2) * 1rem;
+  margin-bottom: math.div($line-height-base, 2) * 1rem;
+}
 
 // Use select field's native caret
 .form-select {
@@ -204,9 +219,21 @@ h3 { font-size: 16px; }
 }
 
 /* ------ Layout ------ */
+.hidden {
+  display: none !important;
+}
+
 .sticky {
   position: fixed;
   left: 0;
+}
+
+.media-body, .media-left, .media-right {
+  display: table-cell;
+  vertical-align: top;
+}
+.media-body {
+  width: 10000px;
 }
 
 footer {
@@ -518,8 +545,9 @@ body.rtl .dropdown-menu {
   }
 }
 
-ul.list-group {
+.list-group:not(:last-child) {
   list-style: none;
+  margin-bottom: 1rem;
 }
 
 .dropdown-menu > li .dropdown-header {
@@ -811,7 +839,7 @@ div.holding-notes {
   flex: 1 1 100%;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 24px 0;
+  margin: $line-height-base * 1rem 0;
 }
 
 /* --- Rating --- */

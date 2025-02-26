@@ -1,5 +1,5 @@
 form {
-    .form-control, .form-select {
+    input.form-control, .form-select:not([multiple]) {
         height: $input-height;
     }
     textarea:invalid,
@@ -82,5 +82,20 @@ form {
       display: inline-block;
       width: auto;
     }
+  }
+}
+
+.checkbox {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.radio, .checkbox {
+  label {
+    min-height: 20px;
+    margin-bottom: 0;
+    cursor: pointer;
   }
 }
