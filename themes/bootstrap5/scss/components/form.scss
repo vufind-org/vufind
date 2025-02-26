@@ -13,10 +13,14 @@ form {
     .info {
         margin: 10px 0;
     }
-    .form-group ul {
-        padding: 0;
-        margin-left: 15px;
-        margin-top: 5px;
+    .form-group {
+        margin-bottom: 1rem;
+
+        ul {
+            padding: 0;
+            margin-left: 15px;
+            margin-top: 5px;
+        }
     }
     .form-group label.required::before,
     .form-group .radio-label.required::before,
@@ -50,6 +54,10 @@ form {
         .radio-label {
             font-weight: 700;
         }
+    }
+
+    .input-group {
+        width: initial;
     }
 
     &.dynamic-form {
