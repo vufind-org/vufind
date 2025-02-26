@@ -115,7 +115,7 @@ class OaiResumption extends Gateway implements DbServiceAwareInterface
      * @return ?\VuFind\Db\Row\OaiResumption
      * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
      */
-    final public function findWithTokenOrLegacyIdToken(string $id): ?OaiResumptionEntityInterface
+    final public function findWithLegacyIdToken(string $id): ?OaiResumptionEntityInterface
     {
         return $this->select(['id' => $id, 'token' => null])->current();
     }

@@ -113,7 +113,7 @@ class OaiResumptionService extends AbstractDbService implements
     final public function findWithTokenOrLegacyIdToken(string $tokenOrId): ?OaiResumptionEntityInterface
     {
         return $this->findWithToken($tokenOrId)
-            ?? $this->getDbTable('oairesumption')->findWithTokenOrLegacyIdToken($tokenOrId);
+            ?? $this->getDbTable('oairesumption')->findWithLegacyIdToken($tokenOrId);
     }
 
     /**
