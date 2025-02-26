@@ -483,6 +483,17 @@ ul.list-group {
   min-width: 200px;
 }
 
+.preferred-library-selection th {
+  vertical-align: middle;
+}
+
+.form-select-card {
+  margin-bottom: $paragraph-margin-bottom;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
 // Reduce the gap between the text and dropdown button:
 #account-home-nav.dropdown {
   > .nav-link:not(.account-dropdown-toggle) {
