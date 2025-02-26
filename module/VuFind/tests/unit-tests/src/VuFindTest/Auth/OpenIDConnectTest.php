@@ -33,6 +33,7 @@ use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\Container as SessionContainer;
+use PHPUnit\Framework\MockObject\Exception;
 use RuntimeException;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\OpenIDConnect;
@@ -335,11 +336,10 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
      * Get a mock ILS authenticator
      *
      * @return ILSAuthenticator
+     * @throws Exception
      */
     protected function getMockILSAuthenticator(): ILSAuthenticator
     {
-        return $this->getMockBuilder(ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(ILSAuthenticator::class);
     }
 }

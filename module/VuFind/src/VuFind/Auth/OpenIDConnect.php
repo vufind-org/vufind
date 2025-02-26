@@ -316,8 +316,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         }
         $catUsername = $user->getCatUsername();
         if (!empty($catUsername)) {
-            $currentPassword = $this->ilsAuthenticator->getCatPasswordForUser($user);
-            $this->ilsAuthenticator->setUserCatalogCredentials($user, $catUsername, $catPassword ?? $currentPassword);
+            $finalCatPassword = $catPassword ?? $this->ilsAuthenticator->getCatPasswordForUser($user);
+            $this->ilsAuthenticator->setUserCatalogCredentials($user, $catUsername, $finalCatPassword);
         }
         $userService->persistEntity($user);
         return $user;
