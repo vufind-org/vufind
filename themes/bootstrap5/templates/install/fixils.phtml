@@ -14,7 +14,7 @@
 
   <form method="post" class="form-fix-ils">
     <div class="form-group">
-      <label for="driver" class="control-label">Pick a driver:</label>
+      <label for="driver" class="form-label">Pick a driver:</label>
       <select id="driver" name="driver" class="form-select">
         <?php foreach ($this->drivers as $driver): ?>
           <option value="<?=$this->escapeHtmlAttr($driver)?>"><?=$this->escapeHtml($driver)?></option>

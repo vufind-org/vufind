@@ -102,7 +102,7 @@
         <?php if ($result->status): ?>
      <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
          <div class="form-group hold-required-by">
-             <label class="control-label"><?=$this->transEsc('Email Address')?></label>
+             <label class="form-label"><?=$this->transEsc('Email Address')?></label>
              <input id="email" name="email" value="" size="" class="form-control" type="text">
          </div>
              <input name="doAction" value="placeHold" type="hidden">
@@ -142,7 +142,7 @@
     <?php elseif ($action == 'editHoldEmailConfirm'): ?>
         <form class="" method="POST" name="editHoldEmail" data-lightbox-onclose="VuFind.refreshPage">
             <div class="form-group">
-                <label class="control-label"><?=$this->transEsc('Email Address')?></label>
+                <label class="form-label"><?=$this->transEsc('Email Address')?></label>
                 <input id="email" name="email" value="<?=$this->escapeHtmlAttr($result->data->hold->emailAddress)?>" size="" class="form-control" type="text">
 
             </div>

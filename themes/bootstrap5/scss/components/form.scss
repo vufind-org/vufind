@@ -33,7 +33,7 @@ form {
     .form-group.checkbox,
     .form-group.radio {
         margin-bottom: 15px;
-        label.control-label {
+        label.form-label {
             padding-left: 0;
             font-weight: 700;
             margin-bottom: 5px;
@@ -67,7 +67,7 @@ form {
 
 @include media-breakpoint-up(sm) {
   .form-inline {
-    .control-label {
+    .form-label {
       margin-bottom: 0;
     }
     .form-control, .form-group, .form-select {

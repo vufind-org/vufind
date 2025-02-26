@@ -17,7 +17,7 @@
     <form id="newemail" class="form-new-email" action="<?=$this->url('myresearch-changeemail') ?>" method="post">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
       <div class="form-group">
-        <label class="control-label"><?=$this->transEsc('Email Address') ?>:</label>
+        <label class="form-label"><?=$this->transEsc('Email Address') ?>:</label>
         <input type="text" name="email" class="form-control" value="<?=$this->escapeHtmlAttr($this->email)?>">
       </div>
       <?=$this->captcha()->html($this->useCaptcha) ?>

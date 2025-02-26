@@ -13,7 +13,7 @@
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <div class="form-group">
-    <label class="control-label" for="addtag_tag"><?=$this->transEsc('Tags')?>:</label>
+    <label class="form-label" for="addtag_tag"><?=$this->transEsc('Tags')?>:</label>
     <input id="addtag_tag" type="text" name="tag" value="" size="40"  class="form-control">
     <p class="help-block"><?=$this->transEsc('add_tag_note')?></p>
   </div>

@@ -13,7 +13,7 @@
 
   <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Manage']);?>" method="post">
     <div class="form-group">
-      <label for="type" class="control-label"><?=$this->transEsc('delete_tags_by')?>:</label>
+      <label for="type" class="form-label"><?=$this->transEsc('delete_tags_by')?>:</label>
       <select id="type" name="type" class="form-select">
         <option value="user" <?=('user' == $this->type) ? ' selected=selected' : ''?>><?=$this->transEsc('Username')?></option>
         <option value="tag" <?=('tag' == $this->type) ? ' selected=selected' : ''?>><?=$this->transEsc('Tag')?></option>
@@ -29,7 +29,7 @@
       <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($this->type) ?>">
       <?php if ('user' == $type):?>
         <div class="form-group">
-          <label for="user_id" class="control-label"><?=$this->transEsc('Username')?></label>
+          <label for="user_id" class="form-label"><?=$this->transEsc('Username')?></label>
           <select name="user_id" id="user_id" class="form-select">
             <?php foreach ($this->uniqueUsers as $user):?>
               <option value="<?=$this->escapeHtmlAttr($user['user_id']) ?>">
@@ -41,7 +41,7 @@
         </div>
       <?php elseif ('tag' == $type):?>
         <div class="form-group">
-          <label for="tag_id" class="control-label"><?=$this->transEsc('Tag')?></label>
+          <label for="tag_id" class="form-label"><?=$this->transEsc('Tag')?></label>
           <select name="tag_id" id="tag_id" class="form-select">
             <?php foreach ($this->uniqueTags as $tag):?>
               <option value="<?=$this->escapeHtmlAttr($tag['tag_id']) ?>">
@@ -53,7 +53,7 @@
         </div>
       <?php elseif ('resource' == $type):?>
         <div class="form-group">
-          <label for="resource_id" class="control-label"><?=$this->transEsc('Title')?></label>
+          <label for="resource_id" class="form-label"><?=$this->transEsc('Title')?></label>
           <select name="resource_id" id="resource_id" class="form-select">
             <?php foreach ($this->uniqueResources as $resource):?>
               <option value="<?=$this->escapeHtmlAttr($resource['resource_id']) ?>" title="<?=$this->escapeHtmlAttr($resource['title']) ?>">
