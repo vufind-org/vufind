@@ -78,7 +78,7 @@
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
 
 <?php if ($currentSearch['more_link'] ?? false): ?>
-  <div class="pull-right flip">
+  <div class="float-end">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
       <?=$this->icon('options', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('More options')?></span>
@@ -101,7 +101,7 @@
 <?php endif; ?>
 
 <div class="clearfix">
-  <div class="pull-left flip help-block">
+  <div class="float-start help-block">
     <?php if ($recordTotal > 0): ?>
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>

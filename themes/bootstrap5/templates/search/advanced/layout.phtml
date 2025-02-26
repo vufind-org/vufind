@@ -85,8 +85,8 @@
         <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>">
       <?php endif; ?>
       <div class="clearfix">
-        <h1 class="pull-left flip"><?=$this->transEsc('Advanced Search')?></h1>
-        <div id="groupJoin" class="form-inline pull-right flip">
+        <h1 class="float-start"><?=$this->transEsc('Advanced Search')?></h1>
+        <div id="groupJoin" class="form-inline float-end">
           <label for="groupJoinOptions"><?=$this->transEsc('search_match')?>:</label>
           <select id="groupJoinOptions" name="join" class="form-select">
             <option value="AND"<?php if ($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?php endif; ?>><?= $this->transEsc('group_AND') ?></option>

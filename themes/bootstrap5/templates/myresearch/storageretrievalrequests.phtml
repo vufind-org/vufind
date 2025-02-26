@@ -60,7 +60,7 @@
             <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <div class="checkbox">
               <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
-              <label class="pull-left flip">
+              <label class="float-start">
                 <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_storage_retrieval_request_cancel')?>">
               </label>
             </div>

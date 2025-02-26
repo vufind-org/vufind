@@ -1,7 +1,7 @@
 <div class="odaction">
   <?php if($action == 'getTitle'): ?>
     <h2><?=$this->transEsc($actionTitleCode)?>
-        <span class="odbrand pull-left">
+        <span class="odbrand float-start">
           <img class="media-left" alt="OverDrive" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
         </span>
     </h2>
@@ -11,11 +11,11 @@
  <div class="media clearfix">
      <div class="media-body">
     <h2><?=$this->transEsc($actionTitleCode)?>
-        <span class="odbrand pull-left">
+        <span class="odbrand float-start">
           <img class="media-left" alt="OverDrive" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
         </span>
     </h2>
-         <div class="pull-right img-col">
+         <div class="float-end img-col">
              <?php if ($cover): ?>
                  <img alt="<?=$this->transEscAttr('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($cover)?>">
              <?php endif; ?>
@@ -237,7 +237,7 @@
             </div>
 
         <?php endif; ?>
-            <div class="pull-right">
+            <div class="float-end">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-hidden="true"><?=$this->transEsc('close')?></button>
             </div>
 
@@ -254,7 +254,7 @@
             </div>
 
         <?php endif; ?>
-        <div class="pull-right">
+        <div class="float-end">
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-hidden="true"><?=$this->transEsc('close')?></button>
         </div>
     <?php endif; ?>

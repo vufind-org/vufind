@@ -65,9 +65,6 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 // Include custom (non-vendor) mixins
 @import "mixins/mixins";
 
-// Include bootstrap3 compatibility layer
-@import "bs3-compat";
-
 @import "components/accessibility";
 @import "components/advanced-search";
 @import "components/alphabrowse";
@@ -676,6 +673,10 @@ body.rtl .dropdown-menu {
         border-left: 1px solid $table-border-color;
         border-right: 1px solid $table-border-color;
         border-bottom: 4px solid $table-border-color;
+
+        > :first-child {
+          border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
+        }
       }
       td, tbody > tr > th {
         display: flex;
@@ -694,6 +695,9 @@ body.rtl .dropdown-menu {
       }
       tfoot > tr > td {
         border-top: none;
+      }
+      > :not(caption) > * > * {
+        box-shadow: none;
       }
     }
   }
