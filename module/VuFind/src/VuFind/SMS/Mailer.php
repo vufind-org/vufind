@@ -46,7 +46,7 @@ use function in_array;
 class Mailer extends AbstractBase
 {
     /**
-     * Default carriers, usually overridden by contents of web/conf/sms.ini.
+     * Default carriers, usually overridden by contents of sms.ini.
      *
      * @var array
      */
@@ -78,11 +78,11 @@ class Mailer extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array                  $options Additional options: defaultFrom
+     * @param \VuFind\Config\Config $config  SMS configuration
+     * @param array                 $options Additional options: defaultFrom
      * (optional) and mailer (must be a \VuFind\Mailer\Mailer object)
      */
-    public function __construct(\Laminas\Config\Config $config, $options = [])
+    public function __construct(\VuFind\Config\Config $config, $options = [])
     {
         // Set up parent object first:
         parent::__construct($config);

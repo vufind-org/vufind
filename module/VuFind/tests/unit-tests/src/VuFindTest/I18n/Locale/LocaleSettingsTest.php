@@ -31,7 +31,7 @@
 
 namespace VuFindTest\I18n\Locale;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**

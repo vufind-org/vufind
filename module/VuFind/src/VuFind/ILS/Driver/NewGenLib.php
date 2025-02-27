@@ -89,7 +89,7 @@ class NewGenLib extends AbstractBase
      * record.
      *
      * @param string $RecordID The record id to retrieve the holdings for
-     * @param array  $patron   Patron data
+     * @param ?array $patron   Patron data
      * @param array  $options  Extra options (not currently used)
      *
      * @throws DateException
@@ -100,7 +100,7 @@ class NewGenLib extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($RecordID, array $patron = null, array $options = [])
+    public function getHolding($RecordID, ?array $patron = null, array $options = [])
     {
         $holding = $this->getItemStatus($RecordID);
         for ($i = 0; $i < count($holding); $i++) {

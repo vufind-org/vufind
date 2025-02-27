@@ -31,11 +31,11 @@ declare(strict_types=1);
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\LoginTokenManager;
+use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\LoginTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;

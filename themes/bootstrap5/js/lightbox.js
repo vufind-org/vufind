@@ -138,6 +138,7 @@ VuFind.register('lightbox', function Lightbox() {
     runScripts.each(function addScript(i2, script) {
       $(document).find('head').append(script);
     });
+    VuFind.emit('lightbox.rendered', {container: _modal});
   }
 
   var _xhr = false;
@@ -368,8 +369,8 @@ VuFind.register('lightbox', function Lightbox() {
     // remove nodes on whose click, the modal closes
     var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
       return !node.hasAttribute("data-lightbox-close") && (
-        !node.hasAttribute("data-dismiss") ||
-        node.getAttribute("data-dismiss") !== "modal"
+        !node.hasAttribute("data-bs-dismiss") ||
+        node.getAttribute("data-bs-dismiss") !== "modal"
       );
     });
 
@@ -543,6 +544,7 @@ VuFind.register('lightbox', function Lightbox() {
         _bsModal.show();
         // Set keyboard focus
         setFocusToFirstNode();
+        VuFind.emit('lightbox.show', {container: _modal});
       } else if (cmd === 'hide') {
         _bsModal.hide();
       } else {

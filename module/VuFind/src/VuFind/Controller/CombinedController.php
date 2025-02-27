@@ -124,6 +124,9 @@ class CombinedController extends AbstractSearch
                 'currentSearch' => $settings,
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
+            if (!empty($settings['view']->extraErrors)) {
+                $viewParams['extraErrors'] = $settings['view']->extraErrors;
+            }
             // Initialize theme resources:
             ($this->getViewRenderer()->plugin('setupThemeResources'))(true);
             // Render content:
@@ -299,6 +302,11 @@ class CombinedController extends AbstractSearch
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
         $query->limit = $settings['limit'] ?? null;
+
+        // Disable default filters, if requested:
+        if ($settings['disable_default_filters'] ?? false) {
+            $query->dfApplied = 1;
+        }
 
         // Apply filters, if any:
         $query->filter = isset($settings['filter'])

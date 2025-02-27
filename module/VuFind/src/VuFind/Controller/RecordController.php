@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 
 /**
  * Record Controller
@@ -60,16 +60,5 @@ class RecordController extends AbstractRecord
 
         // Load default tab setting:
         $this->fallbackDefaultTab = $config->Site->defaultRecordTab ?? 'Holdings';
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        return $config->Record->next_prev_navigation ?? false;
     }
 }

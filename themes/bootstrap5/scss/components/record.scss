@@ -35,7 +35,7 @@
 }
 
 .media-body h1 { margin-top: 0; }
-@media (max-width: 767px) {
+@include media-breakpoint-down(sm) {
   .record .media-left,
   .record .media-right { display: block; }
   .record .media-body { // Add a gap between the thumbnail and the info
@@ -62,33 +62,19 @@
 }
 
 // Comma-separate formatting
+.record .format { display: inline-flex; }
 .record .format::after { content: ", "; }
 .record .format.badge::after,
 .record .result-formats .format::after,
 .record .format:last-child::after { content: ""; }
 .record-previews { margin-top: .5rem; }
 
-/* ------ Nav ------ */
-.record-nav.nav { margin-bottom: 1rem; }
-.record-nav > li,
-.btn-bookbag-toggle { width: 100%; }
-.record-nav > li > a { padding: .5rem; }
-.record-nav > li > a,
-.btn-bookbag-toggle { text-align: center; }
-@media(min-width: 768px) {
-  .record-nav > li,
-  .btn-bookbag-toggle { width: auto; }
-  .record-nav > li > a { padding: $nav-link-padding; }
-  .record-nav > li > a,
-  .btn-bookbag-toggle { text-align: left; }
-}
-
 /* ------ Comments ------ */
 .comment-label,
 .comment-name { font-style: italic; }
 .comment { margin-bottom: 1rem; }
 .comment-name .delete { color: $state-danger-text; }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .comment-form,
   .comment {
     display: flex;
@@ -131,7 +117,7 @@
     text-decoration: none;
   }
 
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     margin-left: 0.5rem;
     padding: $padding-base-vertical calc(#{$padding-base-horizontal} / 2);
   }
@@ -288,9 +274,8 @@
   /* Use display:inline-flex to prevent whitespace issues. Alternatively, you can put all the children of .rating-group on a single line. */
   display: inline-flex;
 
-  /* Make hover effect work properly in IE, reset width */
+  /* Reset width */
   .rating__icon {
-    pointer-events: none;
     width: initial;
   }
 
@@ -314,8 +299,10 @@
     margin-right: -0.6em;
     z-index: 2;
 
+    /* Display only half of the star and ensure that the remainder cannot be hovered over */
     .rating__icon--star {
       width: 0.5rem;
+      overflow: hidden;
     }
   }
 
@@ -352,4 +339,20 @@
   row-gap: 10px;
   align-items: center;
   justify-content: center;
+}
+
+/* Labels */
+.record .label {
+  margin-bottom: 0.5rem;
+
+  &.label-retraction {
+    @extend .label-warning;
+  }
+}
+
+/* QRCode */
+@include media-breakpoint-down(sm) {
+  .collection-qrcode, .record-qrcode {
+    display: none;
+  }
 }

@@ -56,7 +56,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -71,7 +71,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
         $this->config = $this->getService(\VuFind\Config\PluginManager::class)->get('Pazpar2');

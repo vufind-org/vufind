@@ -33,6 +33,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\RateLimiter\RateLimiterManager;
 
 /**
  * VuFind Bootstrapper
@@ -48,7 +49,7 @@ class Bootstrapper
     /**
      * Main VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -240,12 +241,20 @@ class Bootstrapper
      */
     protected function initTheme(): void
     {
-        // Attach remaining theme configuration to the dispatch event at high
-        // priority (TODO: use priority constant once defined by framework):
-        $config = $this->config->Site;
-        $callback = function ($event) use ($config) {
-            $theme = new \VuFindTheme\Initializer($config, $event);
-            $theme->init();
+        // Attach remaining theme configuration to the dispatch event at high priority:
+        $siteConfig = $this->config->Site;
+        $callback = function ($event) use ($siteConfig) {
+            $theme = new \VuFindTheme\Initializer($siteConfig, $event);
+            try {
+                $theme->init();
+            } catch (\Exception $e) {
+                // Try to display an error page if the theme fails to initialize:
+                $appConfig = $this->container->get('config');
+                $model = $event->getViewModel();
+                $model->setTemplate('error/index');
+                $model->display_exceptions = $appConfig['view_manager']['display_exceptions'] ?? false;
+                $model->exception = $e;
+            }
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
@@ -387,19 +396,53 @@ class Bootstrapper
         }
         $callback = function ($event) {
             // Create rate limiter manager here so that we don't e.g. initialize the session too early:
-            $rateLimiterManager = $this->container->get(\VuFind\RateLimiter\RateLimiterManager::class);
+            $rateLimiterManager = $this->container->get(RateLimiterManager::class);
             if (!$rateLimiterManager->isEnabled()) {
                 return;
             }
             $result = $rateLimiterManager->check($event);
             if (!$result['allow']) {
                 $response = $event->getResponse();
-                $response->setStatusCode(429);
-                $response->setContent($result['message']);
+                if ($result['presentTurnstileChallenge'] ?? false) {
+                    $this->presentTurnstileChallenge($rateLimiterManager, $event, $response);
+                } else {
+                    $response->setStatusCode(429);
+                    $response->setContent($result['message']);
+                }
                 $event->stopPropagation(true);
                 return $response;
             }
         };
         $this->events->attach('dispatch', $callback, 11000);
+    }
+
+    /**
+     * Present a Cloudflare Turnstile challenge to the user
+     *
+     * @param RateLimiterManager               $rateLimiterManager The RateLimiterManager
+     * @param MvcEvent                         $event              The current Laminas event
+     * @param Laminas\Stdlib\ResponseInterface $response           Response object to modify to present the challenge
+     *
+     * @return void
+     */
+    protected function presentTurnstileChallenge(
+        RateLimiterManager $rateLimiterManager,
+        MvcEvent $event,
+        \Laminas\Stdlib\ResponseInterface $response
+    ): void {
+        // Although the challenge could be displayed at the current URL, redirecting
+        // to a simple URL (combined with a policy that blocks the referrer URL) may
+        // hide search or result data from being accessible to Turnstile.
+        $response->setStatusCode(307);
+        $policyId = $rateLimiterManager->getPolicyIdForEvent($event);
+        // base64_encoding the destination URL is just further obfuscation
+        $context = base64_encode(json_encode([
+            'policyId' => $policyId,
+            'destination' => $event->getRequest()->getUri()->getPath(),
+        ]));
+        $response->getHeaders()->addHeaderLine(
+            'Location',
+            $event->getRequest()->getBaseUrl() . '/Turnstile/Challenge?context=' . $context
+        );
     }
 }

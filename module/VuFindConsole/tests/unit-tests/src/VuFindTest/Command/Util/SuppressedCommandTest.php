@@ -72,12 +72,12 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get command to test.
      *
-     * @param Writer     $solr Solr writer
-     * @param Connection $ils  ILS connection
+     * @param ?Writer     $solr Solr writer
+     * @param ?Connection $ils  ILS connection
      *
      * @return SuppressedCommand
      */
-    protected function getCommand(Writer $solr = null, Connection $ils = null)
+    protected function getCommand(?Writer $solr = null, ?Connection $ils = null)
     {
         $args = [
             $solr ?? $this->getMockSolrWriter(),

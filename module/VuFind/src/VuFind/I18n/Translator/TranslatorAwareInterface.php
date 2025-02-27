@@ -29,7 +29,7 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Translator\TranslatorInterface;
 
 /**
  * Lightweight translator aware marker interface (used as an alternative to

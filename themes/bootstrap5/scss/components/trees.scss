@@ -103,7 +103,7 @@
     font-weight: bold;
   }
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .collection-hierarchytree {
     display: flex;
   }
@@ -120,6 +120,11 @@
     padding: 0;
   }
   #modal #tree-preview {
+    display: none;
+  }
+}
+@include media-breakpoint-down(sm) {
+  #tree-preview.hidden-narrow {
     display: none;
   }
 }

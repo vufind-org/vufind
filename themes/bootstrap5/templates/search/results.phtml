@@ -19,12 +19,11 @@
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
         'selectedShards' => $this->params->getSelectedShards(),
         'ignoreHiddenFiltersInRequest' => $this->ignoreHiddenFiltersInRequest ?? false,
-        'ignoreHiddenFilterMemory' => $this->ignoreHiddenFilterMemory ?? false,
       ]
   );
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
+  $this->layout()->breadcrumbs .= '<li class="breadcrumb-item active" aria-current="page">' . $this->escapeHtml($headTitle) . '</li>';
 
   // Set up search controls (avoiding unnecessary rendering):
   if (!$this->slot('search-controls')->isset()) {
@@ -66,7 +65,7 @@
     <div class="search-stats" data-record-total="<?=$this->escapeHtmlAttr($recordTotal)?>">
       <?php if ($recordTotal > 0): ?>
         <?php if ($this->results->getOptions()->getTopPaginatorStyle() === 'simple'): ?>
-          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
+          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination-simple.phtml', ['params' => ['results' => $this->results]])?>
         <?php else: ?>
           <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <?php endif; ?>
@@ -85,6 +84,10 @@
     <?php endif; ?>
   </div>
   <?php /* End Listing Options */ ?>
+
+  <?php if ($options->showRestrictedViewWarning() && $this->results->isRestrictedView()): ?>
+    <?=$this->render('error/restrictedViewWarning.phtml')?>
+  <?php endif; ?>
 
   <?php if ($recordTotal < 1): ?>
     <p>
@@ -108,14 +111,14 @@
     <?php endforeach; ?>
   <?php else: ?>
     <?php if ($this->results->getOptions()->getTopPaginatorStyle() === 'full'): ?>
-      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination-top.phtml', ['results' => $this->results, 'options' => $this->paginationOptions ?? []])?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination-top.phtml', ['params' => ['results' => $this->results], 'options' => $this->paginationOptions ?? []])?>
     <?php endif; ?>
     <form id="search-cart-form" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
     </form>
     <?=$this->render('search/results-list.phtml')?>
-    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
-    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => $this->paginationOptions ?? []])?>
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['isBottom' => true, 'formAttr' => 'search-cart-form'])?>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results], 'options' => $this->paginationOptions ?? []])?>
     <?=$this->context($this)->renderInContext('search/controls/results-tools.phtml', ['results' => $this->results])?>
   <?php endif; ?>
 </div>

@@ -91,7 +91,7 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->container = $sm;
         $this->config = $sm->get(\VuFind\Config\PluginManager::class);

@@ -32,10 +32,11 @@ namespace VuFindSearch\Backend\EDS;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Config\Config;
 use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
+use VuFindSearch\Backend\EDS\Response\RecordCollection;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -156,7 +157,7 @@ class Backend extends AbstractBackend
      * @param RecordCollectionFactoryInterface $factory Record collection factory
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
-     * @param Config                           $config  Object representing EDS.ini
+     * @param ?Config                          $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(
@@ -164,7 +165,7 @@ class Backend extends AbstractBackend
         RecordCollectionFactoryInterface $factory,
         CacheAdapter $cache,
         SessionContainer $session,
-        Config $config = null,
+        ?Config $config = null,
         $isGuest = true
     ) {
         // Save dependencies/incoming parameters:
@@ -191,7 +192,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      **/
@@ -199,7 +200,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         // process EDS API communication tokens.
         $authenticationToken = $this->getAuthenticationToken();
@@ -286,18 +287,21 @@ class Backend extends AbstractBackend
         }
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
+        if ($this->isGuest && $collection instanceof RecordCollection) {
+            $collection->setRestrictedView(true);
+        }
         return $collection;
     }
 
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {

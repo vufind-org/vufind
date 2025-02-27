@@ -191,7 +191,7 @@ VuFind.register('cart', function Cart() {
           var ul = document.createElement('ul');
           msgs.forEach((current) => {
             var li = document.createElement('li');
-            li.innerHTML = current;
+            li.textContent = current;
             ul.appendChild(li);
           });
           msg = ul.outerHTML;

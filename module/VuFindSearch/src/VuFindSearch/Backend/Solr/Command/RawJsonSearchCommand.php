@@ -72,7 +72,7 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
         AbstractQuery $query,
         int $offset = 0,
         int $limit = 100,
-        ParamBag $params = null,
+        ?ParamBag $params = null,
         ?bool $asArray = null
     ) {
         $this->query = $query;

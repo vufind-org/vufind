@@ -2,8 +2,8 @@
   $pageTitle = 'Comparing Languages Against ' . $mainName;
   $this->headTitle($pageTitle);
 
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
-  . '<li class="active">' . $this->escapeHtml($pageTitle) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
+  . '<li class="breadcrumb-item active" aria-current="page">' . $this->escapeHtml($pageTitle) . '</li>';
 
   $uLangs = [];
   foreach ($this->layout()->allLangs ?? [] as $c => $n) {
@@ -60,7 +60,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
           <?php if (($row['countfiles'] > 0) && (in_array($row['lang'], $uLangs))):?>
             <div class="btn-group">
               <button type="button" class="btn btn-default btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
-                <?=$this->escapeHtml($row['countfiles'])?> <span class="caret d-none"></span>
+                <?=$this->escapeHtml($row['countfiles'])?>
               </button>
               <ul class="dropdown-menu" aria-labelledby="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
               <?php foreach ($row['files'] as $k => $v): ?>

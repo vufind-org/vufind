@@ -5,7 +5,7 @@
  *
  * @type {Function} Function to check for multiFacetsSelectionEnabled
  */
-let isMultiFacetsSelectionEnabled = () => {
+const isMultiFacetsSelectionEnabled = () => {
   if (typeof multiFacetsSelectionEnabled === "undefined") {
     return false;
   }
@@ -29,13 +29,11 @@ VuFind.register('facetList', function FacetList() {
   function overrideHref(selector, overrideParams = {}) {
     $(selector).each(function overrideHrefEach() {
       const dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
-      let url = new URL(dummyDomain + $(this).attr('href'));
+      const url = new URL(dummyDomain + $(this).attr('href'));
       Object.entries(overrideParams).forEach(([key, value]) => {
         url.searchParams.set(key, value);
       });
-      url = url.href;
-      url = url.replaceAll(dummyDomain, '');
-      $(this).attr('href', url);
+      $(this).attr('href', url.href.replaceAll(dummyDomain, ''));
     });
   }
 
@@ -133,7 +131,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   const globalAddedParams = new URLSearchParams();
   const globalRemovedParams = new URLSearchParams();
   const initialParams = new URLSearchParams();
-  let rangeSelectorForms = [];
+  const rangeSelectorForms = [];
   let isMultiFacetsSelectionActivated = false;
   let callbackOnApply;
   let callbackWhenDeactivated;
@@ -160,96 +158,121 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       return value;
     }
     // Ensure that filter value is surrounded by quotes
-    let filterValue = value.substr(p + 1);
+    let filterValue = value.substring(p + 1);
     filterValue = (!filterValue.startsWith('"') ? '"' : '') + filterValue + (!filterValue.endsWith('"') ? '"' : '');
-    return value.substr(0, p) + ':' + filterValue;
+    return value.substring(0, p) + ':' + filterValue;
+  }
+
+  /**
+   * Normalize a single query key from a search
+   *
+   * @param {string} key Key name
+   *
+   * @returns string
+   */
+  function normalizeSearchQueryKey(key) {
+    // We normally use open-ended brackets to signify array-based query parameters.
+    // However, some server-side processing can occasionally inject explicit index
+    // values. We want to normalize out the index values for consistency.
+    return key.replace(/(.+)\[\d+\]/, '$1[]');
+  }
+
+  /**
+   * Append a normalized value to a normalized key in a set of parameters
+   *
+   * @param {URLSearchParams} params Parameters to update
+   * @param {string}          key    Key name
+   * @param {string}          value  Value to set
+   */
+  function appendNormalizedValue(params, key, value) {
+    const normalizedKey = normalizeSearchQueryKey(key);
+    params.append(normalizedKey, normalizeValue(normalizedKey, value));
+  }
+
+  /**
+   * Normalize keys and values in a set of search parameters
+   *
+   * @param {URLSearchParams} params Parameters to normalize
+   *
+   * @returns URLSearchParams
+   */
+  function normalizeSearchQueryKeysAndValues(params) {
+    const normalized = new URLSearchParams();
+    for (const [key, value] of params) {
+      appendNormalizedValue(normalized, key, value);
+    }
+    return normalized;
   }
 
   for (const [key, value] of (new URLSearchParams(window.location.search))) {
-    initialParams.append(key, normalizeValue(key, value));
+    appendNormalizedValue(initialParams, key, value);
   }
 
-  // Make sure NOT to have a specific range filter parameter in the final URL
-  function hideRangeFilterFromFinalUrl(rangeName) {
-    const paramStart = encodeURIComponent(rangeName + ':');
-    for (const [value] of initialParams.getAll('filter[]')) {
-      if (value.startsWith(paramStart)) {
-        globalRemovedParams.push(encodeURI('filter[]=' + value));
-        return;
-      }
-    }
-    for (const [value] of globalAddedParams.getAll('filter[]')) {
-      if (value.startsWith(paramStart)) {
-        globalAddedParams.remove('filter[]', value);
-      }
-    }
-  }
-
-  // For every date range selector, does a routine to deal with URL parameters
-  function handleRangeSelector() {
-    let addedRangeParams, rangeParams, allEmptyRangeParams;
-    const currentQueryParams = new URLSearchParams(window.location.search);
-
+  /**
+   * Update query params for every date range selector
+   *
+   * @param {URLSearchParams} queryParams
+   *
+   * @returns {URLSearchParams}
+   */
+  function processRangeSelector(queryParams) {
+    let newParams = new URLSearchParams(queryParams.toString());
     for (const form of rangeSelectorForms) {
-      addedRangeParams = [];
-      rangeParams = [];
-      allEmptyRangeParams = true;
-      const dateInputs = form.querySelectorAll('.date-fields input');
-      for (const input of dateInputs) {
-        if (currentQueryParams.has(input.name)) {
-          // Update existing parameter
-          initialParams.set(input.name, input.value);
-        } else {
-          addedRangeParams.push([input.name, input.value]);
-        }
-        rangeParams.push(input.name);
-        if (input.value !== '') {
-          allEmptyRangeParams = false;
-        }
-      }
-
-      // Handle the range input hidden fields
       const rangeName = form.dataset.name;
       const rangeFilterField = form.dataset.filterField;
-      if (allEmptyRangeParams) {
-        // Only empty fields; remove the parameter
-        for (const [key, value] of addedRangeParams) {
-          globalRemovedParams.append(key, value);
+      let valuesExist = false;
+      const dateInputs = form.querySelectorAll('.date-fields input');
+      // Check if we have any non-empty inputs:
+      for (const input of dateInputs) {
+        if (input.value !== '') {
+          valuesExist = true;
+          break;
         }
-        hideRangeFilterFromFinalUrl(rangeName);
+      }
+      if (valuesExist) {
+        // Update query params:
+        for (const input of dateInputs) {
+          newParams.set(input.name, input.value);
+        }
+        newParams.set(rangeFilterField, rangeName);
       } else {
-        // Some values present; add values for the final URL
-        for (const [key, value] of addedRangeParams) {
-          globalAddedParams.append(key, value);
+        // Delete from query params:
+        for (const input of dateInputs) {
+          newParams.delete(input.name);
         }
-        if (!currentQueryParams.has(rangeFilterField, rangeName)) {
-          globalAddedParams.append(rangeFilterField, rangeName);
-          globalRemovedParams.delete(rangeName);
-          hideRangeFilterFromFinalUrl(rangeName);
+        newParams = VuFind.deleteKeyValueFromURLSearchParams(newParams, rangeFilterField, rangeName);
+      }
+      // Remove any filter[]=rangeName:... from query params:
+      const paramStart = rangeName + ':';
+      for (const value of newParams.getAll('filter[]')) {
+        if (value.startsWith(paramStart)) {
+          newParams = VuFind.deleteKeyValueFromURLSearchParams(newParams, 'filter[]', value);
         }
       }
     }
+    return newParams;
   }
 
   // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
-  function setModifiedFacets() {
-    let elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
+  function processModifiedFacets() {
+    const elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
 
     for (const elem of elems) {
       const href = elem.getAttribute('href');
       const p = href.indexOf('?');
-      const elemParams = new URLSearchParams(p >= 0 ? href.substring(p + 1) : '');
+      const elemParams = normalizeSearchQueryKeysAndValues(new URLSearchParams(p >= 0 ? href.substring(p + 1) : ''));
 
       // Add parameters that did not initially exist:
       for (const [key, value] of elemParams) {
-        if (!initialParams.has(key, value)) {
-          globalAddedParams.append(key, value);
+        // URLSearchParams.has(key, value) seems to be broken on iOS 16, so check with our own method:
+        if (!VuFind.inURLSearchParams(initialParams, key, value)) {
+          appendNormalizedValue(globalAddedParams, key, value);
         }
       }
       // Remove parameters that this URL no longer has:
       for (const [key, value] of initialParams) {
-        if (!elemParams.has(key, value)) {
-          globalRemovedParams.append(key, value);
+        if (!VuFind.inURLSearchParams(elemParams, key, value)) {
+          appendNormalizedValue(globalRemovedParams, key, value);
         }
       }
     }
@@ -257,20 +280,18 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   // Compile current parameters and newly added / removed to return the URL to redirect to
   function getHrefWithNewParams() {
-    setModifiedFacets();
-    handleRangeSelector();
+    processModifiedFacets();
 
-    const newParams = new URLSearchParams(initialParams);
-    // Remove parameters:
-    for (const [key, value] of globalRemovedParams) {
-      newParams.delete(key, value);
-    }
+    // Create params without the removed parameters:
+    const newParams = VuFind.deleteParamsFromURLSearchParams(initialParams, globalRemovedParams);
+    // Add newly added parameters:
     for (const [key, value] of globalAddedParams) {
       newParams.append(key, value);
     }
+
     // Take base url from data attribute if present (standalone full facet list):
     const baseUrl = defaultContext.dataset.searchUrl || window.location.pathname;
-    return baseUrl + '?' + newParams.toString();
+    return baseUrl + '?' + processRangeSelector(newParams).toString();
   }
 
   function applyMultiFacetsSelection() {
@@ -298,7 +319,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       }
       facet.classList.toggle('active');
 
-      let icon = elem.closest('a').querySelector('.icon');
+      const icon = elem.closest('a').querySelector('.icon');
       if (icon !== null) {
         const newCheckedState = icon.dataset.checked === 'false';
         let attrs = {};
@@ -311,7 +332,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function handleMultiSelectionClick(e) {
     e.preventDefault();
-    let elem = e.currentTarget;
+    const elem = e.currentTarget;
 
     // Switch data-multi-filters-modified to keep track of changed facets
     const currentAttrVal = elem.getAttribute('data-multi-filters-modified');
@@ -328,7 +349,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       isMultiFacetsSelectionActivated = enable;
     }
     document.querySelectorAll('.multi-facet-selection').forEach( el => el.classList.toggle('multi-facet-selection-active', isMultiFacetsSelectionActivated) );
-    let checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
+    const checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = isMultiFacetsSelectionActivated;
     }
@@ -445,8 +466,29 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function activateFacetBlocking(context) {
-    let finalContext = (typeof context === "undefined") ? $(document.body) : context;
+    const finalContext = (typeof context === "undefined") ? $(document.body) : context;
     finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').click(showLoadingOverlay);
+  }
+
+  /**
+   * Set form action on submit if necessary to get rid of any hash in current page URL
+   *
+   * @param {Event} ev Event
+   */
+  function formSubmitHandler(ev) {
+    const form = ev.target;
+    if (form.getAttribute('action') === null) {
+      const url = new URL(window.location);
+      url.hash = '';
+      form.setAttribute('action', url.toString());
+    }
+  }
+
+  /**
+   * Manage form submission to avoid including a hash (e.g #search-sidebar) in the URL
+   */
+  function setupFacetFormListeners() {
+    document.querySelectorAll('.facet-group form').forEach((formEl) => formEl.addEventListener('submit', formSubmitHandler));
   }
 
   function activateSingleAjaxFacetContainer() {
@@ -454,8 +496,9 @@ VuFind.register('sideFacets', function SideFacets() {
     var facetList = [];
     var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filters [data-facet]');
     $facets.each(function addFacet() {
-      if (!$(this).data('loaded')) {
+      if (!$(this).data('initialized')) {
         facetList.push($(this).data('facet'));
+        $(this).data('initialized', 'true');
       }
     });
     if (facetList.length === 0) {
@@ -509,7 +552,7 @@ VuFind.register('sideFacets', function SideFacets() {
               activateFacetBlocking($facetContainer);
             }
           }
-          if (isMultiFacetsSelectionEnabled()) {
+          if (isMultiFacetsSelectionEnabled() && $facetContainer.length > 0) {
             VuFind.multiFacetsSelection.initFacetClickHandler($facetContainer.get()[0]);
           }
           $facetContainer.find('.facet-load-indicator').remove();
@@ -521,6 +564,7 @@ VuFind.register('sideFacets', function SideFacets() {
             VuFind.multiFacetsSelection.initRangeSelection(sidebar);
           }
         }
+        setupFacetFormListeners();
         VuFind.emit('VuFind.sidefacets.loaded');
       })
       .fail(function onGetSideFacetsFail() {
@@ -531,6 +575,13 @@ VuFind.register('sideFacets', function SideFacets() {
 
   function loadAjaxSideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
+  }
+
+  /**
+   * Load AJAX side facets with a tiny delay so that all non-collapsed items are available after initialization
+   */
+  function delayLoadAjaxSideFacets() {
+    setTimeout(loadAjaxSideFacets, 50);
   }
 
   function facetSessionStorage(e, data) {
@@ -557,7 +608,7 @@ VuFind.register('sideFacets', function SideFacets() {
         try {
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
-          } else if (!$(item).data('forceIn')) {
+          } else if (!$(item).data('forceUncollapsed')) {
             $(item).collapse('hide');
           }
         } finally {
@@ -572,16 +623,10 @@ VuFind.register('sideFacets', function SideFacets() {
     facetGroup.on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
-    if (VuFind.getBootstrapMajorVersion() === 3) {
-      $('.side-facets-container-ajax')
-        .find('div.collapse[data-facet]:not(.in)')
-        .on('shown.bs.collapse', loadAjaxSideFacets);
-    } else {
-      document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
-        collapseEl.addEventListener('shown.bs.collapse', loadAjaxSideFacets);
-      });
-    }
-    loadAjaxSideFacets();
+    document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
+      collapseEl.addEventListener('shown.bs.collapse', delayLoadAjaxSideFacets);
+    });
+    delayLoadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
     $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
@@ -592,6 +637,8 @@ VuFind.register('sideFacets', function SideFacets() {
         $dropdown.removeClass("dropdown-menu-right");
       }
     });
+
+    setupFacetFormListeners();
   }
 
   return { init: init };
@@ -617,14 +664,14 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   function setup() {
     if (isMultiFacetsSelectionEnabled()) {
-      let elem = document.querySelector('.js-full-facet-list');
+      const elem = document.querySelector('.js-full-facet-list');
       if (elem) {
         VuFind.multiFacetsSelection.init(elem);
       }
     }
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
-      let button = $(this);
+      const button = $(this);
       const page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;

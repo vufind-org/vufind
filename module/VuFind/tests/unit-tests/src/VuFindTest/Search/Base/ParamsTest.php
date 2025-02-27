@@ -58,12 +58,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock Options object
      *
-     * @param PluginManager $configManager Config manager for Options object (null
+     * @param ?PluginManager $configManager Config manager for Options object (null
      * for new mock)
      *
      * @return Options
      */
-    protected function getMockOptions(PluginManager $configManager = null): Options
+    protected function getMockOptions(?PluginManager $configManager = null): Options
     {
         return $this->getMockForAbstractClass(
             Options::class,
