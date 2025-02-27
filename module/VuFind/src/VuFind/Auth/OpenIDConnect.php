@@ -386,13 +386,19 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             unset($params['client_secret']);
         }
 
-        $response = $this->httpService->post(
-            $url,
-            http_build_query($params),
-            'application/x-www-form-urlencoded',
-            null,
-            $headers
-        );
+        try {
+            $response = $this->httpService->post(
+                $url,
+                http_build_query($params),
+                'application/x-www-form-urlencoded',
+                null,
+                $headers
+            );
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
+            throw new AuthException('Cannot get request token: HTTP connection error.');
+        }
+
         $json = json_decode($response->getBody());
         if (isset($json->error)) {
             throw new AuthException('authentication_error' . ': ' . ($json->error_description ?? $json->error));
@@ -416,9 +422,13 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'schema' => 'openid',
         ];
         $headers = ['Authorization: Bearer ' . $access_token];
-        return json_decode(
-            $this->httpService->get($url, $params, null, $headers)->getBody()
-        );
+        try {
+            $response = $this->httpService->get($url, $params, null, $headers);
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
+            throw new AuthException('Cannot get user info: HTTP connection error.');
+        }
+        return json_decode($response->getBody());
     }
 
     /**
@@ -506,7 +516,13 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     protected function getJwks(): array
     {
         if (empty($this->jwks)) {
-            $jwks = json_decode($this->httpService->get($this->getProvider()->jwks_uri)->getBody(), true);
+            try {
+                $response = $this->httpService->get($this->getProvider()->jwks_uri);
+            } catch (\Exception $e) {
+                $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
+                throw new AuthException('Cannot get JWKs HTTP connection error.');
+            }
+            $jwks = json_decode($response->getBody(), true);
             foreach ($jwks['keys'] as $jwk) {
                 $this->jwks[$jwk['kid']] = $jwk;
             }
