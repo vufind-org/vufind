@@ -47,6 +47,8 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
       if (_parseInput(inputMin) !== values[0] || _parseInput(inputMax) !== values[1]) {
         inputMin.value = values[0];
         inputMax.value = values[1];
+        inputMin.setAttribute('max', inputMax.value);
+        inputMax.setAttribute('min', inputMin.value);
         sliderElement.dispatchEvent(_updatedSliderEvent);
       }
     });
@@ -66,6 +68,8 @@ VuFind.register("dateRangeSlider", function dateRangeSlider() {
       if (selectionMin > selectionMax) {
         [selectionMin, selectionMax] = [selectionMax, selectionMin];
       }
+      inputMin.setAttribute('max', selectionMax);
+      inputMax.setAttribute('min', selectionMin);
       if (options.range.min <= selectionMin && selectionMin <= selectionMax && selectionMax <= options.range.max) {
         slider.set([selectionMin, selectionMax]);
       }
