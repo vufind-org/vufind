@@ -395,7 +395,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         );
         $json = json_decode($response->getBody());
         if (isset($json->error)) {
-            throw new AuthException('authentication_error' . ': ' . $json->error_description ?? $json->error);
+            throw new AuthException('authentication_error' . ': ' . ($json->error_description ?? $json->error));
         }
         $this->requestToken = $json;
         return $this->requestToken;
