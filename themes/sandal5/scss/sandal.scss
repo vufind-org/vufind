@@ -45,7 +45,7 @@ body {
   height: $banner-height-sm;
   display: inline-block;
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
   .banner .navbar-brand {
     width: calc((170 / 65) * #{$banner-height});
@@ -241,7 +241,7 @@ a:hover .login-dropdown-caret {
   background-color: $sidebar-item-badge;
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
+@include media-breakpoint-between(sm, md) {
   .sidebar .facet {
     flex-flow: wrap;
 
@@ -254,7 +254,7 @@ a:hover .login-dropdown-caret {
   }
 }
 
-@media (max-width: 1399px) {
+@include media-breakpoint-down(xl) {
   .sidebar {
     padding: 1rem 0.5rem 0.5rem 0.5rem;
   }

@@ -46,7 +46,7 @@
     padding: 4px .75rem;
   }
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .result {
     margin-left: 0;
     margin-right: 0;
@@ -114,7 +114,7 @@
     color: $white;
     text-shadow: 0 1px 0 $black;
   }
-  @media (min-width: 768px) {
+  @include media-breakpoint-up(sm) {
     height: 300px;
     padding: 7rem calc(50vw - 50%); // Align searchbox with container
   }
@@ -131,7 +131,7 @@
   color: #fff;
   background-color: rgba(0,0,0,.3);
   content: "Photo by Paul Gilmore on Unsplash";
-  @media (min-width: 768px) {
+  @include media-breakpoint-up(sm) {
     left: auto;
     right: calc(50% - 50vw + .5rem);
     width: auto;
@@ -213,7 +213,7 @@
     border-color: $white;
   }
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   #searchForm_lookfor,
   #searchForm_type { margin-bottom: 0; }
   .nav.searchbox .nav-tabs a,
