@@ -212,6 +212,22 @@ class Server
     protected $useCursorMark = true;
 
     /**
+     * List of possible valid OAI-PMH error codes
+     *
+     * @var string[]
+     */
+    protected $legalErrorCodes = [
+        'cannotDisseminateFormat',
+        'idDoesNotExist',
+        'badArgument',
+        'badVerb',
+        'noMetadataFormats',
+        'noRecordsMatch',
+        'badResumptionToken',
+        'noSetHierarchy',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
@@ -789,7 +805,7 @@ class Server
             $params = $this->listRecordsGetParams();
         } catch (\Exception $e) {
             $parts = explode(':', $e->getMessage(), 2);
-            if (count($parts) != 2) {
+            if (count($parts) != 2 || !in_array($parts[0], $this->legalErrorCodes)) {
                 throw $e;
             }
             return $this->showError($parts[0], $parts[1]);
