@@ -394,6 +394,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
                 null,
                 $headers
             );
+            if ($response->getStatusCode() !== 200) {
+                throw new AuthException('Failed to get request token');
+            }
         } catch (\Exception $e) {
             $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
             throw new AuthException('Cannot get request token: HTTP connection error.');
@@ -424,6 +427,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         $headers = ['Authorization: Bearer ' . $access_token];
         try {
             $response = $this->httpService->get($url, $params, null, $headers);
+            if ($response->getStatusCode() !== 200) {
+                throw new AuthException('Failed to get user info');
+            }
         } catch (\Exception $e) {
             $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
             throw new AuthException('Cannot get user info: HTTP connection error.');
@@ -518,9 +524,12 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         if (empty($this->jwks)) {
             try {
                 $response = $this->httpService->get($this->getProvider()->jwks_uri);
+                if ($response->getStatusCode() !== 200) {
+                    throw new AuthException('Failed to get JWKs');
+                }
             } catch (\Exception $e) {
                 $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
-                throw new AuthException('Cannot get JWKs HTTP connection error.');
+                throw new AuthException('Cannot get JWKs: HTTP connection error.');
             }
             $jwks = json_decode($response->getBody(), true);
             foreach ($jwks['keys'] as $jwk) {
