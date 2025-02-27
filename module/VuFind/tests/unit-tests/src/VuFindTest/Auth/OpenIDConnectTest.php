@@ -69,7 +69,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
         return [
             'User configured attributes' => [
                 [
-                    'OpenIDConnect' => [
+                    'Default' => [
                         'url' => 'openidconnect.provider.url',
                         'client_id' => 'test_cliend_id',
                         'client_secret' => 'test_client_secret',
@@ -121,7 +121,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     public function testGetProviderFromConfig(): void
     {
         $config = [
-            'OpenIDConnect' => [
+            'Default' => [
                 'url' => 'openidconnect.provider.url',
                 'client_id' => 'test_cliend_id',
                 'client_secret' => 'test_client_secret',
@@ -242,7 +242,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
         // Test getting provider info from config using fallback when no automatic discovery is available endpoint
         $openid = $this->getOpenIDConnectObject();
         $config = [
-            'OpenIDConnect' => [
+            'Default' => [
                 'url' => 'openidconnect.provider.url',
                 'client_id' => 'test_cliend_id',
                 'client_secret' => 'test_client_secret',
@@ -275,7 +275,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     protected function getOpenIDConnectObject(array $config = []): OpenIDConnect
     {
         $defaultConfig = [
-            'OpenIDConnect' => [
+            'Default' => [
                 'url' => 'openidconnect.provider.url',
                 'client_id' => 'test_cliend_id',
                 'client_secret' => 'test_client_secret',

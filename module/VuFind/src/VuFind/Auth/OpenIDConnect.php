@@ -126,7 +126,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         $this->validateConfig();
         if (!empty($key)) {
-            return $this->oidcConfig['OpenIDConnect'][$key] ?? null;
+            return $this->oidcConfig['Default'][$key] ?? null;
         }
         return $this->oidcConfig;
     }
@@ -219,7 +219,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         }
         $requiredParams = ['url', 'client_id', 'client_secret'];
         foreach ($requiredParams as $param) {
-            if (empty($this->oidcConfig['OpenIDConnect'][$param] ?? null)) {
+            if (empty($this->oidcConfig['Default'][$param] ?? null)) {
                 throw new AuthException(
                     'One or more OpenID Connect parameters are missing. Check your OpenIDConnectClient.ini!'
                 );
