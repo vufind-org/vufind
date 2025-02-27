@@ -1544,4 +1544,59 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.js-apply-multi-facets-selection');
         $this->assertCount(0, $page->findAll('css', '.facet.active'));
     }
+
+    /**
+     * Test that filters applied during search show up on the record page and can be removed there.
+     *
+     * @return void
+     */
+    public function testFilterClearingOnRecordPage(): void
+    {
+        // Start with a search with multiple filters applied:
+        $path = '/Search/Results'
+            . '?filter[]=building%3A"geo.mrc"'
+            . '&filter[]=format%3A"Book"'
+            . '&filter[]=author_facet%3A"Erickson%2C+Joette"&type=AllFields';
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . $path);
+        $page = $session->getPage();
+        $this->assertCount(3, $page->findAll('css', '.facet.active'));
+        $this->clickCss($page, '#result0 a.title');
+        $this->waitForPageLoad($page);
+
+        // Make sure the active filters show up:
+        $filterArea = $this->findCss($page, '.active-filters');
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(3, $filters);
+
+        // Save the current URL so we can return to it:
+        $urlWithSid = $session->getCurrentUrl();
+
+        // Remove the first filter:
+        $filters[0]->click();
+        $this->waitForPageLoad($page);
+
+        // There should now be fewer filters:
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(2, $filters);
+
+        // Now submit a new search:
+        $this->clickCss($page, '#searchForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertCount(2, $page->findAll('css', '.facet.active'));
+
+        // Now go back to the original record page with the SID in the URL and
+        // confirm the return of the filters:
+        $session->visit($urlWithSid);
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(3, $filters);
+
+        // Remove the second filter:
+        $filters[1]->click();
+        $this->waitForPageLoad($page);
+
+        // There should now be fewer filters:
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(2, $filters);
+    }
 }

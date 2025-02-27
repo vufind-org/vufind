@@ -1,11 +1,11 @@
 <?php
 
 /**
- * DOI linker plugin manager
+ * Identifier linker plugin manager
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,24 +21,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  DOI
+ * @package  IdentifierLinker
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:identifier_linkers Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\IdentifierLinker;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * DOI linker plugin manager
+ * Identifier linker plugin manager
  *
  * @category VuFind
- * @package  DOI
+ * @package  IdentifierLinker
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:identifier_linkers Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
@@ -72,6 +72,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return DoiLinkerInterface::class;
+        return IdentifierLinkerInterface::class;
     }
 }

@@ -27,11 +27,11 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\DoiLinker;
+namespace VuFindTest\IdentifierLinker;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-use VuFind\DoiLinker\Unpaywall;
+use VuFind\IdentifierLinker\Unpaywall;
 
 /**
  * Unpaywall Test Class
@@ -71,7 +71,7 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
             [
                 'fixture' => $this->getFixture('unpaywall/goodresponsepdf'),
                 'response' => [
-                    '10.7553/66-4-1434' => [
+                    0 => [
                         [
                             'link' => 'http://sajlis.journals.ac.za/pub/article/download/1434/1332',
                             'label' => 'PDF Full Text',
@@ -82,7 +82,7 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
             [
                 'fixture' => $this->getFixture('unpaywall/goodresponseonline'),
                 'response' => [
-                    '10.7553/66-4-1434' => [
+                    0 => [
                         [
                             'link' => 'https://doi.org/10.7553/66-4-1434',
                             'label' => 'online_resources',
@@ -109,7 +109,7 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
             $unpaywall->setHttpService($service);
             $this->assertEquals(
                 $data['response'],
-                $unpaywall->getLinks(['10.7553/66-4-1434'])
+                $unpaywall->getLinks([['doi' => '10.7553/66-4-1434']])
             );
         }
     }

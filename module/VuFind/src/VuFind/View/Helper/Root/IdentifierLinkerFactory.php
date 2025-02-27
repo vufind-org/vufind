@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI helper factory.
+ * IdentifierLinker helper factory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * DOI helper factory.
+ * IdentifierLinker helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiFactory implements FactoryInterface
+class IdentifierLinkerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,9 +68,10 @@ class DoiFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $helpers = $container->get('ViewHelperManager');
-        return new $requestedName($helpers->get('context'), $config->DOI ?? null);
+        // DOI config section is supported as a fallback for back-compatibility:
+        $idConfig = $config?->IdentifierLinks?->toArray() ?? $config?->DOI?->toArray() ?? [];
+        return new $requestedName($helpers->get('context'), $idConfig);
     }
 }
