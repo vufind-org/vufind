@@ -5,6 +5,7 @@ Notifications:
   # Add more as two character abbreviations.
   languages:
     - "en"
+    - "de"
 
   # Types of broadcasts.
   # Add more by specifying a name ("success") ad the two colors for the box.
