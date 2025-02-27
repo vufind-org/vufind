@@ -114,10 +114,19 @@
                 </div>
                 </div>
 </div> 
-<?php if ($this->layout()->searchbox !== false): ?>
+<?php if (
+
+  (strpos(strtolower($_SERVER['REDIRECT_URL']), 'alphabrowse') == 0) &&
+  (strpos(strtolower($_SERVER['REDIRECT_URL']), 'search/reserves') == 0) &&
+  ($this->layout()->searchbox !== false)
+):
+
+?>
   <div class="search container navbar">
     <div class="nav searchbox hidden-print" role="search">
       <?=$this->layout()->searchbox ?>
     </div>
   </div>
+  <?php else: ?>
+  <br />
 <?php endif; ?>
