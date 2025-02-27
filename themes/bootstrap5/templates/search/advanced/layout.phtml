@@ -84,9 +84,9 @@
       <?php if (!empty($lastSort)): ?>
         <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>">
       <?php endif; ?>
-      <div class="clearfix">
-        <h1 class="pull-left flip"><?=$this->transEsc('Advanced Search')?></h1>
-        <div id="groupJoin" class="form-inline pull-right flip">
+      <div class="adv-search-header">
+        <h2><?=$this->transEsc('Advanced Search')?></h2>
+        <div id="groupJoin" class="adv-join-options">
           <label for="groupJoinOptions"><?=$this->transEsc('search_match')?>:</label>
           <select id="groupJoinOptions" name="join" class="form-control form-select form-select">
             <option value="AND"<?php if ($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?php endif; ?>><?= $this->transEsc('group_AND') ?></option>
@@ -94,10 +94,16 @@
           </select>
         </div>
       </div>
-      <a role="button" class="icon-link hidden" id="groupPlaceHolder" href="#">
+
+      <div id="adv-search-groups">
+        <span id="groupPlaceHolder" class="sr-only"></span>
+      </div>
+
+      <button type="button" id="adv-add-group-btn" class="btn btn-link icon-link hidden">
         <?=$this->icon('ui-add', 'icon-link__icon') ?>
         <span class="icon-link__label"><?= $this->transEsc('add_search_group') ?></span>
-      </a>
+      </button>
+
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
         <?php if (!empty($this->formOverride)): ?>
@@ -128,16 +134,22 @@
                   </div>
                   <?php if ($group == 0 && $search == 0): ?>
                     </div>
-                    <div class="float-left">
-                      <span class="search_place_holder hidden"></span>
-                      <a href="#" class="add_search_link icon-link hidden" role="button">
-                        <?=$this->icon('ui-add', 'icon-link__icon') ?>
-                        <span class="icon-link__label"><?=$this->transEsc('add_search')?></span>
-                      </a>
-                    </div>
+
+                    <span class="search_place_holder sr-only"></span>
+
+                    <button href="#" class="add_search_link hidden">
+                      <?=$this->icon('ui-add', 'icon-link__icon') ?>
+                      <span class="icon-link__label"><?=$this->transEsc('add_search')?></span>
+                    </button>
+
+                    <button type="button" class="adv-group-close hidden">
+                      <?=$this->icon('ui-remove', 'icon-link__icon') ?>
+                      <span class="icon-link__label"><?=$this->transEsc('del_search') ?></span>
+                    </button>
                   <?php endif; ?>
                 <?php endfor; ?>
               </div>
+
               <div class="adv-group-match">
                 <label class="search_bool"><?=$this->transEsc('search_match')?>:&nbsp;</label>
                 <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
@@ -146,10 +158,6 @@
                   <option value="NOT"<?php if (isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc('search_NOT')?></option>
                 </select>
               </div>
-              <a href="#" class="adv-group-close icon-link hidden" role="button">
-                <?=$this->icon('ui-remove', 'icon-link__icon') ?>
-                <span class="icon-link__label"><?=$this->transEsc('del_search') ?></span>
-              </a>
             </div>
             <?php if ($group == 0): ?>
               </div>
@@ -229,7 +237,7 @@
 </div>
 <?php
 $script = <<<JS
-    $('#groupPlaceHolder').click(function(e) {
+    $('#adv-add-group-btn').click(function(e) {
       addGroup(null, null, null, true);
       return false;
     })
