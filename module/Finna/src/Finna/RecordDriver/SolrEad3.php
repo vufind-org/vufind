@@ -1006,9 +1006,7 @@ class SolrEad3 extends SolrEad
                 }
                 // localtype could be defined for daoset or for dao-element
                 $parentType = (string)($attr->localtype ?? '');
-                $parentType = self::IMAGE_MAP[$parentType] ?? self::IMAGE_LARGE;
-                $parentSize = $parentType === self::IMAGE_FULLRES
-                        ? self::IMAGE_LARGE : $parentType;
+                $parentSize = $this->determineImageSize($parentType, self::IMAGE_LARGE);
                 $displayImage = [];
                 $highResolution = [];
                 foreach ($set->dao as $dao) {
@@ -1066,15 +1064,7 @@ class SolrEad3 extends SolrEad
                         ];
                     }
 
-                    if ($size = self::IMAGE_MAP[$type] ?? false || $parentSize) {
-                        if (false === $size) {
-                            $size = $parentSize;
-                        } else {
-                            $size = ($size === self::IMAGE_FULLRES)
-                                ? self::IMAGE_LARGE
-                                : $size;
-                        }
-
+                    if ($size = $this->determineImageSize($type, $parentSize)) {
                         if (isset($displayImage['urls'][$size])) {
                             // Add old stash to results.
                             $displayImage['highResolution'] = $highResolution;
@@ -1123,6 +1113,20 @@ class SolrEad3 extends SolrEad
         }
 
         return $this->cache[$cacheKey] = $result;
+    }
+
+    /**
+     * Determine image size
+     *
+     * @param string $type    Type given in metadata
+     * @param string $default Default to return
+     *
+     * @return string
+     */
+    public function determineImageSize(string $type, string $default = ''): string
+    {
+        $size = self::IMAGE_MAP[$type] ?? $default;
+        return $size === self::IMAGE_FULLRES ? self::IMAGE_LARGE : $size;
     }
 
     /**
