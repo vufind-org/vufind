@@ -1064,7 +1064,12 @@ class Folio extends AbstractAPI implements
                     $nextBatch[] = $nextItem;
                 }
             } catch (\VuFind\Exception\ILS $e) {
-                $this->warning("getPagedResults('items', '/inventory/items-by-holdings-id', $query=" . json_encode($query) . ') returned ' . $e->getMessage());
+                $this->warning(
+                    "getPagedResults('items', '/inventory/items-by-holdings-id', \$query=" 
+                    . json_encode($query) 
+                    . ") returned " 
+                    . $e->getMessage()
+                );
             }
 
             // If there are no item records on this holding, we're going to create a fake one,
