@@ -225,16 +225,6 @@
                             }
                         }
                     },
-                    "200 (resumption token)": {
-                        "description": "Response containing result count, records and/or resumptionToken.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/<?=$this->modelPrefix?>SearchResponseResumptionToken"
-                                }
-                            }
-                        }
-                    },
                     "default": {
                         "description": "Error",
                         "content": {
@@ -383,31 +373,9 @@
                             "$ref": "#/components/schemas/Facet"
                         }
                     },
-                    "status": {
-                        "description": "Status code",
-                        "type": "string",
-                        "enum": ["OK"]
-                    }
-                },
-                "required": ["resultCount", "status"]
-            },
-            "<?=$this->modelPrefix?>SearchResponseResumptionToken": {
-                "type": "object",
-                "properties": {
-                    "resultCount": {
-                        "description": "Number of results",
-                        "type": "integer"
-                    },
-                    "records": {
-                        "description": "Records",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/<?=$this->modelPrefix?>Record"
-                        }
-                    },
                     "resumptionToken": {
                         "description": "New resumption token",
-                        "type": "array",
+                        "type": "object",
                         "items": {
                             "$ref": "#/components/schemas/ResumptionToken"
                         }
@@ -419,19 +387,6 @@
                     }
                 },
                 "required": ["resultCount", "status"]
-            },
-            "ResumptionToken": {
-                "type": "object",
-                "properties": {
-                    "token": {
-                        "description": "Token to use for the next request",
-                        "type": "integer"
-                    },
-                    "expires": {
-                        "description": "Time stamp when the token expires",
-                        "type": "string"
-                    }
-                }
             },
             "Subject": {
                 "type": "object",

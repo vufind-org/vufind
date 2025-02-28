@@ -110,12 +110,12 @@ class OaiResumption extends Gateway implements DbServiceAwareInterface
     /**
      * Retrieve a row from the database based on primary key and where the token is null.
      *
-     * @param string $id Id used for the search.
+     * @param int $id Id used for the search.
      *
      * @return ?\VuFind\Db\Row\OaiResumption
      * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
      */
-    final public function findWithLegacyIdToken(string $id): ?OaiResumptionEntityInterface
+    final public function findWithLegacyIdToken(int $id): ?OaiResumptionEntityInterface
     {
         return $this->select(['id' => $id, 'token' => null])->current();
     }

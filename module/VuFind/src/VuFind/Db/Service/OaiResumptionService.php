@@ -35,6 +35,8 @@ use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
+use function intval;
+
 /**
  * Database service for OaiResumption.
  *
@@ -112,8 +114,14 @@ class OaiResumptionService extends AbstractDbService implements
      */
     final public function findWithTokenOrLegacyIdToken(string $tokenOrId): ?OaiResumptionEntityInterface
     {
-        return $this->findWithToken($tokenOrId)
-            ?? $this->getDbTable('oairesumption')->findWithLegacyIdToken($tokenOrId);
+        $result = $this->findWithToken($tokenOrId);
+        if (!$result && is_numeric($tokenOrId)) {
+            $idInt = intval($tokenOrId);
+            if ($idInt > 0) {
+                $result = $this->getDbTable('oairesumption')->findWithLegacyIdToken($idInt);
+            }
+        }
+        return $result;
     }
 
     /**

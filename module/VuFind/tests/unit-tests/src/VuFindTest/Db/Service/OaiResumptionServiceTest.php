@@ -31,10 +31,13 @@ namespace VuFindTest\Service;
 
 use Exception;
 use Generator;
+use Laminas\Db\ResultSet\AbstractResultSet;
+use VuFind\Db\Row\OaiResumption;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFindTest\Container\MockContainer;
 
 use function count;
+use function intval;
 
 /**
  * Oai resumption service test case.
@@ -170,5 +173,99 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
             $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['timestamp']);
         }
         $this->assertEmpty($randomTokenSequence, 'Used all the tokens in random token generation.');
+    }
+
+    /**
+     * Test simple get tokens data provider
+     *
+     * @return Generator
+     */
+    public static function getTestTokenRetrieval(): Generator
+    {
+        yield 'get token with random generated string' => [
+          '694ae4fb77426d7b72fff63b584a39a77e37339440d291b55da78352220ece57',
+          'param1=dog',
+        ];
+        yield 'get token with legacy id' => [
+          '25',
+          'param1=cat',
+        ];
+        yield 'get non-existing token' => [
+          '512',
+          null,
+        ];
+    }
+
+    /**
+     * Very simple array acting as a database
+     *
+     * @var array
+     */
+    protected array $mockEntities = [
+      [
+        'id' => 25,
+        'token' => null,
+        'params' => 'param1=cat',
+        'expires' => 99999999,
+      ],
+      [
+        'id' => 26,
+        'token' => '694ae4fb77426d7b72fff63b584a39a77e37339440d291b55da78352220ece57',
+        'params' => 'param1=dog',
+        'expires' => 99999999,
+      ],
+    ];
+
+    /**
+     * Test legacy retrieval
+     *
+     * @param string  $token          Token used to search for row
+     * @param ?string $expectedParams Expected parameters to be returned or null for no results
+     *
+     * @return       void
+     * @dataProvider getTestTokenRetrieval
+     */
+    public function testTokenRetrieval(string $token, ?string $expectedParams): void
+    {
+        $mockRow = $this->container->createMock(OaiResumption::class, []);
+        $mockDb = [];
+        foreach ($this->mockEntities as $entity) {
+            $rowClone = clone $mockRow;
+            $rowClone->expects($this->any())->method('getId')->willReturn($entity['id']);
+            $rowClone->setExpiry(\DateTime::createFromFormat('U', $entity['expires']));
+            $rowClone->expects($this->any())->method('getResumptionParameters')->willReturn($entity['params']);
+            if ($entity['token']) {
+                $rowClone->expects($this->any())->method('getToken')->willReturn($entity['token']);
+            }
+            $mockDb[] = $rowClone;
+        }
+        $mockTable = $this->container->createMock(\VuFind\Db\Table\OaiResumption::class, ['select']);
+
+        $mockTable->expects($this->any())->method('select')->willReturnCallback(function ($select) use ($mockDb) {
+            $result = [];
+            foreach ($mockDb as $entry) {
+                if (!empty($select['id'])) {
+                    if ($entry->getId() === intval($select['id']) && $entry->getToken() === $select['token']) {
+                        $result[] = $entry;
+                    }
+                    continue;
+                }
+                if (!empty($select['token'])) {
+                    if ($entry->getToken() === $select['token']) {
+                        $result[] = $entry;
+                    }
+                }
+            }
+            $mockResultSet = $this->container->createMock(AbstractResultSet::class, ['current']);
+            $mockResultSet->expects($this->any())->method('current')->willReturn($result[0] ?? null);
+            return $mockResultSet;
+        });
+        $oaiResumptionService = $this->container->createMock(
+            OaiResumptionService::class,
+            ['getDbTable']
+        );
+        $oaiResumptionService->expects($this->any())->method('getDbTable')->willReturn($mockTable);
+        $token = $oaiResumptionService->findWithTokenOrLegacyIdToken($token);
+        $this->assertEquals($expectedParams, $expectedParams ? $token->getResumptionParameters() : null);
     }
 }
