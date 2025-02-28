@@ -110,7 +110,7 @@ input[type="checkbox"] { cursor: pointer; }
 // Set up our own margins for headings
 h1, .h1,
 h2, .h2,
-h3:not(.popover-header), .h3 {
+h3, .h3 {
   margin-top: $line-height-base * 1rem;
   margin-bottom: math.div($line-height-base, 2) * 1rem;
 }
@@ -119,6 +119,10 @@ h5, .h5,
 h6, .h6 {
   margin-top: math.div($line-height-base, 2) * 1rem;
   margin-bottom: math.div($line-height-base, 2) * 1rem;
+}
+// Reset popover-header margins here (N.B. intentionally not using :not() above to avoid specificity issues)
+h3.popover-header {
+  margin: 0;
 }
 
 // Use select field's native caret
