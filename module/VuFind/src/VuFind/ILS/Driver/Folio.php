@@ -1065,9 +1065,9 @@ class Folio extends AbstractAPI implements
                 }
             } catch (\VuFind\Exception\ILS $e) {
                 $this->warning(
-                    "getPagedResults('items', '/inventory/items-by-holdings-id', \$query=" 
-                    . json_encode($query) 
-                    . ") returned " 
+                    "getPagedResults('items', '/inventory/items-by-holdings-id', \$query="
+                    . json_encode($query)
+                    . ") returned "
                     . $e->getMessage()
                 );
             }
