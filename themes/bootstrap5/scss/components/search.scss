@@ -42,9 +42,45 @@ $thumbnail-width-large:  160px !default;
   }
 }
 
+.datevis-form {
+  padding: 0 10px;
+
+  .datevis-label {
+    margin-bottom: .3rem;
+  }
+
+  .datevis-chart {
+    height: 100px;
+  }
+
+  .slider-container {
+    padding-top: 0;
+    padding-bottom: .8rem;
+  }
+
+  .datevis-controls-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: .8rem;
+
+    label {
+      margin-right: .5rem;
+    }
+
+    input {
+      margin-right: 1rem;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .datevis-chart,
+    .slider-container,
+    .clear-btn { display: none; }
+  }
+}
+
 // Hide these on mobile
 @include media-breakpoint-down(sm) {
-  #datevispublishDatexWrapper,
   // Bulk action checkboxes:
   #search-cart-form .result .checkbox,
   // Search result and favorites bulk action buttons:

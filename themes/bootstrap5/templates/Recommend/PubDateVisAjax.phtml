@@ -1,27 +1,50 @@
 <?php if ($visFacets = $this->recommend->getVisFacets()): ?>
   <?php
-    // load jQuery flot:
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
+    $this->headScript()->appendFile('vendor/chart.js');
+    $this->headScript()->appendFile('vendor/nouislider.min.js');
+    $this->headLink()->appendStylesheet('vendor/nouislider.min.css');
+    $this->headScript()->appendFile('date_range_slider.js');
     $this->headScript()->appendFile('pubdate_vis.js');
+    $this->jsConfigs()->add(
+        'pub-vis:facet-fields',
+        $this->recommend->getFacetFields()
+    );
+    $this->jsConfigs()->add(
+        'pub-vis:search-params',
+        $this->recommend->getSearchParams()
+    );
+    $this->jsConfigs()->add(
+        'pub-vis:zooming',
+        $this->recommend->getZooming()
+    );
   ?>
   <?php foreach ($visFacets as $facetField => $facetRange): ?>
     <div class="authorbox">
-      <div id="datevis<?=$this->escapeHtml($facetField)?>xWrapper" class="hidden">
-        <strong><?=$this->transEsc($facetRange['label']) ?></strong>
-        <?php /* space the flot visualisation */ ?>
-        <div id="datevis<?=$facetField ?>x" style="margin:0 10px;width:auto;height:80px;cursor:crosshair;"></div>
-        <div id="clearButtonText" style="display: none"><?=$this->transEsc('Clear') ?></div>
-      </div>
+      <form class="datevis-form facet-range-form hidden" name="datevis<?=$facetField?>xForm" id="datevis<?=$facetField?>xForm" data-name="<?=$this->escapeHtmlAttr($facetField)?>" data-filter-field="daterange[]">
+        <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$facetField}:.*/"])?>
+        <input type="hidden" name="daterange[]" value="<?=$this->escapeHtmlAttr($facetField)?>">
+        <div class="datevis-label"><strong><?=$this->transEsc($facetRange['label']) ?></strong></div>
+        <div class="datevis-chart">
+          <canvas id="datevis<?=$facetField?>x-canvas"></canvas>
+        </div>
+        <div class="slider-container" aria-hidden="true"><div id="datevis<?=$facetField?>-slider"></div></div>
+        <div class="datevis-controls-trigger" id="datevis<?=$facetField?>-controls-trigger" tabindex="0"></div>
+        <div class="datevis-controls collapse" id="datevis<?=$facetField?>-controls">
+          <div class="datevis-controls-container">
+            <label id="datevis<?=$facetField?>-from-label" for="datevis<?=$facetField?>-from">
+              <?=$this->transEsc('date_from')?>:
+            </label>
+            <input type="number" class="form-control" name="<?=$facetField?>from" id="datevis<?=$facetField?>-from">
+            <label id="datevis<?=$facetField?>-to-label" for="datevis<?=$facetField?>-to">
+              <?=$this->transEsc('date_to')?>:
+            </label>
+            <input type="number" class="form-control" name="<?=$facetField?>to" id="datevis<?=$facetField?>-to">
+            <input class="btn btn-default submit-button" type="submit" value="<?=$this->transEscAttr('Set')?>">
+            <input class="btn btn-default clear-btn" type="button" value="<?=$this->transEscAttr('Clear')?>">
+          </div>
+        </div>
+      </form>
     </div>
   <?php endforeach; ?>
   <div id="dateVisColorSettings"><!-- do not delete! used for passing CSS to Javascript --></div>
-  <?php
-    $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
-        . $this->recommend->getSearchParams() . "', VuFind.path, "
-        . $this->recommend->getZooming() . ');';
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
-  ?>
-
 <?php endif; ?>

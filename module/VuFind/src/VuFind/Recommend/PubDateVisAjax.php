@@ -44,6 +44,8 @@ use function array_slice;
  */
 class PubDateVisAjax implements RecommendInterface
 {
+    use DateFacetTrait;
+
     /**
      * Raw settings string
      *
@@ -139,7 +141,9 @@ class PubDateVisAjax implements RecommendInterface
             return [];
         }
         return $this->processDateFacets(
-            $this->searchObject->getParams()->getRawFilters()
+            $this->searchObject,
+            $this->searchObject->getParams()->getRawFilters(),
+            $this->dateFacets
         );
     }
 
@@ -175,34 +179,5 @@ class PubDateVisAjax implements RecommendInterface
     {
         // Get search parameters and return them minus the leading ?:
         return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
-    }
-
-    /**
-     * Support method for getVisData() -- extract details from applied filters.
-     *
-     * @param array $filters Current filter list
-     *
-     * @return array
-     */
-    protected function processDateFacets($filters)
-    {
-        $result = [];
-        foreach ($this->dateFacets as $current) {
-            $from = $to = '';
-            if (isset($filters[$current])) {
-                foreach ($filters[$current] as $filter) {
-                    if (preg_match('/\[\d+ TO \d+\]/', $filter)) {
-                        $range = explode(' TO ', trim($filter, '[]'));
-                        $from = $range[0] == '*' ? '' : $range[0];
-                        $to = $range[1] == '*' ? '' : $range[1];
-                        break;
-                    }
-                }
-            }
-            $result[$current] = [$from, $to];
-            $result[$current]['label']
-                = $this->searchObject->getParams()->getFacetLabel($current);
-        }
-        return $result;
     }
 }
