@@ -1873,6 +1873,13 @@ class PAIA extends DAIA
                 self::SCOPE_WRITE_ITEMS . ' ' .
                 self::SCOPE_CHANGE_PASSWORD;
 
+        // append additional scopes via config
+        if (!empty($this->config['PAIA']['additionalScopes'])) {
+            foreach ($this->config['PAIA']['additionalScopes'] as $scope) {
+                $post_data['scope'] .= ' ' . constant("self::$scope");
+            }
+        }
+
         // perform full PAIA auth and get patron info
         $result = $this->httpService->post(
             $this->paiaURL . 'auth/login',
