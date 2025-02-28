@@ -37,7 +37,7 @@
 <?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <?php if (!$user): ?>
-      <div class="alert alert-info">
+      <div class="alert alert-info hidden-print">
         <a id="hold-login" href="<?=$this->serverUrl($this->url('myresearch-completelogin'))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
       </div>
     <?php elseif (!$user->getCatUsername()): ?>
@@ -56,7 +56,7 @@
 <?php endif; ?>
 <?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); ?>
 <?php if (!empty($holdingTitleHold)): ?>
-  <a class="placehold icon-link" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
+  <a class="placehold icon-link hidden-print" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
     <?=$this->icon('place-hold', 'icon-link__icon') ?>
     <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
   </a>
