@@ -7,11 +7,11 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
 
   <?=$this->flashmessages()?>
 
-  <form class="form-feedback-list" action="<?=$this->url('admin/feedback')?>" method="get">
+  <form class="form-feedback-search" action="<?=$this->url('admin/feedback')?>" method="get">
     <div class="feedback-controls">
       <label for="form_name">
         <?=$this->translate('Form name')?>
-        <select name="form_name" id="form_name" class="form-control form-select">
+        <select name="form_name" id="form_name" class="form-select">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach ($this->uniqueForms as $formName):?>
             <option value="<?=$this->escapeHtmlAttr($formName)?>"<?php if ($formName === ($this->params['form_name'] ?? null)): ?> selected="selected"<?php endif;?>>
@@ -22,7 +22,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
       </label>
       <label for="site_url">
         <?=$this->translate('Site URL')?>
-        <select name="site_url" id="site_url" class="form-control form-select">
+        <select name="site_url" id="site_url" class="form-select">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach ($this->uniqueSites as $site):?>
             <option value="<?=$this->escapeHtmlAttr($site)?>"<?php if ($site === ($this->params['site_url'] ?? null)): ?> selected="selected"<?php endif;?>>
@@ -33,7 +33,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
       </label>
       <label for="status">
         <?=$this->translate('Status')?>
-        <select name="status" id="status" class="form-control form-select">
+        <select name="status" id="status" class="form-select">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach ($this->statuses as $status): ?>
             <option value="<?=$this->escapeHtmlAttr($status)?>"<?php if ($status == ($this->params['status'] ?? null)): ?> selected="selected"<?php endif;?>>
@@ -57,13 +57,14 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
     <input type="submit" name="deletePage" value="<?=$this->transEscAttr('delete_page')?>" class="btn btn-default">
   <?php $deleteButtons = ob_get_clean(); ?>
   <?php if (count($this->feedback) > 0):?>
-    <form action="<?=$this->url('admin/feedback', ['action' => 'Delete'])?>" method="post">
+    <form class="form-feedback-list" action="<?=$this->url('admin/feedback', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="form_name" value="<?=$this->escapeHtmlAttr($this->params['form_name'] ?? '') ?>">
       <input type="hidden" name="site_url" value="<?=$this->escapeHtmlAttr($this->params['site_url'] ?? '') ?>">
       <input type="hidden" name="status" value="<?=$this->escapeHtmlAttr($this->params['status'] ?? '') ?>">
       <?=$deleteButtons?>
       <table class="table table-striped">
         <tr>
+          <th></th>
           <th><?=$this->transEsc('Form name')?></th>
           <th><?=$this->transEsc('Site URL')?></th>
           <th><?=$this->transEsc('Message')?></th>
@@ -79,6 +80,8 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
             <td>
               <input id="checkbox_<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>" class="checkbox_ui">
               <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($feedbackEntity->getId())?>">
+            </td>
+            <td>
               <?=$this->escapeHtml($feedbackEntity->getFormName())?>
             </td>
             <td><?=$this->escapeHtml($feedbackEntity->getSiteUrl())?></td>
@@ -99,7 +102,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
               <?php endif; ?>
             </td>
             <td>
-              <select class="form-control form-select status_update" name="status_update">
+              <select class="form-select status_update" name="status_update">
                 <?php foreach ($this->statuses as $status): ?>
                   <option value="<?=$this->escapeHtmlAttr($status)?>"<?=$status == $feedbackEntity->getStatus() ? ' selected="selected"' : ''?>>
                     <?=$this->transEsc('feedback_status_' . $status, [], $status)?>

@@ -3,7 +3,7 @@
   <?php if (count($cards) > 1): ?>
     <form class="form-inline form-select-card" action="<?=$this->url('librarycards-selectcard')?>" method="get" data-clear-account-cache>
       <label for="library_card"><?=$this->transEsc('Library Card')?></label>
-      <select id="library_card" name="cardID" class="jumpMenu form-control form-select">
+      <select id="library_card" name="cardID" class="jumpMenu form-select">
         <?php if (null === $this->user->getCatUsername()): ?>
           <option value="" selected="selected">-</option>
         <?php endif; ?>

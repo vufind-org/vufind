@@ -83,7 +83,7 @@
 
   // Top level bottom border:
   & > li, .more-less-btn-wrapper {
-    border-bottom: 1px solid $list-group-border;
+    border-bottom: 1px solid $list-group-border-color;
   }
   // Make the first child level start a bit higher to counter the padding of top
   // level items:

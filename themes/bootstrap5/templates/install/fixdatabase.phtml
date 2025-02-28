@@ -13,43 +13,43 @@
 
 <form class="form-fix-database" method="post">
   <div class="form-group">
-    <label class="control-label" for="dbname">Select database type:</label>
-    <select name="driver" class="form-control form-select">
+    <label class="form-label" for="dbname">Select database type:</label>
+    <select name="driver" class="form-select">
       <option value="mysql">MySQL</option>
       <option <?php if ($driver == 'mariadb'): ?>selected="selected" <?php endif; ?>value="mariadb">MariaDB</option>
       <option <?php if ($driver == 'pgsql'): ?>selected="selected" <?php endif; ?>value="pgsql">PostgreSQL</option>
     </select>
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbname">New database name:</label>
+    <label class="form-label" for="dbname">New database name:</label>
     <input type="text" name="dbname" value="<?=$this->escapeHtmlAttr($this->dbname)?>" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbuser">New database user:</label>
+    <label class="form-label" for="dbuser">New database user:</label>
     <input type="text" name="dbuser" value="<?=$this->escapeHtmlAttr($this->dbuser)?>" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbpass">New user password:</label>
+    <label class="form-label" for="dbpass">New user password:</label>
     <input type="password" name="dbpass" value="" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbpassconfirm">Confirm new user password:</label>
+    <label class="form-label" for="dbpassconfirm">Confirm new user password:</label>
     <input type="password" name="dbpassconfirm" value="" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbhost">Database Host:</label>
+    <label class="form-label" for="dbhost">Database Host:</label>
     <input type="text" name="dbhost" value="<?=$this->escapeHtmlAttr($this->dbhost)?>" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="vufindhost">VuFind® IP/Host (if different from SQL Host):</label>
+    <label class="form-label" for="vufindhost">VuFind® IP/Host (if different from SQL Host):</label>
     <input type="text" name="vufindhost" value="<?=$this->escapeHtmlAttr($this->vufindhost)?>" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbrootuser">Database Root User:</label>
+    <label class="form-label" for="dbrootuser">Database Root User:</label>
     <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>" class="form-control">
   </div>
   <div class="form-group">
-    <label class="control-label" for="dbrootpass">Database Root Password:</label>
+    <label class="form-label" for="dbrootpass">Database Root Password:</label>
     <input type="password" name="dbrootpass" value="" class="form-control">
   </div>
   <div class="form-group">

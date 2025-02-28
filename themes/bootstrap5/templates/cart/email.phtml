@@ -15,7 +15,7 @@
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
     <?php endforeach; ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc('Title')?>:</label>
+      <label class="form-label"><?=$this->transEsc('Title')?>:</label>
       <?php if (count($this->records) > 1): ?>
         <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
