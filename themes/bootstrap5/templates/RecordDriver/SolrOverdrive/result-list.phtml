@@ -113,7 +113,7 @@
       <?php endif; ?>
 
       <?php if ($this->driver->tryMethod('getWorkKeys') && $this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
-        <div class="record-versions ajax"></div>
+        <div class="record-versions ajax hidden-print"></div>
       <?php endif; ?>
 
       <div class="callnumAndLocation ajax-availability hidden">
