@@ -164,13 +164,24 @@ deleteGroup = function _deleteGroup(group) {
 };
 
 $(function advSearchReady() {
-  $('.clear-btn').on("click", function clearBtnClick() {
-    $('input[type="text"]').val('');
-    $('input[type="checkbox"],input[type="radio"]').each(function onEachCheckbox() {
-      var checked = $(this).data('checked-by-default');
-      checked = (checked == null) ? false : checked;
-      $(this).prop("checked", checked);
+  document.querySelectorAll('.clear-btn').forEach(clearBtn => clearBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    document.querySelectorAll('input[type="text"],input[type="number"]').forEach(input => {
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
     });
-    $("option:selected").prop("selected", false);
-  });
+    document.querySelectorAll('input[type="checkbox"],input[type="radio"]').forEach((input) => {
+      input.checked = input.dataset.checkedByDefault === "true";
+      input.dispatchEvent(new Event('input'));
+    });
+    document.querySelectorAll('select').forEach(select => {
+      let selectedOptions = Array.from(select.selectedOptions);
+      if (selectedOptions.length > 0) {
+        selectedOptions.forEach(option => {
+          option.selected = false;
+        });
+        select.dispatchEvent(new Event('change'));
+      }
+    });
+  }));
 });
