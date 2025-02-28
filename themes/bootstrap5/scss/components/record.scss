@@ -128,7 +128,7 @@ $tag-remove-badge-color:          #a94442 !default;
 .tag-record {
   float: right;
   margin: 2px 0 1rem 1rem;
-  padding: $btn-padding-y $btn-padding-x;
+  padding: $btn-padding-y-sm $btn-padding-x;
 
   &:hover {
     text-decoration: none;
@@ -136,7 +136,7 @@ $tag-remove-badge-color:          #a94442 !default;
 
   @include media-breakpoint-down(sm) {
     margin-left: 0.5rem;
-    padding: $btn-padding-y calc(#{$btn-padding-x} / 2);
+    padding: $btn-padding-y-sm $btn-padding-x-sm;
   }
 }
 
@@ -157,7 +157,7 @@ $tag-remove-badge-color:          #a94442 !default;
     padding: var(--#{$prefix}btn-padding-y) var(--#{$prefix}btn-padding-x);
     // Use bootstrap mixins to make tags look like buttons
     @include border-radius(var(--#{$prefix}btn-border-radius));
-    @include button-size($btn-padding-y, $btn-padding-x, $font-size-base, $border-radius);
+    @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $font-size-base, $border-radius);
 
     a {
       color: $tag-color;
