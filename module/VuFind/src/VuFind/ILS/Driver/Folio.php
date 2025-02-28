@@ -1022,45 +1022,49 @@ class Folio extends AbstractAPI implements
             $nextBatch = [];
             $sortNeeded = false;
             $number = 0;
-            foreach (
-                $this->getPagedResults(
-                    'items',
-                    '/inventory/items-by-holdings-id',
-                    $query
-                ) as $item
-            ) {
-                if ($item->discoverySuppress ?? false) {
-                    continue;
-                }
-                $number++;
-                $currentLoan = null;
-                $dueDateValue = '';
-                $boundWithRecords = null;
-                if (
-                    $item->status->name == 'Checked out'
-                    && $showDueDate
-                    && $dueDateItemCount < $maxNumDueDateItems
+            try {
+                foreach (
+                    $this->getPagedResults(
+                        'items',
+                        '/inventory/items-by-holdings-id',
+                        $query
+                    ) as $item
                 ) {
-                    $currentLoan = $this->getCurrentLoan($item->id);
-                    $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
-                    $dueDateItemCount++;
+                    if ($item->discoverySuppress ?? false) {
+                        continue;
+                    }
+                    $number++;
+                    $currentLoan = null;
+                    $dueDateValue = '';
+                    $boundWithRecords = null;
+                    if (
+                        $item->status->name == 'Checked out'
+                        && $showDueDate
+                        && $dueDateItemCount < $maxNumDueDateItems
+                    ) {
+                        $currentLoan = $this->getCurrentLoan($item->id);
+                        $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
+                        $dueDateItemCount++;
+                    }
+                    if ($item->isBoundWith ?? false) {
+                        $boundWithRecords = $this->getBoundWithRecords($item);
+                    }
+                    $nextItem = $this->formatHoldingItem(
+                        $bibId,
+                        $holdingDetails,
+                        $item,
+                        $number,
+                        $dueDateValue,
+                        $boundWithRecords ?? [],
+                        $currentLoan
+                    );
+                    if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
+                        $sortNeeded = true;
+                    }
+                    $nextBatch[] = $nextItem;
                 }
-                if ($item->isBoundWith ?? false) {
-                    $boundWithRecords = $this->getBoundWithRecords($item);
-                }
-                $nextItem = $this->formatHoldingItem(
-                    $bibId,
-                    $holdingDetails,
-                    $item,
-                    $number,
-                    $dueDateValue,
-                    $boundWithRecords ?? [],
-                    $currentLoan
-                );
-                if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
-                    $sortNeeded = true;
-                }
-                $nextBatch[] = $nextItem;
+            } catch (\VuFind\Exception\ILS $e) {
+                $this->warning("getPagedResults('items', '/inventory/items-by-holdings-id', $query=" . json_encode($query) . ') returned ' . $e->getMessage());
             }
 
             // If there are no item records on this holding, we're going to create a fake one,
