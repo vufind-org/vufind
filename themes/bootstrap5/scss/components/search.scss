@@ -715,7 +715,7 @@ header .container.navbar { margin-bottom: 0; }
 .reset-filters-btn,
 .clear-selection {
   border: 0;
-  color: #555;
+  color: $gray-dark;
   text-decoration: none;
   background-color: rgba(0,0,0,.05);
   border-radius: 4px;
@@ -731,7 +731,7 @@ header .container.navbar { margin-bottom: 0; }
   gap: 0.25rem;
   margin-bottom: 4px;
   margin-top: 4px;
-  padding: .5rem 1rem;
+  padding: $btn-padding-y $btn-padding-x;
 }
 .reset-filters-btn {
   flex: none;
@@ -740,6 +740,7 @@ header .container.navbar { margin-bottom: 0; }
 .toolbar-btn {
   display: inline-block;
   vertical-align: middle;
+  border: 1px solid rgba(0 0 0 / 0.1);
 }
 
 .clear-selection{

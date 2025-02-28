@@ -156,6 +156,13 @@ h6, .h6 {
   }
 }
 
+// More/less buttons
+.more-btn, .less-btn {
+  &:not(.facet) {
+    @extend .toolbar-btn;
+  }
+}
+
 // Normalize highlighting
 .highlight,
 mark {

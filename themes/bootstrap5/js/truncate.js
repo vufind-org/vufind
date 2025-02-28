@@ -99,12 +99,12 @@ VuFind.register('truncate', function Truncate() {
       }
 
       if (shouldTruncate) {
-        var btnMore = '<button type="button" class="more-btn' + btnClass + '">'
+        var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">'
           + (settings['label-icons'] === 'before' ? VuFind.icon(settings['more-icon']) + ' ' : '')
           + '<span>' + moreLabel + '</span>'
           + (settings['label-icons'] === 'after' ? ' ' + VuFind.icon(settings['more-icon']) : '')
           + '</button>';
-        var btnLess = '<button type="button" class="less-btn' + btnClass + '">'
+        var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">'
           + (settings['label-icons'] === 'before' ? VuFind.icon(settings['less-icon']) + ' ' : '')
           + '<span>' + lessLabel + '</span>'
           + (settings['label-icons'] === 'after' ? ' ' + VuFind.icon(settings['less-icon']) : '')
