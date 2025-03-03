@@ -31,6 +31,7 @@ namespace VuFindTest\Config;
 
 use VuFind\Config\Config;
 use VuFind\Config\PathResolver;
+use VuFind\Config\PluginFactory;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
 
@@ -54,7 +55,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Plugin factory instance.
      *
-     * @var \VuFind\Config\PluginFactory
+     * @var PluginFactory
      */
     protected $factory;
 
@@ -65,7 +66,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->factory = new \VuFind\Config\PluginFactory();
+        $this->factory = new PluginFactory();
     }
 
     /**
