@@ -88,7 +88,6 @@
         if ($this->session()->put('reset_account_status', null)) {
           $this->assetManager()->appendScript(
               'VuFind.account.clearAllCaches();',
-              'text/javascript',
               ['data-lightbox-run' => 'always'],
               true
           );

@@ -160,7 +160,6 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * Append raw script code.
      *
      * @param string $script              Script code
-     * @param string $type                Script type
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
@@ -169,19 +168,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function appendScript(
         string $script,
-        string $type = 'text/javascript',
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
         string $position = 'header'
     ) {
-        $this->scripts[$position][] = compact('script', 'type', 'attrs', 'allowArbitraryAttrs');
+        $this->scripts[$position][] = compact('script', 'attrs', 'allowArbitraryAttrs');
     }
 
     /**
      * Add an entry to the list of script files.
      *
      * @param string $src      Script src
-     * @param string $type     Script type
      * @param array  $attrs    Array of script attributes
      * @param string $position Position to output script (header or footer)
      *
@@ -189,18 +186,16 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function appendScriptFile(
         string $src,
-        string $type = 'text/javascript',
         array $attrs = [],
         string $position = 'header'
     ): void {
-        $this->scripts[$position][] = compact('src', 'type', 'attrs');
+        $this->scripts[$position][] = compact('src', 'attrs');
     }
 
     /**
      * Forcibly prepend a file, removing it from any existing position.
      *
      * @param string $src      Script src
-     * @param string $type     Script type
      * @param array  $attrs    Array of script attributes
      * @param string $position Position to output script (header or footer)
      *
@@ -208,11 +203,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function forcePrependScriptFile(
         string $src,
-        string $type = 'text/javascript',
         array $attrs = [],
         string $position = 'header'
     ): void {
-        $newScripts = [compact('src', 'type', 'attrs')];
+        $newScripts = [compact('src', 'attrs')];
         foreach ($this->scripts[$position] as $script) {
             if ($script['src'] ?? null !== $newScripts[0]['src']) {
                 $newScripts[] = $script;
@@ -225,7 +219,6 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * Prepend raw script code.
      *
      * @param string $script              Script code
-     * @param string $type                Script type
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
@@ -234,12 +227,11 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function prependScript(
         string $script,
-        string $type = 'text/javascript',
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
         string $position = 'header'
     ) {
-        array_unshift($this->scripts[$position], compact('script', 'type', 'attrs', 'allowArbitraryAttrs'));
+        array_unshift($this->scripts[$position], compact('script', 'attrs', 'allowArbitraryAttrs'));
     }
 
     /**
@@ -282,14 +274,14 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
             }
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
-                $output[] = $this->outputInlineScript($script['script'], $script['type'], $script['attrs']);
+                $output[] = $this->outputInlineScript($script['script'], $script['attrs']);
             } else {
                 if ($this->isRelativePath($script['src'])) {
                     if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
                         $script['src'] = $themePath;
                     }
                 }
-                $output[] = $this->outputInlineScriptFile($script['src'], $script['type'], $script['attrs']);
+                $output[] = $this->outputInlineScriptFile($script['src'], $script['attrs']);
             }
         }
         return implode("\n", $output);
@@ -342,7 +334,6 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * Output an inline script.
      *
      * @param string $script              Script code
-     * @param string $type                Script type
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      *
@@ -350,7 +341,6 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function outputInlineScript(
         string $script,
-        string $type = 'text/javascript',
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
     ): string {
@@ -361,6 +351,8 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         if ($allowArbitraryAttrs) {
             $inlineScript->setAllowArbitraryAttributes(true);
         }
+        $type = $attrs['type'] ?? 'text/javascript';
+        unset($attrs['type']);
         $inlineScript->setScript($script, $type, $attrs);
         return ($inlineScript)();
     }
@@ -369,14 +361,12 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * Output an inline script file.
      *
      * @param string $src   Script src
-     * @param string $type  Script type
      * @param array  $attrs Array of script attributes
      *
      * @return string
      */
     public function outputInlineScriptFile(
         string $src,
-        string $type = 'text/javascript',
         array $attrs = [],
     ): string {
         if (!empty($this->cspNonce)) {
@@ -386,6 +376,8 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }
+        $type = $attrs['type'] ?? 'text/javascript';
+        unset($attrs['type']);
         $inlineScript->setFile($src, $type, $attrs);
         return ($inlineScript)();
     }

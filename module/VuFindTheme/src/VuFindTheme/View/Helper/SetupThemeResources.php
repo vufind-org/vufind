@@ -174,7 +174,6 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
                 ->plugin('assetManager')
                 ->forcePrependScriptFile(
                     $current['file'],
-                    'text/javascript',
                     $current['attributes'] ?? [],
                     $position
                 );
