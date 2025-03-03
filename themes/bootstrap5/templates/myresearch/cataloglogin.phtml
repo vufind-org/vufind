@@ -27,8 +27,8 @@
     <form method="post" action="<?=$this->serverUrl(true)?>" class="form-catalog-login">
       <?php if ($this->targets !== null): ?>
         <div class="form-group">
-          <label class="control-label" for="profile_cat_target"><?=$this->transEsc('login_target')?>:</label>
-          <select id="profile_cat_target" name="target" class="form-control form-select">
+          <label class="form-label" for="profile_cat_target"><?=$this->transEsc('login_target')?>:</label>
+          <select id="profile_cat_target" name="target" class="form-select">
             <?php foreach ($this->targets as $target): ?>
               <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target === $this->defaultTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
             <?php endforeach; ?>
@@ -37,16 +37,16 @@
       <?php endif; ?>
       <div class="form-group">
         <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
-          <label class="control-label password-login" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+          <label class="form-label password-login" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
         <?php endif; ?>
         <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
-          <label class="control-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
+          <label class="form-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
         <?php endif; ?>
         <input id="profile_cat_username" type="<?='email' === $this->loginMethod ? 'email' : 'text'?>" name="cat_username" value="" class="form-control" autocomplete="<?='email' === $this->loginMethod ? 'email' : 'username'?>">
       </div>
       <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
         <div class="form-group">
-          <label class="control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
+          <label class="form-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
           <input id="profile_cat_password" type="password" name="cat_password" value="" class="form-control" autocomplete="current-password">
         </div>
       <?php else: ?>

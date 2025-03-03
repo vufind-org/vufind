@@ -20,7 +20,7 @@
     <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($this->defaultSort)?>">
   <?php endif; ?>
   <div class="form-group">
-    <label class="control-label"><?=$this->transEsc('Range')?>:</label>
+    <label class="form-label"><?=$this->transEsc('Range')?>:</label>
     <div class="btn-group" data-bs-toggle="buttons">
       <?php foreach ($this->ranges as $key => $range): ?>
         <label class="btn btn-primary<?php if ($key == 0): ?> active<?php endif ?>">
@@ -33,8 +33,8 @@
   <?=$this->render('search/advanced/solr-facets.phtml')?>
   <?php if (is_array($this->fundList) && !empty($this->fundList)): ?>
     <div class="form-group">
-      <label class="control-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
-      <select id="newitem_department" name="department" size="10" class="form-control form-select form-select">
+      <label class="form-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
+      <select id="newitem_department" name="department" size="10" class="form-select form-select">
       <?php foreach ($this->fundList as $fundId => $fund): ?>
         <option value="<?=$this->escapeHtmlAttr($fundId)?>"><?=$this->transEsc($fund)?></option>
       <?php endforeach; ?>

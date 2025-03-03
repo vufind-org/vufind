@@ -25,10 +25,10 @@
 
   <div class="form-group">
     <?php if ($showLists): ?>
-      <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
+      <label class="form-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
     <?php endif; ?>
     <?php if ($showLists): ?>
-      <select class="form-control form-select" id="save_list" name="list">
+      <select class="form-select" id="save_list" name="list">
       <?php if ($this->nonContainingLists): ?>
         <?php foreach ($this->nonContainingLists as $list): ?>
           <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
@@ -46,13 +46,13 @@
   <?php if ($showLists): ?>
     <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
       <div class="form-group">
-        <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+        <label class="form-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
         <input class="form-control" id="add_mytags" type="text" name="mytags" value="">
         <span class="help-block"><?=$this->transEsc('add_tag_note') ?></span>
       </div>
     <?php endif; ?>
     <div class="form-group">
-      <label class="control-label" for="add_notes"><?=$this->transEsc('Add a Note') ?></label>
+      <label class="form-label" for="add_notes"><?=$this->transEsc('Add a Note') ?></label>
       <textarea class="form-control" id="add_notes" name="notes" rows="3"></textarea>
     </div>
     <div class="form-group">

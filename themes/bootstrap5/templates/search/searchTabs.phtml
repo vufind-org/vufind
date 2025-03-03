@@ -3,7 +3,7 @@
     $hasSelectedTab = false;
     $resultTotal = $this->results?->getResultTotal() ?? -1;
   ?>
-  <ul class="nav nav-tabs" role="tablist">
+  <ul class="nav nav-tabs">
     <?php foreach ($searchTabs as $tab): ?>
       <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
         <?php
@@ -14,6 +14,7 @@
           if ($tab['selected']) {
             $hasSelectedTab = true;
             $linkAttributes['class'] .= ' active';
+            $linkAttributes['aria-current'] = 'page';
             if ($this->showCounts && $resultTotal >= 0) {
               $linkAttributes['data-result-total'] = $resultTotal;
             } elseif ($this->showCounts) {
@@ -32,7 +33,7 @@
     <?php endforeach; ?>
     <?php if (!$hasSelectedTab && !$this->translationEmpty('temporary_search_tab_title')): ?>
       <li class="nav-item">
-        <a class="nav-link active"><?=$this->transEsc('temporary_search_tab_title')?></a>
+        <a class="nav-link active" aria-current="page"><?=$this->transEsc('temporary_search_tab_title')?></a>
       </li>
     <?php endif; ?>
   </ul>

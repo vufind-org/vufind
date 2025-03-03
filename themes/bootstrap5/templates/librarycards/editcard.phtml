@@ -16,13 +16,13 @@
 <form class="form-edit-card" method="post" name="<?=empty($this->card->getId()) ? 'newCardForm' : 'editCardForm'?>" autocomplete="off" data-clear-account-cache>
   <input type="hidden" name="id" value="<?=empty($this->card->getId()) ? 'NEW' : $this->escapeHtmlAttr($this->card->getId()) ?>">
   <div class="form-group">
-    <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
+    <label class="form-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
     <input id="card_name" class="form-control" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName)?>">
   </div>
   <?php if ($this->targets !== null): ?>
   <div class="form-group">
-    <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-    <select id="login_target" name="target" class="form-control form-select">
+    <label class="form-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+    <select id="login_target" name="target" class="form-select">
       <?php foreach ($this->targets as $target): ?>
         <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
       <?php endforeach; ?>
@@ -31,16 +31,16 @@
   <?php endif; ?>
   <div class="form-group">
     <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
-      <label class="control-label password-login" for="login_username"><?=$this->transEsc('Username')?>:</label>
+      <label class="form-label password-login" for="login_username"><?=$this->transEsc('Username')?>:</label>
     <?php endif; ?>
     <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
-      <label class="control-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="login_username"><?=$this->transEsc('Email')?>:</label>
+      <label class="form-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="login_username"><?=$this->transEsc('Email')?>:</label>
     <?php endif; ?>
     <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control">
   </div>
   <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
     <div class="form-group">
-      <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
+      <label class="form-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
       <input id="login_password" type="password" name="password" value="" placeholder="<?=!empty($this->card->getId()) ? $this->transEscAttr('library_card_edit_password_placeholder') : ''?>" class="form-control">
     </div>
   <?php endif; ?>

@@ -108,10 +108,10 @@
             );
       ?>
 
-      <?php /* Links from DOI linker */ ?>
-      <?php $doi = $this->doi($this->driver, 'results'); ?>
-      <?php if ($doi->isActive()): ?>
-        <div><?=$doi->renderTemplate()?></div>
+      <?php /* Links from identifier linker */ ?>
+      <?php $identifierLinksHtml = $this->identifierLinker($this->driver, 'results'); ?>
+      <?php if ($identifierLinksHtml): ?>
+        <div><?=$identifierLinksHtml?></div>
       <?php endif; ?>
     </div>
     <div class="result-links hidden-print">

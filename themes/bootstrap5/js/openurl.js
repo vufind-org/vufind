@@ -72,6 +72,7 @@ VuFind.register('openurl', function OpenUrl() {
   function init() {
     updateContainer({container: document.body});
     VuFind.listen('results-init', updateContainer);
+    VuFind.listen('record-tab-init', updateContainer);
   }
 
 

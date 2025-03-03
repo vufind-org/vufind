@@ -1,11 +1,11 @@
 <?php
 
 /**
- * BrowZine DOI linker factory
+ * OpenIDConnect authentication plugin factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) R-Bit Technology 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  DOI
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Authentication
+ * @author   Josef Moravec <josef.moravec@gmail.com>
+ * @author   Radek Šiman <rbit@rbit.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\DoiLinker;
+namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * BrowZine DOI linker factory
+ * OpenIDConnect authentication plugin factory.
  *
  * @category VuFind
- * @package  DOI
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Authentication
+ * @author   Josef Moravec <josef.moravec@gmail.com>
+ * @author   Radek Šiman <rbit@rbit.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class OpenIDConnectFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -57,9 +60,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ContainerException if any other error occurs
      */
     public function __invoke(
         ContainerInterface $container,
@@ -67,15 +68,14 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $search = $container->get(\VuFindSearch\Service::class);
-        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('BrowZine');
-        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
-        $doiServices = isset($fullConfig->DOIServices)
-            ? $fullConfig->DOIServices->toArray()
-            : [];
-        return new $requestedName($search, $config, $doiServices);
+        $session = new \Laminas\Session\Container(
+            'OpenIDConnect',
+            $container->get(\Laminas\Session\SessionManager::class)
+        );
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('OpenIDConnectClient')->toArray();
+        $ilsAuthenticator = $container->get(\VuFind\Auth\ILSAuthenticator::class);
+        return new $requestedName($session, $config, $ilsAuthenticator);
     }
 }

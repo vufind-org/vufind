@@ -22,8 +22,9 @@
 
   foreach ($activeFacets as $field => $facetName) {
     if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
-      $this->assetManager()->appendScriptFile('vendor/bootstrap-slider.min.js');
-      $this->assetManager()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      $this->assetManager()->appendScriptFile('vendor/nouislider.min.js');
+      $this->assetManager()->appendStylesheet('vendor/nouislider.min.css');
+      $this->assetManager()->appendScriptFile('date_range_slider.js');
       break;
     }
   }
@@ -46,7 +47,7 @@
   <?php if ($this->multiFacetsSelection && $this->layout()->sideFacetsInstanceCounter === 1): ?>
     <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
   <?php endif; ?>
-  <span class="sr-only"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
+  <span class="visually-hidden"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
   <?php
     // We need to pass the current URL query to the Javascript; we use substr() to
     // strip off the leading ? character. The "suppress query" option is used for
