@@ -544,15 +544,15 @@ class ModelViewerClass extends HTMLElement {
     const button = document.createElement('button');
     button.classList.add('collapsed', 'viewer-btn');
     button.type = 'button';
-    button.dataset.toggle = 'collapse';
+    button.dataset.bsToggle = 'collapse';
     button.append(info);
     button.append(srOnly);
 
     const buttons = [
-      {class: 'model-fullscreen', translation: 'asd', info: 'model-viewer-fullscreen'},
-      {class: 'model-statistics', target: '#model-statistics-area', translation: 'asd', info: 'model-viewer-statistics'},
-      {class: 'model-help', target: '#model-help-area', translation: 'asd', info: 'fa-question-circle-o'},
-      {class: 'model-settings', target: '#object-editor-settings', translation: 'asd', info: 'fa-cog'},
+      {class: 'model-fullscreen', info: 'model-viewer-fullscreen'},
+      {class: 'model-statistics', target: '#model-statistics-area', info: 'model-viewer-statistics'},
+      {class: 'model-help', target: '#model-help-area', info: 'fa-question-circle-o'},
+      {class: 'model-settings', target: '#object-editor-settings', info: 'fa-cog'},
     ];
 
     buttons.forEach((btn) => {
@@ -561,7 +561,7 @@ class ModelViewerClass extends HTMLElement {
       b.querySelector('span').textContent = btn.translation;
       b.querySelector('i').classList.add(btn.info);
       if (btn.target) {
-        b.dataset.target = btn.target;
+        b.dataset.bsTarget = btn.target;
       }
       buttonsHolder.append(b);
       if (btn.class === 'model-fullscreen') {
@@ -700,6 +700,7 @@ class ModelViewerClass extends HTMLElement {
     }
     this.scene.traverse((obj) => {
       if (obj.type === 'Mesh') {
+        obj.material.vertexColors = false;
         obj.material.envMap = this.background;
         const userData = obj.material.userData;
         if (typeof userData.envMapIntensity !== 'undefined') {
