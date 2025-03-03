@@ -1067,7 +1067,7 @@ class Folio extends AbstractAPI implements
                 $this->warning(
                     "getPagedResults('items', '/inventory/items-by-holdings-id', \$query="
                     . json_encode($query)
-                    . ") returned "
+                    . ') returned '
                     . $e->getMessage()
                 );
             }
