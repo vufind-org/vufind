@@ -32,7 +32,7 @@ namespace VuFindTest\Service;
 use Exception;
 use Generator;
 use Laminas\Db\ResultSet\AbstractResultSet;
-use VuFind\Db\Row\OaiResumption;
+use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFindTest\Container\MockContainer;
 
@@ -227,7 +227,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testTokenRetrieval(string $token, ?string $expectedParams): void
     {
-        $mockRow = $this->container->createMock(OaiResumption::class, []);
+        $mockRow = $this->container->createMock(OaiResumptionEntityInterface::class, []);
         $mockDb = [];
         foreach ($this->mockEntities as $entity) {
             $rowClone = clone $mockRow;
