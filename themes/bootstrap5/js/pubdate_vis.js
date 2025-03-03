@@ -2,6 +2,7 @@
 VuFind.register('pubdateVis', function pubdateVis() {
 
   let _zooming = false;
+  let _initiallyHideControls = false;
   const _graphMargin = 5;
   const _cssColorSettings = {
     // background of box
@@ -80,50 +81,57 @@ VuFind.register('pubdateVis', function pubdateVis() {
       },
     }, minSelectionInput, maxSelectionInput);
 
-    // only show selection in chart and controls if some range was selected
-    let showChartSelection = false;
-    const controlsCollapse = new bootstrap.Collapse(controls, {toggle: false, show: false});
+    // only show selection in chart and controls if some range was selected or initiallyHideControls is false
+    let showChartSelection = !_initiallyHideControls;
+    const controlsCollapse = new bootstrap.Collapse(controls, {toggle: !_initiallyHideControls});
+
 
     /**
      * Show controls
      */
     function showControls() {
-      controlsTrigger.tabIndex = -1;
-      showChartSelection = true;
-      controlsCollapse.show();
+      if (_initiallyHideControls) {
+        controlsTrigger.tabIndex = -1;
+        showChartSelection = true;
+        controlsCollapse.show();
+      }
     }
 
     /**
      * Hide controls
      */
     function hideControls() {
-      controlsTrigger.tabIndex = 0;
-      showChartSelection = false;
-      controlsCollapse.hide();
+      if (_initiallyHideControls) {
+        controlsTrigger.tabIndex = 0;
+        showChartSelection = false;
+        controlsCollapse.hide();
+      }
     }
-
-    // show controls if hidden trigger element was focused because the slider is aria-hidden
-    controlsTrigger.addEventListener('focus', () => {
-      showControls();
-      minSelectionInput.focus();
-    });
-
 
     /**
      * Show controls if mobile view
      */
     function showControlsIfMobile() {
       // always show controls on mobile
-      if (window.screen.width < 768) {
+      if (window.innerWidth < 768) {
         showControls();
       }
     }
-    showControlsIfMobile();
-    addEventListener("resize", showControlsIfMobile);
 
-    // show controls if the filter is already set
-    if (hasFilter) {
-      showControls();
+    if (_initiallyHideControls) {
+      controlsTrigger.tabIndex = 0;
+      // show controls if hidden trigger element was focused because the slider is aria-hidden
+      controlsTrigger.addEventListener('focus', () => {
+        showControls();
+        minSelectionInput.focus();
+      });
+      showControlsIfMobile();
+      addEventListener("resize", showControlsIfMobile);
+
+      // show controls if the filter is already set
+      if (hasFilter) {
+        showControls();
+      }
     }
 
     // custom plugin that draws an overlay for the selected data in the chart
@@ -270,6 +278,7 @@ VuFind.register('pubdateVis', function pubdateVis() {
     }
 
     _zooming = VuFind.config.get('pub-vis:zooming');
+    _initiallyHideControls = VuFind.config.get('pub-vis:initially-hide-controls');
 
     const facetFields = encodeURIComponent(VuFind.config.get('pub-vis:facet-fields'));
     const searchParams = VuFind.config.get('pub-vis:search-params');

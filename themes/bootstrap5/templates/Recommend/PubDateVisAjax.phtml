@@ -17,6 +17,10 @@
         'pub-vis:zooming',
         $this->recommend->getZooming()
     );
+    $this->jsConfigs()->add(
+      'pub-vis:initially-hide-controls',
+      $this->recommend->getInitiallyHideControlsSetting()
+    );
   ?>
   <?php foreach ($visFacets as $facetField => $facetRange): ?>
     <div class="authorbox">
@@ -28,7 +32,7 @@
           <canvas id="datevis<?=$facetField?>x-canvas"></canvas>
         </div>
         <div class="slider-container" aria-hidden="true"><div id="datevis<?=$facetField?>-slider"></div></div>
-        <div class="datevis-controls-trigger" id="datevis<?=$facetField?>-controls-trigger" tabindex="0"></div>
+        <div class="datevis-controls-trigger" id="datevis<?=$facetField?>-controls-trigger"></div>
         <div class="datevis-controls collapse" id="datevis<?=$facetField?>-controls">
           <div class="datevis-controls-container">
             <label id="datevis<?=$facetField?>-from-label" for="datevis<?=$facetField?>-from">
