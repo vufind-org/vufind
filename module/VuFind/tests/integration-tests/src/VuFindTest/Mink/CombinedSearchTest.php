@@ -315,8 +315,9 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'combined' => $config,
                 'config' => [
-                    'DOI' => [
+                    'IdentifierLinks' => [
                         'resolver' => 'Demo',
+                        'supportedIdentifiers' => ['doi'],
                     ],
                 ],
             ],
@@ -327,11 +328,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // now include a DOI link:
         $this->assertStringStartsWith(
             'Demonstrating DOI link for 10.1234/FAKETYFAKE1',
-            $this->findCssAndGetText($page, '#combined_Solr____one .doiLink a')
+            $this->findCssAndGetText($page, '#combined_Solr____one .identifierLink a')
         );
         $this->assertStringStartsWith(
             'Demonstrating DOI link for 10.1234/FAKETYFAKE2',
-            $this->findCssAndGetText($page, '#combined_Solr____two .doiLink a')
+            $this->findCssAndGetText($page, '#combined_Solr____two .identifierLink a')
         );
     }
 }

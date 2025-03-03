@@ -185,12 +185,16 @@ abstract class AbstractAPI extends AbstractBase implements
                 $client->setParameterPost($params);
             }
         }
+        $startTime = microtime(true);
         try {
             $response = $client->send();
         } catch (\Exception $e) {
             $this->logError('Unexpected ' . $e::class . ': ' . (string)$e);
             throw new ILSException('Error during send operation.');
         }
+        $endTime = microtime(true);
+        $responseTime = $endTime - $startTime;
+        $this->debug('Request Response Time --- ' . $responseTime . ' seconds. ' . $path);
         $code = $response->getStatusCode();
         if (
             !$response->isSuccess()

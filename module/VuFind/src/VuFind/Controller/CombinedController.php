@@ -303,6 +303,11 @@ class CombinedController extends AbstractSearch
         $query = $this->getRequest()->getQuery();
         $query->limit = $settings['limit'] ?? null;
 
+        // Disable default filters, if requested:
+        if ($settings['disable_default_filters'] ?? false) {
+            $query->dfApplied = 1;
+        }
+
         // Apply filters, if any:
         $query->filter = isset($settings['filter'])
             ? (array)$settings['filter'] : null;

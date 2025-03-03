@@ -1,4 +1,4 @@
-/*global registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
+/*global registerAjaxCommentRecord, syn_get_widget, VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPARATOR = ':::';
@@ -65,7 +65,6 @@ VuFind.register('embedded', function embedded() {
           var html = data.trim();
           if (html.length > 0) {
             $('#' + tabid + '-content').html(VuFind.updateCspNonce(html));
-            registerTabEvents();
             VuFind.emit('record-tab-init', {container: document.querySelector('#' + tabid + '-content')});
           } else {
             $('#' + tabid + '-content').html(VuFind.translate('collection_empty'));

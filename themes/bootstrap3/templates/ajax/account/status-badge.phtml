@@ -1,6 +1,0 @@
-<?php if ($this->count > 0): ?>
-  <span aria-hidden="true" class="badge <?=$this->class?>" data-toggle="tooltip" title="<?=$this->transEscAttr($this->title)?>">
-    <?=$this->escapeHtml($this->count)?>
-  </span>
-  <span class="sr-only"><?=$this->transEsc($this->title)?>: <?=$this->escapeHtml($this->count)?> , </span>
-<?php endif;

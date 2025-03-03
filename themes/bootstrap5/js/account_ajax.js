@@ -21,14 +21,24 @@ VuFind.register('account', function Account() {
   _accountIcons[ICON_LEVELS.WARNING] = ["my-account-notification", "account-status-warning text-warning"];
   _accountIcons[ICON_LEVELS.DANGER] = ["my-account-warning", "account-status-danger text-danger"];
 
-  var _submodules = [];
+  var _submodules = {};
   var _clearCaches = false;
   var _sessionDataPrefix = "vf-account-status-";
 
+  /**
+   * Get storage key used for saving data into session storage
+   * @param {string} module Name of the module to get session storage key for
+   * @returns {string} Complete session storage key
+   */
   var _getStorageKey = function _getStorageKey(module) {
     return _sessionDataPrefix + module;
   };
 
+  /**
+   * Load data from session storage
+   * @param {string} module Name of the module to load data for
+   * @returns {any|null} Parsed value from storage or null if not defined
+   */
   var _loadSessionData = function _loadSessionData(module) {
     var theme = VuFind.getTheme();
     var json = sessionStorage.getItem(_getStorageKey(module));
@@ -41,6 +51,10 @@ VuFind.register('account', function Account() {
     return null;
   };
 
+  /**
+   * Save data for module into session storage
+   * @param {string} module Name of the module to save data for
+   */
   var _saveSessionData = function _saveSessionData(module) {
     var theme = VuFind.getTheme();
     var json = sessionStorage.getItem(_getStorageKey(module));
@@ -55,6 +69,10 @@ VuFind.register('account', function Account() {
     );
   };
 
+  /**
+   * Remove data from session storage for module
+   * @param {string} module Name of the module to clear session storage
+   */
   var _clearSessionData = function _clearSessionData(module) {
     sessionStorage.removeItem(_getStorageKey(module));
   };
@@ -68,7 +86,6 @@ VuFind.register('account', function Account() {
    * on the current page, and should only be performed when exiting the page via a
    * link, form submission, etc. Cleared data will be reloaded by AJAX on the next
    * page load.
-   *
    * @param {string|undefined} name Cache to clear (undefined/empty for all)
    */
   var clearCache = function clearCache(name) {
@@ -79,10 +96,20 @@ VuFind.register('account', function Account() {
     }
   };
 
+  /**
+   * Get status as a number for module from _statuses object.
+   * (See constants defined above -- LOADING, MISSING, INACTIVE)
+   * @param {string} module Name of the module to get status for
+   * @returns {number} Number indicating the current status for the module
+   */
   var _getStatus = function _getStatus(module) {
     return (typeof _statuses[module] === "undefined") ? LOADING : _statuses[module];
   };
 
+  /**
+   * Render statuses for each module defined in _submodules object. Contains module name
+   * and associated data.
+   */
   var _render = function _render() {
     var accountStatus = ICON_LEVELS.NONE;
     Object.entries(_submodules).forEach(([moduleName, moduleData]) => {
@@ -144,6 +171,10 @@ VuFind.register('account', function Account() {
       accountIconEl.classList.add('notification-level-' + accountStatus);
     }
   };
+  /**
+   * Get module status with ajax call.
+   * @param {string} module Name of the module to lookup
+   */
   var _ajaxLookup = function _ajaxLookup(module) {
     $.ajax({
       url: VuFind.path + '/AJAX/JSON?method=' + _submodules[module].ajaxMethod,
@@ -161,6 +192,12 @@ VuFind.register('account', function Account() {
       });
   };
 
+  /**
+   * Find module elements and set initial values for them using previously saved session data. If _clearCaches is set
+   * to true, will clear session data and return.
+   * @param {string} module Name of the module
+   * @returns {void}
+   */
   var _load = function _load(module) {
     if (_clearCaches) {
       _clearSessionData(module);
@@ -185,6 +222,11 @@ VuFind.register('account', function Account() {
     }
   };
 
+  /**
+   * Set a notification message for a specific module
+   * @param {string} module Name of the module
+   * @param {object} status Status to update
+   */
   var notify = function notify(module, status) {
     if (Object.prototype.hasOwnProperty.call(_submodules, module) && typeof _submodules[module].updateNeeded !== 'undefined') {
       if (_submodules[module].updateNeeded(_getStatus(module), status)) {
@@ -197,6 +239,9 @@ VuFind.register('account', function Account() {
     }
   };
 
+  /**
+   * Initialize the account AJAX system
+   */
   var init = function init() {
     // Update information when certain actions are performed
     $("form[data-clear-account-cache]").on("submit", function dataClearCacheForm() {
@@ -210,6 +255,11 @@ VuFind.register('account', function Account() {
     });
   };
 
+  /**
+   * Register a module for account statuses
+   * @param {string} name Name of the module to register
+   * @param {Function | object} module Function or object to save into _submodules object
+   */
   var register = function register(name, module) {
     if (typeof _submodules[name] === "undefined") {
       _submodules[name] = typeof module == 'function' ? module() : module;

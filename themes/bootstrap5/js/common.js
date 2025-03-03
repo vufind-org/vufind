@@ -1,4 +1,4 @@
-/*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -499,23 +499,12 @@ var VuFind = (function VuFind() {
     setupQRCodeLinks();
   };
 
-  function getBootstrapMajorVersion() {
-    // Bootstrap 5 defines bootstrap global, while 3 doesn't, so we can use that as
-    // an easy way to determine the version:
-    return typeof bootstrap === 'undefined' ? 3 : 5;
-  }
-
   /**
    * Disable transition effects and return the previous state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    */
   function disableTransitions(elem) {
-    if (getBootstrapMajorVersion() === 3) {
-      const oldState = $.support.transition;
-      $.support.transition = false;
-      return oldState;
-    }
     const oldState = elem.style.transitionDuration;
     elem.style.transitionDuration = '0s';
     return oldState;
@@ -524,15 +513,10 @@ var VuFind = (function VuFind() {
   /**
    * Restore transition effects to the given state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    * @param {(string|boolean)} state State from previous call to disableTransitions
    */
   function restoreTransitions(elem, state) {
-    if (getBootstrapMajorVersion() === 3) {
-      $.support.transition = state;
-      return;
-    }
-
     elem.style.transitionDuration = state;
   }
 
@@ -633,7 +617,6 @@ var VuFind = (function VuFind() {
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,
     setElementContents: setElementContents,
-    getBootstrapMajorVersion: getBootstrapMajorVersion,
     disableTransitions: disableTransitions,
     restoreTransitions: restoreTransitions,
     inURLSearchParams: inURLSearchParams,
@@ -780,7 +763,12 @@ function getUrlRoot(url) {
   return urlroot;
 }
 
-// Phone number validation
+/**
+ * Phone number validation
+ * @param {String} numID Phone number field ID
+ * @param {String} regionCode Region code
+ * @deprecated See validation.js for replacement
+ */
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
@@ -791,33 +779,28 @@ function phoneNumberFormHandler(numID, regionCode) {
     } else {
       valid = VuFind.translate('libphonenumber_invalid');
     }
-    $(phoneInput).siblings('.help-block.with-errors').html(valid);
-    $(phoneInput).closest('.form-group').addClass('sms-error');
+    phoneInput.setCustomValidity(valid);
     return false;
   } else {
-    $(phoneInput).closest('.form-group').removeClass('sms-error');
-    $(phoneInput).siblings('.help-block.with-errors').html('');
+    phoneInput.setCustomValidity('');
   }
 }
 
 // Setup captchas after Google script loads
-function recaptchaOnLoad() {
+function recaptchaOnLoad(_context) {
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = document.querySelectorAll('.g-recaptcha:empty');
-    for (var i = 0; i < captchas.length; i++) {
-      var captchaElement = captchas[i];
-      var captchaData = captchaElement.dataset;
-      var captchaId = grecaptcha.render(captchaElement, captchaData);
-      captchaElement.dataset.captchaId = captchaId;
-    }
+    const context = typeof _context === "undefined" ? document : _context;
+    context.querySelectorAll('.g-recaptcha:empty').forEach((captchaElement) => {
+      captchaElement.dataset.captchaId = grecaptcha.render(captchaElement, captchaElement.dataset);
+    });
   }
 }
 
-function resetCaptcha($form) {
+function resetCaptcha(target) {
   if (typeof grecaptcha !== 'undefined') {
-    var captcha = $form.find('.g-recaptcha');
-    if (captcha.length > 0) {
-      grecaptcha.reset(captcha.data('captchaId'));
+    const captcha = target.querySelector('.g-recaptcha');
+    if (captcha) {
+      grecaptcha.reset(captcha.dataset.captchaId);
     }
   }
 }
@@ -873,7 +856,7 @@ function unwrapJQuery(node) {
 }
 
 function setupJumpMenus(_container) {
-  var container = unwrapJQuery(_container || document.body);
+  var container = _container || document.body;
   var selects = container.querySelectorAll('select.jumpMenu');
   selects.forEach((select) => {
     select.addEventListener('change', function jumpMenu() {

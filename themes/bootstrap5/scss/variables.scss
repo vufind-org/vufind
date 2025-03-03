@@ -1,15 +1,18 @@
-/* #LESS>
-// Cookie consent dialog should have a z-index low enough to stay below dropdowns and modals
-$zindex-cookie-consent: ($zindex-dropdown - 10);
+// Colors
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
 
-// Variables used in Sidebar Menu Lists
-$myresearch-menu-ul-margin-bottom: 0;
-$myresearch-menu-ul-padding-left: 0;
-<#LESS */
-/* #SCSS> */
 // Cookie consent dialog should have a z-index low enough to stay below dropdowns and modals
 $zindex-cookie-consent: ($zindex-dropdown - 10) !default;
 
-$myresearch-menu-ul-margin-bottom: 0 !default;
-$myresearch-menu-ul-padding-left: 0 !default;
-/* <#SCSS */
+$myresearch-menu-ul-margin-bottom:  0 !default;
+$myresearch-menu-ul-padding-left:   0 !default;
+
+$nav-link-hover-bg:       $gray-lighter !default;
+
+$alert-default-bg: #f5f5f5 !default;
+$alert-default-border-color: darken($alert-default-bg, 7%) !default;

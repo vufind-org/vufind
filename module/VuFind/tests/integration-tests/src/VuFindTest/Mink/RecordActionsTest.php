@@ -98,6 +98,25 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Open the login modal before adding a comment.
+     *
+     * @param string Element $page Page element
+     *
+     * @return void
+     */
+    protected function openCommentsLoginModal(Element $page): void
+    {
+        $this->waitForPageLoad($page);
+        $this->assertEquals(// Can Comment?
+            'You must be logged in first',
+            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
+        );
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->findCss($page, $this->openModalSelector); // Lightbox open
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
+    }
+
+    /**
      * Test adding comments on records.
      *
      * @return void
@@ -107,17 +126,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        // TODO Rewrite for comment and login coming
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
-        $this->assertEquals(// Can Comment?
-            'You must be logged in first',
-            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
-        );
-        $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, $this->openModalSelector); // Lightbox open
-        $this->findCss($page, '.modal [name="username"]');
         // Create new account
+        $this->openCommentsLoginModal($page);
         $this->makeAccount($page, 'username1');
         $this->waitForLightboxHidden();
         // Make sure page updated for login
@@ -161,17 +173,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        // TODO Rewrite for comment and login coming
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
-        $this->assertEquals(// Can Comment?
-            'You must be logged in first',
-            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
-        );
-        $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, $this->openModalSelector); // Lightbox open
-        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Log in to existing account
+        $this->openCommentsLoginModal($page);
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Make sure page updated for login
@@ -702,32 +707,30 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // - too empty
         $this->findCssAndSetValue($page, '.modal #sms_to', '');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too short
         $this->findCssAndSetValue($page, '.modal #sms_to', '123');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too long
         $this->findCssAndSetValue($page, '.modal #sms_to', '12345678912345678912345679');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too lettery
         $this->findCssAndSetValue($page, '.modal #sms_to', '123abc');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - just right
         $this->findCssAndSetValue($page, '.modal #sms_to', '8005555555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
-        $this->assertNull($page->find('css', '.modal .sms-error'));
+        $this->checkFieldIsValid($page, '.modal #sms_to');
 
-        $this->unFindCss($page, '.modal .sms-error');
         // - pretty just right
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
-        $this->assertNull($page->find('css', '.modal .sms-error'));
-        $this->unFindCss($page, '.modal .sms-error');
+        $this->checkFieldIsValid($page, '.modal #sms_to');
         // Send text to false number
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $this->findCss($page, '.modal #sms_provider option');
