@@ -43,24 +43,21 @@ VuFind.register('pubdateVis', function pubdateVis() {
     const maxSelectionInput = document.getElementById('datevis' + facetName + '-to');
 
     // check if the min and max value have been set otherwise set them to the border of the data
+    const dataMin = data.data[0][0];
     if (data.selectionMin === undefined) {
-      data.selectionMin = data.data[0][0];
+      data.selectionMin = dataMin;
     }
     const initSelectionMin = parseInt(data.selectionMin, 10);
-    const totalSelectionMin = initSelectionMin - _graphMargin;
+    const totalSelectionMin = (_zooming ? initSelectionMin : dataMin) - _graphMargin;
     minSelectionInput.value = initSelectionMin;
 
+    const dataMax = data.data[data.data.length - 1][0];
     if (data.selectionMax === undefined) {
-      data.selectionMax = data.data[data.data.length - 1][0];
+      data.selectionMax = dataMax;
     }
     const initSelectionMax = parseInt(data.selectionMax, 10);
-    const totalSelectionMax = initSelectionMax + _graphMargin;
+    const totalSelectionMax = (_zooming ? initSelectionMax : dataMax) + _graphMargin;
     maxSelectionInput.value = initSelectionMax;
-
-    if (_zooming && hasFilter) {
-      // filter values out of range
-      data.data = data.data.filter((element) => element[0] >= totalSelectionMin && element[0] <= totalSelectionMax);
-    }
 
     // get an array with all years in range and set count to 0 if missing in data
     const years = Array.from(
