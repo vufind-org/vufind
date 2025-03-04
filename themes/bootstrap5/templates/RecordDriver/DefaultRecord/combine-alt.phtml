@@ -2,7 +2,7 @@
   $values = array_filter(
     [$this->stdValue ?? '', $this->altValue ?? ''],
     fn ($value) => $value !== ''
-);
+  );
   if ($this->prioritizeAlt) {
     $values = array_reverse($values);
   }
