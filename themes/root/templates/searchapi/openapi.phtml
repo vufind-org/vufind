@@ -352,6 +352,19 @@
                     }
                 }
             },
+            "ResumptionToken": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "description": "Token to use for the next request",
+                        "type": "integer"
+                    },
+                    "expires": {
+                        "description": "Timestamp when the token expires",
+                        "type": "string"
+                    }
+                }
+            },
             "<?=$this->modelPrefix?>SearchResponse": {
                 "type": "object",
                 "properties": {
@@ -374,11 +387,7 @@
                         }
                     },
                     "resumptionToken": {
-                        "description": "New resumption token",
-                        "type": "object",
-                        "items": {
-                            "$ref": "#/components/schemas/ResumptionToken"
-                        }
+                        "$ref": "#/components/schemas/ResumptionToken"
                     },
                     "status": {
                         "description": "Status code",
