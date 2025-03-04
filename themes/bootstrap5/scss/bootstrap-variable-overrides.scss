@@ -1,4 +1,4 @@
-// From a11y:
+// These colors ensure proper contrast:
 $primary:         #265680 !default;
 $success:         #028302 !default;
 $info:            #1C5F74 !default;
@@ -17,6 +17,9 @@ $warning-border-subtle:     darken(adjust-hue($warning-bg-subtle, -10), 5%) !def
 
 $danger-bg-subtle:          #f2dede !default;
 $danger-border-subtle:      darken(adjust-hue($danger-bg-subtle, -10), 5%) !default;
+
+$input-border-color:        #888 !default;
+$form-select-border-color:  #888 !default;
 
 $breadcrumb-bg:                     #f5f5f5 !default;
 $breadcrumb-padding-y:              8px !default;
@@ -47,6 +50,8 @@ $form-switch-bg-image-dark:         none !default;
 $navbar-dark-toggler-icon-bg:       none !default;
 $navbar-light-toggler-icon-bg:      none !default;
 
+$enable-caret:                      false !default;
+
 $link-hover-decoration:             underline !default;
 $icon-link-underline-offset:        inherit !default;
 
@@ -60,5 +65,4 @@ $enable-smooth-scroll:              false !default;
 $enable-validation-icons:           false !default;
 $form-select-indicator-padding:     .75rem !default;
 
-$table-bg-accent:                   #f9f9f9 !default;
 $table-striped-bg:                  #f9f9f9 !default;

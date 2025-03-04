@@ -126,7 +126,7 @@
             <div class="keyboard-selection dropdown">
               <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <?=$this->icon('keyboard-o') ?>
-                <?=$this->icon('caret-down') ?>
+                <?=$this->icon('dropdown-caret') ?>
               </button>
               <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">
                 <li>
@@ -143,7 +143,7 @@
         </div>
       </div>
       <?php if ($handlerCount > 1): ?>
-        <select id="searchForm_type" class="searchForm_type form-control form-select" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
+        <select id="searchForm_type" class="searchForm_type form-select" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
           <?php $currentGroup = $insideGroup = false; ?>
           <?php foreach ($handlers as $handler): ?>
             <?php

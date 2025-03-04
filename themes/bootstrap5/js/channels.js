@@ -119,12 +119,14 @@ VuFind.register('channels', function Channels() {
           data: {tab: 'description'}
         })
           .done(function channelPopoverDone(data) {
-            var newContent = '<div class="btn-group btn-group-justified">'
+            var newContent = '<div class="d-flex">'
+              + '<div class="btn-group flex-fill">'
               + '<a href="' + VuFind.path + '/Channels/Record?'
               + 'id=' + encodeURIComponent(record.attr('data-record-id'))
               + '&source=' + encodeURIComponent(record.attr('data-record-source'))
               + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
               + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+              + '</div>'
               + '</div>'
               + data;
             loadingPopover.dispose();

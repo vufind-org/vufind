@@ -21,16 +21,16 @@
   <input type="hidden" name="id" value="<?=$this->newList || empty($listId = $this->list->getId()) ? 'NEW' : $this->escapeHtmlAttr($listId) ?>">
   <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>
   <div class="form-group">
-    <label class="control-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
+    <label class="form-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
     <input id="list_title" class="form-control" type="text" name="title" value="<?=$this->escapeHtmlAttr($this->list->getTitle())?>">
   </div>
   <div class="form-group">
-    <label class="control-label" for="list_desc"><?=$this->transEsc('Description') ?></label>
+    <label class="form-label" for="list_desc"><?=$this->transEsc('Description') ?></label>
     <textarea id="list_desc" class="form-control" name="desc" rows="3"><?=$this->escapeHtml($this->list->getDescription() ?? '')?></textarea>
   </div>
   <?php if ($this->usertags()->getListMode() === 'enabled'): ?>
     <div class="form-group">
-      <label class="control-label" for="list_tags"><?=$this->transEsc('Tags') ?>:</label>
+      <label class="form-label" for="list_tags"><?=$this->transEsc('Tags') ?>:</label>
       <input type="text" name="tags" id="list_tags" class="form-control" value="<?=$this->escapeHtmlAttr($this->listTags)?>">
       <span class="help-block"><?=$this->transEsc('add_tag_note') ?></span>
     </div>
@@ -41,7 +41,7 @@
     <input type="hidden" name="public" value="0">
   <?php else: ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc('Access') ?></label>
+      <label class="form-label"><?=$this->transEsc('Access') ?></label>
       <div class="radio inline">
         <label>
           <input id="list_public_1" type="radio" name="public" value="1"<?php if ($this->list->isPublic()): ?> checked="checked"<?php endif; ?>> <?=$this->transEsc('Public') ?>

@@ -12,14 +12,14 @@
   button.dropdown-toggle:focus,
   &.open > button.dropdown-toggle {
     color: white;
-    background-color: $brand-primary;
-    border-color: $brand-primary;
+    background-color: $primary;
+    border-color: $primary;
     outline: none;
   }
 
   &:not(.open) {
     .activated:not(:hover){
-      background: lighten($brand-primary, 55%);
+      background: lighten($primary, 55%);
     }
   }
 
@@ -32,6 +32,7 @@
 
   #keyboard-selection-button {
     padding: 0 2px 0 4px;
+    border: 0;
     .icon {
       margin: 0;
     }

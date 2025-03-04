@@ -41,7 +41,7 @@
                   <?php if ($allowExclude): ?>
                     <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
                       <?=$this->icon('facet-exclude') ?>
-                      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+                      <span class="visually-hidden"><?=$this->transEsc('exclude_facet') ?></span>
                     </a>
                   <?php endif; ?>
                 <?php endif; ?>
