@@ -32,6 +32,7 @@
 namespace VuFind\RecordDataFormatter\Specs;
 
 use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
+use VuFind\View\Helper\Root\SchemaOrg;
 
 /**
  * EDS RecordDataFormatter specs.
@@ -44,17 +45,18 @@ use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class EDS extends BaseSpecs
+class EDS extends DefaultRecord
 {
     /**
      * Constructor
      *
-     * @param array $edsConfig EDS Config
-     * @param array $config    EDS RecordDataFormatter Config
+     * @param array      $config EDS RecordDataFormatter Config
+     * @param ?SchemaOrg $schemaOrgHelper schema.org helper
+     * @param array      $edsConfig EDS Config
      */
-    public function __construct(protected array $edsConfig, array $config)
+    public function __construct(array $config, protected ?SchemaOrg $schemaOrgHelper, protected array $edsConfig)
     {
-        parent::__construct($config);
+        parent::__construct($config, $schemaOrgHelper);
     }
 
     /**

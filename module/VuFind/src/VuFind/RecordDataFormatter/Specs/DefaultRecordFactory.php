@@ -74,8 +74,8 @@ class DefaultRecordFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('RecordDataFormatter')->toArray();
-        return new $requestedName($schemaOrgHelper, $config);
+        $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
+        return new $requestedName($config, $schemaOrgHelper);
     }
 }
