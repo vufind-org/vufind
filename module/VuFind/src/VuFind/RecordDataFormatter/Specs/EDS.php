@@ -50,9 +50,9 @@ class EDS extends DefaultRecord
     /**
      * Constructor
      *
-     * @param array      $config EDS RecordDataFormatter Config
+     * @param array      $config          EDS RecordDataFormatter Config
      * @param ?SchemaOrg $schemaOrgHelper schema.org helper
-     * @param array      $edsConfig EDS Config
+     * @param array      $edsConfig       EDS Config
      */
     public function __construct(array $config, protected ?SchemaOrg $schemaOrgHelper, protected array $edsConfig)
     {

@@ -369,7 +369,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             $this->validPublisher,
         ];
 
-        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($config, []);
+        $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
+            new \Laminas\View\Helper\HtmlAttributes()
+        );
+        $spec = new \VuFind\RecordDataFormatter\Specs\EDS([], $schemaOrgHelper, $config);
         $results = $driver->getItems($spec->getDefaultCoreSpecs()['itemSpecs']['filter']);
 
         // Verify total number of metadata elements
@@ -396,7 +399,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             $this->validAuthor,
             $this->validPublisher,
         ];
-        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($config, []);
+        $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
+            new \Laminas\View\Helper\HtmlAttributes()
+        );
+        $spec = new \VuFind\RecordDataFormatter\Specs\EDS([], $schemaOrgHelper, $config);
         $results = $driver->getItems($spec->getDefaultResultListSpecs()['itemSpecs']['filter']);
 
         // Verify total number of metadata elements
