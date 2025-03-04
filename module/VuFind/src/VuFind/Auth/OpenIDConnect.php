@@ -146,7 +146,11 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             try {
                 $response = $this->httpService->get($url);
                 if ($response->getStatusCode() !== 200) {
-                    throw new AuthException('Failed to get provider metadata');
+                    $this->logError(
+                        'Failed to get provider metadata: Unexpected status ' . $response->getStatusCode()
+                        . ': ' . $response->getBody()
+                    );
+                    throw new AuthException('authentication_error_technical');
                 }
                 $provider = json_decode($response->getBody());
             } catch (\Exception) {
@@ -200,7 +204,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             }
         }
         if (!empty($missing)) {
-            throw new AuthException('Missing required provider metadata: ' . implode(', ', $missing));
+            $this->logError('Missing required provider metadata: ' . implode(', ', $missing));
+            throw new AuthException('authentication_error_admin');
         }
         return true;
     }
@@ -220,9 +225,10 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         $requiredParams = ['url', 'client_id', 'client_secret'];
         foreach ($requiredParams as $param) {
             if (empty($this->oidcConfig['Default'][$param] ?? null)) {
-                throw new AuthException(
+                $this->logError(
                     'One or more OpenID Connect parameters are missing. Check your OpenIDConnectClient.ini!'
                 );
+                throw new AuthException('authentication_error_admin');
             }
         }
         $this->configValidated = true;
@@ -248,18 +254,21 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         $stateIsValid = $state == $this->session->oidc_state;
         unset($this->session->oidc_state);
         if (!$stateIsValid) {
-            throw new AuthException('authentication_error_admin: bad state');
+            $this->logError("Bad state: $currentState");
+            throw new AuthException('authentication_error_technical');
         }
 
         $claims = $this->decodeJWT($request_token->id_token);
 
         if (!$this->validateIssuer($claims->iss)) {
-            throw new AuthException('authentication_error_admin: wrong issuer');
+            $this->logError('Wrong issuer: ' . $claims->iss);
+            throw new AuthException('authentication_error_admin');
         }
         $claimsValid = $this->verifyJwtClaims($claims);
         unset($this->session->oidc_nonce);
         if (!$claimsValid) {
-            throw new AuthException('authentication_error: not valid claims');
+            $this->logError('Claims not valid');
+            throw new AuthException('authentication_error_technical');
         }
 
         $accessToken = $request_token->access_token;
@@ -399,8 +408,11 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('Cannot get request token: HTTP connection error.');
         }
         if ($response->getStatusCode() !== 200) {
-            $this->logError('Failed to get request token: Unexpected status code ' . $response->getStatusCode());
-            throw new AuthException('Failed to get request token');
+            $this->logError(
+                'Failed to get request token: Unexpected status ' . $response->getStatusCode()
+                . ': ' . $response->getBody()
+            );
+            throw new AuthException('authentication_error_technical');
         }
 
         $json = json_decode($response->getBody());
@@ -430,14 +442,18 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         try {
             $response = $this->httpService->get($url, $params, null, $headers);
         } catch (\Exception $e) {
-            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
-            throw new AuthException('Cannot get user info: HTTP connection error.');
+            $this->logError('Failed to get user info: Request failed: ' . (string)$e);
+            throw new AuthException('authentication_error_technical');
         }
         if ($response->getStatusCode() !== 200) {
             $this->logError('Failed to get user info: Unexpected status code ' . $response->getStatusCode());
-            throw new AuthException('Failed to get user info');
+            throw new AuthException('authentication_error_technical');
         }
-        return json_decode($response->getBody());
+        if (null === ($json = json_decode($response->getBody()))) {
+            $this->logError('Failed to get user info: Unable to decode JSON from response: ' . $response->getBody());
+            throw new AuthException('authentication_error_technical');
+        }
+        return $json;
     }
 
     /**
