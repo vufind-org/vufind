@@ -78,7 +78,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     public function __construct(
         protected CacheManager $cacheManager,
         protected ConfigManager $configManager,
-        protected bool $cacheEnabled
+        protected bool $cacheEnabled = true
     ) {
         $this->setUpCache('default');
     }
@@ -86,7 +86,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Get cache and initialize it, if necessary.
      *
-     * @return ?StorageInterface
+     * @return ?StorageInterface Cache storage interface or null if disabled
      */
     protected function getDownloaderCache(): ?StorageInterface
     {
