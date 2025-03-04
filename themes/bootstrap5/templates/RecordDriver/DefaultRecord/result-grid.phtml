@@ -5,8 +5,7 @@
 */
 $openUrl = $this->openUrl($this->driver, 'results');
 $openUrlActive = $openUrl->isActive();
-$doi = $this->doi($this->driver, 'results');
-$doiActive = $doi->isActive();
+$identifierLinksHtml = $this->identifierLinker($this->driver, 'results');
 // Account for replace_other_urls setting
 $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 $recordLinker = $this->recordLinker($this->results);
@@ -35,13 +34,13 @@ $showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxes
           <?=$this->record($this->driver)->getTitleHtml(80)?>
         </a>
       </h2>
-      <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
+      <?php if ($openUrlActive || $identifierLinksHtml || !empty($urls)): ?>
         <br><br>
         <?php if ($openUrlActive): ?>
           <?=$openUrl->renderTemplate()?><br>
         <?php endif; ?>
-        <?php if ($doiActive): ?>
-          <?=$doi->renderTemplate()?><br>
+        <?php if ($identifierLinksHtml): ?>
+          <?=$identifierLinksHtml?><br>
         <?php endif; ?>
         <?php foreach (is_array($urls) ? $urls : [] as $current): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">

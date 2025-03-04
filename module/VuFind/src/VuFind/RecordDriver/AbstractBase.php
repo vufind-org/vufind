@@ -480,6 +480,17 @@ abstract class AbstractBase implements
     }
 
     /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        // Override this if the RecordDataFormatter view helper should be used to format this record driver's data.
+        return null;
+    }
+
+    /**
      * Try to call the requested method and return null if it is unavailable; this is
      * useful for checking for the existence of get methods for particular types of
      * data without causing fatal errors.

@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Install VuFind'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Install VuFind') . '</li>';
+    $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Install VuFind') . '</li>';
 
     // Set up styles:
     $this->headstyle()->appendStyle(

@@ -1818,6 +1818,16 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        return \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
+    }
+
+    /**
      * Get a field as an array
      *
      * @param string $field Field

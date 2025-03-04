@@ -29,15 +29,20 @@
     // Use escapeHtml for performance (this data shouldn't contain anything that escapeHtmlAttr would be useful with)
     $escapeAttr = $escape;
     $truncate = $this->plugin('truncate');
+    $nodeCount = count($nodes);
     foreach ($nodes as $node) {
       $hasChildren = !empty($node->children);
       $liClasses = [];
+      $openTopLevel = false;
       if ($hasChildren) {
         $liClasses[] = 'hierarchy-tree__parent';
       }
       if ('collection' === $node->type) {
         $liClasses[] = 'hierarchy-tree__collection';
         $icon = 'hierarchy-collection';
+        if ($nodeId === 0 && !$parentNodeId && $nodeCount === 1) {
+          $openTopLevel = true;
+        }
       } else {
         $liClasses[] = 'hierarchy-tree__record';
         $icon = 'hierarchy-record';
@@ -63,13 +68,13 @@
         ++$nodeId;
         $childUlIdEsc = $escapeAttr('hierarchy_' . $context . '_' . $parentNodeId . '_' . $nodeId);
         echo '<button class="hierarchy-tree__toggle-expanded js-toggle-expanded"'
-          . ' aria-expanded="' . ($node->hasSelectedChild ? 'true' : 'false') . '"'
+          . ' aria-expanded="' . ($node->hasSelectedChild || $openTopLevel ? 'true' : 'false') . '"'
           . ' aria-controls="' . $childUlIdEsc . '"'
           // Use node title as button label so that a screen reader can read it as
           // "Expanded <text>" or "Collapsed <text>":
           . ' aria-label="' . $escapeAttr($node->title) . '"'
           . ' data-toggle-aria-expanded'
-          . ' data-default-expanded="' . ($node->hasSelectedChild ? 'true' : 'false') . '"'
+          . ' data-default-expanded="' . ($node->hasSelectedChild || $openTopLevel ? 'true' : 'false') . '"'
           . '>'
           . $icons['hierarchy-expand']
           . $icons['hierarchy-collapse']

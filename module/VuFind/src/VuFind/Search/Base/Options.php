@@ -162,6 +162,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $limitOptions = [];
 
     /**
+     * If result scroller is used.
+     *
+     * @var bool
+     */
+    protected bool $resultScrollerActive = false;
+
+    /**
      * Default view option
      *
      * @var string
@@ -410,6 +417,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->setConfigLoader($configLoader);
 
         $id = $this->getSearchClassId();
+        $baseConfig = $configLoader->get('config');
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
             $sortArray = $facetSettings->AvailableFacetSortOptions[$id]->toArray();
@@ -431,10 +439,17 @@ abstract class Options implements TranslatorAwareInterface
         $searchSettings = $configLoader->get($this->searchIni);
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
         $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        $this->resultScrollerActive = (bool)(
+            $searchSettings->Record->next_prev_navigation
+            ?? $baseConfig->Record->next_prev_navigation
+            ?? false
+        );
         $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
         $this->topPaginatorStyle = $searchSettings->General->top_paginator
             ?? ($this->loadResultsWithJs ? 'simple' : false);
-        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
+
+        $this->initializeHiddenSortOptions($searchSettings);
+
         $this->displayCitationLinksInResults
             = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
         $this->showRestrictedViewWarning = (bool)($searchSettings->General->show_restricted_view_warning ?? false);
@@ -559,6 +574,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * If result scroller is used.
+     *
+     * @return bool
+     */
+    public function resultScrollerActive(): bool
+    {
+        return $this->resultScrollerActive;
+    }
+
+    /**
      * Get the name of the ini file used for configuring facet parameters in this
      * object.
      *
@@ -624,7 +649,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get an array of hidden sort options.
      *
-     * @return array
+     * @return array An array of associative arrays with keys 'label' and 'pattern'
      */
     public function getHiddenSortOptions()
     {
@@ -1318,26 +1343,6 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Configure autocomplete preferences from an .ini file.
-     *
-     * @param ?Config $searchSettings Object representation of .ini file
-     *
-     * @return void
-     */
-    protected function configureAutocomplete(?Config $searchSettings = null)
-    {
-        // Only change settings from current values if they are defined in .ini:
-        $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled
-            ?? $this->autocompleteEnabled;
-        $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
-            ?? $this->autocompleteAutoSubmit;
-        $formattingRules = $searchSettings->Autocomplete->formatting_rule ?? [];
-        if (!is_string($formattingRules) && count($formattingRules) > 0) {
-            $this->autocompleteFormattingRules = $formattingRules->toArray();
-        }
-    }
-
-    /**
      * Get advanced search limits that override the natural sorting to
      * display at the top.
      *
@@ -1404,5 +1409,46 @@ abstract class Options implements TranslatorAwareInterface
     public function showRestrictedViewWarning(): bool
     {
         return $this->showRestrictedViewWarning ?? false;
+    }
+
+    /**
+     * Configure autocomplete preferences from an .ini file.
+     *
+     * @param ?Config $searchSettings Object representation of .ini file
+     *
+     * @return void
+     */
+    protected function configureAutocomplete(?Config $searchSettings = null)
+    {
+        // Only change settings from current values if they are defined in .ini:
+        $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled
+            ?? $this->autocompleteEnabled;
+        $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
+            ?? $this->autocompleteAutoSubmit;
+        $formattingRules = $searchSettings->Autocomplete->formatting_rule ?? [];
+        if (!is_string($formattingRules) && count($formattingRules) > 0) {
+            $this->autocompleteFormattingRules = $formattingRules->toArray();
+        }
+    }
+
+    /**
+     * Initialize hidden sort options by combining the settings into a single array
+     *
+     * @param ?Config $searchSettings Search configuration
+     *
+     * @return void
+     */
+    protected function initializeHiddenSortOptions(?Config $searchSettings): void
+    {
+        $this->hiddenSortOptions = [];
+        $hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
+        $hiddenSortOptionLabels = $searchSettings?->HiddenSorting?->label?->toArray() ?? [];
+        foreach ($hiddenSortOptions as $key => $pattern) {
+            $label = (string)($hiddenSortOptionLabels[$key] ?? $key);
+            $this->hiddenSortOptions[] = [
+                'label' => ctype_digit($label) ? null : $label,
+                'pattern' => $pattern,
+            ];
+        }
     }
 }

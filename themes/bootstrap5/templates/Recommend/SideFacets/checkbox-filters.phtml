@@ -8,7 +8,7 @@
   <div class="facet<?=$current['selected'] ? ' active' : ''?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
     <a class="checkbox-filter icon-link<?=$isHidden ? ' hidden' : '' ?>" href="<?=$href ?>">
       <?php if ($current['selected']): ?>
-        <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
+        <span class="visually-hidden"><?=$this->transEsc('clear_tag_filter') ?></span>
       <?php endif; ?>
 
       <?= $this->icon($current['selected'] ? 'facet-checked' : 'facet-unchecked', [

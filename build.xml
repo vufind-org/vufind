@@ -654,6 +654,7 @@
 
     <phingcall target="import_biblios" />
     <phingcall target="import_authorities" />
+    <phingcall target="import_website" />
     <phingcall target="delete_fake_records" />
     <phingcall target="build_alphabrowse" />
   </target>
@@ -939,6 +940,20 @@ return [
         </foreach>
       </then>
     </if>
+  </target>
+
+  <!-- Import website data -->
+  <target name="import_website" description="import web index data">
+    <exec executable="php" checkreturn="true" passthru="true">
+      <arg line="${srcdir}/import/import-xsl.php ${srcdir}/tests/data/website/solr.xml raw.properties --index SolrWeb" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
+    <exec executable="php" checkreturn="true" passthru="true">
+      <arg line="${srcdir}/util/commit.php SolrWeb" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
   </target>
 
   <!-- Delete some fake record IDs so we have deleted records to test with -->

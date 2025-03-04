@@ -7,7 +7,7 @@
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'saved_items';
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile('check_item_statuses.js');
