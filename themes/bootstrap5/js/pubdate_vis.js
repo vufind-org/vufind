@@ -3,6 +3,7 @@ VuFind.register('pubdateVis', function pubdateVis() {
 
   let _zooming = false;
   let _initiallyHideControls = false;
+  const _stepSizes = [1, 2, 5, 10, 25, 50, 100, 200, 500, 1000];
   const _graphMargin = 5;
   const _cssColorSettings = {
     // background of box
@@ -12,7 +13,7 @@ VuFind.register('pubdateVis', function pubdateVis() {
     // box outline color
     'stroke': '#265680',
     // selection color
-    'outline-color': '#c38835'
+    'outline-color': '#0873c655'
   };
 
 
@@ -171,6 +172,13 @@ VuFind.register('pubdateVis', function pubdateVis() {
       };
     }
 
+    let stepSize = 1;
+    let range = years.length;
+    for (let i = 0; i < _stepSizes.length; i++) {
+      stepSize = _stepSizes[i];
+      if (range / stepSize < 15) break;
+    }
+
     // init chart
     const chart = new Chart(chartCanvas, {
       type: 'bar',
@@ -201,18 +209,22 @@ VuFind.register('pubdateVis', function pubdateVis() {
           x: {
             position: 'top',
             ticks: {
-              padding: 0,
-              autoSkip: true,
-              maxTicksLimit: 10,
+              callback: function(value, index) {
+                let year = years[index];
+                return year % stepSize === 0 ? year : null;
+              },
+              stepSize: 1,
+              autoSkip: false,
             },
             grid: {
-              display: false
+              display: true,
+              drawTicks: true
             }
           },
           y: {
             display: false,
           },
-        }
+        },
       },
       plugins: [drawSelectionPlugin]
     });
