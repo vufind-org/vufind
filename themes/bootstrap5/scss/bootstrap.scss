@@ -244,6 +244,13 @@ h3 { font-size: 16px; }
   width: 10000px;
 }
 
+// Ensure that the containers in main content have proper height so that the footer doesn't extend below them
+.main {
+  .container, .container-fluid {
+    @include clearfix();
+  }
+}
+
 footer {
   @extend .container;
   padding: 1rem;
