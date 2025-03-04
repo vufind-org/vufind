@@ -30,6 +30,7 @@
 namespace VuFind\String;
 
 use function array_key_exists;
+use function in_array;
 
 /**
  * Class for a string with additional properties.
@@ -138,6 +139,23 @@ class PropertyString implements PropertyStringInterface
     public function isHtmlTrusted(): ?bool
     {
         return $this['__trustedHtml'];
+    }
+
+    /**
+     * Add an identifier
+     *
+     * @param string $id Identifier
+     *
+     * @return static
+     */
+    public function addId(string $id): static
+    {
+        $ids = $this->getIds() ?? [];
+        if (!in_array($id, $ids)) {
+            $ids[] = $id;
+            $this->setIds($ids);
+        }
+        return $this;
     }
 
     /**

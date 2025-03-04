@@ -66,25 +66,28 @@ class EscapeOrCleanHtml extends AbstractHelper
     /**
      * Invoke this helper: escape a value
      *
-     * @param ?string $value     Value to escape
-     * @param ?string $fieldType Field type (for fields that allow sanitized HTML)
-     * @param ?bool   $allowHtml Whether to allow sanitized HTML if passed a PropertyString
-     * @param string  $context   Rendering context for cleaning HTML
+     * @param ?string $value            Value to escape
+     * @param ?string $dataContext      Data context (for fields that allow sanitized HTML)
+     * @param ?bool   $allowHtml        Whether to allow sanitized HTML if passed a PropertyString
+     * @param string  $renderingContext Rendering context for cleaning HTML
      *
      * @return mixed Given a string, returns an escaped string, otherwise returns self
      */
     public function __invoke(
         $value = null,
-        ?string $fieldType = null,
+        ?string $dataContext = null,
         ?bool $allowHtml = null,
-        string $context = 'default'
+        string $renderingContext = 'default'
     ) {
         if (null === $value) {
             return $this;
         }
         if ($value instanceof PropertyStringInterface) {
-            if (($allowHtml ?? ($fieldType && ($this->htmlContexts[$fieldType] ?? false))) && $html = $value->getHtml()) {
-                return $value->isHtmlTrusted() ? $html : ($this->cleanHtml)($html, context: $context);
+            if (
+                ($allowHtml ?? ($dataContext && ($this->htmlContexts[$dataContext] ?? false)))
+                && $html = $value->getHtml()
+            ) {
+                return $value->isHtmlTrusted() ? $html : ($this->cleanHtml)($html, context: $renderingContext);
             }
             $value = (string)$value;
         }

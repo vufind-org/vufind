@@ -92,6 +92,15 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     public function isHtmlTrusted(): ?bool;
 
     /**
+     * Add an identifier
+     *
+     * @param string $id Identifier
+     *
+     * @return static
+     */
+    public function addId(string $id): static;
+
+    /**
      * Set identifiers
      *
      * @param array $ids Identifiers
