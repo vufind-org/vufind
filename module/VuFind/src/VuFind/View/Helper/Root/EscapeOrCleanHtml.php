@@ -45,11 +45,11 @@ use VuFind\String\PropertyStringInterface;
 class EscapeOrCleanHtml extends AbstractHelper
 {
     /**
-     * Field types that allow HTML
+     * Contexts that allow HTML
      *
      * @var array
      */
-    protected array $htmlFields;
+    protected array $htmlContexts;
 
     /**
      * Constructor
@@ -60,7 +60,7 @@ class EscapeOrCleanHtml extends AbstractHelper
      */
     public function __construct(protected Escaper $escaper, protected CleanHtml $cleanHtml, array $config)
     {
-        $this->htmlFields = (array)($config['HTML_Fields'] ?? []);
+        $this->htmlContexts = (array)($config['Allowed_HTML_Contexts'] ?? []);
     }
 
     /**
@@ -83,8 +83,8 @@ class EscapeOrCleanHtml extends AbstractHelper
             return $this;
         }
         if ($value instanceof PropertyStringInterface) {
-            if (($allowHtml ?? ($fieldType && ($this->htmlFields[$fieldType] ?? false))) && $html = $value->getHtml()) {
-                return $value->getHtmlTrusted() ? $html : ($this->cleanHtml)($html, context: $context);
+            if (($allowHtml ?? ($fieldType && ($this->htmlContexts[$fieldType] ?? false))) && $html = $value->getHtml()) {
+                return $value->isHtmlTrusted() ? $html : ($this->cleanHtml)($html, context: $context);
             }
             $value = (string)$value;
         }

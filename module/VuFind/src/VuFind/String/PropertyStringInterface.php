@@ -69,7 +69,7 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
      * Get HTML string
      *
      * Note: This could contain anything and must be sanitized for display unless marked trusted
-     * (see setHtmlTrusted/getHtmlTrusted).
+     * (see setHtmlTrusted/isHtmlTrusted).
      *
      * @return ?string
      */
@@ -89,7 +89,7 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
      *
      * @return ?bool
      */
-    public function getHtmlTrusted(): ?bool;
+    public function isHtmlTrusted(): ?bool;
 
     /**
      * Set identifiers

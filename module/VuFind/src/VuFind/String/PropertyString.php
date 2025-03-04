@@ -108,7 +108,7 @@ class PropertyString implements PropertyStringInterface
      * Get HTML string
      *
      * Note: This could contain anything and must be sanitized for display unless marked trusted
-     * (see setHtmlTrusted/getHtmlTrusted).
+     * (see setHtmlTrusted/isHtmlTrusted).
      *
      * @return ?string
      */
@@ -135,7 +135,7 @@ class PropertyString implements PropertyStringInterface
      *
      * @return ?bool
      */
-    public function getHtmlTrusted(): ?bool
+    public function isHtmlTrusted(): ?bool
     {
         return $this['__trustedHtml'];
     }
