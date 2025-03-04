@@ -225,6 +225,14 @@ VuFind.register('pubdateVis', function pubdateVis() {
             display: false,
           },
         },
+        onClick: (e) => {
+          const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
+          const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
+          const year = years[dataX];
+          minSelectionInput.value = year;
+          maxSelectionInput.value = year;
+          minSelectionInput.dispatchEvent(new Event('input'));
+        }
       },
       plugins: [drawSelectionPlugin]
     });
