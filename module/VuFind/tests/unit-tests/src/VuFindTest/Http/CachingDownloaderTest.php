@@ -76,22 +76,15 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $testCacheKey = md5($testUrl);
 
         // httpService
-        $service = $this->getMockBuilder(HttpService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $response = $this->getMockBuilder(Response::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $service = $this->createMock(HttpService::class);
+        $response = $this->createMock(Response::class);
         $response->expects($this->once())->method('isOk')->willReturn(true);
         $response->expects($this->once())->method('getBody')->willReturn($testBody);
 
         $service->expects($this->once())->method('get')->with($testUrl)->willReturn($response);
 
         // cacheManager
-        $storage = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $storage = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $cacheManagerMock = $container->createMock(\VuFind\Cache\Manager::class);
 
         if ($cacheEnabled) {
@@ -148,18 +141,14 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $testCacheKey = md5($testUrl);
 
         // httpService
-        $service = $this->getMockBuilder(HttpService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $service = $this->createMock(HttpService::class);
         $service->expects($this->once())
             ->method('get')
             ->with($testUrl)
             ->willThrowException(new \Exception('Download failed (404): ' . $testUrl));
 
         // cacheManager
-        $storage = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $storage = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
 
         $storage->expects($this->once())->method('hasItem')->with($testCacheKey)->willReturn(false);
 
