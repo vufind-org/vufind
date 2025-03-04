@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) R-Bit Technology 2018-2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,6 +25,7 @@
  * @package  Authentication
  * @author   Josef Moravec <josef.moravec@gmail.com>
  * @author   Radek Šiman <rbit@rbit.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -53,6 +55,7 @@ use function is_int;
  * @package  Authentication
  * @author   Josef Moravec <josef.moravec@gmail.com>
  * @author   Radek Šiman <rbit@rbit.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -106,12 +109,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         protected array $oidcConfig,
         protected ILSAuthenticator $ilsAuthenticator
     ) {
-        if (empty($this->session->oidc_state)) {
-            $this->session->oidc_state = hash('sha256', random_bytes(32));
-        }
-        if (empty($this->session->oidc_nonce)) {
-            $this->session->oidc_nonce = hash('sha256', random_bytes(32));
-        }
+        $this->initState();
     }
 
     /**
@@ -251,8 +249,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         }
         $request_token = $this->getRequestToken($code);
         $state = $request->getQuery()->get('state');
-        $stateIsValid = $state == $this->session->oidc_state;
-        unset($this->session->oidc_state);
+        $currentState = $this->session->oidc_state;
+        $stateIsValid = $state === $currentState;
+        $this->initState(true);
         if (!$stateIsValid) {
             $this->logError("Bad state: $currentState");
             throw new AuthException('authentication_error_technical');
@@ -388,8 +387,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         if (in_array('client_secret_basic', $authMethods) || null === $authMethods) {
             $headers = [
                 'Authorization: Basic ' . base64_encode(
-                    urlencode($this->getConfig('client_id')) . ':'
-                    . urlencode($this->getConfig('client_secret'))
+                    $this->getConfig('client_id') . ':'
+                    . $this->getConfig('client_secret')
                 ),
             ];
             unset($params['client_secret']);
@@ -474,7 +473,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         [$headerEncoded] = explode('.', $jwt);
         $header = json_decode(base64_decode(strtr($headerEncoded, '-_', '+/')));
-        $key = JWK::parseKey($this->getJwk($header->kid), $header->alg);
+        $key = JWK::parseKey($this->getJwk($header->kid ?? null), $header->alg);
         return JWT::decode($jwt, $key);
     }
 
@@ -552,8 +551,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
                 throw new AuthException('Failed to get JWKs');
             }
             $jwks = json_decode($response->getBody(), true);
-            foreach ($jwks['keys'] as $jwk) {
-                $this->jwks[$jwk['kid']] = $jwk;
+            foreach ($jwks['keys'] as $i => $jwk) {
+                $this->jwks[$jwk['kid'] ?? $i] = $jwk;
             }
         }
         return $this->jwks;
@@ -562,13 +561,38 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Get JWK data
      *
-     * @param string $kid Key id
+     * @param ?string $kid Key id or null for first (default)
      *
      * @return array
      * @throws AuthException
      */
-    protected function getJwk(string $kid): array
+    protected function getJwk(?string $kid): array
     {
-        return $this->getJwks()[$kid];
+        $jwks = $this->getJwks();
+        if (null !== $kid) {
+            if (!isset($jwks[$kid])) {
+                $this->logError("JWK '$kid' not found");
+                throw new AuthException('authentication_error_technical');
+            }
+            return $jwks[$kid];
+        }
+        return reset($jwks);
+    }
+
+    /**
+     * Initialize OIDC state and nonce
+     *
+     * @param bool $resetState Reset existing state?
+     *
+     * @return void
+     */
+    protected function initState(bool $resetState = false): void
+    {
+        if ($resetState || empty($this->session->oidc_state)) {
+            $this->session->oidc_state = hash('sha256', random_bytes(32));
+        }
+        if (empty($this->session->oidc_nonce)) {
+            $this->session->oidc_nonce = hash('sha256', random_bytes(32));
+        }
     }
 }
