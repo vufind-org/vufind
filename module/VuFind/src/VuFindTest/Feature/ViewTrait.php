@@ -29,6 +29,12 @@
 
 namespace VuFindTest\Feature;
 
+use Laminas\Cache\Storage\Adapter\AdapterOptions;
+use Laminas\Cache\Storage\StorageInterface;
+use Psr\Container\ContainerInterface;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\View\Helper\Root\CleanHtml;
+use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
 
 /**
@@ -103,5 +109,40 @@ trait ViewTrait
                 ->willReturn(-123);
         }
         return new \VuFind\View\Helper\Root\SearchMemory($memory);
+    }
+
+    /**
+     * Create the cleanHtml helper
+     *
+     * @return CleanHtml
+     */
+    protected function createCleanHtmlHelper(): CleanHtml
+    {
+        // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
+        $cacheOptions = new class () extends AdapterOptions {
+            /**
+             * Get cache dir
+             *
+             * @return string
+             */
+            public function getCacheDir(): string
+            {
+                return '';
+            }
+        };
+        $cache = $this->createMock(StorageInterface::class);
+        $cache->expects($this->any())
+            ->method('getOptions')
+            ->willReturn($cacheOptions);
+        $cacheManager = $this->createMock(CacheManager::class);
+        $cacheManager->expects($this->any())
+            ->method('getCache')
+            ->willReturn($cache);
+        $container = $this->createMock(ContainerInterface::class);
+        $container->expects($this->any())
+            ->method('get')
+            ->with(CacheManager::class)
+            ->willReturn($cacheManager);
+        return (new CleanHtmlFactory())($container, CleanHtml::class);
     }
 }
