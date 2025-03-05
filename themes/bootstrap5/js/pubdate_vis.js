@@ -218,7 +218,8 @@ VuFind.register('pubdateVis', function pubdateVis() {
             },
             grid: {
               display: true,
-              drawTicks: true
+              drawTicks: false,
+              offset: false,
             }
           },
           y: {
