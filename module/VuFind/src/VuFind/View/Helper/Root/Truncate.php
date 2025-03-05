@@ -49,10 +49,9 @@ class Truncate extends AbstractHelper
      * Note that any PropertyString with a plain string value that exceeds the maximum length is converted to a plain
      * string before truncation. This means that the returned value is a plain string without e.g. any HTML content.
      *
-     * @param string|PropertyStringInterface $str    the string to be truncated
-     * @param string                         $len    how long the truncated string will be
-     * @param string                         $append what to add to the end of the string to
-     * indicate it's been truncated
+     * @param string|PropertyStringInterface $str    The string to be truncated
+     * @param int                            $len    Maximum length of the resulting string
+     * @param string                         $append Truncation indicator to append to truncated strings
      *
      * @return string|PropertyStringInterface
      */
