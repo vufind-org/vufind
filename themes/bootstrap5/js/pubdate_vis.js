@@ -307,10 +307,15 @@ VuFind.register('pubdateVis', function pubdateVis() {
     fetch(VuFind.path + '/AJAX/json?method=getVisData&facetFields=' + facetFields + '&' + searchParams).then(
       response => response.json()
     ).then(
-      data => Object
-        .entries(data.data.facets)
-        .forEach(([key, val]) => initRangeSlider(key, val))
-    );
+      data => {
+        if (data.data.facets === undefined) {
+          throw data.data;
+        }
+        return Object.entries(data.data.facets).forEach(([key, val]) => initRangeSlider(key, val));
+      }
+    ).catch((error) => {
+      console.error("Could not create pubDateVis recommendation: " + error);
+    });
   }
 
   return { init };
