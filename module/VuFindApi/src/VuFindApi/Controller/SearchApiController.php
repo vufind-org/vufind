@@ -419,7 +419,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         unset($request['page']);
         // Always discard cursors from requests
         $request['cursor'] = 0;
-        if ('true' !== $request['resumptionToken']) {
+        if ('*' !== $request['resumptionToken']) {
             // Try to load a resumption token for this request
             $resumptionTokenParams = $this->loadResumptionToken($request['resumptionToken']);
             if (null === $resumptionTokenParams) {
