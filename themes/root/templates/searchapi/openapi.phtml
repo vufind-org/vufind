@@ -200,6 +200,14 @@
                             "default": 20
                         }
                     },
+                    {
+                        "name": "resumptionToken",
+                        "in": "query",
+                        "description": "A large result set can only be downloaded in batches. You can initiate a batch download by setting resumptionToken to a single asterisk `*`. Each batch will then return a resumptionToken value to use for the next batch until no more results are available (note that the last result set can be empty). Other parameters are ignored when resumptionToken is set to any other value than `*`. The following parameters are not available with resumptionToken: limit, page, facet[].",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
 <?=$commonFields ?>
                 ],
                 "tags": [
@@ -343,6 +351,20 @@
                     }
                 }
             },
+            "ResumptionToken": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "description": "Token to use for the next request",
+                        "type": "string"
+                    },
+                    "expires": {
+                        "description": "Time when the token expires",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
             "<?=$this->modelPrefix?>SearchResponse": {
                 "type": "object",
                 "properties": {
@@ -363,6 +385,9 @@
                         "items": {
                             "$ref": "#/components/schemas/Facet"
                         }
+                    },
+                    "resumptionToken": {
+                        "$ref": "#/components/schemas/ResumptionToken"
                     },
                     "status": {
                         "description": "Status code",
