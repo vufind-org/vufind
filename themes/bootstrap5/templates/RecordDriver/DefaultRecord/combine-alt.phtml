@@ -1,11 +1,11 @@
 <?php
-  $values = array_filter(
+$values = array_filter(
     [$this->stdValue ?? '', $this->altValue ?? ''],
     fn ($value) => $value !== ''
-  );
-  if ($this->prioritizeAlt) {
-    $values = array_reverse($values);
-  }
+);
+if ($this->prioritizeAlt) {
+  $values = array_reverse($values);
+}
 ?>
 <?php foreach ($values as $value): ?>
   <div>
