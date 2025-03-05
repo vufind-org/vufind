@@ -6,6 +6,7 @@ $values = array_filter(
 if ($this->prioritizeAlt) {
   $values = array_reverse($values);
 }
+// We don't have to escape the values here, because the original data has already been rendered and escaped.
 ?>
 <?php foreach ($values as $value): ?>
   <div>
