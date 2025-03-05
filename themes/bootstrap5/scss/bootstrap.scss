@@ -634,7 +634,7 @@ body.rtl .dropdown-menu {
 #dateVisColorSettings {
   background-color: #fff;   // background of box
   outline-color: #0873c655; // selection color
-  fill: #eee;               // fillColor
+  fill: $primary;           // fillColor
   stroke: $primary;         // color
 }
 
