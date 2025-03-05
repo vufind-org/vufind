@@ -211,7 +211,8 @@ class Memory
     public function getCurrentSearchId(): ?int
     {
         $sid = $this->request->getQuery('sid')
-            ?? $this->request->getPost('sid');
+            ?? $this->request->getPost('sid')
+            ?? $this->request->getQuery('edit');
         return intval($sid) ?: null;
     }
 
