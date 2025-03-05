@@ -210,6 +210,7 @@ class Memory
      */
     public function getCurrentSearchId(): ?int
     {
+        // 'edit' query parameter is added for advanced search legacy template support
         $sid = $this->request->getQuery('sid')
             ?? $this->request->getPost('sid')
             ?? $this->request->getQuery('edit');
