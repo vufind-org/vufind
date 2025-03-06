@@ -43,6 +43,13 @@ use Psr\Container\ContainerInterface;
 class UserFactory extends \VuFind\Db\Row\UserFactory
 {
     /**
+     * Class name for private user class.
+     *
+     * @var string
+     */
+    protected $privateUserClass = __NAMESPACE__ . '\PrivateUser';
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
