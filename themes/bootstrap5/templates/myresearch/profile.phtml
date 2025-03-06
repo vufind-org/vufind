@@ -42,7 +42,7 @@
               $selected = $this->profile['home_library'] ?? ' ** ';
             ?>
             <form id="profile_form" class="form-inline" method="post">
-              <select id="home_library" name="home_library" class="form-control form-select">
+              <select id="home_library" name="home_library" class="form-select">
                 <option value=""<?='' === $selected ? ' selected="selected"' : ''?>>
                   <?=$this->transEsc('preferred_library_default')?>
                 </option>

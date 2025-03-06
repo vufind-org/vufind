@@ -8,7 +8,7 @@
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2>
-    <div class="odbrand pull-left">
+    <div class="odbrand float-start">
         <img class="media-left" alt="OverDrive" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
     </div>
     <?=$this->transEsc('od_content')?>
@@ -81,7 +81,7 @@
           <?php endif; ?>
 
           <div> <?=$this->transEsc('od_expires_on', ['%%due_date%%' => $resource['checkout']->expires])?></div>
-          <div class="pull-right">
+          <div class="float-end">
             <?php if ($resource['checkout']->isReturnable): ?>
               <a
                 class="btn btn-warning icon-link returnTitle"
@@ -170,7 +170,7 @@
                   <?=$this->transEsc('od_hold_email', ['%%holdEmailAddress%%' => $resource['hold']->emailAddress]);?>
                 <?php endif; ?>
 
-                <div class="pull-right">
+                <div class="float-end">
                   <div class="btn-group">
                     <button class="btn btn-primary "
                             type="button" id="dropdownMenu1"

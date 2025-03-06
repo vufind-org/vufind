@@ -12,12 +12,12 @@
 
     .noUi-connect {
       background: #CCC;
-      box-shadow:inset 0 -1px 0 rgba(0,0,0,0.3);
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.3);
     }
 
     .noUi-handle {
-      background: $brand-primary;
-      border: 1px solid $brand-primary;
+      background: $primary;
+      border: 1px solid $primary;
       width: 20px;
       height: 20px;
       box-shadow: none;
@@ -28,11 +28,11 @@
       }
 
       &:hover,&.noUi-active {
-        background:#FFF;
-        border-color:$gray-light;
+        background: #FFF;
+        border-color: $gray-light;
       }
       &.noUi-active {
-        border-color:$brand-primary;
+        border-color: $primary;
       }
     }
   }

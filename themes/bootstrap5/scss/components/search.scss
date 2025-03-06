@@ -3,6 +3,28 @@ $thumbnail-width-small:   60px !default;
 $thumbnail-width-medium: 100px !default;
 $thumbnail-width-large:  160px !default;
 
+// Hide browser's own X button in the search field (Safari, Chrome)
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+// Search forms
+.navbar-form {
+  .form-control, .form-select {
+    display: block;
+    width: 100%;
+
+    @include media-breakpoint-up(sm) {
+      display: inline-block;
+      width: auto;
+    }
+  }
+  .btn {
+    vertical-align: baseline;
+  }
+}
+
 // record result list ol, ul that contains li.result
 .record-list {
   list-style: none;
@@ -36,7 +58,7 @@ $thumbnail-width-large:  160px !default;
     .loading-spinner {
       padding: 2rem;
       background-color: rgba(0,0,0,0.6);
-      border-radius: $border-radius-large;
+      border-radius: $border-radius-lg;
       color: $gray-lighter;
     }
   }
@@ -102,10 +124,10 @@ header .container.navbar { margin-bottom: 0; }
   label {
     flex: none;
     white-space: nowrap;
-    line-height: $input-height-base;
+    line-height: $input-height;
   }
 
-  select.form-control {
+  select.form-select {
     flex: 1 1 0%;
   }
 }
@@ -365,7 +387,9 @@ header .container.navbar { margin-bottom: 0; }
     .result-links { float: right; }
   }
 }
+
 /* ------ EMBEDDED RESULTS STYLE ------ */
+
 .result.embedded {
   .getFull {
     display: block;
@@ -375,10 +399,12 @@ header .container.navbar { margin-bottom: 0; }
   }
   .getFull.expanded {
     @extend .list-group-item;
+
     margin-top: -11px;
-    padding-left: .5rem;
-    border-top-left-radius: $border-radius-base;
-    border-top-right-radius: $border-radius-base;
+    margin-bottom: -1px;
+    padding: 10px 15px 10px 0.5rem;
+    border: 1px solid #ddd;
+
     &::before {
       content: '\25BC';
       position: absolute;
@@ -395,10 +421,10 @@ header .container.navbar { margin-bottom: 0; }
   .long-view {
     margin-left: -.5rem;
     padding: .5rem;
-    border: 1px solid $list-group-border;
+    border: 1px solid $list-group-border-color;
     background-color: #fff;
-    border-bottom-left-radius: $border-radius-base;
-    border-bottom-right-radius: $border-radius-base;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
   }
   .long-view .tab-content { padding: 0; }
   .list-tabs { margin-bottom: 0; }
@@ -689,7 +715,7 @@ header .container.navbar { margin-bottom: 0; }
 .reset-filters-btn,
 .clear-selection {
   border: 0;
-  color: #555;
+  color: $gray-dark;
   text-decoration: none;
   background-color: rgba(0,0,0,.05);
   border-radius: 4px;
@@ -705,7 +731,7 @@ header .container.navbar { margin-bottom: 0; }
   gap: 0.25rem;
   margin-bottom: 4px;
   margin-top: 4px;
-  padding: .5rem 1rem;
+  padding: $btn-padding-y $btn-padding-x;
 }
 .reset-filters-btn {
   flex: none;
@@ -714,6 +740,7 @@ header .container.navbar { margin-bottom: 0; }
 .toolbar-btn {
   display: inline-block;
   vertical-align: middle;
+  border: 1px solid rgba(0 0 0 / 0.1);
 }
 
 .clear-selection{
@@ -896,9 +923,9 @@ table.search-history-table {
     span {
       border: 0;
       padding: 0;
-      color: $text-color;
+      color: $body-color;
       &:hover {
-        color: $text-color;
+        color: $body-color;
         background-color: transparent;
       }
     }

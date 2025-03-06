@@ -120,7 +120,7 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
     .on("click", function deleteGroupHandler() {
       return deleteGroup($(this).data('nextGroup'));
     });
-  $newGroup.find('select.form-control')
+  $newGroup.find('.adv-group-match select')
     .attr('id', 'search_bool' + nextGroup)
     .attr('name', 'bool' + nextGroup + '[]');
   $newGroup.find('.search_bool')

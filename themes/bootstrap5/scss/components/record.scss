@@ -108,10 +108,27 @@
 }
 
 /* ------ Tags ------ */
+$tag-color:                       $body-color !default;
+$tag-bg:                          $body-bg !default;
+$tag-border-color:                #ccc !default;
+$tag-badge-color:                 $body-bg !default;
+$tag-badge-bg:                    $body-color !default;
+$tag-badge-border-color:          #ccc !default;
+
+$tag-selected-color:              color-contrast($primary) !default;
+$tag-selected-bg:                 $primary !default;
+$tag-selected-border-color:       shade-color($tag-selected-bg, $btn-active-bg-shade-amount) !default;
+$tag-selected-badge-color:        $gray-darker !default;
+$tag-selected-badge-bg:           #fff !default;
+$tag-selected-badge-border-color: #ccc !default;
+
+$tag-add-badge-color:             $success !default;
+$tag-remove-badge-color:          #a94442 !default;
+
 .tag-record {
   float: right;
   margin: 2px 0 1rem 1rem;
-  padding: $padding-base-vertical $padding-base-horizontal;
+  padding: $btn-padding-y-sm $btn-padding-x;
 
   &:hover {
     text-decoration: none;
@@ -119,47 +136,63 @@
 
   @include media-breakpoint-down(sm) {
     margin-left: 0.5rem;
-    padding: $padding-base-vertical calc(#{$padding-base-horizontal} / 2);
+    padding: $btn-padding-y-sm $btn-padding-x-sm;
   }
 }
 
-.tagList button {
-  margin-top: 0;
-  padding-top: 0;
-  padding-bottom: 4px;
-  font-size: 95%;
-  vertical-align: initial;
-}
-.tagList .tag .badge {
-  margin: 0;
-  padding: 3px 7px;
-  font-weight: normal;
-}
 .tagList {
+  button {
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 4px;
+    font-size: 95%;
+    vertical-align: initial;
+  }
+
   .tag {
     display: inline-block;
     margin: 2px 1px 1px;
-    border: 1px solid $btn-default-border;
-    // Use bootstrap mixin to make tags look like buttons
-    @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $border-radius-base);
+    background-color: $tag-bg;
+    border: 1px solid $tag-border-color;
+    padding: var(--#{$prefix}btn-padding-y) var(--#{$prefix}btn-padding-x);
+    // Use bootstrap mixins to make tags look like buttons
+    @include border-radius(var(--#{$prefix}btn-border-radius));
+    @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $font-size-base, $border-radius);
+
+    a {
+      color: $tag-color;
+    }
+    .badge {
+      color: $tag-badge-color;
+      background-color: $tag-badge-bg;
+      border-color: $tag-badge-border-color;
+      margin: 0;
+      padding: 3px 7px;
+      font-weight: normal;
+    }
+
     &.selected {
-      background-color: $btn-primary-bg;
-      border-color: $btn-primary-border;
-      a { color: #fff; }
+      background-color: $tag-selected-bg;
+      border-color: $tag-selected-border-color;
+      a {
+        color: $tag-selected-color;
+      }
       .badge {
-        color: $gray-darker;
-        background-color: #fff;
-        &:hover { color: #a94442; }
+        color: $tag-selected-badge-color;
+        background-color: $tag-selected-badge-bg;
+        &:hover {
+          color: $tag-remove-badge-color;
+        }
       }
     }
 
-    .badge .fa { width: 12px; }
+    .badge .icon { width: 12px; }
     .icon--img { font-size: 0.625rem; }
   }
   button { border: 0; }
   .tag-form { display: inline; }
 }
-.tagList.loggedin .tag:not(.selected) .badge:hover { background-color: $brand-success; }
+.tagList.loggedin .tag:not(.selected) .badge:hover { background-color: $tag-add-badge-color; }
 
 
 .staff-view .pace-car {
@@ -308,7 +341,7 @@
 
   /* Set default star color */
   .rating__icon--star {
-    color: $brand-warning;
+    color: $warning;
   }
 
   /* If any input is checked, make its following siblings grey */
@@ -321,7 +354,7 @@
   {
     &:hover .rating__label .rating__icon--star,
     &:hover .rating__label--half .rating__icon--star {
-      color: $brand-warning;
+      color: $warning;
     }
     /* Make hovered input's following siblings grey on hover */
     .rating__input:hover ~ .rating__label .rating__icon--star,

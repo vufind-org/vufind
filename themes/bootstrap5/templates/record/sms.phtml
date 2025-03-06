@@ -15,13 +15,13 @@
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
   <div class="form-group">
-    <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
+    <label class="form-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
     <input id="sms_to" type="tel" name="to" value="<?=$this->escapeHtmlAttr($this->to)?>" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control" required<?=!empty($this->validation) ? ' data-validator-region="' . $this->escapeHtmlAttr($this->validation) . '"' : ''?>>
   </div>
   <?php if (is_array($this->carriers) && count($this->carriers) > 1): ?>
     <div class="form-group">
-      <label class="control-label" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
-      <select id="sms_provider" name="provider" class="form-control form-select">
+      <label class="form-label" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
+      <select id="sms_provider" name="provider" class="form-select">
         <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
         <?php foreach ($this->carriers as $val => $details): ?>
           <option value="<?=$this->escapeHtmlAttr($val)?>"<?=$val === $this->provider ? ' selected' : ''?>><?=$this->escapeHtml($details['name'])?></option>

@@ -166,7 +166,7 @@ a:hover .login-dropdown-caret {
 .myresearch-menu a:hover { background-color: $white; }
 .myresearch-menu a.active:hover {
   color: $white;
-  background-color: $brand-primary;
+  background-color: $primary;
 }
 
 /* --- Record --- */
@@ -225,7 +225,7 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    border-bottom: 1px solid $list-group-border;
+    border-bottom: 1px solid $list-group-border-color;
     border-radius: 0;
   }
 
