@@ -61,11 +61,11 @@ class DefaultRecord extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
      * file
      */
     public function __construct(
@@ -1815,5 +1815,15 @@ class DefaultRecord extends AbstractBase
     public function getCoordinateLabels()
     {
         return (array)($this->fields['long_lat_label'] ?? []);
+    }
+
+    /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        return \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
     }
 }

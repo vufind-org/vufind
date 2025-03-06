@@ -93,9 +93,9 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      *
      * @param ?string $sessionId PHP Session id string
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setSessionId(?string $sessionId): AuthHashEntityInterface
+    public function setSessionId(?string $sessionId): static
     {
         $this->session_id = $sessionId;
         return $this;
@@ -116,9 +116,9 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      *
      * @param string $hash Hash Value
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setHash(string $hash): AuthHashEntityInterface
+    public function setHash(string $hash): static
     {
         $this->hash = $hash;
         return $this;
@@ -139,9 +139,9 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      *
      * @param ?string $type Hash Type
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setHashType(?string $type): AuthHashEntityInterface
+    public function setHashType(?string $type): static
     {
         $this->type = $type;
         return $this;
@@ -162,9 +162,9 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      *
      * @param ?string $data Data
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setData(?string $data): AuthHashEntityInterface
+    public function setData(?string $data): static
     {
         $this->__set('data', $data);
         return $this;
@@ -185,9 +185,9 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      *
      * @param DateTime $dateTime Created date
      *
-     * @return AuthHashEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): AuthHashEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;

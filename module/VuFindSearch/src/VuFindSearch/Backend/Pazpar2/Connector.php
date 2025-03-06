@@ -112,12 +112,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Requests and receives information from pazpar
      *
-     * @param string   $command the command to be executed
-     * @param ParamBag $data    optional extra data
+     * @param string    $command the command to be executed
+     * @param ?ParamBag $data    optional extra data
      *
      * @return SimpleXMLElement Response
      */
-    protected function query($command, ParamBag $data = null)
+    protected function query($command, ?ParamBag $data = null)
     {
         // If we don't have a session as long as we're not being explicit
         if (!$this->session && $command !== 'init') {
@@ -225,11 +225,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * TODO: Make the array more useful to get the correct format?
      *
-     * @param ParamBag $options array of options as described above
+     * @param ?ParamBag $options array of options as described above
      *
      * @return associative array of XML data
      */
-    public function search(ParamBag $options = null)
+    public function search(?ParamBag $options = null)
     {
         return $this->query('search', $options);
     }
@@ -272,11 +272,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *  - block : 1 = wait until enough records are found (0)
      *  - sort  : column:1 [increasing] or 0 [decreasing] (none)
      *
-     * @param ParamBag $options array of options as described above
+     * @param ?ParamBag $options array of options as described above
      *
      * @return array Associative array of XML data
      */
-    public function show(ParamBag $options = null)
+    public function show(?ParamBag $options = null)
     {
         return $this->query('show', $options);
     }
@@ -298,11 +298,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *  - name : comma-separated list of termlist names (all termlists)
      *  - num  : maximum number of entries to return (15)
      *
-     * @param ParamBag $options array of options as described above
+     * @param ?ParamBag $options array of options as described above
      *
      * @return array Associative array of XML data
      */
-    public function termlist(ParamBag $options = null)
+    public function termlist(?ParamBag $options = null)
     {
         return $this->query('termlist', $options);
     }

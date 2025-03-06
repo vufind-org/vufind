@@ -1,6 +1,6 @@
 <?php
   $this->headTitle($this->translate('Collection Browse'));
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li>';
+  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li>';
   $filterList = [];
   $filterString = '';
   foreach ($filters ?? [] as $label => $filterBatch) {
@@ -46,8 +46,10 @@
           </a>
         </li>
       <?php endif; ?>
-      <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Jump to')?>">
-      <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control">
+      <li>
+        <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Jump to')?>">
+        <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control">
+      </li>
     </ul>
   </form>
 <?php $pageLinks = ob_get_contents(); ?>
@@ -79,8 +81,8 @@
 
 <ul class="pagination">
   <?php foreach ($letters as $letter): ?>
-    <li<?php if (strcasecmp($letter, $from) == 0): ?> class="active" aria-current="page"<?php endif; ?>>
-      <a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"
+    <li class="page-item<?=strcasecmp($letter, $from) == 0 ? ' active" aria-current="page' : ''?>">
+      <a class="page-link" href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"
          aria-label="<?=$this->transEscAttr('page_num', ['%%page%%' => $letter]); ?>">
         <?=$this->escapeHtml($letter)?>
       </a>

@@ -1,0 +1,24 @@
+<?php
+  $user = $this->auth()->getUserObject();
+
+  // Use a variable so that we can output this nicely without whitespace that would get underlined:
+  $publicInd = $this->icon(
+      'user-public-list-indicator',
+      [
+          'class' => 'user-list__public-icon',
+          'title' => $this->transEscAttr('public_list_indicator'),
+      ]
+  );
+  $publicInd .= '<span class="visually-hidden">(' . $this->transEsc('public_list_indicator') . ')</span>';
+?>
+<?php foreach ($this->userlist()->getUserListsAndCountsByUser($user) as $current): ?>
+  <?php $list = $current['list_entity']; ?>
+  <li>
+    <a class="user-list-link icon-link <?=$this->active == 'list' . $list->getId() ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list->getId()])?>">
+      <?=$this->icon($this->icon, 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->escapeHtml($list->getTitle())?></span>
+      <?=$list->isPublic() ? $publicInd : ''?>
+      <span class="badge"><?=$current['count'] ?></span>
+    </a>
+  </li>
+<?php endforeach; ?>

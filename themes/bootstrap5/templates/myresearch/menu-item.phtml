@@ -2,14 +2,16 @@
   if (isset($this->iconMethod) && !isset($this->icon)) {
     $this->icon = $this->accountMenu()->{$this->iconMethod}();
   }
+
+  $url = $this->url ?: $this->url($this->route, $this->routeParams ?? []);
 ?>
 <li>
-  <a href="<?=$this->url($this->route)?>" class="<?=$this->name?> icon-link<?=$this->active == $this->name ? ' active' : ''?>">
+  <a href="<?=$url?>" class="<?=$this->name?> nav-link icon-link<?=$this->active == $this->name ? ' active' : ''?>">
     <?php if (isset($this->icon)): ?>
       <?=$this->icon($this->icon, 'icon-link__icon') ?>
     <?php endif; ?>
     <span class="icon-link__label"><?=$this->transEsc($this->label)?></span>
-    <?php if ($this->status ?? false): ?>
+    <?php if (($this->status ?? false) && $this->auth()->getManager()->ajaxEnabled()): ?>
       <span class="<?=strtolower($this->name)?>-status status hidden"><?=$this->icon('spinner') ?></span>
     <?php endif; ?>
   </a>

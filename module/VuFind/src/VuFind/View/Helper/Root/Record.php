@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -94,7 +94,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      * Constructor
      *
      * @param TagsService $tagsService Tags service
-     * @param Config      $config      Configuration from config.ini
+     * @param ?Config     $config      Configuration from config.ini
      */
     public function __construct(protected TagsService $tagsService, protected ?Config $config = null)
     {
@@ -486,9 +486,13 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         $hiddenFilters = null;
         // Try to get hidden filters for the current search:
         if ($this->searchMemory) {
+            $view = $this->getView();
             $searchId = $this->driver->getExtraDetail('searchId')
-                ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
-            if ($searchId && ($search = $this->searchMemory->getSearchById($searchId))) {
+                ?? $view->plugin('searchMemory')->getLastSearchId();
+            if (
+                $searchId
+                && ($search = $this->searchMemory->getSearchById($searchId, $view->plugin('auth')->getUserObject()))
+            ) {
                 $filters = UrlQueryHelper::buildQueryString(
                     [
                         'hiddenFilters' => $search->getParams()->getHiddenFiltersAsQueryParams(),

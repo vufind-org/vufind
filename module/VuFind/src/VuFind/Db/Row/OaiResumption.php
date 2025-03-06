@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -38,11 +39,13 @@ use VuFind\Db\Entity\OaiResumptionEntityInterface;
  * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  *
  * @property int    $id
  * @property string $params
+ * @property string $token
  * @property string $expires
  */
 class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
@@ -111,9 +114,9 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
      *
      * @param ?string $params Resumption parameters.
      *
-     * @return OaiResumptionEntityInterface
+     * @return static
      */
-    public function setResumptionParameters(?string $params): OaiResumptionEntityInterface
+    public function setResumptionParameters(?string $params): static
     {
         $this->params = $params;
         return $this;
@@ -130,13 +133,36 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
     }
 
     /**
+     * Set token used for identifying.
+     *
+     * @param string $token Generated token.
+     *
+     * @return static
+     */
+    public function setToken(string $token): static
+    {
+        $this->token = $token;
+        return $this;
+    }
+
+    /**
+     * Get token used for identifying.
+     *
+     * @return ?string
+     */
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    /**
      * Expiry date setter.
      *
      * @param DateTime $dateTime Expiration date
      *
-     * @return OaiResumptionEntityInterface
+     * @return static
      */
-    public function setExpiry(DateTime $dateTime): OaiResumptionEntityInterface
+    public function setExpiry(DateTime $dateTime): static
     {
         $this->expires = $dateTime->format('Y-m-d H:i:s');
         return $this;

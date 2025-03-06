@@ -4,13 +4,13 @@
   Why does this look less than beautiful? Because we expect you to change it! See the <a href="https://vufind.org/wiki/development:architecture:user_interface">User Interface Customization</a> page in the wiki for details.
 </p>
 
-<nav aria-label="Theme Config view helper demo" class="navbar navbar-dark bg-dark mb-4">
+<nav aria-label="Theme Config view helper demo" class="navbar navbar-dark navbar-expand-md bg-dark mb-4">
   <div class="container-fluid">
     <span class="navbar-text">
       Some helpful links:
     </span>
 
-    <ul class="navbar-nav me-auto">
+    <ul class="nav navbar-nav me-auto">
       <?php foreach ($this->themeConfig(['home-content', 'links']) as $label => $route): ?>
         <?php
           try {
@@ -28,7 +28,7 @@
       <?php endforeach; ?>
     </ul>
 
-    <ul class="navbar-nav navbar-right flip">
+    <ul class="nav navbar-nav">
       <?php foreach ($this->themeConfig(['header-nav']) as $section => $links): ?>
         <?php
           $currentItems = [];
@@ -49,7 +49,7 @@
         <li class="nav-item dropdown">
           <a href="#" class="dropdown-toggle icon-link nav-link" data-bs-toggle="dropdown">
             <span class="icon-link__label"><?=$this->transEsc($section)?></span>
-            <?=$this->icon('caret-down', 'icon-link__icon')?>
+            <?=$this->icon('dropdown-caret', 'icon-link__icon') ?>
           </a>
           <ul class="dropdown-menu">
             <?php foreach ($currentItems as $url => $label): ?>
@@ -68,7 +68,7 @@
 
 <div class="searchHomeContent">
   <div class="search-hero" role="search">
-    <?php require(__DIR__ . '/../../../bootstrap3/templates/search/home.phtml'); ?>
+    <?php require(__DIR__ . '/../../../bootstrap5/templates/search/home.phtml'); ?>
     <div class="image-credit">
       Yosemite Valley. Photo by <a class="name" href="https://unsplash.com/@heytowner">John Towner</a>.
     </div>

@@ -1778,7 +1778,7 @@ class MyResearchController extends AbstractBase
                     );
                     $this->getService(Mailer::class)->send(
                         $user->getEmail(),
-                        $config->Site->email,
+                        $this->getEmailSenderAddress($config),
                         $this->translate('recovery_email_subject'),
                         $message
                     );
@@ -1839,7 +1839,7 @@ class MyResearchController extends AbstractBase
         // address; if they have a pending address change, use that.
         $this->getService(Mailer::class)->send(
             $user->getEmail(),
-            $config->Site->email,
+            $this->getEmailSenderAddress($config),
             $this->translate('change_notification_email_subject'),
             $message
         );
@@ -1889,7 +1889,7 @@ class MyResearchController extends AbstractBase
                     $to = ($pending = $user->getPendingEmail()) ? $pending : $user->getEmail();
                     $this->getService(Mailer::class)->send(
                         $to,
-                        $config->Site->email,
+                        $this->getEmailSenderAddress($config),
                         $this->translate('verification_email_subject'),
                         $message
                     );

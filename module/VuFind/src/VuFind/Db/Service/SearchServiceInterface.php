@@ -99,7 +99,7 @@ interface SearchServiceInterface extends DbServiceInterface
     /**
      * Get an array of rows for the specified user.
      *
-     * @param string                       $sessionId Session ID of current user.
+     * @param ?string                      $sessionId Session ID of current user or null to ignore searches in session.
      * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
      *
      * @return SearchEntityInterface[]

@@ -13,7 +13,7 @@ VuFind.register('channels', function Channels() {
     }
     var $cont = $(
       '<div class="dropdown">' +
-        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
+        '<button class="btn btn-link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
           VuFind.icon("ui-dots-menu") +
         '</button>' +
       '</div>'
@@ -24,7 +24,7 @@ VuFind.register('channels', function Channels() {
       li.append(
         $('<a/> ', {
           'href': links[i].url,
-          'class': links[i].label,
+          'class': 'dropdown-item ' + links[i].label,
           'html': '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
         })
       );
@@ -62,10 +62,10 @@ VuFind.register('channels', function Channels() {
 
   // Truncate lines to height with ellipses
   function clampLines(el) {
-    var words = el.innerHTML.split(" ");
+    var words = el.innerText.split(" ");
     while (el.scrollHeight > el.offsetHeight) {
       words.pop();
-      el.innerHTML = words.join(" ") + VuFind.translate("eol_ellipsis");
+      el.innerText = words.join(" ") + VuFind.translate("eol_ellipsis");
     }
   }
 
@@ -119,12 +119,14 @@ VuFind.register('channels', function Channels() {
           data: {tab: 'description'}
         })
           .done(function channelPopoverDone(data) {
-            var newContent = '<div class="btn-group btn-group-justified">'
+            var newContent = '<div class="d-flex">'
+              + '<div class="btn-group flex-fill">'
               + '<a href="' + VuFind.path + '/Channels/Record?'
               + 'id=' + encodeURIComponent(record.attr('data-record-id'))
               + '&source=' + encodeURIComponent(record.attr('data-record-source'))
               + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
               + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+              + '</div>'
               + '</div>'
               + data;
             loadingPopover.dispose();

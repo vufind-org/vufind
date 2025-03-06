@@ -280,9 +280,11 @@ DROP TABLE IF EXISTS "oai_resumption";
 
 CREATE TABLE oai_resumption (
 id SERIAL,
+token varchar(255) DEFAULT NULL,
 params text,
 expires timestamp NOT NULL default '1970-01-01 00:00:00',
-PRIMARY KEY (id)
+PRIMARY KEY (id),
+UNIQUE(token)
 );
 
 -- --------------------------------------------------------
@@ -400,7 +402,8 @@ CREATE TABLE login_token (
   last_session_id varchar(255),
   PRIMARY KEY (id)
 );
-CREATE INDEX login_token_user_id_series_idx ON login_token (user_id, series);
+CREATE INDEX login_token_user_id_idx ON login_token (user_id);
+CREATE INDEX login_token_series_idx ON login_token (series);
 
 -- --------------------------------------------------------
 

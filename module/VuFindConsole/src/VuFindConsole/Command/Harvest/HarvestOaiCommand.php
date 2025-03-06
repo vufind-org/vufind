@@ -60,22 +60,22 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
     /**
      * Constructor
      *
-     * @param Client           $client       HTTP client (omit for default)
-     * @param string           $harvestRoot  Root directory for harvesting (omit for
+     * @param Client            $client       HTTP client (omit for default)
+     * @param string            $harvestRoot  Root directory for harvesting (omit for
      * default)
-     * @param HarvesterFactory $factory      Harvester factory (omit for default)
-     * @param bool             $silent       Should we suppress output?
-     * @param string|null      $name         The name of the command; passing null
+     * @param ?HarvesterFactory $factory      Harvester factory (omit for default)
+     * @param bool              $silent       Should we suppress output?
+     * @param string|null       $name         The name of the command; passing null
      * means it must be set in configure()
-     * @param PathResolver     $pathResolver Config file path resolver
+     * @param ?PathResolver     $pathResolver Config file path resolver
      */
     public function __construct(
         $client = null,
         $harvestRoot = null,
-        HarvesterFactory $factory = null,
+        ?HarvesterFactory $factory = null,
         $silent = false,
         $name = null,
-        PathResolver $pathResolver = null
+        ?PathResolver $pathResolver = null
     ) {
         parent::__construct($client, $harvestRoot, $factory, $silent, $name);
         $this->pathResolver = $pathResolver;

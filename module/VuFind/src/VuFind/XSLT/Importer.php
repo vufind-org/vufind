@@ -35,6 +35,8 @@ use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
 
+use function count;
+use function in_array;
 use function is_array;
 
 /**
@@ -140,6 +142,30 @@ class Importer
     }
 
     /**
+     * Throw a helpful exception if a custom class does not exist.
+     *
+     * @param string $class Class that does not exist.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function throwMissingClassException(string $class): void
+    {
+        $parts = explode('\\', ltrim($class, '\\'));
+        $namespace = count($parts) > 1 ? array_shift($parts) : null;
+        $localModules = ($localModulesEnv = getenv('VUFIND_LOCAL_MODULES'))
+            ? array_map('trim', explode(',', $localModulesEnv)) : [];
+        if (empty($localModules)) {
+            $extraMsg = 'Did you forget to set VUFIND_LOCAL_MODULES?';
+        } elseif ($namespace && $namespace !== 'VuFind' && !in_array($namespace, $localModules)) {
+            $extraMsg = "Did you forget to add $namespace to VUFIND_LOCAL_MODULES?";
+        } else {
+            $extraMsg = '';
+        }
+        throw new \Exception(trim("Class $class does not exist. $extraMsg"));
+    }
+
+    /**
      * Initialize an XSLT processor using settings from the user-specified properties
      * file.
      *
@@ -173,6 +199,10 @@ class Importer
                 // Add a default namespace if none was provided:
                 if (!str_contains($class, '\\')) {
                     $class = 'VuFind\XSLT\Import\\' . $class;
+                }
+                // Fail now if the custom class does not exist:
+                if (!class_exists($class)) {
+                    $this->throwMissingClassException($class);
                 }
                 // If necessary, dynamically generate the truncated version of the
                 // requested class:

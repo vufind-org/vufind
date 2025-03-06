@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
 use VStelmakh\UrlHighlight\UrlHighlight;
+use VStelmakh\UrlHighlight\Validator\Validator;
 use VuFind\UrlHighlight\VuFindHighlighter;
 
 /**
@@ -60,7 +61,7 @@ class LinkifyFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
@@ -70,8 +71,9 @@ class LinkifyFactory implements FactoryInterface
 
         $highlighter = new VuFindHighlighter($proxyUrl);
         $encoder = new HtmlSpecialcharsEncoder();
+        $validatorExceptEmail = new Validator(matchEmails: false);
         $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
-
-        return new Linkify($urlHighlight);
+        $urlHighlightExceptEmail = new UrlHighlight($validatorExceptEmail, $highlighter, $encoder);
+        return new Linkify($urlHighlight, $urlHighlightExceptEmail);
     }
 }

@@ -54,9 +54,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $username Username
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setUsername(string $username): UserEntityInterface;
+    public function setUsername(string $username): static;
 
     /**
      * Get username.
@@ -70,9 +70,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $password Password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setRawPassword(string $password): UserEntityInterface;
+    public function setRawPassword(string $password): static;
 
     /**
      * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
@@ -86,9 +86,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?string $hash Password hash
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setPasswordHash(?string $hash): UserEntityInterface;
+    public function setPasswordHash(?string $hash): static;
 
     /**
      * Get hashed password. This should only be used when hashing is enabled.
@@ -102,9 +102,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $firstName New first name
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setFirstname(string $firstName): UserEntityInterface;
+    public function setFirstname(string $firstName): static;
 
     /**
      * Get firstname.
@@ -118,9 +118,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $lastName New last name
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastname(string $lastName): UserEntityInterface;
+    public function setLastname(string $lastName): static;
 
     /**
      * Get lastname.
@@ -134,9 +134,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $email Email address
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setEmail(string $email): UserEntityInterface;
+    public function setEmail(string $email): static;
 
     /**
      * Get email.
@@ -150,9 +150,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $email New pending email
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setPendingEmail(string $email): UserEntityInterface;
+    public function setPendingEmail(string $email): static;
 
     /**
      * Get pending email.
@@ -166,9 +166,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?string $catId Catalog id
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatId(?string $catId): UserEntityInterface;
+    public function setCatId(?string $catId): static;
 
     /**
      * Get catalog id.
@@ -182,9 +182,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?string $catUsername Catalog username
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatUsername(?string $catUsername): UserEntityInterface;
+    public function setCatUsername(?string $catUsername): static;
 
     /**
      * Get catalog username.
@@ -198,9 +198,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?string $homeLibrary Home library
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface;
+    public function setHomeLibrary(?string $homeLibrary): static;
 
     /**
      * Get home library.
@@ -214,9 +214,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?string $catPassword Cat password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setRawCatPassword(?string $catPassword): UserEntityInterface;
+    public function setRawCatPassword(?string $catPassword): static;
 
     /**
      * Get raw catalog password.
@@ -230,9 +230,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatPassEnc(?string $passEnc): UserEntityInterface;
+    public function setCatPassEnc(?string $passEnc): static;
 
     /**
      * Get encrypted catalog password.
@@ -246,9 +246,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $college College
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCollege(string $college): UserEntityInterface;
+    public function setCollege(string $college): static;
 
     /**
      * Get college.
@@ -262,9 +262,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $major Major
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setMajor(string $major): UserEntityInterface;
+    public function setMajor(string $major): static;
 
     /**
      * Get major.
@@ -278,9 +278,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $hash Hash value to save
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setVerifyHash(string $hash): UserEntityInterface;
+    public function setVerifyHash(string $hash): static;
 
     /**
      * Get verification hash for recovery.
@@ -294,9 +294,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?string $authMethod New value (null for none)
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setAuthMethod(?string $authMethod): UserEntityInterface;
+    public function setAuthMethod(?string $authMethod): static;
 
     /**
      * Get active authentication method (if any).
@@ -310,9 +310,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param string $lang Last language
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastLanguage(string $lang): UserEntityInterface;
+    public function setLastLanguage(string $lang): static;
 
     /**
      * Get last language.
@@ -333,18 +333,18 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param bool $userProvided New value
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface;
+    public function setHasUserProvidedEmail(bool $userProvided): static;
 
     /**
      * Last login setter.
      *
      * @param DateTime $dateTime Last login date
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastLogin(DateTime $dateTime): UserEntityInterface;
+    public function setLastLogin(DateTime $dateTime): static;
 
     /**
      * Last login getter
@@ -358,9 +358,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Last login date
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): UserEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Created getter
@@ -374,9 +374,9 @@ interface UserEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Verification date (or null)
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface;
+    public function setEmailVerified(?DateTime $dateTime): static;
 
     /**
      * Get email verification date (or null for unverified).

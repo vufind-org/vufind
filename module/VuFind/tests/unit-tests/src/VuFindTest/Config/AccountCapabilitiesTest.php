@@ -29,9 +29,9 @@
 
 namespace VuFindTest\Config;
 
-use Laminas\Config\Config;
 use VuFind\Auth\Manager;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Config\Config;
 
 /**
  * Account Capabilities Test Class

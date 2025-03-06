@@ -58,24 +58,17 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   }
 
   function _updateKeyboardLayout(layoutName) {
-    if (VuFind.getBootstrapMajorVersion() === 3) {
-      $('.keyboard-selection-item').each(function deactivateItems() {
-        $(this).parent().removeClass("active");
-      });
-      $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
-    } else {
-      $('.keyboard-selection-item').each(function deactivateItems() {
-        $(this).removeClass("active");
-        $(this).addClass("dropdown-item");
-      });
-      $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
-    }
-    window.Cookies.set("keyboard", layoutName);
+    $('.keyboard-selection-item').each(function deactivateItems() {
+      $(this).removeClass("active");
+    });
+    $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
     if (layoutName === "none") {
+      VuFind.cookie.remove("keyboard");
       $("#keyboard-selection-button").removeClass("activated");
       _enabled = false;
       _hideKeyboard();
     } else {
+      VuFind.cookie.set("keyboard", layoutName);
       $("#keyboard-selection-button").addClass("activated");
       _enabled = true;
       const keyboardLayout = new _KeyboardLayoutClass().get(layoutName);
@@ -168,7 +161,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
     _keyboard.setInput(_textInput.value);
 
-    let layout = window.Cookies.get("keyboard");
+    let layout = VuFind.cookie.get("keyboard");
     if (layout == null) {
       layout = "none";
     }

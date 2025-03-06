@@ -64,7 +64,7 @@ class ResultsFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         // Replace trailing "Results" with "Params" to get the params service:
         $paramsService = preg_replace('/Results$/', 'Params', $requestedName);

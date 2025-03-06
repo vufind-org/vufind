@@ -36,6 +36,7 @@ use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -58,6 +59,8 @@ use function strlen;
  */
 class Server
 {
+    use \VuFind\ResumptionToken\ResumptionTokenTrait;
+
     /**
      * Repository base URL
      *
@@ -211,6 +214,22 @@ class Server
     protected $useCursorMark = true;
 
     /**
+     * List of possible valid OAI-PMH error codes
+     *
+     * @var string[]
+     */
+    protected $legalErrorCodes = [
+        'cannotDisseminateFormat',
+        'idDoesNotExist',
+        'badArgument',
+        'badVerb',
+        'noMetadataFormats',
+        'noRecordsMatch',
+        'badResumptionToken',
+        'noSetHierarchy',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
@@ -222,21 +241,21 @@ class Server
         protected \VuFind\Search\Results\PluginManager $resultsManager,
         protected \VuFind\Record\Loader $recordLoader,
         protected ChangeTrackerServiceInterface $trackerService,
-        protected OaiResumptionServiceInterface $resumptionService
+        OaiResumptionServiceInterface $resumptionService
     ) {
+        $this->setResumptionService($resumptionService);
     }
 
     /**
      * Initialize settings
      *
-     * @param \Laminas\Config\Config $config  VuFind configuration
-     * @param string                 $baseURL The base URL for the OAI server
-     * @param array                  $params  The incoming OAI-PMH parameters (i.e.
-     * $_GET)
+     * @param \VuFind\Config\Config $config  VuFind configuration
+     * @param string                $baseURL The base URL for the OAI server
+     * @param array                 $params  The incoming OAI-PMH parameters (i.e. $_GET)
      *
      * @return void
      */
-    public function init(\Laminas\Config\Config $config, $baseURL, array $params)
+    public function init(\VuFind\Config\Config $config, $baseURL, array $params)
     {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
@@ -379,7 +398,7 @@ class Server
      *
      * @param object $record A record driver object
      *
-     * @return string
+     * @return string|false String on success and false if an error occurred
      */
     protected function getVuFindMetadata($record)
     {
@@ -445,24 +464,20 @@ class Server
         $headerOnly = false,
         $set = ''
     ) {
-        // Get the XML (and display an error if it is unsupported):
         if ($format === false) {
-            $xml = '';      // no metadata if in header-only mode!
-        } elseif ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
-            $xml = $this->getVuFindMetadata($record);   // special case
-        } else {
-            $xml = $record
-                ->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
-            if ($xml === false) {
-                return false;
-            }
+            // If no format was requested, report success without doing anything:
+            return true;
         }
+
+        $xml = $this->getRecordAsXML($record, $format);
 
         // Headers should be returned only if the metadata format matching
         // the supplied metadataPrefix is available.
-        // If RecordDriver returns nothing, skip this record.
-        if (empty($xml)) {
-            return true;
+        // If returned XML is empty, return true to simply skip this record.
+        // If returned XML is false, an error was encountered during the process
+        // of generating the XML file.
+        if (!$xml) {
+            return $xml !== false;
         }
 
         // Check for sets:
@@ -493,12 +508,28 @@ class Server
         );
 
         // Inject metadata if necessary:
-        if (!$headerOnly && !empty($xml)) {
+        if (!$headerOnly) {
             $metadata = $recXml->addChild('metadata');
             SimpleXML::appendElement($metadata, $xml);
         }
 
         return true;
+    }
+
+    /**
+     * Get record as a metadata presentation
+     *
+     * @param AbstractRecordDriver $record A record driver object
+     * @param string               $format Metadata format to obtain
+     *
+     * @return string|false String or false if an error occured
+     */
+    protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
+    {
+        if ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
+            return $this->getVuFindMetadata($record);
+        }
+        return $record->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
     }
 
     /**
@@ -652,11 +683,11 @@ class Server
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\Laminas\Config\Config $config)
+    protected function initializeSettings(\VuFind\Config\Config $config)
     {
         // Override default repository name if configured:
         if (isset($config->OAI->repository_name)) {
@@ -777,7 +808,7 @@ class Server
             $params = $this->listRecordsGetParams();
         } catch (\Exception $e) {
             $parts = explode(':', $e->getMessage(), 2);
-            if (count($parts) != 2) {
+            if (count($parts) != 2 || !in_array($parts[0], $this->legalErrorCodes)) {
                 throw $e;
             }
             return $this->showError($parts[0], $parts[1]);
@@ -1056,7 +1087,7 @@ class Server
         // parameters or fail if it is invalid.
         if (!empty($this->params['resumptionToken'])) {
             $params = $this->loadResumptionToken($this->params['resumptionToken']);
-            if ($params === false) {
+            if (null === $params) {
                 throw new \Exception(
                     'badResumptionToken:Invalid or expired resumption token'
                 );
@@ -1238,28 +1269,6 @@ class Server
     }
 
     /**
-     * Load parameters associated with a resumption token.
-     *
-     * @param string $token The resumption token to look up
-     *
-     * @return array        Parameters associated with token
-     */
-    protected function loadResumptionToken($token)
-    {
-        // Clean up expired records before doing our search:
-        $this->resumptionService->removeExpired();
-
-        // Load the requested token if it still exists:
-        if ($row = $this->resumptionService->findToken($token)) {
-            parse_str($row->getResumptionParameters(), $params);
-            return $params;
-        }
-
-        // If we got this far, the token is invalid or expired:
-        return false;
-    }
-
-    /**
      * Normalize a date to a Unix timestamp.
      *
      * @param string $date Date (ISO-8601 or YYYY-MM-DD HH:MM:SS)
@@ -1318,17 +1327,11 @@ class Server
         // Save the old cursor position before overwriting it for storage in the
         // database!
         $oldCursor = $params['cursor'];
-        $params['cursor'] = $currentCursor;
-        $params['cursorMark'] = $cursorMark;
-
-        // Save everything to the database:
-        $expire = time() + 24 * 60 * 60;
-        $token = $this->resumptionService->createAndPersistToken($params, $expire)->getId();
-
+        $resumptionToken = $this->createResumptionToken($params, $currentCursor, $cursorMark);
         // Add details to the xml:
-        $token = $xml->addChild('resumptionToken', $token);
+        $token = $xml->addChild('resumptionToken', $resumptionToken->getToken());
         $token->addAttribute('cursor', $oldCursor);
-        $token->addAttribute('expirationDate', date($this->iso8601, $expire));
+        $token->addAttribute('expirationDate', date($this->iso8601, $resumptionToken->getExpiry()->getTimestamp()));
         $token->addAttribute('completeListSize', $listSize);
     }
 

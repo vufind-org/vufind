@@ -97,23 +97,24 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Build a Params helper for testing.
      *
-     * @param array $get  GET parameters
-     * @param array $post POST parameters
+     * @param array  $get     GET parameters
+     * @param array  $post    POST parameters
+     * @param string $content Body content
      *
      * @return Params
      */
-    protected function getParamsHelper(array $get = [], array $post = []): Params
+    protected function getParamsHelper(array $get = [], array $post = [], string $content = ''): Params
     {
         $params = new Params();
         $request = new Request();
         $request->setQuery(new Parameters($get));
         $request->setPost(new Parameters($post));
+        $request->setContent($content);
         $controller = $this->container->createMock(
-            'Laminas\Mvc\Controller\AbstractActionController',
+            \Laminas\Mvc\Controller\AbstractActionController::class,
             ['getRequest']
         );
-        $controller->expects($this->any())->method('getRequest')
-            ->will($this->returnValue($request));
+        $controller->expects($this->any())->method('getRequest')->willReturn($request);
         $params->setController($controller);
         return $params;
     }

@@ -34,8 +34,6 @@ namespace VuFind\Controller;
 use ArrayObject;
 use Composer\Semver\Comparator;
 use Exception;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -47,6 +45,7 @@ use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
+use VuFind\Crypt\BlockCipher;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
@@ -579,6 +578,12 @@ class UpgradeController extends AbstractBase
                 }
             }
 
+            // If we have SQL to show, stop at this point to allow the changes to be made before progressing any
+            // further:
+            if (!empty($this->session->sql)) {
+                return $this->forwardTo('Upgrade', 'ShowSql');
+            }
+
             // Now that database structure is addressed, we can fix database
             // content -- the checks below should be platform-independent.
 
@@ -622,9 +627,6 @@ class UpgradeController extends AbstractBase
         }
 
         $this->cookie->databaseOkay = true;
-        if (!empty($this->session->sql)) {
-            return $this->forwardTo('Upgrade', 'ShowSql');
-        }
         return $this->redirect()->toRoute('upgrade-home');
     }
 
@@ -635,6 +637,11 @@ class UpgradeController extends AbstractBase
      */
     public function showsqlAction()
     {
+        $recheck = $this->params()->fromPost('recheck');
+        if ($recheck) {
+            unset($this->session->sql);
+            return $this->redirect()->toRoute('upgrade-fixdatabase');
+        }
         $continue = $this->params()->fromPost('continue', 'nope');
         if ($continue == 'Next') {
             unset($this->session->sql);
@@ -1120,7 +1127,7 @@ class UpgradeController extends AbstractBase
         // Test that blowfish is still working
         $blowfishIsWorking = true;
         try {
-            $newcipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+            $newcipher = $this->serviceLocator->get(BlockCipher::class)->setAlgorithm('blowfish');
             $newcipher->setKey('akeyforatest');
             $newcipher->encrypt('youfoundtheeasteregg!');
         } catch (Exception $e) {

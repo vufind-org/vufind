@@ -59,9 +59,9 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      *
      * @param ?UserEntityInterface $user User owning token
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->__set('user_id', $user?->getId());
         return $this;
@@ -72,9 +72,9 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      *
      * @param string $data Data
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setData(string $data): AccessTokenEntityInterface
+    public function setData(string $data): static
     {
         $this->__set('data', $data);
         return $this;
@@ -95,9 +95,9 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      *
      * @param bool $revoked Revoked
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setRevoked(bool $revoked): AccessTokenEntityInterface
+    public function setRevoked(bool $revoked): static
     {
         $this->__set('revoked', $revoked);
         return $this;

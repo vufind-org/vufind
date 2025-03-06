@@ -793,13 +793,13 @@ class AbstractRecord extends AbstractBase
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
-     * @param ParamBag $params Search backend parameters
-     * @param bool     $force  Set to true to force a reload of the record, even if
+     * @param ?ParamBag $params Search backend parameters
+     * @param bool      $force  Set to true to force a reload of the record, even if
      * already loaded (useful if loading a record using different parameters)
      *
      * @return AbstractRecordDriver
      */
-    protected function loadRecord(ParamBag $params = null, bool $force = false)
+    protected function loadRecord(?ParamBag $params = null, bool $force = false)
     {
         // Only load the record if it has not already been loaded. Note that
         // when determining record ID, we check both the route match (the most
@@ -919,17 +919,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        // Disabled by default:
-        return false;
-    }
-
-    /**
      * Display a particular tab.
      *
      * @param string $tab  Name of tab to display
@@ -967,7 +956,8 @@ class AbstractRecord extends AbstractBase
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
-        if ($this->resultScrollerActive()) {
+        $searchOptions = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class)->get($this->sourceId);
+        if ($searchOptions->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }

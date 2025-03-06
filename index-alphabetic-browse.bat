@@ -86,7 +86,7 @@ mkdir "%index_dir%"
 rem These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbib_field_iterator=org.vufind.solr.indexing.StoredFieldIterator -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse 0 "-Dbrowse.normalizer=org.vufind.util.TopicNormalizer"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-raw 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse dewey dewey-raw 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer"
