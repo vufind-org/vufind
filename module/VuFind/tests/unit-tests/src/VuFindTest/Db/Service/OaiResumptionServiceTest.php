@@ -1,11 +1,11 @@
 <?php
 
 /**
- * OaiResumptionService Test Class
+ * Oai resumption service test case.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,20 +23,29 @@
  * @category VuFind
  * @package  Tests
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
 namespace VuFindTest\Db\Service;
 
+use Exception;
+use Generator;
 use VuFind\Db\Entity\OaiResumption;
+use VuFind\Db\Entity\OaiResumptionEntityInterface;
+use VuFind\Db\Service\OaiResumptionService;
+
+use function count;
+use function intval;
 
 /**
- * OaiResumptionService Test Class
+ * Oai resumption service test case.
  *
  * @category VuFind
  * @package  Tests
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -80,10 +89,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      */
     protected function getPluginManager($setExpectation = false)
     {
-        $pluginManager = $this->getMockBuilder(
-            \VuFind\Db\Entity\PluginManager::class
-        )->disableOriginalConstructor()
-            ->getMock();
+        $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
                 ->with($this->equalTo(OaiResumption::class))
@@ -101,9 +107,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      */
     protected function getEntityManager($count = 0)
     {
-        $entityManager = $this->getMockBuilder(\Doctrine\ORM\EntityManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $entityManager = $this->createMock(\Doctrine\ORM\EntityManager::class);
         $entityManager->expects($this->exactly($count))->method('persist');
         $entityManager->expects($this->exactly($count))->method('flush');
         return $entityManager;
@@ -121,10 +125,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $resumptionService = $this->getService($entityManager, $pluginManager);
         $queryStmt = "DELETE FROM VuFind\Db\Entity\OaiResumption O WHERE O.expires <= :now";
 
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['execute', 'setParameters'])
-            ->getMockForAbstractClass();
+        $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')
             ->with($this->equalTo($queryStmt))
             ->willReturn($query);
@@ -145,22 +146,17 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager(true);
         $resumptionService = $this->getService($entityManager, $pluginManager);
-        $queryStmt = "SELECT O FROM VuFind\Db\Entity\OaiResumption O WHERE O.id = :token";
+        $queryStmt = "SELECT O FROM VuFind\Db\Entity\OaiResumption O WHERE O.id = :id";
 
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getResult', 'setParameters'])
-            ->getMockForAbstractClass();
+        $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')
             ->with($this->equalTo($queryStmt))
             ->willReturn($query);
-        $oaiResumption = $this->getMockBuilder(\VuFind\Db\Entity\OaiResumption::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $query->expects($this->once())->method('getResult')
-            ->willReturn([$oaiResumption]);
+        $oaiResumption = $this->createMock(\VuFind\Db\Entity\OaiResumption::class);
+        $query->expects($this->once())->method('getOneOrNullResult')
+            ->willReturn($oaiResumption);
         $query->expects($this->once())->method('setParameters')
-            ->with(['token' => 'foo'])
+            ->with(['id' => 'foo'])
             ->willReturn($query);
         $this->assertEquals($oaiResumption, $resumptionService->findToken('foo'));
     }
@@ -202,30 +198,201 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test creating and persisting a new token.
+     * Data provider for testCreateTokenSuccess
      *
-     * @return void
+     * @return Generator
      */
-    public function testCreateAndPersistToken(): void
+    public static function getTestDuplicatesData(): Generator
     {
-        $entityManager = $this->getEntityManager(1);
-        $pluginManager = $this->getPluginManager();
-        $oaiResumption = $this->getMockBuilder(\VuFind\Db\Entity\OaiResumption::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $params = ['cursor' => 20,
-            'cursorMark' => 100,
-            'foo' => 'bar'];
-        $queryString  = 'cursor=20&cursorMark=100&foo=bar';
-        $oaiResumption->expects($this->once())->method('setResumptionParameters')
-            ->with($queryString)
-            ->willReturn($oaiResumption);
-        $oaiResumption->expects($this->once())->method('setExpiry')
-            ->with($this->anything())
-            ->willReturn($oaiResumption);
-        $oaiResumption->expects($this->once())->method('getId')
-            ->willReturn(1);
-        $resumptionService = $this->getService($entityManager, $pluginManager, $oaiResumption);
-        $this->assertEquals(1, $resumptionService->createAndPersistToken($params, 1666782990)->getId());
+        yield 'one token and success' => [
+          [
+            'params' => [
+              'param5' => 'cat',
+            ],
+            'timestamp' => 1739870677 + 99999,
+          ],
+          [
+            'onetokenonly',
+          ],
+        ];
+        yield 'token duplicate and success' => [
+          [
+            'params' => [
+              'param1' => 0,
+              'param2' => 'mainecoon',
+              'param3' => 'calico',
+            ],
+            'timestamp' => 1739870677 + 99999,
+          ],
+          [
+            'testtokenfirstduplicate',
+            'testtokenfirstduplicate',
+            'testtokensecondsuccess',
+          ],
+        ];
+        yield 'token 6 duplicates and error' => [
+          [
+            'params' => [
+              'param1' => 0,
+              'param2' => 'norwegianforestcat',
+              'param3' => 'turle',
+            ],
+            'timestamp' => 1739870677 + 99999,
+          ],
+          [
+            'testtokenfirstduplicate',
+            'testtokenfirstduplicate',
+            'testtokenfirstduplicate',
+            'testtokenfirstduplicate',
+            'testtokenfirstduplicate',
+            'testtokenfirstduplicate',
+            'testtokenfirstduplicate',
+          ],
+          'Test error: Duplicate token found.',
+        ];
+    }
+
+    /**
+     * Test duplicate tokens but success on the second try
+     *
+     * @param array  $token               Array with params and timestamp
+     * @param array  $randomTokenSequence Array containing strings to simulate duplicate tokens
+     * @param string $error               If set, will expect this iteration to throw this error message
+     *
+     * @return       void
+     * @dataProvider getTestDuplicatesData
+     */
+    public function testDuplicates(array $token, array $randomTokenSequence, string $error = ''): void
+    {
+        if ($error) {
+            $this->expectExceptionMessage($error);
+        }
+        $previousToken = '';
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $row = $container->createMock(OaiResumption::class, ['getToken', 'setToken']);
+        $row->expects($this->any())->method('getToken')->willReturnCallback(
+            function () use (&$previousToken) {
+                return $previousToken;
+            }
+        );
+        $row->expects($this->any())->method('setToken')->willReturnCallback(
+            function ($t) use (&$previousToken, $row) {
+                $previousToken = $t;
+                return $row;
+            }
+        );
+        $oaiResumptionService = $container->createMock(
+            OaiResumptionService::class,
+            ['createRandomToken', 'createEntity', 'persistEntity']
+        );
+        $oaiResumptionService->expects($this->any())->method('createRandomToken')->willReturnCallback(
+            function () use (&$randomTokenSequence, $row) {
+                $newToken = array_shift($randomTokenSequence);
+                if ($newToken === $row->getToken()) {
+                    throw new Exception('Test error: Duplicate token found.');
+                }
+                return $newToken;
+            }
+        );
+        $oaiResumptionService->expects($this->any())->method('createEntity')->willReturn($row);
+
+        // Create first token as baseline
+        $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['timestamp']);
+
+        if (count($randomTokenSequence) > 1) {
+            // Create second token and try to assign new random token sequences
+            $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['timestamp']);
+        }
+        $this->assertEmpty($randomTokenSequence, 'Used all the tokens in random token generation.');
+    }
+
+    /**
+     * Test simple get tokens data provider
+     *
+     * @return Generator
+     */
+    public static function getTestTokenRetrieval(): Generator
+    {
+        yield 'get token with random generated string' => [
+          '694ae4fb77426d7b72fff63b584a39a77e37339440d291b55da78352220ece57',
+          'param1=dog',
+        ];
+        yield 'get token with legacy id' => [
+          '25',
+          'param1=cat',
+        ];
+        yield 'get non-existing token' => [
+          '512',
+          null,
+        ];
+    }
+
+    /**
+     * Very simple array acting as a database
+     *
+     * @var array
+     */
+    protected array $mockEntities = [
+      [
+        'id' => 25,
+        'token' => null,
+        'params' => 'param1=cat',
+        'expires' => 99999999,
+      ],
+      [
+        'id' => 26,
+        'token' => '694ae4fb77426d7b72fff63b584a39a77e37339440d291b55da78352220ece57',
+        'params' => 'param1=dog',
+        'expires' => 99999999,
+      ],
+    ];
+
+    /**
+     * Test legacy retrieval
+     *
+     * @param string  $token          Token used to search for row
+     * @param ?string $expectedParams Expected parameters to be returned or null for no results
+     *
+     * @return       void
+     * @dataProvider getTestTokenRetrieval
+     */
+    public function testTokenRetrieval(string $token, ?string $expectedParams): void
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $mockRow = $container->createMock(OaiResumptionEntityInterface::class, []);
+        $mockDb = [];
+        foreach ($this->mockEntities as $entity) {
+            $rowClone = clone $mockRow;
+            $rowClone->expects($this->any())->method('getId')->willReturn($entity['id']);
+            $rowClone->setExpiry(\DateTime::createFromFormat('U', $entity['expires']));
+            $rowClone->expects($this->any())->method('getResumptionParameters')->willReturn($entity['params']);
+            $rowClone->expects($this->any())->method('getToken')->willReturn($entity['token']);
+            $mockDb[] = $rowClone;
+        }
+        $mockService = $container->createMock(OaiResumptionService::class, ['findWithToken', 'findWithLegacyIdToken']);
+
+        $lookupFunction = function ($select) use ($mockDb) {
+            foreach ($mockDb as $entry) {
+                if (!empty($select['id']) && $entry->getId() === intval($select['id'])) {
+                    return $entry;
+                }
+                if (!empty($select['token']) && $entry->getToken() === $select['token']) {
+                    return $entry;
+                }
+            }
+            return null;
+        };
+        $mockService->expects($this->any())->method('findWithToken')->willReturnCallback(
+            function ($token) use ($lookupFunction) {
+                return $lookupFunction(compact('token'));
+            }
+        );
+        $mockService->expects($this->any())->method('findWithLegacyIdToken')->willReturnCallback(
+            function ($id) use ($lookupFunction) {
+                return $lookupFunction(compact('id'));
+            }
+        );
+        $token = $mockService->findWithTokenOrLegacyIdToken($token);
+        $this->assertEquals($expectedParams, $expectedParams ? $token->getResumptionParameters() : null);
     }
 }

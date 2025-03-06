@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) R-Bit Technology 2018-2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,6 +25,7 @@
  * @package  Authentication
  * @author   Josef Moravec <josef.moravec@gmail.com>
  * @author   Radek Šiman <rbit@rbit.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -53,6 +55,7 @@ use function is_int;
  * @package  Authentication
  * @author   Josef Moravec <josef.moravec@gmail.com>
  * @author   Radek Šiman <rbit@rbit.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -106,12 +109,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         protected array $oidcConfig,
         protected ILSAuthenticator $ilsAuthenticator
     ) {
-        if (empty($this->session->oidc_state)) {
-            $this->session->oidc_state = hash('sha256', random_bytes(32));
-        }
-        if (empty($this->session->oidc_nonce)) {
-            $this->session->oidc_nonce = hash('sha256', random_bytes(32));
-        }
+        $this->initState();
     }
 
     /**
@@ -146,7 +144,11 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             try {
                 $response = $this->httpService->get($url);
                 if ($response->getStatusCode() !== 200) {
-                    throw new AuthException('Failed to get provider metadata');
+                    $this->logError(
+                        'Failed to get provider metadata: Unexpected status ' . $response->getStatusCode()
+                        . ': ' . $response->getBody()
+                    );
+                    throw new AuthException('authentication_error_technical');
                 }
                 $provider = json_decode($response->getBody());
             } catch (\Exception) {
@@ -200,7 +202,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             }
         }
         if (!empty($missing)) {
-            throw new AuthException('Missing required provider metadata: ' . implode(', ', $missing));
+            $this->logError('Missing required provider metadata: ' . implode(', ', $missing));
+            throw new AuthException('authentication_error_admin');
         }
         return true;
     }
@@ -220,9 +223,10 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         $requiredParams = ['url', 'client_id', 'client_secret'];
         foreach ($requiredParams as $param) {
             if (empty($this->oidcConfig['Default'][$param] ?? null)) {
-                throw new AuthException(
+                $this->logError(
                     'One or more OpenID Connect parameters are missing. Check your OpenIDConnectClient.ini!'
                 );
+                throw new AuthException('authentication_error_admin');
             }
         }
         $this->configValidated = true;
@@ -245,21 +249,25 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         }
         $request_token = $this->getRequestToken($code);
         $state = $request->getQuery()->get('state');
-        $stateIsValid = $state == $this->session->oidc_state;
-        unset($this->session->oidc_state);
+        $currentState = $this->session->oidc_state;
+        $stateIsValid = $state === $currentState;
+        $this->initState(true);
         if (!$stateIsValid) {
-            throw new AuthException('authentication_error_admin: bad state');
+            $this->logError("Bad state: $currentState");
+            throw new AuthException('authentication_error_technical');
         }
 
         $claims = $this->decodeJWT($request_token->id_token);
 
         if (!$this->validateIssuer($claims->iss)) {
-            throw new AuthException('authentication_error_admin: wrong issuer');
+            $this->logError('Wrong issuer: ' . $claims->iss);
+            throw new AuthException('authentication_error_admin');
         }
         $claimsValid = $this->verifyJwtClaims($claims);
         unset($this->session->oidc_nonce);
         if (!$claimsValid) {
-            throw new AuthException('authentication_error: not valid claims');
+            $this->logError('Claims not valid');
+            throw new AuthException('authentication_error_technical');
         }
 
         $accessToken = $request_token->access_token;
@@ -379,8 +387,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         if (in_array('client_secret_basic', $authMethods) || null === $authMethods) {
             $headers = [
                 'Authorization: Basic ' . base64_encode(
-                    urlencode($this->getConfig('client_id')) . ':'
-                    . urlencode($this->getConfig('client_secret'))
+                    $this->getConfig('client_id') . ':'
+                    . $this->getConfig('client_secret')
                 ),
             ];
             unset($params['client_secret']);
@@ -399,8 +407,11 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('Cannot get request token: HTTP connection error.');
         }
         if ($response->getStatusCode() !== 200) {
-            $this->logError('Failed to get request token: Unexpected status code ' . $response->getStatusCode());
-            throw new AuthException('Failed to get request token');
+            $this->logError(
+                'Failed to get request token: Unexpected status ' . $response->getStatusCode()
+                . ': ' . $response->getBody()
+            );
+            throw new AuthException('authentication_error_technical');
         }
 
         $json = json_decode($response->getBody());
@@ -430,14 +441,18 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         try {
             $response = $this->httpService->get($url, $params, null, $headers);
         } catch (\Exception $e) {
-            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
-            throw new AuthException('Cannot get user info: HTTP connection error.');
+            $this->logError('Failed to get user info: Request failed: ' . (string)$e);
+            throw new AuthException('authentication_error_technical');
         }
         if ($response->getStatusCode() !== 200) {
             $this->logError('Failed to get user info: Unexpected status code ' . $response->getStatusCode());
-            throw new AuthException('Failed to get user info');
+            throw new AuthException('authentication_error_technical');
         }
-        return json_decode($response->getBody());
+        if (null === ($json = json_decode($response->getBody()))) {
+            $this->logError('Failed to get user info: Unable to decode JSON from response: ' . $response->getBody());
+            throw new AuthException('authentication_error_technical');
+        }
+        return $json;
     }
 
     /**
@@ -458,7 +473,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         [$headerEncoded] = explode('.', $jwt);
         $header = json_decode(base64_decode(strtr($headerEncoded, '-_', '+/')));
-        $key = JWK::parseKey($this->getJwk($header->kid), $header->alg);
+        $key = JWK::parseKey($this->getJwk($header->kid ?? null), $header->alg);
         return JWT::decode($jwt, $key);
     }
 
@@ -536,8 +551,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
                 throw new AuthException('Failed to get JWKs');
             }
             $jwks = json_decode($response->getBody(), true);
-            foreach ($jwks['keys'] as $jwk) {
-                $this->jwks[$jwk['kid']] = $jwk;
+            foreach ($jwks['keys'] as $i => $jwk) {
+                $this->jwks[$jwk['kid'] ?? $i] = $jwk;
             }
         }
         return $this->jwks;
@@ -546,13 +561,38 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Get JWK data
      *
-     * @param string $kid Key id
+     * @param ?string $kid Key id or null for first (default)
      *
      * @return array
      * @throws AuthException
      */
-    protected function getJwk(string $kid): array
+    protected function getJwk(?string $kid): array
     {
-        return $this->getJwks()[$kid];
+        $jwks = $this->getJwks();
+        if (null !== $kid) {
+            if (!isset($jwks[$kid])) {
+                $this->logError("JWK '$kid' not found");
+                throw new AuthException('authentication_error_technical');
+            }
+            return $jwks[$kid];
+        }
+        return reset($jwks);
+    }
+
+    /**
+     * Initialize OIDC state and nonce
+     *
+     * @param bool $resetState Reset existing state?
+     *
+     * @return void
+     */
+    protected function initState(bool $resetState = false): void
+    {
+        if ($resetState || empty($this->session->oidc_state)) {
+            $this->session->oidc_state = hash('sha256', random_bytes(32));
+        }
+        if (empty($this->session->oidc_nonce)) {
+            $this->session->oidc_nonce = hash('sha256', random_bytes(32));
+        }
     }
 }

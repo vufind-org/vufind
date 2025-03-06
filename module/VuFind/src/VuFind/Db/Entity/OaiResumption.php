@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -38,6 +39,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
@@ -83,6 +85,15 @@ class OaiResumption implements OaiResumptionEntityInterface
     protected $expires = '2000-01-01 00:00:00';
 
     /**
+     * Token.
+     *
+     * @var ?string
+     *
+     * @ORM\Column(name="token", type="string", length=255, nullable=true)
+     */
+    protected $token;
+
+    /**
      * Id getter
      *
      * @return int
@@ -113,6 +124,29 @@ class OaiResumption implements OaiResumptionEntityInterface
     public function getResumptionParameters(): ?string
     {
         return $this->params;
+    }
+
+    /**
+     * Set token used for identifying.
+     *
+     * @param string $token Generated token.
+     *
+     * @return static
+     */
+    public function setToken(string $token): static
+    {
+        $this->token = $token;
+        return $this;
+    }
+
+    /**
+     * Get token used for identifying.
+     *
+     * @return ?string
+     */
+    public function getToken(): ?string
+    {
+        return $this->token;
     }
 
     /**

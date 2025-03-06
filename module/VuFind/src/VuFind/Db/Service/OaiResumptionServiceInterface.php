@@ -57,9 +57,40 @@ interface OaiResumptionServiceInterface
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return ?OaiResumptionEntityInterface
+     * @return     ?OaiResumptionEntityInterface
+     * @deprecated Use OaiResumptionService::findWithId
      */
     public function findToken(string $token): ?OaiResumptionEntityInterface;
+
+    /**
+     * Retrieve a row from the database based on primary key; return null if it
+     * is not found.
+     *
+     * @param string $id Id to use for the search.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findWithId(string $id): ?OaiResumptionEntityInterface;
+
+    /**
+     * Retrieve a row from the database based on token; return null if it
+     * is not found.
+     *
+     * @param string $token Token used for the search.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findWithToken(string $token): ?OaiResumptionEntityInterface;
+
+    /**
+     * Try to find with token first, if not found then try to find with id where the token is null.
+     *
+     * @param string $tokenOrId Token or id
+     *
+     * @return ?OaiResumptionEntityInterface
+     * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
+     */
+    public function findWithTokenOrLegacyIdToken(string $tokenOrId): ?OaiResumptionEntityInterface;
 
     /**
      * Create and persist a new resumption token.
