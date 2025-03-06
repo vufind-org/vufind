@@ -114,7 +114,7 @@
 <?php if ($recordTotal > 0): ?>
   <div class="finna-search-filter-toggle-trigger visible-xs hidden-print"></div>
   <div class="finna-search-filter-toggle visible-xs hidden-print">
-    <div class="btn btn-primary btn-search-filter">
+    <div role="button" id="narrow-search-filter-toggle" class="btn btn-primary btn-search-filter" tabindex="0">
       <?=$this->transEsc('Narrow Search')?>
       <?php if ($filterCount > 0): ?>
         <span class="active-filter-count">(<?=$filterCount?>)</span>
@@ -274,7 +274,8 @@
           if (!isset($this->layout()->skiplink)) {
             $this->layout()->skiplink = '';
           }
-          $this->layout()->skiplink .= ' <a class="skip-link" href="#sidebar">' . $this->transEsc('Skip to narrowing options') . '</a>';
+          $this->layout()->skiplink .= ' <a class="skip-link hidden-xs" href="#sidebar">' . $this->transEsc('Skip to narrowing options') . '</a>';
+          $this->layout()->skiplink .= ' <a class="skip-link visible-xs" href="#narrow-search-filter-toggle">' . $this->transEsc('Skip to narrowing options') . '</a>';
           $messageAdded = true;
         }?>
       <?php endforeach; ?>

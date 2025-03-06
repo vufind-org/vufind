@@ -178,17 +178,77 @@ finna.layout = (function finnaLayout() {
   }
 
   /**
+   * Toggle visibility of sidebar on mobile
+   * @param {object} e Event object
+   */
+  function toggleMobileSidebar(e) {
+    e.stopImmediatePropagation();
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelectorAll('.mobile-navigation .sidebar-navigation .expand-icon, .mobile-navigation .sidebar-navigation .collapse-icon').forEach(el => {
+      el.classList.toggle('hidden');
+    });
+    document.querySelector('body').classList.toggle('prevent-scroll');
+  }
+
+  /**
+   * Check and keep focus within the search facet list
+   * @param {object} e Event object
+   */
+  function onFocusOutOfFacetContainer(e) {
+    const container = document.querySelector('.side-facets-container-ajax');
+    if (!container.contains(e.relatedTarget)) {
+      container.focus();
+    }
+  }
+
+  /**
+   * On keypress of mobile sidebar
+   * @param {object} e Event object
+   * @param {HTMLElement} container Container of elements
+   */
+  function onKeyPressMobileSidebar(e, container) {
+    if (e.which === 32 || e.which === 13) {
+      e.preventDefault();
+      toggleMobileSidebar(e);
+      if (document.querySelector('.sidebar').classList.contains('open')) {
+        container.addEventListener('focusout', onFocusOutOfFacetContainer);
+        document.activeElement.blur();
+        container.querySelector('h1').focus();
+      } else {
+        document.activeElement.blur();
+        document.querySelector('.finna-search-filter-toggle .btn-search-filter').focus();
+        container.removeEventListener('focusout', onFocusOutOfFacetContainer);
+      }
+    }
+  }
+
+  /**
    * Initialize mobile narrow search
    */
   function initMobileNarrowSearch() {
-    $('.mobile-navigation .sidebar-navigation, .finna-search-filter-toggle .btn-search-filter, .sidebar .sidebar-close-btn, .sidebar .mylist-bar h1').off('click').on('click', function onClickMobileNav() {
-      $('.sidebar').toggleClass('open');
-      $('.mobile-navigation .sidebar-navigation i').toggleClass('fa-arrow-down');
-      $('body').toggleClass('prevent-scroll');
+    document.querySelectorAll('.mobile-navigation .sidebar-navigation, .sidebar .mylist-bar h1').forEach(el => {
+      el.addEventListener('click', toggleMobileSidebar);
     });
-    $('.mobile-navigation .sidebar-navigation .active-filters').off('click').on('click', function onClickMobileActiveFilters() {
-      $('.sidebar').scrollTop(0);
-    });
+    const container = document.querySelector(".side-facets-container-ajax");
+    if (container) {
+      document.querySelectorAll('.finna-search-filter-toggle .btn-search-filter, .sidebar .sidebar-close-btn').forEach(el => {
+        el.addEventListener('click', toggleMobileSidebar);
+      });
+      container.tabIndex = '0';
+      container.ariaModal = true;
+      container.querySelector('h1').tabIndex = '0';
+      document.querySelectorAll('.finna-search-filter-toggle .btn-search-filter, .sidebar .sidebar-close-btn').forEach(el => {
+        el.addEventListener('keydown', function onKeyDownMobileFacets(e) {
+          onKeyPressMobileSidebar(e, container);
+        });
+      });
+    }
+    const filters = document.querySelector('.mobile-navigation .sidebar-navigation .active-filters');
+    if (filters) {
+      filters.addEventListener('click', function onClickMobileActiveFilters() {
+        document.querySelector('.sidebar').scrollTop(0);
+      });
+    }
     const narrowSearchMobileTrigger = document.querySelector('.finna-search-filter-toggle-trigger');
     const narrowSearchMobile = document.querySelector('.finna-search-filter-toggle');
     if (narrowSearchMobileTrigger && narrowSearchMobile && ('IntersectionObserver' in window)) {

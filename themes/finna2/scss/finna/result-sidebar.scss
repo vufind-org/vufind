@@ -59,7 +59,7 @@
   }
 }
 
-.sidebar :not(.recordProvidedBy) h1,
+.sidebar :not(.recordProvidedBy) .side-facets-header-container,
 .sidebar > h1,
 .sidebar > h2 {
   margin-bottom: 5px;
@@ -71,10 +71,28 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 0;
-    .tooltip-facet {
+    .finna-toggletip {
       margin-right: auto;
       padding-left: 10px;
     }
+  }
+}
+.sidebar .side-facets-header-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background-color: $sidebar-background;
+  color: $sidebar-header-text-color;
+  padding: 10px 15px;
+  align-items: baseline;
+  h1 {
+    padding: 0;
+  }
+  button {
+    background-color: $sidebar-background;
+    color: $sidebar-header-text-color;
+    border: none;
+    font-size: 1.2rem;
   }
 }
 

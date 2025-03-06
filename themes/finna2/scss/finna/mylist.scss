@@ -55,7 +55,9 @@
     > li {
       max-width: none;
       border: none;
-
+      > h1 {
+        width: 100%;
+      }
       > a {
         padding: 3px 20px;
         &.active {
