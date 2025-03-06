@@ -44,7 +44,7 @@
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
-<h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
+<h1 class="visually-hidden"><?=$this->escapeHtml($headTitle)?></h1>
 <?php $recs = $combinedResults->getRecommendations('top'); ?>
 <?php if (!empty($recs)): ?>
   <div>

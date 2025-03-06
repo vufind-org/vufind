@@ -14,18 +14,18 @@
 
 <form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds">
   <?=$this->flashmessages()?>
-  <label class="control-label"><?=$this->transEsc('Title')?></label>
+  <label class="form-label"><?=$this->transEsc('Title')?></label>
   <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
   <?php if (in_array('comments', $this->extraHoldFields)): ?>
     <div class="form-group hold-comment">
-      <label class="control-label"><?=$this->transEsc('Comments')?>:</label>
+      <label class="form-label"><?=$this->transEsc('Comments')?>:</label>
       <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
     </div>
   <?php endif; ?>
 
   <?php if (in_array('startDate', $this->extraHoldFields)): ?>
     <div class="form-group hold-start-date">
-      <label class="control-label"><?=$this->transEsc('hold_start_date')?>:</label>
+      <label class="form-label"><?=$this->transEsc('hold_start_date')?>:</label>
       <input id="startDate" type="text" name="gatheredDetails[startDate]" value="<?=!empty($this->gatheredDetails['startDate']) ? $this->escapeHtmlAttr($this->gatheredDetails['startDate']) : $this->escapeHtmlAttr($this->defaultStartDate)?>" size="10" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
@@ -33,7 +33,7 @@
 
   <?php if (in_array('requiredByDate', $this->extraHoldFields) || in_array('requiredByDateOptional', $this->extraHoldFields)): ?>
     <div class="form-group hold-required-by">
-      <label class="control-label"><?=$this->transEsc(in_array('requiredByDateOptional', $this->extraHoldFields) ? 'hold_required_by_optional' : 'hold_required_by')?>:</label>
+      <label class="form-label"><?=$this->transEsc(in_array('requiredByDateOptional', $this->extraHoldFields) ? 'hold_required_by_optional' : 'hold_required_by')?>:</label>
       <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=!empty($this->gatheredDetails['requiredBy']) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="10" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
@@ -48,8 +48,8 @@
             $selected = $this->defaultRequestGroup;
         }
      ?>
-      <label class="control-label"><?=$this->transEsc('hold_request_group')?>:</label>
-      <select id="requestGroupId" name="gatheredDetails[requestGroupId]" class="form-control form-select">
+      <label class="form-label"><?=$this->transEsc('hold_request_group')?>:</label>
+      <select id="requestGroupId" name="gatheredDetails[requestGroupId]" class="form-select">
         <?php if ($selected === false): ?>
           <option value="" selected="selected">
             <?=$this->transEsc('select_request_group')?>
@@ -86,7 +86,7 @@
     ?>
     <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
-        <label id="pickUpLocationLabel" class="control-label"><?=$this->icon('spinner', 'loading-icon hidden')?> <?=$this->transEsc('pick_up_location')?>:
+        <label id="pickUpLocationLabel" class="form-label"><?=$this->icon('spinner', 'loading-icon hidden')?> <?=$this->transEsc('pick_up_location')?>:
           <?php if (in_array('requestGroup', $this->extraHoldFields)): ?>
             <noscript> (<?=$this->transEsc('Please enable JavaScript.')?>)</noscript>
           <?php endif; ?>
@@ -101,8 +101,8 @@
       </div>
     <?php elseif ($this->pickup): ?>
       <div class="form-group hold-pickup-location">
-        <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
-        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-control form-select">
+        <label class="form-label"><?=$this->transEsc('pick_up_location')?>:</label>
+        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-select">
           <?php if ($selected === false && count($this->pickup) > 1): ?>
             <option value="" selected="selected">
               <?=$this->transEsc('select_pickup_location')?>
@@ -121,9 +121,9 @@
 
     <?php if (!empty($this->proxiedUsers)): ?>
       <div class="form-group hold-proxied-users">
-        <label class="control-label"><?=$this->transEsc('proxied_user')?>:</label>
+        <label class="form-label"><?=$this->transEsc('proxied_user')?>:</label>
         <?php $selectedProxy = $this->gatheredDetails['proxiedUser'] ?? ''; ?>
-        <select id="proxiedUser" name="gatheredDetails[proxiedUser]" class="form-control form-select">
+        <select id="proxiedUser" name="gatheredDetails[proxiedUser]" class="form-select">
           <option value=""<?php if (empty($selectedProxy)): ?> selected="selected"<?php endif; ?>>
             <?=$this->transEsc('no_proxied_user')?>
           </option>

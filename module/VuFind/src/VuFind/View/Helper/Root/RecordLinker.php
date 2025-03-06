@@ -277,8 +277,11 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function getBreadcrumbParams(AbstractRecord $driver): array
     {
-        $truncateHelper = $this->getView()->plugin('truncate');
-        return [$truncateHelper($driver->getBreadcrumb(), 30), $this->getUrl($driver)];
+        $breadcrumb = $driver->getBreadcrumb();
+        $breadcrumbText = empty($breadcrumb)
+            ? ($this->getView()->plugin('translate'))('Title not available')
+            : ($this->getView()->plugin('truncate'))($breadcrumb, 30);
+        return [$breadcrumbText, $this->getUrl($driver)];
     }
 
     /**

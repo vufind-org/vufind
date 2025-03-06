@@ -51,7 +51,7 @@
   $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
 ?>
 
-<h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
+<h1 class="visually-hidden"><?=$this->escapeHtml($headTitle)?></h1>
 
 <div class="<?=$this->layoutClass('mainbody', (bool)$recommendations)?>">
   <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
