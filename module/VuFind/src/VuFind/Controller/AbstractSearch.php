@@ -160,17 +160,6 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        // Disabled by default:
-        return false;
-    }
-
-    /**
      * Store the URL of the provided search (if appropriate).
      *
      * @param \VuFind\Search\Base\Results $results Search results object
@@ -423,7 +412,7 @@ class AbstractSearch extends AbstractBase
             }
 
             // Set up results scroller:
-            if ($this->resultScrollerActive()) {
+            if ($results->getOptions()->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
 

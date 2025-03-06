@@ -53,21 +53,21 @@ trait SearchFacetFilterTrait
      * @var string
      */
     protected $activeFilterNodesSelector
-        = '.active-filters.hidden-xs .filters > a, .active-filters.hidden-xs .filters > div';
+        = '.active-filters--uncollapsible .filters > a, .active-filters--uncollapsible .filters > div';
 
     /**
      * CSS selector for finding the active filter values
      *
      * @var string
      */
-    protected $activeFilterSelector = '.active-filters.hidden-xs .filters .filter-value';
+    protected $activeFilterSelector = '.active-filters--uncollapsible .filters .filter-value';
 
     /**
      * CSS selector for finding the active filter list
      *
      * @var string
      */
-    protected $activeFilterListSelector = '.active-filters.hidden-xs .filters .title-value-pair';
+    protected $activeFilterListSelector = '.active-filters--uncollapsible .filters .title-value-pair';
 
     /**
      * CSS selector for finding the first hierarchical facet expand button

@@ -1,6 +1,13 @@
 <?php
     // Initialize from current search (if available and not explicitly overridden) or defaults:
-    if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
+    if ($this->results === null) {
+      $fromSearchMemory = true;
+      $results = $this->searchMemory()->getCurrentSearch();
+    } else {
+      $fromSearchMemory = false;
+      $results = $this->results;
+    }
+    if ($results) {
       $params = $results->getParams();
       $this->searchClassId = $params->getSearchClassId();
     } else {
@@ -51,7 +58,7 @@
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
-  <div class="navbar-form navbar-left flip">
+  <div class="navbar-form">
     <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => false]); ?>
     <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc('Your search terms')?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
@@ -70,6 +77,7 @@
               'checkboxFilters' => $showFilters ? $checkboxFilters : [],
               'searchClassId' => $this->searchClassId,
               'searchType' => $this->searchType,
+              'fromSearchMemory' => $fromSearchMemory,
             ]
         );
       ?>
@@ -216,13 +224,14 @@
     <?=$this->context($this)->renderInContext(
           'search/filters.phtml',
           [
-          'params' => $params ?? null,
-          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
-          'filterList' => $showFilters ? $filterList : [],
-          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-          'searchClassId' => $this->searchClassId,
-          'searchType' => $this->searchType,
-        ]
+            'params' => $params ?? null,
+            'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+            'filterList' => $showFilters ? $filterList : [],
+            'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+            'searchClassId' => $this->searchClassId,
+            'searchType' => $this->searchType,
+            'fromSearchMemory' => $fromSearchMemory,
+          ]
       );?>
   </form>
 <?php endif; ?>

@@ -260,11 +260,12 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function getBreadcrumbHtml($driver)
     {
-        $truncateHelper = $this->getView()->plugin('truncate');
         $escapeHelper = $this->getView()->plugin('escapeHtml');
-        return '<a href="' . $this->getUrl($driver) . '">' .
-            $escapeHelper($truncateHelper($driver->getBreadcrumb(), 30))
-            . '</a>';
+        $breadcrumb = $driver->getBreadcrumb();
+        $breadcrumbText = empty($breadcrumb)
+            ? ($this->getView()->plugin('translate'))('Title not available')
+            : ($this->getView()->plugin('truncate'))($breadcrumb, 30);
+        return '<a href="' . $this->getUrl($driver) . '">' . $escapeHelper($breadcrumbText) . '</a>';
     }
 
     /**

@@ -35,7 +35,7 @@
 }
 
 .media-body h1 { margin-top: 0; }
-@media (max-width: 767px) {
+@include media-breakpoint-down(sm) {
   .record .media-left,
   .record .media-right { display: block; }
   .record .media-body { // Add a gap between the thumbnail and the info
@@ -69,27 +69,12 @@
 .record .format:last-child::after { content: ""; }
 .record-previews { margin-top: .5rem; }
 
-/* ------ Nav ------ */
-.record-nav.nav { margin-bottom: 1rem; }
-.record-nav > li,
-.btn-bookbag-toggle { width: 100%; }
-.record-nav > li > a { padding: .5rem; }
-.record-nav > li > a,
-.btn-bookbag-toggle { text-align: center; }
-@media(min-width: 768px) {
-  .record-nav > li,
-  .btn-bookbag-toggle { width: auto; }
-  .record-nav > li > a { padding: $nav-link-padding; }
-  .record-nav > li > a,
-  .btn-bookbag-toggle { text-align: left; }
-}
-
 /* ------ Comments ------ */
 .comment-label,
 .comment-name { font-style: italic; }
 .comment { margin-bottom: 1rem; }
 .comment-name .delete { color: $state-danger-text; }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .comment-form,
   .comment {
     display: flex;
@@ -132,7 +117,7 @@
     text-decoration: none;
   }
 
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     margin-left: 0.5rem;
     padding: $padding-base-vertical calc(#{$padding-base-horizontal} / 2);
   }
@@ -362,5 +347,12 @@
 
   &.label-retraction {
     @extend .label-warning;
+  }
+}
+
+/* QRCode */
+@include media-breakpoint-down(sm) {
+  .collection-qrcode, .record-qrcode {
+    display: none;
   }
 }

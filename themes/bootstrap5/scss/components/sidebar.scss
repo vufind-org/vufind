@@ -227,7 +227,7 @@ h3.facet-title {
   font-size: $font-size-base;
   margin: 0;
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
 }

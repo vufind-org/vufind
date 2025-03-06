@@ -40,7 +40,6 @@ $nav-link-padding:        $nav-link-padding-y !default;
 
 $nav-tabs-active-link-hover-color: $gray !default;
 $navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
-$navbar-height:                    50px !default;
 $navbar-nav-link-hover-color:      $body-bg !default;
 $navbar-nav-link-hover-bg:         $body-color !default;
 
@@ -50,25 +49,6 @@ $padding-base-horizontal:          $btn-padding-x !default;
 $panel-default-border:   $primary-border-subtle !default;
 $panel-bg:               #f5f5f5 !default;
 $panel-footer-bg:        $panel-bg !default;
-
-$screen-xs:              map-get($grid-breakpoints, "xs");
-$screen-xs-min:          $screen-xs;
-$screen-sm:              map-get($grid-breakpoints, "sm");
-$screen-sm-min:          $screen-sm;
-$screen-md:              map-get($grid-breakpoints, "md");
-$screen-md-min:          $screen-md;
-$screen-lg:              map-get($grid-breakpoints, "lg");
-$screen-lg-min:          $screen-lg;
-$screen-xl:              map-get($grid-breakpoints, "xl");
-$screen-xl-min:          $screen-xl;
-
-$screen-xs-max:          ($screen-sm-min - 1);
-$screen-sm-max:          ($screen-md-min - 1);
-$screen-md-max:          ($screen-lg-min - 1);
-$screen-lg-max:          ($screen-xl-min - 1);
-
-$grid-float-breakpoint:     $screen-sm-min !default;
-$grid-float-breakpoint-max: ($grid-float-breakpoint - 1) !default;
 
 $state-danger-text:           var(--#{$prefix}danger) !default;
 $state-danger-bg:             var(--#{$prefix}danger-bg-subtle) !default;
@@ -244,7 +224,7 @@ button.list-group-item {
     display: block;
     width: 100%;
 
-    @media (min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       display: inline-block;
       width: auto;
     }
@@ -273,7 +253,7 @@ textarea.form-control {
   height: auto;
 }
 
-@media (min-width: map-get($grid-breakpoints, "sm")) {
+@include media-breakpoint-up(sm) {
   .form-inline {
     .control-label {
       margin-bottom: 0;
@@ -343,7 +323,7 @@ h6, .h6 {
 #modal .modal-dialog .modal-content > .close {
   border: 0;
 
-  @media (max-width: 767px) {
+  @include media-breakpoint-down(sm) {
     font-size: 1.5rem;
     background-color: var(--#{$prefix}modal-bg);
     top: 0.5rem;
@@ -355,38 +335,6 @@ h6, .h6 {
   }
 }
 
-// See .nav > li > a in bootstrap.scss
-.nav.navbar-nav button.dropdown-toggle {
-  color: inherit;
-  padding: var(--#{$prefix}nav-link-padding-y) var(--#{$prefix}navbar-nav-link-padding-x);
-
-  &:hover,
-  &:focus {
-    color: $dropdown-bg;
-    background-color: #333;
-  }
-}
-.navbar nav {
-  width: 100%;
-  margin-bottom: 7.5px;
-
-  > li > .nav-link {
-    &.active {
-      background-color: $nav-link-active-bg;
-    }
-    &:not(.active):hover {
-      --#{$prefix}nav-link-hover-color: #{$navbar-nav-link-hover-color};
-      background-color: $navbar-nav-link-hover-bg;
-    }
-  }
-}
-.navbar-right {
-  justify-content: right;
-}
-.navbar-left {
-  justify-content: left;
-}
-
 .media-body, .media-left, .media-right {
   display: table-cell;
   vertical-align: top;
@@ -394,49 +342,6 @@ h6, .h6 {
 .media-body {
   width: 10000px;
 }
-
-// Responsive utilities (that avoid `display: *` that would override any existing value)
-@media(max-width: $screen-xs-max) {
-  .hidden-xs {
-    display: none !important;
-  }
-  :not(.visible-xs) {
-    &.visible-sm, &.visible-md, &.visible-lg {
-      display: none !important;
-    }
-  }
-}
-@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
-  .hidden-sm {
-    display: none !important;
-  }
-  :not(.visible-sm) {
-    &.visible-xs, &.visible-md, &.visible-lg {
-      display: none !important;
-    }
-  }
-}
-@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
-  .hidden-md {
-    display: none !important;
-  }
-  :not(.visible-md) {
-    &.visible-xs, &.visible-sm, &.visible-lg {
-      display: none !important;
-    }
-  }
-}
-@media (min-width: $screen-lg-min) {
-  .hidden-lg {
-    display: none !important;
-  }
-  :not(.visible-lg) {
-    &.visible-xs, &.visible-sm, &.visible-md {
-      display: none !important;
-    }
-  }
-}
-
 
 .hidden-print {
   @extend .d-print-none;
@@ -545,11 +450,6 @@ h6, .h6 {
   }
 }
 
-.navbar-brand {
-  font-size: 1.4rem;
-  text-decoration: underline;
-}
-
 .pull-right {
   float: right !important;
 }
@@ -566,13 +466,15 @@ h6, .h6 {
   @include border-radius(var(--#{$prefix}btn-border-radius));
 }
 
-@media screen and (max-width: 768px) {
-  .table-responsive {
-    > :not(caption) > * > * {
-      box-shadow: none;
-    }
-    > tbody > tr > *:first-child {
-      border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
+@include media-breakpoint-down(sm) {
+  @media screen {
+    .table-responsive {
+      > :not(caption) > * > * {
+        box-shadow: none;
+      }
+      > tbody > tr > *:first-child {
+        border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
+      }
     }
   }
 }

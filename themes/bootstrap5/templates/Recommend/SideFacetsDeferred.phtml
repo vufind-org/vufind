@@ -22,8 +22,9 @@
 
   foreach ($activeFacets as $field => $facetName) {
     if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
-      $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
-      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      $this->headScript()->appendFile('vendor/nouislider.min.js');
+      $this->headLink()->appendStylesheet('vendor/nouislider.min.css');
+      $this->headScript()->appendFile('date_range_slider.js');
       break;
     }
   }
