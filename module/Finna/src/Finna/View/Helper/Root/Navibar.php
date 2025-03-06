@@ -196,11 +196,12 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
      */
     public function getLanguageUrl($lng)
     {
+        // Clone the URI so that we don't manipulate current request:
         $url = clone $this->router->getRequestUri();
         $params = $url->getQueryAsArray();
         $params['lng'] = $lng;
         $url->setQuery(http_build_query($params));
-        return $url->toString();
+        return $url->isValid() ? $url->toString() : '';
     }
 
     /**
