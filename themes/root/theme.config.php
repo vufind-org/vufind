@@ -207,4 +207,39 @@ return [
             'Laminas\View\Helper\Url' => 'VuFind\View\Helper\Root\Url',
         ],
     ],
+    'icons' => [
+        'sets' => [
+            /**
+             * Define icon sets here.
+             *
+             * All sets need:
+             * - 'template': which template the icon renders with
+             * - 'src': the location of the relevant resource (font, css, images)
+             * - 'prefix': prefix to place before each icon name for convenience
+             *             (ie. fa fa- for FontAwesome, default "")
+             */
+            'Collapse' => [
+                'template' => 'collapse',
+            ],
+            // Unicode symbol characters. Icons are defined as hex code points.
+            'Unicode' => [
+                'template' => 'unicode',
+            ],
+        ],
+        'aliases' => [
+            /**
+             * Icons can be assigned or overridden here
+             *
+             * Format: 'icon' => [set:]icon[:extra_classes]
+             * Icons assigned without set will use the defaultSet.
+             * In order to specify extra CSS classes, you must also specify a set.
+             *
+             * All of the items below have been specified with FontAwesome to allow
+             * for a strong inheritance safety net but this is not required.
+             */
+            'cites' => 'Unicode:275D',
+            'cited-by' => 'Unicode:275E',
+            'collapse' => 'Collapse:_', // uses the icons below
+        ]
+    ]
 ];
