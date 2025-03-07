@@ -75,12 +75,6 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
             'div as PropertyString, allow HTML, rendered in heading' => [
                 PropertyString::fromHtml($div), null, true, 'heading', [], 'Div',
             ],
-            /*'link + script' => [$link . $script, null, null, $link],
-            'link + script + link' => [$link . $script . $link, null, null, $link . $link],
-            'link with target="_blank"' => [$link, true, null, $linkTargetBlank],
-            'link in heading' => [$link, null, 'heading', $link],
-            'summary and details in default context' => [$summaryDetails, null, null, $summaryDetails],
-            'summary and details in heading' => [$summaryDetails, null, 'heading', 'Summary Details'],*/
         ];
     }
 
