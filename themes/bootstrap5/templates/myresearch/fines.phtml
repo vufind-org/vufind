@@ -6,10 +6,9 @@
    // $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
    //   ->add($this->translate('Fines'), active: true);
 
-  // $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Yoursss Account') . '</a></li>'
-  //  . '<li>' . $this->transEsc($pageTitle) . '</li>';
+   //$this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Upgrade VuFind') . '</li>';
 
-$this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))->add($this->translate($pageTitle));
+   $this->breadcrumbs()->set($this->translate('Upgrade VuFind'), active: true);
 
 ?>
 
