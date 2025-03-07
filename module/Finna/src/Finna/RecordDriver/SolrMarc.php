@@ -2640,7 +2640,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
     }
 
     /**
-     * Get original languages from fields 041, subfield h and 979, subfield i
+     * Get original languages from fields 041, subfield h and 979, subfields h and i
      *
      * @return array
      */
@@ -2652,7 +2652,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                 $result[] = $this->stripTrailingPunctuation($this->getSubfield($field, 'h')) ?? '';
             }
         }
-        foreach ($this->stripTrailingPunctuation($this->getFieldArray('979', ['i'])) as $lang) {
+        foreach ($this->stripTrailingPunctuation($this->getFieldArray('979', ['h', 'i'], false)) as $lang) {
             $result[] = $lang;
         }
         return array_unique(array_filter($result));
