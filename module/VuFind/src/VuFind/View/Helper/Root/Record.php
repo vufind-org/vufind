@@ -451,16 +451,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     public function getTitleHtml($maxLength = 180)
     {
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
-        $title = trim($this->driver->tryMethod('getTitle'));
-        if (!empty($highlightedTitle)) {
+        $title = $this->driver->tryMethod('getTitle');
+        if ('' !== $highlightedTitle) {
             $highlight = $this->getView()->plugin('highlight');
             $addEllipsis = $this->getView()->plugin('addEllipsis');
             return $highlight($addEllipsis($highlightedTitle, $title));
         }
-        if (!empty($title)) {
-            $escapeHtml = $this->getView()->plugin('escapeHtml');
+        if ('' !== trim($title)) {
+            $escape = $this->getView()->plugin('escapeOrCleanHtml');
             $truncate = $this->getView()->plugin('truncate');
-            return $escapeHtml($truncate($title, $maxLength));
+            return $escape($truncate($title, $maxLength), dataContext: 'title', renderingContext: 'link');
         }
         $transEsc = $this->getView()->plugin('transEsc');
         return $transEsc('Title not available');

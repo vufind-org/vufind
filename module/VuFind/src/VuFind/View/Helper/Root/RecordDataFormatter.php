@@ -470,7 +470,9 @@ class RecordDataFormatter extends AbstractHelper
         $transDomain = $options['translationTextDomain'] ?? '';
         $separator = $options['separator'] ?? '<br>';
         $retVal = '';
-        $array = (array)$data;
+        // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+        // properties):
+        $array = null === $data ? [] : (is_array($data) ? $data : [$data]);
         $remaining = count($array);
         foreach ($array as $line) {
             $remaining--;

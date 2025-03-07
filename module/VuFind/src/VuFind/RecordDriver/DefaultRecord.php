@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\String\PropertyString;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
@@ -976,8 +977,9 @@ class DefaultRecord extends AbstractBase
         // Assemble the URL:
         $query = [];
         foreach ($params as $key => $value) {
-            $value = (array)$value;
-            foreach ($value as $sub) {
+            // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+            // properties):
+            foreach (is_array($value) ? $value : [$value] as $sub) {
                 $query[] = urlencode($key) . '=' . urlencode($sub);
             }
         }
