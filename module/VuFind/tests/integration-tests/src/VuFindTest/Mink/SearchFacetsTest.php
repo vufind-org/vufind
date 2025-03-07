@@ -679,6 +679,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFacetLightboxMultiselect(): void
     {
+        // This test can be a bit slow; make sure we wait long enough:
+        $longTimeout = $this->getDefaultTimeout() * 2;
+
         $this->changeConfigs(
             [
                 'facets' => [
@@ -698,16 +701,19 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertIsObject($modal);
         // Check for multi-filter controls:
         $this->activateMultiFilterSelection($modal);
+        $this->unfindCss($modal, '.loading-spinner', timeout: $longTimeout);
         $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
         $this->findCss($modal, '.js-apply-multi-facets-selection');
         // Change order and check for multi-filter controls:
         $this->clickCss($modal, '[data-sort="index"]');
+        $this->unfindCss($modal, '.loading-spinner', timeout: $longTimeout);
         $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
         $this->findCss($modal, '.js-apply-multi-facets-selection');
         // Load more:
         $this->clickCss($modal, '.js-facet-next-page');
+        $this->waitForPageLoad($page);
         // Select and exclude a facet item:
-        $this->clickCss($modal, 'a[data-title="Weird IDs"]');
+        $this->clickCss($modal, 'a[data-title="Weird IDs"]', timeout: $longTimeout);
         $this->clickCss($this->findCss($modal, 'a[data-title="Fiction"]')->getParent(), 'a.exclude');
         $this->clickCss($modal, '.js-apply-multi-facets-selection');
         $this->waitForPageLoad($page);
