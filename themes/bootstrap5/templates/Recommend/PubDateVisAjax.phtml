@@ -23,26 +23,29 @@
     );
   ?>
   <?php foreach ($visFacets as $facetField => $facetRange): ?>
+    <?php
+      $facetFieldEsc = $this->escapeHtmlAttr($facetField);
+    ?>
     <div class="authorbox">
-      <form class="datevis-form facet-range-form hidden" name="datevis<?=$facetField?>xForm" id="datevis<?=$facetField?>xForm" data-name="<?=$this->escapeHtmlAttr($facetField)?>" data-filter-field="daterange[]">
-        <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$facetField}:.*/"])?>
-        <input type="hidden" name="daterange[]" value="<?=$this->escapeHtmlAttr($facetField)?>">
+      <form class="datevis-form facet-range-form hidden" name="datevis<?=$facetFieldEsc?>xForm" id="datevis<?=$facetFieldEsc?>xForm" data-name="<?=$facetFieldEsc?>" data-filter-field="daterange[]">
+        <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$facetFieldEsc}:.*/"])?>
+        <input type="hidden" name="daterange[]" value="<?=$facetFieldEsc?>">
         <div class="datevis-label"><strong><?=$this->transEsc($facetRange['label']) ?></strong></div>
         <div class="datevis-chart">
-          <canvas id="datevis<?=$facetField?>x-canvas"></canvas>
+          <canvas id="datevis<?=$facetFieldEsc?>x-canvas"></canvas>
         </div>
-        <div class="slider-container" aria-hidden="true"><div id="datevis<?=$facetField?>-slider"></div></div>
-        <div class="datevis-controls-trigger" id="datevis<?=$facetField?>-controls-trigger"></div>
-        <div class="datevis-controls collapse" id="datevis<?=$facetField?>-controls">
+        <div class="slider-container" aria-hidden="true"><div id="datevis<?=$facetFieldEsc?>-slider"></div></div>
+        <div class="datevis-controls-trigger" id="datevis<?=$facetFieldEsc?>-controls-trigger"></div>
+        <div class="datevis-controls collapse" id="datevis<?=$facetFieldEsc?>-controls">
           <div class="datevis-controls-container">
-            <label id="datevis<?=$facetField?>-from-label" for="datevis<?=$facetField?>-from">
+            <label id="datevis<?=$facetFieldEsc?>-from-label" for="datevis<?=$facetFieldEsc?>-from">
               <?=$this->transEsc('date_from')?>:
             </label>
-            <input type="number" class="form-control" name="<?=$facetField?>from" id="datevis<?=$facetField?>-from">
-            <label id="datevis<?=$facetField?>-to-label" for="datevis<?=$facetField?>-to">
+            <input type="number" class="form-control" name="<?=$facetFieldEsc?>from" id="datevis<?=$facetFieldEsc?>-from">
+            <label id="datevis<?=$facetFieldEsc?>-to-label" for="datevis<?=$facetFieldEsc?>-to">
               <?=$this->transEsc('date_to')?>:
             </label>
-            <input type="number" class="form-control" name="<?=$facetField?>to" id="datevis<?=$facetField?>-to">
+            <input type="number" class="form-control" name="<?=$facetFieldEsc?>to" id="datevis<?=$facetFieldEsc?>-to">
             <input class="btn btn-default submit-button" type="submit" value="<?=$this->transEscAttr('Set')?>">
             <input class="btn btn-default clear-btn" type="button" value="<?=$this->transEscAttr('Clear')?>">
           </div>
