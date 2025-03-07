@@ -38,6 +38,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PluginManager as ConfigPluginManager;
 
 /**
  * CleanHtml helper factory.
@@ -57,6 +58,20 @@ class CleanHtmlFactory implements FactoryInterface
      * @var ContainerInterface
      */
     protected ContainerInterface $container;
+
+    /**
+     * Default list of allowed elements in different rendering contexts
+     *
+     * See e.g. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#technical_summary for more
+     * information on headings. Note that the defaults below are subsets of all allowed elements.
+     *
+     * @var array
+     */
+    protected $defaultContextConfig = [
+        'default' => null,
+        'heading' => 'a,b,br,em,i,span,strong,sub,sup,u',
+        'link' => 'abbr,acronym,b,bdo,big,br,cite,dfn,em,i,img,q,samp,small,span,strong,sub,sup,var',
+    ];
 
     /**
      * Create an object
@@ -134,23 +149,25 @@ class CleanHtmlFactory implements FactoryInterface
      */
     protected function setAdditionalConfiguration(HTMLPurifier_Config $config, array $options): void
     {
+        // Configure allowed elements:
         $context = $options['context'] ?? 'default';
-        if ('heading' === $context) {
-            // Limit elements allowed in headings
-            // (see https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content for more
-            // information):
-            $config->set('HTML.AllowedElements', 'a,b,br,em,i,span');
-        } else {
-            // Add support for details and summary elements:
-            $definition = $config->getHTMLDefinition(true);
-            $definition->addElement(
-                'details',
-                'Block',
-                'Flow',
-                'Common',
-                ['open' => new \HTMLPurifier_AttrDef_HTML_Bool(true)]
-            );
-            $definition->addElement('summary', 'Block', 'Flow', 'Common');
+        $contextConfig
+            = (array)($this->container->get(ConfigPluginManager::class)->get('config')->HTML_Rendering_Contexts ?? []);
+        $allowedElements
+            = $contextConfig['allowed_elements'][$context] ?? $this->defaultContextConfig[$context] ?? null;
+        if ($allowedElements) {
+            $config->set('HTML.AllowedElements', $allowedElements);
         }
+
+        // Add support for details and summary elements:
+        $definition = $config->getHTMLDefinition(true);
+        $definition->addElement(
+            'details',
+            'Block',
+            'Flow',
+            'Common',
+            ['open' => new \HTMLPurifier_AttrDef_HTML_Bool(true)]
+        );
+        $definition->addElement('summary', 'Block', 'Flow', 'Common');
     }
 }
