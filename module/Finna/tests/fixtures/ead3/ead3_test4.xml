@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<c02 level="file">
+  <did>
+    <unitid id="Item_Ref" identifier="test" label="Tekninen">test</unitid>
+    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
+    <unitdate label="Ajallinen kattavuus" normal="16uu-01-01/17uu-01-01">01.01.16uu-01.01.17uu</unitdate>
+    <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
+
+    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
+    <unitdate label="Ajallinen kattavuus" normal="1661-uu-u/1661-uu-uu"></unitdate>
+    <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
+
+    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
+    <unitdate label="Ajallinen kattavuus" normal="166u"></unitdate>
+    <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
+
+    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
+    <unitdate label="Ajallinen kattavuus" normal="1600-01-01/1610-01-01"></unitdate>
+    <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
+
+    <unitdate normal="1923-XX-XX">1923</unitdate>
+    <unitdate normal="1925-XX-XX/XXXX-XX-XX">1925</unitdate>
+
+    <physdesc lang="sv">Hyllmeter ordnat 0.96 hm</physdesc>
+    <physdesc lang="fi">Hyllymetriä järjestetty 0.96 hm</physdesc>
+    <physdesc lang="fi">Koteloita 5</physdesc>
+    <daoset>
+      <dao daotype="borndigital" href="https://testikuva.large/test" label="0" linkrole="image/jpeg" linktitle="Lavastussuunnitelma esitykseen &quot;Makean yst&#xE4;v&#xE4;&quot; (KILPAILUTY&#xD6;) 0" localtype=""/>
+    </daoset>
+  </did>
+  <relatedmaterial>
+    <p lang="fi">
+      <ref href="https://fi.wikipedia.org/">Wikipedia-artikkeli</ref>
+      <ref>Joku muu liittyvä aineisto</ref>
+    </p>
+    <p lang="en">Some related material</p>
+    <p>
+      <ref lang="sv" href="https://sv.wikipedia.org/">   </ref>
+    </p>
+  </relatedmaterial>
+  <relations>
+    <relation arcrole="kokoelmanmuodostaja" relationtype="cpfrelation" href="EAC_102476374">
+      <relationentry localtype="Ensisijainen nimi">Suomalaisen Kirjallisuuden Seura ry</relationentry>
+    </relation>
+    <relation arcrole="luovuttaja" relationtype="cpfrelation">
+      <relationentry localtype="Ensisijainen nimi">Lucifer Luovuttaja</relationentry>
+    </relation>
+    <relation arcrole="aihe" relationtype="cpfrelation">
+      <relationentry localtype="Ensisijainen nimi">Aino Aihe</relationentry>
+    </relation>
+  </relations>
+  <controlaccess>
+    <name localtype="http://www.rdaregistry.info/Elements/u/#P60066" relator="Kokoelmanmuodostaja" identifier="EAC_102476374">
+      <part localtype="Ensisijainen nimi" lang="fin">Suomalaisen Kirjallisuuden Seura ry</part>
+      <part localtype="suhteen ajallinen kattavuus">unknown - open</part>
+    </name>
+    <name relator="Haastateltava" identifier="EAC_123456">
+      <part localtype="Ensisijainen nimi" lang="fin">Harri Haastateltava</part>
+    </name>
+    <name>
+      <part lang="fin">Rolle Rooliton</part>
+    </name>
+    <name relator="Tuntematon rooli">
+      <part lang="fin">Tuovi Tuntematon</part>
+    </name>
+    <name relator="Aihe">
+      <part localtype="Ensisijainen nimi" lang="fin">Anssi Aihe</part>
+    </name>
+    <subject relator="aihe" identifier="EAC_102486375">
+      <part localtype="Ensisijainen nimi" lang="fin">Manner, Eeva-Liisa</part>
+      <part localtype="Varianttinimi" lang="fin">September, Anna</part>
+    </subject>
+    <subject identifier="http://www.yso.fi/onto/yso/p900" lang="fin" relator="aihe" source="YSO">
+      <part>fysiikka</part>
+    </subject>
+    <subject>
+      <part lang="fin">Elintarviketeollisuus</part>
+      <part lang="fin">Myllytuotteiden valmistus</part>
+    </subject>
+    <subject relator="asiasana" source="KOKO" identifier="http://www.yso.fi/onto/koko/p9492" lang="eng">
+      <part>writing contests</part>
+    </subject>
+  </controlaccess>
+</c02>

@@ -30,6 +30,7 @@
 namespace FinnaTest\RecordDriver;
 
 use Finna\RecordDriver\SolrEad3;
+use Generator;
 
 /**
  * SolrEad3 Record Driver Test Class
@@ -499,38 +500,74 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetImages
+     *
+     * @return Generator
+     */
+    public static function getTestGetImagesData(): Generator
+    {
+        $expected = [
+            'urls' => [
+                'large' => 'https://testikuva.large/test',
+                'small' => 'https://testikuva.large/test',
+                'medium' => 'https://testikuva.large/test',
+            ],
+            'description' => 'Lavastussuunnitelma esitykseen "Makean ystävä" (KILPAILUTYÖ) 0',
+            'rights' => false,
+            'descId' => '',
+            'sort' => '0',
+            'type' => 'fullres',
+            'pdf' => [
+                'large' => false,
+                'small' => false,
+                'medium' => false,
+            ],
+            'highResolution' => [],
+            'cacheSizes' => [
+                'small' => 'large',
+                'medium' => 'large',
+            ],
+            'downloadable' => false,
+        ];
+        yield 'record with 1 image' => [
+            'ead3_test3.xml',
+            [$expected],
+        ];
+        $expected['type'] = '';
+        yield 'record with image type unset' => [
+            'ead3_test4.xml',
+            [$expected],
+        ];
+        $expected['urls'] = [
+            'large' => 'https://testpdflinkki.fi/pdf',
+            'small' => 'https://testikuvalinkki.fi/kuva',
+            'medium' => 'https://testikuvalinkki.fi/kuva',
+        ];
+        $expected['description'] = 'Kuvaus';
+        $expected['sort'] = '';
+        $expected['type'] = 'fullsize';
+        $expected['pdf']['large'] = true;
+        $expected['cacheSizes'] = [
+            'small' => 'medium',
+        ];
+        yield 'record with pdf and a image' => [
+            'ead3_test5.xml',
+            [$expected],
+        ];
+    }
+
+    /**
      * Test get images
      *
-     * @return void
+     * @param string $xmlPath  Path for the record xml
+     * @param array  $expected Return value to be expected
+     *
+     * @return       void
+     * @dataProvider getTestGetImagesData
      */
-    public function testGetImages()
+    public function testGetImages(string $xmlPath, array $expected)
     {
-        $driver = $this->getDriver('ead3_test3.xml', ['id' => 'test_id']);
-        $expected = [
-            [
-                'urls' => [
-                    'large' => 'https://testikuva.large/test',
-                    'small' => 'https://testikuva.large/test',
-                    'medium' => 'https://testikuva.large/test',
-                ],
-                'description' => 'Lavastussuunnitelma esitykseen "Makean ystävä" (KILPAILUTYÖ) 0',
-                'rights' => false,
-                'descId' => '',
-                'sort' => '0',
-                'type' => 'fullres',
-                'pdf' => [
-                    'large' => false,
-                    'small' => false,
-                    'medium' => false,
-                ],
-                'highResolution' => [],
-                'cacheSizes' => [
-                    'small' => 'large',
-                    'medium' => 'large',
-                ],
-                'downloadable' => false,
-            ],
-        ];
+        $driver = $this->getDriver($xmlPath, ['id' => 'test_id']);
         $this->assertEquals($expected, $driver->getAllImages());
     }
 

@@ -966,8 +966,9 @@ class SolrEad3 extends SolrEad
             $formatted = $imageData;
             if (!empty($imageData['urls'])) {
                 foreach ($sizes as $size) {
-                    if (!isset($imageData['pdf'][$size])) {
-                        $formatted['pdf'][$size] = reset($imageData['pdf']);
+                    $from = $imageData['cacheSizes'][$size] ?? null;
+                    if ($from) {
+                        $formatted['pdf'][$size] = $imageData['pdf'][$from];
                     }
                 }
             }

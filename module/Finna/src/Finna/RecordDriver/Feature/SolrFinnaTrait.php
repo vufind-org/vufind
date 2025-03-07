@@ -1427,10 +1427,10 @@ trait SolrFinnaTrait
         $hasSmallImage = isset($images['urls']['small']);
         $hasMediumImage = isset($images['urls']['medium']);
         $hasLargeImage = isset($images['urls']['large']);
+        $images['cacheSizes'] = [];
         if (!$hasSmallImage && !$hasMediumImage && !$hasLargeImage) {
             return $images;
         }
-        $images['cacheSizes'] = [];
         if (!$hasLargeImage) {
             $images['urls']['large'] = $hasMediumImage ? $images['urls']['medium'] : $images['urls']['small'];
             $images['cacheSizes']['large'] = $hasMediumImage ? 'medium' : 'small';
