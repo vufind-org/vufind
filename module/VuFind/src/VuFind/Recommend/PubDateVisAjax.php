@@ -61,14 +61,14 @@ class PubDateVisAjax implements RecommendInterface
     protected \VuFind\Search\Base\Results $searchObject;
 
     /**
-     * Should we allow zooming? (String of "true" or "false")
+     * Should we allow zooming?
      *
      * @var bool
      */
     protected bool $zooming = false;
 
     /**
-     * Should we initially hide controls? (String of "true" or "false")
+     * Should we initially hide controls?
      *
      * @var bool
      */
