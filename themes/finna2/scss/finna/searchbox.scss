@@ -1,4 +1,4 @@
-.searcbox, .searchbox-columns {
+.searchbox, .searchbox-columns {
   @extend .clearfix;
 }
 .searchbox, .searchbox-flex {
@@ -102,7 +102,7 @@
   }
 }
 
-.searchbox-home {
+.searchbox-home, .searchbox-authority-search {
   flex-wrap: wrap;
   .search-links {
     flex-basis: 100%;
