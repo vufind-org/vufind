@@ -2,8 +2,8 @@
   $title = $this->translate('Permissions');
   $titleEsc = $this->escapeHtml($title);
   $this->headTitle($title);
-  $this->breadcrumbs()->set(('Development Tools'), $this->url('devtools-home'))
-    ->add(($titleEsc), active: true);
+  $this->breadcrumbs()->set('Development Tools', $this->url('devtools-home'))
+    ->add($titleEsc, active: true);
 ?>
 <h1><?=$titleEsc?></h1>
 
