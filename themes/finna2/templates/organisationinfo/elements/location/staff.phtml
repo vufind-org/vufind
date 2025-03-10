@@ -4,34 +4,28 @@
     return;
   }
 ?>
-<div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
+<table class="table table-striped table-responsive" tabindex="0">
+  <thead>
+    <tr>
+      <th scope="col"><?= $this->transEsc('organisation_info_name') ?></th>
+      <th scope="col"><?= $this->transEsc('organisation_info_job_title') ?></th>
+      <th scope="col"><?= $this->transEsc('organisation_info_contact') ?></th>
+    </tr>
+  </thead>
+  <tbody class="personnel-container">
+    <?php foreach ($orgInfo['personnel'] as $member): ?>
       <tr>
-        <th>
-          <?= $this->transEsc('organisation_info_name') ?>
-          <span class="job-title"><br><?= $this->transEsc('organisation_info_job_title') ?></span>
-        </th>
-        <th><?= $this->transEsc('organisation_info_job_title') ?></th>
-        <th><?= $this->transEsc('organisation_info_contact') ?></th>
-      </tr>
-    </thead>
-    <tbody class="personnel-container">
-      <?php foreach ($orgInfo['personnel'] as $member): ?>
-        <tr>
-          <td>
-            <?=$this->escapeHtml($member['firstName'])?>
-            <?=$this->escapeHtml($member['lastName'])?>
-            <span class="job-title">
-              <?=$this->escapeHtml($member['jobTitle'])?>
-            </span>
-          </td>
-          <td>
-            <?=$this->escapeHtml($member['jobTitle'])?>
-          </td>
-          <td>
-            <!-- noindex -->
-            <!-- googleoff: all -->
+        <td data-label="<?= $this->transEsc('organisation_info_name') ?>" scope="row">
+          <?=$this->escapeHtml($member['firstName'])?>
+          <?=$this->escapeHtml($member['lastName'])?>
+        </td>
+        <td data-label="<?= $this->transEsc('organisation_info_job_title') ?>" scope="row">
+          <?=$this->escapeHtml($member['jobTitle'])?>
+        </td>
+        <td data-label="<?= $this->transEsc('organisation_info_contact')?>" scope="row">
+          <!-- noindex -->
+          <!-- googleoff: all -->
+          <div>
             <?php if ($member['email']): ?>
               <div>
                 <?=$this->escapeHtml($member['email'])?>
@@ -42,11 +36,11 @@
                 <?=$this->escapeHtml($member['phone'])?>
               </div>
             <?php endif; ?>
-            <!-- googleon: all -->
-            <!-- /noindex -->
-          </td>
-        </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
-</div>
+          </div>
+          <!-- googleon: all -->
+          <!-- /noindex -->
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
