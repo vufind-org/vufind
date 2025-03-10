@@ -28,7 +28,7 @@
     ?>
     <div class="authorbox">
       <form class="datevis-form facet-range-form hidden" name="datevis<?=$facetFieldEsc?>xForm" id="datevis<?=$facetFieldEsc?>xForm" data-name="<?=$facetFieldEsc?>" data-filter-field="daterange[]">
-        <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$facetField}:.*/"])?>
+        <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => '/^{' . preg_quote($facetField) . '}:.*/'])?>
         <input type="hidden" name="daterange[]" value="<?=$facetFieldEsc?>">
         <div class="datevis-label"><strong><?=$this->transEsc($facetRange['label']) ?></strong></div>
         <div class="datevis-chart">
