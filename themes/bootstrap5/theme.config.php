@@ -155,7 +155,6 @@ return [
              * All of the items below have been specified with FontAwesome to allow
              * for a strong inheritance safety net but this is not required.
              */
-            'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
             'browzine-issue' => 'Alias:format-serial',
             'browzine-pdf' => 'FontAwesome:file-pdf-o',
