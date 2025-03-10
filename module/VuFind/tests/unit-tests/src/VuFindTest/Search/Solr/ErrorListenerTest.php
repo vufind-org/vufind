@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR 3.x error listener.
+ * Unit tests for SOLR error listener.
  *
  * PHP version 8
  *
@@ -27,16 +27,16 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindTest\Search\Solr\V3;
+namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
 use Laminas\Http\Response;
 use PHPUnit\Framework\TestCase;
-use VuFind\Search\Solr\V3\ErrorListener;
+use VuFind\Search\Solr\ErrorListener;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**
- * Unit tests for SOLR 3.x error listener.
+ * Unit tests for SOLR error listener.
  *
  * @category VuFind
  * @package  Search
@@ -56,8 +56,8 @@ class ErrorListenerTest extends TestCase
      */
     public function testDetectParseError()
     {
-        $response = $this->createResponse('solr3-parse-error');
-        $backend  = 'foo';
+        $response  = $this->createResponse('solr4-parse-error');
+        $backend   = 'foo';
 
         $command   = $this->getMockSearchCommand();
         $exception = HttpErrorException::createFromResponse($response);
@@ -78,7 +78,7 @@ class ErrorListenerTest extends TestCase
      */
     public function testDetectUndefinedFieldError()
     {
-        $response = $this->createResponse('solr3-undefined-field-error');
+        $response = $this->createResponse('solr4-undefined-field-error');
         $backend  = 'foo';
 
         $command   = $this->getMockSearchCommand();
