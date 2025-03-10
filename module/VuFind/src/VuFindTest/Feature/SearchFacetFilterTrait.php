@@ -445,8 +445,9 @@ trait SearchFacetFilterTrait
     ): void {
         $sidebar = $this->findCss($page, '.sidebar');
         $container = $this->findCss($sidebar, "#side-panel-$facet");
-        $this->multiFilterSelectionToggle($sidebar, $multiselection);
-
+        if ($multiselection) {
+            $this->activateMultiFilterSelection($sidebar);
+        }
         if (null !== $from) {
             $this->findCssAndSetValue($page, '.date-from input', $from);
         }
@@ -460,7 +461,9 @@ trait SearchFacetFilterTrait
             $this->clickCss($container, 'input[type="submit"]');
         }
         $this->waitForPageLoad($page);
-        $this->deactivateMultiFilterSelection($page);
+        if ($multiselection) {
+            $this->deactivateMultiFilterSelection($page);
+        }
     }
 
     /**
@@ -600,11 +603,10 @@ trait SearchFacetFilterTrait
      */
     protected function multiFilterSelectionToggle(Element $container, ?bool $activate = null): void
     {
-        if ($elem = $container->find('css', '.js-user-selection-multi-filters')) {
-            $click = $elem->isChecked() !== $activate || $activate === null;
-            if ($click) {
-                $this->clickCss($container, '.js-user-selection-multi-filters');
-            }
+        $elem = $this->findCss($container, '.js-user-selection-multi-filters');
+        $click = $elem->isChecked() !== $activate || $activate === null;
+        if ($click) {
+            $elem->click();
         }
     }
 
