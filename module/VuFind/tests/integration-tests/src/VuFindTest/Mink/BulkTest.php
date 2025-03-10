@@ -270,13 +270,13 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->waitForPageLoad($page);
 
-        // If all records were deleted, success message should be visible in
-        // lightbox, and delete button should be gone after lightbox is closed.
+        // If all records were deleted, success message should be visible, and delete button should be gone after
+        // lightbox is closed.
+        $this->waitForLightboxHidden();
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCssAndGetText($page, '.modal .alert-success')
+            $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->closeLightbox($page, true);
         $this->unfindCss($page, 'button[name="delete"]');
     }
 
