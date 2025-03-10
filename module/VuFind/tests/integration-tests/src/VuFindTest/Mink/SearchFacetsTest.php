@@ -700,6 +700,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $this->genreMoreSelector);
         $modal = $this->findCss($page, '#modal');
         $this->assertIsObject($modal);
+        // Make sure the filter control is available in the modal before proceeding; otherwise,
+        // timing issues in activateMultiFilterSelection can break the test.
+        $this->findCss($page, '#modal .js-user-selection-multi-filters');
         // Check for multi-filter controls:
         $this->activateMultiFilterSelection($modal);
         $this->unfindCss($modal, '.loading-spinner');
