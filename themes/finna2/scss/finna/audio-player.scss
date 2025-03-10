@@ -11,6 +11,9 @@
   .open-link:not(.download-audio) {
     font-size: $font-size-small;
   }
+  .open-link a:focus-visible {
+    outline: 2px solid $action-link-color;
+  }
 }
 
 .audio-accordion {
@@ -61,6 +64,9 @@
   .play {
     font-size: 35px;
     color: $action-link-color;
+    &:focus-visible {
+      outline: 2px solid $action-link-color;
+    }
   }
 }
 
@@ -118,6 +124,9 @@
     > div, > button {
       height: 3em;
       position: absolute;
+    }
+    > button:focus-visible {
+      outline: 2px solid $action-link-color;
     }
   }
 

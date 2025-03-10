@@ -359,6 +359,13 @@
         <resourceSet>
           <resourceRepresentation type="preview_3D">
             <linkResource formatResource="glTF">https://gltfmalli.gltf</linkResource>
+            <resourceMeasurementsSet>
+              <measurementType lang="fi">koko</measurementType>
+              <measurementType lang="en">size</measurementType>
+              <measurementUnit lang="fi">tavua</measurementUnit>
+              <measurementUnit lang="en">bytes</measurementUnit>
+              <measurementValue>60840000</measurementValue>
+            </resourceMeasurementsSet>
           </resourceRepresentation>
           <resourceRepresentation type="preview_3D">
             <linkResource formatResource="glb">https://glbmalli.glb</linkResource>
@@ -383,6 +390,15 @@
           <resourceDescription type="displayLink">VideoTesti.mp4</resourceDescription>
           <resourceRepresentation type="preview_video">
             <linkResource formatResource="mp4">https://linkkivideoon.fi</linkResource>
+            <resourceMeasurementsSet>
+              <measurementType lang="fi">koko</measurementType>
+              <measurementType lang="en">size</measurementType>
+              <measurementType lang="sv">storlek</measurementType>
+              <measurementUnit lang="fi">tavua</measurementUnit>
+              <measurementUnit lang="en">byte</measurementUnit>
+              <measurementUnit lang="sv">byte</measurementUnit>
+              <measurementValue>74576596</measurementValue>
+            </resourceMeasurementsSet>
           </resourceRepresentation>
         </resourceSet>
         <resourceSet>

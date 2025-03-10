@@ -20,22 +20,22 @@
                     <?php foreach ($hiRes as $size => $img): ?>
                         <?php foreach ($img as $key => $info): ?>
                             <?php
-                                $imgSize = $info['data']['size'] ?? [];
-                                $imageSize = '';
-                                if ($imgSize) {
-                                    $imageSize = !empty($imgSize['value']) && $imgSize['unit'] === 'byte' ? $this->fileSize(preg_replace('/[^0-9]/', '', $imgSize['value'])) : '';
-                                }
+                                $imageInfoParts = [];
                                 $width = $info['data']['width'] ?? [];
                                 $height = $info['data']['height'] ?? [];
-                                $dimensions = '';
                                 if (!empty($width['value']) && !empty($height['value']) && $height['unit'] === 'pixel' && $width['unit'] === 'pixel') {
                                     $cleanWidth = preg_replace('/[^0-9]/', '', $width['value']);
                                     $cleanHeight = preg_replace('/[^0-9]/', '', $height['value']);
-                                    $dimensions = "($cleanWidth x $cleanHeight px)";
+                                    $imageInfoParts[] = "$cleanWidth x $cleanHeight px";
                                 }
+                                $imageSize = $info['data']['size'] ?? [];
+                                if (!empty($imageSize['value']) && $imageSize['unit'] === 'byte') {
+                                    $imageInfoParts[] = $this->fileSize($imageSize['value']);
+                                }
+                                $imageInfo = $imageInfoParts ? '(' . implode(', ', $imageInfoParts) . ')' : '';
                                 $downloadName = str_replace('.', '-', $this->driver->getUniqueID()) . '-' . ($info['resourceID'] ?? $index) . '-' . $size;
                             ?>
-                            <li><a class="dropdown-item" download="<?=$downloadName?>" href="<?=$this->escapeHtmlAttr($this->url('record-downloadfile', [], ['query' => $info['params']]))?>" rel="nofollow"> <?=$this->transEsc('high_resolution_image')?> <span class="image-dimensions"><?=$this->escapeHtml($dimensions)?></span> <span class="image-size"><?=$this->escapeHtml($imageSize)?></span>  <?=$this->escapeHtml($info['format'] ?? '')?></a></li>
+                            <li><a class="dropdown-item" download="<?=$downloadName?>" href="<?=$this->escapeHtmlAttr($this->url('record-downloadfile', [], ['query' => $info['params']]))?>" rel="nofollow"> <?=$this->transEsc('high_resolution_image')?> <span class="image-dimensions"><?=$this->escapeHtml($imageInfo)?></span>  <?=$this->escapeHtml($info['format'] ?? '')?></a></li>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>

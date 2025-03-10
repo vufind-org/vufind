@@ -219,7 +219,7 @@ a.authority {
   }
 }
 
-.image-link {
+.image-link, .model-link {
   display: flex;
   align-items: center;
   font-size: 1em;
@@ -234,7 +234,7 @@ a.authority {
   .dropdown {
     position: initial;
   }
-  .image-dimensions, .image-size {
+  .image-dimensions, .dropdown-menu .file-size {
     font-size: 0.8em;
     text-transform: initial;
   }
@@ -502,7 +502,7 @@ a.authority {
   }
 }
 
-.open-link, .save-record-link, .record-link {
+.open-link, .save-record-link, .record-link, .model-link .download-link {
   text-align: left;
   margin-top: 5px;
   color: $action-link-color;
@@ -520,8 +520,8 @@ a.authority {
     color: $gray-mid-light;
     font-size: .8em;
   }
-  > span.file-size {
-    color: $gray-slightly-lighter;
+  .file-size {
+    color: $gray-mid-light;
   }
 }
 

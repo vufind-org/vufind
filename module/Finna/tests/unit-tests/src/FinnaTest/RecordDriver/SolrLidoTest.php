@@ -63,6 +63,12 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
                                 'url' => 'https://gltfmalli.gltf',
                                 'format' => 'gltf',
                                 'type' => 'preview',
+                                'data' => [
+                                    'size' => [
+                                        'unit' => 'byte',
+                                        'value' => '60840000',
+                                    ],
+                                ],
                             ],
                             [
                                 'url' => 'https://glbmalli.glb',
@@ -224,6 +230,12 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
                             'type' => 'video/mp4',
                         ],
                         'resourceName' => 'VideoTesti.mp4',
+                        'data' => [
+                            'size' => [
+                                'unit' => 'byte',
+                                'value' => '74576596',
+                            ],
+                        ],
                     ],
                 ],
             ],

@@ -1,8 +1,13 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/audio-information.phtml -->
+<?php
+    if ($fileSize = $url['data']['size'] ?? '') {
+        $fileSize = !empty($fileSize['value']) && $fileSize['unit'] === 'byte' ? '(' . $this->fileSize($fileSize['value']) . ')' : '';
+    }
+?>
 <div class="open-link download-audio">
     <a href="<?=$url['url'] ?>" target="_blank" rel="nofollow" download>
         <?=$this->icon('download') ?> <?=$this->transEsc('Download recording') ?>
-    </a>
+    </a> <span class="file-size"><?=$fileSize?></span>
 </div>
 <?php if (!empty($url['identifier'])): ?>
     <div class="audio-details-container text-left" data-img-index="<?=$ind?>">

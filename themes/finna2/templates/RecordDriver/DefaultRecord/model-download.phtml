@@ -1,6 +1,7 @@
 <!-- START of Finna - RecordDriver/DefaultRecord/model-download.phtml -->
 <div class="model-link">
     <?php if (count($models) > 1 && !$this->userAgent()->isBot()): ?>
+        <?=$this->icon('download') ?>
         <div class="dropdown">
             <button class="btn btn-default dropdown-toggle download" type="button" id="downloadMenu-<?=$index?>" data-bs-toggle="dropdown" aria-expanded="false">
                 <?=$this->transEsc('Download the file')?> <span class="caret"></span>
@@ -22,10 +23,13 @@
                                         ],
                                     ]
                                 ) : $this->escapeHtmlAttr($model['url']);
+                            if ($fileSize = $model['data']['size'] ?? '') {
+                                $fileSize = !empty($fileSize['value']) && $fileSize['unit'] === 'byte' ? '(' . $this->fileSize($fileSize['value']) . ')' : '';
+                            }
                         ?>
                         <a class="dropdown-item" download href="<?=$url?>" rel="nofollow">
                             <?=$this->transEscWithPrefix('model_type_', $model['type'])?>
-                            <span><?=$this->transEscWithPrefix('model_format_', $model['format'])?></span>
+                            <span><?=$this->transEscWithPrefix('model_format_', $model['format'])?></span> <span class="file-size"><?=$fileSize?></span>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -48,11 +52,14 @@
                             ],
                         ]
                     ) : $this->escapeHtmlAttr($model['url']);
+                    if ($fileSize = $model['data']['size'] ?? '') {
+                        $fileSize = !empty($fileSize['value']) && $fileSize['unit'] === 'byte' ? '(' . $this->fileSize($fileSize['value']) . ')' : '';
+                    }
             ?>
             <a download href="<?=$url?>" rel="nofollow">
                 <?=$this->icon('download') ?>
                 <span><?=$this->transEsc('Download the file')?></span>
-            </a>
+            </a> <span class="file-size"><?=$fileSize?></span>
         </div>
     <?php endif; ?>
 </div>

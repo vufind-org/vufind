@@ -839,9 +839,22 @@ finna.layout = (function finnaLayout() {
               function onVideoJsInited() {}
             );
             play.remove();
+            self.find('.vjs-play-control').focus();
           }
         );
       });
+      play.on('keydown', function onKeyDown(e) {
+        if (e.which === 13 || e.which === 32) {
+          e.preventDefault();
+          play.trigger('click');
+        }
+      });
+    });
+    $('finna-video').on('keydown', function onKeyDown(e) {
+      if (e.which === 13 || e.which === 32) {
+        e.preventDefault();
+        $(this).trigger('click');
+      }
     });
   }
 

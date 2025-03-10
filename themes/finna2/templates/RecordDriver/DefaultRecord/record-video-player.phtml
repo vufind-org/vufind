@@ -65,6 +65,7 @@
         class="video-link-container active-video"
         popup-id="<?=$popupId?>"
         type="<?=$type?>"
+        tabindex="0"
         index="<?=$i?>"
         source="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>"
         title="<?=$this->escapeHtmlAttr($url['url'])?>"
@@ -82,9 +83,14 @@
         <?=$this->icon('video-play', 'video-play-icon') ?>
         <span class="video-desc"><?=$this->escapeHtml($this->truncate(ucfirst($desc), 30))?></span>
       </finna-video>
-      <?php if ($showDetails && !$inlineVideo): ?>
+      <?php
+        if ($showDetails && !$inlineVideo):
+          if ($fileSize = $url['data']['size'] ?? '') {
+            $fileSize = !empty($fileSize['value']) && $fileSize['unit'] === 'byte' ? '(' . $this->fileSize($fileSize['value']) . ')' : '';
+          }
+      ?>
         <div class="resource-details">
-          <div class="open-link"><a href="<?=$url['url'] ?>" target="_blank" rel="nofollow" download><?=$this->icon('download')?> <?=$this->transEsc('Download video') ?></a></div>
+          <div class="open-link"><a href="<?=$url['url'] ?>" target="_blank" rel="nofollow" download><?=$this->icon('download')?> <?=$this->transEsc('Download video') ?></a> <span class="file-size"><?=$fileSize?></span></div>
           <?=$this->record($this->driver)->renderTemplate('video-information.phtml', ['i' => $i, 'url' => $url]);?>
         </div>
       <?php endif; ?>
