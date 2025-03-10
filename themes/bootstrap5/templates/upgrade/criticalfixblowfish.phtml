@@ -27,7 +27,7 @@
 					<p><b>Identify the location of your OpenSSL configuration</b></p>
 
 					<pre id="find-openssl">php -i | grep "Openssl default config"</pre>
-					<?=$this->copyToClipboardButton('find-openssl') ?>
+					<?=$this->copyToClipboardButton('find-openssl', ['btn-primary']) ?>
 				</li>
 
 				<li>
@@ -90,4 +90,4 @@ activate = 1</pre>
 
 <pre id="example-cmd">php $VUFIND_HOME/public/index.php util switch_db_hash <?=$this->escapeHtml($newAlgorithm)?> "<?=$this->escapeHtml($exampleKey) ?>"</pre>
 
-<?=$this->copyToClipboardButton('#example-cmd') ?>
+<?=$this->copyToClipboardButton('#example-cmd', ['btn-primary']) ?>

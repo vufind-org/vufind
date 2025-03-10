@@ -45,18 +45,25 @@ class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
     /**
      * This helper creates button for copying content of an element into clipboard
      *
-     * @param string $elementSelector jQuery selector for element to copy
+     * @param string  $elementSelector css selector for element to copy
+     * @param array   $extraClasses    additional classes for the button
+     * @param ?string $buttonText      optional alternative button text
      *
      * @return string HTML string
      */
-    public function __invoke(string $elementSelector)
+    public function __invoke(string $elementSelector, array $extraClasses = [], ?string $buttonText = null)
     {
         static $buttonNumber = 0;
         $buttonNumber++;
         $view = $this->getView();
         return $view->render(
             'Helpers/copy-to-clipboard-button.phtml',
-            ['selector' => $elementSelector, 'buttonNumber' => $buttonNumber]
+            [
+                'selector' => $elementSelector,
+                'buttonNumber' => $buttonNumber,
+                'extraClasses' => $extraClasses,
+                'buttonText' => $buttonText,
+            ]
         );
     }
 }
