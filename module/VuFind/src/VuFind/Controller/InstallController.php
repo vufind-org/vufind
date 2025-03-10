@@ -35,6 +35,7 @@ use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\ILS\Driver\NoILS;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -580,7 +581,8 @@ class InstallController extends AbstractBase
             $status = false;
         } else {
             try {
-                $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
+                $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true)
+                    || ($this->getILS()->getDriver() instanceof NoILS);
             } catch (\Exception $e) {
                 $status = false;
             }
