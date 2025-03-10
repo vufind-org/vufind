@@ -3,7 +3,7 @@ VuFind.register('copyToClipboard', function covers() {
 
   /**
    * Show popover for 2 seconds
-   * @param {Object} popover Popover
+   * @param {object} popover Popover
    */
   function _showPopover(popover) {
     if (popover !== undefined) {
