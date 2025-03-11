@@ -1212,17 +1212,17 @@ ${git_status}
     <!-- build the a zip archive -->
     <echo message="Building .zip...." />
     <exec dir="${builddir}/export" executable="zip" checkreturn="true">
-      <arg line="-r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
+      <arg line="-q -r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
     </exec>
 
     <!-- build the DEB package -->
     <echo message="Building .deb...." />
     <move file="${builddir}/export/vufind/usr/local/vufind/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
-    <exec executable="chmod">
-      <arg line="0775 ${builddir}/export/vufind/DEBIAN/postinst" />
+    <exec executable="chmod" passthru="true">
+      <arg line="0775 ${builddir}/export/vufind/DEBIAN/config ${builddir}/export/vufind/DEBIAN/postinst ${builddir}/export/vufind/DEBIAN/postrm" />
     </exec>
-    <exec executable="dpkg-deb" checkreturn="true">
-      <arg line="-b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
+    <exec executable="dpkg-deb" checkreturn="true" passthru="true">
+      <arg line="--root-owner-group -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
     </exec>
 
     <!-- clean up -->
