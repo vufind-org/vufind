@@ -28,11 +28,15 @@
       $longCaption = $this->translate($format . ' Edition Citation');
       $caption = (strpos($longCaption, 'Citation') > 0 && !str_contains($shortCaption, 'Citation'))
         ? $shortCaption : $longCaption;
+      $elementId = 'citation-' . $this->escapeHtmlAttr($format);
     ?>
     <strong><?=$this->escapeHtml($caption)?></strong>
-    <p class="text-left">
-      <?=$citation?>
-    </p>
+    <div class="citation copy-to-clipboard-container">
+      <span id="<?=$elementId?>">
+        <?=$citation?>
+      </span>
+      <?=$this->copyToClipboardButton('#' . $elementId)?>
+    </div>
   <?php endforeach; ?>
   <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
 <?php endif; ?>
