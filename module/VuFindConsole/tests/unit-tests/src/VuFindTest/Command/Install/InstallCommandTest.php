@@ -158,7 +158,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             Once the configuration is linked, restart Apache. You should now be able
             to access VuFind at http://localhost/bar
 
-            For proper use of command line tools, you should also ensure that your
+            For proper use of command line tools, you should ensure that your
 
             VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
             $expectedBaseDir and $localFixtures respectively.
@@ -223,7 +223,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             Once the configuration is linked, restart Apache. You should now be able
             to access VuFind at http://localhost/vufind
 
-            For proper use of command line tools, you should also ensure that your
+            For proper use of command line tools, you should ensure that your
 
             VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
             $expectedBaseDir and $localFixtures respectively.
