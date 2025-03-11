@@ -18,7 +18,7 @@ VuFind.register('copyToClipboard', function copyToClipboard() {
    * Initialise copy button
    * @param {Element} button Copy button
    */
-  function initButton(button) {
+  function _initButton(button) {
     if (button.dataset.initialized !== 'true') {
       button.dataset.initialized = 'true';
       if (!button.dataset.target) return;
@@ -55,7 +55,7 @@ VuFind.register('copyToClipboard', function copyToClipboard() {
    */
   function updateContainer(params) {
     let container = params.container;
-    container.querySelectorAll('.copy-to-clipboard-button').forEach(initButton);
+    container.querySelectorAll('.copy-to-clipboard-button').forEach(_initButton);
   }
 
   /**
@@ -66,7 +66,7 @@ VuFind.register('copyToClipboard', function copyToClipboard() {
     VuFind.listen('lightbox.rendered', updateContainer);
   }
 
-  return { init, initButton };
+  return { init, updateContainer };
 });
 
 
