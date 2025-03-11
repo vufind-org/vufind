@@ -3,7 +3,6 @@
   if (!empty($addThis)) {
     $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
   }
-  $this->headScript()->appendFile('copy_to_clipboard.js');
 ?>
 <nav class="record-nav" aria-label="<?=$this->transEscAttr('ajaxview_label_tools'); ?>">
   <ul class="action-toolbar">

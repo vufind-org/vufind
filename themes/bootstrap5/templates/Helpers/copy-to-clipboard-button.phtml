@@ -12,7 +12,6 @@
   if ($this->reducedDesign) {
     $buttonAttributes['title'] = $this->transEscAttr('copy_to_clipboard_button_label');
   }
-  $this->headScript()->appendFile('copy_to_clipboard.js');
 ?>
 <span class="copy-to-clipboard">
   <button <?=$this->htmlAttributes($buttonAttributes)?>>
