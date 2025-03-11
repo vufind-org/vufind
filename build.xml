@@ -531,6 +531,7 @@
 
   <target name="composer" description="Install dependencies with Composer">
     <property name="composer_filename" value="composer-${composer_version}.phar" />
+    <property name="workdir" value="." />
     <mkdir dir="${downloadsdir}" />
     <if>
       <equals arg1="${composer_version}" arg2="latest-2.x" />
@@ -548,8 +549,8 @@
       </else>
     </if>
     <echo message="Installing dependencies..." />
-    <exec executable="php" passthru="true" checkreturn="true">
-      <arg line="${downloadsdir}/${composer_filename} install ${composer_extra_params}" />
+    <exec executable="sh" passthru="true" checkreturn="true">
+      <arg line="-c 'cd ${workdir}; php ${downloadsdir}/${composer_filename} install ${composer_extra_params}'" />
     </exec>
   </target>
 
@@ -1181,21 +1182,22 @@ ${git_status}
     <mkdir dir="${builddir}/export/vufind/usr/local/vufind" />
 
     <!-- load the relevant files into the work area -->
-    <phingcall target="composer">
-      <property name="composer_extra_params" value="--no-dev" />
-    </phingcall>
     <exec executable="git">
       <arg line="archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
     </exec>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/vendor">
-      <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
-    </copy>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/solr/vendor">
-      <fileset dir="${srcdir}/solr/vendor" defaultexcludes="false" />
-    </copy>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/public/swagger-ui">
-      <fileset dir="${srcdir}/public/swagger-ui" defaultexcludes="false" />
-    </copy>
+    <!-- copy over any cached Solr package -->
+    <if>
+      <available file="${downloadsdir}/solr-${solr_version}.tgz" />
+      <then>
+        <mkdir dir="${builddir}/export/vufind/usr/local/vufind/downloads" />
+        <copy todir="${builddir}/export/vufind/usr/local/vufind/downloads" file="${downloadsdir}/solr-${solr_version}.tgz" />
+      </then>
+    </if>
+    <phingcall target="composer">
+      <property name="workdir" value="${builddir}/export/vufind/usr/local/vufind" />
+      <property name="composer_extra_params" value="--no-dev" />
+    </phingcall>
+    <delete dir="${builddir}/export/vufind/usr/local/vufind/downloads" includeemptydirs="true" failonerror="true" />
 
     <!-- create a version-specific symlink so that tar/zip packages will have
          appropriate directory structures. -->
