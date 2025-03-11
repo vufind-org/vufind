@@ -36,6 +36,8 @@
       $openTopLevel = false;
       if ($hasChildren) {
         $liClasses[] = 'hierarchy-tree__parent';
+      } else {
+        $liClasses[] = 'hierarchy-tree__item';
       }
       if ('collection' === $node->type) {
         $liClasses[] = 'hierarchy-tree__collection';
@@ -69,7 +71,6 @@
         $childUlIdEsc = $escapeAttr('hierarchy_' . $context . '_' . $parentNodeId . '_' . $nodeId);
         echo '<button class="hierarchy-tree__toggle-expanded js-toggle-expanded"'
           . ' aria-expanded="' . ($node->hasSelectedChild || $openTopLevel ? 'true' : 'false') . '"'
-          . ' aria-controls="' . $childUlIdEsc . '"'
           // Use node title as button label so that a screen reader can read it as
           // "Expanded <text>" or "Collapsed <text>":
           . ' aria-label="' . $escapeAttr($node->title) . '"'
@@ -86,7 +87,6 @@
         echo '</ul></li>';
       } else {
         echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>'
-          . '<button class="hierarchy-tree__toggle-expanded" disabled aria-label="' . $escape($node->title) . '"></button> '
           . $itemHtml;
         echo '</li>';
       }

@@ -40,6 +40,10 @@
       }
     }
 
+    .hierarchy-tree__item {
+      padding-left: 1.7rem;
+    }
+
     .facet-tree__item-container, .hierarchy-tree__item-container {
       // Leave space for the open/close icon (see above):
       width: calc(100% - 1.5em);
