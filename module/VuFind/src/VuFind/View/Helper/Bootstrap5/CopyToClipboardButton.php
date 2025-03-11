@@ -47,7 +47,7 @@ class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $elementSelector css selector for element to copy
      * @param bool   $hideButtonText  controls whether the description of the button's purpose
-     *                                is displayed as text or only with a title attribute
+     * is displayed as text or only with a title attribute
      *
      * @return string HTML string
      */
