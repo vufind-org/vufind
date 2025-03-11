@@ -45,13 +45,12 @@ class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
     /**
      * This helper creates button for copying content of an element into clipboard
      *
-     * @param string  $elementSelector css selector for element to copy
-     * @param array   $extraClasses    additional classes for the button
-     * @param ?string $buttonText      optional alternative button text
+     * @param string $elementSelector css selector for element to copy
+     * @param bool   $reducedDesign   controls the size and design of the button
      *
      * @return string HTML string
      */
-    public function __invoke(string $elementSelector, array $extraClasses = [], ?string $buttonText = null)
+    public function __invoke(string $elementSelector, bool $reducedDesign = true)
     {
         static $buttonNumber = 0;
         $buttonNumber++;
@@ -61,8 +60,7 @@ class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
             [
                 'selector' => $elementSelector,
                 'buttonNumber' => $buttonNumber,
-                'extraClasses' => $extraClasses,
-                'buttonText' => $buttonText,
+                'reducedDesign' => $reducedDesign,
             ]
         );
     }

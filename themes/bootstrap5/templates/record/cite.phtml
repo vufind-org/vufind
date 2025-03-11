@@ -35,7 +35,7 @@
       <span id="<?=$elementId?>">
         <?=$citation?>
       </span>
-      <?=$this->copyToClipboardButton('#' . $elementId, ['toolbar-btn'], $this->icon('clone'))?>
+      <?=$this->copyToClipboardButton('#' . $elementId)?>
     </div>
   <?php endforeach; ?>
   <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>

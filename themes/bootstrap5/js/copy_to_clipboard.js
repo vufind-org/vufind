@@ -1,5 +1,5 @@
 /*global VuFind, bootstrap */
-VuFind.register('copyToClipboard', function covers() {
+VuFind.register('copyToClipboard', function copyToClipboard() {
 
   /**
    * Show popover for 2 seconds

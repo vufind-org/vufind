@@ -2,6 +2,10 @@
   display: flex;
   align-items: center;
 
+  pre {
+    margin-bottom: 0;
+  }
+
   .copy-to-clipboard {
     .toolbar-btn {
       padding: .175rem .5rem;

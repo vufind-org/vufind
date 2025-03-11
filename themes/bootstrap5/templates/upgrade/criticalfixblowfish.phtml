@@ -26,8 +26,10 @@
 				<li>
 					<p><b>Identify the location of your OpenSSL configuration</b></p>
 
-					<pre id="find-openssl">php -i | grep "Openssl default config"</pre>
-					<?=$this->copyToClipboardButton('find-openssl', ['btn-primary']) ?>
+          <div class="copy-to-clipboard-container">
+            <pre id="find-openssl">php -i | grep "Openssl default config"</pre>
+            <?=$this->copyToClipboardButton('#find-openssl') ?>
+          </div>
 				</li>
 
 				<li>
@@ -88,6 +90,8 @@ activate = 1</pre>
 
 <p>You can use VuFind's CLI tool <kbd>switch_db_hash</kbd> to convert all passwords from blowfish to another encryption method. Below, you can find a pre-filled example command that will convert your encryption to <?=$this->escapeHtml($newAlgorithm)?> (the new recommended VuFind encryption method) with a random key. You can use <kbd>openssl_get_cipher_methods()</kbd> to see all encryption methods available on your system.</p>
 
-<pre id="example-cmd">php $VUFIND_HOME/public/index.php util switch_db_hash <?=$this->escapeHtml($newAlgorithm)?> "<?=$this->escapeHtml($exampleKey) ?>"</pre>
+<div class="copy-to-clipboard-container">
+  <pre id="example-cmd">php $VUFIND_HOME/public/index.php util switch_db_hash <?=$this->escapeHtml($newAlgorithm)?> "<?=$this->escapeHtml($exampleKey) ?>"</pre>
+  <?=$this->copyToClipboardButton('#example-cmd') ?>
+</div>
 
-<?=$this->copyToClipboardButton('#example-cmd', ['btn-primary']) ?>

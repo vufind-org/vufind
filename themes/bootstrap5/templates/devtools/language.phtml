@@ -94,7 +94,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
 <p>Translation of Help in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
 
 <template id="template-copy-btn">
-  <div class="float-right"><p><?=$this->copyToClipboardButton('.translation-output', ['btn-primary']);?></p></div>
+  <div class="float-right"><?=$this->copyToClipboardButton('.translation-output', false); ?></div>
 </template>
 
 <?php
