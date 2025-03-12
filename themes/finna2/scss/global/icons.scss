@@ -165,9 +165,11 @@ table .iconlabel {
 .iconlabel[class*="format-1document"]:before,
 .iconlabel[class*="format-1othertext"]:before,
 .iconlabel.format-0manuscript:before,
+.iconlabel.format-0researchdata:before,
 .iconlabel[class*="format-feed-document"]:before,
 .iconlabel[class*="format-feed-othertext"]:before,
-.iconlabel.format-feed-manuscript:before {
+.iconlabel.format-feed-manuscript:before,
+.iconlabel.format-feed-researchdata:before {
     content: "\e006";
 }
 .iconlabel[class*="format-1documentarchive"]:before,
