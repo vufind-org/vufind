@@ -13,22 +13,26 @@
         'pub-vis:search-params',
         $this->recommend->getSearchParams()
     );
-    $this->jsConfigs()->add(
-        'pub-vis:zooming',
-        $this->recommend->getZooming()
-    );
-    $this->jsConfigs()->add(
-        'pub-vis:initially-hide-controls',
-        $this->recommend->getInitiallyHideControlsSetting()
-    );
   ?>
   <?php foreach ($visFacets as $facetField => $facetRange): ?>
     <?php
       $facetFieldEsc = $this->escapeHtmlAttr($facetField);
       $elementIdPart = $facetFieldEsc . '_' . $this->escapeHtmlAttr($this->location);
+      $formAttributes = [
+        'class' => 'datevis-form facet-range-form hidden datevis' . $facetField . 'Form',
+        'name' => 'datevis' . $facetField . 'xForm',
+        'data-name' => $facetField,
+        'data-filter-field' => 'daterange[]',
+      ];
+      if ($this->recommend->getZooming()) {
+        $formAttributes['data-zooming'] = 'true';
+      }
+      if ($this->recommend->getInitiallyHideControlsSetting()) {
+        $formAttributes['data-initially-hide-controls'] = 'true';
+      }
     ?>
     <div class="authorbox">
-      <form class="datevis-form facet-range-form hidden datevis<?=$facetFieldEsc?>Form" name="datevis<?=$facetFieldEsc?>xForm" data-name="<?=$facetFieldEsc?>" data-filter-field="daterange[]">
+      <form <?=$this->htmlAttributes($formAttributes)?>>
         <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => '/^' . preg_quote($facetField) . ':.*/'])?>
         <input type="hidden" name="daterange[]" value="<?=$facetFieldEsc?>">
         <h3 class="datevis-label facet-title"><?=$this->transEsc($facetRange['label']) ?></h3>

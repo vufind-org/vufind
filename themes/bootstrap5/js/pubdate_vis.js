@@ -1,8 +1,5 @@
 /*global VuFind, Chart, bootstrap */
 VuFind.register('pubdateVis', function pubdateVis() {
-
-  let _zooming = false;
-  let _initiallyHideControls = false;
   const _stepSizes = [1, 2, 5, 10, 25, 50, 100, 200, 500, 1000];
   const _graphMargin = 5;
   const _cssColorSettings = {
@@ -34,6 +31,8 @@ VuFind.register('pubdateVis', function pubdateVis() {
 
     // set up the hasFilter variable
     const hasFilter = data.selectionMin !== undefined && data.selectionMax !== undefined;
+    const zooming = form.dataset.zooming === 'true';
+    const initiallyHideControls = form.dataset.initiallyHideControls === 'true';
 
     form.classList.remove('hidden');
     const chartCanvas = form.querySelector('.datevis-canvas');
@@ -46,19 +45,21 @@ VuFind.register('pubdateVis', function pubdateVis() {
 
     // check if the min and max value have been set otherwise set them to the border of the data
     const dataMin = data.data[0][0];
-    if (data.selectionMin === undefined || data.selectionMin === '') {
-      data.selectionMin = dataMin;
+    let selectionMin = dataMin;
+    if (data.selectionMin !== undefined && data.selectionMin !== '') {
+      selectionMin = data.selectionMin;
     }
-    const initSelectionMin = parseInt(data.selectionMin, 10);
-    const totalSelectionMin = (_zooming ? initSelectionMin : dataMin) - _graphMargin;
+    const initSelectionMin = parseInt(selectionMin, 10);
+    const totalSelectionMin = (zooming ? initSelectionMin : dataMin) - _graphMargin;
     minSelectionInput.value = initSelectionMin;
 
     const dataMax = data.data[data.data.length - 1][0];
-    if (data.selectionMax === undefined || data.selectionMax === '') {
-      data.selectionMax = dataMax;
+    let selectionMax = dataMax;
+    if (data.selectionMax !== undefined && data.selectionMax !== '') {
+      selectionMax = data.selectionMax;
     }
-    const initSelectionMax = parseInt(data.selectionMax, 10);
-    const totalSelectionMax = (_zooming ? initSelectionMax : dataMax) + _graphMargin;
+    const initSelectionMax = parseInt(selectionMax, 10);
+    const totalSelectionMax = (zooming ? initSelectionMax : dataMax) + _graphMargin;
     maxSelectionInput.value = initSelectionMax;
 
     // get an array with all years in range and set count to 0 if missing in data
@@ -83,15 +84,15 @@ VuFind.register('pubdateVis', function pubdateVis() {
     }, minSelectionInput, maxSelectionInput);
 
     // only show selection in chart and controls if some range was selected or initiallyHideControls is false
-    let showChartSelection = !_initiallyHideControls;
-    const controlsCollapse = new bootstrap.Collapse(controls, {toggle: !_initiallyHideControls});
+    let showChartSelection = !initiallyHideControls;
+    const controlsCollapse = new bootstrap.Collapse(controls, {toggle: !initiallyHideControls});
 
 
     /**
      * Show controls
      */
     function showControls() {
-      if (_initiallyHideControls) {
+      if (initiallyHideControls) {
         controlsTrigger.tabIndex = -1;
         showChartSelection = true;
         controlsCollapse.show();
@@ -102,14 +103,14 @@ VuFind.register('pubdateVis', function pubdateVis() {
      * Hide controls
      */
     function hideControls() {
-      if (_initiallyHideControls) {
+      if (initiallyHideControls) {
         controlsTrigger.tabIndex = 0;
         showChartSelection = false;
         controlsCollapse.hide();
       }
     }
 
-    if (_initiallyHideControls) {
+    if (initiallyHideControls) {
       controlsTrigger.tabIndex = 0;
       // show controls if hidden trigger element was focused because the slider is aria-hidden
       controlsTrigger.addEventListener('focus', () => {
@@ -285,9 +286,6 @@ VuFind.register('pubdateVis', function pubdateVis() {
         _cssColorSettings['outline-color'] = matchShortHex[0] + '80';
       }
     }
-
-    _zooming = VuFind.config.get('pub-vis:zooming');
-    _initiallyHideControls = VuFind.config.get('pub-vis:initially-hide-controls');
 
     const facetFields = encodeURIComponent(VuFind.config.get('pub-vis:facet-fields'));
     const searchParams = VuFind.config.get('pub-vis:search-params');
