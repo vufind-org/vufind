@@ -19,10 +19,11 @@ VuFind.register('pubdateVis', function pubdateVis() {
 
   /**
    * Init range slider
-   * @param {string} facetName Facet name
-   * @param {object} data Facet data
+   * @param {Element} form      Form
+   * @param {string}  facetName Facet name
+   * @param {object}  data      Facet data
    */
-  function initRangeSlider(facetName, data) {
+  function initRangeSlider(form, facetName, data) {
     // check if there is data to display, if there isn't hide the box
     if (data.data === undefined || data.data.length === 0) {
       return;
@@ -34,15 +35,14 @@ VuFind.register('pubdateVis', function pubdateVis() {
     // set up the hasFilter variable
     const hasFilter = data.selectionMin !== undefined && data.selectionMax !== undefined;
 
-    const form = document.getElementById('datevis' + facetName + 'xForm');
     form.classList.remove('hidden');
-
-    const chartCanvas = document.getElementById('datevis' + facetName + 'x-canvas');
-    const sliderElement = document.getElementById('datevis' + facetName + '-slider');
-    const controlsTrigger = document.getElementById('datevis' + facetName + '-controls-trigger');
-    const controls = document.getElementById('datevis' + facetName + '-controls');
-    const minSelectionInput = document.getElementById('datevis' + facetName + '-from');
-    const maxSelectionInput = document.getElementById('datevis' + facetName + '-to');
+    const chartCanvas = form.querySelector('.datevis-canvas');
+    const sliderElement = form.querySelector('.datevis-slider');
+    const controlsTrigger = form.querySelector('.datevis-controls-trigger');
+    const controls = form.querySelector('.datevis-controls');
+    const minSelectionInput = form.querySelector('.datevis-input-from');
+    const maxSelectionInput = form.querySelector('.datevis-input-to');
+    if (!chartCanvas || !sliderElement || !controlsTrigger || !controls || !minSelectionInput || !maxSelectionInput) return;
 
     // check if the min and max value have been set otherwise set them to the border of the data
     const dataMin = data.data[0][0];
@@ -311,7 +311,11 @@ VuFind.register('pubdateVis', function pubdateVis() {
         if (data.data.facets === undefined) {
           throw data.data;
         }
-        return Object.entries(data.data.facets).forEach(([key, val]) => initRangeSlider(key, val));
+        return Object
+          .entries(data.data.facets)
+          .forEach(([facetName, facetData]) => document
+            .querySelectorAll('.datevis' + facetName + 'Form')
+            .forEach(form => initRangeSlider(form, facetName, facetData)));
       }
     ).catch((error) => {
       console.error("Could not create pubDateVis recommendation: " + error);
