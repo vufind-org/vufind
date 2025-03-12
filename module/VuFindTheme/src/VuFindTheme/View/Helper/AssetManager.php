@@ -50,14 +50,14 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @var array
      */
-    protected $scripts = ['header' => [], 'footer' => []];
+    protected $scripts;
 
     /**
      * Array of accumulated styles.
      *
      * @var array
      */
-    protected $styles = [];
+    protected $styles;
 
     /**
      * Array of accumulated stylesheets.
@@ -78,6 +78,8 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         protected AssetPipeline $pipeline,
         protected string $cspNonce = ''
     ) {
+        $this->clearScriptList();
+        $this->clearStyleList();
     }
 
     /**
@@ -174,38 +176,42 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Add an entry to the list of script files.
      *
-     * @param string $src      Script src
-     * @param array  $attrs    Array of script attributes
-     * @param string $position Position to output script (header or footer)
+     * @param string $src                 Script src
+     * @param array  $attrs               Additional attributes for the script tag
+     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $position            Position to output script (header or footer)
      *
      * @return static
      */
     public function appendScriptLink(
         string $src,
         array $attrs = [],
+        bool $allowArbitraryAttrs = false,
         string $position = 'header'
     ): static {
-        $this->scripts[$position][] = compact('src', 'attrs');
+        $this->scripts[$position][] = compact('src', 'attrs', 'allowArbitraryAttrs');
         return $this;
     }
 
     /**
      * Forcibly prepend a file, removing it from any existing position.
      *
-     * @param string $src      Script src
-     * @param array  $attrs    Array of script attributes
-     * @param string $position Position to output script (header or footer)
+     * @param string $src                 Script src
+     * @param array  $attrs               Additional attributes for the script tag
+     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $position            Position to output script (header or footer)
      *
      * @return static
      */
     public function forcePrependScriptLink(
         string $src,
         array $attrs = [],
+        bool $allowArbitraryAttrs = false,
         string $position = 'header'
     ): static {
-        $newScripts = [compact('src', 'attrs')];
+        $newScripts = [compact('src', 'attrs', 'allowArbitraryAttrs')];
         foreach ($this->scripts[$position] as $script) {
-            if ($script['src'] ?? null !== $newScripts[0]['src']) {
+            if (($script['src'] ?? null) !== $newScripts[0]['src']) {
                 $newScripts[] = $script;
             }
         }
@@ -240,7 +246,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function clearScriptList(): static
     {
-        $this->scripts = [];
+        $this->scripts = ['header' => [], 'footer' => []];
         return $this;
     }
 

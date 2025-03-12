@@ -31,6 +31,9 @@ namespace VuFindTest\View\Helper;
 
 use Laminas\View\Helper\InlineScript;
 use VuFindTest\Feature\ViewTrait;
+use VuFindTheme\AssetPipeline;
+use VuFindTheme\ThemeInfo;
+use VuFindTheme\View\Helper\AssetManager;
 
 /**
  * AssetManager view helper Test Class
@@ -117,5 +120,47 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
         $assetManager = $view->plugin('assetManager');
         $this->assertEquals('output', $assetManager->outputInlineScriptString($script, $attrs, $arbitrary));
+    }
+
+    /**
+     * Test manipulation of the script list.
+     *
+     * @return void
+     */
+    public function testScriptListManipulation(): void
+    {
+        $themeInfo = $this->createMock(ThemeInfo::class);
+        $pipeline = $this->createMock(AssetPipeline::class);
+        $pipeline->method('process')->willReturnCallback(function ($scripts, $type) {
+            $this->assertEquals('js', $type);
+            return $scripts;
+        });
+        $manager = $this->getMockBuilder(AssetManager::class)
+            ->setConstructorArgs([$themeInfo, $pipeline])
+            ->onlyMethods(['outputInlineScriptLink', 'outputInlineScriptString', 'outputStyleAssets'])
+            ->getMock();
+        $manager->method('outputInlineScriptLink')->willReturnCallback(function ($src, $attrs, $arbitrary) {
+            return $src . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
+        });
+        $manager->method('outputInlineScriptString')->willReturnCallback(function ($script, $attrs, $arbitrary) {
+            return $script . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
+        });
+        $manager->method('outputStyleAssets')->willReturn('');
+        $manager->setView($this->getPhpRenderer());
+        $manager->appendScriptString('foo')
+            ->appendScriptLink('foo.js')
+            ->prependScriptString('bar', ['attr'], true);
+        $this->assertEquals("bar/attr/1\nfoo//0\nfoo.js//0", trim($manager->outputHeaderAssets()));
+        $manager->forcePrependScriptLink('bar.js')
+            ->forcePrependScriptLink('foo.js', ['attr1'], true);
+        $this->assertEquals("foo.js/attr1/1\nbar.js//0\nbar/attr/1\nfoo//0", trim($manager->outputHeaderAssets()));
+        $manager->appendScriptString('foot1', position: 'footer')
+            ->prependScriptString('foot0', position: 'footer')
+            ->appendScriptLink('foot.js', position: 'footer')
+            ->forcePrependScriptLink('pre-foot.js', position: 'footer');
+        $this->assertEquals("pre-foot.js//0\nfoot0//0\nfoot1//0\nfoot.js//0", trim($manager->outputFooterAssets()));
+        $manager->clearScriptList()->appendScriptString('xyzzy', ['foo'], true);
+        $this->assertEquals('xyzzy/foo/1', trim($manager->outputHeaderAssets()));
+        $this->assertEquals('', trim($manager->outputFooterAssets()));
     }
 }

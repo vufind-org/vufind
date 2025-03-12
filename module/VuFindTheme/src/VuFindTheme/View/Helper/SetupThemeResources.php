@@ -175,7 +175,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
                 ->forcePrependScriptLink(
                     $current['file'],
                     $current['attributes'] ?? [],
-                    $position
+                    position: $position
                 );
         }
     }
