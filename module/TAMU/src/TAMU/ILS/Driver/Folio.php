@@ -128,7 +128,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 );
 
                 $isPurchase = false;
-                if ($holdingLocationData['code'] == 'pda,print'
+                if ($holdingLocationData['code'] == 'POD'
                     && $hasHoldingNotes
                 ) {
                     foreach ($holding->notes as $note) {
