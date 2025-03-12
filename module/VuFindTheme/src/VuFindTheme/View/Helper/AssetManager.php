@@ -269,8 +269,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         $scriptHelper = $this->getView()->plugin('inlineScript');
         $processedScripts = $this->pipeline->process($this->scripts[$position], 'js');
         foreach ($processedScripts as $script) {
-            if ($script['allowArbitraryAttrs'] ?? false) {
+            $resetArbitraryAttributes = false;
+            if (!$scriptHelper->arbitraryAttributesAllowed() && ($script['allowArbitraryAttrs'] ?? false)) {
                 $scriptHelper->setAllowArbitraryAttributes(true);
+                $resetArbitraryAttributes = true;
             }
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
@@ -282,6 +284,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
                     }
                 }
                 $output[] = $this->outputInlineScriptFile($script['src'], $script['attrs']);
+            }
+            if ($resetArbitraryAttributes) {
+                $scriptHelper->setAllowArbitraryAttributes(false);
             }
         }
         return implode("\n", $output);
@@ -348,13 +353,19 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
             $attrs['nonce'] = $this->cspNonce;
         }
         $inlineScript = $this->getView()->plugin('inlineScript');
-        if ($allowArbitraryAttrs) {
+        $resetArbitraryAttributes = false;
+        if (!$inlineScript->arbitraryAttributesAllowed() && $allowArbitraryAttrs) {
             $inlineScript->setAllowArbitraryAttributes(true);
+            $resetArbitraryAttributes = true;
         }
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setScript($script, $type, $attrs);
-        return ($inlineScript)();
+        $result = ($inlineScript)();
+        if ($resetArbitraryAttributes) {
+            $inlineScript->setAllowArbitraryAttributes(false);
+        }
+        return $result;
     }
 
     /**
