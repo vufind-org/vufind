@@ -86,11 +86,12 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $css        Raw CSS.
      * @param array  $attributes Extra attributes for style tag
      *
-     * @return void
+     * @return static
      */
-    public function appendStyle(string $css, array $attributes = []): void
+    public function appendStyleString(string $css, array $attributes = []): static
     {
         $this->styles[] = compact('css', 'attributes');
+        return $this;
     }
 
     /**
@@ -103,13 +104,14 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return void
      */
-    public function appendStylesheet(
+    public function appendStyleLink(
         string $href,
         string $media = 'screen',
         string $conditionalStylesheet = '',
         array $extras = []
-    ): void {
+    ): static {
         $this->stylesheets[] = compact('href', 'media', 'conditionalStylesheet', 'extras');
+        return $this;
     }
 
     /**
@@ -120,14 +122,14 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $conditionalStylesheet Any conditions
      * @param array  $extras                Array of extra attributes
      *
-     * @return void
+     * @return static
      */
-    public function forcePrependStylesheet(
+    public function forcePrependStyleLink(
         string $href,
         string $media = 'screen',
         string $conditionalStylesheet = '',
         array $extras = []
-    ): void {
+    ): static {
         $newSheets = [compact('href', 'media', 'conditionalStylesheet', 'extras')];
         foreach ($this->stylesheets as $sheet) {
             if ($sheet['href'] !== $newSheets[0]['href']) {
@@ -135,25 +137,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
             }
         }
         $this->stylesheets = $newSheets;
+        return $this;
     }
 
     /**
-     * Clear the list of stylesheets, re-establishing it with the provided one.
+     * Clear the list of stylesheets.
      *
-     * @param string $href                  Stylesheet href
-     * @param string $media                 Media
-     * @param string $conditionalStylesheet Any conditions
-     * @param array  $extras                Array of extra attributes
-     *
-     * @return void
+     * @return static
      */
-    public function setStylesheet(
-        string $href,
-        string $media = 'screen',
-        string $conditionalStylesheet = '',
-        array $extras = []
-    ): void {
-        $this->stylesheets = [compact('href', 'media', 'conditionalStylesheet', 'extras')];
+    public function clearStyleList(): static
+    {
+        $this->stylesheets = [];
+        return $this;
     }
 
     /**
@@ -164,15 +159,16 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
      *
-     * @return void
+     * @return static
      */
-    public function appendScript(
+    public function appendScriptString(
         string $script,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
         string $position = 'header'
-    ) {
+    ): static {
         $this->scripts[$position][] = compact('script', 'attrs', 'allowArbitraryAttrs');
+        return $this;
     }
 
     /**
@@ -182,14 +178,15 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs    Array of script attributes
      * @param string $position Position to output script (header or footer)
      *
-     * @return void
+     * @return static
      */
-    public function appendScriptFile(
+    public function appendScriptLink(
         string $src,
         array $attrs = [],
         string $position = 'header'
-    ): void {
+    ): static {
         $this->scripts[$position][] = compact('src', 'attrs');
+        return $this;
     }
 
     /**
@@ -199,13 +196,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs    Array of script attributes
      * @param string $position Position to output script (header or footer)
      *
-     * @return void
+     * @return static
      */
-    public function forcePrependScriptFile(
+    public function forcePrependScriptLink(
         string $src,
         array $attrs = [],
         string $position = 'header'
-    ): void {
+    ): static {
         $newScripts = [compact('src', 'attrs')];
         foreach ($this->scripts[$position] as $script) {
             if ($script['src'] ?? null !== $newScripts[0]['src']) {
@@ -213,6 +210,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
             }
         }
         $this->scripts[$position] = $newScripts;
+        return $this;
     }
 
     /**
@@ -223,15 +221,27 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
      *
-     * @return void
+     * @return static
      */
-    public function prependScript(
+    public function prependScriptString(
         string $script,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
         string $position = 'header'
-    ) {
+    ): static {
         array_unshift($this->scripts[$position], compact('script', 'attrs', 'allowArbitraryAttrs'));
+        return $this;
+    }
+
+    /**
+     * Clear the list of scripts.
+     *
+     * @return static
+     */
+    public function clearScriptList(): static
+    {
+        $this->scripts = [];
+        return $this;
     }
 
     /**
@@ -283,7 +293,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
                         $script['src'] = $themePath;
                     }
                 }
-                $output[] = $this->outputInlineScriptFile($script['src'], $script['attrs']);
+                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs']);
             }
             if ($resetArbitraryAttributes) {
                 $scriptHelper->setAllowArbitraryAttributes(false);
@@ -376,7 +386,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function outputInlineScriptFile(
+    public function outputInlineScriptLink(
         string $src,
         array $attrs = [],
     ): string {

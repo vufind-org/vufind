@@ -1,6 +1,6 @@
 <?php
     if ($this->src) {
-        $this->assetManager()->appendStylesheet($this->src);
+        $this->assetManager()->appendStyleLink($this->src);
     }
     $className = trim('icon icon--font ' . $this->icon . ' ' . ($this->extra['class'] ?? ''));
 ?>

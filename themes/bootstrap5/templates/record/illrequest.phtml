@@ -112,7 +112,7 @@
 
 <?php
     // Set up ill script; we do this inline instead of in the header for lightbox compatibility:
-    echo $this->assetManager()->outputInlineScriptFile('ill.js');
+    echo $this->assetManager()->outputInlineScriptLink('ill.js');
 
     $js = <<<JS
         if ($.isReady) {

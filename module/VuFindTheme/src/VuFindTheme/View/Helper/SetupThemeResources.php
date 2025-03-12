@@ -114,7 +114,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $assetManager->forcePrependStylesheet(
+            $assetManager->forcePrependStyleLink(
                 $current['file'],
                 empty($current['media']) ? 'all' : $current['media'],
                 $current['conditional'] ?? '',
@@ -172,7 +172,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
             }
             $this->getView()
                 ->plugin('assetManager')
-                ->forcePrependScriptFile(
+                ->forcePrependScriptLink(
                     $current['file'],
                     $current['attributes'] ?? [],
                     $position

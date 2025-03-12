@@ -5,7 +5,7 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Checked Out Items') . '</li>';
 
-  $this->assetManager()->appendScriptFile('checkouts.js');
+  $this->assetManager()->appendScriptLink('checkouts.js');
 
   // Check if "Renew All" button can be displayed:
   $renewAll = !$this->ilsPaging || !$paginator;

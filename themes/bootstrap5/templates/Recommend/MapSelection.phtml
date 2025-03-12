@@ -5,15 +5,15 @@
       'rectangle_center_message' => 'rectangle_center_message',
     ]);
 
-    $this->assetManager()->appendScriptFile('vendor/leaflet/leaflet.js');
-    $this->assetManager()->appendScriptFile('vendor/leaflet/leaflet.draw.js');
-    $this->assetManager()->appendScriptFile('vendor/leaflet/leaflet.markercluster.js');
-    $this->assetManager()->appendScriptFile('map_selection_leaflet.js');
-    $this->assetManager()->appendStylesheet('vendor/leaflet/leaflet.css');
-    $this->assetManager()->appendStylesheet('vendor/leaflet/leaflet.draw.css');
-    $this->assetManager()->appendStylesheet('vendor/leaflet/MarkerCluster.css');
-    $this->assetManager()->appendStylesheet('vendor/leaflet/MarkerCluster.Default.css');
-    $this->assetManager()->appendStylesheet('geofeatures.css');
+    $this->assetManager()->appendScriptLink('vendor/leaflet/leaflet.js');
+    $this->assetManager()->appendScriptLink('vendor/leaflet/leaflet.draw.js');
+    $this->assetManager()->appendScriptLink('vendor/leaflet/leaflet.markercluster.js');
+    $this->assetManager()->appendScriptLink('map_selection_leaflet.js');
+    $this->assetManager()->appendStyleLink('vendor/leaflet/leaflet.css');
+    $this->assetManager()->appendStyleLink('vendor/leaflet/leaflet.draw.css');
+    $this->assetManager()->appendStyleLink('vendor/leaflet/MarkerCluster.css');
+    $this->assetManager()->appendStyleLink('vendor/leaflet/MarkerCluster.Default.css');
+    $this->assetManager()->appendStyleLink('geofeatures.css');
 
     $basemap = $this->recommend->getBasemap();
     $geoField = $this->recommend->getGeoField();

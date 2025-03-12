@@ -61,7 +61,7 @@
   <?php endif; ?>
 </div>
 <?php
-  echo $this->assetManager()->outputInlineScriptFile('hierarchy_tree.js');
+  echo $this->assetManager()->outputInlineScriptLink('hierarchy_tree.js');
   $js = <<<JS
         document.querySelectorAll('.js-hierarchy-tree-container').forEach((el) => VuFind.hierarchyTree.initTree(el));
       JS;

@@ -6,7 +6,7 @@
     $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('New Items') . '</li>';
 
     // Load advanced search Javascript to activate the clear button:
-    $this->assetManager()->appendScriptFile('advanced_search.js');
+    $this->assetManager()->appendScriptLink('advanced_search.js');
 
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();

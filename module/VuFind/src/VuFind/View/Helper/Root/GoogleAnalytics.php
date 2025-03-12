@@ -109,7 +109,7 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
         $url = 'https://www.googletagmanager.com/gtag/js?id=' . urlencode($this->key);
         $code = $this->getRawJavascript($customUrl);
         return
-            $assetManager->outputInlineScriptFile($url, attrs: ['async' => true]) . "\n"
+            $assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
             . $assetManager->outputInlineScript($code);
     }
 }
