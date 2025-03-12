@@ -31,7 +31,7 @@
       <form class="datevis-form facet-range-form hidden datevis<?=$facetFieldEsc?>Form" name="datevis<?=$facetFieldEsc?>xForm" data-name="<?=$facetFieldEsc?>" data-filter-field="daterange[]">
         <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => '/^' . preg_quote($facetField) . ':.*/'])?>
         <input type="hidden" name="daterange[]" value="<?=$facetFieldEsc?>">
-        <div class="datevis-label"><strong><?=$this->transEsc($facetRange['label']) ?></strong></div>
+        <h3 class="datevis-label facet-title"><?=$this->transEsc($facetRange['label']) ?></h3>
         <div class="datevis-chart">
           <canvas class="datevis-canvas"></canvas>
         </div>

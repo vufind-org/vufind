@@ -109,16 +109,6 @@ VuFind.register('pubdateVis', function pubdateVis() {
       }
     }
 
-    /**
-     * Show controls if mobile view
-     */
-    function showControlsIfMobile() {
-      // always show controls on mobile
-      if (window.innerWidth < 768) {
-        showControls();
-      }
-    }
-
     if (_initiallyHideControls) {
       controlsTrigger.tabIndex = 0;
       // show controls if hidden trigger element was focused because the slider is aria-hidden
@@ -126,8 +116,6 @@ VuFind.register('pubdateVis', function pubdateVis() {
         showControls();
         minSelectionInput.focus();
       });
-      showControlsIfMobile();
-      addEventListener("resize", showControlsIfMobile);
 
       // show controls if the filter is already set
       if (hasFilter) {
