@@ -38,16 +38,20 @@
         <div class="datevis-controls-trigger" id="datevis<?=$facetFieldEsc?>-controls-trigger"></div>
         <div class="datevis-controls collapse" id="datevis<?=$facetFieldEsc?>-controls">
           <div class="datevis-controls-container">
-            <label id="datevis<?=$facetFieldEsc?>-from-label" for="datevis<?=$facetFieldEsc?>-from">
-              <?=$this->transEsc('date_from')?>:
-            </label>
-            <input type="number" class="form-control" name="<?=$facetFieldEsc?>from" id="datevis<?=$facetFieldEsc?>-from">
-            <label id="datevis<?=$facetFieldEsc?>-to-label" for="datevis<?=$facetFieldEsc?>-to">
-              <?=$this->transEsc('date_to')?>:
-            </label>
-            <input type="number" class="form-control" name="<?=$facetFieldEsc?>to" id="datevis<?=$facetFieldEsc?>-to">
-            <input class="btn btn-default submit-button" type="submit" value="<?=$this->transEscAttr('Set')?>">
-            <input class="btn btn-default clear-btn" type="button" value="<?=$this->transEscAttr('Clear')?>">
+            <div class="datevis-controls-row datevis-input">
+              <label id="datevis<?=$facetFieldEsc?>-from-label" for="datevis<?=$facetFieldEsc?>-from">
+                <?=$this->transEsc('date_from')?>:
+              </label>
+              <input type="number" class="datevis-input-from form-control" name="<?=$facetFieldEsc?>from" id="datevis<?=$facetFieldEsc?>-from">
+              <label id="datevis<?=$facetFieldEsc?>-to-label" for="datevis<?=$facetFieldEsc?>-to">
+                <?=$this->transEsc('date_to')?>:
+              </label>
+              <input type="number" class="datevis-input-to form-control" name="<?=$facetFieldEsc?>to" id="datevis<?=$facetFieldEsc?>-to">
+            </div>
+            <div class="datevis-controls-row">
+              <input class="btn btn-default submit-button" type="submit" value="<?=$this->transEscAttr('Set')?>">
+              <input class="btn btn-default clear-btn" type="button" value="<?=$this->transEscAttr('Clear')?>">
+            </div>
           </div>
         </div>
       </form>

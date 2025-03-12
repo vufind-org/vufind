@@ -92,6 +92,15 @@ input[type="search"]::-webkit-search-decoration {
     input {
       margin-right: 1rem;
     }
+
+    .datevis-controls-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .datevis-input {
+      width: 100%;
+    }
   }
 
   @media (max-width: 767px) {

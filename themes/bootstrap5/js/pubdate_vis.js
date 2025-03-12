@@ -46,7 +46,7 @@ VuFind.register('pubdateVis', function pubdateVis() {
 
     // check if the min and max value have been set otherwise set them to the border of the data
     const dataMin = data.data[0][0];
-    if (data.selectionMin === undefined) {
+    if (data.selectionMin === undefined || data.selectionMin === '') {
       data.selectionMin = dataMin;
     }
     const initSelectionMin = parseInt(data.selectionMin, 10);
@@ -54,7 +54,7 @@ VuFind.register('pubdateVis', function pubdateVis() {
     minSelectionInput.value = initSelectionMin;
 
     const dataMax = data.data[data.data.length - 1][0];
-    if (data.selectionMax === undefined) {
+    if (data.selectionMax === undefined || data.selectionMax === '') {
       data.selectionMax = dataMax;
     }
     const initSelectionMax = parseInt(data.selectionMax, 10);

@@ -199,7 +199,8 @@ a:hover .login-dropdown-caret {
 
   h1,h2,h3,h4 { margin-top: 0; }
 
-  .facet-group {
+  .facet-group,
+  .datevis-form {
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }
