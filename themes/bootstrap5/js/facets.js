@@ -140,6 +140,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   const activation_event = 'facet-selection-begin';
   const deactivation_event = 'facet-selection-cancel';
   const apply_event = 'facet-selection-done';
+  const local_storage_variable_name = 'multi-facets-selection';
 
   /**
    * Normalize a filter value
@@ -344,9 +345,21 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     toggleSelectedFacetStyle(elem);
   }
 
+  function saveUserSelectionLastState(state) {
+    localStorage.setItem(local_storage_variable_name, state ? 'true' : 'false');
+  }
+
+  function getUserSelectionLastState() {
+    return localStorage.getItem(local_storage_variable_name) === 'true';
+  }
+
   function toggleMultiFacetsSelection(enable) {
     if (typeof enable !== 'undefined') {
+      if (isMultiFacetsSelectionActivated === enable) {
+        return;
+      }
       isMultiFacetsSelectionActivated = enable;
+      saveUserSelectionLastState(isMultiFacetsSelectionActivated);
     }
     document.querySelectorAll('.multi-facet-selection').forEach( el => el.classList.toggle('multi-facet-selection-active', isMultiFacetsSelectionActivated) );
     const checkboxes = document.getElementsByClassName('js-user-selection-multi-filters');
@@ -385,6 +398,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     const activationElem = context.querySelector('.js-user-selection-multi-filters');
     if (activationElem) {
       activationElem.addEventListener('change', function multiFacetSelectionChange() { toggleMultiFacetsSelection(this.checked); } );
+      toggleMultiFacetsSelection(getUserSelectionLastState());
     }
     // Listener on apply filters button
     const applyElem = context.querySelector('.js-apply-multi-facets-selection');

@@ -11,7 +11,7 @@
   $link = $this->serverUrl() . $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
 ?>
 <h2><?=$this->transEsc('permanent_link') ?></h2>
-<p>
+<div class="copy-to-clipboard-container">
   <pre id="permalink"><?=$this->escapeHtml($link)?></pre>
-</p>
-<?=$this->copyToClipboardButton('#permalink');?>
+  <?=$this->copyToClipboardButton('#permalink');?>
+</div>

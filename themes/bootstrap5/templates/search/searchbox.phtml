@@ -63,7 +63,7 @@
     <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc('Your search terms')?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
-        <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc('Edit this Advanced Search')?></a> |
+        <a href="<?=$this->url($advSearch, [], ['query' => ['sid' => $this->searchId]])?>"><?=$this->transEsc('Edit this Advanced Search')?></a> |
         <a href="<?=$this->url($advSearch, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc('Start a new Advanced Search')?></a> |
         <a href="<?=$this->url($searchHome, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc('Start a new Basic Search')?></a>
       </p>
@@ -172,7 +172,7 @@
       <button type="submit" class="btn btn-primary"><?=$this->icon('search') ?> <?=$this->transEsc('Find')?></button>
       <?php if ($advSearch): ?>
         <?php
-          $advSearchQuery = $results ? ['edit' => $results->getSearchId()] : $hiddenFilters;
+          $advSearchQuery = $results ? ['sid' => $results->getSearchId()] : $hiddenFilters;
           $advSearchLink = $this->url($advSearch, [], ['query' => $advSearchQuery]);
         ?>
         <a href="<?=$advSearchLink?>" class="advanced-search-link btn btn-link" rel="nofollow"><?=$this->transEsc('Advanced')?></a>
