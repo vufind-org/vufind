@@ -1,27 +1,66 @@
 <?php if ($visFacets = $this->recommend->getVisFacets()): ?>
   <?php
-    // load jQuery flot:
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
+    $this->headScript()->appendFile('vendor/chart.js');
+    $this->headScript()->appendFile('vendor/nouislider.min.js');
+    $this->headLink()->appendStylesheet('vendor/nouislider.min.css');
+    $this->headScript()->appendFile('date_range_slider.js');
     $this->headScript()->appendFile('pubdate_vis.js');
+    $this->jsConfigs()->add(
+        'pub-vis:facet-fields',
+        $this->recommend->getFacetFields()
+    );
+    $this->jsConfigs()->add(
+        'pub-vis:search-params',
+        $this->recommend->getSearchParams()
+    );
   ?>
   <?php foreach ($visFacets as $facetField => $facetRange): ?>
+    <?php
+      $facetFieldEsc = $this->escapeHtmlAttr($facetField);
+      $elementIdPart = $facetFieldEsc . '_' . $this->escapeHtmlAttr($this->location);
+      $formAttributes = [
+        'class' => 'datevis-form facet-range-form hidden datevis' . $facetField . 'Form',
+        'name' => 'datevis' . $facetField . 'xForm',
+        'data-name' => $facetField,
+        'data-filter-field' => 'daterange[]',
+      ];
+      if ($this->recommend->getZooming()) {
+        $formAttributes['data-zooming'] = 'true';
+      }
+      if ($this->recommend->getInitiallyHideControlsSetting()) {
+        $formAttributes['data-initially-hide-controls'] = 'true';
+      }
+    ?>
     <div class="authorbox">
-      <div id="datevis<?=$this->escapeHtml($facetField)?>xWrapper" class="hidden">
-        <strong><?=$this->transEsc($facetRange['label']) ?></strong>
-        <?php /* space the flot visualisation */ ?>
-        <div id="datevis<?=$facetField ?>x" style="margin:0 10px;width:auto;height:80px;cursor:crosshair;"></div>
-        <div id="clearButtonText" style="display: none"><?=$this->transEsc('Clear') ?></div>
-      </div>
+      <form <?=$this->htmlAttributes($formAttributes)?>>
+        <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => '/^' . preg_quote($facetField) . ':.*/'])?>
+        <input type="hidden" name="daterange[]" value="<?=$facetFieldEsc?>">
+        <h3 class="datevis-label facet-title"><?=$this->transEsc($facetRange['label']) ?></h3>
+        <div class="datevis-chart">
+          <canvas class="datevis-canvas"></canvas>
+        </div>
+        <div class="slider-container" aria-hidden="true"><div class="datevis-slider"></div></div>
+        <div class="datevis-controls-trigger"></div>
+        <div class="datevis-controls collapse">
+          <div class="datevis-controls-container">
+            <div class="datevis-controls-row datevis-input">
+              <label for="datevis-<?=$elementIdPart?>-from">
+                <?=$this->transEsc('date_from')?>:
+              </label>
+              <input type="number" class="datevis-input-from form-control" name="<?=$facetFieldEsc?>from" id="datevis-<?=$elementIdPart?>-from">
+              <label for="datevis-<?=$elementIdPart?>-to">
+                <?=$this->transEsc('date_to')?>:
+              </label>
+              <input type="number" class="datevis-input-to form-control" name="<?=$facetFieldEsc?>to" id="datevis-<?=$elementIdPart?>-to">
+            </div>
+            <div class="datevis-controls-row">
+              <input class="btn btn-default submit-button" type="submit" value="<?=$this->transEscAttr('Set')?>">
+              <input class="btn btn-default clear-btn" type="button" value="<?=$this->transEscAttr('Clear')?>">
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   <?php endforeach; ?>
   <div id="dateVisColorSettings"><!-- do not delete! used for passing CSS to Javascript --></div>
-  <?php
-    $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
-        . $this->recommend->getSearchParams() . "', VuFind.path, "
-        . $this->recommend->getZooming() . ');';
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
-  ?>
-
 <?php endif; ?>
