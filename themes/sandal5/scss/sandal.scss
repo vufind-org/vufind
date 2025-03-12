@@ -169,6 +169,11 @@ a:hover .login-dropdown-caret {
   background-color: $primary;
 }
 
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  outline-color: #afafaf54; // selection color
+}
+
 /* --- Record --- */
 .record-nav {
   display: table;
@@ -194,7 +199,8 @@ a:hover .login-dropdown-caret {
 
   h1,h2,h3,h4 { margin-top: 0; }
 
-  .facet-group {
+  .facet-group,
+  .datevis-form {
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }

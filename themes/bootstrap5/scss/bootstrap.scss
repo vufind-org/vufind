@@ -629,16 +629,14 @@ body.rtl .dropdown-menu {
 .fines-total {
   font-weight: bold;
 }
-
-/* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
 
 /* ------ PubDateVis ------ */
 #dateVisColorSettings {
-  background-color: #fff; // background of box
-  fill: #eee;             // fillColor
-  outline-color: #c38835; // selection color
-  stroke: $primary; // color
+  background-color: #fff;   // background of box
+  outline-color: #0873c655; // selection color
+  fill: $primary;           // fillColor
+  stroke: $primary;         // color
 }
 
 /* ------ Table wrapping to prevent horizontal overflow ------ */

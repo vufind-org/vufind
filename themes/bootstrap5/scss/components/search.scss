@@ -64,9 +64,50 @@ input[type="search"]::-webkit-search-decoration {
   }
 }
 
+.datevis-form {
+  padding: 0 10px;
+
+  .datevis-label {
+    margin-bottom: .3rem;
+    font-weight: bold;
+    text-align: inherit;
+  }
+
+  .datevis-chart {
+    height: 70px;
+  }
+
+  .slider-container {
+    padding-top: 0;
+    padding-bottom: .8rem;
+  }
+
+  .datevis-controls-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: .8rem;
+
+    label {
+      margin-right: .5rem;
+    }
+
+    input {
+      margin-right: 1rem;
+    }
+
+    .datevis-controls-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .datevis-input {
+      width: 100%;
+    }
+  }
+}
+
 // Hide these on mobile
 @include media-breakpoint-down(sm) {
-  #datevispublishDatexWrapper,
   // Bulk action checkboxes:
   #search-cart-form .result .checkbox,
   // Search result and favorites bulk action buttons:
