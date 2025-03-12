@@ -46,17 +46,47 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     use ViewTrait;
 
     /**
-     * Data provider for testOutputInlineScriptString().
+     * Data provider for testOutputInlineScriptLink() and testOutputInlineScriptString().
      *
      * @return array[]
      */
-    public static function outputInlineScriptStringProvider(): array
+    public static function outputInlineScriptProvider(): array
     {
         return [
             'default settings' => [[], false, 'text/javascript'],
             'arbitrary attribute' => [['data-foo' => 'bar'], true, 'text/javascript'],
             'arbitrary MIME type' => [['type' => 'mime/type'], false, 'mime/type'],
         ];
+    }
+
+    /**
+     * Test that outputInlineScriptLink() behaves as expected.
+     *
+     * @param array  $attrs        Attributes array
+     * @param bool   $arbitrary    Value for arbitrary attributes flag
+     * @param string $expectedType The type we expect to pass to the helper
+     *
+     * @return void
+     *
+     * @dataProvider outputInlineScriptProvider
+     */
+    public function testOutputInlineScriptLink(array $attrs, bool $arbitrary, string $expectedType): void
+    {
+        $script = 'foo.js';
+        $inlineScriptHelper = $this->createMock(InlineScript::class);
+        $inlineScriptHelper->method('arbitraryAttributesAllowed')->willReturn(false);
+        $inlineScriptHelper
+            ->expects($arbitrary ? $this->exactly(2) : $this->never())
+            ->method('setAllowArbitraryAttributes');
+        $expectedAttrs = isset($attrs['type']) ? array_diff($attrs, ['type' => $attrs['type']]) : $attrs;
+        $inlineScriptHelper
+            ->expects($this->once())
+            ->method('__call')
+            ->with('setFile', [$script, $expectedType, $expectedAttrs]);
+        $inlineScriptHelper->method('__invoke')->willReturn('output');
+        $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
+        $assetManager = $view->plugin('assetManager');
+        $this->assertEquals('output', $assetManager->outputInlineScriptLink($script, $attrs, $arbitrary));
     }
 
     /**
@@ -68,7 +98,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      *
-     * @dataProvider outputInlineScriptStringProvider
+     * @dataProvider outputInlineScriptProvider
      */
     public function testOutputInlineScriptString(array $attrs, bool $arbitrary, string $expectedType): void
     {

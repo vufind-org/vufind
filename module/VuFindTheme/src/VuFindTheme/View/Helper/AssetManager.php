@@ -279,24 +279,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         $scriptHelper = $this->getView()->plugin('inlineScript');
         $processedScripts = $this->pipeline->process($this->scripts[$position], 'js');
         foreach ($processedScripts as $script) {
-            $resetArbitraryAttributes = false;
-            if (!$scriptHelper->arbitraryAttributesAllowed() && ($script['allowArbitraryAttrs'] ?? false)) {
-                $scriptHelper->setAllowArbitraryAttributes(true);
-                $resetArbitraryAttributes = true;
-            }
+            $allowArbitrary = $script['allowArbitraryAttrs'] ?? false;
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
-                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs']);
+                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs'], $allowArbitrary);
             } else {
                 if ($this->isRelativePath($script['src'])) {
                     if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
                         $script['src'] = $themePath;
                     }
                 }
-                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs']);
-            }
-            if ($resetArbitraryAttributes) {
-                $scriptHelper->setAllowArbitraryAttributes(false);
+                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs'], $allowArbitrary);
             }
         }
         return implode("\n", $output);
@@ -357,14 +350,14 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     public function outputInlineScriptString(
         string $script,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
+        bool $allowArbitraryAttrs = false
     ): string {
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
         $inlineScript = $this->getView()->plugin('inlineScript');
         $resetArbitraryAttributes = false;
-        if (!$inlineScript->arbitraryAttributesAllowed() && $allowArbitraryAttrs) {
+        if ($allowArbitraryAttrs && !$inlineScript->arbitraryAttributesAllowed()) {
             $inlineScript->setAllowArbitraryAttributes(true);
             $resetArbitraryAttributes = true;
         }
@@ -381,14 +374,16 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Output an inline script file.
      *
-     * @param string $src   Script src
-     * @param array  $attrs Array of script attributes
+     * @param string $src                 Script src
+     * @param array  $attrs               Array of script attributes
+     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      *
      * @return string
      */
     public function outputInlineScriptLink(
         string $src,
         array $attrs = [],
+        bool $allowArbitraryAttrs = false
     ): string {
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
@@ -397,10 +392,19 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }
+        $resetArbitraryAttributes = false;
+        if ($allowArbitraryAttrs && !$inlineScript->arbitraryAttributesAllowed()) {
+            $inlineScript->setAllowArbitraryAttributes(true);
+            $resetArbitraryAttributes = true;
+        }
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setFile($src, $type, $attrs);
-        return ($inlineScript)();
+        $result = ($inlineScript)();
+        if ($resetArbitraryAttributes) {
+            $inlineScript->setAllowArbitraryAttributes(false);
+        }
+        return $result;
     }
 
     /**
