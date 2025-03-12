@@ -389,3 +389,12 @@ $tag-remove-badge-color:          #a94442 !default;
     display: none;
   }
 }
+
+/* Citation */
+.citation {
+  margin-bottom: .5rem;
+
+  .copy-to-clipboard {
+    margin-left: auto;
+  }
+}

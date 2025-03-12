@@ -33,7 +33,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
+use VuFind\Search\Solr\ErrorListener;
 
 use function is_array;
 use function is_callable;
