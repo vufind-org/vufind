@@ -21,7 +21,7 @@
     $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
         . $this->recommend->getSearchParams() . "', VuFind.path, "
         . $this->recommend->getZooming() . ');';
-    echo $this->assetManager()->outputInlineScript($js);
+    echo $this->assetManager()->outputInlineScriptString($js);
   ?>
 
 <?php endif; ?>

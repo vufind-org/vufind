@@ -174,7 +174,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             $code = $this->trackPageView();
         }
 
-        return $this->getView()->plugin('assetManager')->outputInlineScript($code);
+        return $this->getView()->plugin('assetManager')->outputInlineScriptString($code);
     }
 
     /**

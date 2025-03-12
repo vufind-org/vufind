@@ -65,5 +65,5 @@
   $js = <<<JS
         document.querySelectorAll('.js-hierarchy-tree-container').forEach((el) => VuFind.hierarchyTree.initTree(el));
       JS;
-  echo $this->assetManager()->outputInlineScript($js);
+  echo $this->assetManager()->outputInlineScriptString($js);
 ?>

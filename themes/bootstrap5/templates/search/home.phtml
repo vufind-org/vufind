@@ -17,7 +17,7 @@
 <div class="searchHomeContent">
   <?php $this->slot('search-home-hero')->start() ?>
     <?=$this->render('search/searchbox.phtml')?>
-    <?=$this->assetManager()->outputInlineScript('$("#searchForm_lookfor").focus();'); ?>
+    <?=$this->assetManager()->outputInlineScriptString('$("#searchForm_lookfor").focus();'); ?>
   <?=$this->slot('search-home-hero')->end() ?>
 </div>
 

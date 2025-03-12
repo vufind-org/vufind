@@ -110,6 +110,6 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
         $code = $this->getRawJavascript($customUrl);
         return
             $assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
-            . $assetManager->outputInlineScript($code);
+            . $assetManager->outputInlineScriptString($code);
     }
 }

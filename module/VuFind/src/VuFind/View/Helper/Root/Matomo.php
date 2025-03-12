@@ -177,7 +177,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         } else {
             $code = $this->trackPageView();
         }
-        return $this->getView()->plugin('assetManager')->outputInlineScript($code);
+        return $this->getView()->plugin('assetManager')->outputInlineScriptString($code);
     }
 
     /**

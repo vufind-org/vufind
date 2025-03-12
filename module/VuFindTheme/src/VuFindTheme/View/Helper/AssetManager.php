@@ -286,7 +286,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
             }
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
-                $output[] = $this->outputInlineScript($script['script'], $script['attrs']);
+                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs']);
             } else {
                 if ($this->isRelativePath($script['src'])) {
                     if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
@@ -354,7 +354,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function outputInlineScript(
+    public function outputInlineScriptString(
         string $script,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,

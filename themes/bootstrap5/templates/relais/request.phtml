@@ -10,5 +10,5 @@
 <?php
   $this->assetManager()->appendScriptLink('relais.js');
   $activateRelais = "$(document).ready(function () { VuFind.relais.addItem('$oclc', '$failLink'); });\n";
-  echo $this->assetManager()->outputInlineScript($activateRelais);
+  echo $this->assetManager()->outputInlineScriptString($activateRelais);
 ?>

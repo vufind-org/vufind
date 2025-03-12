@@ -67,7 +67,7 @@
   <button class="btn btn-default lightbox-only" data-bs-dismiss="modal"><?=$this->translate('close') ?></button>
 </div>
 
-<?=$this->assetManager()->outputInlineScript('VuFind.facetList.setup();')?>
+<?=$this->assetManager()->outputInlineScriptString('VuFind.facetList.setup();')?>
 <?php if ($this->inLightbox): ?>
-  <?=$this->assetManager()->outputInlineScript('VuFind.lightbox_facets.setup();')?>
+  <?=$this->assetManager()->outputInlineScriptString('VuFind.lightbox_facets.setup();')?>
 <?php endif; ?>

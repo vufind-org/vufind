@@ -76,7 +76,7 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
             n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','{$this->gtmContainerId}');
             END;
-        return $this->getView()->plugin('assetManager')->outputInlineScript($js);
+        return $this->getView()->plugin('assetManager')->outputInlineScriptString($js);
     }
 
     /**

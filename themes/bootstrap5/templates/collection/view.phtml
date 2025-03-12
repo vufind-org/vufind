@@ -106,4 +106,4 @@
     <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 </div>
-<?=$this->assetManager()->outputInlineScript('$(document).ready(recordDocReady);'); ?>
+<?=$this->assetManager()->outputInlineScriptString('$(document).ready(recordDocReady);'); ?>
