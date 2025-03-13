@@ -94,7 +94,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
 <p>Translation of Help in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
 
 <template id="template-copy-btn">
-  <div class="float-right"><?=$this->copyToClipboardButton('.translation-output'); ?></div>
+  <div class="float-right"><?=$this->copyToClipboardButton('.translation-output', false); ?></div>
 </template>
 
 <?php
@@ -122,6 +122,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
         function bindTextareaEvent() {
           var copyBtn = document.getElementById("template-copy-btn").content.cloneNode(true);
           $(".modal-body h2").after(copyBtn);
+          VuFind.copyToClipboard.updateContainer({container: document});
           $('.translation-output').click(function(e) {
             this.select();
           });

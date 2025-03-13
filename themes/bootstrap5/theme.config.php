@@ -69,6 +69,7 @@ return [
         ['file' => 'list_item_selection.js', 'priority' => 400],
         ['file' => 'covers.js', 'priority' => 410],
         ['file' => 'validation.js', 'priority' => 420],
+        ['file' => 'copy_to_clipboard.js', 'priority' => 430],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -155,7 +156,6 @@ return [
              * All of the items below have been specified with FontAwesome to allow
              * for a strong inheritance safety net but this is not required.
              */
-            'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
             'browzine-issue' => 'Alias:format-serial',
             'browzine-pdf' => 'FontAwesome:file-pdf-o',
