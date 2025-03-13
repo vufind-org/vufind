@@ -4,11 +4,11 @@
 
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
-      if ($url = $this->searchMemory()->getLastSearchUrl()) {
-        $this->breadcrumbs()->add($this->translate('Search'), $url);
-      }
-      $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
-        ->add($this->translate('Place a Storage Retrieval Request'), active: true);
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+      ->add($this->translate('Place a Storage Retrieval Request'), active: true);
 ?>
 <h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
 <?php if ($this->helpTextHtml): ?>
