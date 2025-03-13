@@ -4,11 +4,11 @@
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
-    if ($url = $this->searchMemory()->getLastSearchUrl()) {
-      $this->breadcrumbs()->add($this->translate('Search'), $url);
-    }
-    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
-      ->add($this->translate('Email Record'), active: true);
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('Email Record'), active: true);
 ?>
 <h2><?=$this->transEsc('Email Record') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
 <form class="form-record-email" method="post" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email')) ?>" name="emailRecord">
