@@ -4,10 +4,10 @@
 
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
-      if ($url = $this->searchMemory()->getLastSearchUrl()) {
-        $this->breadcrumbs()->add($this->translate('Search'), $url);
-      }
-      $this->breadcrumbs()->add($this->translate('bulk_save_cart'), active: true);
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add($this->translate('bulk_save_cart'), active: true);
 ?>
 <h2><?=$this->transEsc('bulk_save_cart')?></h2>
 
