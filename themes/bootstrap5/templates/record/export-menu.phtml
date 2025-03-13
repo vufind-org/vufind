@@ -4,11 +4,11 @@
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
-    if ($url = $this->searchMemory()->getLastSearchUrl()) {
-      $this->breadcrumbs()->add($this->translate('Search'), $url);
-    }
-    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
-      ->add($this->translate('Export Record'), active: true);
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('Export Record'), active: true);
 ?>
 <?=$this->flashmessages()?>
 <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
