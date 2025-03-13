@@ -1205,8 +1205,10 @@ ${git_status}
 
     <!-- build the standard tar.gz archive -->
     <echo message="Building .tar.gz...." />
-    <exec dir="${builddir}/export" executable="tar" checkreturn="true">
-      <arg line="czfh ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" />
+    <!-- macOS needs the no-xattrs and COPYFILE_DISABLE settings -->
+    <exec dir="${builddir}/export" executable="tar" checkreturn="true" passthru="true">
+      <arg line="--no-xattrs -czhf ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" />
+      <env key="COPYFILE_DISABLE" value="true" />
     </exec>
 
     <!-- build the a zip archive -->
