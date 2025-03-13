@@ -29,11 +29,14 @@
 
 namespace VuFindTest\View\Helper;
 
+use Exception;
 use Laminas\View\Helper\InlineScript;
 use VuFindTest\Feature\ViewTrait;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 use VuFindTheme\View\Helper\AssetManager;
+
+use function is_array;
 
 /**
  * AssetManager view helper Test Class
@@ -162,5 +165,98 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         $manager->clearScriptList()->appendScriptString('xyzzy', ['foo'], true);
         $this->assertEquals('xyzzy/foo/1', trim($manager->outputHeaderAssets()));
         $this->assertEquals('', trim($manager->outputFooterAssets()));
+    }
+
+    /**
+     * Build a simulated version of a Laminas style helper.
+     *
+     * @param string $appendMethod Expected method name for append operations.
+     *
+     * @return object
+     */
+    public function getMockStyleHelper(string $appendMethod): object
+    {
+        $mockHelper = new class ($appendMethod) {
+            protected $data = [];
+
+            /**
+             * Constructor
+             *
+             * @param string $appendMethod Name of append method to simulate
+             */
+            public function __construct(protected string $appendMethod)
+            {
+            }
+
+            /**
+             * Return the collected data.
+             *
+             * @return string
+             */
+            public function __invoke()
+            {
+                $str = implode("\n", $this->data);
+                $this->data = [];
+                return $str;
+            }
+
+            /**
+             * Magic method to simulate appending.
+             *
+             * @param string $method Method name
+             * @param array  $args   Arguments sent to method
+             *
+             * @return void
+             * @throws Exception
+             */
+            public function __call($method, $args)
+            {
+                if ($method !== $this->appendMethod) {
+                    throw new Exception("Unexpected method call: $method");
+                }
+                $this->data[] = implode(
+                    '/',
+                    array_map(fn ($data) => is_array($data) ? implode('|', $data) : $data, $args)
+                );
+            }
+        };
+        return $mockHelper;
+    }
+
+    /**
+     * Test manipulation of the style list.
+     *
+     * @return void
+     */
+    public function testStyleListManipulation(): void
+    {
+        $themeInfo = $this->createMock(ThemeInfo::class);
+        $pipeline = $this->createMock(AssetPipeline::class);
+        $pipeline->method('process')->willReturnCallback(function ($styles, $type) {
+            $this->assertEquals('css', $type);
+            return $styles;
+        });
+        $manager = $this->getMockBuilder(AssetManager::class)
+            ->setConstructorArgs([$themeInfo, $pipeline])
+            ->onlyMethods(['outputScriptAssets'])
+            ->getMock();
+        $manager->method('outputScriptAssets')->willReturn('');
+        $helpers = [
+            'headLink' => $this->getMockStyleHelper('appendStylesheet'),
+            'headStyle' => $this->getMockStyleHelper('appendStyle'),
+        ];
+        $manager->setView($this->getPhpRenderer($helpers));
+        $manager->appendStyleString('foo')
+            ->appendStyleLink('foo.css')
+            ->forcePrependStyleLink('bar.css');
+        $this->assertEquals("bar.css/screen//\nfoo.css/screen//\nfoo/", trim($manager->outputHeaderAssets()));
+        $manager->clearStyleList()
+            ->appendStyleLink('xyzzy.css', 'print', 'cond', ['a', 'b'])
+            ->appendStyleString('baz', ['c', 'd'])
+            ->forcePrependStyleLink('pre.css', 'odd', 'oop', ['z']);
+        $this->assertEquals(
+            "pre.css/odd/oop/z\nxyzzy.css/print/cond/a|b\nbaz/c|d",
+            trim($manager->outputHeaderAssets())
+        );
     }
 }

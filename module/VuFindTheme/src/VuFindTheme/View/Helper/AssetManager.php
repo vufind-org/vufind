@@ -64,7 +64,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @var array
      */
-    protected $stylesheets = [];
+    protected $stylesheets;
 
     /**
      * Constructor
@@ -143,12 +143,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Clear the list of stylesheets.
+     * Clear the list of styles and stylesheets.
      *
      * @return static
      */
     public function clearStyleList(): static
     {
+        $this->styles = [];
         $this->stylesheets = [];
         return $this;
     }
