@@ -4,11 +4,10 @@
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
-    if ($url = $this->searchMemory()->getLastSearchUrl()) {
-      $this->breadcrumbs()->add($this->translate('Search'), $url);
-   }
-   $this->breadcrumbs()->add($this->translate('Email this Search'), active: true);
-
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add($this->translate('Email this Search'), active: true);
 ?>
 <h2><?=$this->transEsc('Email this Search') ?></h2>
 <?=$this->flashmessages()?>
