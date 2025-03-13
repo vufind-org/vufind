@@ -4,11 +4,11 @@
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
-    if ($url = $this->searchMemory()->getLastSearchUrl()) {
-      $this->breadcrumbs()->add($this->translate('Search'), $url);
-    }
-    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
-      ->add($this->translate('rating_add_or_update'), active: true);
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('rating_add_or_update'), active: true);
 
   $ratingData = $this->ratings()->getRatingBreakdown($this->driver, [1 => [10, 29], 2 => [30, 49], 3 => [50, 69], 4 => [70, 89], 5 => [90, 100]]);
   krsort($ratingData['groups']);
