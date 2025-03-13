@@ -5,7 +5,7 @@
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
     ->add($this->translate('My Holds'), $this->url('holds-list'))
-    ->add(this->translate('hold_edit_title'), active: true);
+    ->add($this->translate('hold_edit_title'), active: true);
 ?>
 <h2><?=$this->transEsc('hold_edit_title')?></h2>
 <?php if ($this->helpTextHtml): ?>
