@@ -4,10 +4,10 @@
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
-   if ($url = $this->searchMemory()->getLastSearchUrl()) {
-     $this->breadcrumbs()->add($this->translate('Search'), $url);
-   }
-   $this->breadcrumbs()->add($this->translate('Cart'), $this->url('cart-home'));
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add($this->translate('Cart'), $this->url('cart-home'));
 ?>
 <h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
