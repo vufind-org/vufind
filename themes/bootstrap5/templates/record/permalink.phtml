@@ -4,11 +4,11 @@
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
-    if ($url = $this->searchMemory()->getLastSearchUrl()) {
-      $this->breadcrumbs()->add($this->translate('Search'), $url);
-    }
-    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
-      ->add($this->translate('permanent_link'), active: true);
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('permanent_link'), active: true);
 
   // Collect permalink data:
   $link = $this->serverUrl() . $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
