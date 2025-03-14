@@ -81,18 +81,24 @@ class SolrAuthEaccpfTest extends \PHPUnit\Framework\TestCase
         $publications = [
           [
             'title' => 'Kansallisbiografia',
+            'searchTitle' => '',
             'label' => '',
             'url' => 'https://kansallisbiografia.fi/',
+            'isbn' => '',
           ],
           [
             'title' => 'Ylioppilasmatrikkeli 1983',
+            'searchTitle' => '',
             'label' => '',
             'url' => 'https://ylioppilasmatrikkeli.helsinki.fi/1853-1899/',
+            'isbn' => '',
           ],
           [
             'title' => 'Julkaisu ilman linkkiä',
+            'searchTitle' => '',
             'label' => '',
             'url' => '',
+            'isbn' => '',
           ],
         ];
         $this->assertEquals($publications, $driver->getRelatedPublications());

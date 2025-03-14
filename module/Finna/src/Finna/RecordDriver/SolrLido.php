@@ -240,6 +240,20 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
     protected $displayDownloadLinks = ['provided_video'];
 
     /**
+     * Array of related work relation types for related publications
+     *
+     * @var array
+     */
+    protected $relatedPulicationRelationTypes = ['is reproduced in', 'kirjallisuus', 'lähteet', 'julkaisu'];
+
+    /**
+     * Array of related publication title labels excluded from search
+     *
+     * @var array
+     */
+    protected $relatedPulicationTitlesExcludedFromSearch = ['verkkojulkaisu'];
+
+    /**
      * Events used for author information.
      *
      * Key is event type, value is priority (lower is more important),
@@ -1153,24 +1167,48 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
     public function getRelatedPublications()
     {
         $results = [];
-        $publicationTypes = ['kirjallisuus', 'lähteet', 'julkaisu'];
-        $xpath = 'lido/descriptiveMetadata/objectRelationWrap/relatedWorksWrap/'
-            . 'relatedWorkSet';
-        foreach ($this->getXmlRecord()->xpath($xpath) as $node) {
-            if (!empty($node->relatedWork->displayObject)) {
-                $title = trim((string)$node->relatedWork->displayObject);
-                $attributes = $node->relatedWork->displayObject->attributes();
-                $label = !empty($attributes->label)
-                    ? (string)$attributes->label : '';
-                $term = !empty($node->relatedWorkRelType->term)
-                    ? (string)$node->relatedWorkRelType->term : '';
+        foreach (
+            $this->getXmlRecord()->lido->descriptiveMetadata->objectRelationWrap->relatedWorksWrap
+            ->relatedWorkSet ?? [] as $node
+        ) {
+            if ($title = $searchTitle = trim((string)($node->relatedWork->displayObject ?? ''))) {
+                $term = trim((string)($node->relatedWorkRelType->term ?? ''));
                 $termLC = mb_strtolower($term, 'UTF-8');
-                if ($title && in_array($termLC, $publicationTypes)) {
-                    $term = $termLC != 'julkaisu' ? $term : '';
+                if (in_array($termLC, $this->relatedPulicationRelationTypes)) {
+                    $label = trim((string)($node->relatedWork->displayObject->attributes()->label ?? ''));
+                    $term = !in_array($termLC, ['julkaisu', 'is reproduced in']) ? $term : '';
+                    // Check if title can be used as search link.
+                    // Discard titles that are extremely long as they usually contain excessive information
+                    // or contain semicolons which are commonly used to combine multiple titles in one field.
+                    if (
+                        in_array(mb_strtolower($label, 'UTF-8'), $this->relatedPulicationTitlesExcludedFromSearch)
+                        || strlen($searchTitle) > 400
+                        || str_contains($searchTitle, ';')
+                    ) {
+                        $searchTitle = '';
+                    }
+                    // Remove page numbers like "s. 36-38, s. 196" from the end of the search title
+                    if (preg_match('{^(.*?),[s\.,\-–\s\d]+$}', $searchTitle, $matches)) {
+                        $searchTitle = $matches[1];
+                    }
+                    // Limit search title to 30 words for better result
+                    if (preg_match('{((.+?\s+){29}\S*).*}', $searchTitle, $matches)) {
+                        $searchTitle = $matches[1];
+                    }
+                    $isbn = '';
+                    foreach ($node->relatedWork->object->objectID ?? [] as $identifier) {
+                        $trimmed = trim((string)preg_replace('/\s+/', ' ', $identifier));
+                        if (preg_match('{^(URN:ISBN:)(.*)}', $trimmed, $matches)) {
+                            $isbn = trim($matches[2]);
+                            continue;
+                        }
+                    }
                     $results[] = [
                       'title' => $title,
+                      'searchTitle' => $searchTitle,
                       'label' => $label ?: $term,
                       'url' => '',
+                      'isbn' => $isbn,
                     ];
                 }
             }

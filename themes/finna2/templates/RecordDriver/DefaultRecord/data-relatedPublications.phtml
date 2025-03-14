@@ -3,14 +3,21 @@
   <div class="truncate-field">
     <?php foreach ($data as $publication): ?>
       <div class="related-publications">
+      <?php
+        $contentAfterLinkEscaped = '';
+        if (!empty($publication['isbn'])) {
+          $contentAfterLinkEscaped .= ', ISBN ' . $this->escapeHtml($publication['isbn']);
+        }
+        if (!empty($publication['label'])) {
+            $contentAfterLinkEscaped .= ' (' . $this->escapeHtml($publication['label']) . ')';
+        }
+        ?>
         <?php if (!empty($publication['url'])): ?>
-          <a href="<?=$this->escapeHtmlAttr($publication['url'])?>" target="_blank" aria-label="<?=$this->escapeHtmlAttr($publication['title'])?> (<?=$this->transEscAttr('external_link')?>; <?=$this->transEscAttr('Open in a new window')?>)">
-            <?=$this->icon('external-link') ?>
-            <?=$this->escapeHtml($publication['title'])?>
-          </a>
-          <?php if (!empty($publication['label'])): ?> (<?=$this->escapeHtml($publication['label'])?>)<?php endif; ?>
+          <a href="<?=$this->escapeHtmlAttr($publication['url'])?>" target="_blank" aria-label="<?=$this->escapeHtmlAttr($publication['title'])?> (<?=$this->transEscAttr('external_link')?>; <?=$this->transEscAttr('Open in a new window')?>)"><?=$this->icon('external-link') ?> <?=$this->escapeHtml($publication['title'])?></a><?=$contentAfterLinkEscaped?>
+        <?php elseif ($publication['searchTitle']): ?>
+          <a class="backlink" title="<?=$this->escapeHtmlAttr($publication['title'])?>" href="<?=$this->record($this->driver)->getLink('title-isbn', $publication['searchTitle'], params: ['isbn' => $publication['isbn'] ?? ''])?>"><?=$this->escapeHtml($publication['title'])?></a><?=$contentAfterLinkEscaped?>
         <?php else: ?>
-            <?=$this->escapeHtml($publication['title'])?><?php if (!empty($publication['label'])): ?> (<?=$this->escapeHtml($publication['label'])?>)<?php endif; ?>
+          <?=$this->escapeHtml($publication['title'])?><?=$contentAfterLinkEscaped?>
         <?php endif; ?>
       </div>
     <?php endforeach; ?> 

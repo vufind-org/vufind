@@ -343,8 +343,10 @@ class SolrAuthEaccpf extends SolrAuthDefault
                 if ($title = trim((string)$citation ?? '')) {
                     $result[] = [
                         'title' => $title,
+                        'searchTitle' => '',
                         'label' => '',
                         'url' => (string)($citation->attributes()->href ?? ''),
+                        'isbn' => '',
                     ];
                 }
             }

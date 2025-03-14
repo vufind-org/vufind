@@ -160,6 +160,60 @@
             </subject>
           </subjectSet>
         </subjectWrap>
+        <relatedWorksWrap>
+          <relatedWorkSet>
+            <relatedWork>
+              <displayObject label="Julkaistu teoksessa">Helsinki = Empirekaupungin synty 1550-1850, Helsinki, s. 89</displayObject>
+              <object>
+                <objectWebResource/>
+                <objectID type="URI">URN:ISBN:951-746-543-2</objectID>
+              </object>
+            </relatedWork>
+            <relatedWorkRelType>
+              <term>is reproduced in</term>
+            </relatedWorkRelType>
+          </relatedWorkSet>
+          <relatedWorkSet>
+            <relatedWork>
+              <displayObject>Multiple titles in one field; Should be discarded from search</displayObject>
+            </relatedWork>
+            <relatedWorkRelType>
+              <term>is reproduced in</term>
+            </relatedWorkRelType>
+          </relatedWorkSet>
+          <relatedWorkSet>
+            <relatedWork>
+              <displayObject label="Verkkojulkaisu">Online publication, discarded from search</displayObject>
+            </relatedWork>
+            <relatedWorkRelType>
+              <term>is reproduced in</term>
+            </relatedWorkRelType>
+          </relatedWorkSet>
+          <relatedWorkSet>
+            <relatedWork>
+              <displayObject>This is a very long title and for better result, only the first 30 words should be included in search title, which means that its last word should be this. The rest of the title should be included only in display title.</displayObject>
+              <object>
+                <objectWebResource/>
+                <objectID type="URI">URN:ISBN:951-772-866-2</objectID>
+              </object>
+            </relatedWork>
+            <relatedWorkRelType>
+              <term>julkaisu</term>
+            </relatedWorkRelType>
+          </relatedWorkSet>
+          <relatedWorkSet>
+            <relatedWork>
+              <displayObject>A publication with no valid ISBN</displayObject>
+              <object>
+                <objectWebResource/>
+                <objectID type="URI">12345678</objectID>
+              </object>
+            </relatedWork>
+            <relatedWorkRelType>
+              <term>kirjallisuus</term>
+            </relatedWorkRelType>
+          </relatedWorkSet>
+        </relatedWorksWrap>
       </objectRelationWrap>
       <eventWrap>
         <eventSet>
