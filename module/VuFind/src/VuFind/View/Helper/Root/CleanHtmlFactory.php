@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2020-2024.
+ * Copyright (C) The National Library of Finland 2020-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -60,14 +60,14 @@ class CleanHtmlFactory implements FactoryInterface
     protected ContainerInterface $container;
 
     /**
-     * Default list of allowed elements in different rendering contexts
+     * List of allowed elements in different rendering contexts
      *
      * See e.g. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#technical_summary for more
      * information on headings. Note that the defaults below are subsets of all allowed elements.
      *
      * @var array
      */
-    protected $defaultContextConfig = [
+    protected $allowedElements = [
         'default' => null,
         'heading' => 'a,b,br,em,i,span,strong,sub,sup,u',
         'link' => 'abbr,acronym,b,bdo,big,br,cite,dfn,em,i,img,q,samp,small,span,strong,sub,sup,var',
@@ -95,6 +95,11 @@ class CleanHtmlFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+
+        // Modify default context settings per configuration
+        $config = $container->get(ConfigPluginManager::class)->get('config')->toArray();
+        $this->allowedElements = ($config['HTML_Rendering_Contexts']['allowed_elements'] ?? [])
+            + $this->allowedElements;
 
         $this->container = $container;
         return new $requestedName(Closure::fromCallable([$this, 'createPurifier']));
@@ -151,11 +156,7 @@ class CleanHtmlFactory implements FactoryInterface
     {
         // Configure allowed elements:
         $context = $options['context'] ?? 'default';
-        $contextConfig
-            = (array)($this->container->get(ConfigPluginManager::class)->get('config')->HTML_Rendering_Contexts ?? []);
-        $allowedElements
-            = $contextConfig['allowed_elements'][$context] ?? $this->defaultContextConfig[$context] ?? null;
-        if ($allowedElements) {
+        if ($allowedElements = $this->allowedElements[$context] ?? null) {
             $config->set('HTML.AllowedElements', $allowedElements);
         }
 
