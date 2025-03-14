@@ -408,7 +408,7 @@ class Record extends \VuFind\View\Helper\Root\Record
             $params
         );
 
-        if ($link && $searchTabsFilters) {
+        if ($link && $searchTabsFilters && !in_array($type, ['cites', 'citedBy'])) {
             $prepend = (!str_contains($link, '?')) ? '?' : '&amp;';
 
             $hiddenFilters = null;
