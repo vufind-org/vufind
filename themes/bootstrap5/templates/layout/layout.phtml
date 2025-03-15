@@ -145,13 +145,7 @@
       <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
-      <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
-        <div class="container">
-          <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
-        </div>
-      </nav>
-    <?php endif; ?>
+    <?=$this->breadcrumbs()->render()?>
     <div role="main" class="main">
       <div id="content" class="container">
         <?=$this->layout()->content ?>

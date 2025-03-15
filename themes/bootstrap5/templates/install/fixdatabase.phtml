@@ -3,7 +3,8 @@
     $this->headTitle($this->translate('auto_configure_title'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Fix Database') . '</li>';
+    $this->breadcrumbs()->set($this->translate('auto_configure_title'), $this->url('install-home'))
+      ->add($this->translate('Fix Database'), active: true);
 ?>
 <h2><?=$this->transEsc('auto_configure_title')?></h2>
 
