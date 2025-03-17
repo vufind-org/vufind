@@ -674,9 +674,15 @@ class Upgrade
             $newConfig['Session']['type'] = 'Database';
         }
 
-        // Eliminate obsolete database settings:
-        $newConfig['Database']
-            = ['database' => $newConfig['Database']['database']];
+        // If we have granular database settings, disable the legacy version:
+        if (isset($newConfig['Database']['database_driver'])
+            && isset($newConfig['Database']['database_username'])
+            && isset($newConfig['Database']['database_password'])
+            && isset($newConfig['Database']['database_host'])
+            && isset($newConfig['Database']['database_name'])
+        ) {
+            unset($newConfig['Database']['database']);
+        }
 
         // Eliminate obsolete config override settings:
         unset($newConfig['Extra_Config']);
