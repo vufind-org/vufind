@@ -675,7 +675,8 @@ class Upgrade
         }
 
         // If we have granular database settings, disable the legacy version:
-        if (isset($newConfig['Database']['database_driver'])
+        if (
+            isset($newConfig['Database']['database_driver'])
             && isset($newConfig['Database']['database_username'])
             && isset($newConfig['Database']['database_password'])
             && isset($newConfig['Database']['database_host'])
