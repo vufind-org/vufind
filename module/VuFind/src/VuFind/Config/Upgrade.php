@@ -218,8 +218,8 @@ class Upgrade
     /**
      * Support function -- merge the contents of two arrays parsed from ini files.
      *
-     * @param string $config_ini The base config array.
-     * @param string $custom_ini Overrides to apply on top of the base array.
+     * @param array $config_ini The base config array.
+     * @param array $custom_ini Overrides to apply on top of the base array.
      *
      * @return array             The merged results.
      */
