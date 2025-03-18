@@ -15,7 +15,7 @@
         $type = $useSearchLink === true ? 'generic' : $useSearchLink;
         return '<a href="'
           . $this->record($this->driver)->getLink($type, $this->highlight($data, null, true, false))
-          . '">' . $data . '</a>';
+          . '">' . $this->highlight($data) . '</a>';
       }
       return $element['Link'] ?? $element['Data'];
     }, $this->data['Elements']);

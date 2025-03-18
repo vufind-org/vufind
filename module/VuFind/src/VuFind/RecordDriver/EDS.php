@@ -532,6 +532,23 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get highlighted author data, if available.
+     *
+     * @return array
+     */
+    public function getRawAuthorHighlights()
+    {
+        $authors = $this->getItem('Group', 'Au')[0] ?? [];
+        $highlightedAuthors = [];
+        foreach ($authors['Elements'] ?? [] as $author) {
+            if (preg_match('/<span class="highlight">(((?!<\/span>).)*)<\/span>/', $author['Data'] ?? '', $matches)) {
+                $highlightedAuthors[] = '{{{{START_HILITE}}}}' . $matches[1] . '{{{{END_HILITE}}}}';
+            }
+        }
+        return $highlightedAuthors;
+    }
+
+    /**
      * Get the source of the record.
      *
      * @return string

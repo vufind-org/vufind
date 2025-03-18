@@ -144,8 +144,10 @@ class EDS extends DefaultRecord
         $spec = new SpecBuilder();
         $filter = $this->getFilterFromConfigSection('ItemResultListFilter');
         $format = $this->edsConfig['AuthorDisplay']['ResultListFormat'] ?? 'Long';
+        $authorOptions = $this->getAuthorOptions($format);
+        $authorOptions['dataMethod'] = 'getPrimaryAuthorsWithHighlighting';
         $spec->addItems($filter);
-        $spec->setItemLine('Group', 'Au', $this->getAuthorOptions($format));
+        $spec->setItemLine('Group', 'Au', $authorOptions);
         $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
         return $spec->getArray();
     }

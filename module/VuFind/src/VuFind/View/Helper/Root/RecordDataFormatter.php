@@ -223,6 +223,17 @@ class RecordDataFormatter extends AbstractHelper
                 if (!isset($options['pos'])) {
                     $options['pos'] = $itemPos;
                 }
+                $alternativeDataMethod = $options['dataMethod'] ?? null;
+                if ($alternativeDataMethod !== null) {
+                    $data = $this->extractData($options);
+                    if (is_array($data)) {
+                        $item['Data'] = implode($options['separator'] ?? ', ', $data);
+                        $item['Elements'] = array_map(fn ($element) => ['Data' => $element], $data);
+                    } else {
+                        $item['Data'] = $data;
+                        unset($item['Elements']);
+                    }
+                }
                 $value = $this->render($item['Label'], $item, $options);
                 if ($value !== null) {
                     $itemPos++;
