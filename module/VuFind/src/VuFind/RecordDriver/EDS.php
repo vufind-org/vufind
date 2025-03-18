@@ -670,11 +670,13 @@ class EDS extends DefaultRecord
                 $element['SearchLink'] = $this->toHTML($link);
             }
             $element['Data'] = $this->toHTML($elementData);
-            if (preg_match(
-                '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
-                $element['Data'],
-                $matches
-            )) {
+            if (
+                preg_match(
+                    '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
+                    $element['Data'],
+                    $matches
+                )
+            ) {
                 $element['Link'] = $matches[1];
             }
             $elements[] = $element;
