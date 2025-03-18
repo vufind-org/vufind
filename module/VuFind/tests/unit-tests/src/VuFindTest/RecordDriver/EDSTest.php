@@ -650,26 +650,6 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testLinkUrls
-     *
-     * @return array
-     */
-    public static function getLinkUrlsProvider(): array
-    {
-        return [
-            [
-                'http://localhost/sample1',
-                '<a href=\'http://localhost/sample1\'>http://localhost/sample1</a>',
-            ],
-            [
-                '<link linkTarget="URL" linkTerm="https://localhost/sample"'
-                    . ' linkWindow="_blank">https://localhost/sample</link>',
-                '<a href=\'https://localhost/sample\'>https://localhost/sample</a>',
-            ],
-        ];
-    }
-
-    /**
      * Test getCleanDOI for a record.
      *
      * @return void

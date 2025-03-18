@@ -72,7 +72,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get default specifications for displaying data in core metadata.
+     * Get general options for authors.
      *
      * @param string $format If number of authors should be limited (Short or Long)
      *

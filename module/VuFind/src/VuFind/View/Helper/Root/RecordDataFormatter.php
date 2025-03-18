@@ -256,6 +256,9 @@ class RecordDataFormatter extends AbstractHelper
     public function getDefaults(string $key): array
     {
         $specs = $this->getSpecPluginForDriver();
+        if ($specs === null) {
+            throw new \Exception('Using the RecordDataFormatter view helper with a driver that is not supported.');
+        }
         return $specs->getDefaults($key);
     }
 
@@ -273,7 +276,7 @@ class RecordDataFormatter extends AbstractHelper
     public function setDefaults(string $key, array|callable $values): void
     {
         $specs = $this->getSpecPluginForDriver();
-        if (method_exists($specs, 'setDefaults')) {
+        if ($specs !== null && method_exists($specs, 'setDefaults')) {
             $specs->setDefaults($key, $values);
         }
     }
@@ -281,13 +284,16 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Get matching spec plugin for the driver.
      *
-     * @return SpecInterface
+     * @return ?SpecInterface
      */
-    protected function getSpecPluginForDriver(): SpecInterface
+    protected function getSpecPluginForDriver(): ?SpecInterface
     {
         $specClass = \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
         if ($this->driver !== null) {
             $specClass = $this->driver->getRecordDataFormatterSpecClass();
+        }
+        if ($specClass === null) {
+            return null;
         }
         return $this->specsManager->get($specClass);
     }

@@ -560,23 +560,6 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Extracts url form link element if available.
-     *
-     * @param string $string String to process
-     *
-     * @return ?string
-     */
-    protected function getLinkUrl(string $string): ?string
-    {
-        preg_match(
-            '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
-            $string,
-            $matches
-        );
-        return $matches[1] ?? null;
-    }
-
-    /**
      * Parse a SimpleXml element and
      * return it's inner XML as an HTML string.
      *
@@ -687,9 +670,12 @@ class EDS extends DefaultRecord
                 $element['SearchLink'] = $this->toHTML($link);
             }
             $element['Data'] = $this->toHTML($elementData);
-            $link = $this->getLinkUrl($element['Data']);
-            if (!empty($link)) {
-                $element['Link'] = $link;
+            if (preg_match(
+                '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
+                $element['Data'],
+                $matches
+            )) {
+                $element['Link'] = $matches[1];
             }
             $elements[] = $element;
         }
@@ -1005,9 +991,9 @@ class EDS extends DefaultRecord
     /**
      * Get class name for RecordDataFormatter spec.
      *
-     * @return string
+     * @return ?string
      */
-    public function getRecordDataFormatterSpecClass(): string
+    public function getRecordDataFormatterSpecClass(): ?string
     {
         return \VuFind\RecordDataFormatter\Specs\EDS::class;
     }
