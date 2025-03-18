@@ -240,6 +240,83 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testDatabaseUpgrade().
+     *
+     * @return array[]
+     */
+    public static function databaseUpgradeProvider(): array
+    {
+        return [
+            'legacy and new formats' => [
+                'database-both-formats',
+                // New format should take precedence:
+                [
+                    'use_ssl' => '',
+                    'verify_server_certificate' => '',
+                    'database_driver' => 'mysql',
+                    'database_username' => 'notroot',
+                    'database_password' => 'password',
+                    'database_host' => 'localhost',
+                    'database_port' => '3306',
+                    'database_name' => 'vufind',
+                ],
+            ],
+            'legacy format only' => [
+                'database-legacy-format',
+                [
+                    'use_ssl' => '',
+                    'verify_server_certificate' => '',
+                    'database' => 'mysql://user:pass@localhost/vufind_custom',
+                ],
+            ],
+            'new format only' => [
+                'database-new-format',
+                [
+                    'use_ssl' => '',
+                    'verify_server_certificate' => '',
+                    'database_driver' => 'mysql',
+                    'database_username' => 'notroot',
+                    'database_password' => 'password',
+                    'database_host' => 'localhost',
+                    'database_port' => '3306',
+                    'database_name' => 'vufind',
+                ],
+            ],
+            'new format only, with file-based password' => [
+                'database-new-format-password-file',
+                [
+                    'use_ssl' => '',
+                    'verify_server_certificate' => '',
+                    'database_driver' => 'mysql',
+                    'database_username' => 'notroot',
+                    'database_password_file' => '/path/to/secret',
+                    'database_host' => 'localhost',
+                    'database_port' => '3306',
+                    'database_name' => 'vufind',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test database upgrade in config.ini
+     *
+     * @param string $fixture  Fixture file
+     * @param array  $expected Expected result
+     *
+     * @return void
+     *
+     * @dataProvider databaseUpgradeProvider
+     */
+    public function testDatabaseUpgrade(string $fixture, array $expected): void
+    {
+        $upgrader = $this->getUpgrader($fixture);
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals($expected, $results['config.ini']['Database']);
+    }
+
+    /**
      * Test generator upgrade.
      *
      * @return void
