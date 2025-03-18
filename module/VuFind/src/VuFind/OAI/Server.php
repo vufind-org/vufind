@@ -59,6 +59,8 @@ use function strlen;
  */
 class Server
 {
+    use \VuFind\ResumptionToken\ResumptionTokenTrait;
+
     /**
      * Repository base URL
      *
@@ -239,8 +241,9 @@ class Server
         protected \VuFind\Search\Results\PluginManager $resultsManager,
         protected \VuFind\Record\Loader $recordLoader,
         protected ChangeTrackerServiceInterface $trackerService,
-        protected OaiResumptionServiceInterface $resumptionService
+        OaiResumptionServiceInterface $resumptionService
     ) {
+        $this->setResumptionService($resumptionService);
     }
 
     /**
@@ -1084,7 +1087,7 @@ class Server
         // parameters or fail if it is invalid.
         if (!empty($this->params['resumptionToken'])) {
             $params = $this->loadResumptionToken($this->params['resumptionToken']);
-            if ($params === false) {
+            if (null === $params) {
                 throw new \Exception(
                     'badResumptionToken:Invalid or expired resumption token'
                 );
@@ -1266,28 +1269,6 @@ class Server
     }
 
     /**
-     * Load parameters associated with a resumption token.
-     *
-     * @param string $token The resumption token to look up
-     *
-     * @return array        Parameters associated with token
-     */
-    protected function loadResumptionToken($token)
-    {
-        // Clean up expired records before doing our search:
-        $this->resumptionService->removeExpired();
-
-        // Load the requested token if it still exists:
-        if ($row = $this->resumptionService->findToken($token)) {
-            parse_str($row->getResumptionParameters(), $params);
-            return $params;
-        }
-
-        // If we got this far, the token is invalid or expired:
-        return false;
-    }
-
-    /**
      * Normalize a date to a Unix timestamp.
      *
      * @param string $date Date (ISO-8601 or YYYY-MM-DD HH:MM:SS)
@@ -1346,17 +1327,11 @@ class Server
         // Save the old cursor position before overwriting it for storage in the
         // database!
         $oldCursor = $params['cursor'];
-        $params['cursor'] = $currentCursor;
-        $params['cursorMark'] = $cursorMark;
-
-        // Save everything to the database:
-        $expire = time() + 24 * 60 * 60;
-        $token = $this->resumptionService->createAndPersistToken($params, $expire)->getId();
-
+        $resumptionToken = $this->createResumptionToken($params, $currentCursor, $cursorMark);
         // Add details to the xml:
-        $token = $xml->addChild('resumptionToken', $token);
+        $token = $xml->addChild('resumptionToken', $resumptionToken->getToken());
         $token->addAttribute('cursor', $oldCursor);
-        $token->addAttribute('expirationDate', date($this->iso8601, $expire));
+        $token->addAttribute('expirationDate', date($this->iso8601, $resumptionToken->getExpiry()->getTimestamp()));
         $token->addAttribute('completeListSize', $listSize);
     }
 

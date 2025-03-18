@@ -73,6 +73,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/buttons";
 @import "components/channels";
 @import "components/cookie-consent/index";
+@import "components/copy-to-clipboard";
 @import "components/devtools";
 @import "components/explain";
 @import "components/form";
@@ -242,6 +243,13 @@ h3 { font-size: 16px; }
 }
 .media-body {
   width: 10000px;
+}
+
+// Ensure that the containers in main content have proper height so that the footer doesn't extend below them
+.main {
+  .container, .container-fluid {
+    @include clearfix();
+  }
 }
 
 footer {
@@ -621,16 +629,14 @@ body.rtl .dropdown-menu {
 .fines-total {
   font-weight: bold;
 }
-
-/* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
 
 /* ------ PubDateVis ------ */
 #dateVisColorSettings {
-  background-color: #fff; // background of box
-  fill: #eee;             // fillColor
-  outline-color: #c38835; // selection color
-  stroke: $primary; // color
+  background-color: #fff;   // background of box
+  outline-color: #0873c655; // selection color
+  fill: $primary;           // fillColor
+  stroke: $primary;         // color
 }
 
 /* ------ Table wrapping to prevent horizontal overflow ------ */

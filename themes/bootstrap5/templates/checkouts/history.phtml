@@ -3,7 +3,7 @@
   $this->headTitle($this->translate('Loan History'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Loan History') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))->add($this->translate('Loan History'), active: true);
 
   $this->headScript()->appendFile('checkouts.js');
 ?>

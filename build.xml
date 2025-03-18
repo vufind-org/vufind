@@ -66,7 +66,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="10.1.1" />
+  <property name="version" value="10.1.2" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -526,6 +526,7 @@
 
   <target name="composer" description="Install dependencies with Composer">
     <property name="composer_filename" value="composer-${composer_version}.phar" />
+    <property name="workdir" value="." />
     <mkdir dir="${downloadsdir}" />
     <if>
       <equals arg1="${composer_version}" arg2="latest-2.x" />
@@ -543,8 +544,8 @@
       </else>
     </if>
     <echo message="Installing dependencies..." />
-    <exec executable="php" passthru="true" checkreturn="true">
-      <arg line="${downloadsdir}/${composer_filename} install ${composer_extra_params}" />
+    <exec executable="sh" passthru="true" checkreturn="true">
+      <arg line="-c 'cd ${workdir}; php ${downloadsdir}/${composer_filename} install ${composer_extra_params}'" />
     </exec>
   </target>
 
@@ -1191,21 +1192,22 @@ ${git_status}
     <mkdir dir="${builddir}/export/vufind/usr/local/vufind" />
 
     <!-- load the relevant files into the work area -->
-    <phingcall target="composer">
-      <property name="composer_extra_params" value="--no-dev" />
-    </phingcall>
     <exec executable="git">
       <arg line="archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
     </exec>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/vendor">
-      <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
-    </copy>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/solr/vendor">
-      <fileset dir="${srcdir}/solr/vendor" defaultexcludes="false" />
-    </copy>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/public/swagger-ui">
-      <fileset dir="${srcdir}/public/swagger-ui" defaultexcludes="false" />
-    </copy>
+    <!-- copy over any cached Solr package -->
+    <if>
+      <available file="${downloadsdir}/solr-${solr_version}.tgz" />
+      <then>
+        <mkdir dir="${builddir}/export/vufind/usr/local/vufind/downloads" />
+        <copy todir="${builddir}/export/vufind/usr/local/vufind/downloads" file="${downloadsdir}/solr-${solr_version}.tgz" />
+      </then>
+    </if>
+    <phingcall target="composer">
+      <property name="workdir" value="${builddir}/export/vufind/usr/local/vufind" />
+      <property name="composer_extra_params" value="--no-dev" />
+    </phingcall>
+    <delete dir="${builddir}/export/vufind/usr/local/vufind/downloads" includeemptydirs="true" failonerror="true" />
 
     <!-- create a version-specific symlink so that tar/zip packages will have
          appropriate directory structures. -->
@@ -1215,24 +1217,26 @@ ${git_status}
 
     <!-- build the standard tar.gz archive -->
     <echo message="Building .tar.gz...." />
-    <exec dir="${builddir}/export" executable="tar" checkreturn="true">
-      <arg line="czfh ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" />
+    <!-- macOS needs the no-xattrs and COPYFILE_DISABLE settings -->
+    <exec dir="${builddir}/export" executable="tar" checkreturn="true" passthru="true">
+      <arg line="--no-xattrs -czhf ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" />
+      <env key="COPYFILE_DISABLE" value="true" />
     </exec>
 
     <!-- build the a zip archive -->
     <echo message="Building .zip...." />
     <exec dir="${builddir}/export" executable="zip" checkreturn="true">
-      <arg line="-r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
+      <arg line="-q -r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
     </exec>
 
     <!-- build the DEB package -->
     <echo message="Building .deb...." />
     <move file="${builddir}/export/vufind/usr/local/vufind/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
-    <exec executable="chmod">
-      <arg line="0775 ${builddir}/export/vufind/DEBIAN/postinst" />
+    <exec executable="chmod" passthru="true">
+      <arg line="0775 ${builddir}/export/vufind/DEBIAN/config ${builddir}/export/vufind/DEBIAN/postinst ${builddir}/export/vufind/DEBIAN/postrm" />
     </exec>
-    <exec executable="dpkg-deb" checkreturn="true">
-      <arg line="-b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
+    <exec executable="dpkg-deb" checkreturn="true" passthru="true">
+      <arg line="--root-owner-group -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
     </exec>
 
     <!-- clean up -->

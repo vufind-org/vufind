@@ -3,8 +3,11 @@
     $this->headTitle($this->translate('bulk_save_cart'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ') .
-        '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('bulk_save_cart') . '</li>';
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add($this->translate('bulk_save_cart'), active: true);
 ?>
 <h2><?=$this->transEsc('bulk_save_cart')?></h2>
 

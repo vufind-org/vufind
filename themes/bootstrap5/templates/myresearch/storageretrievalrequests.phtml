@@ -3,7 +3,8 @@
   $this->headTitle($this->translate('Storage Retrieval Requests'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Storage Retrieval Requests'), active: true);
 
   $this->headScript()->appendFile('requests.js');
 ?>

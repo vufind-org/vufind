@@ -34,14 +34,13 @@ use VuFind\Config\Config;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
+use VuFind\Search\Solr\ErrorListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
-use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
-use VuFind\Search\Solr\V4\ErrorListener;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
@@ -396,10 +395,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $hfvListener->attach($events);
         }
 
-        // Attach error listeners for Solr 3.x and Solr 4.x (for backward
-        // compatibility with VuFind 1.x instances).
-        $legacyErrorListener = new LegacyErrorListener($backend->getIdentifier());
-        $legacyErrorListener->attach($events);
+        // Attach error listener:
         $errorListener = new ErrorListener($backend->getIdentifier());
         $errorListener->attach($events);
     }

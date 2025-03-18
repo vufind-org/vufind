@@ -3,9 +3,12 @@
   $this->headTitle($this->translate('Save'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
-    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Save') . '</li>';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('Save'), active: true);
 ?>
 <h2><?=$this->translate('add_to_favorites_html', ['%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb())]) ?></h2>
 <form class="form-record-save" method="post" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save')) ?>" name="saveRecord" data-lightbox-onclose="VuFind.saveStatuses.refresh">

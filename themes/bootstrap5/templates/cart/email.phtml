@@ -3,9 +3,12 @@
   $this->headTitle($this->translate('email_selected_favorites'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
-    . '<li><a href="' . $this->url('cart-home') . '">' . $this->transEsc('Cart') . '</a></li> '
-    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('email_selected_favorites') . '</li>';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
+    ->add($this->translate('email_selected_favorites'), active: true);
 ?>
 <h2><?=$this->transEsc('bulk_email_cart') ?></h2>
 <?=$this->flashmessages()?>

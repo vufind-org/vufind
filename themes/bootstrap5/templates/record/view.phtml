@@ -26,8 +26,11 @@
   $this->headLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ') .
-    '<li class="breadcrumb-item active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> ';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver));
   $this->layout()->title = $this->driver->getShortTitle();
 ?>
 

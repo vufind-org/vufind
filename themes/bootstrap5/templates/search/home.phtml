@@ -11,7 +11,7 @@
     $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
   }
 
-  $this->layout()->breadcrumbs = false;
+  $this->breadcrumbs()->disable();
 ?>
 
 <div class="searchHomeContent">

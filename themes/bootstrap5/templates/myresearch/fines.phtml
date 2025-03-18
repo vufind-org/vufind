@@ -3,7 +3,8 @@
     $this->headTitle($this->translate('My Fines'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Fines') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Fines'), active: true);
 ?>
 
 <?=$this->component('show-account-menu-button')?>

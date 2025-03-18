@@ -3,9 +3,12 @@
     $this->headTitle($this->translate('Export Favorites'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
-    . '<li><a href="' . $this->url('cart-home') . '">' . $this->transEsc('Cart') . '</a></li> '
-    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Export Favorites') . '</li>';
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
+      ->add($this->translate('Export Favorites'), active: true);
 ?>
 <h2><?=$this->transEsc('Export Favorites')?></h2>
 
