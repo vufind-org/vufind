@@ -1054,16 +1054,60 @@ class Upgrade
             'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
         ];
         $this->applyOldSettings('EDS.ini', $groups);
+        $this->applyOldSettings('EDSRecordDataFormatter.ini');
 
         // Fix default view settings in case they use the old style:
-        $newConfig = & $this->newConfigs['EDS.ini']['General'];
+        $newEDSConfig = & $this->newConfigs['EDS.ini'];
+        $newEDSRecordDataFormatterConfig = & $this->newConfigs['EDSRecordDataFormatter.ini'];
 
-        if (!str_contains($newConfig['default_view'], '_')) {
-            $newConfig['default_view'] = 'list_' . $newConfig['default_view'];
+        if (!str_contains($newEDSConfig['General']['default_view'], '_')) {
+            $newEDSConfig['General']['default_view'] = 'list_' . $newEDSConfig['General']['default_view'];
+        }
+
+        // Move several settings to EDSRecordDataFormatter.ini
+        if (!empty($newEDSConfig['ItemCoreFilter'])) {
+            foreach ($newEDSConfig['ItemCoreFilter'] as $key => $value) {
+                $newEDSRecordDataFormatterConfig['core_ItemFilter'][$key] =
+                    array_merge($newEDSRecordDataFormatterConfig['core_ItemFilter'][$key] ?? [], $value);
+            }
+            unset($newEDSConfig['ItemCoreFilter']);
+        }
+
+        if (!empty($newEDSConfig['ItemResultListFilter'])) {
+            foreach ($newEDSConfig['ItemResultListFilter'] as $key => $value) {
+                $newEDSRecordDataFormatterConfig['result-list_ItemFilter'][$key] =
+                    array_merge($newEDSRecordDataFormatterConfig['list_ItemFilter'][$key] ?? [], $value);
+            }
+            unset($newEDSConfig['ItemResultListFilter']);
+        }
+
+        if (($newEDSConfig['AuthorDisplay']['DetailPageFormat'] ?? 'Long') === 'Short') {
+            $newEDSRecordDataFormatterConfig['core_ItemFilter']['excludeGroup'][] = 'AuInfo';
+            if (!isset($newEDSRecordDataFormatterConfig['core_Authors']['limit'])) {
+                $newEDSRecordDataFormatterConfig['core_Authors']['limit'] =
+                    $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            }
+        }
+
+        if (
+            isset($newEDSConfig['AuthorDisplay']['ResultListFormat'])
+            && ($newEDSRecordDataFormatterConfig['result-list_Authors']['limit'] ?? null) === 3
+        ) {
+            if ($newEDSConfig['AuthorDisplay']['ResultListFormat'] === 'Short') {
+                $newEDSRecordDataFormatterConfig['result-list_Authors']['limit']
+                    = $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            } else {
+                unset($newEDSRecordDataFormatterConfig['result-list_Authors']['limit']);
+            }
+        }
+
+        if (isset($newEDSConfig['AuthorDisplay'])) {
+            unset($newEDSConfig['AuthorDisplay']);
         }
 
         // save the file
         $this->saveModifiedConfig('EDS.ini');
+        $this->saveModifiedConfig('EDSRecordDataFormatter.ini');
     }
 
     /**

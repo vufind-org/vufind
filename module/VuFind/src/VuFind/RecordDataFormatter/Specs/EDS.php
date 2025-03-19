@@ -78,40 +78,13 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function getAuthorOptions(string $format): array
+    protected function getAuthorOptions(): array
     {
-        $options = [
+        return [
             'useSearchLink' => 'author',
             'itemPrefix' => '<span class="author">',
             'itemSuffix' => '</span>',
-            'separator' => '',
-        ];
-        if (strtolower($format) == 'short') {
-            $options['limit'] = $this->edsConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
-            $options['abbreviation'] = ' ' . $this->translate('more_authors_abbrev');
-        }
-        return $options;
-    }
-
-    /**
-     * Get filters from section of config.
-     *
-     * @param string $section Section
-     *
-     * @return array
-     */
-    protected function getFilterFromConfigSection(string $section): array
-    {
-        $filterConfig = $this->edsConfig[$section] ?? [];
-        return [
-            'Group' => [
-                'exclude' => $filterConfig['excludeGroup'] ?? [],
-                'include' => $filterConfig['includeGroup'] ?? [],
-            ],
-            'Label' => [
-                'exclude' => $filterConfig['excludeLabel'] ?? [],
-                'include' => $filterConfig['includeLabel'] ?? [],
-            ],
+            'abbreviation' => ' ' . $this->translate('more_authors_abbrev'),
         ];
     }
 
@@ -123,13 +96,8 @@ class EDS extends DefaultRecord
     public function getDefaultCoreSpecs(): array
     {
         $spec = new SpecBuilder();
-        $filter = $this->getFilterFromConfigSection('ItemCoreFilter');
-        $format = $this->edsConfig['AuthorDisplay']['DetailPageFormat'] ?? 'Long';
-        if (strtolower($format) === 'short') {
-            $filter['Group']['exclude'] = ['AuInfo'];
-        }
-        $spec->addItems($filter, ['separator' => '<br>']);
-        $spec->setItemLine('Group', 'Au', $this->getAuthorOptions($format));
+        $spec->addItems([], ['separator' => '<br>']);
+        $spec->setItemLine('Group', 'Au', $this->getAuthorOptions());
         $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
         return $spec->getArray();
     }
@@ -142,12 +110,8 @@ class EDS extends DefaultRecord
     public function getDefaultResultListSpecs(): array
     {
         $spec = new SpecBuilder();
-        $filter = $this->getFilterFromConfigSection('ItemResultListFilter');
-        $format = $this->edsConfig['AuthorDisplay']['ResultListFormat'] ?? 'Long';
-        $authorOptions = $this->getAuthorOptions($format);
-        $authorOptions['dataMethod'] = 'getPrimaryAuthorsWithHighlighting';
-        $spec->addItems($filter);
-        $spec->setItemLine('Group', 'Au', $authorOptions);
+        $spec->addItems();
+        $spec->setItemLine('Group', 'Au', $this->getAuthorOptions());
         $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
         return $spec->getArray();
     }

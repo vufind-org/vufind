@@ -527,13 +527,104 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader->run();
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
+        $edsConfig = $results['EDS.ini'];
+        $edsRecordDataFormatterConfig = $results['EDSRecordDataFormatter.ini'];
         $this->assertEquals(
             ['foo' => 'bar'],
-            $results['EDS.ini']['Facets']
+            $edsConfig['Facets']
         );
         $this->assertEquals(
             'list_test',
-            $results['EDS.ini']['General']['default_view']
+            $edsConfig['General']['default_view']
+        );
+        $this->assertFalse(isset($edsConfig['ItemCoreFilter']));
+        $this->assertFalse(isset($edsConfig['ItemResultListFilter']));
+        $this->assertFalse(isset($edsConfig['AuthorDisplay']));
+        $this->assertEmpty(
+            $edsRecordDataFormatterConfig['core_ItemFilter']
+        );
+        $this->assertEquals(
+            [
+                'excludeLabel' => ['Availability'],
+                'excludeGroup' => ['URL'],
+            ],
+            $edsRecordDataFormatterConfig['result-list_ItemFilter']
+        );
+        $this->assertEquals(
+            [
+                'core' => ['core_Authors'],
+                'result-list' => ['result-list_Authors'],
+            ],
+            $edsRecordDataFormatterConfig['ItemOptions']
+        );
+        $this->assertEquals(
+            [
+                'itemKey' => 'Group',
+                'itemValue' => 'Au',
+                'separator' => '; ',
+            ],
+            $edsRecordDataFormatterConfig['core_Authors']
+        );
+        $this->assertEquals(
+            [
+                'itemKey' => 'Group',
+                'itemValue' => 'Au',
+                'dataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'limit' => 3,
+                'separator' => '; ',
+            ],
+            $edsRecordDataFormatterConfig['result-list_Authors']
+        );
+
+        $upgrader = $this->getUpgrader('eds2');
+        $upgrader->run();
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $edsConfig = $results['EDS.ini'];
+        $edsRecordDataFormatterConfig = $results['EDSRecordDataFormatter.ini'];
+        $this->assertFalse(isset($edsConfig['ItemCoreFilter']));
+        $this->assertFalse(isset($edsConfig['ItemResultListFilter']));
+        $this->assertFalse(isset($edsConfig['AuthorDisplay']));
+        $this->assertEquals(
+            [
+                'excludeLabel' => ['Availability'],
+                'excludeGroup' => ['URL', 'AuInfo'],
+            ],
+            $edsRecordDataFormatterConfig['core_ItemFilter']
+        );
+        $this->assertEquals(
+            [
+                'excludeLabel' => ['Availability'],
+                'excludeGroup' => ['URL'],
+            ],
+            $edsRecordDataFormatterConfig['result-list_ItemFilter']
+        );
+        $this->assertEquals(
+            [
+                'core' => ['core_Authors'],
+                'result-list' => ['result-list_Authors'],
+            ],
+            $edsRecordDataFormatterConfig['ItemOptions']
+        );
+        $this->assertEquals(
+            [
+                'itemKey' => 'Group',
+                'itemValue' => 'Au',
+                'dataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'separator' => '; ',
+                'limit' => 7,
+            ],
+            $edsRecordDataFormatterConfig['core_Authors']
+        );
+        $this->assertEquals(
+            [
+                'itemKey' => 'Group',
+                'itemValue' => 'Au',
+                'dataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'limit' => 3,
+                'separator' => ', ',
+            ],
+            $edsRecordDataFormatterConfig['result-list_Authors']
         );
     }
 
