@@ -14,7 +14,10 @@
       <div class="home-facet <?=$this->escapeHtmlAttr($field) ?><?=$isHierarchy ? ' facet-tree' : ''?>">
         <h2><?=$labelHeading?></h2>
         <div class="home-facet-container">
-          <ul class="home-facet-list">
+          <?php
+            $cssColumnClass = $field == 'callnumber-first' ? 'two-columns' : 'one-column'; // Special case: two columns for LC call numbers ...
+          ?>
+          <ul class="home-facet-list <?php echo $cssColumnClass; ?>">
             <?php if ($isHierarchy): ?>
               <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
                 'exclude' => false,
@@ -26,10 +29,8 @@
             <?php else: ?>
               <?php
                 $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch, $format);
+                $maxListLength = $columnSize;
 
-                // Special case: two columns for LC call numbers...
-                $maxListLength = $field == 'callnumber-first'
-                  ? $columnSize * 2 : $columnSize;
 
                 // Special case: custom URLs for collections...
                 $moreUrl = $field == 'hierarchy_top_title'
