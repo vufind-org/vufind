@@ -111,7 +111,9 @@ class SearchController extends AbstractSolrSearch
                 ->rememberSearch($base . $query->getParams(false));
         }
 
-        // Send the user back where they came from:
+        // Send the user back where they came from (but strip off the SID
+        // so we don't override the modified search with an older version):
+        $from = rtrim(preg_replace('/([?&])sid=\d+/', '$1', $from), '&?');
         return $this->redirect()->toUrl($from);
     }
 
@@ -534,16 +536,5 @@ class SearchController extends AbstractSolrSearch
             json_encode([$query->get('lookfor', ''), $suggestions])
         );
         return $response;
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        return $config->Record->next_prev_navigation ?? false;
     }
 }

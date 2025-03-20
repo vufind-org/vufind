@@ -114,7 +114,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function lookupIssns($issns)
     {
-        return $this->request('search', ['issns' => implode(',', (array)$issns)]);
+        $processCallback = fn ($issn) => str_replace('-', '', $issn);
+        $processedIssns = array_map($processCallback, (array)$issns);
+        return $this->request('search', ['issns' => implode(',', $processedIssns)]);
     }
 
     /**

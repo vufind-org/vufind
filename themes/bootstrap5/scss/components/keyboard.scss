@@ -1,3 +1,5 @@
+@use "sass:map";
+
 .keyboard-selection {
   display: inline-block;
 
@@ -10,14 +12,14 @@
   button.dropdown-toggle:focus,
   &.open > button.dropdown-toggle {
     color: white;
-    background-color: $brand-primary;
-    border-color: $brand-primary;
+    background-color: $primary;
+    border-color: $primary;
     outline: none;
   }
 
   &:not(.open) {
     .activated:not(:hover){
-      background: lighten($brand-primary, 55%);
+      background: lighten($primary, 55%);
     }
   }
 
@@ -30,6 +32,7 @@
 
   #keyboard-selection-button {
     padding: 0 2px 0 4px;
+    border: 0;
     .icon {
       margin: 0;
     }
@@ -42,19 +45,19 @@
   height: 0;
   z-index: 60;
   width: 95%;
-  left: 50%;
+  left: 50vw;
   transform: translate(-50%, -50%);
 
-  @media (min-width: 768px) {
-    width: 720px;
+  @include media-breakpoint-up(sm) {
+    width: calc(map.get($grid-breakpoints, 'sm') - 48px);
   }
 
-  @media (min-width: 992px) {
-    width: 940px;
+  @include media-breakpoint-up(md) {
+    width: calc(map.get($grid-breakpoints, 'md') - 52px);
   }
 
-  @media (min-width: 1200px) {
-    width: 1040px;
+  @include media-breakpoint-up(lg) {
+    width: calc(map.get($grid-breakpoints, 'lg') - 160px);
   }
 }
 

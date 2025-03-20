@@ -1,0 +1,14 @@
+<?php
+    $attribs = ['class' => 'identifierLink', 'data-instance' => $instance ?? 0];
+    if (!empty($doi)) {
+        $attribs['data-doi'] = $doi;
+    }
+    if (!empty($isbn)) {
+        $attribs['data-isbn'] = $isbn;
+    }
+    if (!empty($issn)) {
+        $attribs['data-issn'] = $issn;
+    }
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'identifierLinks.js', 'SET');?>
+<span <?=$this->htmlAttributes($attribs)?>></span>

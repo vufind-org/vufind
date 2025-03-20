@@ -69,6 +69,9 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get(\VuFindSearch\Service::class));
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('BrowZine')?->toArray() ?? [];
+        $defaultIgnoreList = ['https://assets.thirdiron.com/default-journal-cover.png'];
+        $ignoreList = $config['Covers']['ignored_images'] ?? $defaultIgnoreList;
+        return new $requestedName($container->get(\VuFindSearch\Service::class), $ignoreList);
     }
 }

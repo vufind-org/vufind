@@ -2,7 +2,7 @@
   // Set page title.
   $this->headTitle($this->translate('An error has occurred'));
 
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">Error</li>';
+  $this->breadcrumbs()->set($this->translate('An error has occurred'), active: true);
 ?>
 <div class="alert alert-danger">
   <p><?=$this->transEsc('An error has occurred')?></p>
