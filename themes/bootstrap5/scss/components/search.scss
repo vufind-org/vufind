@@ -103,12 +103,77 @@ input[type="search"]::-webkit-search-decoration {
   }
 }
 
-.searchHomeContent { @include clearfix(); }
-.home-facet-list {
-  padding-left: 0;
-  padding-right: 1rem;
-  list-style: none;
+.searchHomeContent {
+  @include clearfix();
 }
+
+.home-facet {
+  @media (min-width: 768px) {
+    flex: 0 1 100%;
+  }
+}
+
+.search-home-facets,
+.home-facet-container {
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.home-facet-container {
+  padding-right: $home-facet-container-right-padding; // set left padding here to define distance between containers for visual division
+
+  @media (min-width: 768px) {
+    height: 100%; // required to make visual division line go full height, when 'column-fill: balance;' is set on '.two-columns'
+  }
+}
+
+.home-facet-list {
+  list-style: $home-facet-list-list-style; // defines the list style (default = 'none')
+  overflow: $home-facet-list-column-overflow; // Defines what's to be done if there are more entries than fit the columns
+  padding-left: $home-facet-list-left-padding; // overwrites default left-padding for <ul>s
+  padding-right: $home-facet-list-right-padding;
+
+  @media (min-width: 768px) {
+    border-right: $home-facet-list-border-right-style; // adds visual division between containers for devices >=768px (containers are stacked on smaller devices)
+    height: $home-facet-list-column-height; // Defines the height of each column; value is set in variables.scss; The number of entries per <ul> is set in module/VuFind/src/VuFind/ContentBlock/FacetList.php (e.g.: "$columnSize = 10")
+  }
+
+
+  &.one-column {
+    column-count: 1; // this is the default
+    width: 100%; // make sure single column has same width as double column (required for border)
+  }
+
+  // two columns are used for 'callnumber-first'; more such exceptions could be defined in 'ContenBlock/FacetList.phtml'
+  &.two-columns {
+    column-count: $home-facet-list-column-count; // defines maximum number of cols to be used on devices >=1200px; see variables.scss
+    column-fill: $home-facet-list-column-fill; // defines, how the columns will be filled: 'auto' fills up to max height and the breaks into new column, 'balance' attempts to distribute available entries evenly across the max. number of columns; value is set in variables.scss
+    column-gap: $home-facet-list-column-gap; // defines the gap between the columns, if more than one
+
+
+    @media (max-width: 767px) {
+      column-count: $home-facet-list-column-count-xs; // you can set this to two columns in 'variables.scss', if desired
+    }
+
+    @media (min-width: 768px) {
+      flex: 0 1 100%;
+    }
+
+    @media (min-width: 768px) and (max-width: 991px) {
+      column-count: $home-facet-list-column-count-sm; // you can set this to two columns in 'variables.scss', if desired
+    }
+
+    @media (min-width: 992px) and (max-width: 1199px) {
+      column-count: $home-facet-list-column-count-md; // defaults to two columns, see 'variables.scss'
+    }
+  }
+
+  .search-home-facets .home-facet:last-of-type & {
+    border-right: 0; // removes visual division between containers for last container
+  }
+}
+
 // Reset styling of hierarchical facets on the home page:
 .home-facet.facet-tree li {
   line-height: inherit;
