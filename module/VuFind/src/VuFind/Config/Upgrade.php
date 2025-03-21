@@ -1076,7 +1076,7 @@ class Upgrade
         if (!empty($newEDSConfig['ItemResultListFilter'])) {
             foreach ($newEDSConfig['ItemResultListFilter'] as $key => $value) {
                 $newEDSRecordDataFormatterConfig['result-list_ItemFilter'][$key] =
-                    array_merge($newEDSRecordDataFormatterConfig['list_ItemFilter'][$key] ?? [], $value);
+                    array_merge($newEDSRecordDataFormatterConfig['result-list_ItemFilter'][$key] ?? [], $value);
             }
             unset($newEDSConfig['ItemResultListFilter']);
         }

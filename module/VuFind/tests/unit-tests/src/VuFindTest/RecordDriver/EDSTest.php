@@ -197,7 +197,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsAbstract(): void
+    public function testGetAbstractNotes(): void
     {
         $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals(['unit test abstract'], $driver->getAbstractNotes());
@@ -360,20 +360,23 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         // Change the default order the array data is in and exclude one of the items
         // to ensure it appears at the end
-        $config = $this->defaultDriverConfig;
-        $config['ItemCoreFilter']['excludeLabel'][] = 'Title';
-
-        $driver = $this->getDriver('valid-eds-record', $config);
+        $driver = $this->getDriver('valid-eds-record');
         $items = [
             $this->validAuthor,
             $this->validPublisher,
         ];
 
+        $recordDataFormatterConfig = [
+            'core_ItemFilter' => [
+                'excludeLabel' => ['Title'],
+            ],
+        ];
+
         $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
             new \Laminas\View\Helper\HtmlAttributes()
         );
-        $spec = new \VuFind\RecordDataFormatter\Specs\EDS([], $schemaOrgHelper, $config);
-        $results = $driver->getItems($spec->getDefaultCoreSpecs()['itemSpecs']['filter']);
+        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($recordDataFormatterConfig, $schemaOrgHelper);
+        $results = $driver->getItems($spec->getDefaults('core')['itemSpecs']['filter']);
 
         // Verify total number of metadata elements
         // (Note one is removed from the fixture file since it has been filtered)
@@ -391,19 +394,22 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         // Change the default order the array data is in and exclude one of the items
         // to ensure it appears at the end
-        $config = $this->defaultDriverConfig;
-        $config['ItemResultListFilter']['excludeLabel'][] = 'Title';
-
-        $driver = $this->getDriver('valid-eds-record', $config);
+        $driver = $this->getDriver('valid-eds-record');
         $items = [
             $this->validAuthor,
             $this->validPublisher,
         ];
+        $recordDataFormatterConfig = [
+            'result-list_ItemFilter' => [
+                'excludeLabel' => ['Title'],
+            ],
+        ];
+
         $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
             new \Laminas\View\Helper\HtmlAttributes()
         );
-        $spec = new \VuFind\RecordDataFormatter\Specs\EDS([], $schemaOrgHelper, $config);
-        $results = $driver->getItems($spec->getDefaultResultListSpecs()['itemSpecs']['filter']);
+        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($recordDataFormatterConfig, $schemaOrgHelper);
+        $results = $driver->getItems($spec->getDefaults('result-list')['itemSpecs']['filter']);
 
         // Verify total number of metadata elements
         // (Note one is removed from the fixture file since it has been filtered)

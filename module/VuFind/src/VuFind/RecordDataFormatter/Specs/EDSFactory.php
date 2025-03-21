@@ -77,7 +77,6 @@ class EDSFactory implements FactoryInterface
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $config = $configManager->get('EDSRecordDataFormatter')->toArray();
         $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
-        $edsConfig = $configManager->get('EDS')->toArray();
-        return new $requestedName($config, $schemaOrgHelper, $edsConfig);
+        return new $requestedName($config, $schemaOrgHelper);
     }
 }

@@ -232,6 +232,7 @@ class EDS extends DefaultRecord
     {
         $globalFilter = isset($this->recordConfig->ItemGlobalFilter)
             ? $this->recordConfig->ItemGlobalFilter->toArray() : [];
+
         $filter['Label']['exclude'] =
             array_merge($filter['Label']['exclude'] ?? [], $globalFilter['excludeLabel'] ?? []);
         $filter['Label']['include'] =
@@ -241,21 +242,21 @@ class EDS extends DefaultRecord
         $filter['Group']['include'] =
             array_merge($filter['Group']['include'] ?? [], $globalFilter['includeGroup'] ?? []);
 
-        foreach ($filter as $selector => $selectedFilter) {
+        foreach ($filter as $itemKey => $itemKeyFilter) {
             if (
-                isset($item[$selector]) && in_array($item[$selector], $selectedFilter['exclude'] ?? [])
+                isset($item[$itemKey]) && in_array($item[$itemKey], $itemKeyFilter['exclude'] ?? [])
             ) {
                 return false;
             }
         }
 
         $hasIncludeFilter = false;
-        foreach ($filter as $selector => $selectedFilter) {
+        foreach ($filter as $itemKey => $itemKeyFilter) {
             if (
-                !empty($selectedFilter['include'])
+                !empty($itemKeyFilter['include'])
             ) {
                 $hasIncludeFilter = true;
-                if (isset($item[$selector]) && in_array($item[$selector], $selectedFilter['include'])) {
+                if (isset($item[$itemKey]) && in_array($item[$itemKey], $itemKeyFilter['include'])) {
                     return true;
                 }
             }

@@ -99,7 +99,7 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
         }
         // Adding options from config
         foreach ($this->defaults[$key] as $field => $options) {
-            if ($field !== 'itemSpecs') {
+            if ($field === 'itemSpecs') {
                 continue;
             }
             $this->defaults[$key][$field] = $this->addOptions($key, $field, $options);
@@ -112,7 +112,10 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
                 $filters[$matches[2]][$matches[1]] = $filter;
             }
         }
-        $this->defaults[$key]['itemSpecs']['filter'] = $filters;
+        $this->defaults[$key]['itemSpecs']['filter'] = array_merge_recursive(
+            $this->defaults[$key]['itemSpecs']['filter'] ?? [],
+            $filters,
+        );
 
         // Add item default options from config
         $this->defaults[$key]['itemSpecs']['defaultOptions'] =
@@ -123,9 +126,12 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
             );
 
         // Add item options from config
-        $itemConfigs = array_merge($this->config['ItemOptions']['global'] ?? [], $this->config['ItemOptions'][$key] ?? []);
+        $itemConfigs = array_merge(
+            $this->config['ItemOptions']['global'] ?? [],
+            $this->config['ItemOptions'][$key] ?? []
+        );
         foreach ($itemConfigs as $itemConfigSection) {
-            $itemConfig = $this->config[$itemConfigSection];
+            $itemConfig = $this->config[$itemConfigSection] ?? [];
             $itemKey = $itemConfig['itemKey'] ?? 'Label';
             $itemValue = $itemConfig['itemValue'] ?? null;
             unset($itemConfig['itemKey']);

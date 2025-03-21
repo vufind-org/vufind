@@ -32,7 +32,6 @@
 namespace VuFind\RecordDataFormatter\Specs;
 
 use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
-use VuFind\View\Helper\Root\SchemaOrg;
 
 /**
  * EDS RecordDataFormatter specs.
@@ -48,18 +47,6 @@ use VuFind\View\Helper\Root\SchemaOrg;
 class EDS extends DefaultRecord
 {
     /**
-     * Constructor
-     *
-     * @param array      $config          EDS RecordDataFormatter Config
-     * @param ?SchemaOrg $schemaOrgHelper schema.org helper
-     * @param array      $edsConfig       EDS Config
-     */
-    public function __construct(array $config, protected ?SchemaOrg $schemaOrgHelper, protected array $edsConfig)
-    {
-        parent::__construct($config, $schemaOrgHelper);
-    }
-
-    /**
      * Initialize specs.
      *
      * @return void
@@ -73,8 +60,6 @@ class EDS extends DefaultRecord
 
     /**
      * Get general options for authors.
-     *
-     * @param string $format If number of authors should be limited (Short or Long)
      *
      * @return array
      */
@@ -96,7 +81,7 @@ class EDS extends DefaultRecord
     public function getDefaultCoreSpecs(): array
     {
         $spec = new SpecBuilder();
-        $spec->addItems([], ['separator' => '<br>']);
+        $spec->addItems(['separator' => '<br>']);
         $spec->setItemLine('Group', 'Au', $this->getAuthorOptions());
         $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
         return $spec->getArray();

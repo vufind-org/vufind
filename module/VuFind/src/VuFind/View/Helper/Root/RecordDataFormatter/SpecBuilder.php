@@ -146,8 +146,7 @@ class SpecBuilder
      *
      * @param array $orderedKeys Keys in the desired order
      * @param ?int  $defaultPos  Position to use for elements not included in
-     *                           $orderedKeys (null to put unrecognized items
-     *                           at end of list).
+     * $orderedKeys (null to put unrecognized items at end of list).
      *
      * @return void
      */
@@ -181,12 +180,12 @@ class SpecBuilder
     /**
      * Set default items specifications.
      *
-     * @param array $filter         Item filter
      * @param array $defaultOptions Default options
+     * @param array $filter         Item filter
      *
      * @return void
      */
-    public function addItems(array $filter = [], array $defaultOptions = []): void
+    public function addItems(array $defaultOptions = [], array $filter = []): void
     {
         if (!isset($defaultOptions['startPos'])) {
             $this->maxPos += 1000;

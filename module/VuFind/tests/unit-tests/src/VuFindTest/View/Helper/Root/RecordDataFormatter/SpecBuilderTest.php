@@ -56,7 +56,7 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         $builder->setLine('foo', 'getFoo');
         $builder->setLine('bar', 'getBar');
         $builder->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
-        $builder->addItems(['Group' => ['exclude' => ['Au']]]);
+        $builder->addItems([], ['Group' => ['exclude' => ['Au']]]);
         $expectedLineSpecs = [
             'enabled' => true,
             'defaultOptions' => [
