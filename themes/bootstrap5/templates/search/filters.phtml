@@ -40,7 +40,7 @@
       ?>
       <?php if ($removeLink): ?>
         <a class="filter-value" href="<?=$removeLink?>" data-filter="<?=$this->escapeHtmlAttr($filter['filter'])?>">
-        <span class="visually-hidden">
+          <span class="visually-hidden">
             <?=$this->translate('Remove filter') ?>
           </span>
           <span class="text"><?=$this->transEsc($filter['desc'])?></span>
