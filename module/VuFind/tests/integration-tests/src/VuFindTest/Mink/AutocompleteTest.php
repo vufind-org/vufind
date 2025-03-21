@@ -129,6 +129,42 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testFilteredAutocomplete().
+     *
+     * @return array[]
+     */
+    public static function filteredAutocompleteProvider(): array
+    {
+        return ['filtered' => [true], 'unfiltered' => [false]];
+    }
+
+    /**
+     * Test the apply_active_filters setting.
+     *
+     * @param bool $filtered Should we apply the active filters?
+     *
+     * @return void
+     *
+     * @dataProvider filteredAutocompleteProvider
+     */
+    public function testFilteredAutocomplete(bool $filtered): void
+    {
+        // Turn on autocomplete filtering:
+        $this->changeConfigs(
+            ['searches' => ['Autocomplete' => ['apply_active_filters' => $filtered]]]
+        );
+
+        // Go to a filtered page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A"hierarchy.mrc"');
+        $page = $session->getPage();
+
+        // Depending on filter setting, we expect a different result:
+        $expected = $filtered ? 'The Hierarchy Example 9' : 'Al Gore';
+        $this->assertAutocompleteValueAndReturnItem($page, 'jsto', $expected);
+    }
+
+    /**
      * Test that no-autosubmit autocomplete behavior is correct.
      *
      * @return void
