@@ -8,7 +8,7 @@
       <?php foreach ($this->facetList as $field => $list): ?>
         <div class="solr-adv-facet">
           <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-          <select class="form-control form-select" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+          <select class="form-select" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
             <?php if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
               <?php foreach ($list['list'] as $value): ?>
                 <?php $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>

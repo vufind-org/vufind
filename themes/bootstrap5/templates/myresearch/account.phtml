@@ -3,7 +3,9 @@
     $this->headTitle($this->translate('User Account'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Account') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Account'), active: true);
+
 ?>
 <h2><?=$this->transEsc('User Account')?></h2>
 <?=$this->flashmessages()?>

@@ -919,17 +919,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        // Disabled by default:
-        return false;
-    }
-
-    /**
      * Display a particular tab.
      *
      * @param string $tab  Name of tab to display
@@ -967,7 +956,8 @@ class AbstractRecord extends AbstractBase
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
-        if ($this->resultScrollerActive()) {
+        $searchOptions = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class)->get($this->sourceId);
+        if ($searchOptions->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }

@@ -83,7 +83,7 @@
 
   // Top level bottom border:
   & > li, .more-less-btn-wrapper {
-    border-bottom: 1px solid $list-group-border;
+    border-bottom: 1px solid $list-group-border-color;
   }
   // Make the first child level start a bit higher to counter the padding of top
   // level items:
@@ -103,7 +103,7 @@
     font-weight: bold;
   }
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .collection-hierarchytree {
     display: flex;
   }
@@ -120,6 +120,11 @@
     padding: 0;
   }
   #modal #tree-preview {
+    display: none;
+  }
+}
+@include media-breakpoint-down(sm) {
+  #tree-preview.hidden-narrow {
     display: none;
   }
 }

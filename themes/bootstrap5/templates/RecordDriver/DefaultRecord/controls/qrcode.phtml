@@ -1,5 +1,5 @@
 <?php if ($QRCode = $this->record($this->driver)->getQRCode($this->context)): ?>
-  <div class="dropdown hidden-xs">
+  <div class="dropdown result-qrcode">
     <a href="#" class="dropdown-toggle qrcodeLink result-link icon-link" data-bs-toggle="dropdown" aria-expanded="false" rel="nofollow">
       <?=$this->icon('qrcode', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('QR Code')?></span>
