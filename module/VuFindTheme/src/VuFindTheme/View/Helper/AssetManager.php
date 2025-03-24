@@ -283,7 +283,6 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     protected function outputScriptAssets($position): string
     {
         $output = [];
-        $scriptHelper = $this->getView()->plugin('inlineScript');
         $processedScripts = $this->pipeline->process($this->scripts[$position], 'js');
         foreach ($processedScripts as $script) {
             $allowArbitrary = $script['allowArbitraryAttrs'] ?? false;
