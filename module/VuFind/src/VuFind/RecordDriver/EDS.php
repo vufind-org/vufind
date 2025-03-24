@@ -664,7 +664,7 @@ class EDS extends DefaultRecord
             $link_xml = '/&lt;searchLink fieldCode=(&quot;|")' . $excludeQuotationMark
                 . '(&quot;|") term=(&quot;|")%22' . $excludeQuotationMark . '%22(&quot;|")&gt;/';
             if (!empty($type) && preg_match($link_xml, $elementData, $matches)) {
-                $link_html = '&lt;a href=&quot;../EDS/Search?lookfor=%22$6%22&amp;type='
+                $link_html = '&lt;a href=&quot;../EDS/Search?lookfor=%22$6%22&amp;amp;type='
                     . urlencode($type) . '&quot;&gt;';
                 $link = preg_replace($link_xml, $link_html, $elementData);
                 $link = str_replace('&lt;/searchLink&gt;', '&lt;/a&gt;', $link);

@@ -31,8 +31,8 @@
 
 namespace VuFindTest\RecordDriver;
 
-use VuFind\RecordDriver\EDS;
 use VuFind\RecordDataFormatter\Specs\EDS as EDSSpecs;
+use VuFind\RecordDriver\EDS;
 
 use function array_slice;
 
@@ -96,7 +96,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             [
                 'Data' => '<span>TORNEKE, NIKLAS.</span>',
                 'SearchLink' =>
-                    '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&type=AU">TORNEKE, NIKLAS.</a>',
+                    '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
             ],
         ],
     ];
@@ -236,7 +236,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals(
-            '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&type=AU">TORNEKE, NIKLAS.</a>',
+            '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
             $driver->getItemsAuthors()
         );
     }
