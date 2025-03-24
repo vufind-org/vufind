@@ -38,7 +38,8 @@
     $keyboardLayouts = $this->searchbox()->getKeyboardLayouts();
     $handlers = $this->searchbox()->getHandlers(
         $this->searchClassId,
-        $this->searchIndex ?? null
+        $this->searchIndex ?? null,
+        $hiddenFilters
     );
     $handlerCount = count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
