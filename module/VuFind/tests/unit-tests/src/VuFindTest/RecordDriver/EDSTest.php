@@ -32,6 +32,7 @@
 namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\EDS;
+use VuFind\RecordDataFormatter\Specs\EDS as EDSSpecs;
 
 use function array_slice;
 
@@ -135,6 +136,18 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             $record->setRawData($json);
         }
         return $record;
+    }
+
+    /**
+     * Get EDS specs.
+     *
+     * @param array $config EDSRecordDataFormatter config
+     *
+     * @return EDSSpecs
+     */
+    protected function getEdsSpecs(array $config = []): EDSSpecs
+    {
+        return new EDSSpecs($config);
     }
 
     /**
@@ -365,17 +378,12 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             $this->validAuthor,
             $this->validPublisher,
         ];
-
         $recordDataFormatterConfig = [
             'core_ItemFilter' => [
                 'excludeLabel' => ['Title'],
             ],
         ];
-
-        $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
-            new \Laminas\View\Helper\HtmlAttributes()
-        );
-        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($recordDataFormatterConfig, $schemaOrgHelper);
+        $spec = $this->getEdsSpecs($recordDataFormatterConfig);
         $results = $driver->getItems($spec->getDefaults('core')['itemSpecs']['filter']);
 
         // Verify total number of metadata elements
@@ -404,11 +412,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
                 'excludeLabel' => ['Title'],
             ],
         ];
-
-        $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
-            new \Laminas\View\Helper\HtmlAttributes()
-        );
-        $spec = new \VuFind\RecordDataFormatter\Specs\EDS($recordDataFormatterConfig, $schemaOrgHelper);
+        $spec = $this->getEdsSpecs($recordDataFormatterConfig);
         $results = $driver->getItems($spec->getDefaults('result-list')['itemSpecs']['filter']);
 
         // Verify total number of metadata elements

@@ -527,19 +527,32 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader->run();
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
-        $edsConfig = $results['EDS.ini'];
-        $edsRecordDataFormatterConfig = $results['EDSRecordDataFormatter.ini'];
         $this->assertEquals(
             ['foo' => 'bar'],
-            $edsConfig['Facets']
+            $results['EDS.ini']['Facets']
         );
         $this->assertEquals(
             'list_test',
-            $edsConfig['General']['default_view']
+            $results['EDS.ini']['General']['default_view']
         );
-        $this->assertFalse(isset($edsConfig['ItemCoreFilter']));
-        $this->assertFalse(isset($edsConfig['ItemResultListFilter']));
-        $this->assertFalse(isset($edsConfig['AuthorDisplay']));
+    }
+
+    /**
+     * Test EDS record data formatter upgrade with mainly legacy default configs in EDS.ini.
+     *
+     * @return void
+     */
+    public function testEDSRecordDataFormatterUpgradeSimple(): void
+    {
+        $upgrader = $this->getUpgrader('eds');
+        $upgrader->run();
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $edsConfig = $results['EDS.ini'];
+        $edsRecordDataFormatterConfig = $results['EDSRecordDataFormatter.ini'];
+        $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
+        $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
+        $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
         $this->assertEmpty(
             $edsRecordDataFormatterConfig['core_ItemFilter']
         );
@@ -575,16 +588,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             ],
             $edsRecordDataFormatterConfig['result-list_Authors']
         );
+    }
 
+    /**
+     * Test EDS record data formatter upgrade with preexisting EDSRecordDataFormatter.ini
+     * and more changes to legacy configs in EDS.ini.
+     *
+     * @return void
+     */
+    public function testEDSRecordDataFormatterUpgradeAdvanced(): void
+    {
         $upgrader = $this->getUpgrader('eds2');
         $upgrader->run();
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS.ini'];
         $edsRecordDataFormatterConfig = $results['EDSRecordDataFormatter.ini'];
-        $this->assertFalse(isset($edsConfig['ItemCoreFilter']));
-        $this->assertFalse(isset($edsConfig['ItemResultListFilter']));
-        $this->assertFalse(isset($edsConfig['AuthorDisplay']));
+        $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
+        $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
+        $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
         $this->assertEquals(
             [
                 'excludeLabel' => ['Availability'],
