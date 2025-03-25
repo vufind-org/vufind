@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SOLR 4.x error listener.
+ * SOLR error listener.
  *
  * PHP version 8
  *
@@ -27,15 +27,18 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Search\Solr\V4;
+namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\Http\Response;
-use VuFind\Search\Solr\AbstractErrorListener;
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\Service;
+
+use function in_array;
 
 /**
- * SOLR 3.x error listener.
+ * SOLR error listener.
  *
  * @category VuFind
  * @package  Search
@@ -43,8 +46,22 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ErrorListener extends AbstractErrorListener
+class ErrorListener
 {
+    /**
+     * Tag indicating a parser error.
+     *
+     * @var string
+     */
+    public const TAG_PARSER_ERROR = 'VuFind\Search\ParserError';
+
+    /**
+     * Backends to listen for.
+     *
+     * @var array
+     */
+    protected $backends;
+
     /**
      * Normalized media types.
      *
@@ -53,6 +70,61 @@ class ErrorListener extends AbstractErrorListener
     public const TYPE_OTHER = 'other';
     public const TYPE_JSON  = 'json';
     public const TYPE_XML   = 'xml';
+
+    /**
+     * Constructor.
+     *
+     * @param string $backend Identifier of backend to listen for
+     *
+     * @return void
+     */
+    public function __construct(string $backend)
+    {
+        $this->backends = [];
+        $this->addBackend($backend);
+    }
+
+    /**
+     * Add backend to listen for.
+     *
+     * @param string $backend Identifier of backend to listen for
+     *
+     * @return void
+     */
+    public function addBackend(string $backend)
+    {
+        if (!$this->listenForBackend($backend)) {
+            $this->backends[] = $backend;
+        }
+    }
+
+    /**
+     * Return true if listeners listens for backend errors.
+     *
+     * @param string $backend Backend identifier
+     *
+     * @return bool
+     */
+    public function listenForBackend(string $backend)
+    {
+        return in_array($backend, $this->backends);
+    }
+
+    /**
+     * Attach listener to shared event manager.
+     *
+     * @param SharedEventManagerInterface $manager Shared event manager
+     *
+     * @return void
+     */
+    public function attach(SharedEventManagerInterface $manager)
+    {
+        $manager->attach(
+            Service::class,
+            Service::EVENT_ERROR,
+            [$this, 'onSearchError']
+        );
+    }
 
     /**
      * VuFindSearch.error

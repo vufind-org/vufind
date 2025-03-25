@@ -24,6 +24,11 @@ Vagrant.configure("2") do |config|
     vb.memory = "2048"
   end
 
+  # With Docker provider we need to use a Docker-friendly box.
+  config.vm.provider "docker" do |d, override|
+    override.vm.box = "tknerr/baseimage-ubuntu-22.04"
+  end
+
   # Network configuration to forward ports.
   config.vm.network :forwarded_port, guest: 80, host: 4567
   config.vm.network :forwarded_port, guest: 8983, host: 4568
@@ -42,8 +47,8 @@ Vagrant.configure("2") do |config|
     # Install package dependencies.
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
-    apt-get install -y git zip unzip apache2 default-jdk mysql-server
-    apt-get install -y libapache2-mod-php php-pear php php-curl php-dev php-gd php-intl php-json php-ldap php-mbstring php-mysql php-soap php-xml
+    apt-get install -y git zip unzip apache2 default-jdk mysql-server lsof \
+    libapache2-mod-php php-pear php php-curl php-dev php-gd php-intl php-json php-ldap php-mbstring php-mysql php-soap php-xml
 
     # Install composer.
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -58,7 +63,15 @@ Vagrant.configure("2") do |config|
     su - vagrant -c 'cd /vagrant && composer install && php install.php --non-interactive --overridedir=/vufindlocal'
     ln -s /vufindlocal/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf
     a2enmod rewrite
-    systemctl restart apache2
+
+    # Restart Apache (and MySQL to be sure it's running).
+    if [[ -d /run/systemd/system ]]; then
+      systemctl restart apache2
+      systemctl restart mysql
+    else
+      service apache2 restart
+      service mysql restart
+    fi
 
     # Set up cache and config permissions.
     chown -R www-data:www-data /vufindlocal/cache /vufindlocal/config/vufind

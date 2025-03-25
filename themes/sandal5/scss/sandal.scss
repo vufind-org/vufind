@@ -166,7 +166,12 @@ a:hover .login-dropdown-caret {
 .myresearch-menu a:hover { background-color: $white; }
 .myresearch-menu a.active:hover {
   color: $white;
-  background-color: $brand-primary;
+  background-color: $primary;
+}
+
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  outline-color: #afafaf54; // selection color
 }
 
 /* --- Record --- */
@@ -194,7 +199,8 @@ a:hover .login-dropdown-caret {
 
   h1,h2,h3,h4 { margin-top: 0; }
 
-  .facet-group {
+  .facet-group,
+  .datevis-form {
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }
@@ -225,7 +231,7 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    border-bottom: 1px solid $list-group-border;
+    border-bottom: 1px solid $list-group-border-color;
     border-radius: 0;
   }
 

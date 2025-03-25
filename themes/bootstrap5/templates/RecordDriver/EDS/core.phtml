@@ -82,7 +82,7 @@
     <?php endif; ?>
 
     <table class="table table-striped">
-      <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
+      <caption class="visually-hidden"><?=$this->transEsc('Bibliographic Details')?></caption>
       <?php foreach ($items as $key => $item): ?>
         <?php if (!empty($item['Data'])): ?>
           <?php if ('Au' == $item['Group'] && $authorDisplay == 'short'): ?>

@@ -8,8 +8,8 @@
   position: relative;
   margin-bottom: .5rem;
   padding: 1rem;
-  border: 1px solid $panel-default-border;
-  border-radius: $border-radius-base;
+  border: 1px solid $primary-border-subtle;
+  border-radius: $border-radius;
 
   & ~ & { margin-top: 1rem; } // Spacing between groups
 
@@ -154,7 +154,7 @@
 }
 .primo-adv-search .search-container { width: 100%; }
 .primo-adv-label {
-  line-height: $input-height-base;
+  line-height: $input-height;
   padding-right: 1rem;
 }
 @media (min-width: 640px) {

@@ -9,7 +9,7 @@
           'title' => $this->transEscAttr('public_list_indicator'),
       ]
   );
-  $publicInd .= '<span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
+  $publicInd .= '<span class="visually-hidden">(' . $this->transEsc('public_list_indicator') . ')</span>';
 ?>
 <?php foreach ($this->userlist()->getUserListsAndCountsByUser($user) as $current): ?>
   <?php $list = $current['list_entity']; ?>

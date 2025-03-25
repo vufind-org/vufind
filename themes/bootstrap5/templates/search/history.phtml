@@ -2,15 +2,13 @@
   // Set page title.
   $this->headTitle($this->translate('Search History'));
 
-  // Hide the account breadcrumb when login is disabled:
+  // Set up breadcrumbs; hide the account breadcrumb when login is disabled:
   $account = $this->auth()->getManager();
-  $parentBreadcrumb = is_object($account) && $account->loginEnabled()
-    ? '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    : '';
-
-  // Set up breadcrumbs:
-  $this->layout()->breadcrumbs
-    = $parentBreadcrumb . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Search History') . '</li>';
+  $this->breadcrumbs()->reset();
+  if (is_object($account) && $account->loginEnabled()) {
+    $this->breadcrumbs()->add($this->translate('Your Account'), $this->url('myresearch-home'));
+  }
+  $this->breadcrumbs()->add($this->translate('Search History'), active: true);
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
   $loggedInUser = $this->auth()->getUserObject();
