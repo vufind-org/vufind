@@ -93,7 +93,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         $active = 0;
 
-        $this->multiFilterSelectionToggle($page, $multiselect);
+        if ($multiselect) {
+            $this->activateMultiFilterSelection($page);
+        }
         foreach ($facets as $facet) {
             $title = $facet['title'];
             $count = $facet['count'];
@@ -136,7 +138,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $activeFacetSelector = '#side-collapse-genre_facet .active a[data-title="' . $title . '"]';
             $this->findCss($page, $activeFacetSelector);
         }
-        $this->deactivateMultiFilterSelection($page);
+        if ($multiselect) {
+            $this->deactivateMultiFilterSelection($page);
+        }
     }
 
     /**
@@ -722,7 +726,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             'Genre: NOT Remove Filter Fiction AND Remove Filter Weird IDs',
             $this->findCss($page, $this->activeFilterListSelector)->getText()
         );
-        $this->deactivateMultiFilterSelection($modal);
     }
 
     /**
@@ -1381,7 +1384,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->performSearch('building:weird_ids.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
-        $this->multiFilterSelectionToggle($sidebar, $multiselection);
+        if ($multiselection) {
+            $this->activateMultiFilterSelection($sidebar);
+        }
 
         // Filter by date range and checkbox filter:
         $checkboxFilters = $this->findCss($sidebar, '.checkbox-filters');
@@ -1432,7 +1437,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $this->assertNoFilters($page);
             $this->deactivateMultiFilterSelection($sidebar);
         }
-        $this->deactivateMultiFilterSelection($sidebar);
     }
 
     /**

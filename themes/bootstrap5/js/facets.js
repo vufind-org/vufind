@@ -365,7 +365,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function getUserSelectionLastState() {
-    const state =  localStorage.getItem(local_storage_variable_name);
+    const state = localStorage.getItem(local_storage_variable_name);
     if (state === null) {
       return undefined;
     }
@@ -468,8 +468,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     initFacetClickHandler(context);
     initRangeSelection(context);
     // Synchronize the state of multi-facet checkboxes in case there's e.g. a lightbox with its own controls:
-    let state = getUserSelectionLastState()
-    console.log(state)
+    let state = getUserSelectionLastState();
     if (state === undefined) {
       state = isMultiFacetsSelectionDefaultEnabled() ? true : undefined;
     }

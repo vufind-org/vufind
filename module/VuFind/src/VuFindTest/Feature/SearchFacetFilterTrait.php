@@ -445,8 +445,9 @@ trait SearchFacetFilterTrait
     ): void {
         $sidebar = $this->findCss($page, '.sidebar');
         $container = $this->findCss($sidebar, "#side-panel-$facet");
-        $this->multiFilterSelectionToggle($sidebar, $multiselection);
-
+        if ($multiselection) {
+            $this->activateMultiFilterSelection($sidebar);
+        }
         if (null !== $from) {
             $this->findCssAndSetValue($page, '.date-from input', $from);
         }
@@ -460,7 +461,9 @@ trait SearchFacetFilterTrait
             $this->clickCss($container, 'input[type="submit"]');
         }
         $this->waitForPageLoad($page);
-        $this->deactivateMultiFilterSelection($page);
+        if ($multiselection) {
+            $this->deactivateMultiFilterSelection($page);
+        }
     }
 
     /**
@@ -592,31 +595,30 @@ trait SearchFacetFilterTrait
     /**
      * Toggle the state of multi facet selection
      *
-     * @param mixed     $container Container containing the checkbox
+     * @param Element   $container Container containing the checkbox
      * @param bool|null $activate  True to activate, false to deactivate, null to toggle
      *
      * @return void
      * @throws \Exception
      */
-    protected function multiFilterSelectionToggle($container, ?bool $activate = null)
+    protected function multiFilterSelectionToggle(Element $container, ?bool $activate = null): void
     {
-        if ($elem = $container->find('css', '.js-user-selection-multi-filters')) {
-            $click = $elem->isChecked() !== $activate || $activate === null;
-            if ($click) {
-                $this->clickCss($container, '.js-user-selection-multi-filters');
-            }
+        $elem = $this->findCss($container, '.js-user-selection-multi-filters');
+        $click = $elem->isChecked() !== $activate || $activate === null;
+        if ($click) {
+            $elem->click();
         }
     }
 
     /**
      * Deactivate multi facet selection
      *
-     * @param mixed $container Container containing the checkbox
+     * @param Element $container Container containing the checkbox
      *
      * @return void
      * @throws \Exception
      */
-    protected function deactivateMultiFilterSelection($container)
+    protected function deactivateMultiFilterSelection(Element $container): void
     {
         $this->multiFilterSelectionToggle($container, false);
     }
@@ -624,12 +626,12 @@ trait SearchFacetFilterTrait
     /**
      * Activate multi facet selection
      *
-     * @param mixed $container Container containing the checkbox
+     * @param Element $container Container containing the checkbox
      *
      * @return void
      * @throws \Exception
      */
-    protected function activateMultiFilterSelection($container)
+    protected function activateMultiFilterSelection(Element $container): void
     {
         $this->multiFilterSelectionToggle($container, true);
     }
