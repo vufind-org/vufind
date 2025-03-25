@@ -345,7 +345,10 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $config = $this->getConfig($this->getOptionsForClass()->getFacetsIni());
-        $view->multiFacetsSelection = (bool)($config->Results_Settings->multiFacetsSelection ?? false);
+        // Allows string value
+        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
+        $view->multiFacetsSelectionEnabled = $multiFacetsSelection !== 'false' && $multiFacetsSelection;
+        $view->multiFacetsSelectionValue = $multiFacetsSelection;
         $extraErrors = [];
 
         // Handle saved search requests:
@@ -912,6 +915,8 @@ class AbstractSearch extends AbstractBase
         $list = $facets[$facet]['data']['list'] ?? [];
         $facetLabel = $params->getFacetLabel($facet);
 
+        // Allows string value
+        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
         $viewParams = [
             'contains' => $contains,
             'data' => $list,
@@ -929,7 +934,8 @@ class AbstractSearch extends AbstractBase
             'key' => $sort,
             'urlBase' => $urlBase,
             'searchAction' => $searchAction,
-            'multiFacetsSelection' => (bool)($config->Results_Settings->multiFacetsSelection ?? false),
+            'multiFacetsSelectionEnabled' => $multiFacetsSelection !== 'false' && $multiFacetsSelection,
+            'multiFacetsSelectionValue' => $multiFacetsSelection,
         ];
         $viewParams['delegateParams'] = $viewParams;
         $view = $this->createViewModel($viewParams);

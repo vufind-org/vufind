@@ -1,4 +1,4 @@
-/*global VuFind, multiFacetsSelectionEnabled, unwrapJQuery */
+/*global VuFind, multiFacetsSelectionEnabled, multiFacetsSelectionValue, unwrapJQuery */
 
 /**
  * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
@@ -10,6 +10,21 @@ const isMultiFacetsSelectionEnabled = () => {
     return false;
   }
   return multiFacetsSelectionEnabled;
+};
+
+const getMultiFacetsSelectionValue = () => {
+  if (typeof multiFacetsSelectionEnabled === "undefined") {
+    return false;
+  }
+  return multiFacetsSelectionValue;
+};
+
+const isMultiFacetsSelectionDefaultEnabled = () => {
+  if (isMultiFacetsSelectionEnabled() === false) {
+    return false;
+  }
+  const value = getMultiFacetsSelectionValue();
+  return value === 'only' || value === 'default';
 };
 
 /* --- Facet List --- */
@@ -350,14 +365,15 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function getUserSelectionLastState() {
+    const state =  localStorage.getItem(local_storage_variable_name);
+    if (state === null) {
+      return undefined;
+    }
     return localStorage.getItem(local_storage_variable_name) === 'true';
   }
 
   function toggleMultiFacetsSelection(enable) {
     if (typeof enable !== 'undefined') {
-      if (isMultiFacetsSelectionActivated === enable) {
-        return;
-      }
       isMultiFacetsSelectionActivated = enable;
       saveUserSelectionLastState(isMultiFacetsSelectionActivated);
     }
@@ -449,7 +465,12 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     initFacetClickHandler(context);
     initRangeSelection(context);
     // Synchronize the state of multi-facet checkboxes in case there's e.g. a lightbox with its own controls:
-    VuFind.multiFacetsSelection.toggleMultiFacetsSelection();
+    let state = getUserSelectionLastState()
+    console.log(state)
+    if (state === undefined) {
+      state = isMultiFacetsSelectionDefaultEnabled() ? true : undefined;
+    }
+    VuFind.multiFacetsSelection.toggleMultiFacetsSelection(state);
   }
 
   return {

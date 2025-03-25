@@ -19,8 +19,9 @@
     $urlBase .= '&baseUriExtra=' . urlencode($this->baseUriExtra);
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
-  $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
+  $multiFacetsSelection = $this->multiFacetsSelectionEnabled ? 'true' : 'false';
   $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
+  $this->headScript()->appendScript('var multiFacetsSelectionValue = "' . $this->multiFacetsSelectionValue . '";');
   $this->headScript()->appendFile('facets.js');
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
@@ -50,7 +51,7 @@
       <button type="submit" disabled style="display: none" aria-hidden="true"></button>
     </div>
   </form>
-  <?php if ($this->multiFacetsSelection): ?>
+  <?php if ($this->multiFacetsSelectionEnabled): ?>
     <?=$this->render('Recommend/SideFacets/multiFacetsSelection.phtml') ?>
   <?php endif; ?>
 

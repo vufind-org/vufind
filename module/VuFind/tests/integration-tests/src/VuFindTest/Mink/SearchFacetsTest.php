@@ -1581,6 +1581,52 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test setting "default" for multi facet selection, the feature is checked by default
+     *
+     * @return void
+     */
+    public function testMultiFacetsSelectionDefault(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'default',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertStringContainsString($checkbox->isChecked(), true);
+    }
+
+    /**
+     * Test setting "only" for multi facet selection, the feature is enabled but the checkbox is hidden
+     *
+     * @return void
+     */
+    public function testMultiFacetsSelectionOnly(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'only',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $this->assertFalse($this->findCss($sidebar, '.js-user-selection-multi-filters')->isVisible());
+        $this->assertNotNull($sidebar->find('css', '.js-apply-multi-facets-selection'));
+    }
+
+    /**
      * Test that filters applied during search show up on the record page and can be removed there.
      *
      * @return void
