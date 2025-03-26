@@ -36,8 +36,6 @@
       $openTopLevel = false;
       if ($hasChildren) {
         $liClasses[] = 'hierarchy-tree__parent';
-      } else {
-        $liClasses[] = 'hierarchy-tree__item';
       }
       if ('collection' === $node->type) {
         $liClasses[] = 'hierarchy-tree__collection';
@@ -87,7 +85,8 @@
         echo '</ul></li>';
       } else {
         echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>'
-          . $itemHtml;
+        . '<button class="hierarchy-tree__toggle-expanded" disabled aria-hidden="true"></button> '
+        . $itemHtml;
         echo '</li>';
       }
     }
