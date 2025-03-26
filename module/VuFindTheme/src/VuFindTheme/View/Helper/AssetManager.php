@@ -87,12 +87,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $css        Raw CSS.
      * @param array  $attributes Extra attributes for style tag
+     * @param array  $options    Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
-    public function appendStyleString(string $css, array $attributes = []): static
+    public function appendStyleString(string $css, array $attributes = [], array $options = []): static
     {
-        $this->styles[] = compact('css', 'attributes');
+        $this->styles[] = compact('css', 'attributes', 'options');
         return $this;
     }
 
@@ -103,6 +104,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $media                 Media
      * @param string $conditionalStylesheet Any conditions
      * @param array  $extras                Array of extra attributes
+     * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
      * @return void
      */
@@ -110,9 +112,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $href,
         string $media = 'screen',
         string $conditionalStylesheet = '',
-        array $extras = []
+        array $extras = [],
+        array $options = []
     ): static {
-        $this->stylesheets[] = compact('href', 'media', 'conditionalStylesheet', 'extras');
+        $this->stylesheets[] = compact('href', 'media', 'conditionalStylesheet', 'extras', 'options');
         return $this;
     }
 
@@ -123,6 +126,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $media                 Media
      * @param string $conditionalStylesheet Any conditions
      * @param array  $extras                Array of extra attributes
+     * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -130,9 +134,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $href,
         string $media = 'screen',
         string $conditionalStylesheet = '',
-        array $extras = []
+        array $extras = [],
+        array $options = []
     ): static {
-        $newSheets = [compact('href', 'media', 'conditionalStylesheet', 'extras')];
+        $newSheets = [compact('href', 'media', 'conditionalStylesheet', 'extras', 'options')];
         foreach ($this->stylesheets as $sheet) {
             if ($sheet['href'] !== $newSheets[0]['href']) {
                 $newSheets[] = $sheet;
@@ -161,6 +166,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -168,9 +174,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $script,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
-        $this->scripts[$position][] = compact('script', 'attrs', 'allowArbitraryAttrs');
+        $this->scripts[$position][] = compact('script', 'attrs', 'allowArbitraryAttrs', 'options');
         return $this;
     }
 
@@ -181,6 +188,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -188,9 +196,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $src,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
-        $this->scripts[$position][] = compact('src', 'attrs', 'allowArbitraryAttrs');
+        $this->scripts[$position][] = compact('src', 'attrs', 'allowArbitraryAttrs', 'options');
         return $this;
     }
 
@@ -201,6 +210,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -208,9 +218,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $src,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
-        $newScripts = [compact('src', 'attrs', 'allowArbitraryAttrs')];
+        $newScripts = [compact('src', 'attrs', 'allowArbitraryAttrs', 'options')];
         foreach ($this->scripts[$position] as $script) {
             if (($script['src'] ?? null) !== $newScripts[0]['src']) {
                 $newScripts[] = $script;
@@ -227,6 +238,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -234,9 +246,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $script,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
-        array_unshift($this->scripts[$position], compact('script', 'attrs', 'allowArbitraryAttrs'));
+        array_unshift($this->scripts[$position], compact('script', 'attrs', 'allowArbitraryAttrs', 'options'));
         return $this;
     }
 

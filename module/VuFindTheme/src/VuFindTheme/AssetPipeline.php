@@ -155,6 +155,9 @@ class AssetPipeline implements LoggerAwareInterface
      */
     protected function isExcludedFromConcat(array $item, string $type): bool
     {
+        if ($item['options']['exclude_from_pipeline'] ?? false) {
+            return true;
+        }
         if ($type === 'css') {
             return empty($item['href']) || !$this->isRelativePath($item['href']);
         } elseif ($type === 'js') {
