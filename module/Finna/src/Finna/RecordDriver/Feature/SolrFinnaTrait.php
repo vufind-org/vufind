@@ -227,6 +227,19 @@ trait SolrFinnaTrait
     }
 
     /**
+     * Return the collection search ID for this record.
+     *
+     * @return string
+     */
+    public function getCollectionSearchId(): string
+    {
+        if ($this->mainConfig->Hierarchy->showFullHierarchyTree ?? false) {
+            return $this->getHierarchyTopID()[0] ?? $this->getUniqueID();
+        }
+        return $this->getUniqueID();
+    }
+
+    /**
      * Return geographic center point
      *
      * @return array lon, lat
