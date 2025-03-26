@@ -1065,39 +1065,39 @@ class Upgrade
         }
 
         // Move several settings to EDSRecordDataFormatter.ini
-        if (!empty($newEDSConfig['ItemCoreFilter'])) {
-            foreach ($newEDSConfig['ItemCoreFilter'] as $key => $value) {
-                $newEDSRecordDataFormatterConfig['core_ItemFilter'][$key] =
-                    array_merge($newEDSRecordDataFormatterConfig['core_ItemFilter'][$key] ?? [], $value);
-            }
-            unset($newEDSConfig['ItemCoreFilter']);
+        foreach ($newEDSConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
+            $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Label:' . $label;
         }
+        foreach ($newEDSConfig['ItemCoreFilter']['excludeGroup'] ?? [] as $label) {
+            $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:' . $label;
+        }
+        unset($newEDSConfig['ItemCoreFilter']);
 
-        if (!empty($newEDSConfig['ItemResultListFilter'])) {
-            foreach ($newEDSConfig['ItemResultListFilter'] as $key => $value) {
-                $newEDSRecordDataFormatterConfig['result-list_ItemFilter'][$key] =
-                    array_merge($newEDSRecordDataFormatterConfig['result-list_ItemFilter'][$key] ?? [], $value);
-            }
-            unset($newEDSConfig['ItemResultListFilter']);
+        foreach ($newEDSConfig['ItemResultListFilter']['excludeLabel'] ?? [] as $label) {
+            $newEDSRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Label:' . $label;
         }
+        foreach ($newEDSConfig['ItemResultListFilter']['excludeGroup'] ?? [] as $label) {
+            $newEDSRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Group:' . $label;
+        }
+        unset($newEDSConfig['ItemResultListFilter']);
 
         if (($newEDSConfig['AuthorDisplay']['DetailPageFormat'] ?? 'Long') === 'Short') {
-            $newEDSRecordDataFormatterConfig['core_ItemFilter']['excludeGroup'][] = 'AuInfo';
-            if (!isset($newEDSRecordDataFormatterConfig['core_Authors']['limit'])) {
-                $newEDSRecordDataFormatterConfig['core_Authors']['limit'] =
+            $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:AuInfo';
+            if (!isset($newEDSRecordDataFormatterConfig['CoreAuthors']['limit'])) {
+                $newEDSRecordDataFormatterConfig['CoreAuthors']['limit'] =
                     $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
             }
         }
 
         if (
             isset($newEDSConfig['AuthorDisplay']['ResultListFormat'])
-            && ($newEDSRecordDataFormatterConfig['result-list_Authors']['limit'] ?? null) === 3
+            && ($newEDSRecordDataFormatterConfig['ResultListAuthors']['limit'] ?? null) === 3
         ) {
             if ($newEDSConfig['AuthorDisplay']['ResultListFormat'] === 'Short') {
-                $newEDSRecordDataFormatterConfig['result-list_Authors']['limit']
+                $newEDSRecordDataFormatterConfig['ResultListAuthors']['limit']
                     = $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
             } else {
-                unset($newEDSRecordDataFormatterConfig['result-list_Authors']['limit']);
+                unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['limit']);
             }
         }
 

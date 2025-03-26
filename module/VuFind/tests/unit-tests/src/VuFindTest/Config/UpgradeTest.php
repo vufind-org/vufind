@@ -553,40 +553,34 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
         $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
         $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
-        $this->assertEmpty(
-            $edsRecordDataFormatterConfig['core_ItemFilter']
+        $this->assertEquals(
+            ['extraLineOptions' => ['CoreAuthors']],
+            $edsRecordDataFormatterConfig['CoreItems']
         );
         $this->assertEquals(
             [
-                'excludeLabel' => ['Availability'],
-                'excludeGroup' => ['URL'],
+                'extraLineOptions' => ['ResultListAuthors'],
+                'filterExclude' => ['Label:Availability', 'Group:URL'],
             ],
-            $edsRecordDataFormatterConfig['result-list_ItemFilter']
+            $edsRecordDataFormatterConfig['ResultListItems']
         );
         $this->assertEquals(
             [
-                'core' => ['core_Authors'],
-                'result-list' => ['result-list_Authors'],
-            ],
-            $edsRecordDataFormatterConfig['ItemOptions']
-        );
-        $this->assertEquals(
-            [
-                'itemKey' => 'Group',
-                'itemValue' => 'Au',
+                'lineIdentifierKey' => 'Group',
+                'lineIdentifierValue' => 'Au',
                 'separator' => '; ',
             ],
-            $edsRecordDataFormatterConfig['core_Authors']
+            $edsRecordDataFormatterConfig['CoreAuthors']
         );
         $this->assertEquals(
             [
-                'itemKey' => 'Group',
-                'itemValue' => 'Au',
-                'dataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'lineIdentifierKey' => 'Group',
+                'lineIdentifierValue' => 'Au',
                 'limit' => 3,
                 'separator' => '; ',
+                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
             ],
-            $edsRecordDataFormatterConfig['result-list_Authors']
+            $edsRecordDataFormatterConfig['ResultListAuthors']
         );
     }
 
@@ -609,44 +603,47 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
         $this->assertEquals(
             [
-                'excludeLabel' => ['Availability'],
-                'excludeGroup' => ['URL', 'AuInfo'],
+                'extraLineOptions' => ['CoreAuthors'],
+                'filterExclude' => [
+                    'Label:Availability',
+                    'Group:URL',
+                    'Group:AuInfo',
+                ],
             ],
-            $edsRecordDataFormatterConfig['core_ItemFilter']
+            $edsRecordDataFormatterConfig['CoreItems']
         );
         $this->assertEquals(
             [
-                'excludeLabel' => ['Availability'],
-                'excludeGroup' => ['URL'],
+                'extraLineOptions' => ['ResultListAuthors'],
+                'filterInclude' => ['Label:Title'],
+                'filterExclude' => [
+                    'Group:AuInfo',
+                    'Label:Availability',
+                    'Group:Su',
+                    'Group:URL',
+                ],
             ],
-            $edsRecordDataFormatterConfig['result-list_ItemFilter']
+            $edsRecordDataFormatterConfig['ResultListItems']
         );
         $this->assertEquals(
             [
-                'core' => ['core_Authors'],
-                'result-list' => ['result-list_Authors'],
-            ],
-            $edsRecordDataFormatterConfig['ItemOptions']
-        );
-        $this->assertEquals(
-            [
-                'itemKey' => 'Group',
-                'itemValue' => 'Au',
-                'dataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'lineIdentifierKey' => 'Group',
+                'lineIdentifierValue' => 'Au',
+                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
                 'separator' => '; ',
                 'limit' => 7,
             ],
-            $edsRecordDataFormatterConfig['core_Authors']
+            $edsRecordDataFormatterConfig['CoreAuthors']
         );
         $this->assertEquals(
             [
-                'itemKey' => 'Group',
-                'itemValue' => 'Au',
-                'dataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'lineIdentifierKey' => 'Group',
+                'lineIdentifierValue' => 'Au',
+                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
                 'limit' => 3,
                 'separator' => ', ',
             ],
-            $edsRecordDataFormatterConfig['result-list_Authors']
+            $edsRecordDataFormatterConfig['ResultListAuthors']
         );
     }
 

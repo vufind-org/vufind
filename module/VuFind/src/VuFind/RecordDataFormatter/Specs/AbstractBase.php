@@ -31,6 +31,7 @@
 
 namespace VuFind\RecordDataFormatter\Specs;
 
+use function count;
 use function is_array;
 use function is_callable;
 
@@ -99,51 +100,8 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
         }
         // Adding options from config
         foreach ($this->defaults[$key] as $field => $options) {
-            if ($field === 'itemSpecs') {
-                continue;
-            }
             $this->defaults[$key][$field] = $this->addOptions($key, $field, $options);
         }
-
-        // Add item filters from config
-        $filters = [];
-        foreach ($this->config[$key . '_ItemFilter'] ?? [] as $filterKey => $filter) {
-            if (preg_match('/^(exclude|include)(.+)/', $filterKey, $matches)) {
-                $filters[$matches[2]][$matches[1]] = $filter;
-            }
-        }
-        $this->defaults[$key]['itemSpecs']['filter'] = array_merge_recursive(
-            $this->defaults[$key]['itemSpecs']['filter'] ?? [],
-            $filters,
-        );
-
-        // Add item default options from config
-        $this->defaults[$key]['itemSpecs']['defaultOptions'] =
-            array_merge(
-                $this->config['GlobalItemDefaultOptions'] ?? [],
-                $this->defaults[$key]['itemSpecs']['defaultOptions'] ?? [],
-                $this->config[$key . '_ItemDefaultOptions'] ?? []
-            );
-
-        // Add item options from config
-        $itemConfigs = array_merge(
-            $this->config['ItemOptions']['global'] ?? [],
-            $this->config['ItemOptions'][$key] ?? []
-        );
-        foreach ($itemConfigs as $itemConfigSection) {
-            $itemConfig = $this->config[$itemConfigSection] ?? [];
-            $itemKey = $itemConfig['itemKey'] ?? 'Label';
-            $itemValue = $itemConfig['itemValue'] ?? null;
-            unset($itemConfig['itemKey']);
-            unset($itemConfig['itemValue']);
-            if ($itemValue !== null) {
-                $this->defaults[$key]['itemSpecs']['options'][$itemKey][$itemValue] = array_merge(
-                    $this->defaults[$key]['itemSpecs']['options'][$itemKey][$itemValue],
-                    $itemConfig
-                );
-            }
-        }
-
         // Send back array:
         return $this->defaults[$key];
     }
@@ -201,6 +159,71 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
             $options = array_merge($options, $contextOptions);
         }
 
+        $includingFilter = array_merge_recursive(
+            $options['filter']['include'] ?? [],
+            $this->getFilterFromConfig($options['filterInclude'] ?? []),
+        );
+        if (!empty($includingFilter)) {
+            $options['multiEnabled'] = false;
+        }
+        foreach ($includingFilter as $lineIdentifierKey => $lineIdentifierValues) {
+            foreach ($lineIdentifierValues as $lineIdentifierValue) {
+                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue]['enabled'] = true;
+            }
+        }
+
+        $excludingFilter = array_merge_recursive(
+            $options['filter']['exclude'] ?? [],
+            $this->getFilterFromConfig($options['filterExclude'] ?? []),
+        );
+        foreach ($excludingFilter as $lineIdentifierKey => $lineIdentifierValues) {
+            foreach ($lineIdentifierValues as $lineIdentifierValue) {
+                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue]['enabled'] = false;
+            }
+        }
+        unset($options['filterExclude']);
+        unset($options['filterInclude']);
+        unset($options['filter']);
+
+        foreach ($options['extraLineOptions'] ?? [] as $lineOptionSection) {
+            $lineOption = $this->config[$lineOptionSection] ?? [];
+            $lineIdentifierKey = $lineOption['lineIdentifierKey'] ?? 'label';
+            $lineIdentifierValue = $lineOption['lineIdentifierValue'] ?? null;
+            unset($lineOption['lineIdentifierKey']);
+            unset($lineOption['lineIdentifierValue']);
+            if ($lineIdentifierValue === null) {
+                continue;
+            }
+            $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] = array_merge(
+                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] ?? [],
+                $lineOption,
+            );
+        }
+        unset($options['extraLineOptions']);
+
         return $options;
+    }
+
+    /**
+     * Get filter from config.
+     *
+     * @param array $config Config
+     *
+     * @return array
+     */
+    protected function getFilterFromConfig(array $config): array
+    {
+        $filterFromConfig = [];
+        foreach ($config as $filter) {
+            $lineIdentifierKey = 'label';
+            $lineIdentifierValue = $filter;
+            $filterParts = explode(':', $filter);
+            if (count($filterParts) === 2) {
+                $lineIdentifierKey = $filterParts[0];
+                $lineIdentifierValue = $filterParts[1];
+            }
+            $filterFromConfig[$lineIdentifierKey][] = $lineIdentifierValue;
+        }
+        return $filterFromConfig;
     }
 }

@@ -31,10 +31,10 @@
 
 namespace VuFindTest\RecordDriver;
 
-use VuFind\RecordDataFormatter\Specs\EDS as EDSSpecs;
 use VuFind\RecordDriver\EDS;
 
 use function array_slice;
+use function count;
 
 /**
  * EDS Record Driver Test Class
@@ -69,7 +69,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected array $validTitle = [
+    protected static array $validTitle = [
         'Name' => 'Title',
         'Label' => 'Title',
         'Group' => 'Ti',
@@ -85,7 +85,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected array $validAuthor =  [
+    protected static array $validAuthor = [
         'Name' => 'Author',
         'Label' => 'Authors',
         'Group' => 'Au',
@@ -106,7 +106,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected array $validPublisher =  [
+    protected static array $validPublisher = [
         'Name' => 'Publisher',
         'Label' => 'Publisher Information',
         'Group' => 'PubInfo',
@@ -136,18 +136,6 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             $record->setRawData($json);
         }
         return $record;
-    }
-
-    /**
-     * Get EDS specs.
-     *
-     * @param array $config EDSRecordDataFormatter config
-     *
-     * @return EDSSpecs
-     */
-    protected function getEdsSpecs(array $config = []): EDSSpecs
-    {
-        return new EDSSpecs($config);
     }
 
     /**
@@ -325,9 +313,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record');
         $items = [
-            $this->validTitle,
-            $this->validAuthor,
-            $this->validPublisher,
+            self::$validTitle,
+            self::$validAuthor,
+            self::$validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -352,9 +340,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         $driver = $this->getDriver('valid-eds-record', $config);
         $items = [
-            $this->validAuthor,
-            $this->validTitle,
-            $this->validPublisher,
+            self::$validAuthor,
+            self::$validTitle,
+            self::$validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -365,61 +353,57 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getItems filtering the data for a record.
+     * Data provider for testEscaping
      *
-     * @return void
+     * @return array
      */
-    public function testGetItemsFilteredCore(): void
+    public static function filterProvider(): array
     {
-        // Change the default order the array data is in and exclude one of the items
-        // to ensure it appears at the end
-        $driver = $this->getDriver('valid-eds-record');
-        $items = [
-            $this->validAuthor,
-            $this->validPublisher,
-        ];
-        $recordDataFormatterConfig = [
-            'core_ItemFilter' => [
-                'excludeLabel' => ['Title'],
+        return [
+            'exclude' => [
+                ['exclude' => ['Label' => ['Title']]],
+                [self::$validAuthor, self::$validPublisher,],
+                10,
+            ],
+            'include' => [
+                ['include' => ['Label' => ['Title']]],
+                [self::$validTitle],
+                1,
+            ],
+            'exclude and include' => [
+                [
+                    'include' => ['Label' => ['Title', 'Authors']],
+                    'exclude' => ['Label' => ['Title']],
+                ],
+                [self::$validAuthor],
+                1,
             ],
         ];
-        $spec = $this->getEdsSpecs($recordDataFormatterConfig);
-        $results = $driver->getItems($spec->getDefaults('core')['itemSpecs']['filter']);
-
-        // Verify total number of metadata elements
-        // (Note one is removed from the fixture file since it has been filtered)
-        $this->assertCount(10, $results);
-        // Verify contents of the first 2 elements
-        $this->assertEquals($items, array_slice($results, 0, 2));
     }
 
     /**
-     * Test getItems filtering the data for a record.
+     * Test getItems filter.
+     *
+     * @param array $filter        Filter
+     * @param array $expectedItems Expected items
+     * @param int   $expectedCount Expected item count
+     *
+     * @dataProvider filterProvider
      *
      * @return void
      */
-    public function testGetItemsFilteredResultList(): void
+    public function testGetItemsFilter(array $filter, array $expectedItems, int $expectedCount): void
     {
         // Change the default order the array data is in and exclude one of the items
         // to ensure it appears at the end
         $driver = $this->getDriver('valid-eds-record');
-        $items = [
-            $this->validAuthor,
-            $this->validPublisher,
-        ];
-        $recordDataFormatterConfig = [
-            'result-list_ItemFilter' => [
-                'excludeLabel' => ['Title'],
-            ],
-        ];
-        $spec = $this->getEdsSpecs($recordDataFormatterConfig);
-        $results = $driver->getItems($spec->getDefaults('result-list')['itemSpecs']['filter']);
+        $results = $driver->getItems($filter);
 
         // Verify total number of metadata elements
         // (Note one is removed from the fixture file since it has been filtered)
-        $this->assertCount(10, $results);
+        $this->assertCount($expectedCount, $results);
         // Verify contents of the first 2 elements
-        $this->assertEquals($items, array_slice($results, 0, 2));
+        $this->assertEquals($expectedItems, array_slice($results, 0, count($expectedItems)));
     }
 
     /**
@@ -437,9 +421,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         // items in original order are returned when the config can't be parsed
         $items = [
-            $this->validTitle,
-            $this->validAuthor,
-            $this->validPublisher,
+            self::$validTitle,
+            self::$validAuthor,
+            self::$validPublisher,
         ];
         $results = $driver->getItems();
 

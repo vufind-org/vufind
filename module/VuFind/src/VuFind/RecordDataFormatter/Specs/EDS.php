@@ -59,18 +59,45 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get general options for authors.
+     * Get general options.
      *
      * @return array
      */
-    protected function getAuthorOptions(): array
+    protected function getGeneralOptions(): array
     {
         return [
-            'useSearchLink' => 'author',
-            'itemPrefix' => '<span class="author">',
-            'itemSuffix' => '</span>',
-            'abbreviation' => ' ' . $this->translate('more_authors_abbrev'),
+            'multiRenderType' => 'RecordDriverTemplate',
+            'template' => 'data-item.phtml',
+            'lineOptions' => [
+                'Group' => [
+                    'Au' => [
+                        'useSearchLink' => 'author',
+                        'itemPrefix' => '<span class="author">',
+                        'itemSuffix' => '</span>',
+                        'abbreviation' => ' ' . $this->translate('more_authors_abbrev'),
+                    ],
+                    'Su' => [
+                        'useSearchLink' => true,
+                    ],
+                ],
+            ],
         ];
+    }
+
+    /**
+     * Get method that maps items to a format for multi line rendering.
+     *
+     * @return callable
+     */
+    protected function getMultiLineItemMapper(): callable
+    {
+        return function ($data) {
+            return array_map(function ($item) {
+                $item['label'] = $item['Label'];
+                $item['values'] = $item;
+                return $item;
+            }, $data);
+        };
     }
 
     /**
@@ -81,9 +108,14 @@ class EDS extends DefaultRecord
     public function getDefaultCoreSpecs(): array
     {
         $spec = new SpecBuilder();
-        $spec->addItems(['separator' => '<br>']);
-        $spec->setItemLine('Group', 'Au', $this->getAuthorOptions());
-        $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
+        $options = $this->getGeneralOptions();
+        $options['separator'] = '<br>';
+        $spec->setMultiLine(
+            'Items',
+            'getItems',
+            $this->getMultiLineItemMapper(),
+            $options
+        );
         return $spec->getArray();
     }
 
@@ -95,9 +127,12 @@ class EDS extends DefaultRecord
     public function getDefaultResultListSpecs(): array
     {
         $spec = new SpecBuilder();
-        $spec->addItems();
-        $spec->setItemLine('Group', 'Au', $this->getAuthorOptions());
-        $spec->setItemLine('Group', 'Su', ['useSearchLink' => true]);
+        $spec->setMultiLine(
+            'Items',
+            'getItems',
+            $this->getMultiLineItemMapper(),
+            $this->getGeneralOptions()
+        );
         return $spec->getArray();
     }
 }

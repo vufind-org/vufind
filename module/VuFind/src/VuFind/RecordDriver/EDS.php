@@ -233,36 +233,28 @@ class EDS extends DefaultRecord
         $globalFilter = isset($this->recordConfig->ItemGlobalFilter)
             ? $this->recordConfig->ItemGlobalFilter->toArray() : [];
 
-        $filter['Label']['exclude'] =
-            array_merge($filter['Label']['exclude'] ?? [], $globalFilter['excludeLabel'] ?? []);
-        $filter['Label']['include'] =
-            array_merge($filter['Label']['include'] ?? [], $globalFilter['includeLabel'] ?? []);
-        $filter['Group']['exclude'] =
-            array_merge($filter['Group']['exclude'] ?? [], $globalFilter['excludeGroup'] ?? []);
-        $filter['Group']['include'] =
-            array_merge($filter['Group']['include'] ?? [], $globalFilter['includeGroup'] ?? []);
+        $filter['exclude']['Label'] =
+            array_merge($filter['exclude']['Label'] ?? [], $globalFilter['excludeLabel'] ?? []);
+        $filter['include']['Label'] =
+            array_merge($filter['include']['Label'] ?? [], $globalFilter['includeLabel'] ?? []);
+        $filter['exclude']['Group'] =
+            array_merge($filter['exclude']['Group'] ?? [], $globalFilter['excludeGroup'] ?? []);
+        $filter['include']['Group'] =
+            array_merge($filter['include']['Group'] ?? [], $globalFilter['includeGroup'] ?? []);
 
-        foreach ($filter as $itemKey => $itemKeyFilter) {
-            if (
-                isset($item[$itemKey]) && in_array($item[$itemKey], $itemKeyFilter['exclude'] ?? [])
-            ) {
+        foreach ($filter['exclude'] ?? [] as $itemKey => $filteredItemValues) {
+            if (isset($item[$itemKey]) && in_array($item[$itemKey], $filteredItemValues)) {
                 return false;
             }
         }
 
-        $hasIncludeFilter = false;
-        foreach ($filter as $itemKey => $itemKeyFilter) {
-            if (
-                !empty($itemKeyFilter['include'])
-            ) {
-                $hasIncludeFilter = true;
-                if (isset($item[$itemKey]) && in_array($item[$itemKey], $itemKeyFilter['include'])) {
-                    return true;
-                }
+        foreach ($filter['include'] ?? [] as $itemKey => $filteredItemValues) {
+            if (isset($item[$itemKey]) && in_array($item[$itemKey], $filteredItemValues)) {
+                return true;
             }
         }
 
-        return !$hasIncludeFilter;
+        return empty(array_filter($filter['include']));
     }
 
     /**
@@ -276,7 +268,7 @@ class EDS extends DefaultRecord
      */
     public function getItem(string $itemKey, string $itemValue): array
     {
-        $filter = [$itemKey => ['include' => [$itemValue]]];
+        $filter = ['include' => [$itemKey => [$itemValue]]];
         return $this->getItems($filter);
     }
 
