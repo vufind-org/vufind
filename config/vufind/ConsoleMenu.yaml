@@ -1,0 +1,51 @@
+# This configuration file controls the menu displayed by thhe menu/menu console command.
+# It must begin with a "main:" container; all of its contents must be either nested submenus
+# or commands.
+#
+# Every section of the configuration MUST have a label and a type. Each supported type has
+# different requirements.
+#
+# type = menu
+#   Purpose: Display a sub-menu
+#   Attributes:
+#     - contents (required): a list of sub-menus and/or commands in the menu
+#
+# type = external-command
+#   Purpose: Run a command-line command
+#   Attributes:
+#     - command (required): the command to run (relative to VUFIND_HOME)
+#     - arguments (optional): a list of arguments for the command. Each entry contains:
+#         - label (required): A description of the argument
+#         - required (optional): Set to true if the argument is required
+#         - default (optional): A default value to use
+#     - options (optional): a list of options for the command. Each entry contains:
+#         - label (required): A description of the option
+#         - switch (required): The switch text to add to the command line for the option
+#         - type (optional, defaults to 'string'): 'string' for arguments that require
+#           a string value; 'no-value' for arguments that are simple toggle switches.
+#         - default (optional): A default value to use
+#
+# type = internal-command
+#   Purpose: Run an internal Symfony console command
+#   Attributes:
+#     - command (required): the name of the command in the plugin manager
+main:
+  label: Main Menu
+  type: menu
+  contents:
+    - label: Import Options
+      type: menu
+      contents:
+        - label: Import MARC
+          type: external-command
+          command: import-marc.sh
+          arguments:
+            - label: Filename
+              required: true
+          options:
+            - label: Properties File
+              switch: -p
+              type: string
+        - label: Import XML
+          type: internal-command
+          command: import/import-xsl
