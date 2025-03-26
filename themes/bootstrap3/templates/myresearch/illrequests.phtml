@@ -6,7 +6,7 @@
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
         . '<li class="active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
 
-    $this->headScript()->appendFile('requests.js');
+    $this->assetManager()->appendScriptLink('requests.js');
 ?>
 
 <?=$this->component('show-account-menu-button')?>

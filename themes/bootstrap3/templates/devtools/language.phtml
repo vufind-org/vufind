@@ -175,4 +175,4 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
       });
       JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

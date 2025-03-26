@@ -69,7 +69,7 @@
       $script = "setupMultiILSLoginFields($methods, 'profile_cat_');";
 
       // Inline the script for lightbox compatibility
-      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+      echo $this->assetManager()->outputInlineScriptString($script);
     }
   ?>
 <?php endif; ?>

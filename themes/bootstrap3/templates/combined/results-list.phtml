@@ -71,7 +71,7 @@
       }
       JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
+<?=$this->assetManager()->outputInlineScriptString($countsJs)?>
 
 <?php if ($currentSearch['more_link'] ?? false): ?>
   <div class="pull-right flip">
@@ -106,7 +106,7 @@
         $recommendationClass = str_replace('\\', '_', $current::class);
         $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
         ?>
-        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
+        <?=$this->assetManager()->outputInlineScriptString($recommendationJs)?>
         <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
           <?=$this->recommend($current)?>
         </div>
@@ -148,7 +148,7 @@
       $recommendationClass = str_replace('\\', '_', $current::class);
       $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
       ?>
-      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
+      <?=$this->assetManager()->outputInlineScriptString($recommendationJs)?>
       <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
         <?=$this->recommend($current)?>
       </div>

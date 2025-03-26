@@ -1,7 +1,7 @@
 <?php
   // Set page title.
   $this->headTitle($this->translate('Text this'));
-  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
+  echo $this->assetManager()->outputInlineScriptLink('vendor/libphonenumber.js');
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')

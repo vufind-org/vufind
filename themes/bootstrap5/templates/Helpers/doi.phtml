@@ -1,2 +1,2 @@
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'doi.js', 'SET');?>
+<?=$this->assetManager()->outputInlineScriptLink('doi.js');?>
 <span class="doiLink" data-doi="<?=$this->escapeHtml($doi)?>"></span>
