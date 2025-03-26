@@ -24,13 +24,13 @@
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
   // Set up breadcrumbs:
-  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
-  if (!empty($lastSearch)) {
-      $this->layout()->breadcrumbs = '<li class="breadcrumb-item">' . $lastSearch . '</li> ';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
   } else {
-      $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> ';
+    $this->breadcrumbs()->add($this->translate('Collections'), $this->url('collections-home'));
   }
-  $this->layout()->breadcrumbs .= '<li class="breadcrumb-item active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver));
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(

@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Library Cards'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Library Cards') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))->add($this->translate('Library Cards'), active: true);
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
 

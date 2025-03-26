@@ -813,10 +813,6 @@ header .container.navbar { margin-bottom: 0; }
     font-weight: 600;
     vertical-align: baseline;
   }
-  .btn::after {
-    content: "\f107";
-    font-family: "FontAwesome";
-  }
 
   .dropdown-menu {
     .filters-term {

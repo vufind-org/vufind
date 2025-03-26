@@ -23,7 +23,7 @@
   );
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs .= '<li class="breadcrumb-item active" aria-current="page">' . $this->escapeHtml($headTitle) . '</li>';
+  $this->breadcrumbs()->add($headTitle, active: true);
 
   // Set up search controls (avoiding unnecessary rendering):
   if (!$this->slot('search-controls')->isset()) {
