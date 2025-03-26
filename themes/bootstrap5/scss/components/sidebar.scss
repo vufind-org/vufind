@@ -28,7 +28,8 @@
 .facet,
 .facet-group .title,
 .facet-load-indicator,
-.facet-load-failed {
+.facet-load-failed,
+.sidebar .datevis-form {
   padding: .5rem;
   line-height: 1.5rem;
   background-color: transparent;
@@ -265,5 +266,32 @@ h3.facet-title {
   // Hide submit buttons of range forms when multi-facet selection is active:
   .facet input[type="submit"] {
     display: none;
+  }
+}
+
+.sidebar .datevis-form {
+  border: 1px solid $list-group-border-color;
+
+  .datevis-controls-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+
+    input {
+      margin-right: 0;
+    }
+
+    .datevis-controls-row {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .datevis-input {
+      margin-bottom: .5rem;
+    }
+
+    .datevis-input-from {
+      margin-right: 1rem
+    }
   }
 }

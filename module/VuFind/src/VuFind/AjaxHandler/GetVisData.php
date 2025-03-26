@@ -33,6 +33,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use VuFind\Recommend\DateFacetTrait;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -51,6 +52,8 @@ use VuFind\Session\Settings as SessionSettings;
  */
 class GetVisData extends AbstractBase
 {
+    use DateFacetTrait;
+
     /**
      * Solr search results object
      *
@@ -71,36 +74,6 @@ class GetVisData extends AbstractBase
     }
 
     /**
-     * Extract details from applied filters.
-     *
-     * @param array $filters    Current filter list
-     * @param array $dateFacets Objects containing the date ranges
-     *
-     * @return array
-     */
-    protected function processDateFacets($filters, $dateFacets)
-    {
-        $result = [];
-        foreach ($dateFacets as $current) {
-            $from = $to = '';
-            if (isset($filters[$current])) {
-                foreach ($filters[$current] as $filter) {
-                    if (preg_match('/\[[\d\*]+ TO [\d\*]+\]/', $filter)) {
-                        $range = explode(' TO ', trim($filter, '[]'));
-                        $from = $range[0] == '*' ? '' : $range[0];
-                        $to = $range[1] == '*' ? '' : $range[1];
-                        break;
-                    }
-                }
-            }
-            $result[$current] = [$from, $to];
-            $result[$current]['label']
-                = $this->results->getParams()->getFacetLabel($current);
-        }
-        return $result;
-    }
-
-    /**
      * Filter bad values from facet lists and add useful data fields.
      *
      * @param array $filters Current filter list
@@ -116,16 +89,16 @@ class GetVisData extends AbstractBase
             $filter = $filters[$field][0] ?? null;
             $newValues = [
                 'data' => [],
-                'min' => $fields[$field][0] > 0 ? $fields[$field][0] : 0,
-                'max' => $fields[$field][1] > 0 ? $fields[$field][1] : 0,
-                'removalURL' => $this->results->getUrlQuery()
-                    ->removeFacet($field, $filter)->getParams(false),
+                'removalURL' => $this->results->getUrlQuery()->removeFacet($field, $filter)->getParams(false),
             ];
+            if ($filter !== null) {
+                $newValues['selectionMin'] = $fields[$field]['from'] ?? 0;
+                $newValues['selectionMax'] = $fields[$field]['to'] ?? 0;
+            }
             foreach ($values['data']['list'] as $current) {
                 // Only retain numeric values!
                 if (preg_match('/^[0-9]+$/', $current['value'])) {
-                    $newValues['data'][]
-                        = [$current['value'], $current['count']];
+                    $newValues['data'][] = [$current['value'], $current['count']];
                 }
             }
             $retVal[$field] = $newValues;
@@ -153,7 +126,7 @@ class GetVisData extends AbstractBase
         $filters = $paramsObj->getRawFilters();
         $rawDateFacets = $params->fromQuery('facetFields');
         $dateFacets = empty($rawDateFacets) ? [] : explode(':', $rawDateFacets);
-        $fields = $this->processDateFacets($filters, $dateFacets);
+        $fields = $this->processDateFacets($this->results, $filters, $dateFacets);
         $facets = $this->processFacetValues($filters, $fields);
         return $this->formatResponse(compact('facets'));
     }

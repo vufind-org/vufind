@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Load debconf library
+. /usr/share/debconf/confmodule
+
+# Prompt for information
+db_input high vufind/solr-user || true
+db_go
+
+exit 0
