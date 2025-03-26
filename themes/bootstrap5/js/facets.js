@@ -1,4 +1,4 @@
-/*global VuFind, multiFacetsSelectionEnabled, multiFacetsSelectionValue, unwrapJQuery */
+/*global VuFind, multiFacetsSelection, unwrapJQuery */
 
 /**
  * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
@@ -6,25 +6,11 @@
  * @type {Function} Function to check for multiFacetsSelectionEnabled
  */
 const isMultiFacetsSelectionEnabled = () => {
-  if (typeof multiFacetsSelectionEnabled === "undefined") {
-    return false;
-  }
-  return multiFacetsSelectionEnabled;
+  return multiFacetsSelection !== 'false';
 };
 
-const getMultiFacetsSelectionValue = () => {
-  if (typeof multiFacetsSelectionEnabled === "undefined") {
-    return false;
-  }
-  return multiFacetsSelectionValue;
-};
-
-const isMultiFacetsSelectionDefaultEnabled = () => {
-  if (isMultiFacetsSelectionEnabled() === false) {
-    return false;
-  }
-  const value = getMultiFacetsSelectionValue();
-  return value === 'only' || value === 'default';
+const getMultiFacetsSelectionPageLoadValue = () => {
+  return multiFacetsSelection === 'always' || multiFacetsSelection === 'checked';
 };
 
 /* --- Facet List --- */
@@ -470,7 +456,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     // Synchronize the state of multi-facet checkboxes in case there's e.g. a lightbox with its own controls:
     let state = getUserSelectionLastState();
     if (state === undefined) {
-      state = isMultiFacetsSelectionDefaultEnabled() ? true : undefined;
+      state = getMultiFacetsSelectionPageLoadValue() ? true : undefined;
     }
     VuFind.multiFacetsSelection.toggleMultiFacetsSelection(state);
   }

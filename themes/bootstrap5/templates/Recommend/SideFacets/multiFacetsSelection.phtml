@@ -1,8 +1,8 @@
 <?php
-$attributes = $this->multiFacetsSelectionValue === 'only' ? 'style="display: none;"' : '';
+$attributes = $this->multiFacetsSelection === 'always' ? ' style="display: none;"' : '';
 ?>
 <div class="multi-filters-selection">
-  <div <?= $attributes ?>>
+  <div<?= $attributes ?>>
     <form autocomplete="off">
       <label>
         <input class="js-user-selection-multi-filters" type="checkbox">

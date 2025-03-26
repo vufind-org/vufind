@@ -35,6 +35,7 @@ use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
@@ -335,6 +336,24 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Get the value multiFacetsSelection from the config
+     *
+     * @param Config $config The config containing multiFacetsSelection
+     *
+     * @return string
+     */
+    protected static function getMultiSelectionValueFromConfig(Config $config)
+    {
+        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
+        if ($multiFacetsSelection === false) {
+            $multiFacetsSelection = 'false';
+        } elseif ($multiFacetsSelection === true) {
+            $multiFacetsSelection = 'true';
+        }
+        return $multiFacetsSelection;
+    }
+
+    /**
      * Perform a search and send results to a results view
      *
      * @param callable $setupCallback Optional setup callback that overrides the
@@ -346,10 +365,7 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $config = $this->getConfig($this->getOptionsForClass()->getFacetsIni());
-        // Allows string value
-        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
-        $view->multiFacetsSelectionEnabled = $multiFacetsSelection !== 'false' && $multiFacetsSelection;
-        $view->multiFacetsSelectionValue = $multiFacetsSelection;
+        $view->multiFacetsSelection = static::getMultiSelectionValueFromConfig($config);
         $extraErrors = [];
 
         // Handle saved search requests:
@@ -916,8 +932,6 @@ class AbstractSearch extends AbstractBase
         $list = $facets[$facet]['data']['list'] ?? [];
         $facetLabel = $params->getFacetLabel($facet);
 
-        // Allows string value
-        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
         $viewParams = [
             'contains' => $contains,
             'data' => $list,
@@ -935,8 +949,7 @@ class AbstractSearch extends AbstractBase
             'key' => $sort,
             'urlBase' => $urlBase,
             'searchAction' => $searchAction,
-            'multiFacetsSelectionEnabled' => $multiFacetsSelection !== 'false' && $multiFacetsSelection,
-            'multiFacetsSelectionValue' => $multiFacetsSelection,
+            'multiFacetsSelection' => static::getMultiSelectionValueFromConfig($config),
         ];
         $viewParams['delegateParams'] = $viewParams;
         $view = $this->createViewModel($viewParams);
