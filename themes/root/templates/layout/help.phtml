@@ -3,7 +3,7 @@
   <head>
     <?php
       $this->setupThemeResources();
-      $this->assetManager()->clearStyleList()->appendStyleLink('help.css');
+      $this->assetManager()->clearScriptList()->clearStyleList()->appendStyleLink('help.css');
     ?>
     <?=$this->headMeta()?>
     <?=$this->headTitle()?>
