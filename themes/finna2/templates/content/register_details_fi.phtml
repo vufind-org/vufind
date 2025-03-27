@@ -22,9 +22,8 @@ $this->content()->setHeading($this->translate('Register Details')); ?>
   <p>Finna-palvelun käyttäjätietojen rekisteri</p>
 
   <h3>4. Henkilötietojen käsittelyn tarkoitus ja käsittelyn peruste</h3>
-  <p>Henkilötietoja käsitellään asiakkaiden yksikäsitteisyyden ylläpitämiseksi ja Finna-palveluun kirjautuvan käyttäjän tunnistamiseksi. Henkilötietoja käsitellään myös, jotta käyttäjälle voidaan tarjota asiakastoimintoja ja personoituja palveluita Finnan avulla. Esimerkki personoidusta palvelusta on uutuusvahtipalvelu, jolla käyttäjä saa sähköpostitse tiedot hakuun tulleista uusista viitteistä. Tietoja käsitellään palvelun toteuttamiseen Kansalliskirjastossa (rekisterinpitäjä) ja CSC – Tieteen tietotekniikan keskus Oy:ssä (tietojen käsittelijä).</p>
-  <p>Käyttäjien henkilötietoja käsitellään lisäksi palvelun käytön seuraamiseksi analytiikkajärjestelmällä (Matomo), mikäli käyttäjä on antanut tähän suostumuksensa. Käyttöanalyyseissä käytettävä analytiikkajärjestelmä on konfiguroitu niin, että käyttäjän IP-osoite anonymisoidaan. Se tapahtuu nollaamalla IP-osoitteen kaksi viimeistä oktettia.</p>
-  <p>Analytiikkajärjestelmää käytetään CSC - Tieteen tietotekniikan keskus Oy:n  palvelimilla niin, etteivät jäljitystiedot pääse turvallisen ympäristön ulkopuolelle.</p>
+  <p>Henkilötietoja käsitellään asiakkaiden yksikäsitteisyyden ylläpitämiseksi ja Finna-palveluun kirjautuvan käyttäjän tunnistamiseksi. Henkilötietoja käsitellään myös, jotta käyttäjälle voidaan tarjota asiakastoimintoja ja personoituja palveluita Finnan avulla. Esimerkki personoidusta palvelusta on uutuusvahtipalvelu, jolla käyttäjä saa sähköpostitse tiedot hakuun tulleista uusista viitteistä. Tietoja käsitellään palvelun toteuttamiseen Kansalliskirjastossa (rekisterinpitäjä) ja CSC – Tieteen tietotekniikan keskus Oy:ssä (tietojen käsittelijä). Sivuston tietoliikenteen teknisiä lokitietoja käsittelee myös Kansalliskirjaston sopimuskumppani Cloudflare Inc.</p>
+  <p>Käyttäjien henkilötietoja käsitellään lisäksi palvelun käytön seuraamiseksi analytiikkajärjestelmällä (Matomo), mikäli käyttäjä on antanut tähän suostumuksensa. Käyttöanalyyseissä käytettävä analytiikkajärjestelmä on konfiguroitu niin, että käyttäjän IP-osoite anonymisoidaan. Analytiikkajärjestelmää käytetään CSC - Tieteen tietotekniikan keskus Oy:n palvelimilla.</p>
   <p>Kun käyttäjä tulee tähän verkkopalveluun, tieto tapahtumasta (mm. IP-osoite) tallentuu väliaikaisesti käsiteltäväksi.</p>
   <p>Käsittelyn perusteena on rekisterinpitäjän oikeutettu etu ja rekisteröidyn suostumus (analytiikkajärjestelmän käsittelemät henkilötiedot).</p>
 
@@ -53,7 +52,7 @@ $this->content()->setHeading($this->translate('Register Details')); ?>
   </ul>
   <h4>Käytön analysointia varten analytiikkajärjestelmään kerättävät tiedot</h4>
   <ul class="list-bullets">
-    <li>Anonymisoitu IP-osoite (anonymisointi tapahtuu nollaamalla IP-osoitteen kaksi viimeistä oktettia)</li>
+    <li>Anonymisoitu IP-osoite</li>
     <li>Selaintyyppi/-versio</li>
     <li>Selaimen kieliversio</li>
     <li>Käyttöjärjestelmä</li>
@@ -92,9 +91,13 @@ $this->content()->setHeading($this->translate('Register Details')); ?>
 
   <h3>10. Tietojen säännönmukaiset luovutukset</h3>
   <p>Palvelussa käsitellään kirjastojärjestelmän palvelurajapintoja käytettäessä siirtyviä tietoja. Tietoja käsitellään lainojen, uusintojen, varausten ja maksujen suoritus- ja selaustoiminnoissa. Henkilötiedot välittyvät eteenpäin kirjastojärjestelmään, jossa kirjastojärjestelmän ylläpitäjä vastaa niiden käsittelystä.</p>
+  <p>Kirjastojen, arkistojen tai museoiden omassa ylläpidossa olevien Finna-hakupalveluiden anonymisoituja analytiikkatietoja voidaan luovuttaa ylläpidosta vastaavalle organisaatiolle.</p>
 
   <h3>11. Tietojen siirto EU:n tai ETA:n ulkopuolelle</h3>
-  <p>Tietoja ei siirretä.</p>
+  <p>Sopimuskumppani Cloudflare Inc. tarjoamat palvelut tallentavat Finna-sivustojen tietoliikenteen teknisiä lokitietoja. Kansalliskirjasto käyttää Cloudflaren palveluita verkkopalveluiden toimintakyvyn varmistamiseksi. Cloudflare käsittelee tietoja ETA-alueella ja Yhdysvalloissa. Henkilötietojen siirtämisen perusteena ovat EU:n komission hyväksymät mallisopimuslausekkeet. Cloudflaren tietosuojasta on lisätietoja <a href="https://www.cloudflare.com/trust-hub/gdpr/" target="_blank">sen omilla sivuilla (englanniksi)</a>.
+  </p>
+  <p>Muuten henkilötietoja ei siirretä EU:n tai ETA:n ulkopuolelle.
+  </p>
 
   <h3>12. Rekisterin suojauksen periaatteet</h3>
   <p>Tietoja säilytetään ainoastaan sähköisessä muodossa. Tietoihin pääsevät käsiksi ainoastaan järjestelmän ylläpitäjät, jotka tunnistetaan käyttäjätunnuksella ja salasanalla.</p>

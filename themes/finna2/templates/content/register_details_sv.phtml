@@ -22,8 +22,8 @@ $this->content()->setHeading($this->translate('Register Details')); ?>
   <p>Finna-tjänstens register över användaruppgifter</p>
 
   <h3>4. Ändamålet med hanteringen av personuppgifter och grund för hanteringen</h3>
-  <p>Personuppgifterna hanteras för att upprätthålla kunduppgifternas entydighet och identifiera användarna som loggar in på Finna-tjänsten. Personuppgifterna hanteras också i syfte att erbjuda användarna kundfunktioner och individualiserade tjänster med hjälp av Finna. Ett exempel på en individualiserad tjänst är nyhetsvakten, genom vilken användaren får information om nya referenser i söket per e-post. Uppgifterna hanteras för produktionen av tjänsten vid Nationalbiblioteket (registeransvarig) och CSC – IT-centret för vetenskap (uppgiftshanterare).</p>
-  <p>Därtill hanteras användarnas personuppgifter för att följa upp tjänstens användning med ett analyssystem (Matomo), om användaren har gett sitt samtycke till detta. Systemet som används för användaranalyserna är konfigurerat så att användarens IP-adress anonymiseras. Det sker genom att IP-adressens två sista oktetter nollas. Analyssystemet används på servern vid CSC – IT-centret för vetenskap så att spårningsinformationen inte kommer utanför den säkra miljön.</p>
+  <p>Personuppgifterna hanteras för att upprätthålla kunduppgifternas entydighet och identifiera användarna som loggar in på Finna-tjänsten. Personuppgifterna hanteras också i syfte att erbjuda användarna kundfunktioner och individualiserade tjänster med hjälp av Finna. Ett exempel på en individualiserad tjänst är nyhetsvakten, genom vilken användaren får information om nya referenser i söket per e-post. Uppgifterna hanteras för produktionen av tjänsten vid Nationalbiblioteket (registeransvarig) och CSC – IT-centret för vetenskap (uppgiftshanterare). De tekniska logguppgifterna för webbplatsens datatrafik behandlas även av Nationalbibliotekets avtalspartner Cloudflare Inc.</p>
+  <p>Därtill hanteras användarnas personuppgifter för att följa upp tjänstens användning med ett analyssystem (Matomo), om användaren har gett sitt samtycke till detta. Systemet som används för användaranalyserna är konfigurerat så att användarens IP-adress anonymiseras. Analyssystemet används på servern vid CSC – IT-centret för vetenskap.</p>
   <p>När användaren besöker denna webbtjänst sparas informationen om händelsen (bl.a. IP-adressen) tillfälligt för hantering.</p>
   <p>Grunden för hanteringen är den registeransvarigas berättigade intresse och den registrerades samtycke (de personuppgifter som behandlas i analyssystemet).</p>
 
@@ -52,7 +52,7 @@ $this->content()->setHeading($this->translate('Register Details')); ?>
   </ul>
   <h4>Uppgifter som sparas i analyssystemet för analys av användningen</h4>
   <ul class="list-bullets">
-    <li>Anonymiserad IP-adress (anonymiseringen sker genom att IP-adressens två sista oktetter nollas)</li>
+    <li>Anonymiserad IP-adress</li>
     <li>Webbläsarens typ och version</li>
     <li>Webbläsarens språkversion</li>
     <li>Operativsystem</li>
@@ -91,9 +91,11 @@ $this->content()->setHeading($this->translate('Register Details')); ?>
 
   <h3>10. Lagenlig överföring av uppgifter</h3>
   <p>Tjänsten hanterar uppgifter som överförs vid användning av bibliotekssystemets tjänstegränssnitt. Uppgifterna behandlas vid utförande av och bläddring i lån, förnyelser, reserveringar och avgifter. Personuppgifterna förmedlas till bibliotekssystemet, där bibliotekssystemets administratör ansvarar för behandlingen av dem.</p>
+  <p>Anonymiserade analysdata från Finna-söktjänster som bibliotek, arkiv eller museer själva administrerar kan överlämnas till den organisation som ansvarar för administrationen.</p>
 
   <h3>11. Överföring av uppgifter utanför EU eller EES</h3>
-  <p>Uppgifter överförs inte.</p>
+  <p>De tjänster som erbjuds av avtalspartnern Cloudflare Inc. lagrar tekniska logguppgifter för Finna-webbplatsers datatrafik. Nationalbiblioteket använder Cloudflares tjänster för att säkerställa webbtjänsternas funktionsförmåga. Cloudflare behandlar datauppgifter inom EES-området och i USA. Grunden för överföringen av personuppgifter är EU-kommissionens godkända standardavtalsklausuler. Mera information on Cloudflares dataskydd finns på <a href="https://www.cloudflare.com/trust-hub/gdpr/" target="_blank">företagets egna webbsidor (på engelska)</a>.</p>
+  <p>I övrigt överförs inga personuppgifter utanför EU eller EES.</p>
 
   <h3>12. Dataskyddsprinciper</h3>
   <p>Uppgifterna sparas enbart i elektroniskt format. Endast systemets administratörer har åtkomst till uppgifterna. Administratörerna identifieras med användarnamn och lösenord. </p>
