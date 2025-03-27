@@ -6,7 +6,7 @@
     $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Install VuFind') . '</li>';
 
     // Set up styles:
-    $this->headstyle()->appendStyle(
+    $this->assetManager()->appendStyleString(
         ".pre {\n"
         . "  white-space:pre-wrap; width:90%; overflow-y:visible; padding:8px; margin:1em 2em; background:#EEE; border:1px dashed #CCC;\n"
         . "}\n"
@@ -29,4 +29,4 @@ $script = <<<JS
     });
     JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+<?=$this->assetManager()->outputInlineScriptString($script);

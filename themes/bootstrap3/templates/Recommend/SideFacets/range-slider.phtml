@@ -35,8 +35,8 @@
   </form>
 </div>
 <?php if ($this->facet['type'] == 'date'): ?>
-  <?php $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
-  <?php $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
+  <?php $this->assetManager()->appendScriptLink('vendor/bootstrap-slider.min.js'); ?>
+  <?php $this->assetManager()->appendStyleLink('vendor/bootstrap-slider.min.css'); ?>
   <?php
     $min = !empty($cleanValues[0]) ? min($cleanValues[0], 1400) : 1400;
     $future = date('Y', time() + 31536000); // next year
@@ -82,5 +82,5 @@
         });
         JS;
   ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+  <?=$this->assetManager()->outputInlineScriptString($script); ?>
 <?php endif; ?>

@@ -20,8 +20,8 @@
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
   $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
-  $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
-  $this->headScript()->appendFile('facets.js');
+  $this->assetManager()->appendScriptString('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
+  $this->assetManager()->appendScriptLink('facets.js');
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
 
@@ -67,7 +67,7 @@
   <button class="btn btn-default lightbox-only" data-bs-dismiss="modal"><?=$this->translate('close') ?></button>
 </div>
 
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.facetList.setup();', 'SET')?>
+<?=$this->assetManager()->outputInlineScriptString('VuFind.facetList.setup();')?>
 <?php if ($this->inLightbox): ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.lightbox_facets.setup();', 'SET')?>
+  <?=$this->assetManager()->outputInlineScriptString('VuFind.lightbox_facets.setup();')?>
 <?php endif; ?>

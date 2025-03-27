@@ -1,14 +1,14 @@
 <?php
   // Set up standard record scripts:
-  $this->headScript()->appendFile('record.js');
-  $this->headScript()->appendFile('check_save_statuses.js');
+  $this->assetManager()->appendScriptLink('record.js');
+  $this->assetManager()->appendScriptLink('check_save_statuses.js');
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
-    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+    $this->assetManager()->appendScriptLink($this->syndeticsPlus()->getScript());
   }
   // Add any extra scripts the tabs require:
   foreach ($this->tabsExtraScripts as $script) {
-    $this->headScript()->appendFile($script);
+    $this->assetManager()->appendScriptLink($script);
   }
 
   // Add RDF header link if applicable:
@@ -98,4 +98,4 @@
     <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 </div>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
+<?=$this->assetManager()->outputInlineScriptString('$(document).ready(recordDocReady);'); ?>

@@ -1,11 +1,11 @@
 <?php if ($visFacets = $this->recommend->getVisFacets()): ?>
   <?php
     // load jQuery flot:
-    $this->headScript()->appendFile('vendor/flot/excanvas.min.js', null, ['conditional' => 'IE']);
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
-    $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
-    $this->headScript()->appendFile('pubdate_vis.js');
+    $this->assetManager()->appendScriptLink('vendor/flot/excanvas.min.js', null, ['conditional' => 'IE']);
+    $this->assetManager()->appendScriptLink('vendor/flot/jquery.flot.min.js');
+    $this->assetManager()->appendScriptLink('vendor/flot/jquery.flot.resize.min.js');
+    $this->assetManager()->appendScriptLink('vendor/flot/jquery.flot.selection.min.js');
+    $this->assetManager()->appendScriptLink('pubdate_vis.js');
   ?>
   <?php foreach ($visFacets as $facetField => $facetRange): ?>
     <div class="authorbox">
@@ -22,7 +22,7 @@
     $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
         . $this->recommend->getSearchParams() . "', VuFind.path, "
         . $this->recommend->getZooming() . ');';
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
+    echo $this->assetManager()->outputInlineScriptString($js);
   ?>
 
 <?php endif; ?>

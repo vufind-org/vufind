@@ -124,6 +124,7 @@ class Module
     {
         return [
             'factories' => [
+                View\Helper\AssetManager::class => InvokableFactory::class,
                 View\Helper\FootScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
@@ -143,6 +144,7 @@ class Module
                     View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
+                'assetManager' => View\Helper\AssetManager::class,
                 'footScript' => View\Helper\FootScript::class,
                 // Legacy alias for compatibility with pre-8.0 templates:
                 'headThemeResources' => View\Helper\SetupThemeResources::class,
