@@ -219,9 +219,9 @@ class EDS extends DefaultRecord
     /**
      * Support method for getItems, used to apply filters.
      * Filters are multidimensional arrays. The first dimension
-     * defines in which item key (e.g. Label or Group) is used for
-     * filtering. The second dimension defines if the values should
-     * be excluded or the only ones to be included.
+     * defines if the values should be excluded or the only ones
+     * to be included. The second dimension defines in which item
+     * key (e.g. Label or Group) is used for filtering.
      *
      * @param array $item   Item to check
      * @param array $filter Filters
@@ -234,13 +234,13 @@ class EDS extends DefaultRecord
             ? $this->recordConfig->ItemGlobalFilter->toArray() : [];
 
         $filter['exclude']['Label'] =
-            array_merge($filter['exclude']['Label'] ?? [], $globalFilter['excludeLabel'] ?? []);
+            array_merge($globalFilter['excludeLabel'] ?? [], $filter['exclude']['Label'] ?? []);
         $filter['include']['Label'] =
-            array_merge($filter['include']['Label'] ?? [], $globalFilter['includeLabel'] ?? []);
+            array_merge($globalFilter['includeLabel'] ?? [], $filter['include']['Label'] ?? []);
         $filter['exclude']['Group'] =
-            array_merge($filter['exclude']['Group'] ?? [], $globalFilter['excludeGroup'] ?? []);
+            array_merge($globalFilter['excludeGroup'] ?? [], $filter['exclude']['Group'] ?? []);
         $filter['include']['Group'] =
-            array_merge($filter['include']['Group'] ?? [], $globalFilter['includeGroup'] ?? []);
+            array_merge($globalFilter['includeGroup'] ?? [], $filter['include']['Group'] ?? []);
 
         foreach ($filter['exclude'] ?? [] as $itemKey => $filteredItemValues) {
             if (isset($item[$itemKey]) && in_array($item[$itemKey], $filteredItemValues)) {
@@ -259,7 +259,7 @@ class EDS extends DefaultRecord
 
     /**
      * Get the items of the record based on a value of a specific key.
-     * E.g. Label and Author or Group and Au.
+     * E.g. Label and Authors or Group and Au.
      *
      * @param string $itemKey   Key of item used for selection
      * @param string $itemValue Value to be selected
@@ -280,8 +280,8 @@ class EDS extends DefaultRecord
      * @return array
      */
     public function getItems(
-        $filter = []
-    ) {
+        array $filter = []
+    ): array {
         $items = [];
         if (is_array($this->fields['Items'] ?? null)) {
             $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];

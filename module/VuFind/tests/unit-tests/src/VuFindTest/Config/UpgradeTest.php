@@ -538,13 +538,13 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test EDS record data formatter upgrade with mainly legacy default configs in EDS.ini.
+     * Test EDS record data formatter upgrade with legacy default configs in EDS.ini.
      *
      * @return void
      */
     public function testEDSRecordDataFormatterUpgradeSimple(): void
     {
-        $upgrader = $this->getUpgrader('eds');
+        $upgrader = $this->getUpgrader('eds-record-data-formatter-default');
         $upgrader->run();
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
@@ -558,10 +558,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $edsRecordDataFormatterConfig['CoreItems']
         );
         $this->assertEquals(
-            [
-                'extraLineOptions' => ['ResultListAuthors'],
-                'filterExclude' => ['Label:Availability', 'Group:URL'],
-            ],
+            ['extraLineOptions' => ['ResultListAuthors']],
             $edsRecordDataFormatterConfig['ResultListItems']
         );
         $this->assertEquals(
@@ -585,14 +582,13 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test EDS record data formatter upgrade with preexisting EDSRecordDataFormatter.ini
-     * and more changes to legacy configs in EDS.ini.
+     * Test EDS record data formatter upgrade with changes to legacy configs in EDS.ini.
      *
      * @return void
      */
     public function testEDSRecordDataFormatterUpgradeAdvanced(): void
     {
-        $upgrader = $this->getUpgrader('eds2');
+        $upgrader = $this->getUpgrader('eds-record-data-formatter-advanced');
         $upgrader->run();
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
@@ -615,9 +611,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'extraLineOptions' => ['ResultListAuthors'],
-                'filterInclude' => ['Label:Title'],
                 'filterExclude' => [
-                    'Group:AuInfo',
                     'Label:Availability',
                     'Group:Su',
                     'Group:URL',
@@ -629,9 +623,9 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'lineIdentifierKey' => 'Group',
                 'lineIdentifierValue' => 'Au',
-                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
                 'separator' => '; ',
-                'limit' => 7,
+                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'limit' => 5,
             ],
             $edsRecordDataFormatterConfig['CoreAuthors']
         );
@@ -639,9 +633,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'lineIdentifierKey' => 'Group',
                 'lineIdentifierValue' => 'Au',
-                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
-                'limit' => 3,
-                'separator' => ', ',
+                'separator' => '; ',
             ],
             $edsRecordDataFormatterConfig['ResultListAuthors']
         );

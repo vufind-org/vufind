@@ -353,7 +353,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testEscaping
+     * Data provider for testGetItemsFilter.
      *
      * @return array
      */

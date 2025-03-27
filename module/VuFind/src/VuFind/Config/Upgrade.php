@@ -1081,29 +1081,29 @@ class Upgrade
         }
         unset($newEDSConfig['ItemResultListFilter']);
 
-        if (($newEDSConfig['AuthorDisplay']['DetailPageFormat'] ?? 'Long') === 'Short') {
+        if (
+            isset($newEDSConfig['AuthorDisplay']['DetailPageFormat'])
+            && $newEDSConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
+        ) {
             $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:AuInfo';
-            if (!isset($newEDSRecordDataFormatterConfig['CoreAuthors']['limit'])) {
-                $newEDSRecordDataFormatterConfig['CoreAuthors']['limit'] =
-                    $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
-            }
+            $newEDSRecordDataFormatterConfig['CoreAuthors']['alternativeDataMethod'] =
+                'getPrimaryAuthorsWithHighlighting';
+            $newEDSRecordDataFormatterConfig['CoreAuthors']['limit'] =
+                $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
         }
 
         if (
             isset($newEDSConfig['AuthorDisplay']['ResultListFormat'])
-            && ($newEDSRecordDataFormatterConfig['ResultListAuthors']['limit'] ?? null) === 3
         ) {
             if ($newEDSConfig['AuthorDisplay']['ResultListFormat'] === 'Short') {
                 $newEDSRecordDataFormatterConfig['ResultListAuthors']['limit']
                     = $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
             } else {
                 unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['limit']);
+                unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['alternativeDataMethod']);
             }
         }
-
-        if (isset($newEDSConfig['AuthorDisplay'])) {
-            unset($newEDSConfig['AuthorDisplay']);
-        }
+        unset($newEDSConfig['AuthorDisplay']);
 
         // save the file
         $this->saveModifiedConfig('EDS.ini');
