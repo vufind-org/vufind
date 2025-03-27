@@ -208,6 +208,19 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
+     * Get a group key value for the provided filename.
+     *
+     * @param string $file Filename
+     *
+     * @return string
+     */
+    protected function getKeyForFile(string $file): string
+    {
+        $mtime = filemtime($file);
+        return $file . (string)($mtime ?: '');
+    }
+
+    /**
      * Sort assets into groups that can be collapsed using a minifier.
      *
      * @param array  $assets Assets to group
@@ -252,11 +265,11 @@ class AssetPipeline implements LoggerAwareInterface
                 $groupTypeIndex[$groupType] = count($groups);
                 $groups[] = [
                     'items' => [$item],
-                    'key' => $details['path'] . filemtime($details['path']),
+                    'key' => $this->getKeyForFile($details['path']),
                 ];
             } elseif (!in_array($item, $groups[$index]['items'])) {
                 $groups[$index]['items'][] = $item;
-                $groups[$index]['key'] .= $details['path'] . filemtime($details['path']);
+                $groups[$index]['key'] .= $this->getKeyForFile($details['path']);
             }
         }
 

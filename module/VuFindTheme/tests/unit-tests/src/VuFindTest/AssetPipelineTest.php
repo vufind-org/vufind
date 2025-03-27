@@ -163,4 +163,92 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
         $pipeline->expects($this->any())->method('processGroupedAssets')->with($grouped, $type)->willReturn($grouped);
         $this->assertEquals($expectGrouped ? $grouped : $raw, $pipeline->process($raw, $type));
     }
+
+    /**
+     * Data provider for testGroupAssets().
+     *
+     * @return array
+     */
+    public static function groupAssetsProvider(): array
+    {
+        return [
+            'empty css array' => [[], 'css', []],
+            'empty js array' => [[], 'js', []],
+            'simple js links' => [
+                [
+                    ['src' => 'foo.js'],
+                    ['src' => 'bar.js'],
+                ],
+                'js',
+                [
+                    [
+                        'items' => [
+                            ['src' => 'foo.js'],
+                            ['src' => 'bar.js'],
+                        ],
+                        'key' => '/theme/js/foo.js/theme/js/bar.js',
+                    ],
+                ],
+            ],
+            'complex js links' => [
+                [
+                    ['src' => 'foo.js'],
+                    ['src' => 'http://bar.js'],
+                    ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                    ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+                ],
+                'js',
+                [
+                    [
+                        'items' => [
+                            ['src' => 'foo.js'],
+                        ],
+                        'key' => '/theme/js/foo.js',
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['src' => 'http://bar.js'],
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test asset gruping.
+     *
+     * @param array  $assets                Assets to process
+     * @param string $type                  Asset type
+     * @param array  $expectedGroupedAssets Expected processed assets
+     *
+     * @return void
+     *
+     * @dataProvider groupAssetsProvider
+     */
+    public function testGroupAssets(array $assets, string $type, array $expectedGroupedAssets): void
+    {
+        $themeInfo = $this->createMock(ThemeInfo::class);
+        $themeInfo->method('findContainingTheme')->willReturnCallback(
+            function ($path) {
+                return ['path' => "/theme/$path"];
+            }
+        );
+        $pipeline = $this->getMockPipeline(
+            themeInfo: $themeInfo,
+            methods: ['getKeyForFile', 'isPipelineAvailable', 'processGroupedAssets']
+        );
+        $pipeline->method('isPipelineAvailable')->willReturn(true);
+        $pipeline->method('getKeyForFile')->willReturnCallback(fn ($file) => $file);
+        $pipeline->expects($this->once())->method('processGroupedAssets')->with($expectedGroupedAssets, $type)
+            ->willReturn([]);
+        $pipeline->process($assets, $type);
+    }
 }
