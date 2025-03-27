@@ -157,7 +157,7 @@ class MenuCommand extends Command
                 $menu = [];
                 if (count($options) > 0) {
                     foreach ($options as $i => $currentOption) {
-                        if ($currentOption['type'] ?? 'string' === 'no-value') {
+                        if (($currentOption['type'] ?? 'string') === 'no-value') {
                             $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? false) ? 'ON' : 'OFF';
                         } else {
                             $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? '--unset--');
