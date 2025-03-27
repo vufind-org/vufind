@@ -259,7 +259,7 @@ trait HoldsTrait
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
             ? $this->getUser()->getHomeLibrary() : '';
-        // helpText is only for backward compatibility:
+        // helpText is only for backward compatibility with legacy code:
         $helpText = $helpTextHtml = $checkHolds['helpText'];
 
         $view = $this->createViewModel(

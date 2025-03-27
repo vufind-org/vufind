@@ -188,7 +188,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Maintaining this method for backwards compatibility;
+     * Maintaining this method for backwards compatibility with legacy code;
      * logic moved to parent and method re-named
      *
      * @return void

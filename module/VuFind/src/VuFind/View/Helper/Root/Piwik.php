@@ -120,7 +120,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      * @param string|bool                         $url        Piwik address
      * (false if disabled)
      * @param int|array                           $options    Options array (or,
-     * if a single value, the Piwik site ID -- for backward compatibility)
+     * if a single value, the Piwik site ID -- for legacy backward compatibility)
      * @param bool                                $customVars Whether to track
      * additional information in custom variables
      * @param Laminas\Router\Http\RouteMatch      $router     Request

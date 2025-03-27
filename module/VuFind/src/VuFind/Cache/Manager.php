@@ -217,7 +217,7 @@ class Manager implements LoggerAwareInterface
     public function getCacheDir($allowCliOverride = true)
     {
         if (isset($this->defaults['cache_dir'])) {
-            // cache_dir setting in config.ini is obsolete
+            // Handle legacy configuration: cache_dir setting in config.ini is obsolete
             throw new \Exception(
                 'Obsolete cache_dir setting found in config.ini - please use '
                 . 'Apache environment variable VUFIND_CACHE_DIR in '

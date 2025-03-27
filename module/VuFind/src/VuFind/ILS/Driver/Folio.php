@@ -1114,7 +1114,7 @@ class Folio extends AbstractAPI implements
      * current loan, adjusting the timezone and formatting in universal
      * time with or without due time
      *
-     * @param \stdClass|string $loan     The current loan, or its itemId for backwards compatibility
+     * @param \stdClass|string $loan     The current loan, or its itemId for legacy backwards compatibility
      * @param bool             $showTime Determines if date or date & time is returned
      *
      * @return string

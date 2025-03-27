@@ -1163,7 +1163,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $config = $this->checkCapability('getConfig', ['Holdings', $params])
             ? $this->getDriver()->getConfig('Holdings', $params) : [];
         if (empty($config['itemLimit'])) {
-            // Use itemLimit in Holds as fallback for backward compatibility:
+            // Use itemLimit in Holds as fallback for backward compatibility with legacy configs:
             $config
                 = $this->checkCapability('getConfig', ['Holds', $params])
                 ? $this->getDriver()->getConfig('Holds', $params) : [];

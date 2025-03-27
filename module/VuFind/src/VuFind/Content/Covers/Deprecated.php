@@ -2,7 +2,7 @@
 
 /**
  * Deprecated cover content loader (for backward-compatibility with deprecated
- * settings).
+ * legacy settings).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Content\Covers;
 
 /**
  * Deprecated cover content loader (for backward-compatibility with deprecated
- * settings).
+ * legacy settings).
  *
  * @category VuFind
  * @package  Content
