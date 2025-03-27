@@ -1,4 +1,4 @@
-# This configuration file controls the menu displayed by thhe menu/menu console command.
+# This configuration file controls the menu displayed by the menu/menu console command.
 # It must begin with a "main:" container; all of its contents must be either nested submenus
 # or commands.
 #
