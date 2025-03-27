@@ -14,6 +14,7 @@
 #   Purpose: Run a command-line command
 #   Attributes:
 #     - command (required): the command to run (relative to VUFIND_HOME)
+#     - winCommand (optional): an override of command to use on Windows platforms.
 #     - arguments (optional): a list of arguments for the command. Each entry contains:
 #         - label (required): A description of the argument
 #         - required (optional): Set to true if the argument is required
@@ -39,6 +40,7 @@ main:
         - label: Import MARC
           type: external-command
           command: import-marc.sh
+          winCommand: import-marc.bat
           arguments:
             - label: Filename
               required: true

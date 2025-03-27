@@ -210,7 +210,9 @@ class MenuCommand extends Command
         }
 
         // Run the command:
-        if (isset($config['command'])) {
+        if (PHP_OS_FAMILY === 'Windows' && isset($config['winCommand'])) {
+            $baseCommand = APPLICATION_PATH . '\\' . $config['winCommand'];
+        } elseif (isset($config['command'])) {
             $baseCommand = APPLICATION_PATH . '/' . $config['command'];
         } elseif (isset($config['phpCommand'])) {
             $baseCommand = 'php ' . APPLICATION_PATH . '/' . $config['phpCommand'];
