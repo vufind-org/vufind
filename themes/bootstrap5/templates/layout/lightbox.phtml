@@ -6,6 +6,6 @@
   echo $this->assetManager()->outputInlineScriptString(
       script: 'VuFind.account.clearAllCaches();',
       attrs: ['data-lightbox-run' => 'always'],
-      allowArbitraryAttrs: true
+      options: ['allow_arbitrary_attributes' => true]
   );
 }

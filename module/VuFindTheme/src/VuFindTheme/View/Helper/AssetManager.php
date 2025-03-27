@@ -29,6 +29,8 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Laminas\View\Helper\HeadScript;
+
 /**
  * Asset manager view helper (for pre-processing, combining when appropriate, etc.)
  *
@@ -40,6 +42,13 @@ namespace VuFindTheme\View\Helper;
  */
 class AssetManager extends \Laminas\View\Helper\AbstractHelper
 {
+    /**
+     * Should we allow arbitrary attributes on scripts by default?
+     *
+     * @var bool
+     */
+    protected bool $allowArbitraryScriptAttributesByDefault = false;
+
     /**
      * Add raw CSS to the pipeline.
      *
@@ -118,13 +127,33 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Apply the appropriate arbitraryAttributesAllowed value to the provided view helper, using global
+     * default and any override options. If the value was changed, return the original value that should be
+     * restored after processing.
+     *
+     * @param HeadScript $helper  View helper to configure (supports InlineScript and FootScript as well)
+     * @param array      $options Options array to evaluate
+     *
+     * @return ?bool
+     */
+    protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): ?bool
+    {
+        $newValue = $options['allow_arbitrary_attributes'] ?? $this->allowArbitraryScriptAttributesByDefault;
+        $resetValue = null;
+        if ($helper->arbitraryAttributesAllowed() !== $newValue) {
+            $helper->setAllowArbitraryAttributes($newValue);
+            $resetValue = !$newValue;
+        }
+        return $resetValue;
+    }
+
+    /**
      * Append raw script code.
      *
-     * @param string $script              Script code
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (not yet used; for forward-compatibility)
+     * @param string $script   Script code
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return static
      *
@@ -133,22 +162,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     public function appendScriptString(
         string $script,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$helper->arbitraryAttributesAllowed()) {
-            $helper->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->appendScript($script, $type, $attrs);
-        if ($resetArbitraryAttributes) {
-            $helper->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $this;
     }
@@ -156,11 +180,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Add an entry to the list of script files.
      *
-     * @param string $src                 Script src
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (not yet used; for forward-compatibility)
+     * @param string $src      Script src
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return static
      *
@@ -169,22 +192,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     public function appendScriptLink(
         string $src,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$helper->arbitraryAttributesAllowed()) {
-            $helper->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->appendFile($src, $type, $attrs);
-        if ($resetArbitraryAttributes) {
-            $helper->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $this;
     }
@@ -192,11 +210,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Forcibly prepend a file, removing it from any existing position.
      *
-     * @param string $src                 Script src
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (not yet used; for forward-compatibility)
+     * @param string $src      Script src
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return static
      *
@@ -205,22 +222,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     public function forcePrependScriptLink(
         string $src,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$helper->arbitraryAttributesAllowed()) {
-            $helper->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->forcePrependFile($src, $type, $attrs);
-        if ($resetArbitraryAttributes) {
-            $helper->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $this;
     }
@@ -228,11 +240,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Prepend raw script code.
      *
-     * @param string $script              Script code
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (not yet used; for forward-compatibility)
+     * @param string $script   Script code
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return static
      *
@@ -241,22 +252,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     public function prependScriptString(
         string $script,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$helper->arbitraryAttributesAllowed()) {
-            $helper->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->prependScript($script, $type, $attrs);
-        if ($resetArbitraryAttributes) {
-            $helper->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $this;
     }
@@ -288,29 +294,25 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Output an inline script.
      *
-     * @param string $script              Script code
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $script  Script code
+     * @param array  $attrs   Additional attributes for the script tag
+     * @param array  $options Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return string
      */
     public function outputInlineScriptString(
         string $script,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false
+        array $options = []
     ): string {
         $inlineScript = $this->getView()->plugin('inlineScript');
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$inlineScript->arbitraryAttributesAllowed()) {
-            $inlineScript->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setScript($script, $type, $attrs);
         $result = ($inlineScript)();
-        if ($resetArbitraryAttributes) {
-            $inlineScript->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
@@ -318,29 +320,25 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Output an inline script file.
      *
-     * @param string $src                 Script src
-     * @param array  $attrs               Array of script attributes
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $src     Script src
+     * @param array  $attrs   Additional attributes for the script tag
+     * @param array  $options Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return string
      */
     public function outputInlineScriptLink(
         string $src,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false
+        array $options = []
     ): string {
         $inlineScript = $this->getView()->plugin('inlineScript');
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$inlineScript->arbitraryAttributesAllowed()) {
-            $inlineScript->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setFile($src, $type, $attrs);
         $result = ($inlineScript)();
-        if ($resetArbitraryAttributes) {
-            $inlineScript->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
