@@ -174,6 +174,46 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
         return [
             'empty css array' => [[], 'css', []],
             'empty js array' => [[], 'js', []],
+            'simple css links' => [
+                [
+                    ['href' => 'foo.css'],
+                    ['href' => 'bar.css'],
+                ],
+                'css',
+                [
+                    [
+                        'items' => [
+                            ['href' => 'foo.css'],
+                            ['href' => 'bar.css'],
+                        ],
+                        'key' => '/theme/css/foo.css/theme/css/bar.css',
+                    ],
+                ],
+            ],
+            'complex css links' => [
+                [
+                    ['href' => 'foo.css'],
+                    ['href' => 'http://bar.css'],
+                    ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+                ],
+                'css',
+                [
+                    [
+                        'items' => [
+                            ['href' => 'foo.css'],
+                        ],
+                        'key' => '/theme/css/foo.css',
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['href' => 'http://bar.css'],
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+                    ],
+                ],
+            ],
             'simple js links' => [
                 [
                     ['src' => 'foo.js'],
