@@ -127,24 +127,22 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Apply the appropriate arbitraryAttributesAllowed value to the provided view helper, using global
-     * default and any override options. If the value was changed, return the original value that should be
-     * restored after processing.
+     * Turn on the arbitraryAttributesAllowed behavior only if necessary.
      *
      * @param HeadScript $helper  View helper to configure (supports InlineScript and FootScript as well)
      * @param array      $options Options array to evaluate
      *
-     * @return ?bool
+     * @return void
      */
-    protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): ?bool
+    protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): void
     {
+        // Because of the workflow of the 10.x code, we have to turn the setting on and leave it on if ANY
+        // scripts require it. This logic will be refined and better restricted when things are refactored
+        // in 11.0.
         $newValue = $options['allow_arbitrary_attributes'] ?? $this->allowArbitraryScriptAttributesByDefault;
-        $resetValue = null;
-        if ($helper->arbitraryAttributesAllowed() !== $newValue) {
+        if ($newValue && $helper->arbitraryAttributesAllowed() !== $newValue) {
             $helper->setAllowArbitraryAttributes($newValue);
-            $resetValue = !$newValue;
         }
-        return $resetValue;
     }
 
     /**
@@ -167,13 +165,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
+        $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->appendScript($script, $type, $attrs);
-        if ($resetArbitraryAttributes !== null) {
-            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $this;
     }
 
@@ -197,13 +192,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
+        $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->appendFile($src, $type, $attrs);
-        if ($resetArbitraryAttributes !== null) {
-            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $this;
     }
 
@@ -227,13 +219,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
+        $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->forcePrependFile($src, $type, $attrs);
-        if ($resetArbitraryAttributes !== null) {
-            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $this;
     }
 
@@ -257,13 +246,10 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($helper, $options);
+        $this->applyArbitraryScriptAttributesOption($helper, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $helper->prependScript($script, $type, $attrs);
-        if ($resetArbitraryAttributes !== null) {
-            $helper->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $this;
     }
 
@@ -306,14 +292,11 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         array $options = []
     ): string {
         $inlineScript = $this->getView()->plugin('inlineScript');
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setScript($script, $type, $attrs);
         $result = ($inlineScript)();
-        if ($resetArbitraryAttributes !== null) {
-            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $result;
     }
 
@@ -332,14 +315,11 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         array $options = []
     ): string {
         $inlineScript = $this->getView()->plugin('inlineScript');
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setFile($src, $type, $attrs);
         $result = ($inlineScript)();
-        if ($resetArbitraryAttributes !== null) {
-            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $result;
     }
 
