@@ -460,13 +460,15 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Return a URL to a thumbnail preview of the record, if available; false
-     * otherwise.
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
      *
      * @param string $size Size of thumbnail (small, medium or large -- small is
      * default).
      *
-     * @return string
+     * @return string|array|bool
      */
     public function getThumbnail($size = 'small')
     {
@@ -475,7 +477,7 @@ class EDS extends DefaultRecord
                 return $image['Target'] ?? '';
             }
         }
-        return false;
+        return parent::getThumbnail($size);
     }
 
     /**
