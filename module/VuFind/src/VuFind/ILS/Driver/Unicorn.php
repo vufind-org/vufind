@@ -126,7 +126,7 @@ class Unicorn extends AbstractBase implements
         // allow user to specify the full url to the Sirsi side perl script
         $this->url = $this->config['Catalog']['url'];
 
-        // host/port/search_prog kept for backward compatibility
+        // host/port/search_prog kept for backward compatibility with legacy configs
         if (
             isset($this->config['Catalog']['host'])
             && isset($this->config['Catalog']['port'])

@@ -87,7 +87,7 @@ class IdentifierLinksLookup extends AbstractBase
         protected RendererInterface $viewRenderer,
         array $config
     ) {
-        // DOI config section is supported as a fallback for back-compatibility:
+        // DOI config section is supported as a legacy fallback for back-compatibility:
         $idConfig = $config['IdentifierLinks'] ?? $config['DOI'] ?? [];
         $this->resolvers
             = array_map('trim', explode(',', $idConfig['resolver'] ?? ''));

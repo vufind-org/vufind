@@ -5,7 +5,7 @@
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))->add($this->translate('Loan History'), active: true);
 
-  $this->headScript()->appendFile('checkouts.js');
+  $this->assetManager()->appendScriptLink('checkouts.js');
 ?>
 
 <?=$this->component('show-account-menu-button')?>
