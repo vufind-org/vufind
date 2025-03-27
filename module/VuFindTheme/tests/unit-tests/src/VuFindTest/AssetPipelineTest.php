@@ -34,6 +34,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
+use function count;
+
 /**
  * AssetPipeline Test Class
  *
@@ -263,7 +265,7 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test asset gruping.
+     * Test asset grouping.
      *
      * @param array  $assets                Assets to process
      * @param string $type                  Asset type
@@ -290,5 +292,127 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
         $pipeline->expects($this->once())->method('processGroupedAssets')->with($expectedGroupedAssets, $type)
             ->willReturn([]);
         $pipeline->process($assets, $type);
+    }
+
+    /**
+     * Data provider for testProcessGroupedAssets().
+     *
+     * @return array[]
+     */
+    public static function processGroupedAssetsProvider(): array
+    {
+        return [
+            'simple css links' => [
+                [
+                    [
+                        'items' => [
+                            ['href' => 'foo.css'],
+                            ['href' => 'bar.css'],
+                        ],
+                        'key' => '/theme/css/foo.css/theme/css/bar.css',
+                    ],
+                ],
+                'css',
+                [
+                    ['href' => '2-css'],
+                ],
+            ],
+            'complex css links' => [
+                [
+                    [
+                        'items' => [
+                            ['href' => 'foo.css'],
+                        ],
+                        'key' => '/theme/css/foo.css',
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['href' => 'http://bar.css'],
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+                    ],
+                ],
+                'css',
+                [
+                    ['href' => '1-css'],
+                    ['href' => 'http://bar.css'],
+                    ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+                ],
+            ],
+            'simple js links' => [
+                [
+                    [
+                        'items' => [
+                            ['src' => 'foo.js'],
+                            ['src' => 'bar.js'],
+                        ],
+                        'key' => '/theme/js/foo.js/theme/js/bar.js',
+                    ],
+                ],
+                'js',
+                [
+                    ['src' => '2-js'],
+                ],
+            ],
+            'complex js links' => [
+                [
+                    [
+                        'items' => [
+                            ['src' => 'foo.js'],
+                        ],
+                        'key' => '/theme/js/foo.js',
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['src' => 'http://bar.js'],
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                    ],
+                    [
+                        'other' => true,
+                        'item' => ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+                    ],
+                ],
+                'js',
+                [
+                    ['src' => '1-js'],
+                    ['src' => 'http://bar.js'],
+                    ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                    ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+                ],
+            ],
+
+        ];
+    }
+
+    /**
+     * Test processing of grouped assets.
+     *
+     * @param array  $groupedAssets  Grouped assets to process
+     * @param string $type           Asset type
+     * @param array  $expectedResult Expected final result
+     *
+     * @return void
+     *
+     * @dataProvider processGroupedAssetsProvider
+     */
+    public function testProcessGroupedAssets(array $groupedAssets, string $type, array $expectedResult): void
+    {
+        $pipeline = $this->getMockPipeline(
+            methods: ['getConcatenatedFilePath', 'groupAssets', 'isPipelineAvailable']
+        );
+        $pipeline->method('isPipelineAvailable')->willReturn(true);
+        $pipeline->method('getConcatenatedFilePath')->willReturnCallback(
+            function ($group, $type) {
+                return count($group['items'] ?? []) . '-' . $type;
+            }
+        );
+        $fakeAssets = [];
+        $pipeline->expects($this->once())->method('groupAssets')->with($fakeAssets, $type)->willReturn($groupedAssets);
+        $this->assertEquals($expectedResult, $pipeline->process($fakeAssets, $type));
     }
 }
