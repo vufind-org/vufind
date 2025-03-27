@@ -45,10 +45,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $css        Raw CSS.
      * @param array  $attributes Extra attributes for style tag
+     * @param array  $options    Additional options (not yet used; for forward-compatibility)
      *
      * @return static
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function appendStyleString(string $css, array $attributes = []): static
+    public function appendStyleString(string $css, array $attributes = [], array $options = []): static
     {
         $this->getView()->plugin('headStyle')->appendStyle($css, $attributes);
         return $this;
@@ -61,14 +64,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $media                 Media
      * @param string $conditionalStylesheet Any conditions
      * @param array  $extras                Array of extra attributes
+     * @param array  $options               Additional options (not yet used; for forward-compatibility)
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function appendStyleLink(
         string $href,
         string $media = 'screen',
         string $conditionalStylesheet = '',
-        array $extras = []
+        array $extras = [],
+        array $options = []
     ): static {
         $this->getView()->plugin('headLink')->appendStylesheet($href, $media, $conditionalStylesheet, $extras);
         return $this;
@@ -81,14 +88,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $media                 Media
      * @param string $conditionalStylesheet Any conditions
      * @param array  $extras                Array of extra attributes
+     * @param array  $options               Additional options (not yet used; for forward-compatibility)
      *
      * @return static
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function forcePrependStyleLink(
         string $href,
         string $media = 'screen',
         string $conditionalStylesheet = '',
-        array $extras = []
+        array $extras = [],
+        array $options = []
     ): static {
         $this->getView()->plugin('headLink')->forcePrependStylesheet($href, $media, $conditionalStylesheet, $extras);
         return $this;
@@ -113,14 +124,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (not yet used; for forward-compatibility)
      *
      * @return static
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function appendScriptString(
         string $script,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
@@ -145,14 +160,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (not yet used; for forward-compatibility)
      *
      * @return static
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function appendScriptLink(
         string $src,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
@@ -177,14 +196,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (not yet used; for forward-compatibility)
      *
      * @return static
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function forcePrependScriptLink(
         string $src,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
@@ -209,14 +232,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param array  $attrs               Additional attributes for the script tag
      * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
      * @param string $position            Position to output script (header or footer)
+     * @param array  $options             Additional options (not yet used; for forward-compatibility)
      *
      * @return static
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function prependScriptString(
         string $script,
         array $attrs = [],
         bool $allowArbitraryAttrs = false,
-        string $position = 'header'
+        string $position = 'header',
+        array $options = []
     ): static {
         $helperName = $position === 'header' ? 'headScript' : 'footScript';
         $helper = $this->getView()->plugin($helperName);
