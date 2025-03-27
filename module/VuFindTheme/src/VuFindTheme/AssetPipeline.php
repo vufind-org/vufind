@@ -111,10 +111,10 @@ class AssetPipeline implements LoggerAwareInterface
     protected function isPipelineEnabledForType(string $fileType): bool
     {
         $config = $this->pipelineConfig;
-        if ($config === false || $config == 'off' || $config == 'false' || $config === '0') {
+        if ($config === false || $config === 'off' || $config === 'false' || $config === '0') {
             return false;
         }
-        if ($config == '*' || $config == 'on' || $config == 'true' || $config === true || $config === '1') {
+        if ($config == '*' || $config === 'on' || $config === 'true' || $config === true || $config === '1') {
             return true;
         }
         $settings = array_map('trim', explode(',', $config));
