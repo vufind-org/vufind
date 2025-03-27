@@ -516,7 +516,7 @@ class Params
             $lookfor = $lookfor[0];
         }
 
-        // Flatten type arrays for backward compatibility:
+        // Flatten type arrays for backward compatibility with legacy URLs:
         $handler = $request->get('type');
         if (is_array($handler)) {
             $handler = $handler[0];

@@ -47,7 +47,7 @@
       ]
   );
   $recommendations = $this->results->getRecommendations('side');
-  $this->headScript()->appendScript('var multiFacetsSelection = "' . $this->multiFacetsSelection . '";');
+  $this->assetManager()->appendScriptString('var multiFacetsSelection = "' . $this->multiFacetsSelection . '";');
 ?>
 
 <h1 class="visually-hidden"><?=$this->escapeHtml($headTitle)?></h1>

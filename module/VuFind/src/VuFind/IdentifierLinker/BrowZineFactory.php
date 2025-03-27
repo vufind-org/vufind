@@ -100,7 +100,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         }
         $search = $container->get(\VuFindSearch\Service::class);
         $fullConfig = $container->get(\VuFind\Config\PluginManager::class)->get('BrowZine')->toArray();
-        // DOI config section is supported as a fallback for back-compatibility:
+        // DOI config section is supported as a fallback for legacy back-compatibility:
         $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
 
         return new $requestedName(

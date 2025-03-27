@@ -217,7 +217,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
      * @param string   $id     ID of given record (not currently used, but
-     * retained for backward compatibility / extensibility).
+     * retained for legacy backward compatibility / extensibility).
      * @param ParamBag $params Parameters
      *
      * @return string

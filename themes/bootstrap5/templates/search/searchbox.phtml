@@ -125,10 +125,10 @@
           ><?=$this->icon('ui-reset-search');?></button>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
-            $this->headScript()->appendFile('vendor/js.cookie.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard/index.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard-layouts/index.js');
-            $this->headLink()->appendStylesheet('vendor/simple-keyboard/index.css');
+            $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
+            $this->assetManager()->appendScriptLink('vendor/simple-keyboard/index.js');
+            $this->assetManager()->appendScriptLink('vendor/simple-keyboard-layouts/index.js');
+            $this->assetManager()->appendStyleLink('vendor/simple-keyboard/index.css');
             ?>
             <div class="keyboard-selection dropdown">
               <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

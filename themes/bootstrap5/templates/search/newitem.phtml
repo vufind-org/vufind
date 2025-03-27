@@ -6,7 +6,7 @@
     $this->breadcrumbs()->set($this->translate('New Items'), active: true);
 
     // Load advanced search Javascript to activate the clear button:
-    $this->headScript()->appendFile('advanced_search.js');
+    $this->assetManager()->appendScriptLink('advanced_search.js');
 
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();

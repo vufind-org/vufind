@@ -116,4 +116,4 @@
       });
       JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $changeHandler, 'SET');
+<?=$this->assetManager()->outputInlineScriptString($changeHandler);
