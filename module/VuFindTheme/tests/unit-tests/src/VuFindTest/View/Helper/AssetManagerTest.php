@@ -92,7 +92,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         $inlineScriptHelper->method('__invoke')->willReturn('output');
         $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
         $assetManager = $view->plugin('assetManager');
-        $this->assertEquals('output', $assetManager->outputInlineScriptLink($script, $attrs, $arbitrary));
+        $options = ['allow_arbitrary_attributes' => $arbitrary];
+        $this->assertEquals('output', $assetManager->outputInlineScriptLink($script, $attrs, $options));
     }
 
     /**
@@ -122,7 +123,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         $inlineScriptHelper->method('__invoke')->willReturn('output');
         $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
         $assetManager = $view->plugin('assetManager');
-        $this->assertEquals('output', $assetManager->outputInlineScriptString($script, $attrs, $arbitrary));
+        $options = ['allow_arbitrary_attributes' => $arbitrary];
+        $this->assertEquals('output', $assetManager->outputInlineScriptString($script, $attrs, $options));
     }
 
     /**
@@ -152,17 +154,18 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         $manager->setView($this->getPhpRenderer());
         $manager->appendScriptString('foo')
             ->appendScriptLink('foo.js')
-            ->prependScriptString('bar', ['attr'], true);
+            ->prependScriptString('bar', ['attr'], options: ['allow_arbitrary_attributes' => true]);
         $this->assertEquals("bar/attr/1\nfoo//0\nfoo.js//0", trim($manager->outputHeaderAssets()));
         $manager->forcePrependScriptLink('bar.js')
-            ->forcePrependScriptLink('foo.js', ['attr1'], true);
+            ->forcePrependScriptLink('foo.js', ['attr1'], options: ['allow_arbitrary_attributes' => true]);
         $this->assertEquals("foo.js/attr1/1\nbar.js//0\nbar/attr/1\nfoo//0", trim($manager->outputHeaderAssets()));
         $manager->appendScriptString('foot1', position: 'footer')
             ->prependScriptString('foot0', position: 'footer')
             ->appendScriptLink('foot.js', position: 'footer')
             ->forcePrependScriptLink('pre-foot.js', position: 'footer');
         $this->assertEquals("pre-foot.js//0\nfoot0//0\nfoot1//0\nfoot.js//0", trim($manager->outputFooterAssets()));
-        $manager->clearScriptList()->appendScriptString('xyzzy', ['foo'], true);
+        $manager->clearScriptList()
+            ->appendScriptString('xyzzy', ['foo'], options: ['allow_arbitrary_attributes' => true]);
         $this->assertEquals('xyzzy/foo/1', trim($manager->outputHeaderAssets()));
         $this->assertEquals('', trim($manager->outputFooterAssets()));
     }

@@ -29,6 +29,7 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Laminas\View\Helper\HeadScript;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
@@ -65,6 +66,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @var array
      */
     protected $stylesheets;
+
+    /**
+     * Should we allow arbitrary attributes on scripts by default?
+     *
+     * @var bool
+     */
+    protected bool $allowArbitraryScriptAttributesByDefault = false;
 
     /**
      * Constructor
@@ -160,68 +168,83 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Apply the appropriate arbitraryAttributesAllowed value to the provided view helper, using global
+     * default and any override options. If the value was changed, return the original value that should be
+     * restored after processing.
+     *
+     * @param HeadScript $helper  View helper to configure (note that InlineScript is a child of HeadScript)
+     * @param array      $options Options array to evaluate
+     *
+     * @return ?bool
+     */
+    protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): ?bool
+    {
+        $newValue = $options['allow_arbitrary_attributes'] ?? $this->allowArbitraryScriptAttributesByDefault;
+        $resetValue = null;
+        if ($helper->arbitraryAttributesAllowed() !== $newValue) {
+            $helper->setAllowArbitraryAttributes($newValue);
+            $resetValue = !$newValue;
+        }
+        return $resetValue;
+    }
+
+    /**
      * Append raw script code.
      *
-     * @param string $script              Script code
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (supported: exclude_from_pipeline)
+     * @param string $script   Script code
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
      */
     public function appendScriptString(
         string $script,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
-        $this->scripts[$position][] = compact('script', 'attrs', 'allowArbitraryAttrs', 'options');
+        $this->scripts[$position][] = compact('script', 'attrs', 'options');
         return $this;
     }
 
     /**
      * Add an entry to the list of script files.
      *
-     * @param string $src                 Script src
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (supported: exclude_from_pipeline)
+     * @param string $src      Script src
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
      */
     public function appendScriptLink(
         string $src,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
-        $this->scripts[$position][] = compact('src', 'attrs', 'allowArbitraryAttrs', 'options');
+        $this->scripts[$position][] = compact('src', 'attrs', 'options');
         return $this;
     }
 
     /**
      * Forcibly prepend a file, removing it from any existing position.
      *
-     * @param string $src                 Script src
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (supported: exclude_from_pipeline)
+     * @param string $src      Script src
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
      */
     public function forcePrependScriptLink(
         string $src,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
-        $newScripts = [compact('src', 'attrs', 'allowArbitraryAttrs', 'options')];
+        $newScripts = [compact('src', 'attrs', 'options')];
         foreach ($this->scripts[$position] as $script) {
             if (($script['src'] ?? null) !== $newScripts[0]['src']) {
                 $newScripts[] = $script;
@@ -234,22 +257,20 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Prepend raw script code.
      *
-     * @param string $script              Script code
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
-     * @param string $position            Position to output script (header or footer)
-     * @param array  $options             Additional options (supported: exclude_from_pipeline)
+     * @param string $script   Script code
+     * @param array  $attrs    Additional attributes for the script tag
+     * @param string $position Position to output script (header or footer)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
      */
     public function prependScriptString(
         string $script,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false,
         string $position = 'header',
         array $options = []
     ): static {
-        array_unshift($this->scripts[$position], compact('script', 'attrs', 'allowArbitraryAttrs', 'options'));
+        array_unshift($this->scripts[$position], compact('script', 'attrs', 'options'));
         return $this;
     }
 
@@ -298,17 +319,17 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         $output = [];
         $processedScripts = $this->pipeline->process($this->scripts[$position], 'js');
         foreach ($processedScripts as $script) {
-            $allowArbitrary = $script['allowArbitraryAttrs'] ?? false;
+            $options = $script['options'] ?? [];
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
-                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs'], $allowArbitrary);
+                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs'], $options);
             } else {
                 if ($this->isRelativePath($script['src'])) {
                     if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
                         $script['src'] = $themePath;
                     }
                 }
-                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs'], $allowArbitrary);
+                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs'], $options);
             }
         }
         return implode("\n", $output);
@@ -360,32 +381,28 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Output an inline script.
      *
-     * @param string $script              Script code
-     * @param array  $attrs               Additional attributes for the script tag
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $script  Script code
+     * @param array  $attrs   Additional attributes for the script tag
+     * @param array  $options Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return string
      */
     public function outputInlineScriptString(
         string $script,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false
+        array $options = []
     ): string {
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
         $inlineScript = $this->getView()->plugin('inlineScript');
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$inlineScript->arbitraryAttributesAllowed()) {
-            $inlineScript->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setScript($script, $type, $attrs);
         $result = ($inlineScript)();
-        if ($resetArbitraryAttributes) {
-            $inlineScript->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
@@ -393,16 +410,16 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Output an inline script file.
      *
-     * @param string $src                 Script src
-     * @param array  $attrs               Array of script attributes
-     * @param bool   $allowArbitraryAttrs Should we allow arbitrary attributes in $attrs?
+     * @param string $src     Script src
+     * @param array  $attrs   Additional attributes for the script tag
+     * @param array  $options Additional options (supported option: allow_arbitrary_attributes)
      *
      * @return string
      */
     public function outputInlineScriptLink(
         string $src,
         array $attrs = [],
-        bool $allowArbitraryAttrs = false
+        array $options = []
     ): string {
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
@@ -411,17 +428,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }
-        $resetArbitraryAttributes = false;
-        if ($allowArbitraryAttrs && !$inlineScript->arbitraryAttributesAllowed()) {
-            $inlineScript->setAllowArbitraryAttributes(true);
-            $resetArbitraryAttributes = true;
-        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setFile($src, $type, $attrs);
         $result = ($inlineScript)();
-        if ($resetArbitraryAttributes) {
-            $inlineScript->setAllowArbitraryAttributes(false);
+        if ($resetArbitraryAttributes !== null) {
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }

@@ -87,9 +87,9 @@
         $this->assetManager()->appendScriptLink('account_ajax.js');
         if ($this->session()->put('reset_account_status', null)) {
           $this->assetManager()->appendScriptString(
-              'VuFind.account.clearAllCaches();',
-              ['data-lightbox-run' => 'always'],
-              true
+              script: 'VuFind.account.clearAllCaches();',
+              attrs: ['data-lightbox-run' => 'always'],
+              options: ['allow_arbitrary_attributes' => true]
           );
         }
       }
