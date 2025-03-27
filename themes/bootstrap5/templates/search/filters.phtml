@@ -11,6 +11,7 @@
   $options = $this->searchOptions($this->searchClassId);
   $hasDefaultsApplied = $params->hasDefaultsApplied();
   $filterCount = $this->searchbox()->getFilterCount($this->checkboxFilters, $this->filterList);
+  $fromSearchMemory ??= false;
 
   // Determine whether the only filters applied are the default ones; this controls
   // when we display or hide the reset button:

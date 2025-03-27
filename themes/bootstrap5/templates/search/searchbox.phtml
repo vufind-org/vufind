@@ -115,7 +115,14 @@
       <div class="searchForm-query">
         <input<?=$this->htmlAttributes($searchboxAttributes)?>>
         <div id="searchForm_controls">
-          <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+          <button
+            id="searchForm-reset"
+            class="searchForm-reset hidden"
+            tabindex="-1"
+            type="button"
+            title="<?=$this->transEscAttr('searchform_reset_button')?>"
+            aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"
+          ><?=$this->icon('ui-reset-search');?></button>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
             $this->headScript()->appendFile('vendor/js.cookie.js');
