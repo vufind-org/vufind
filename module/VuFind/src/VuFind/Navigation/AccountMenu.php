@@ -69,7 +69,7 @@ class AccountMenu extends AbstractMenu
         protected ?OverdriveConnector $overdriveConnector,
     ) {
         if (isset($config['MenuItems'])) {
-            // backward compatibility for outdated AccountMenu configurations
+            // backward compatibility for outdated legacy AccountMenu configurations
             $default = static::getDefaultMenuConfig();
             $default['Account']['MenuItems'] = $config['MenuItems'];
             $config = $default;

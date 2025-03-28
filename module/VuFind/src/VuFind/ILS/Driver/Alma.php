@@ -417,7 +417,7 @@ class Alma extends AbstractBase implements
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
                     'holdings_id' => $holdingId,
-                    'holding_id' => $holdingId, // deprecated, retained for backward compatibility
+                    'holding_id' => $holdingId, // deprecated, retained for legacy backward compatibility
                     'holdtype' => 'auto',
                     'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
@@ -464,7 +464,7 @@ class Alma extends AbstractBase implements
         $level = $data['level'] ?? 'copy';
         if ('copy' === $level) {
             // Call the request-options API for the logged-in user; note that holding_id
-            // is deprecated but retained for backward compatibility.
+            // is deprecated but retained for legacy backward compatibility.
             $requestOptionsPath = '/bibs/' . rawurlencode($id)
                 . '/holdings/' . rawurlencode($data['holdings_id'] ?? $data['holding_id'])
                 . '/items/' . rawurlencode($data['item_id']) . '/request-options?user_id='
@@ -1453,7 +1453,7 @@ class Alma extends AbstractBase implements
 
             // Set default value for "itemLimit" in Alma driver
             if ($function === 'Holdings') {
-                // Use itemLimit in Holds as fallback for backward compatibility
+                // Use itemLimit in Holds as fallback for backward compatibility with legacy configs
                 $functionConfig['itemLimit'] = ($functionConfig['itemLimit']
                     ?? $this->config['Holds']['itemLimit']
                     ?? 10) ?: 10;
@@ -1495,7 +1495,7 @@ class Alma extends AbstractBase implements
         // Get information that is valid for both, item level requests and title
         // level requests.
         $mmsId = $holdDetails['id'];
-        // The holding_id value is deprecated but retained for back-compatibility
+        // The holding_id value is deprecated but retained for legacy back-compatibility
         $holId = $holdDetails['holdings_id'] ?? $holdDetails['holding_id'];
         $itmId = $holdDetails['item_id'];
         $patronId = $holdDetails['patron']['id'];

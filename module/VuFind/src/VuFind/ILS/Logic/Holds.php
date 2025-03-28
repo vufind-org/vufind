@@ -582,7 +582,7 @@ class Holds
 
         // Multiple keys may be used here (delimited by comma)
         foreach (array_map('trim', explode(',', $grouping)) as $key) {
-            // backwards-compatibility:
+            // Legacy backwards-compatibility:
             // The config.ini file originally expected only
             //   two possible settings: holdings_id and location_name.
             // However, when location_name was set, the code actually

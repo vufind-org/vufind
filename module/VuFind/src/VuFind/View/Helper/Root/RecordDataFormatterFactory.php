@@ -102,7 +102,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $specPluginManager = $container->get(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
-        // for backward compatibility check if getDefault*Specs methods got overridden.
+        // for legacy backward compatibility check if getDefault*Specs methods got overridden.
         $this->schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         $this->defaultRecordSpec = $specPluginManager->get(DefaultRecordSpec::class);
         $methodMapping = [
