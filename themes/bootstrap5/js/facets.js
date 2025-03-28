@@ -360,9 +360,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function toggleMultiFacetsSelection(enable) {
     if (typeof enable !== 'undefined') {
-      if (isMultiFacetsSelectionActivated === enable) {
-        return;
-      }
       isMultiFacetsSelectionActivated = enable;
       saveUserSelectionLastState(isMultiFacetsSelectionActivated);
     }

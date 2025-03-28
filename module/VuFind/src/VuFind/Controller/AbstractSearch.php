@@ -345,12 +345,11 @@ class AbstractSearch extends AbstractBase
     protected static function getMultiSelectionValueFromConfig(Config $config)
     {
         $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
-        if ($multiFacetsSelection === false) {
-            $multiFacetsSelection = 'false';
-        } elseif ($multiFacetsSelection === true) {
-            $multiFacetsSelection = 'true';
-        }
-        return $multiFacetsSelection;
+        return match($multiFacetsSelection) {
+            true, '1' => 'true',
+            false, '', '0' => 'false',
+            default => $multiFacetsSelection,
+        };
     }
 
     /**
