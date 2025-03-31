@@ -347,8 +347,8 @@ class RecordDataFormatter extends AbstractHelper
                     $options['lineOptions'][$key][$value] ?? [],
                 );
             }
-            if (isset($currentOptions['alternativeDataMethod'])) {
-                $currentOptions['dataMethod'] = $currentOptions['alternativeDataMethod'];
+            if (isset($currentOptions['multiAltDataMethod'])) {
+                $currentOptions['dataMethod'] = $currentOptions['multiAltDataMethod'];
                 $values = $this->extractData($currentOptions);
             }
             $currentResult = $this->render($label, $values, $currentOptions);

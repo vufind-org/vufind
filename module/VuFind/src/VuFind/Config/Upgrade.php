@@ -1094,7 +1094,7 @@ class Upgrade
             && $newEDSConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
         ) {
             $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:AuInfo';
-            $newEDSRecordDataFormatterConfig['CoreAuthors']['alternativeDataMethod'] =
+            $newEDSRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod'] =
                 'getPrimaryAuthorsWithHighlighting';
             $newEDSRecordDataFormatterConfig['CoreAuthors']['limit'] =
                 $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
@@ -1108,7 +1108,7 @@ class Upgrade
                     = $newEDSConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
             } else {
                 unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['limit']);
-                unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['alternativeDataMethod']);
+                unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['multiAltDataMethod']);
             }
         }
         unset($newEDSConfig['AuthorDisplay']);

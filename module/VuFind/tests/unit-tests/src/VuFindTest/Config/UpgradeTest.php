@@ -652,7 +652,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 'lineIdentifierValue' => 'Au',
                 'limit' => 3,
                 'separator' => '; ',
-                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'multiAltDataMethod' => 'getPrimaryAuthorsWithHighlighting',
             ],
             $edsRecordDataFormatterConfig['ResultListAuthors']
         );
@@ -701,7 +701,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 'lineIdentifierKey' => 'Group',
                 'lineIdentifierValue' => 'Au',
                 'separator' => '; ',
-                'alternativeDataMethod' => 'getPrimaryAuthorsWithHighlighting',
+                'multiAltDataMethod' => 'getPrimaryAuthorsWithHighlighting',
                 'limit' => 5,
             ],
             $edsRecordDataFormatterConfig['CoreAuthors']
