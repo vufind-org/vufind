@@ -238,20 +238,25 @@ trait HoldsTrait
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
-        $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
-            $checkHolds,
-            $catalog,
-            $patron,
-            $gatheredDetails
-        );
-        $defaultRequiredDate = $defaultRequiredTS
-            ? $dateConverter->convertToDisplayDate(
-                'U',
-                $defaultRequiredTS
-            ) : '';
+        $defaultRequiredDate = '';
+        if (in_array('requiredByDate', $extraHoldFields)
+            || in_array('requiredByDateOptional', $extraHoldFields)) {
+            $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
+                $checkHolds,
+                $catalog,
+                $patron,
+                $gatheredDetails
+            );
+            $defaultRequiredDate = $defaultRequiredTS
+                ? $dateConverter->convertToDisplayDate(
+                    'U',
+                    $defaultRequiredTS
+                ) : '';
+        }
         try {
-            $defaultPickup
-                = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+            $defaultPickup = empty($pickup)
+                ? false
+                : $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
         } catch (\Exception $e) {
             $defaultPickup = false;
         }
