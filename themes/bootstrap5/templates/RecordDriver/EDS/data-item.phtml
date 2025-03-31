@@ -13,7 +13,7 @@
   $prefix = $this->options['itemPrefix'] ?? '';
   $suffix = $this->options['itemSuffix'] ?? '';
   $separator = $this->options['separator'] ?? ', ';
-  $abbreviation = $this->options['abbreviation'] ?? '...';
+  $abbreviation = $this->options['abbreviation'] ?? $this->transEsc('eol_ellipsis');
   $entries = array_map(function ($element) use ($useSearchLink) {
     if ($useSearchLink) {
       if (!empty($element['SearchLink'])) {
@@ -30,6 +30,7 @@
   $entries = array_map(fn ($element) => $prefix . $this->linkify($element, includeEmail: false) . $suffix, $entries);
   if ($limit !== null && count($entries) > $limit) {
     $entries = array_slice($entries, 0, $limit);
-    $entries[] = $abbreviation;
+    echo implode($separator, $entries) . $abbreviation;
+  } else {
+    echo implode($separator, $entries);
   }
-  echo implode($separator, $entries);
