@@ -71,7 +71,7 @@ class AccountMenu extends AbstractMenuHelper
                 'menu' => $menu,
                 'active' => $activeItem,
                 'idPrefix' => $idPrefix,
-                // set items for backward compatibility, might be removed in future releases
+                // set items for legacy backward compatibility, might be removed in future releases
                 'items' => $menu['Account']['MenuItems'],
             ]
         );

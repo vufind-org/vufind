@@ -33,5 +33,5 @@
   $script = "setupMultiILSLoginFields($methods, 'login_{$topClass}_');";
 
   // Inline the script for lightbox compatibility
-  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  echo $this->assetManager()->outputInlineScriptString($script);
 ?>

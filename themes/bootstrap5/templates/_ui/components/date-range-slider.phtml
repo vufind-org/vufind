@@ -1,7 +1,7 @@
 <?php
-  $this->headScript()->appendFile('vendor/nouislider.min.js');
-  $this->headLink()->appendStylesheet('vendor/nouislider.min.css');
-  $this->headScript()->appendFile('date_range_slider.js');
+  $this->assetManager()->appendScriptLink('vendor/nouislider.min.js');
+  $this->assetManager()->appendStyleLink('vendor/nouislider.min.css');
+  $this->assetManager()->appendScriptLink('date_range_slider.js');
   $past = 1400;
   $future = (int)date('Y', time() + 31536000); // next year
   $low = !empty($this->values[0]) ? (int)$this->values[0] : $past;
