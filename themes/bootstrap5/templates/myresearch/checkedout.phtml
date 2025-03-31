@@ -6,7 +6,7 @@
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
     ->add($this->translate('Checked Out Items'), active: true);
 
-  $this->headScript()->appendFile('checkouts.js');
+  $this->assetManager()->appendScriptLink('checkouts.js');
 
   // Check if "Renew All" button can be displayed:
   $renewAll = !$this->ilsPaging || !$paginator;

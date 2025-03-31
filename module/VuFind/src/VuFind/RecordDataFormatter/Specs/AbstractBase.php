@@ -219,8 +219,7 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
             $lineIdentifierValue = $filter;
             $filterParts = explode(':', $filter);
             if (count($filterParts) === 2) {
-                $lineIdentifierKey = $filterParts[0];
-                $lineIdentifierValue = $filterParts[1];
+                [$lineIdentifierKey, $lineIdentifierValue] = $filterParts;
             }
             $filterFromConfig[$lineIdentifierKey][] = $lineIdentifierValue;
         }

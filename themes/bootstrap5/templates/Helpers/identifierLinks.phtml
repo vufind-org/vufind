@@ -9,6 +9,6 @@
     if (!empty($issn)) {
         $attribs['data-issn'] = $issn;
     }
+    echo $this->assetManager()->outputInlineScriptLink('identifierLinks.js');
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'identifierLinks.js', 'SET');?>
 <span <?=$this->htmlAttributes($attribs)?>></span>

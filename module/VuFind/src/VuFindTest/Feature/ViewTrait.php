@@ -29,7 +29,9 @@
 
 namespace VuFindTest\Feature;
 
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\View\Helper\Root\SearchMemory;
+use VuFindTheme\View\Helper\AssetManager;
 
 /**
  * Trait for tests involving Laminas Views.
@@ -43,12 +45,26 @@ use VuFind\View\Helper\Root\SearchMemory;
 trait ViewTrait
 {
     /**
+     * Get a working AssetManager helper.
+     *
+     * @param PhpRenderer $renderer View for helper
+     *
+     * @return AssetManager
+     */
+    protected function getAssetManager(PhpRenderer $renderer): AssetManager
+    {
+        $helper = new AssetManager();
+        $helper->setView($renderer);
+        return $helper;
+    }
+
+    /**
      * Get a working renderer.
      *
      * @param array  $plugins Custom VuFind plug-ins to register
      * @param string $theme   Theme directory to load from
      *
-     * @return \Laminas\View\Renderer\PhpRenderer
+     * @return PhpRenderer
      */
     protected function getPhpRenderer($plugins = [], $theme = 'bootstrap5')
     {
@@ -63,13 +79,14 @@ trait ViewTrait
                 $this->getPathForTheme($theme),
             ]
         );
-        $renderer = new \Laminas\View\Renderer\PhpRenderer();
+        $renderer = new PhpRenderer();
         $renderer->setResolver($resolver);
-        if (!empty($plugins)) {
-            $pluginManager = $renderer->getHelperPluginManager();
-            foreach ($plugins as $key => $value) {
-                $pluginManager->setService($key, $value);
-            }
+        $pluginManager = $renderer->getHelperPluginManager();
+        if (!isset($plugins['assetManager'])) {
+            $plugins['assetManager'] = $this->getAssetManager($renderer);
+        }
+        foreach ($plugins as $key => $value) {
+            $pluginManager->setService($key, $value);
         }
         return $renderer;
     }
