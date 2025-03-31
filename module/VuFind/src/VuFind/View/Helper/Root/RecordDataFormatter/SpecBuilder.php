@@ -41,13 +41,6 @@ namespace VuFind\View\Helper\Root\RecordDataFormatter;
 class SpecBuilder
 {
     /**
-     * Spec
-     *
-     * @var array
-     */
-    protected $spec = [];
-
-    /**
      * Highest position value so far.
      *
      * @var int
@@ -59,9 +52,8 @@ class SpecBuilder
      *
      * @param array $spec Existing specification lines (optional)
      */
-    public function __construct($spec = [])
+    public function __construct(protected array $spec = [])
     {
-        $this->spec = $spec;
         foreach ($spec as $current) {
             if (isset($current['pos']) && $current['pos'] > $this->maxPos) {
                 $this->maxPos = $current['pos'];
@@ -72,14 +64,14 @@ class SpecBuilder
     /**
      * Set a generic spec line.
      *
-     * @param string $key        Label to associate with this spec line
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param string $renderType Type of rendering to use to generate output
-     * @param array  $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param ?string     $renderType Type of rendering to use to generate output
+     * @param array       $options    Additional options
      *
      * @return void
      */
-    public function setLine($key, $dataMethod, $renderType = null, $options = [])
+    public function setLine(string $key, string|bool $dataMethod, ?string $renderType = null, array $options = []): void
     {
         $options['dataMethod'] = $dataMethod;
         $options['renderType'] = $renderType;
@@ -97,7 +89,7 @@ class SpecBuilder
      *
      * @return void
      */
-    public function removeLine($key)
+    public function removeLine(string $key): void
     {
         unset($this->spec[$key]);
     }
@@ -105,14 +97,14 @@ class SpecBuilder
     /**
      * Construct a multi-function template spec line.
      *
-     * @param string   $key        Label to associate with this spec line
-     * @param string   $dataMethod Method of data retrieval for rendering element
-     * @param callable $callback   Callback function for multi-processing
-     * @param array    $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param callable    $callback   Callback function for multi-processing
+     * @param array       $options    Additional options
      *
      * @return void
      */
-    public function setMultiLine($key, $dataMethod, $callback, $options = [])
+    public function setMultiLine(string $key, string|bool $dataMethod, callable $callback, array $options = []): void
     {
         $options['multiFunction'] = $callback;
         $this->setLine($key, $dataMethod, 'Multi', $options);
@@ -121,13 +113,13 @@ class SpecBuilder
     /**
      * Construct a combine alt template spec line.
      *
-     * @param string $key        Label to associate with this spec line
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param array  $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param array       $options    Additional options
      *
      * @return void
      */
-    public function setCombineAltLine($key, $dataMethod, $options = [])
+    public function setCombineAltLine(string $key, string|bool $dataMethod, array $options = []): void
     {
         $this->setLine($key, $dataMethod, 'CombineAlt', $options);
     }
@@ -135,14 +127,14 @@ class SpecBuilder
     /**
      * Construct a record driver template spec line.
      *
-     * @param string $key        Label to associate with this spec line
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param string $template   Record driver template to render with data
-     * @param array  $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param string      $template   Record driver template to render with data
+     * @param array       $options    Additional options
      *
      * @return void
      */
-    public function setTemplateLine($key, $dataMethod, $template, $options = [])
+    public function setTemplateLine(string $key, string|bool $dataMethod, string $template, array $options = []): void
     {
         $options['template'] = $template;
         $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
@@ -152,12 +144,12 @@ class SpecBuilder
      * Reorder the specs to match the provided array of keys.
      *
      * @param array $orderedKeys Keys in the desired order
-     * @param int   $defaultPos  Position to use for elements not included in
+     * @param ?int  $defaultPos  Position to use for elements not included in
      * $orderedKeys (null to put unrecognized items at end of list).
      *
      * @return void
      */
-    public function reorderKeys($orderedKeys, $defaultPos = null)
+    public function reorderKeys(array $orderedKeys, ?int $defaultPos = null): void
     {
         $lookup = array_flip($orderedKeys);
         if (null === $defaultPos) {
@@ -174,7 +166,7 @@ class SpecBuilder
      *
      * @return array
      */
-    public function getArray()
+    public function getArray(): array
     {
         return $this->spec;
     }
