@@ -239,8 +239,10 @@ trait HoldsTrait
 
         // Find and format the default required date:
         $defaultRequiredDate = '';
-        if (in_array('requiredByDate', $extraHoldFields)
-            || in_array('requiredByDateOptional', $extraHoldFields)) {
+        if (
+            in_array('requiredByDate', $extraHoldFields)
+            || in_array('requiredByDateOptional', $extraHoldFields)
+        ) {
             $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
                 $checkHolds,
                 $catalog,
