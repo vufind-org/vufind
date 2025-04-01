@@ -79,7 +79,8 @@ class EscapeOrCleanHtml extends AbstractHelper
         ?bool $allowHtml = null,
         string $renderingContext = 'default'
     ) {
-        if (null === $value && null === $dataContext && null === $allowHtml) {
+        // Return self if all arguments are default:
+        if (null === $value && null === $dataContext && null === $allowHtml && 'default' === $renderingContext) {
             return $this;
         }
         if ($value instanceof PropertyStringInterface) {
