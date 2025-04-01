@@ -97,15 +97,12 @@ trait HoldsTrait
 
         // Send various values to the view so we can build the form:
         $requestGroups = [];
-        if (in_array('requestGroup', $extraHoldFields)) {
-            $requestGroups = $catalog->checkCapability(
-                'getRequestGroups',
-                [$driver->getUniqueID(), $patron, $gatheredDetails]
-            ) ? $catalog->getRequestGroups(
-                $driver->getUniqueID(),
-                $patron,
-                $gatheredDetails
-            ) : [];
+        $requestGroupsArgs = [$driver->getUniqueID(), $patron, $gatheredDetails];
+        if (
+            in_array('requestGroup', $extraHoldFields)
+            && $catalog->checkCapability('getRequestGroups', $requestGroupsArgs)
+        ) {
+            $requestGroups = $catalog->getRequestGroups(...$requestGroupsArgs);
         }
 
         $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
@@ -130,8 +127,7 @@ trait HoldsTrait
         if (in_array('pickUpLocation', $extraHoldFields)) {
             $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
             if (!$pickup) {
-                $this->flashMessenger()
-                    ->addErrorMessage('No pickup locations available');
+                $this->flashMessenger()->addErrorMessage('No pickup locations available');
                 return $this->redirectToRecord('#top');
             }
         }
