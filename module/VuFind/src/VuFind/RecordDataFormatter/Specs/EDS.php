@@ -71,7 +71,8 @@ class EDS extends DefaultRecord
             'lineOptions' => [
                 'Group' => [
                     'Au' => [
-                        'useSearchLink' => 'author',
+                        'useSearchLink' => true,
+                        'searchLinkType' => 'author',
                         'itemPrefix' => '<span class="author">',
                         'itemSuffix' => '</span>',
                         'abbreviation' => ' ' . $this->translate('more_authors_abbrev'),
