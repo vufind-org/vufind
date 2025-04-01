@@ -71,7 +71,7 @@ class EscapeOrCleanHtml extends AbstractHelper
      * @param ?bool   $allowHtml        Whether to allow sanitized HTML if passed a PropertyString
      * @param string  $renderingContext Rendering context for cleaning HTML
      *
-     * @return mixed Given a string, returns an escaped string, otherwise returns self
+     * @return mixed Called with non-null arguments, returns an escaped string, otherwise returns self
      */
     public function __invoke(
         $value = null,
