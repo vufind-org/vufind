@@ -2,13 +2,13 @@
 
 /* Material Colors can be found here: https://material.io/guidelines/style/color.html */
 $primary: #1976d2; /* Material Blue 700 */
-$brand-primary: #1976d2; /* Material Blue 700 */
-$brand-secondary: #ff6d00; /* Material Orange A700 */
+$primary: #1976d2; /* Material Blue 700 */
+$secondary: #ff6d00; /* Material Orange A700 */
 
 $header-bg: #607d8b; /* Material Blue Grey 500 */
 $header-light: #cfd8dc; /* Material Blue Grey 100 */
 
-$action-color: $brand-primary;
+$action-color: $primary;
 $action-hover-bg: $white;
 $action-hover-color: $black;
 $passive-icon-color: $gray;
@@ -17,7 +17,7 @@ $highlighter-color: lighten(#FF0, 20%);
 $search-row-bg: $white;
 $search-row-bg-alt: $light-gray;
 $search-row-bg-hover: $lightest-blue;
-$search-row-selected-bg: $brand-primary;
+$search-row-selected-bg: $primary;
 $search-row-selected-color: $white;
 
 $sidebar-title-bg: $white;
@@ -27,7 +27,7 @@ $sidebar-item-bg: $white;
 $sidebar-item-color: $black;
 $sidebar-item-hover-bg: $lightest-blue;
 $sidebar-item-badge: $gray;
-$sidebar-active-bg: $brand-secondary;
+$sidebar-active-bg: $secondary;
 $sidebar-active-color: $white;
 
 /* Bootstrap variable changes */
@@ -46,9 +46,8 @@ $input-border-radius:         .25rem;
 $autocomplete-hover-bg:     $header-light;
 $dropdown-link-hover-bg:    $header-light;
 $dropdown-link-hover-color: $black;
-$list-group-active-bg:      $brand-secondary;
+$list-group-active-bg:      $secondary;
 $table-bg-hover:            $header-light;
 $pagination-color:          $header-bg;
 $pagination-hover-bg:       #eee;
 $nav-link-hover-bg:         $header-light;
-$nav-link-active-bg:        $header-bg;

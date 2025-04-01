@@ -13,7 +13,7 @@
           <li>
             <?php $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
             <a class="list-group-item active" href="<?=$removeLink?>">
-              <span class="pull-right flip"><?=$this->icon('ui-remove') ?></span>
+              <span class="float-end"><?=$this->icon('ui-remove') ?></span>
               <?=$this->escapeHtml($filter['displayText'])?>
             </a>
           </li>

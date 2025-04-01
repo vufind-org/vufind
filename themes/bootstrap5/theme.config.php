@@ -19,7 +19,7 @@ return [
          * - media: e.g. 'print'
          * - extras: array of additional attributes
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for legacy backwards compatibility reasons. examples:
          * - 'example.css' => same as ['file' => 'example.css']
          * - 'example.css:print' => same as
          *   ['file' => 'example.css', 'media' => 'print']
@@ -48,14 +48,13 @@ return [
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
          *
-         * Strings are supported for backwards compatibility reasons. example:
+         * Strings are supported for legacy backwards compatibility reasons. example:
          * - 'example.js' => same as ['file' => 'example.js']
          */
         ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/popper.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
-        ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
@@ -69,7 +68,8 @@ return [
         ['file' => 'openurl.js', 'priority' => 390],
         ['file' => 'list_item_selection.js', 'priority' => 400],
         ['file' => 'covers.js', 'priority' => 410],
-        ['file' => 'bs3-compat.js', 'priority' => 1000],
+        ['file' => 'validation.js', 'priority' => 420],
+        ['file' => 'copy_to_clipboard.js', 'priority' => 430],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -156,7 +156,6 @@ return [
              * All of the items below have been specified with FontAwesome to allow
              * for a strong inheritance safety net but this is not required.
              */
-            'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
             'browzine-issue' => 'Alias:format-serial',
             'browzine-pdf' => 'FontAwesome:file-pdf-o',

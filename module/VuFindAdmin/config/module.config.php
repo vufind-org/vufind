@@ -58,6 +58,16 @@ $config = [
                             ],
                         ],
                     ],
+                    'feedback-details' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Feedback/Details/:id',
+                            'defaults' => [
+                                'controller' => 'AdminFeedback',
+                                'action'     => 'Details',
+                            ],
+                        ],
+                    ],
                     'feedback' => [
                         'type' => 'Laminas\Router\Http\Segment',
                         'options' => [

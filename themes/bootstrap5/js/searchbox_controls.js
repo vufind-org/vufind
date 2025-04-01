@@ -58,18 +58,10 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   }
 
   function _updateKeyboardLayout(layoutName) {
-    if (VuFind.getBootstrapMajorVersion() === 3) {
-      $('.keyboard-selection-item').each(function deactivateItems() {
-        $(this).parent().removeClass("active");
-      });
-      $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
-    } else {
-      $('.keyboard-selection-item').each(function deactivateItems() {
-        $(this).removeClass("active");
-        $(this).addClass("dropdown-item");
-      });
-      $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
-    }
+    $('.keyboard-selection-item').each(function deactivateItems() {
+      $(this).removeClass("active");
+    });
+    $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
     if (layoutName === "none") {
       VuFind.cookie.remove("keyboard");
       $("#keyboard-selection-button").removeClass("activated");
@@ -277,10 +269,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       // Bind autocomplete auto submit
       if ($searchbox.hasClass("ac-auto-submit")) {
         input.addEventListener("ac-select", (event) => {
-          const value = typeof event.detail === "string"
+          input.value = typeof event.detail === "string"
             ? event.detail
             : event.detail.value;
-          input.value = value;
           input.form.submit();
         });
       }
@@ -302,7 +293,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _resetButton.classList.toggle("hidden", _textInput.value === "");
     });
 
-    _resetButton.addEventListener("click", function resetOnClick() {
+    _resetButton.addEventListener("click", function resetOnClick(e) {
+      e.preventDefault();
       requestAnimationFrame(() => {
         _textInput.value = "";
         _textInput.dispatchEvent(new Event("input"));

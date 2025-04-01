@@ -31,7 +31,7 @@
           <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($params->getSort()) ?>">
           <span class="input-group-btn">
             <button class="btn btn-primary" type="submit" name="submitButton">
-              <span class="sr-only"><?=$this->transEsc('Search')?></span>
+              <span class="visually-hidden"><?=$this->transEsc('Search')?></span>
               <?=$this->icon('search') ?>
             </button>
           </span>
@@ -65,7 +65,7 @@
   <div class="collection-list-results">
     <?php if ($recordTotal > 0): ?>
       <div class="clearfix hidden-print">
-        <div class="pull-left flip">
+        <div class="float-start">
           <?php
             $transParams = [
               '%%start%%' => $this->localizedNumber($results->getStartRecord()),

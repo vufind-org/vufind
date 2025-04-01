@@ -349,7 +349,7 @@ VuFind.register('lightbox', function Lightbox() {
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
-      resetCaptcha($(form));
+      resetCaptcha(form);
     });
 
     VuFind.modal('show');
@@ -369,8 +369,8 @@ VuFind.register('lightbox', function Lightbox() {
     // remove nodes on whose click, the modal closes
     var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
       return !node.hasAttribute("data-lightbox-close") && (
-        !node.hasAttribute("data-dismiss") ||
-        node.getAttribute("data-dismiss") !== "modal"
+        !node.hasAttribute("data-bs-dismiss") ||
+        node.getAttribute("data-bs-dismiss") !== "modal"
       );
     });
 
@@ -552,6 +552,7 @@ VuFind.register('lightbox', function Lightbox() {
       }
     };
     VuFind.listen('results-init', updateContainer);
+    VuFind.listen('record-tab-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

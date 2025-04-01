@@ -10,7 +10,7 @@
     <?php if (isset($this->previous)): ?>
       <li class="page-item page-prev">
         <a class="page-link" href="<?=$results->getUrlQuery()->setPage($this->previous)?>">
-          <span class="sr-only"><?=$this->transEsc('page_prev')?></span>
+          <span class="visually-hidden"><?=$this->transEsc('page_prev')?></span>
           <?=$this->icon('page-prev') ?>
         </a>
       </li>
@@ -29,7 +29,7 @@
     <?php if (isset($this->next)): ?>
       <li class="page-item page-next">
         <a class="page-link" href="<?=$results->getUrlQuery()->setPage($this->next)?>">
-          <span class="sr-only"><?=$this->transEsc('page_next')?></span>
+          <span class="visually-hidden"><?=$this->transEsc('page_next')?></span>
           <?=$this->icon('page-next') ?>
         </a>
       </li>
