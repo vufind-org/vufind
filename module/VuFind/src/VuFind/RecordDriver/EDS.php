@@ -219,7 +219,7 @@ class EDS extends DefaultRecord
     /**
      * Support method for getItems, used to apply filters.
      * Filters are multidimensional arrays. The first dimension
-     * defines if the values should be excluded or the only ones
+     * defines if the values should be excluded or are the only ones
      * to be included. The second dimension defines in which item
      * key (e.g. Label or Group) is used for filtering.
      *
