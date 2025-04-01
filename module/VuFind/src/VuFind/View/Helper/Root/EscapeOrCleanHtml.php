@@ -79,7 +79,7 @@ class EscapeOrCleanHtml extends AbstractHelper
         ?bool $allowHtml = null,
         string $renderingContext = 'default'
     ) {
-        if (null === $value) {
+        if (null === $value && null === $dataContext && null === $allowHtml) {
             return $this;
         }
         if ($value instanceof PropertyStringInterface) {
@@ -91,7 +91,7 @@ class EscapeOrCleanHtml extends AbstractHelper
             }
             $value = (string)$value;
         }
-        return $this->escape($value);
+        return $this->escape($value ?? '');
     }
 
     /**
