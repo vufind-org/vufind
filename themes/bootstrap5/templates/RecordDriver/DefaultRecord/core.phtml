@@ -45,7 +45,7 @@
   <?php endif; ?>
   <div class="media-body">
 
-    <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->escapeOrCleanHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection(), 'title', renderingContext: 'heading')?></h1>
+    <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->escapeOrCleanHtml($this->driver->getShortTitle(), 'title', renderingContext: 'heading') . ' ' . $this->escapeOrCleanHtml($this->driver->getSubtitle(), 'title', renderingContext: 'heading') . ' ' . $this->escapeOrCleanHtml($this->driver->getTitleSection(), 'title', renderingContext: 'heading')?></h1>
 
     <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>
       <div class="alert alert-warning">
