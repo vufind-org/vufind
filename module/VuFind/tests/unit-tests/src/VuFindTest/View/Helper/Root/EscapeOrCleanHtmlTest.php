@@ -56,6 +56,7 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
     {
         $link = '<a href="https://vufind.org/">VuFind</a>';
         $div = '<div>Div</div>';
+        $dnd = '<i>Dungeons &amp; Dragons</i>';
         return [
             'plain string' => ['plain string', null, null, 'default', [], 'plain string'],
             'link' => [$link, null, null, 'default', [], htmlentities($link)],
@@ -74,6 +75,9 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
             ],
             'div as PropertyString, allow HTML, rendered in heading' => [
                 PropertyString::fromHtml($div), null, true, 'heading', [], 'Div',
+            ],
+            'HTML containing entity, disallow HTML' => [
+                PropertyString::fromHtml($dnd), null, false, 'heading', [], 'Dungeons &amp; Dragons',
             ],
         ];
     }

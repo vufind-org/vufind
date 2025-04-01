@@ -114,6 +114,13 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
                 '<strong>HTML</strong> string',
                 ['__html' => '<strong>HTML</strong> string'],
             ],
+            'HTML string containing entities' => [
+                '<i>Dungeons &amp; Dragons</i>',
+                [],
+                'Dungeons & Dragons',
+                '<i>Dungeons &amp; Dragons</i>',
+                ['__html' => '<i>Dungeons &amp; Dragons</i>'],
+            ],
         ];
     }
 
