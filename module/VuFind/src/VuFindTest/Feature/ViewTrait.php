@@ -29,7 +29,15 @@
 
 namespace VuFindTest\Feature;
 
+use Laminas\Cache\Storage\Adapter\AdapterOptions;
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Renderer\PhpRenderer;
+use Psr\Container\ContainerInterface;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\Config;
+use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\View\Helper\Root\CleanHtml;
+use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
 use VuFindTheme\View\Helper\AssetManager;
 
@@ -120,5 +128,51 @@ trait ViewTrait
                 ->willReturn(-123);
         }
         return new \VuFind\View\Helper\Root\SearchMemory($memory);
+    }
+
+    /**
+     * Create the cleanHtml helper
+     *
+     * @return CleanHtml
+     */
+    protected function createCleanHtmlHelper(): CleanHtml
+    {
+        // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
+        $cacheOptions = new class () extends AdapterOptions {
+            /**
+             * Get cache dir
+             *
+             * @return string
+             */
+            public function getCacheDir(): string
+            {
+                return '';
+            }
+        };
+        $cache = $this->createMock(StorageInterface::class);
+        $cache->expects($this->any())
+            ->method('getOptions')
+            ->willReturn($cacheOptions);
+        $cacheManager = $this->createMock(CacheManager::class);
+        $cacheManager->expects($this->any())
+            ->method('getCache')
+            ->willReturn($cache);
+        $config = $this->createMock(Config::class);
+        $configPluginManager = $this->createMock(ConfigPluginManager::class);
+        $configPluginManager->expects($this->any())
+            ->method('get')
+            ->willReturn($config);
+        $container = $this->createMock(ContainerInterface::class);
+        $container->expects($this->any())
+            ->method('get')
+            ->willReturnCallback(
+                function ($class) use ($cacheManager, $configPluginManager) {
+                    return match ($class) {
+                        CacheManager::class => $cacheManager,
+                        ConfigPluginManager::class => $configPluginManager,
+                    };
+                }
+            );
+        return (new CleanHtmlFactory())($container, CleanHtml::class);
     }
 }

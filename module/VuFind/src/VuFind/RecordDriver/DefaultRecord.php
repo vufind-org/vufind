@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\String\PropertyString;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
@@ -976,8 +977,9 @@ class DefaultRecord extends AbstractBase
         // Assemble the URL:
         $query = [];
         foreach ($params as $key => $value) {
-            $value = (array)$value;
-            foreach ($value as $sub) {
+            // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+            // properties):
+            foreach (is_array($value) ? $value : [$value] as $sub) {
                 $query[] = urlencode($key) . '=' . urlencode($sub);
             }
         }
@@ -1271,9 +1273,9 @@ class DefaultRecord extends AbstractBase
     public function getSummary()
     {
         // We need to return an array, so if we have a description, turn it into an
-        // array (it should be a flat string according to the default schema, but we
-        // might as well support the array case just to be on the safe side:
-        return (array)($this->fields['description'] ?? []);
+        // array (it is a flat string in the default Solr schema, but we also
+        // support multivalued fields for other backends):
+        return $this->getFieldAsArray('description');
     }
 
     /**
@@ -1825,5 +1827,24 @@ class DefaultRecord extends AbstractBase
     public function getRecordDataFormatterSpecClass(): ?string
     {
         return \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
+    }
+
+    /**
+     * Get a field as an array
+     *
+     * @param string $field Field
+     *
+     * @return array
+     */
+    protected function getFieldAsArray(string $field): array
+    {
+        // Make sure to return only non-empty values:
+        $value = $this->fields[$field] ?? '';
+        if ('' === $value) {
+            return [];
+        }
+        // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+        // properties):
+        return is_array($value) ? $value : [$value];
     }
 }

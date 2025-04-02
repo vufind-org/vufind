@@ -41,7 +41,7 @@
             <?php if (!$missing): ?></a><?php endif; ?>
             <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
               <div class="title-alt">
-                <?=$this->escapeHtml($altTitle)?>
+                <?=$this->escapeOrCleanHtml($altTitle, 'title')?>
               </div>
             <?php endforeach; ?>
 

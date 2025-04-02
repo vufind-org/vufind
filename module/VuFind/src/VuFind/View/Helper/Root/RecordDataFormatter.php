@@ -35,6 +35,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\RecordDataFormatter\Specs\PluginManager as SpecsManager;
 use VuFind\RecordDataFormatter\Specs\SpecInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\String\PropertyStringInterface;
 
 use function call_user_func;
 use function count;
@@ -115,6 +116,9 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function allowValue(mixed $value, array $options, bool $ignoreCombineAlt = false): bool
     {
+        if ($value instanceof PropertyStringInterface) {
+            $value = (string)$value;
+        }
         if (!empty($value) || ($ignoreCombineAlt && ($options['renderType'] ?? 'Simple') == 'CombineAlt')) {
             return true;
         }
@@ -490,7 +494,9 @@ class RecordDataFormatter extends AbstractHelper
         $transDomain = $options['translationTextDomain'] ?? '';
         $separator = $options['separator'] ?? '<br>';
         $retVal = '';
-        $array = (array)$data;
+        // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+        // properties):
+        $array = null === $data ? [] : (is_array($data) ? $data : [$data]);
         $remaining = count($array);
         foreach ($array as $line) {
             $remaining--;
