@@ -137,6 +137,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let callbackOnApply;
   let callbackWhenDeactivated;
   let defaultContext;
+  let defaultCountText;
   // Events to emit
   const activation_event = 'facet-selection-begin';
   const deactivation_event = 'facet-selection-cancel';
@@ -332,6 +333,25 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  function getModifiedFiltersCount() {
+    return document.querySelectorAll('[data-multi-filters-modified="true"]').length;
+  }
+
+  function updateCountText() {
+    const textElems = document.getElementsByClassName('multi-filters-text');
+    const count = getModifiedFiltersCount();
+    const text = count === 0 ? defaultCountText : 'You have modified ' + count + ' filters.';
+    for (const textElem of textElems) {
+      textElem.textContent = text;
+    }
+  }
+
+  function initOriginalCountText(context) {
+    if (typeof defaultCountText === 'undefined') {
+      defaultCountText = context.getElementsByClassName('multi-filters-text')[0].textContent;
+    }
+  }
+
   function handleMultiSelectionClick(e) {
     e.preventDefault();
     const elem = e.currentTarget;
@@ -343,6 +363,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       elem.closest('.facet').querySelector('[data-multi-filters-modified="true"]').click();
     }
     elem.setAttribute('data-multi-filters-modified', isOriginalState);
+    updateCountText();
     toggleSelectedFacetStyle(elem);
   }
 
@@ -447,6 +468,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       }
     }
     const context = (typeof _context === "undefined") ? defaultContext : _context;
+    initOriginalCountText(context);
     initMultiFacetControls(context);
     initFacetClickHandler(context);
     initRangeSelection(context);

@@ -1,7 +1,14 @@
 <?php
-$attributes = $this->multiFacetsSelection === 'always' ? ' style="display: none;"' : '';
+if ($this->multiFacetsSelection === 'always') {
+    $attributes = ' style="display: none;"';
+    $text = '<p class="multi-filters-text">Select one or more filters, then click button to apply</p>';
+} else {
+    $attributes = '';
+    $text = '';
+}
 ?>
 <div class="multi-filters-selection">
+  <?= $text ?>
   <div<?= $attributes ?>>
     <form autocomplete="off">
       <label>
