@@ -68,7 +68,8 @@ class EscapeOrCleanHtml extends AbstractHelper
      *
      * @param string|PropertyStringInterface $value            Value to escape
      * @param ?string                        $dataContext      Data context (for fields that allow sanitized HTML)
-     * @param ?bool                          $allowHtml        Whether to allow sanitized HTML if passed a PropertyString
+     * @param ?bool                          $allowHtml        Whether to allow sanitized HTML if passed a
+     * PropertyString
      * @param string                         $renderingContext Rendering context for cleaning HTML
      *
      * @return mixed Returns an escaped or HTML-safe string
