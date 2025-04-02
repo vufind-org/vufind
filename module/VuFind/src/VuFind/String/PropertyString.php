@@ -66,7 +66,8 @@ class PropertyString implements PropertyStringInterface
      */
     public static function fromHtml(string $html, array $properties = []): PropertyString
     {
-        return (new PropertyString(strip_tags($html), $properties))->setHtml($html);
+        $decodedHtml = html_entity_decode(strip_tags($html));
+        return (new PropertyString($decodedHtml, $properties))->setHtml($html);
     }
 
     /**
