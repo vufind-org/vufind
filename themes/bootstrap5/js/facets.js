@@ -346,6 +346,22 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  function hideCountText() {
+    document.querySelectorAll('.multi-filters-text').forEach(el => el.style.display = 'none');
+  }
+
+  function showCountText() {
+    document.querySelectorAll('.multi-filters-text').forEach(el => el.style.display = 'block');
+  }
+
+  function toggleCountText(show = true) {
+    if (show) {
+      showCountText();
+    } else {
+      hideCountText();
+    }
+  }
+
   function initOriginalCountText(context) {
     if (typeof defaultCountText === 'undefined') {
       defaultCountText = context.getElementsByClassName('multi-filters-text')[0].textContent;
@@ -396,6 +412,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         toggleSelectedFacetStyle(elem);
       }
     }
+    toggleCountText(isMultiFacetsSelectionActivated);
     const event = isMultiFacetsSelectionActivated ? activation_event : deactivation_event;
     VuFind.emit(event);
   }
