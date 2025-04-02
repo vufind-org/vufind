@@ -59,30 +59,23 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get general options.
+     * Get specs for EDS items rendered as multi line.
      *
      * @return array
      */
-    protected function getGeneralOptions(): array
+    protected function getItemsSpecs(): array
     {
-        return [
-            'multiRenderType' => 'RecordDriverTemplate',
-            'template' => 'data-item.phtml',
-            'lineOptions' => [
-                'Group' => [
-                    'Au' => [
-                        'useSearchLink' => true,
-                        'searchLinkType' => 'author',
-                        'itemPrefix' => '<span class="author">',
-                        'itemSuffix' => '</span>',
-                        'abbreviation' => ' ' . $this->translate('more_authors_abbrev'),
-                    ],
-                    'Su' => [
-                        'useSearchLink' => true,
-                    ],
-                ],
-            ],
-        ];
+        $spec = new SpecBuilder();
+        $spec->setMultiLine(
+            'Items',
+            'getItems',
+            $this->getMultiLineItemMapper(),
+            [
+                'multiRenderType' => 'RecordDriverTemplate',
+                'template' => 'data-item.phtml',
+            ]
+        );
+        return $spec->getArray();
     }
 
     /**
@@ -108,16 +101,7 @@ class EDS extends DefaultRecord
      */
     public function getDefaultCoreSpecs(): array
     {
-        $spec = new SpecBuilder();
-        $options = $this->getGeneralOptions();
-        $options['separator'] = '<br>';
-        $spec->setMultiLine(
-            'Items',
-            'getItems',
-            $this->getMultiLineItemMapper(),
-            $options
-        );
-        return $spec->getArray();
+        return $this->getItemsSpecs();
     }
 
     /**
@@ -127,13 +111,6 @@ class EDS extends DefaultRecord
      */
     public function getDefaultResultListSpecs(): array
     {
-        $spec = new SpecBuilder();
-        $spec->setMultiLine(
-            'Items',
-            'getItems',
-            $this->getMultiLineItemMapper(),
-            $this->getGeneralOptions()
-        );
-        return $spec->getArray();
+        return $this->getItemsSpecs();
     }
 }

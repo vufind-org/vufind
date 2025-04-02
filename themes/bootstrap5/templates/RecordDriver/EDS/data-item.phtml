@@ -11,10 +11,12 @@
   $useSearchLink = $this->options['useSearchLink'] ?? false;
   $searchLinkType = $this->options['searchLinkType'] ?? 'generic';
   $limit = $this->options['limit'] ?? null;
-  $prefix = $this->options['itemPrefix'] ?? '';
-  $suffix = $this->options['itemSuffix'] ?? '';
+  $prefix = $this->options['elementPrefix'] ?? '';
+  $suffix = $this->options['elementSuffix'] ?? '';
   $separator = $this->options['separator'] ?? ', ';
-  $abbreviation = $this->options['abbreviation'] ?? $this->transEsc('eol_ellipsis');
+  $abbreviation = ($this->options['abbreviationPrefix'] ?? '')
+    . $this->transEsc($this->options['abbreviation'] ?? 'eol_ellipsis')
+    . ($this->options['abbreviationSuffix'] ?? '');
   $entries = array_map(function ($element) use ($useSearchLink, $searchLinkType) {
     if ($useSearchLink) {
       if (!empty($element['SearchLink'])) {
