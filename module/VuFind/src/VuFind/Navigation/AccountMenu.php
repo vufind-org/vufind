@@ -173,6 +173,13 @@ class AccountMenu extends AbstractMenu
                         'checkMethod' => 'checkHistory',
                     ],
                     [
+                        'name' => 'usercomments',
+                        'label' => 'Comments and Ratings',
+                        'route' => 'comments-usercomments',
+                        'icon' => 'comment',
+                        'checkMethod' => 'checkCommentsAndRatings',
+                    ],
+                    [
                         'name' => 'logout',
                         'label' => 'Log Out',
                         'route' => 'myresearch-logout',
@@ -350,6 +357,17 @@ class AccountMenu extends AbstractMenu
     {
         return $this->isIlsOnline()
             && $this->ilsConnection->checkFunction($function, $this->getCapabilityParams());
+    }
+
+    /**
+     * Check whether to show comments and ratings item
+     *
+     * @return bool
+     */
+    protected function checkCommentsAndRatings(): bool
+    {
+        return ('enabled' === $this->accountCapabilities->getCommentSetting())
+            || $this->accountCapabilities->getRatingSetting();
     }
 
     /**

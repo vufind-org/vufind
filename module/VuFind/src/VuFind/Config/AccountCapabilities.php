@@ -90,6 +90,16 @@ class AccountCapabilities
     }
 
     /**
+     * Get rating setting.
+     *
+     * @return bool
+     */
+    public function getRatingSetting(): bool
+    {
+        return !empty($this->config->Social->rating);
+    }
+
+    /**
      * Get list setting.
      *
      * @return string

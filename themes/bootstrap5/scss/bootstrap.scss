@@ -626,6 +626,14 @@ body.rtl .dropdown-menu {
     vertical-align: middle;
   }
 }
+.usercomments-table {
+  tbody > tr > td {
+    vertical-align: middle;
+    &.user-comment {
+      width: 40%;
+    }
+  }
+}
 .fines-total {
   font-weight: bold;
 }

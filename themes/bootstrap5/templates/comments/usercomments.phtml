@@ -1,0 +1,94 @@
+<?php
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Comments and Ratings'), active: true);
+
+  $this->assetManager()->appendScriptLink('requests.js');
+
+?>
+<?php $this->headTitle($this->translate('Comments and Ratings'));?>
+<?=$this->component('show-account-menu-button')?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Your Comments and Ratings')?></h2>
+  <?php if (count($this->comments) !== 0): ?>
+    <form action="<?=$this->url('comments-deletecomments')?>" name="updateForm" id="select_all_comments" method="post">
+      <?php if ($this->accountCapabilities()->isRatingRemovalAllowed() || ('enabled' === $this->accountCapabilities()->getCommentSetting())): ?>
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+        <label>
+          <div class="checkbox">
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
+            <?=$this->transEsc('select_all_on_page')?>
+          </div>
+        </label>
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelSelected',
+                  'buttonName' => 'cancelSelected',
+                  'buttonLabel' => 'delete_selected',
+                  'header' => 'confirm_usercomment_delete_selected_text',
+                  'confirmId' => 'confirm_cancel_selected_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+                  'ignoreLightbox' => true,
+              ]
+          )
+        ?>
+      <?php endif; ?>
+      <table class="usercomments-table table-striped table table-responsive">
+        <thead>
+          <tr>
+            <th></th>
+            <th><?=$this->transEsc('Created')?></th>
+            <th><?=$this->transEsc('Title')?></th>
+            <th><?=$this->transEsc('Comment or Rating')?></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($this->comments as $comment):?>
+            <tr>
+              <td class="checkbox-col">
+                <?php $className = (null === $comment['comment']) ? 'rating' : 'comment'; ?>
+                <?php if ($className === 'comment' || ($className === 'rating' && $this->accountCapabilities()->isRatingRemovalAllowed())):?>
+                  <div class="checkbox-container result">
+                    <div class="checkbox">
+                      <label>
+                        <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                        <?php $className = (null === $comment['comment']) ? 'rating' : 'comment';?>
+                        <input class="checkbox-select-item" type="checkbox" name="deleteSelected<?=$className?>[]" value="<?=$this->escapeHtmlAttr(($comment[$className . '_id'] ?? ''))?>" id="checkbox_<?=$className?>_<?=$comment[$className . '_id']?>">
+                      </label>
+                    </div>
+                  </div>
+                <?php endif; ?>
+              </td>
+              <td><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $comment['created'])?></td>
+              <td>
+                <a href="<?=$this->url('record', ['id' => $comment['record_id']])?>"><?=$comment['recordTitle']?></a>
+              </td>
+              <td class="user-comment">
+                <?php if (isset($comment['rating'])): ?>
+                <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['rating' => $comment['rating'], 'count' => 1]])?>
+                <?php else: ?>
+                <?php $truncateSettings = ['rows' => 1]?>
+                <div class="user-comment-truncate" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"><?=$this->escapeHtml($comment['comment'] ?? '')?></div>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </form>
+  <?php endif;?>
+  <?=$this->paginationControl($this->comments, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render('usercomments')?>
+</div>
+<?php
+  $script = <<<JS
+      VuFind.truncate.initTruncate('.user-comment-truncate');
+      JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($script);?>
