@@ -80,6 +80,16 @@ interface RatingsServiceInterface extends DbServiceInterface
     public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
+     * Deletes ratings by given rating ids and user id
+     *
+     * @param array $ids    Array of rating ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void;
+
+    /**
      * Get statistics on use of Ratings.
      *
      * @return array

@@ -185,10 +185,13 @@ class Comments extends Gateway implements DbServiceAwareInterface
      * @param bool $comments Whether to fetch comments
      * @param bool $ratings  Whether to fetch ratings
      *
-     * @return \Laminas\Paginator\Paginator
+     * @return \Laminas\Paginator\Paginator|array
      */
-    public function getCommentsAndRatingsByUserId($userId, $limit = 0, $page = 1, $comments = true, $ratings = true)
+    public function getCommentsAndRatingsByUserId($userId, $limit, $page, $comments, $ratings)
     {
+        if (!$comments && !$ratings) {
+            return [];
+        }
         if ($comments) {
             $commentSelect = new Select();
             $commentSelect->from('comments')
@@ -237,7 +240,7 @@ class Comments extends Gateway implements DbServiceAwareInterface
             $paginatedSelect->from(['c' => $commentSelect]);
         } elseif ($ratings) {
             $paginatedSelect = $ratingSelect;
-        } else {
+        } elseif ($comments) {
             $paginatedSelect = $commentSelect;
         }
         $paginatedSelect->order('created DESC');

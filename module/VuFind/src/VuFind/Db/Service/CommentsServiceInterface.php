@@ -96,6 +96,16 @@ interface CommentsServiceInterface extends DbServiceInterface
     public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
+     * Deletes comments by given comment ids and user id
+     *
+     * @param array $ids    Array of comment ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void;
+
+    /**
      * Get statistics on use of comments.
      *
      * @return array
@@ -110,6 +120,25 @@ interface CommentsServiceInterface extends DbServiceInterface
      * @return ?CommentsEntityInterface
      */
     public function getCommentById(int $id): ?CommentsEntityInterface;
+
+    /**
+     * Get a paginated result of all comments and ratings by user id
+     *
+     * @param int  $userId   User Id
+     * @param int  $limit    Limit
+     * @param int  $page     Page
+     * @param bool $comments Whether to fetch comments
+     * @param bool $ratings  Whether to fetch ratings
+     *
+     * @return \Laminas\Paginator\Paginator|array
+     */
+    public function getCommentsAndRatingsByUserId(
+        int $userId,
+        int $limit,
+        int $page,
+        bool $comments,
+        bool $ratings
+    ): \Laminas\Paginator\Paginator|array;
 
     /**
      * Change all matching comments to use the new resource ID instead of the old one (called when an ID changes).

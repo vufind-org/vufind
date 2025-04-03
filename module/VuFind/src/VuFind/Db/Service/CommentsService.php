@@ -167,7 +167,7 @@ class CommentsService extends AbstractDbService implements
     }
 
     /**
-     * Get all comments and ratings by a given user
+     * Get a paginated result of all comments and ratings by user id
      *
      * @param int  $userId   User Id
      * @param int  $limit    Limit
