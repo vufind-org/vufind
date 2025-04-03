@@ -2,7 +2,7 @@
 $attributes = $this->multiFacetsSelection === 'always' ? ' style="display: none;"' : '';
 ?>
 <div class="multi-filters-selection">
-  <p class="multi-filters-text">Select one or more filters, then click button to apply</p>
+  <p class="multi-filters-text"><?=$this->transEsc('select_filters_instructions')?></p>
   <div<?= $attributes ?>>
     <form autocomplete="off">
       <label>

@@ -340,7 +340,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   function updateCountText() {
     const textElems = document.getElementsByClassName('multi-filters-text');
     const count = getModifiedFiltersCount();
-    const text = count === 0 ? defaultCountText : 'You have modified ' + count + ' filters.';
+    const text = count === 0 ? defaultCountText : VuFind.translate('modified_filter_count', { '%%count%%': count });
     for (const textElem of textElems) {
       textElem.textContent = text;
     }
