@@ -32,7 +32,3 @@ local/config/vufind/*.ini
 local/config/vufind/*.json
 local/config/vufind/*.key
 local/config/vufind/*.yaml
-
-.idea/*
-hebis_local/*
-logs/*
