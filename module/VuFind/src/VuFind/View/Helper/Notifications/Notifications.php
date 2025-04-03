@@ -84,6 +84,13 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
     private $config;
 
     /**
+     * Default language
+     *
+     * @var mixed
+     */
+    private $defaultLanguage;
+
+    /**
      * Constructor
      *
      * @param PluginManager $database Database
@@ -93,6 +100,9 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
     {
         $this->database = $database;
         $this->config = $config;
+        if (!empty($this->config['Notifications']['languages'])) {
+            $this->defaultLanguage = $this->config['Notifications']['languages'][0];
+        }
     }
 
     /**
@@ -142,14 +152,25 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
         $environment->addExtension(new EmojiExtension());
         $converter = new MarkdownConverter($environment);
 
-        $broadcasts = [];
-
         $visibility = 'visibility';
         if ($global) {
             $visibility = 'visibility_global';
         }
 
-        foreach ($broadcastsTable->getBroadcastsList([$visibility => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, id ASC') as $broadcast) {
+        // Retrieve all broadcasts from the database in both the selected and default languages
+        $broadcastsSelection = $broadcastsTable->getBroadcastsList([$visibility => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, id ASC');
+        $broadcastsSelectionDefaultLanguage = $broadcastsTable->getBroadcastsList([$visibility => true, 'language' => $this->defaultLanguage], 'priority ASC, id ASC');
+        $lookupbroadcastsSelectionDefaultLanguage = array_column($broadcastsSelectionDefaultLanguage, null, 'broadcast_id');
+
+        // If the content in the selected language is empty, use the content from the default language instead
+        foreach ($broadcastsSelection as &$broadcastSelection) {
+            if (empty($broadcastSelection['content']) && isset($lookupbroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']])) {
+                $broadcastSelection['content'] = $lookupbroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']]['content'];
+            }
+        }
+
+        $broadcasts = [];
+        foreach ($broadcastsSelection as $broadcast) {
             if ($broadcast['content'] != '' && !in_array($broadcast['broadcast_id'], $closedBroadcasts)) {
                 $broadcast['content'] = $converter->convert($broadcast['content']);
 

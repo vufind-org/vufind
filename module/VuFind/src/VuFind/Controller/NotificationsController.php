@@ -60,6 +60,13 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
     protected $config;
 
     /**
+     * Default language
+     *
+     * @var mixed
+     */
+    private $defaultLanguage;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service locator
@@ -71,6 +78,9 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
     {
         parent::__construct($sm);
         $this->config = $sm->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml');
+        if (!empty($this->config['Notifications']['languages'])) {
+            $this->defaultLanguage = $this->config['Notifications']['languages'][0];
+        }
     }
 
     /**
@@ -137,8 +147,20 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $environment->addExtension(new EmojiExtension());
         $converter = new MarkdownConverter($environment);
 
+        // Retrieve all broadcasts from the database in both the selected and default languages
+        $broadcastsSelection = $broadcastsTable->getBroadcastsList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC', false);
+        $broadcastsSelectionDefaultLanguage = $broadcastsTable->getBroadcastsList(['language' => $this->defaultLanguage], 'priority ASC, id ASC', false);
+        $lookupbroadcastsSelectionDefaultLanguage = array_column($broadcastsSelectionDefaultLanguage, null, 'broadcast_id');
+
+        // If the content in the selected language is empty, use the content from the default language instead
+        foreach ($broadcastsSelection as &$broadcastSelection) {
+            if (empty($broadcastSelection['content']) && isset($lookupbroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']])) {
+                $broadcastSelection['content'] = $lookupbroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']]['content'];
+            }
+        }
+
         $broadcastsList = [];
-        foreach ($broadcastsTable->getBroadcastsList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC', false) as $broadcast) {
+        foreach ($broadcastsSelection as $broadcast) {
             if ($broadcast['content'] != '') {
                 $broadcast['content'] = $converter->convert($broadcast['content']);
             }
