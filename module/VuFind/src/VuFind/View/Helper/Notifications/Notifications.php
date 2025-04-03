@@ -118,9 +118,26 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
         $environment->addExtension(new EmojiExtension());
         $converter = new MarkdownConverter($environment);
 
-        $pages = [];
+        // Retrieve all broadcasts from the database in both the selected and default languages
+        $pagesSelection = $pagesTable->getPagesList(['visibility' => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, page_id ASC');
+        $pagesSelectionDefaultLanguage = $pagesTable->getPagesList(['visibility' => true, 'language' => $this->defaultLanguage], 'priority ASC, page_id ASC');
+        $lookupPagesSelectionDefaultLanguage = array_column($pagesSelectionDefaultLanguage, null, 'page_id');
 
-        foreach ($pagesTable->getPagesList(['visibility' => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, page_id ASC') as $page) {
+        // If the content in the selected language is empty, use the content from the default language instead
+        foreach ($pagesSelection as &$pageSelection) {
+            if (empty($pageSelection['content']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['content'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            }
+            if (empty($pageSelection['headline']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['headline'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            }
+            if (empty($pageSelection['nav_title']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['nav_title'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            }
+        }
+
+        $pages = [];
+        foreach ($pagesSelection as $page) {
             if ($page['headline'] != '') {
                 $page['headline'] = $converter->convert($page['headline']);
             }

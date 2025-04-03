@@ -107,8 +107,26 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $environment->addExtension(new EmojiExtension());
         $converter = new MarkdownConverter($environment);
 
+        // Retrieve all broadcasts from the database in both the selected and default languages
+        $pagesSelection = $pagesTable->getPagesList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC');
+        $pagesSelectionDefaultLanguage = $pagesTable->getPagesList(['language' => $this->defaultLanguage], 'priority ASC, id ASC');
+        $lookupPagesSelectionDefaultLanguage = array_column($pagesSelectionDefaultLanguage, null, 'page_id');
+
+        // If the content in the selected language is empty, use the content from the default language instead
+        foreach ($pagesSelection as &$pageSelection) {
+            if (empty($pageSelection['content']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['content'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            }
+            if (empty($pageSelection['headline']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['headline'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            }
+            if (empty($pageSelection['nav_title']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['nav_title'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            }
+        }
+
         $pagesList = [];
-        foreach ($pagesTable->getPagesList([], 'priority ASC, id ASC') as $page) {
+        foreach ($pagesSelection as $page) {
             if ($page['headline'] != '') {
                 $page['headline'] = $converter->convert($page['headline']);
             }
@@ -431,6 +449,9 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
 
         $pagesTable = $this->getTable('notifications_pages');
         $page = $pagesTable->getPageByPageIdAndLanguage($page_id, $this->getTranslatorLocale());
+        if ($page['content'] == '') {
+            $page = $pagesTable->getPageByPageIdAndLanguage($page_id, $this->defaultLanguage);
+        }
 
         if ($page) {
             $environment = new Environment([]);
