@@ -76,10 +76,12 @@ $(function() {
                     $this.find('.icon--font').removeClass('fa-eye-slash');
                     $this.find('.icon--font').addClass('fa-eye');
                     $this.data('visibility', '0');
+                    $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_shown'));
                 } else {
                     $this.find('.icon--font').removeClass('fa-eye');
                     $this.find('.icon--font').addClass('fa-eye-slash');
                     $this.data('visibility', '1');
+                    $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_hidden'));
                 }
             },
         });
@@ -98,13 +100,15 @@ $(function() {
             },
             success : function(data) {
                 if (data.data.visibility_global == 1) {
-                    $this.find('.icon--font').removeClass('fa-globe');
-                    $this.find('.icon--font').addClass('fa-times-circle');
-                    $this.data('visibility-global', '0');
-                } else {
                     $this.find('.icon--font').removeClass('fa-times-circle');
                     $this.find('.icon--font').addClass('fa-globe');
+                    $this.data('visibility-global', '0');
+                    $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_global_shown'));
+                } else {
+                    $this.find('.icon--font').removeClass('fa-globe');
+                    $this.find('.icon--font').addClass('fa-times-circle');
                     $this.data('visibility-global', '1');
+                    $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_global_hidden'));
                 }
             },
         });

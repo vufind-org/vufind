@@ -8,6 +8,16 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('admin/notifications-broadcasts', ['action' => 'Broadcasts']) . '">' . $this->transEsc('notifications_broadcasts') . '</a></li>';
+
+    $this->jsTranslations()->addStrings(
+        [
+            'notifications_broadcasts_reorder' => 'notifications_broadcasts_reorder',
+            'notifications_broadcasts_visibility_hidden' => 'notifications_broadcasts_visibility_hidden',
+            'notifications_broadcasts_visibility_shown' => 'notifications_broadcasts_visibility_shown',
+            'notifications_broadcasts_visibility_global_hidden' => 'notifications_broadcasts_visibility_global_hidden',
+            'notifications_broadcasts_visibility_global_shown' => 'notifications_broadcasts_visibility_global_shown',
+        ]
+    );
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
@@ -29,18 +39,18 @@
       <?php foreach($this->broadcastsList as $broadcast): ?>
         <tr data-broadcast-id="<?=$broadcast['broadcast_id']?>">
           <td>
-            <span class="reorder">
+            <span class="reorder" title="<?=$this->transEsc('notifications_broadcasts_reorder')?>">
               <?=$this->icon('notifications-order') ?>
             </span>
             <?php if ($broadcast['visibility']): ?>
-              <a href="" class="notifications-visibility" data-visibility="0"><?=$this->icon('notifications-visible') ?></a>
+              <a href="" class="notifications-visibility" data-visibility="0" title="<?=$this->transEsc('notifications_broadcasts_visibility_shown')?>"><?=$this->icon('notifications-visible') ?></a>
             <?php else: ?>
-              <a href="" class="notifications-visibility" data-visibility="1"><?=$this->icon('notifications-invisible') ?></a>
+              <a href="" class="notifications-visibility" data-visibility="1" title="<?=$this->transEsc('notifications_broadcasts_visibility_hidden')?>"><?=$this->icon('notifications-invisible') ?></a>
             <?php endif; ?>
             <?php if ($broadcast['visibility_global']): ?>
-              <a href="" class="notifications-visibility-global" data-visibility-global="0"><?=$this->icon('notifications-visible-global') ?></a>
+              <a href="" class="notifications-visibility-global" data-visibility-global="0" title="<?=$this->transEsc('notifications_broadcasts_visibility_global_shown')?>"><?=$this->icon('notifications-invisible-global') ?></a>
             <?php else: ?>
-              <a href="" class="notifications-visibility-global" data-visibility-global="1"><?=$this->icon('notifications-invisible-global') ?></a>
+              <a href="" class="notifications-visibility-global" data-visibility-global="1" title="<?=$this->transEsc('notifications_broadcasts_visibility_global_hidden')?>"><?=$this->icon('notifications-visible-global') ?></a>
             <?php endif; ?>
             <a href="<?=$this->url('admin/notifications-broadcasts', ['action' => 'EditBroadcast'])?>?broadcast_id=<?=$broadcast['broadcast_id']?>" title="<?=$this->transEsc('Edit')?>"><?=$this->icon('notifications-edit') ?></a>
             <a href="<?=$this->url('admin/notifications-broadcasts', ['action' => 'DeleteBroadcast'])?>?broadcast_id=<?=$broadcast['broadcast_id']?>" title="<?=$this->transEsc('Delete')?>"><?=$this->icon('notifications-delete') ?></a>
