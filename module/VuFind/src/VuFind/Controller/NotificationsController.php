@@ -150,12 +150,12 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         // Retrieve all broadcasts from the database in both the selected and default languages
         $broadcastsSelection = $broadcastsTable->getBroadcastsList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC', false);
         $broadcastsSelectionDefaultLanguage = $broadcastsTable->getBroadcastsList(['language' => $this->defaultLanguage], 'priority ASC, id ASC', false);
-        $lookupbroadcastsSelectionDefaultLanguage = array_column($broadcastsSelectionDefaultLanguage, null, 'broadcast_id');
+        $lookupBroadcastsSelectionDefaultLanguage = array_column($broadcastsSelectionDefaultLanguage, null, 'broadcast_id');
 
         // If the content in the selected language is empty, use the content from the default language instead
         foreach ($broadcastsSelection as &$broadcastSelection) {
-            if (empty($broadcastSelection['content']) && isset($lookupbroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']])) {
-                $broadcastSelection['content'] = $lookupbroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']]['content'];
+            if (empty($broadcastSelection['content']) && isset($lookupBroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']])) {
+                $broadcastSelection['content'] = $lookupBroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']]['content'];
             }
         }
 
