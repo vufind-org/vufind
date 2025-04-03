@@ -68,10 +68,10 @@
               </td>
               <td class="user-comment">
                 <?php if (isset($comment['rating'])): ?>
-                <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['rating' => $comment['rating'], 'count' => 1]])?>
+                  <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['rating' => $comment['rating'], 'count' => 1]])?>
                 <?php else: ?>
-                <?php $truncateSettings = ['rows' => 1]?>
-                <div class="user-comment-truncate" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"><?=$this->escapeHtml($comment['comment'] ?? '')?></div>
+                  <?php $truncateSettings = ['rows' => 1]?>
+                  <div class="user-comment-truncate" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"><?=$this->escapeHtml($comment['comment'] ?? '')?></div>
                 <?php endif; ?>
               </td>
             </tr>
