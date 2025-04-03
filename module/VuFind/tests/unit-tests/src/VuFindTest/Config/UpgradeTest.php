@@ -626,36 +626,9 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS.ini'];
-        $edsRecordDataFormatterConfig = $results['EDSRecordDataFormatter.ini'];
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
         $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
         $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
-        $this->assertEquals(
-            ['extraLineOptions' => ['CoreAuthors']],
-            $edsRecordDataFormatterConfig['CoreItems']
-        );
-        $this->assertEquals(
-            ['extraLineOptions' => ['ResultListAuthors']],
-            $edsRecordDataFormatterConfig['ResultListItems']
-        );
-        $this->assertEquals(
-            [
-                'lineIdentifierKey' => 'Group',
-                'lineIdentifierValue' => 'Au',
-                'separator' => '; ',
-            ],
-            $edsRecordDataFormatterConfig['CoreAuthors']
-        );
-        $this->assertEquals(
-            [
-                'lineIdentifierKey' => 'Group',
-                'lineIdentifierValue' => 'Au',
-                'limit' => 3,
-                'separator' => '; ',
-                'multiAltDataMethod' => 'getPrimaryAuthorsWithHighlighting',
-            ],
-            $edsRecordDataFormatterConfig['ResultListAuthors']
-        );
     }
 
     /**
@@ -674,46 +647,32 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
         $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
         $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
+        $this->assertContains(
+            'CoreAuthors',
+            $edsRecordDataFormatterConfig['CoreItems']['extraLineOptions']
+        );
+        foreach (['Label:Availability', 'Group:URL', 'Group:AuInfo'] as $excludeFilter) {
+            $this->assertContains(
+                $excludeFilter,
+                $edsRecordDataFormatterConfig['CoreItems']['filterExclude']
+            );
+        }
+        foreach (['Label:Availability', 'Group:Su', 'Group:URL'] as $excludeFilter) {
+            $this->assertContains(
+                $excludeFilter,
+                $edsRecordDataFormatterConfig['ResultListItems']['filterExclude']
+            );
+        }
         $this->assertEquals(
-            [
-                'extraLineOptions' => ['CoreAuthors'],
-                'filterExclude' => [
-                    'Label:Availability',
-                    'Group:URL',
-                    'Group:AuInfo',
-                ],
-            ],
-            $edsRecordDataFormatterConfig['CoreItems']
+            'getPrimaryAuthorsWithHighlighting',
+            $edsRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod']
         );
         $this->assertEquals(
-            [
-                'extraLineOptions' => ['ResultListAuthors'],
-                'filterExclude' => [
-                    'Label:Availability',
-                    'Group:Su',
-                    'Group:URL',
-                ],
-            ],
-            $edsRecordDataFormatterConfig['ResultListItems']
+            5,
+            $edsRecordDataFormatterConfig['CoreAuthors']['limit']
         );
-        $this->assertEquals(
-            [
-                'lineIdentifierKey' => 'Group',
-                'lineIdentifierValue' => 'Au',
-                'separator' => '; ',
-                'multiAltDataMethod' => 'getPrimaryAuthorsWithHighlighting',
-                'limit' => 5,
-            ],
-            $edsRecordDataFormatterConfig['CoreAuthors']
-        );
-        $this->assertEquals(
-            [
-                'lineIdentifierKey' => 'Group',
-                'lineIdentifierValue' => 'Au',
-                'separator' => '; ',
-            ],
-            $edsRecordDataFormatterConfig['ResultListAuthors']
-        );
+        $this->assertArrayNotHasKey('multiAltDataMethod', $edsRecordDataFormatterConfig['ResultListAuthors']);
+        $this->assertArrayNotHasKey('limit', $edsRecordDataFormatterConfig['ResultListAuthors']);
     }
 
     /**

@@ -1094,6 +1094,7 @@ class Upgrade
             && $newEDSConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
         ) {
             $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:AuInfo';
+            $newEDSRecordDataFormatterConfig['CoreItems']['extraLineOptions'][] = 'CoreAuthors';
             $newEDSRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod'] =
                 'getPrimaryAuthorsWithHighlighting';
             $newEDSRecordDataFormatterConfig['CoreAuthors']['limit'] =
