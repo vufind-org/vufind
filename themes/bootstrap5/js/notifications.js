@@ -76,12 +76,22 @@ $(function() {
                     $this.find('.icon--font').removeClass('fa-eye-slash');
                     $this.find('.icon--font').addClass('fa-eye');
                     $this.data('visibility', '0');
-                    $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_shown'));
+                    if ($this.parents('tr').data('page-id')) {
+                        $this.attr('title', VuFind.translate('notifications_pages_visibility_global_shown'));
+                    }
+                    if ($this.parents('tr').data('broadcast-id')) {
+                        $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_shown'));
+                    }
                 } else {
                     $this.find('.icon--font').removeClass('fa-eye');
                     $this.find('.icon--font').addClass('fa-eye-slash');
                     $this.data('visibility', '1');
-                    $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_hidden'));
+                    if ($this.parents('tr').data('page-id')) {
+                        $this.attr('title', VuFind.translate('notifications_pages_visibility_global_hidden'));
+                    }
+                    if ($this.parents('tr').data('broadcast-id')) {
+                        $this.attr('title', VuFind.translate('notifications_broadcasts_visibility_hidden'));
+                    }
                 }
             },
         });
