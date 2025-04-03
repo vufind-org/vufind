@@ -51,3 +51,174 @@ main:
         - label: Import XML
           type: internal-command
           command: import/import-xsl
+        - label: Import CSV
+          type: internal-command
+          command: import/import-csv
+        - label: Import via webcrawl
+          type: internal-command
+          command: import/webcrawl
+    - label: Compile Options
+      type: menu
+      contents:
+        - label: Compile theme (flatten hierarchy)
+          type: internal-command
+          command: compile/theme
+    - label: Completion Options
+      type: menu
+      contents:
+        - label: Dump the shell completion script to enable shell autocompletion
+          type: internal command
+          command: completion
+    - label: Generate Options
+      type: menu
+      contents:
+        - label: Generate a dynamic route
+          type: internal-command
+          command: generate/dynamicroute
+        - label: Generate a subclass, with lookup by class name
+          type: internal-command
+          command: generate/extendclass
+        - label: Generate a service (override with a new child class)
+          type: internal-command
+          command: generate/extendservice
+        - label: Generate a non-tab record action route
+          type: internal-command
+          command: generate/nontabrecordaction
+        - label: Generate a new plugin class
+          type: internal-command
+          command: generate/plugin
+        - label: Generate a record route
+          type: internal-command
+          command: generate/recordroute
+        - label: Generate a static route
+          type: internal-command
+          command: generate/staticroute
+        - label: Generate and configure a new theme
+          type: internal-command
+          command: generate/theme
+        - label: Generate and configure a new theme mixin
+          type: internal-command
+          command: generate/thememixin
+    - label: Harvest Options
+      type: menu
+      contents:
+        - label: Harvest metadata using OAI-PMH
+          type: internal-command
+          command: harvest/harvest-oai
+        - label: Merge harvested MARCXML files into a collection
+          type: internal-command
+          command: harvest/merge-marc
+    - label: Help Options
+      type: menu
+      contents:
+        - label: Display help for a command
+          type: internal-command
+          command: help
+    - label: Install Options
+      type: menu
+      contents:
+        - label: Install VuFind
+          type: internal-command
+          command: install/install
+    - label: Language options
+      type: menu
+      contents:
+        - label: Add new language strings based on existing ones, using a template
+          type: internal-command
+          command: language/addusingtemplate
+        - label: Copy a language string
+          type: internal-command
+          command: language/copystring
+        - label: Remove a language string from all files
+          type: internal-command
+          command: language/delete
+        - label: Load and normalize language strings from Lokalise export files
+          type: internal-command
+          command: language/importlokalise
+        - label: Normalize a file or directory of language strings
+          type: internal-command
+          command: language/normalize
+    - label: List Options
+      type: menu
+      contents:
+        - label: Display a list of commands
+          type: internal-command
+          command: list
+    - label: Menu Options
+      type: menu
+      contents:
+        - label: Display this interactive menu of commands
+          type: internal-command
+          command: menu/menu
+    - label: Scheduled Search Notification Options
+      type: menu
+      contents:
+        - label: Send scheduled search email notifications
+          type: internal-command
+          command: scheduledsearch/notify
+    - label: Utility Options
+      type: menu
+      contents:
+        - label: Manage the browscap cache
+          type: internal-command
+          command: util/browscap
+        - label: Remove unused cached records from the database
+          type: internal-command
+          command: util/cleanup_record_cache
+        - label: Send a commit command to a Solr index
+          type: internal-command
+          command: util/commit
+        - label: Populate the hierarchy tree cache
+          type: internal-command
+          command: util/createHierarchyTrees
+        - label: Deduplicate lines in a sorted file
+          type: internal-command
+          command: util/dedupe
+        - label: Delete a set of records from the Solr index
+          type: internal-command
+          command: util/deletes
+        - label: Populate the course reserves Solr index
+          type: internal-command
+          command: util/index_reserves
+        - label: Validate MARC file contents
+          type: internal-command
+          command: util/lint_marc
+        - label: Send an optimize command to a Solr index
+          type: internal-command
+          command: util/optimize
+        - label: Purge a cached record (and optionally a resource) from the database
+          type: internal-command
+          command: util/purge_cached_record
+        - label: Compile CSS files from SCSS
+          type: internal-command
+          command: util/scssBuilder
+        - label: Generate XML sitemap files
+          type: internal-command
+          command: util/sitemap
+        - label: Remove ILS-suppressed records from Solr
+          type: internal-command
+          command: util/suppressed
+        - label: Switch the encryption algorithm in the database and config
+          type: internal-command
+          command: switch_db_hash
+    - label: Expire Options
+      type: menu
+      contents:
+        - label: Expire old access tokens in the database
+          type: internal-command
+          command: util/expire_access_tokens
+        - label: Expire old authentication hashes in the database
+          type: internal-command
+          command: util/expire_auth_hashes
+        - label: Expire old external sessions in the database
+          type: internal-command
+          command: util/expire_external_sessions
+        - label: Expire old login tokens in the database
+          type: internal-command
+          command: util/expire_login_tokens
+        - label: Expire old searches in the database
+          type: internal-command
+          command: util/expire_searches
+        - label: Expire old sessions in the database
+          type: internal-command
+          command: util/expire_sessions
