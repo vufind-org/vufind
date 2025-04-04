@@ -247,6 +247,13 @@ main:
     - label: Utility Options
       type: menu
       contents:
+        - label: Run Solr commands
+          type: external-command
+          command: solr.sh
+          winCommand: solr.bat
+          arguments:
+            - label: Action to take (start, stop, restart, or status)
+              required: true
         - label: Index all alphabetic browse entries
           type: external-command
           command: index-alphabetic-browse.sh
