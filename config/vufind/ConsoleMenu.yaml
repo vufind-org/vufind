@@ -128,14 +128,9 @@ main:
           arguments:
             - label: Harvest subdirectory
               required: true
-            - label: Properties file
-              required: false
           options:
-            - label: Use the directory path as-is, do not append it to /usr/local/vufind/local/harvest.
+            - label: Use the directory path as-is, do not append it to $VUFIND_LOCAL_DIR/harvest.
               switch: -d
-              type: no-value
-            - label: Print this message.
-              switch: -h
               type: no-value
             - label: Do not move the data files after importing.
               switch: -m
@@ -159,11 +154,8 @@ main:
             - label: SolrMARC properties file
               required: true
           options:
-            - label: Use the directory path as-is, do not append it to /usr/local/vufind/local/harvest.
+            - label: Use the directory path as-is, do not append it to $VUFIND_LOCAL_DIR/harvest.
               switch: -d
-              type: no-value
-            - label: Print this message.
-              switch: -h
               type: no-value
             - label: Do not move the data files after importing.
               switch: -m
