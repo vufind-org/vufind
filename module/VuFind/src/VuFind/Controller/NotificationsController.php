@@ -125,6 +125,14 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             }
         }
 
+        // Check if pages are missing, and include the default language version if that is the case
+        $pagesSelectionIds = array_column($pagesSelection, 'page_id');
+        foreach ($pagesSelectionDefaultLanguage as $pageSelectionDefaultLanguage) {
+            if (!in_array($pageSelectionDefaultLanguage['page_id'], $pagesSelectionIds)) {
+                $pagesSelection[] = $pageSelectionDefaultLanguage;
+            }
+        }
+
         $pagesList = [];
         foreach ($pagesSelection as $page) {
             if ($page['headline'] != '') {
@@ -174,6 +182,14 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         foreach ($broadcastsSelection as &$broadcastSelection) {
             if (empty($broadcastSelection['content']) && isset($lookupBroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']])) {
                 $broadcastSelection['content'] = $lookupBroadcastsSelectionDefaultLanguage[$broadcastSelection['broadcast_id']]['content'];
+            }
+        }
+
+        // Check if broadcasts are missing, and include the default language version if that is the case
+        $broadcastsSelectionIds = array_column($broadcastsSelection, 'broadcast_id');
+        foreach ($broadcastsSelectionDefaultLanguage as $broadcastSelectionDefaultLanguage) {
+            if (!in_array($broadcastSelectionDefaultLanguage['broadcast_id'], $broadcastsSelectionIds)) {
+                $broadcastsSelection[] = $broadcastSelectionDefaultLanguage;
             }
         }
 
