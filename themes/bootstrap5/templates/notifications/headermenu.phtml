@@ -1,12 +1,13 @@
 <?php
   $pages = $this->notifications()->getPages();
+  $maxWidth = round((100/sizeof($pages))-10);
 ?>
-<ul class="nav navbar-nav navbar-left flip">
+<ul class="nav navbar-nav navbar-left flip notifications-nav">
   <?php foreach($pages as $page): ?>
     <?php if($page['is_external_url']): ?>
-      <li class="nav-item"><a class="nav-link" href="<?=$page['external_url']?>" target="_blank"><?=strip_tags($page['nav_title'])?></a></li>
+      <li class="nav-item" style="max-width:<?=$maxWidth?>%;"><a class="nav-link notifications-nav-link" href="<?=$page['external_url']?>" target="_blank"><?=strip_tags($page['nav_title'])?></a></li>
     <?php else: ?>
-      <li class="nav-item"><a class="nav-link" href="<?=$this->url('notifications-page')?>?page_id=<?=$page['page_id']?>"><?=strip_tags($page['nav_title'])?></a></li>
+      <li class="nav-item" style="max-width:<?=$maxWidth?>%;"><a class="nav-link notifications-nav-link" href="<?=$this->url('notifications-page')?>?page_id=<?=$page['page_id']?>"><?=strip_tags($page['nav_title'])?></a></li>
     <?php endif; ?>
   <?php endforeach; ?>
 </ul>

@@ -127,3 +127,14 @@ ul.notifications-tabs {
     height: auto;
   }
 }
+
+ul.notifications-nav {
+  justify-content: flex-end;
+}
+
+a.notifications-nav-link {
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  display: block !important;
+}
