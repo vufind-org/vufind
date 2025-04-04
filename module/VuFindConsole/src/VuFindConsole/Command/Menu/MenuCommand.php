@@ -57,6 +57,20 @@ use function in_array;
 class MenuCommand extends Command
 {
     /**
+     * Menu option for running a command.
+     *
+     * @var string
+     */
+    protected string $runCommand = 'Run Command';
+
+    /**
+     * Menu option for exiting a command without running it.
+     *
+     * @var string
+     */
+    protected string $exitCommand = 'Exit Command';
+
+    /**
      * Constructor
      *
      * @param array         $config         Menu configuration
@@ -171,12 +185,16 @@ class MenuCommand extends Command
                             . ($argumentValues[$i] ?? $currentArgument['default'] ?? '--unset--');
                     }
                 }
-                $menu[] = 'Run Command';
+                $menu[] = $this->exitCommand;
+                $menu[] = $this->runCommand;
                 $question = new ChoiceQuestion(
                     'Choose an option: ',
                     $menu
                 );
                 $result = $helper->ask($input, $output, $question);
+                if ($result === $this->exitCommand) {
+                    return 1;
+                }
                 $resultParts = explode(' ', $result);
                 $index = $resultParts[2] ?? null;
                 switch ($resultParts[1] ?? '') {
@@ -206,7 +224,7 @@ class MenuCommand extends Command
                         $argumentValues[$index] = $helper->ask($input, $output, $valueQuestion);
                         break;
                 }
-            } while ($result !== 'Run Command');
+            } while ($result !== $this->runCommand);
         }
 
         // Run the command:
