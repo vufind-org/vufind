@@ -48,6 +48,15 @@ main:
             - label: Properties File
               switch: -p
               type: string
+        - label: Import MARC authority records
+          type: external-command
+          command: import-marc-auth.sh
+          winCommand: import-marc-auth.bat
+          arguments:
+            - label: Filename
+              required: true
+            - label: Properties file
+              required: false
         - label: Import XML
           type: internal-command
           command: import/import-xsl
@@ -102,7 +111,35 @@ main:
     - label: Harvest Options
       type: menu
       contents:
-        - label: Batch import harvested authority records
+        - label: Batch import harvested MARC records
+          type: external-command
+          command: harvest/batch-import-marc.sh
+          winCommand: harvest/batch-import-marc.bat
+          arguments:
+            - label: Harvest subdirectory
+              required: true
+            - label: Properties file
+              required: false
+          options:
+            - label: Use the directory path as-is, do not append it to /usr/local/vufind/local/harvest.
+              switch: -d
+              type: no-value
+            - label: Print this message.
+              switch: -h
+              type: no-value
+            - label: Do not move the data files after importing.
+              switch: -m
+              type: no-value
+            - label: Use specified SolrMarc configuration properties file.
+              switch: -p
+              type: string
+            - label: Maximum number of files to send in batches to import-marc.sh (default is MAX_BATCH_COUNT or 10)
+              switch: -x
+              type: string
+            - label: No logging.
+              switch: -z
+              type: no-value
+        - label: Batch import harvested MARC authority records
           type: external-command
           command: harvest/batch-import-marc-auth.sh
           winCommand: harvest/batch-import-marc-auth.bat
@@ -117,12 +154,25 @@ main:
               type: no-value
             - label: Print this message.
               switch: -h
-              type: string
+              type: no-value
             - label: Do not move the data files after importing.
               switch: -m
               type: no-value
             - label: No logging.
               switch: -z
+              type: no-value
+        - label: Batch import harvested XML records
+          type: external-command
+          command: harvest/batch-import-xsl.sh
+          winCommand: harvest/batch-import-xsl.bat
+          arguments:
+            - label: Harvest subdirectory
+              required: true
+            - label: Properties file
+              required: true
+          options:
+            - label: Skip optimize operation after importing.
+              switch: -s
               type: no-value
         - label: Harvest metadata using OAI-PMH
           type: internal-command
@@ -197,6 +247,10 @@ main:
     - label: Utility Options
       type: menu
       contents:
+        - label: Index all alphabetic browse entries
+          type: external-command
+          command: index-alphabetic-browse.sh
+          winCommand: index-alphabetic-browse.bat
         - label: Manage the browscap cache
           type: internal-command
           command: util/browscap
