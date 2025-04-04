@@ -34,53 +34,9 @@ main:
   label: Main Menu
   type: menu
   contents:
-    - label: Import Options
-      type: menu
-      contents:
-        - label: Import MARC
-          type: external-command
-          command: import-marc.sh
-          winCommand: import-marc.bat
-          arguments:
-            - label: Filename
-              required: true
-          options:
-            - label: Properties File
-              switch: -p
-              type: string
-        - label: Import MARC authority records
-          type: external-command
-          command: import-marc-auth.sh
-          winCommand: import-marc-auth.bat
-          arguments:
-            - label: Filename
-              required: true
-            - label: Properties file
-              required: false
-        - label: Import XML
-          type: internal-command
-          command: import/import-xsl
-        - label: Import CSV
-          type: internal-command
-          command: import/import-csv
-        - label: Import via webcrawl
-          type: internal-command
-          command: import/webcrawl
-    - label: Compile Options
-      type: menu
-      contents:
-        - label: Compile theme (flatten hierarchy)
-          type: internal-command
-          command: compile/theme
-    - label: Completion Options
-      type: menu
-      contents:
-        - label: Dump the shell completion script to enable shell autocompletion
-          type: internal command
-          command: completion
-    - label: Generate Options
-      type: menu
-      contents:
+      - label: Code Generation Tools
+        type: menu
+        contents:
         - label: Generate a dynamic route
           type: internal-command
           command: generate/dynamicroute
@@ -108,9 +64,63 @@ main:
         - label: Generate and configure a new theme mixin
           type: internal-command
           command: generate/thememixin
-    - label: Harvest Options
-      type: menu
-      contents:
+        - label: Compile theme (flatten hierarchy)
+          type: internal-command
+          command: compile/theme
+      - label: Configuration and Installation Tools
+        type: menu
+        contents:
+        - label: Manage VuFind installation
+          type: internal-command
+          command: install/install
+        - label: Manage the browscap cache
+          type: internal-command
+          command: util/browscap
+        - label: Switch the encryption algorithm in the database and config
+          type: internal-command
+          command: switch_db_hash
+      - label: Data Cleanup and Expiration Tools
+        type: menu
+        contents:
+        - label: Remove unused cached records from the database
+          type: internal-command
+          command: util/cleanup_record_cache
+        - label: Purge a cached record (and optionally a resource) from the database
+          type: internal-command
+          command: util/purge_cached_record
+        - label: Expire old access tokens in the database
+          type: internal-command
+          command: util/expire_access_tokens
+        - label: Expire old authentication hashes in the database
+          type: internal-command
+          command: util/expire_auth_hashes
+        - label: Expire old external sessions in the database
+          type: internal-command
+          command: util/expire_external_sessions
+        - label: Expire old login tokens in the database
+          type: internal-command
+          command: util/expire_login_tokens
+        - label: Expire old searches in the database
+          type: internal-command
+          command: util/expire_searches
+        - label: Expire old sessions in the database
+          type: internal-command
+          command: util/expire_sessions
+      - label: Data Management Tools
+        type: menu
+        contents:
+        - label: Populate the hierarchy tree cache
+          type: internal-command
+          command: util/createHierarchyTrees
+        - label: Generate XML sitemap files
+          type: internal-command
+          command: util/sitemap
+        - label: Send scheduled search email notifications
+          type: internal-command
+          command: scheduledsearch/notify
+      - label: Harvest Tools
+        type: menu
+        contents:
         - label: Batch import harvested MARC records
           type: external-command
           command: harvest/batch-import-marc.sh
@@ -196,21 +206,48 @@ main:
             - label: Specify ID prefix
               switch: --id-prefix
               type: string
-    - label: Help Options
-      type: menu
-      contents:
-        - label: Display help for a command
+      - label: Import Tools
+        type: menu
+        contents:
+        - label: Import MARC
+          type: external-command
+          command: import-marc.sh
+          winCommand: import-marc.bat
+          arguments:
+            - label: Filename
+              required: true
+          options:
+            - label: Properties File
+              switch: -p
+              type: string
+        - label: Import MARC authority records
+          type: external-command
+          command: import-marc-auth.sh
+          winCommand: import-marc-auth.bat
+          arguments:
+            - label: Filename
+              required: true
+            - label: Properties file
+              required: false
+        - label: Import XML
           type: internal-command
-          command: help
-    - label: Install Options
-      type: menu
-      contents:
-        - label: Install VuFind
+          command: import/import-xsl
+        - label: Import CSV
           type: internal-command
-          command: install/install
-    - label: Language options
-      type: menu
-      contents:
+          command: import/import-csv
+        - label: Import via webcrawl
+          type: internal-command
+          command: import/webcrawl
+        - label: Index all alphabetic browse entries
+          type: external-command
+          command: index-alphabetic-browse.sh
+          winCommand: index-alphabetic-browse.bat
+        - label: Populate the course reserves Solr index
+          type: internal-command
+          command: util/index_reserves
+      - label: Language Tools
+        type: menu
+        contents:
         - label: Add new language strings based on existing ones, using a template
           type: internal-command
           command: language/addusingtemplate
@@ -226,15 +263,9 @@ main:
         - label: Normalize a file or directory of language strings
           type: internal-command
           command: language/normalize
-    - label: Scheduled Search Notification Options
-      type: menu
-      contents:
-        - label: Send scheduled search email notifications
-          type: internal-command
-          command: scheduledsearch/notify
-    - label: Utility Options
-      type: menu
-      contents:
+      - label: Solr Management Tools
+        type: menu
+        contents:
         - label: Run Solr commands
           type: external-command
           command: solr.sh
@@ -242,70 +273,24 @@ main:
           arguments:
             - label: Action to take (start, stop, restart, or status)
               required: true
-        - label: Index all alphabetic browse entries
-          type: external-command
-          command: index-alphabetic-browse.sh
-          winCommand: index-alphabetic-browse.bat
-        - label: Manage the browscap cache
-          type: internal-command
-          command: util/browscap
-        - label: Remove unused cached records from the database
-          type: internal-command
-          command: util/cleanup_record_cache
         - label: Send a commit command to a Solr index
           type: internal-command
           command: util/commit
-        - label: Populate the hierarchy tree cache
-          type: internal-command
-          command: util/createHierarchyTrees
-        - label: Deduplicate lines in a sorted file
-          type: internal-command
-          command: util/dedupe
         - label: Delete a set of records from the Solr index
           type: internal-command
           command: util/deletes
-        - label: Populate the course reserves Solr index
-          type: internal-command
-          command: util/index_reserves
-        - label: Validate MARC file contents
-          type: internal-command
-          command: util/lint_marc
         - label: Send an optimize command to a Solr index
           type: internal-command
           command: util/optimize
-        - label: Purge a cached record (and optionally a resource) from the database
-          type: internal-command
-          command: util/purge_cached_record
-        - label: Compile CSS files from SCSS
-          type: internal-command
-          command: util/scssBuilder
-        - label: Generate XML sitemap files
-          type: internal-command
-          command: util/sitemap
         - label: Remove ILS-suppressed records from Solr
           type: internal-command
           command: util/suppressed
-        - label: Switch the encryption algorithm in the database and config
+      - label: Utilities
+        type: menu
+        contents:
+        - label: Deduplicate lines in a sorted file
           type: internal-command
-          command: switch_db_hash
-    - label: Expire Options
-      type: menu
-      contents:
-        - label: Expire old access tokens in the database
+          command: util/dedupe
+        - label: Validate MARC file contents
           type: internal-command
-          command: util/expire_access_tokens
-        - label: Expire old authentication hashes in the database
-          type: internal-command
-          command: util/expire_auth_hashes
-        - label: Expire old external sessions in the database
-          type: internal-command
-          command: util/expire_external_sessions
-        - label: Expire old login tokens in the database
-          type: internal-command
-          command: util/expire_login_tokens
-        - label: Expire old searches in the database
-          type: internal-command
-          command: util/expire_searches
-        - label: Expire old sessions in the database
-          type: internal-command
-          command: util/expire_sessions
+          command: util/lint_marc
