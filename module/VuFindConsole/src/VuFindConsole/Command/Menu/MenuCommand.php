@@ -292,6 +292,26 @@ class MenuCommand extends Command
     }
 
     /**
+     * Display a summary of the menu system.
+     *
+     * @param OutputInterface $output Output object
+     * @param array           $config Configuration of option to summarize
+     * @param string          $indent Indentation level to apply (used for recursion)
+     *
+     * @return int
+     */
+    protected function displaySummary(OutputInterface $output, array $config, string $indent = ''): int
+    {
+        $output->writeln($indent . ($config['label'] ?? ''));
+        foreach ($config['contents'] ?? [] as $content) {
+            if (($content['type'] ?? '') !== 'summary') {
+                $this->displaySummary($output, $content, $indent . '    ');
+            }
+        }
+        return 1;
+    }
+
+    /**
      * Display a menu or prompt for the provided configuration.
      *
      * @param InputInterface  $input  Input object
@@ -312,6 +332,9 @@ class MenuCommand extends Command
                 return $this->runExternalCommand($input, $output, $config);
             case 'internal-command':
                 return $this->runInternalCommand($input, $output, $config);
+            case 'summary':
+                $output->writeln('');
+                return $this->displaySummary($output, $this->config['main']);
             default:
                 $output->writeln("Unknown menu type '$type' with label '$label'");
                 return 1;
