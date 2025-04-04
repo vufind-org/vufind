@@ -92,11 +92,23 @@ class AccountCapabilities
     /**
      * Get rating setting.
      *
-     * @return bool
+     * @return string
      */
-    public function getRatingSetting(): bool
+    public function getRatingSetting(): string
     {
-        return !empty($this->config->Social->rating);
+        return empty($this->config->Social->rating)
+            || $this->config->Social->rating === 'disabled'
+            ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get page size for comments and ratings in user account
+     *
+     * @return int
+     */
+    public function getUserCommentsPageSize(): int
+    {
+        return $this->config->Social->user_comments_page_size ?? 50;
     }
 
     /**

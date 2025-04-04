@@ -169,11 +169,12 @@ class CommentsService extends AbstractDbService implements
     /**
      * Get a paginated result of all comments and ratings by user id
      *
-     * @param int  $userId   User Id
-     * @param int  $limit    Limit
-     * @param int  $page     Page
-     * @param bool $comments Whether to fetch comments
-     * @param bool $ratings  Whether to fetch ratings
+     * @param int    $userId   User Id
+     * @param int    $limit    Limit
+     * @param int    $page     Page
+     * @param string $sort     Sort
+     * @param bool   $comments Whether to fetch comments
+     * @param bool   $ratings  Whether to fetch ratings
      *
      * @return Paginator
      */
@@ -181,6 +182,7 @@ class CommentsService extends AbstractDbService implements
         int $userId,
         int $limit,
         int $page,
+        string $sort,
         bool $comments,
         bool $ratings
     ): \Laminas\Paginator\Paginator {
@@ -188,6 +190,7 @@ class CommentsService extends AbstractDbService implements
             $userId,
             $limit,
             $page,
+            $sort,
             $comments,
             $ratings
         );

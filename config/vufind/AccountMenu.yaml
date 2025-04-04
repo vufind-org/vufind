@@ -97,6 +97,12 @@ Account:
       icon: search
       checkMethod: checkHistory
 
+    - name: usercomments
+      label: Comments and Ratings
+      route: comments-usercomments
+      icon: comment
+      checkMethod: checkCommentsAndRatings
+
     - name: logout
       label: Log Out
       route: myresearch-logout

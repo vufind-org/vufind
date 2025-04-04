@@ -55,7 +55,6 @@
                     <div class="checkbox">
                       <label>
                         <span class="sr-only"><?=$this->transEsc('Select');?></span>
-                        <?php $className = (null === $comment['comment']) ? 'rating' : 'comment';?>
                         <input class="checkbox-select-item" type="checkbox" name="deleteSelected<?=$className?>[]" value="<?=$this->escapeHtmlAttr(($comment[$className . '_id'] ?? ''))?>" id="checkbox_<?=$className?>_<?=$comment[$className . '_id']?>">
                       </label>
                     </div>

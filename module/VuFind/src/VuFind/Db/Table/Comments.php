@@ -179,15 +179,16 @@ class Comments extends Gateway implements DbServiceAwareInterface
      * Get a paginated result of all comments and ratings
      * made by the user
      *
-     * @param int  $userId   User ID
-     * @param int  $limit    Limit
-     * @param int  $page     Page
-     * @param bool $comments Whether to fetch comments
-     * @param bool $ratings  Whether to fetch ratings
+     * @param int    $userId   User ID
+     * @param int    $limit    Limit
+     * @param int    $page     Page
+     * @param string $sort     Sort
+     * @param bool   $comments Whether to fetch comments
+     * @param bool   $ratings  Whether to fetch ratings
      *
      * @return \Laminas\Paginator\Paginator|array
      */
-    public function getCommentsAndRatingsByUserId($userId, $limit, $page, $comments, $ratings)
+    public function getCommentsAndRatingsByUserId($userId, $limit, $page, $sort, $comments, $ratings)
     {
         if (!$comments && !$ratings) {
             return [];
@@ -243,7 +244,8 @@ class Comments extends Gateway implements DbServiceAwareInterface
         } elseif ($comments) {
             $paginatedSelect = $commentSelect;
         }
-        $paginatedSelect->order('created DESC');
+        $order = $sort ? $sort : 'created DESC';
+        $paginatedSelect->order($order);
         if ($page > 0) {
             $paginatedSelect->offset($page);
         }

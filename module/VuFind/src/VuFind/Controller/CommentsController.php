@@ -56,19 +56,21 @@ class CommentsController extends AbstractBase
         }
         if (
             !$this->commentsEnabled()
-            && !$this->getService(\VuFind\Config\AccountCapabilities::class)->getRatingSetting()
+            && !$this->ratingsEnabled()
         ) {
             throw new ForbiddenException('Comments and ratings disabled.');
         }
-        $limit = 50;
+        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserCommentsPageSize();
         $page = $this->params()->fromQuery('page', 1);
+        $sort = $this->params()->fromQuery('sort', '');
         $service = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
         $comments = $service->getCommentsAndRatingsByUserId(
             $user->id,
             $limit,
             $page,
+            $sort,
             $this->commentsEnabled(),
-            $this->getService(\VuFind\Config\AccountCapabilities::class)->getRatingSetting()
+            $this->ratingsEnabled()
         );
         $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         $ids = [];
@@ -115,9 +117,6 @@ class CommentsController extends AbstractBase
             $ratingsService->deleteByIdsAndUserId($ratings, $user->getId());
         }
 
-        return $this->redirect()->toRoute(
-            'default',
-            ['controller' => 'Comments', 'action' => 'userComments']
-        );
+        return $this->redirect()->toRoute('comments-usercomments');
     }
 }
