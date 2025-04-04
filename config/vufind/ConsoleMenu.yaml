@@ -102,12 +102,50 @@ main:
     - label: Harvest Options
       type: menu
       contents:
+        - label: Batch import harvested authority records
+          type: external-command
+          command: harvest/batch-import-marc-auth.sh
+          winCommand: harvest/batch-import-marc-auth.bat
+          arguments:
+            - label: Harvest subdirectory
+              required: true
+            - label: SolrMARC properties file
+              required: true
+          options:
+            - label: Use the directory path as-is, do not append it to /usr/local/vufind/local/harvest.
+              switch: -d
+              type: no-value
+            - label: Print this message.
+              switch: -h
+              type: string
+            - label: Do not move the data files after importing.
+              switch: -m
+              type: no-value
+            - label: No logging.
+              switch: -z
+              type: no-value
         - label: Harvest metadata using OAI-PMH
           type: internal-command
           command: harvest/harvest-oai
         - label: Merge harvested MARCXML files into a collection
           type: internal-command
           command: harvest/merge-marc
+        - label: Batch delete records based on files created by the OAI-PMH harvester
+          type: external-command
+          command: harvest/batch-delete.sh
+          winCommand: harvest/batch-delete.bat
+          arguments:
+            - label: Harvest subdirectory
+              required: true
+            - label: Index type
+              required: false
+          options:
+            - label: Skip optimize
+              switch: -s
+              type: no-value
+            - label: Specify ID prefix
+              switch: --id-prefix
+              type: string
     - label: Help Options
       type: menu
       contents:
