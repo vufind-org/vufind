@@ -226,18 +226,6 @@ main:
         - label: Normalize a file or directory of language strings
           type: internal-command
           command: language/normalize
-    - label: List Options
-      type: menu
-      contents:
-        - label: Display a list of commands
-          type: internal-command
-          command: list
-    - label: Menu Options
-      type: menu
-      contents:
-        - label: Display this interactive menu of commands
-          type: internal-command
-          command: menu/menu
     - label: Scheduled Search Notification Options
       type: menu
       contents:
