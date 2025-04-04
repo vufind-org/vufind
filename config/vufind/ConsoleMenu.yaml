@@ -258,7 +258,7 @@ main:
       - label: Solr Management Tools
         type: menu
         contents:
-        - label: Run Solr commands
+        - label: Manage Solr service
           type: external-command
           command: solr.sh
           winCommand: solr.bat
