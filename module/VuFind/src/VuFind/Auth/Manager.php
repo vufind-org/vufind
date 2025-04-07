@@ -421,7 +421,7 @@ class Manager implements
         $selectedAuthMethod = is_callable([$auth, 'getSelectedAuthOption'])
             ? $auth->getSelectedAuthOption()
             : $this->getAuthMethod();
-        if ($selectedAuthMethod === false) {
+        if (!$selectedAuthMethod) {
             return null;
         }
         return (string)$selectedAuthMethod;
@@ -526,18 +526,6 @@ class Manager implements
     public function userHasLoggedOut(): bool
     {
         return (bool)$this->cookieManager->get('loggedOut');
-    }
-
-    /**
-     * Legacy method to check whether the user is logged in.
-     *
-     * @return UserEntityInterface|false Object if user is logged in, false otherwise.
-     *
-     * @deprecated Use getIdentity() or getUserObject() instead.
-     */
-    public function isLoggedIn(): UserEntityInterface|false
-    {
-        return $this->getUserObject() ?? false;
     }
 
     /**
