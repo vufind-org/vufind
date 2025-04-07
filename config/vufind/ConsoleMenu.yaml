@@ -183,7 +183,7 @@ main:
             type: no-value
       - label: Harvest metadata using OAI-PMH
         type: internal-command
-        command: harvest/harvest-oai
+        command: harvest/harvest_oai
       - label: Merge harvested MARCXML files into a collection
         type: internal-command
         command: harvest/merge-marc
