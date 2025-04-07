@@ -36,6 +36,7 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Autolink\AutolinkExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
+use VuFind\Db\Service\PagesServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function in_array;
@@ -96,7 +97,7 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
      * @param PluginManager $database Database
      * @param mixed         $config   Notifications config
      */
-    public function __construct(\VuFind\Db\Table\PluginManager $database, $config)
+    public function __construct(\VuFind\Db\Table\PluginManager $database, $config, protected PagesServiceInterface $pagesService)
     {
         $this->database = $database;
         $this->config = $config;
@@ -110,8 +111,6 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
      */
     public function getPages()
     {
-        $pagesTable = $this->database->get('notifications_pages');
-
         $environment = new Environment([]);
         $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addExtension(new AutolinkExtension());
@@ -119,8 +118,8 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
         $converter = new MarkdownConverter($environment);
 
         // Retrieve all broadcasts from the database in both the selected and default languages
-        $pagesSelection = $pagesTable->getPagesList(['visibility' => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, page_id ASC');
-        $pagesSelectionDefaultLanguage = $pagesTable->getPagesList(['visibility' => true, 'language' => $this->defaultLanguage], 'priority ASC, page_id ASC');
+        $pagesSelection = $this->pagesService->getPagesList(['visibility' => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, page_id ASC');
+        $pagesSelectionDefaultLanguage = $this->pagesService->getPagesList(['visibility' => true, 'language' => $this->defaultLanguage], 'priority ASC, page_id ASC');
         $lookupPagesSelectionDefaultLanguage = array_column($pagesSelectionDefaultLanguage, null, 'page_id');
 
         // If the content in the selected language is empty, use the content from the default language instead

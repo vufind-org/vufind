@@ -37,6 +37,7 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Autolink\AutolinkExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
+use VuFind\Db\Service\PagesServiceInterface;
 use VuFind\Form\BroadcastsForm;
 use VuFind\Form\PagesForm;
 
@@ -74,7 +75,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    public function __construct(ServiceLocatorInterface $sm, protected PagesServiceInterface $pagesService)
     {
         parent::__construct($sm);
         $this->config = $sm->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml');
@@ -97,8 +98,6 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $this->redirect()->toRoute('myresearch-home');
         }
 
-        $pagesTable = $this->getTable('notifications_pages');
-
         $view = $this->createViewModel();
 
         $environment = new Environment([]);
@@ -108,8 +107,8 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $converter = new MarkdownConverter($environment);
 
         // Retrieve all broadcasts from the database in both the selected and default languages
-        $pagesSelection = $pagesTable->getPagesList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC');
-        $pagesSelectionDefaultLanguage = $pagesTable->getPagesList(['language' => $this->defaultLanguage], 'priority ASC, id ASC');
+        $pagesSelection = $this->pagesService->getPagesList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC');
+        $pagesSelectionDefaultLanguage = $this->pagesService->getPagesList(['language' => $this->defaultLanguage], 'priority ASC, id ASC');
         $lookupPagesSelectionDefaultLanguage = array_column($pagesSelectionDefaultLanguage, null, 'page_id');
 
         // If the content in the selected language is empty, use the content from the default language instead
@@ -227,7 +226,6 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'Pages']);
         }
 
-        $pagesTable = $this->getTable('notifications_pages');
         $formElementManager = $this->serviceLocator->get('FormElementManager');
         $pagesForm = $formElementManager->get(PagesForm::class);
 
@@ -242,7 +240,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $view->languages = $this->config['Notifications']['languages'];
 
         if ($page_id != 'NEW') {
-            $page = $pagesTable->getPagesDataByPageId($page_id);
+            $page = $this->pagesService->getPagesDataByPageId($page_id);
             $pagesForm->setAttribute(
                 'action',
                 $this->url()->fromRoute('admin/notifications-pages', ['action' => 'EditPage','page_id' => $page_id])
@@ -273,7 +271,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             $data['author_id'] = $user->id;
         }
 
-        $pagesTable->insertOrUpdatePage($data, $page, $page_id);
+        $this->pagesService->insertOrUpdatePage($data, $page, $page_id);
 
         return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'Pages']);
     }
@@ -368,8 +366,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'Pages']);
         }
 
-        $pagesTable = $this->getTable('notifications_pages');
-        $page = $pagesTable->getPageByPageIdAndLanguage($page_id, $this->getTranslatorLocale());
+        $page = $this->pagesService->getPageByPageIdAndLanguage($page_id, $this->getTranslatorLocale());
 
         $view = $this->createViewModel();
         $view->page = $page;
@@ -462,11 +459,10 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!$page_id) {
             return $this->redirect()->toRoute('search-home');
         }
-
-        $pagesTable = $this->getTable('notifications_pages');
-        $page = $pagesTable->getPageByPageIdAndLanguage($page_id, $this->getTranslatorLocale());
+        
+        $page = $this->pagesService->getPageByPageIdAndLanguage($page_id, $this->getTranslatorLocale());
         if ($page['content'] == '') {
-            $page = $pagesTable->getPageByPageIdAndLanguage($page_id, $this->defaultLanguage);
+            $page = $this->pagesService->getPageByPageIdAndLanguage($page_id, $this->defaultLanguage);
         }
 
         if ($page) {

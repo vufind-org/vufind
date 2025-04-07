@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Notifications helper factory.
+ * Notifications controller factory.
  *
  * PHP version 8
  *
- * Copyright (C) effective WEBWORK GmbH 2023.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Notifications;
+namespace VuFind\Controller;
 
-use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
- * Notifications helper factory.
+ * Notifications controller factory.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class NotificationsFactory implements FactoryInterface
+class NotificationsControllerFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -57,7 +59,7 @@ class NotificationsFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
         ContainerInterface $container,
@@ -70,10 +72,6 @@ class NotificationsFactory implements FactoryInterface
         $servicePluginManager = $container->get(
             \VuFind\Db\Service\PluginManager::class
         );
-        return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class),
-            $container->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml'),
-            $servicePluginManager->get(\VuFind\Db\Service\PagesServiceInterface::class)
-        );
+        return parent::__invoke($container, $requestedName, [$servicePluginManager->get(\VuFind\Db\Service\PagesServiceInterface::class)]);
     }
 }

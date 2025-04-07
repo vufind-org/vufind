@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Notifications helper factory.
+ * Database notifications pages service factory
  *
  * PHP version 8
  *
- * Copyright (C) effective WEBWORK GmbH 2023.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\View\Helper\Notifications;
+namespace VuFind\Db\Service;
 
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
- * Notifications helper factory.
+ * Database notifications pages service factory
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class NotificationsFactory implements FactoryInterface
+class PagesServiceFactory extends AbstractDbServiceFactory
 {
     /**
      * Create an object
@@ -57,23 +59,17 @@ class NotificationsFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        array $options = null
+        ContainerInterface|\Psr\Container\ContainerInterface $container,
+                                                             $requestedName,
+        array                                                $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options sent to factory!');
         }
-        $servicePluginManager = $container->get(
-            \VuFind\Db\Service\PluginManager::class
-        );
-        return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class),
-            $container->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml'),
-            $servicePluginManager->get(\VuFind\Db\Service\PagesServiceInterface::class)
-        );
+        $pagesTable = $container->get(\VuFind\Db\Table\PluginManager::class)->get('notifications_pages');
+        return parent::__invoke($container, $requestedName, [$pagesTable]);
     }
 }
