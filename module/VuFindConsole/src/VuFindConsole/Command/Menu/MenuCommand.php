@@ -128,7 +128,7 @@ class MenuCommand extends Command
         while (true) {
             $choice = $this->getHelper('question')->ask($input, $output, $question);
             if ($choice === $exitOption) {
-                return 0;
+                return Command::SUCCESS;
             }
             $index = array_search($choice, $legalOptions);
             if ($index !== false) {
@@ -264,7 +264,7 @@ class MenuCommand extends Command
                 $fullCommand
             );
             if ($result === $this->exitCommand) {
-                return 0;
+                return Command::SUCCESS;
             }
             $resultParts = explode(' ', $result);
             $index = $resultParts[2] ?? null;
@@ -302,7 +302,7 @@ class MenuCommand extends Command
                 $success = $passthruSuccess !== false && $resultCode === 0;
                 $output->writeln($success ? '<info>Commmand successful.</info>' : '<error>Command failed.</error>');
                 if ($success || (empty($arguments) && empty($options))) {
-                    return $success ? 0 : 1;
+                    return $success ? Command::SUCCESS : Command::FAILURE;
                 }
             }
         }
@@ -364,7 +364,7 @@ class MenuCommand extends Command
                 $this->displaySummary($output, $content, $indent . '    ');
             }
         }
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
@@ -393,7 +393,7 @@ class MenuCommand extends Command
                 return $this->displaySummary($output, $this->config['main']);
             default:
                 $output->writeln("Unknown menu type '$type' with label '$label'");
-                return 1;
+                return Command::FAILURE;
         }
     }
 
