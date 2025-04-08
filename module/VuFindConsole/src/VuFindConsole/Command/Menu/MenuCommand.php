@@ -252,7 +252,7 @@ class MenuCommand extends Command
             }
         }
         // Collect any additional optional details from the user:
-        do {
+        while (true) {
             $fullCommand = $this->buildExternalCommand($config, $argumentValues, $optionValues);
             $result = $this->getExternalCommandAction(
                 $input,
@@ -295,12 +295,17 @@ class MenuCommand extends Command
                     $argumentValues[$index] = $helper->ask($input, $output, $valueQuestion);
                     break;
             }
-        } while (!str_starts_with($result, $this->runCommand));
 
-        // Run the command:
-        $output->writeln("Running command: $fullCommand");
-        passthru($fullCommand);
-        return 0;
+            // Run the command if ready!
+            if (str_starts_with($result, $this->runCommand)) {
+                $passthruSuccess = passthru($fullCommand, $resultCode);
+                $success = $passthruSuccess !== false && $resultCode === 0;
+                $output->writeln($success ? '<info>Commmand successful.</info>' : '<error>Command failed.</error>');
+                if ($success || (empty($arguments) && empty($options))) {
+                    return $success ? 0 : 1;
+                }
+            }
+        }
     }
 
     /**
