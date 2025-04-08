@@ -138,6 +138,39 @@ class MenuCommand extends Command
     }
 
     /**
+     * Build the external command string from configuration and user input.
+     *
+     * @param array $config         Command configuration
+     * @param array $argumentValues User argument values
+     * @param array $optionValues   User option values
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function buildExternalCommand(array $config, array $argumentValues, array $optionValues): string
+    {
+        if (PHP_OS_FAMILY === 'Windows' && isset($config['winCommand'])) {
+            $baseCommand = APPLICATION_PATH . '\\' . $config['winCommand'];
+        } elseif (isset($config['command'])) {
+            $baseCommand = APPLICATION_PATH . '/' . $config['command'];
+        } elseif (isset($config['phpCommand'])) {
+            $baseCommand = 'php ' . APPLICATION_PATH . DIRECTORY_SEPARATOR . $config['phpCommand'];
+        } else {
+            throw new Exception('No actionable command found in configuration.');
+        }
+        $optionsString = '';
+        foreach ($config['options'] ?? [] as $i => $option) {
+            if (isset($optionValues[$i])) {
+                $optionsString .= ' ' . $option['switch'];
+                if (($option['type'] ?? 'string') !== 'no-value') {
+                    $optionsString .= ' ' . $optionValues[$i];
+                }
+            }
+        }
+        return $baseCommand . $optionsString . ' ' . implode(' ', $argumentValues);
+    }
+
+    /**
      * Run an external (non-Symfony) command.
      *
      * @param InputInterface  $input  Input object
@@ -228,25 +261,7 @@ class MenuCommand extends Command
         }
 
         // Run the command:
-        if (PHP_OS_FAMILY === 'Windows' && isset($config['winCommand'])) {
-            $baseCommand = APPLICATION_PATH . '\\' . $config['winCommand'];
-        } elseif (isset($config['command'])) {
-            $baseCommand = APPLICATION_PATH . '/' . $config['command'];
-        } elseif (isset($config['phpCommand'])) {
-            $baseCommand = 'php ' . APPLICATION_PATH . '/' . $config['phpCommand'];
-        } else {
-            throw new Exception('No actionable command found in configuration.');
-        }
-        $optionsString = '';
-        foreach ($options as $i => $option) {
-            if (isset($optionValues[$i])) {
-                $optionsString .= ' ' . $option['switch'];
-                if (($option['type'] ?? 'string') !== 'no-value') {
-                    $optionsString .= ' ' . $optionValues[$i];
-                }
-            }
-        }
-        $fullCommand = $baseCommand . $optionsString . ' ' . implode(' ', $argumentValues);
+        $fullCommand = $this->buildExternalCommand($config, $argumentValues, $optionValues);
         $output->writeln("Running command: $fullCommand");
         passthru($fullCommand);
         return 0;
@@ -268,7 +283,7 @@ class MenuCommand extends Command
         $newConfig = [
             'label' => $config['label'],
             'type' => 'external-command',
-            'phpCommand' => 'public/index.php ' . $config['command'],
+            'phpCommand' => 'public' . DIRECTORY_SEPARATOR . 'index.php ' . $config['command'],
             'arguments' => [],
             'options' => [],
         ];
