@@ -263,9 +263,20 @@ class MenuCommand extends Command
                 $argumentValues,
                 $fullCommand
             );
+            // Bail out if the user wants to exit:
             if ($result === $this->exitCommand) {
                 return Command::SUCCESS;
             }
+            // Run the command if ready!
+            if (str_starts_with($result, $this->runCommand)) {
+                $passthruSuccess = passthru($fullCommand, $resultCode);
+                $success = $passthruSuccess !== false && $resultCode === 0;
+                $output->writeln($success ? '<info>Commmand successful.</info>' : '<error>Command failed.</error>');
+                if ($success || (empty($arguments) && empty($options))) {
+                    return $success ? Command::SUCCESS : Command::FAILURE;
+                }
+            }
+            // If we got this far, we need to process additional user input:
             $resultParts = explode(' ', $result);
             $index = $resultParts[2] ?? null;
             switch ($resultParts[1] ?? '') {
@@ -294,16 +305,6 @@ class MenuCommand extends Command
                     );
                     $argumentValues[$index] = $helper->ask($input, $output, $valueQuestion);
                     break;
-            }
-
-            // Run the command if ready!
-            if (str_starts_with($result, $this->runCommand)) {
-                $passthruSuccess = passthru($fullCommand, $resultCode);
-                $success = $passthruSuccess !== false && $resultCode === 0;
-                $output->writeln($success ? '<info>Commmand successful.</info>' : '<error>Command failed.</error>');
-                if ($success || (empty($arguments) && empty($options))) {
-                    return $success ? Command::SUCCESS : Command::FAILURE;
-                }
             }
         }
     }
