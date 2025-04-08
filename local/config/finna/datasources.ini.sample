@@ -137,3 +137,8 @@ archiveRequestRequireFilingUnit = true
 ; Each value is a field label defined in RecordDataFormatterFactory
 ;hidden_record_fields[] = 'Archive'
 ;hidden_record_fields[] = 'Subject'
+
+; Permissive settings for a datasource
+; Allow piping images from provider, must have a permission which is granted by the
+; provider. Used in CoverController::PipeAction.
+;permissions[image_piping] = 1

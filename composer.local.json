@@ -12,6 +12,11 @@
             "FinnaTheme\\": "module/FinnaTheme/src/FinnaTheme"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "FinnaTest\\": ["module/Finna/src/FinnaTest", "module/Finna/tests/unit-tests/src/FinnaTest"]
+        }
+    },
     "require": {
         "ezyang/htmlpurifier": "4.17.0",
         "league/mime-type-detection": "1.9.0",

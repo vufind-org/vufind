@@ -636,6 +636,7 @@ $config = [
             'db_service' => [
                 'factories' => [
                     \Finna\Db\Service\CommentsService::class => \VuFind\Db\Service\AbstractDbServiceFactory::class,
+                    \Finna\Db\Service\AccessTokenService::class => \VuFind\Db\Service\AccessTokenServiceFactory::class,
                     \Finna\Db\Service\FinnaCacheService::class => \VuFind\Db\Service\AbstractDbServiceFactory::class,
                     \Finna\Db\Service\FinnaDueDateReminderService::class
                         => \VuFind\Db\Service\AbstractDbServiceFactory::class,
@@ -666,6 +667,7 @@ $config = [
                     \VuFind\Db\Service\UserResourceService::class => \Finna\Db\Service\UserResourceService::class,
                     \VuFind\Db\Service\UserService::class => \Finna\Db\Service\UserService::class,
                     \VuFind\Db\Service\UserCardService::class => \Finna\Db\Service\UserCardService::class,
+                    \VuFind\Db\Service\AccessTokenService::class => \Finna\Db\Service\AccessTokenService::class,
 
                     \Finna\Db\Service\FinnaCacheServiceInterface::class => \Finna\Db\Service\FinnaCacheService::class,
                     \Finna\Db\Service\FinnaDueDateReminderServiceInterface::class
@@ -1128,6 +1130,7 @@ $staticRoutes = [
     'LibraryCards/RegistrationDone', 'LibraryCards/RegistrationForm',
     'LibraryCards/ResetPassword',
     'LocationService/Modal',
+    'Cover/Pipe',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
     'MyResearch/SaveCustomOrder', 'MyResearch/SaveHistoricLoans',
     'MyResearch/DownloadCheckoutHistory',

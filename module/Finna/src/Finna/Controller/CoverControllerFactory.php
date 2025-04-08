@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\PluginManager;
 
 /**
  * Cover controller factory.
@@ -71,12 +72,18 @@ class CoverControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $dbManager = $container->get(PluginManager::class);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $configArray = $config?->Content?->toArray() ?? [];
         return new $requestedName(
             $container->get(\VuFind\Cover\Loader::class),
             $container->get(\VuFind\Cover\CachingProxy::class),
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('datasources'),
-            $container->get(\VuFind\Record\Loader::class)
+            $container->get(\VuFind\Record\Loader::class),
+            $configArray,
+            $container->get(\Finna\File\Loader::class),
+            $dbManager->get(\VuFind\Db\Service\AccessTokenService::class)
         );
     }
 }
