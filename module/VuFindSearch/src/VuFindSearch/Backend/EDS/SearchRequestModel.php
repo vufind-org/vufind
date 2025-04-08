@@ -537,18 +537,6 @@ class SearchRequestModel
         $this->facetOperators[$field] = $operator;
     }
 
-    // $validateFields = ['ContentProvider'];
-    // $validatedFieldKnownValues = [];
-    // protected function validateFilter($field, $value) {
-    //     $knownValues = $this->validatedFieldKnownValues[$field] ?? [];
-    //     if (empty($knownValues)) {
-    //         return;
-    //     }
-    //     if (!in_array($value, $knownValues)) {
-    //         throw new \Exception("unknown value in filter");
-    //     }
-    // }
-
     /**
      * Escape characters that may be present in the parameter syntax
      *
