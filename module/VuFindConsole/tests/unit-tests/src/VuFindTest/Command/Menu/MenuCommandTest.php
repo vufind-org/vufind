@@ -32,6 +32,7 @@ namespace VuFindTest\Command\Import;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\CSV\Importer;
 use VuFindConsole\Command\Import\ImportCsvCommand;
 use VuFindConsole\Command\Menu\MenuCommand;
@@ -112,5 +113,50 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
             ->with($input, $output, $expectedConfig)
             ->willReturn(Command::SUCCESS);
         $this->assertEquals(Command::SUCCESS, $this->callMethod($command, 'execute', [$input, $output]));
+    }
+
+    /**
+     * Data provider for testSimpleExternalCommand().
+     *
+     * @return array[]
+     */
+    public static function simpleExternalCommandProvider(): array
+    {
+        return ['success' => [true], 'failure' => [false]];
+    }
+
+    /**
+     * Test running an external command.
+     *
+     * @param bool $success Should the command succeed?
+     *
+     * @return void
+     *
+     * @dataProvider simpleExternalCommandProvider
+     */
+    public function testSimpleExternalCommand(bool $success): void
+    {
+        $config = [
+            'main' => [
+                'label' => 'sample command',
+                'type' => 'external-command',
+                'command' => 'foo',
+            ],
+        ];
+        $commandManager = $this->createMock(\VuFindConsole\Command\PluginManager::class);
+        $input = $this->createMock(InputInterface::class);
+        $output = $this->createMock(OutputInterface::class);
+        $command = $this->getMockBuilder(MenuCommand::class)
+            ->setConstructorArgs([$config, $commandManager])
+            ->onlyMethods(['runCommand', 'getHelper'])
+            ->getMock();
+        $command->expects($this->once())->method('runCommand')->with(APPLICATION_PATH . '/foo')->willReturn($success);
+        $tester = new CommandTester($command);
+        $tester->execute([]);
+        $this->assertEquals(
+            $success ? "sample command\nCommand successful.\n" : "sample command\nCommand failed.\n",
+            $tester->getDisplay()
+        );
+        $this->assertEquals($success ? Command::SUCCESS : Command::FAILURE, $tester->getStatusCode());
     }
 }

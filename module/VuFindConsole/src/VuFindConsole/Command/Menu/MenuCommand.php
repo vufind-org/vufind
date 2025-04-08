@@ -167,7 +167,7 @@ class MenuCommand extends Command
                 }
             }
         }
-        return $baseCommand . $optionsString . ' ' . implode(' ', $argumentValues);
+        return trim($baseCommand . $optionsString . ' ' . implode(' ', $argumentValues));
     }
 
     /**
@@ -283,7 +283,7 @@ class MenuCommand extends Command
             // Run the command if ready!
             if (str_starts_with($result, $this->runCommand)) {
                 $success = $this->runCommand($fullCommand);
-                $output->writeln($success ? '<info>Commmand successful.</info>' : '<error>Command failed.</error>');
+                $output->writeln($success ? '<info>Command successful.</info>' : '<error>Command failed.</error>');
                 if ($success || (empty($arguments) && empty($options))) {
                     return $success ? Command::SUCCESS : Command::FAILURE;
                 }
