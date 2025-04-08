@@ -45,10 +45,9 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends AbstractEDSOptions
 {
     use \VuFind\Config\Feature\ExplodeSettingTrait;
-    use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
      * Default limit option
@@ -303,16 +302,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getDefaultMode()
     {
         return $this->getApiProperty('defaultMode');
-    }
-
-    /**
-     * Return the view type to request from the EDS API.
-     *
-     * @return string
-     */
-    public function getEdsView()
-    {
-        return $this->getDefaultViewPart(1);
     }
 
     /**
@@ -777,16 +766,6 @@ class Options extends \VuFind\Search\Base\Options
             ];
         }
         return $ssExpanderOptions;
-    }
-
-    /**
-     * Get default view setting.
-     *
-     * @return int
-     */
-    public function getDefaultView()
-    {
-        return $this->getDefaultViewPart(0, 'list');
     }
 
     /**

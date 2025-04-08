@@ -1,13 +1,13 @@
 <?php
 
 /**
- * EPF API Params
+ * Common EDS & EPF API Options
  *
  * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  * Copyright (C) The National Library of Finland 2022
- * Copyright (C) Villanova University 2023
+ * Copyright (C) Villanova University 2025
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,12 +31,10 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Search\EPF;
-
-use VuFindSearch\ParamBag;
+namespace VuFind\Search\EDS;
 
 /**
- * EPF API Params
+ * Common EDS & EPF API Options
  *
  * @category VuFind
  * @package  EBSCO
@@ -46,25 +44,42 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Params extends \VuFind\Search\EDS\AbstractEDSParams
+abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Search\Options\ViewOptionsTrait;
+
     /**
-     * Create search backend parameters for advanced features.
+     * Extract a component from the defaultView API property.
      *
-     * @return ParamBag
+     * The defaultView API property takes the form vufindSetting_ebscoSetting -- the first component
+     * of the underscore-delimited string is the view name used by VuFind (e.g. list or grid).
+     * However, for EDSand EPF, only list is suggested to be used. The second component is the format
+     * requested from the Ebsco API (e.g. title, brief or detailed).
+     *
+     * @param int     $index   Index of part to extract from the property
+     * @param ?string $default Default to use as a fallback if the property does not contain delimited values
+     *
+     * @return string
      */
-    public function getBackendParameters()
+    abstract protected function getDefaultViewPart(int $index, ?string $default = null): string;
+
+    /**
+     * Get default view setting.
+     *
+     * @return int
+     */
+    public function getDefaultView()
     {
-        $backendParams = new ParamBag();
+        return $this->getDefaultViewPart(0, 'list');
+    }
 
-        // The documentation says that 'view' is optional,
-        // but omitting it causes an error.
-        // https://connect.ebsco.com/s/article/Publication-Finder-API-Reference-Guide-Search
-        $view = $this->getEbscoView();
-        $backendParams->set('view', $view);
-
-        $this->createBackendFilterParameters($backendParams);
-
-        return $backendParams;
+    /**
+     * Return the view type to request from the Ebsco API.
+     *
+     * @return string
+     */
+    public function getEbscoView()
+    {
+        return $this->getDefaultViewPart(1);
     }
 }

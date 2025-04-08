@@ -32,6 +32,8 @@
 
 namespace VuFind\Search\EPF;
 
+use VuFind\Search\EDS\AbstractEDSOptions;
+
 use function count;
 
 /**
@@ -45,7 +47,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends AbstractEDSOptions
 {
     /**
      * Default view option
@@ -98,17 +100,6 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getEpfView()
-    {
-        $viewArr = explode('_', $this->defaultView);
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
-    }
-
-    /**
      * Return the route name of the action used for performing advanced searches.
      * Returns false if the feature is not supported.
      *
@@ -127,9 +118,25 @@ class Options extends \VuFind\Search\Base\Options
     protected function setOptionsFromConfig()
     {
         // View preferences
-        if (isset($this->searchSettings->General->default_view)) {
-            $this->defaultView
-                = 'list_' . $this->searchSettings->General->default_view;
-        }
+        $this->initViewOptions($this->searchSettings);
+    }
+
+    /**
+     * Extract a component from the defaultView API property.
+     *
+     * The defaultView API property takes the form vufindSetting_ebscoSetting -- the first component
+     * of the underscore-delimited string is the view name used by VuFind (e.g. list or grid).
+     * However, for EDS only list is suggested to be used. The second component is the format
+     * requested from the EDS API (e.g. title, brief or detailed).
+     *
+     * @param int     $index   Index of part to extract from the property
+     * @param ?string $default Default to use as a fallback if the property does not contain delimited values
+     *
+     * @return string
+     */
+    protected function getDefaultViewPart(int $index, ?string $default = null): string
+    {
+        $viewArr = explode('_', $this->defaultView);
+        return (count($viewArr) > 1) ? $viewArr[$index] : ($default ?? $this->defaultView);
     }
 }

@@ -33,8 +33,6 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
 
-use function count;
-
 /**
  * EDS API Params
  *
@@ -166,7 +164,7 @@ class Params extends AbstractEDSParams
             $backendParams->set('highlight', true);
         }
 
-        $view = $this->getEdsView();
+        $view = $this->getEbscoView();
         $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
@@ -177,17 +175,6 @@ class Params extends AbstractEDSParams
         $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
-    }
-
-    /**
-     * Return the value for which search view we use
-     *
-     * @return string
-     */
-    public function getEdsView()
-    {
-        $viewArr = explode('_', $this->view ?? '');
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
     }
 
     /**
@@ -297,23 +284,6 @@ class Params extends AbstractEDSParams
                 true
             );
         }
-    }
-
-    /**
-     * Basic 'getter' for list of available view options.
-     *
-     * @return array
-     */
-    public function getViewList()
-    {
-        $list = [];
-        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
-            $list[$key] = [
-                'desc' => $value,
-                'selected' => ($key == $this->getView() . '_' . $this->getEdsView()),
-            ];
-        }
-        return $list;
     }
 
     /**
