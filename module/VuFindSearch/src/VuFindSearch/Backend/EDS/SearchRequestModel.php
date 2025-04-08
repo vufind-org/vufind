@@ -219,12 +219,10 @@ class SearchRequestModel
     public function isValid()
     {
         $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
+        $invalidContentProviderCharacters = '|';
         foreach ($contentProviderValues as $value) {
-            // Content providers should be only alphanumeric+space strings.
-            // This explode + ctype logic is about 8x faster than using a regex.
-            $words = explode(' ', $value);
-            foreach ($words as $word) {
-                if (!ctype_alnum($word)) {
+            foreach (str_split($invalidContentProviderCharacters) as $invalidCharacter) {
+                if (str_contains($value, $invalidCharacter)) {
                     return false;
                 }
             }
