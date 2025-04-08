@@ -73,7 +73,7 @@ class Results extends \VuFind\Search\Base\Results
             return;
         }
         $limit  = $this->getParams()->getLimit();
-        $offset = $this->getStartRecord();
+        $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $command = new SearchCommand(
             $this->backendId,
@@ -88,8 +88,8 @@ class Results extends \VuFind\Search\Base\Results
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();
 
-        // ProQuest does not return facets unless the startRecord is 1
-        if ($offset === 1) {
+        // ProQuest does not return facets unless the offset is 0
+        if ($offset === 0) {
             $this->responseFacets = $collection->getFacets();
         }
     }

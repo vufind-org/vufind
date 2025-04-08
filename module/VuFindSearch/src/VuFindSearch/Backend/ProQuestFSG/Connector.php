@@ -87,7 +87,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     {
         $params ??= new ParamBag();
         $params->set('query', "rec.identifier = \"{$id}\"");
-        return $this->search($params, 1, 1);
+        return $this->search($params, 0, 1);
     }
 
     /**
@@ -105,13 +105,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $params->set('operation', 'searchRetrieve');
         $params->set('recordSchema', 'marcxml');
 
-        // TEMP -- blender wants to start at zero
-        if ($offset == 0) {
-            $offset = 1;
-        }
-
         $options = $params->getArrayCopy();
-        $options['startRecord'] = $offset;
+
+        // startRecord uses 1-based offsets 
+        $options['startRecord'] = $offset + 1;
+
         if (null !== $limit) {
             $options['maximumRecords'] = $limit;
         }
