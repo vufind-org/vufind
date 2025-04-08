@@ -193,7 +193,7 @@ class MenuCommand extends Command
                 );
                 $result = $helper->ask($input, $output, $question);
                 if ($result === $this->exitCommand) {
-                    return 1;
+                    return 0;
                 }
                 $resultParts = explode(' ', $result);
                 $index = $resultParts[2] ?? null;
@@ -308,7 +308,7 @@ class MenuCommand extends Command
                 $this->displaySummary($output, $content, $indent . '    ');
             }
         }
-        return 1;
+        return 0;
     }
 
     /**
