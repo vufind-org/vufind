@@ -212,6 +212,27 @@ class SearchRequestModel
     }
 
     /**
+     * Checks whether the search model is valid for the EDS API.
+     *
+     * @return bool Returns false if any model parameters are invalid.
+     */
+    public function isValid()
+    {
+        $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
+        foreach ($contentProviderValues as $value) {
+            // Content providers should be only alphanumeric+space strings.
+            // This explode + ctype logic is about 8x faster than using a regex.
+            $words = explode(' ', $value);
+            foreach ($words as $word) {
+                if (!ctype_alnum($word)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Converts properties to a querystring to send to the EdsAPI
      *
      * @return string
@@ -504,6 +525,7 @@ class SearchRequestModel
         } else {
             [$field, $operator, $value] = $filterComponents;
         }
+        // $this->validateFilter($field, $value);
         if (str_starts_with($field, '~')) {
             $field = substr($field, 1);
             $operator = 'OR';
@@ -514,6 +536,18 @@ class SearchRequestModel
         $this->facetFilters[$field][] = $value;
         $this->facetOperators[$field] = $operator;
     }
+
+    // $validateFields = ['ContentProvider'];
+    // $validatedFieldKnownValues = [];
+    // protected function validateFilter($field, $value) {
+    //     $knownValues = $this->validatedFieldKnownValues[$field] ?? [];
+    //     if (empty($knownValues)) {
+    //         return;
+    //     }
+    //     if (!in_array($value, $knownValues)) {
+    //         throw new \Exception("unknown value in filter");
+    //     }
+    // }
 
     /**
      * Escape characters that may be present in the parameter syntax

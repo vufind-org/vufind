@@ -118,6 +118,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         foreach (($options['filters'] ?? []) as $filter) {
             [$filterKey, $filterValue] = explode(':', $filter, 2);
             if ('Databases' == $filterKey) {
+                if (!$this->validateDatabaseValue($filterValue)) {
+                    // This may happen in the context of a blended search,
+                    // when the database is valid for another backend.
+                    return ['docs' => [], 'offset' => 0, 'total' => 0];
+                }
                 $path = '/' . $filterValue;
             } else {
                 $filterRelationValue = $filterValue ?
@@ -161,5 +166,18 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
             'total' => (int)($response->RecordCount),
             'facets' => $facets,
         ];
+    }
+
+    /**
+     * Checks whether a database code is valid for the ProQuestFSG API.
+     *
+     * @param string $value The database code to validate
+     *
+     * @return bool
+     */
+    protected function validateDatabaseValue(string $value)
+    {
+        // ProQuestFSG database product codes are all-lowercase (and underscore) strings
+        return $value == strtolower($value);
     }
 }

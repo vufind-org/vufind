@@ -228,6 +228,11 @@ class Backend extends AbstractBackend
         $baseParams->set('pageNumber', $page);
 
         $searchModel = $this->paramBagToEBSCOSearchModel($baseParams);
+        if (!$searchModel->isValid()) {
+            // This may happen in the context of a blended search,
+            // when the database is valid for another backend.
+            return $this->createRecordCollection([]);
+        }
         $qs = $searchModel->convertToQueryString();
         $this->debug("Search Model query string: $qs");
         try {
