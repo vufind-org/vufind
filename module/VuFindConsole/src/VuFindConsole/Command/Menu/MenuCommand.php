@@ -224,6 +224,19 @@ class MenuCommand extends Command
     }
 
     /**
+     * Run the provided command line; return true on success or false if it fails.
+     *
+     * @param string $command Command to run
+     *
+     * @return bool
+     */
+    protected function runCommand(string $command): bool
+    {
+        $passthruSuccess = passthru($command, $resultCode);
+        return $passthruSuccess !== false && $resultCode === 0;
+    }
+
+    /**
      * Run an external (non-Symfony) command.
      *
      * @param InputInterface  $input  Input object
@@ -269,8 +282,7 @@ class MenuCommand extends Command
             }
             // Run the command if ready!
             if (str_starts_with($result, $this->runCommand)) {
-                $passthruSuccess = passthru($fullCommand, $resultCode);
-                $success = $passthruSuccess !== false && $resultCode === 0;
+                $success = $this->runCommand($fullCommand);
                 $output->writeln($success ? '<info>Commmand successful.</info>' : '<error>Command failed.</error>');
                 if ($success || (empty($arguments) && empty($options))) {
                     return $success ? Command::SUCCESS : Command::FAILURE;
