@@ -62,8 +62,8 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
             'x-navigators' => 'database',
             'sortKey' => 'relevance',
         ]);
-        $searchResult = $connector->search($params, 1, 2);
-        $this->assertEquals(1, $searchResult['offset']);
+        $searchResult = $connector->search($params, 0, 2);
+        $this->assertEquals(0, $searchResult['offset']);
         $this->assertEquals(31, $searchResult['total']);
         $this->assertCount(21, $searchResult['facets']['Databases']);
         $this->assertCount(2, $searchResult['docs']);
@@ -81,7 +81,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
             $this->getMockClient($responseBody)
         );
         $searchResult = $connector->getRecord('2811962947');
-        $this->assertEquals(1, $searchResult['offset']);
+        $this->assertEquals(0, $searchResult['offset']);
         $this->assertEquals(1, $searchResult['total']);
         $this->assertCount(2, $searchResult['facets']['Databases']);
         $this->assertCount(1, $searchResult['docs']);
