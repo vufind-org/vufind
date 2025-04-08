@@ -171,6 +171,59 @@ class MenuCommand extends Command
     }
 
     /**
+     * Determine which action to take on an external command, using user input when appropriate.
+     *
+     * @param InputInterface  $input          Input object
+     * @param OutputInterface $output         Output object
+     * @param array           $options        Option configuration
+     * @param array           $optionValues   User-provided option values
+     * @param array           $arguments      Argument configuration
+     * @param array           $argumentValues User-provided argument values
+     * @param string          $fullCommand    Command to run based on current settings
+     *
+     * @return string
+     */
+    protected function getExternalCommandAction(
+        InputInterface $input,
+        OutputInterface $output,
+        array $options,
+        array $optionValues,
+        array $arguments,
+        array $argumentValues,
+        string $fullCommand
+    ): string {
+        // If there are no arguments or options to prompt the user about, run the command immediately:
+        if (count($options) === 0 && count($arguments) === 0) {
+            return $this->runCommand;
+        }
+        $helper = $this->getHelper('question');
+        $menu = [];
+        if (count($options) > 0) {
+            foreach ($options as $i => $currentOption) {
+                if (($currentOption['type'] ?? 'string') === 'no-value') {
+                    $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? false) ? 'ON' : 'OFF';
+                } else {
+                    $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? '--unset--');
+                }
+                $menu[] = "Set Option $i ({$currentOption['label']}); current value: " . $currentValue;
+            }
+        }
+        if (count($arguments) > 0) {
+            foreach ($arguments as $i => $currentArgument) {
+                $menu[] = "Set Argument $i ({$currentArgument['label']}); current value: "
+                    . ($argumentValues[$i] ?? $currentArgument['default'] ?? '--unset--');
+            }
+        }
+        $menu[] = $this->exitCommand;
+        $menu[] = $this->runCommand . ': ' . $fullCommand;
+        $question = new ChoiceQuestion(
+            'Choose an option: ',
+            $menu
+        );
+        return $helper->ask($input, $output, $question);
+    }
+
+    /**
      * Run an external (non-Symfony) command.
      *
      * @param InputInterface  $input  Input object
@@ -199,69 +252,52 @@ class MenuCommand extends Command
             }
         }
         // Collect any additional optional details from the user:
-        if (count($options) > 0 || count($arguments) > 0) {
-            do {
-                $menu = [];
-                if (count($options) > 0) {
-                    foreach ($options as $i => $currentOption) {
-                        if (($currentOption['type'] ?? 'string') === 'no-value') {
-                            $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? false) ? 'ON' : 'OFF';
-                        } else {
-                            $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? '--unset--');
-                        }
-                        $menu[] = "Set Option $i ({$currentOption['label']}); current value: " . $currentValue;
+        do {
+            $fullCommand = $this->buildExternalCommand($config, $argumentValues, $optionValues);
+            $result = $this->getExternalCommandAction(
+                $input,
+                $output,
+                $options,
+                $optionValues,
+                $arguments,
+                $argumentValues,
+                $fullCommand
+            );
+            if ($result === $this->exitCommand) {
+                return 0;
+            }
+            $resultParts = explode(' ', $result);
+            $index = $resultParts[2] ?? null;
+            switch ($resultParts[1] ?? '') {
+                case 'Option':
+                    $option = $options[$index];
+                    switch ($option['type'] ?? 'string') {
+                        case 'string':
+                            $valueQuestion = new Question(
+                                "Enter new value for {$option['label']}: ",
+                                $option['default'] ?? null
+                            );
+                            $optionValues[$index] = $helper->ask($input, $output, $valueQuestion);
+                            break;
+                        case 'no-value':
+                            $optionValues[$index] = !($optionValues[$index] ?? false);
+                            break;
+                        default:
+                            throw new Exception("Unknown option type {$option['type']}.");
                     }
-                }
-                if (count($arguments) > 0) {
-                    foreach ($arguments as $i => $currentArgument) {
-                        $menu[] = "Set Argument $i ({$currentArgument['label']}); current value: "
-                            . ($argumentValues[$i] ?? $currentArgument['default'] ?? '--unset--');
-                    }
-                }
-                $menu[] = $this->exitCommand;
-                $menu[] = $this->runCommand;
-                $question = new ChoiceQuestion(
-                    'Choose an option: ',
-                    $menu
-                );
-                $result = $helper->ask($input, $output, $question);
-                if ($result === $this->exitCommand) {
-                    return 0;
-                }
-                $resultParts = explode(' ', $result);
-                $index = $resultParts[2] ?? null;
-                switch ($resultParts[1] ?? '') {
-                    case 'Option':
-                        $option = $options[$index];
-                        switch ($option['type'] ?? 'string') {
-                            case 'string':
-                                $valueQuestion = new Question(
-                                    "Enter new value for {$option['label']}: ",
-                                    $option['default'] ?? null
-                                );
-                                $optionValues[$index] = $helper->ask($input, $output, $valueQuestion);
-                                break;
-                            case 'no-value':
-                                $optionValues[$index] = !($optionValues[$index] ?? false);
-                                break;
-                            default:
-                                throw new Exception("Unknown option type {$option['type']}.");
-                        }
-                        break;
-                    case 'Argument':
-                        $argument = $arguments[$index];
-                        $valueQuestion = new Question(
-                            "Enter new value for {$argument['label']}: ",
-                            $argument['default'] ?? null
-                        );
-                        $argumentValues[$index] = $helper->ask($input, $output, $valueQuestion);
-                        break;
-                }
-            } while ($result !== $this->runCommand);
-        }
+                    break;
+                case 'Argument':
+                    $argument = $arguments[$index];
+                    $valueQuestion = new Question(
+                        "Enter new value for {$argument['label']}: ",
+                        $argument['default'] ?? null
+                    );
+                    $argumentValues[$index] = $helper->ask($input, $output, $valueQuestion);
+                    break;
+            }
+        } while (!str_starts_with($result, $this->runCommand));
 
         // Run the command:
-        $fullCommand = $this->buildExternalCommand($config, $argumentValues, $optionValues);
         $output->writeln("Running command: $fullCommand");
         passthru($fullCommand);
         return 0;
