@@ -197,7 +197,7 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
         $app = new Application();
         $app->addCommands([$command]);
         $tester = new CommandTester($command);
-        $tester->setInputs(['0', '2']);
+        $tester->setInputs(['0', '2']); // choose first menu option, then exit
         $tester->execute([]);
         $expectedSummary = <<<OUTPUT
             Summary
