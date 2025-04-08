@@ -121,7 +121,7 @@ class MenuCommand extends Command
         $legalOptions[] = $exitOption;
 
         $question = new ChoiceQuestion(
-            'Choose an option: ',
+            'Choose an option:',
             $legalOptions,
             count($legalOptions) - 1
         );

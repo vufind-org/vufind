@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Command\Import;
 
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -144,8 +145,6 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $commandManager = $this->createMock(\VuFindConsole\Command\PluginManager::class);
-        $input = $this->createMock(InputInterface::class);
-        $output = $this->createMock(OutputInterface::class);
         $command = $this->getMockBuilder(MenuCommand::class)
             ->setConstructorArgs([$config, $commandManager])
             ->onlyMethods(['runCommand', 'getHelper'])
@@ -158,5 +157,56 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
             $tester->getDisplay()
         );
         $this->assertEquals($success ? Command::SUCCESS : Command::FAILURE, $tester->getStatusCode());
+    }
+
+    /**
+     * Test the summary feature.
+     *
+     * @return void
+     */
+    public function testSummary(): void
+    {
+        $config = [
+            'main' => [
+                'label' => 'Main Menu',
+                'type' => 'menu',
+                'contents' => [
+                    [
+                        'label' => 'Summary',
+                        'type' => 'summary',
+                    ],
+                    [
+                        'label' => 'Submenu',
+                        'type' => 'menu',
+                        'contents' => [
+                            [
+                                'label' => 'Command',
+                                'type' => 'internal-command',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $commandManager = $this->createMock(\VuFindConsole\Command\PluginManager::class);
+        $command = $this->getMockBuilder(MenuCommand::class)
+            ->setConstructorArgs([$config, $commandManager, 'menu/menu'])
+            ->onlyMethods(['runCommand'])
+            ->getMock();
+        // We need to add the command to an application to set up the question helper:
+        $app = new Application();
+        $app->addCommands([$command]);
+        $tester = new CommandTester($command);
+        $tester->setInputs(['0', '2']);
+        $tester->execute([]);
+        $expectedSummary = <<<OUTPUT
+            Summary
+
+            Main Menu
+                Submenu
+                    Command
+            OUTPUT;
+        $this->assertStringContainsString($expectedSummary, $tester->getDisplay());
+        $this->assertEquals(Command::SUCCESS, $tester->getStatusCode());
     }
 }
