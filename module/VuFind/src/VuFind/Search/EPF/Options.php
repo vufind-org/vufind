@@ -104,7 +104,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getEpfView()
     {
-        $viewArr = explode('|', $this->defaultView);
+        $viewArr = explode('_', $this->defaultView);
         return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
     }
 
@@ -129,7 +129,7 @@ class Options extends \VuFind\Search\Base\Options
         // View preferences
         if (isset($this->searchSettings->General->default_view)) {
             $this->defaultView
-                = 'list|' . $this->searchSettings->General->default_view;
+                = 'list_' . $this->searchSettings->General->default_view;
         }
     }
 }
