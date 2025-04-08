@@ -107,7 +107,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
 
         $options = $params->getArrayCopy();
 
-        // startRecord uses 1-based offsets 
+        // startRecord uses 1-based offsets
         $options['startRecord'] = $offset + 1;
 
         if (null !== $limit) {
