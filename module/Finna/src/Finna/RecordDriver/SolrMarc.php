@@ -568,7 +568,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
         $results = [];
         foreach ($this->getMarcReader()->getFields('534') as $field) {
             $result = [];
-            if ($subfields = $this->getSubfieldArray($field, ['p', 'c'])) {
+            if ($subfields = $this->getSubfieldArray($field, ['p', 'c', 'n', 'l'])) {
                 $result['notes'] = implode(' ', $subfields);
             }
             if ($result) {
