@@ -291,7 +291,11 @@ class MenuCommand extends Command
                             $optionValues[$index] = $helper->ask($input, $output, $valueQuestion);
                             break;
                         case 'no-value':
-                            $optionValues[$index] = !($optionValues[$index] ?? false);
+                            if (!($optionValues[$index] ?? false)) {
+                                $optionValues[$index] = true;
+                            } else {
+                                unset($optionValues[$index]);
+                            }
                             break;
                         default:
                             throw new Exception("Unknown option type {$option['type']}.");
