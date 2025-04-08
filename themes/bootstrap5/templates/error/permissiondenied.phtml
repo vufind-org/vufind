@@ -5,7 +5,7 @@
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;
 
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">Error</li>';
+  $this->breadcrumbs()->set($this->translate('An error has occurred'), active: true);
 ?>
 <div>
   <h2><?=$this->transEsc('permission_denied_title')?></h2>

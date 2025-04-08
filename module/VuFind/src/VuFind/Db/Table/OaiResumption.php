@@ -30,6 +30,7 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
+use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\DbServiceAwareInterface;
 
@@ -85,11 +86,51 @@ class OaiResumption extends Gateway implements DbServiceAwareInterface
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return ?\VuFind\Db\Row\OaiResumption
+     * @return     ?\VuFind\Db\Row\OaiResumption
+     * @deprecated Use OaiResumption::findWithId
      */
     public function findToken($token)
     {
-        return $this->select(['id' => $token])->current();
+        return $this->findWithId($token);
+    }
+
+    /**
+     * Retrieve a row from the database based on primary key; return null if it
+     * is not found.
+     *
+     * @param string $id Id used for the search.
+     *
+     * @return ?\VuFind\Db\Row\OaiResumption
+     */
+    public function findWithId(string $id): ?OaiResumptionEntityInterface
+    {
+        return $this->select(['id' => $id])->current();
+    }
+
+    /**
+     * Retrieve a row from the database based on primary key and where the token is null.
+     *
+     * @param int $id Id used for the search.
+     *
+     * @return ?\VuFind\Db\Row\OaiResumption
+     * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
+     */
+    final public function findWithLegacyIdToken(int $id): ?OaiResumptionEntityInterface
+    {
+        return $this->select(['id' => $id, 'token' => null])->current();
+    }
+
+    /**
+     * Retrieve a row from the database based on token; return null if it
+     * is not found.
+     *
+     * @param string $token Token used for the search.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findWithToken(string $token): ?OaiResumptionEntityInterface
+    {
+        return $this->select(['token' => $token])->current();
     }
 
     /**

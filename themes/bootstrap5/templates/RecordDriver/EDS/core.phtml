@@ -1,4 +1,4 @@
-<?php $this->headLink()->appendStylesheet('EDS.css'); ?>
+<?php $this->assetManager()->appendStyleLink('EDS.css'); ?>
 <?php
     $items = $this->driver->getItems('core');
     $dbLabel = $this->driver->getDbLabel();
@@ -82,7 +82,7 @@
     <?php endif; ?>
 
     <table class="table table-striped">
-      <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
+      <caption class="visually-hidden"><?=$this->transEsc('Bibliographic Details')?></caption>
       <?php foreach ($items as $key => $item): ?>
         <?php if (!empty($item['Data'])): ?>
           <?php if ('Au' == $item['Group'] && $authorDisplay == 'short'): ?>
@@ -165,9 +165,9 @@
       <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php $doi = $this->doi($this->driver, 'record'); ?>
-    <?php if ($doi->isActive()): ?>
-      <div><?=$doi->renderTemplate()?></div>
+    <?php $identifierLinksHtml = $this->identifierLinker($this->driver, 'record'); ?>
+    <?php if ($identifierLinksHtml): ?>
+      <div><?=$identifierLinksHtml?></div>
     <?php endif; ?>
     </div>
   </div>

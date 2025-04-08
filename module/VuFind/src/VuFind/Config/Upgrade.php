@@ -219,8 +219,8 @@ class Upgrade
     /**
      * Support function -- merge the contents of two arrays parsed from ini files.
      *
-     * @param string $config_ini The base config array.
-     * @param string $custom_ini Overrides to apply on top of the base array.
+     * @param array $config_ini The base config array.
+     * @param array $custom_ini Overrides to apply on top of the base array.
      *
      * @return array             The merged results.
      */
@@ -675,9 +675,17 @@ class Upgrade
             $newConfig['Session']['type'] = 'Database';
         }
 
-        // Eliminate obsolete database settings:
-        $newConfig['Database']
-            = ['database' => $newConfig['Database']['database']];
+        // If we have granular database settings, disable the legacy version:
+        $databaseKeys = array_keys($newConfig['Database'] ?? []);
+        if (
+            in_array('database_driver', $databaseKeys)
+            && in_array('database_username', $databaseKeys)
+            && (in_array('database_password', $databaseKeys) || in_array('database_password_file', $databaseKeys))
+            && in_array('database_host', $databaseKeys)
+            && in_array('database_name', $databaseKeys)
+        ) {
+            unset($newConfig['Database']['database']);
+        }
 
         // Eliminate obsolete config override settings:
         unset($newConfig['Extra_Config']);

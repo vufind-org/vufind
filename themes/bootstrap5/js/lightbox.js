@@ -349,7 +349,7 @@ VuFind.register('lightbox', function Lightbox() {
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
-      resetCaptcha($(form));
+      resetCaptcha(form);
     });
 
     VuFind.modal('show');
@@ -552,6 +552,7 @@ VuFind.register('lightbox', function Lightbox() {
       }
     };
     VuFind.listen('results-init', updateContainer);
+    VuFind.listen('record-tab-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

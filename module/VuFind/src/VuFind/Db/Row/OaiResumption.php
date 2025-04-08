@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -38,11 +39,13 @@ use VuFind\Db\Entity\OaiResumptionEntityInterface;
  * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  *
  * @property int    $id
  * @property string $params
+ * @property string $token
  * @property string $expires
  */
 class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
@@ -127,6 +130,29 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
     public function getResumptionParameters(): ?string
     {
         return $this->params;
+    }
+
+    /**
+     * Set token used for identifying.
+     *
+     * @param string $token Generated token.
+     *
+     * @return static
+     */
+    public function setToken(string $token): static
+    {
+        $this->token = $token;
+        return $this;
+    }
+
+    /**
+     * Get token used for identifying.
+     *
+     * @return ?string
+     */
+    public function getToken(): ?string
+    {
+        return $this->token;
     }
 
     /**

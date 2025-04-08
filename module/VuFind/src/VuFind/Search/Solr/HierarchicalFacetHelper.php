@@ -119,7 +119,7 @@ class HierarchicalFacetHelper implements
     public function sortFacetList(&$facetList, $order = null)
     {
         // Map $order to a sort setting that's simple and fast to compare (boolean values of $order are
-        // supported for backward compatibility):
+        // supported for backward compatibility with legacy code):
         $sort = match ($order) {
             true, 'top' => static::SORT_TOP,
             false, 'all' => static::SORT_ALL,

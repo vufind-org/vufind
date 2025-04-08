@@ -229,7 +229,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals("All {$this->getVuFindUrl()}/", $this->findCss($page, '#site_url')->getText());
 
         // Set the first message to "in progress" status:
-        $this->findCss($page, '.form-control.status_update')->setValue('in progress');
+        $this->findCss($page, '.form-feedback-list .status_update')->setValue('in progress');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Feedback status updated successfully',
