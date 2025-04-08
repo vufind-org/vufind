@@ -525,7 +525,6 @@ class SearchRequestModel
         } else {
             [$field, $operator, $value] = $filterComponents;
         }
-        // $this->validateFilter($field, $value);
         if (str_starts_with($field, '~')) {
             $field = substr($field, 1);
             $operator = 'OR';
