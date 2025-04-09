@@ -1193,8 +1193,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $selectMulti   Select multiple?
      * @param bool  $unselectMulti Unselect multiple?
      *
-     * @return void
-     * @throws \Exception
+     * @return       void
+     * @throws       \Exception
      * @dataProvider checkboxFacetSelectionProvider
      *
      */
