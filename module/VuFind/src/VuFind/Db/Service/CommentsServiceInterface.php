@@ -131,16 +131,16 @@ interface CommentsServiceInterface extends DbServiceInterface
      * @param bool   $comments Whether to fetch comments
      * @param bool   $ratings  Whether to fetch ratings
      *
-     * @return \Laminas\Paginator\Paginator|array
+     * @return \Laminas\Paginator\Paginator
      */
-    public function getCommentsAndRatingsByUserId(
+    public function getCommentsAndRatingsPaginator(
         int $userId,
         int $limit,
         int $page,
         string $sort,
         bool $comments,
         bool $ratings
-    ): \Laminas\Paginator\Paginator|array;
+    ): \Laminas\Paginator\Paginator;
 
     /**
      * Change all matching comments to use the new resource ID instead of the old one (called when an ID changes).

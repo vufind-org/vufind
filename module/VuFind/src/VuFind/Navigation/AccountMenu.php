@@ -367,7 +367,7 @@ class AccountMenu extends AbstractMenu
     protected function checkCommentsAndRatings(): bool
     {
         return ('enabled' === $this->accountCapabilities->getCommentSetting())
-            || ('enabked' === $this->accountCapabilities->getRatingSetting());
+            || ('enabled' === $this->accountCapabilities->getRatingSetting());
     }
 
     /**

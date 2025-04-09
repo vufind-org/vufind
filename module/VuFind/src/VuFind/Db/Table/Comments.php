@@ -186,13 +186,10 @@ class Comments extends Gateway implements DbServiceAwareInterface
      * @param bool   $comments Whether to fetch comments
      * @param bool   $ratings  Whether to fetch ratings
      *
-     * @return \Laminas\Paginator\Paginator|array
+     * @return \Laminas\Paginator\Paginator
      */
-    public function getCommentsAndRatingsByUserId($userId, $limit, $page, $sort, $comments, $ratings)
+    public function getCommentsAndRatingsPaginator($userId, $limit, $page, $sort, $comments, $ratings)
     {
-        if (!$comments && !$ratings) {
-            return [];
-        }
         if ($comments) {
             $commentSelect = new Select();
             $commentSelect->from('comments')

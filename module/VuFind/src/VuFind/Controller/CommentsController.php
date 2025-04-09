@@ -64,8 +64,8 @@ class CommentsController extends AbstractBase
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', '');
         $service = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
-        $comments = $service->getCommentsAndRatingsByUserId(
-            $user->id,
+        $comments = $service->getCommentsAndRatingsPaginator(
+            $user->getId(),
             $limit,
             $page,
             $sort,

@@ -178,7 +178,7 @@ class CommentsService extends AbstractDbService implements
      *
      * @return Paginator
      */
-    public function getCommentsAndRatingsByUserId(
+    public function getCommentsAndRatingsPaginator(
         int $userId,
         int $limit,
         int $page,
@@ -186,7 +186,7 @@ class CommentsService extends AbstractDbService implements
         bool $comments,
         bool $ratings
     ): \Laminas\Paginator\Paginator {
-        return $this->getDbTable('Comments')->getCommentsAndRatingsByUserId(
+        return $this->getDbTable('Comments')->getCommentsAndRatingsPaginator(
             $userId,
             $limit,
             $page,
