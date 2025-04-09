@@ -23,7 +23,7 @@
  * @package  Utilities
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/installation Wiki
+ * @link     https://vufind.org/wiki/administration:command_line_utilities Wiki
  */
 
 // Manipulate command line to load correct route, then run the main index page:
