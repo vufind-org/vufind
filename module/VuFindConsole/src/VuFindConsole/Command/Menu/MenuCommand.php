@@ -24,7 +24,7 @@
  * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/administration:command_line_utilities Wiki
  */
 
 namespace VuFindConsole\Command\Menu;
