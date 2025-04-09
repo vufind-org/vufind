@@ -203,6 +203,38 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that the advanced search breadcrumb is operational.
+     *
+     * @return void
+     */
+    public function testAdvancedSearchBreadcrumb()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Check breadcrumb without link
+        $this->assertEquals('Search', $this->findCssAndGetHtml($page, '.breadcrumb-item'));
+
+        // Enter and submit search
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'miller');
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+
+        // Test breadcrumb link
+        $this->editAdvancedSearch($page);
+        $this->clickCss($page, '.breadcrumb-item a');
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+    }
+
+    /**
      * Test that the advanced search form works correctly with a NOT group combined
      * with another group.
      *

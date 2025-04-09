@@ -3,9 +3,12 @@
     $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
-        . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-        . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('request_place_text') . '</li>';
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+      ->add($this->translate('request_place_text'), active: true);
 ?>
 <h2><?=$this->transEsc('request_place_text')?></h2>
 <?php if ($this->helpTextHtml): ?>
@@ -143,7 +146,7 @@
 
 <?php
     // Set up hold script; we do this inline instead of in the header for lightbox compatibility:
-    $this->inlineScript()->appendFile('hold.js');
+    echo $this->assetManager()->outputInlineScriptLink('hold.js');
 
     $js = <<<JS
         if ($.isReady) {
@@ -155,5 +158,5 @@
         }
         JS;
 
-    echo $this->inlineScript()->appendScript($js);
+    echo $this->assetManager()->outputInlineScriptString($js);
 ?>

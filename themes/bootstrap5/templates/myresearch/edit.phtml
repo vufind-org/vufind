@@ -3,12 +3,10 @@
   $this->headTitle($this->translate('Edit') . ' : ' . $this->driver->getBreadcrumb());
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    . (
-        isset($listID)
-          ? '<li><a href="' . $this->url('userList', ['id' => $listID]) . '">' . $this->transEsc('List') . '</a></li>'
-          : '<li><a href="' . $this->url('myresearch-favorites') . '">' . $this->transEsc('saved_items') . '</a></li>'
-    ) . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Edit') . '</li>';
+  $listLink = isset($listID) ? $this->url('userList', ['id' => $listID]) : $this->url('myresearch-favorites');
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate(isset($listID) ? 'List' : 'saved_items'), $listLink)
+    ->add($this->translate('Edit'), active: true);
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->component('show-account-menu-button')?>

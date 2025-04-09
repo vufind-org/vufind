@@ -1,11 +1,11 @@
 <?php
 
 /**
- * AddThis helper factory.
+ * EscapeOrCleanHtml helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,13 +22,14 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Escaper\Escaper;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -36,15 +37,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * AddThis helper factory.
+ * EscapeOrCleanHtml helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AddThisFactory implements FactoryInterface
+class EscapeOrCleanHtmlFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,8 +69,9 @@ class AddThisFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        return new $requestedName($config->AddThis->key ?? false);
+
+        $helpers = $container->get('ViewHelperManager');
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        return new $requestedName(new Escaper(), $helpers->get('cleanHtml'), $config->toArray());
     }
 }

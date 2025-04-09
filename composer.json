@@ -55,6 +55,7 @@
         "doctrine/doctrine-orm-module": "^6.0",
         "doctrine/orm": "^2.10.2",
         "endroid/qr-code": "5.1.0",
+        "ezyang/htmlpurifier": "4.17.0",
         "firebase/php-jwt": "6.10.1",
         "guzzlehttp/guzzle": "7.9.2",
         "jaybizzle/crawler-detect": "^1.2",

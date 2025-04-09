@@ -575,7 +575,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     ) {
         $buttonFound = false;
         // Use of 'submit' as an input name was deprecated in release 10.0, but the
-        // check is retained for backward compatibility with custom templates.
+        // check is retained for backward compatibility with legacy custom templates.
         $defaultSubmitElements = ['submitButton', 'submit'];
         foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
             if ($this->params()->fromPost($submitElement, false)) {

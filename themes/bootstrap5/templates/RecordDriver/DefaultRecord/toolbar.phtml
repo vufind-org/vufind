@@ -1,9 +1,3 @@
-<?php
-  $addThis = $this->addThis();
-  if (!empty($addThis)) {
-    $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
-  }
-?>
 <nav class="record-nav" aria-label="<?=$this->transEscAttr('ajaxview_label_tools'); ?>">
   <ul class="action-toolbar">
     <?php if (count($this->driver->getCitationFormats()) > 0): ?>
@@ -82,16 +76,6 @@
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block ?>
         <?php endif; ?>
-      </li>
-    <?php endif; ?>
-    <?php if (!empty($addThis)): ?>
-      <li>
-        <a class="addThis addthis_button icon-link" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>">
-          <?=$this->icon('addthis-bookmark', 'icon-link__icon') ?>
-          <span class="icon-link__label">
-            <?=$this->transEsc('Bookmark')?>
-          </span>
-        </a>
       </li>
     <?php endif; ?>
 

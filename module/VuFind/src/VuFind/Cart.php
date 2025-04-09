@@ -275,7 +275,7 @@ class Cart
             $items = explode(self::CART_COOKIE_DELIM, $cookie);
 
             if (!isset($cookies[self::CART_COOKIE_SOURCES])) {
-                // Backward compatibility with VuFind 1.x -- if no source cookie, all
+                // Backward compatibility with VuFind 1.x legacy code -- if no source cookie, all
                 // items come from the default source:
                 for ($i = 0; $i < count($items); $i++) {
                     $items[$i] = DEFAULT_SEARCH_BACKEND . '|' . $items[$i];

@@ -1,6 +1,6 @@
 <?php
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a></li>';
+  $this->breadcrumbs()->set($this->translate('Browse Alphabetically'), $this->url('alphabrowse-home'));
   $baseQuery = ['source' => $this->source, 'from' => $this->from];
 
   // Set up upper search box if necessary:
