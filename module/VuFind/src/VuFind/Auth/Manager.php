@@ -155,6 +155,14 @@ class Manager implements
         $name = empty($name) ? $this->activeAuth : $name;
         if (!isset($this->auth[$name])) {
             $this->auth[$name] = $this->makeAuth($name);
+            // check if authentication handler still has the legacy methods "logout" or "resetState" that
+            // need to be replaced by "getLogoutRedirectUrl" and "clearLoginState".
+            if (is_callable([$this->auth[$name], 'logout']) || is_callable([$this->auth[$name], 'resetState'])) {
+                throw new \Exception(
+                    'Deprecated methods "logout" and "resetState" need'
+                    . 'to be replaced by "getLogoutRedirectUrl" and "clearLoginState"'
+                );
+            }
         }
         return $this->auth[$name];
     }
@@ -328,7 +336,7 @@ class Manager implements
             if (!$this->getIdentity()) {
                 throw $e;
             }
-            $this->logout();
+            $this->clearLoginState();
             return $this->getAuth()->getSessionInitiator($target);
         }
     }
@@ -479,25 +487,36 @@ class Manager implements
     }
 
     /**
-     * Log out the current user.
+     * Legacy method that logs out the current user.
      *
-     * @param ?string $url     URL to redirect user to after logging out.
-     * @param bool    $destroy Should we destroy the session (true) or just reset it
+     * @param string $url     URL to redirect user to after logging out.
+     * @param bool   $destroy Should we destroy the session (true) or just reset it
      * (false); destroy is for log out, reset is for expiration.
      *
-     * @return ?string     Redirect URL (usually same as $url, but modified in
+     * @return string     Redirect URL (usually same as $url, but modified in
      * some authentication modules).
+     *
+     * @deprecated Use clearLoginState() and getLogoutRedirectUrl() instead.
      */
-    public function logout(?string $url = null, bool $destroy = true): ?string
+    public function logout(string $url, bool $destroy = true): string
     {
-        // Perform authentication-specific cleanup and modify redirect URL if
-        // necessary.
-        if ($url !== null) {
-            $url = $this->getAuth()->logout($url);
-        }
+        $url = $this->getLogoutRedirectUrl($url);
+        $this->clearLoginState($destroy);
+        return $url;
+    }
 
+    /**
+     * Clear the logged in state of the current user.
+     *
+     * @param bool $destroy Should we destroy the session (true) or just reset it
+     * (false); destroy is for log out, reset is for expiration.
+     *
+     * @return void
+     */
+    public function clearLoginState(bool $destroy = true): void
+    {
         // Reset authentication state
-        $this->getAuth()->resetState();
+        $this->getAuth()->clearLoginState();
 
         // Clear out the cached user object and session entry.
         $this->currentUser = null;
@@ -514,8 +533,18 @@ class Manager implements
             // apparently isn't (TODO -- do this better):
             $_SESSION = [];
         }
+    }
 
-        return $url;
+    /**
+     * Get URL users should be redirected to for logout in external services if necessary.
+     *
+     * @param string $url Internal URL to redirect user to after logging out.
+     *
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
+     */
+    public function getLogoutRedirectUrl(string $url): string
+    {
+        return $this->getAuth()->getLogoutRedirectUrl($url);
     }
 
     /**
@@ -542,7 +571,7 @@ class Manager implements
                 $this->currentUser = $this->userSession->getUserFromSession();
                 // End the session if the logged-in user cannot be found:
                 if (null === $this->currentUser) {
-                    $this->logout();
+                    $this->clearLoginState();
                 }
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                 if ($this->getAuth() instanceof ChoiceAuth) {
@@ -598,7 +627,7 @@ class Manager implements
     public function checkForExpiredCredentials(): bool
     {
         if ($this->getIdentity() && $this->getAuth()->isExpired()) {
-            $this->logout(null, false);
+            $this->clearLoginState(false);
             return true;
         }
         return false;
@@ -740,7 +769,7 @@ class Manager implements
                 && $this->getAuth()->needsCsrfCheck($request)
             ) {
                 if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
-                    $this->getAuth()->resetState();
+                    $this->getAuth()->clearLoginState();
                     $this->logWarning('Invalid CSRF token passed to login');
                     throw new AuthException('authentication_error_technical');
                 } else {
@@ -811,7 +840,7 @@ class Manager implements
             // Send user back to caller:
             return $user;
         } catch (\Exception $e) {
-            $this->getAuth()->resetState();
+            $this->getAuth()->clearLoginState();
             throw $e;
         }
     }

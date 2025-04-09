@@ -130,7 +130,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function resetState()
+    public function clearLoginState()
     {
         // By default, do no checking.
     }
@@ -283,16 +283,15 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
-        // No special cleanup or URL modification needed by default.
+        // No modification needed by default.
         return $url;
     }
 
