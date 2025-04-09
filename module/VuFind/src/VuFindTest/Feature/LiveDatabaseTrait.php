@@ -33,6 +33,7 @@ namespace VuFindTest\Feature;
 
 use Throwable;
 use VuFind\Account\UserAccountService;
+use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
@@ -168,6 +169,10 @@ trait LiveDatabaseTrait
         $container->set(
             \VuFind\Db\Service\PluginManager::class,
             new \VuFind\Db\Service\PluginManager($container, [])
+        );
+        $container->set(
+            PersistenceManager::class,
+            new PersistenceManager($container->get(\Doctrine\ORM\EntityManager::class))
         );
     }
 

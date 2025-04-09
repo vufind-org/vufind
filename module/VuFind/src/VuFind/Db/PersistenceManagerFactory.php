@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database service factory
+ * Factory for the persistence manager.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,23 +21,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Database
+ * @package  Db
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db\Service;
+namespace VuFind\Db;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Db\PersistenceManager;
 
 /**
- * Database service factory
+ * Factory for the persistence manager.
  *
  * @category VuFind
  * @package  Database
@@ -45,7 +44,7 @@ use VuFind\Db\PersistenceManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AbstractDbServiceFactory implements FactoryInterface
+class PersistenceManagerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,8 +67,6 @@ class AbstractDbServiceFactory implements FactoryInterface
     ) {
         return new $requestedName(
             $container->get('doctrine.entitymanager.orm_vufind'),
-            $container->get(\VuFind\Db\Entity\PluginManager::class),
-            $container->get(PersistenceManager::class),
             ...($options ?? [])
         );
     }

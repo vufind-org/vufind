@@ -30,9 +30,9 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
-use Laminas\Db\RowGateway\AbstractRowGateway;
 use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\PersistenceManager;
 
 use function is_callable;
 use function is_int;
@@ -60,11 +60,13 @@ abstract class AbstractDbService implements DbServiceInterface
      * Constructor
      *
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
+     * @param EntityPluginManager $entityPluginManager Database entity plugin manager
+     * @param PersistenceManager  $persistenceManager  Entity persistence manager
      */
     public function __construct(
         protected EntityManager $entityManager,
-        protected EntityPluginManager $entityPluginManager
+        protected EntityPluginManager $entityPluginManager,
+        protected PersistenceManager $persistenceManager
     ) {
     }
 
@@ -90,13 +92,7 @@ abstract class AbstractDbService implements DbServiceInterface
      */
     public function persistEntity(EntityInterface $entity): void
     {
-        // Compatibility with legacy \VuFind\Db\Row objects:
-        if ($entity instanceof AbstractRowGateway) {
-            $entity->save();
-            return;
-        }
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
+        $this->persistenceManager->persistEntity($entity);
     }
 
     /**
@@ -108,8 +104,7 @@ abstract class AbstractDbService implements DbServiceInterface
      */
     public function deleteEntity(EntityInterface $entity): void
     {
-        $this->entityManager->remove($entity);
-        $this->entityManager->flush();
+        $this->persistenceManager->deleteEntity($entity);
     }
 
     /**

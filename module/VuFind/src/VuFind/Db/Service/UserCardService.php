@@ -40,6 +40,7 @@ use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Entity\UserCardEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\PersistenceManager;
 use VuFind\Log\LoggerAwareTrait;
 
 use function count;
@@ -68,16 +69,18 @@ class UserCardService extends AbstractDbService implements
      *
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
+     * @param PersistenceManager  $persistenceManager  Entity persistence manager
      * @param ILSAuthenticator    $ilsAuthenticator    ILS authenticator
      * @param AccountCapabilities $capabilities        Account capabilities configuration
      */
     public function __construct(
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
         protected ILSAuthenticator $ilsAuthenticator,
         protected AccountCapabilities $capabilities
     ) {
-        parent::__construct($entityManager, $entityPluginManager);
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
 
     /**

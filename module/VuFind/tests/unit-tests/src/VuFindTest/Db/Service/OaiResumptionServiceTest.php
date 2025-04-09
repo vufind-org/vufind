@@ -34,6 +34,7 @@ use Exception;
 use Generator;
 use VuFind\Db\Entity\OaiResumption;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
+use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\OaiResumptionService;
 
 use function count;
@@ -67,11 +68,12 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager,
         $oaiResumption = null,
     ) {
+        $persistenceManager = $this->createMock(PersistenceManager::class);
         $serviceMock = $this->getMockBuilder(
             \VuFind\Db\Service\OaiResumptionService::class
         )
             ->onlyMethods(['createEntity'])
-            ->setConstructorArgs([$entityManager, $pluginManager])
+            ->setConstructorArgs([$entityManager, $pluginManager, $persistenceManager])
             ->getMock();
         if ($oaiResumption) {
             $serviceMock->expects($this->once())->method('createEntity')
