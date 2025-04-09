@@ -1196,7 +1196,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @return       void
      * @throws       \Exception
      * @dataProvider checkboxFacetSelectionProvider
-     *
      */
     public function testCheckboxFacetSelection(
         array $checkFacets,
