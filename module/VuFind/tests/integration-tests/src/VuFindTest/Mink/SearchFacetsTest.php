@@ -1170,15 +1170,15 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 $result["select one $params"] = [
                     ['Books'],
                     8,
-                    $selectMulti ? 'unchecked' : 'false',
-                    $unselectMulti ? 'unchecked' : 'false',
+                    $selectMulti,
+                    $unselectMulti,
                 ];
                 $name = "select two $params";
                 $result[$name] = [
                     ['Books', 'Fiction'],
                     7,
-                    $selectMulti ? 'unchecked' : 'false',
-                    $unselectMulti ? 'unchecked' : 'false',
+                    $selectMulti,
+                    $unselectMulti,
                 ];
             }
         }
@@ -1188,27 +1188,28 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test checkbox facet selection
      *
-     * @param array  $checkFacets   Facet checkboxes to check
-     * @param int    $expectedCount Expected result count
-     * @param string $selectMulti   Select multiple?
-     * @param string $unselectMulti Unselect multiple?
-     *
-     * @dataProvider checkboxFacetSelectionProvider
+     * @param array $checkFacets   Facet checkboxes to check
+     * @param int   $expectedCount Expected result count
+     * @param bool  $selectMulti   Select multiple?
+     * @param bool  $unselectMulti Unselect multiple?
      *
      * @return void
+     * @throws \Exception
+     * @dataProvider checkboxFacetSelectionProvider
+     *
      */
     public function testCheckboxFacetSelection(
         array $checkFacets,
         int $expectedCount,
-        string $selectMulti,
-        string $unselectMulti
+        bool $selectMulti,
+        bool $unselectMulti
     ): void {
-        $multiSelectActive = $selectMulti !== 'false' || $unselectMulti !== 'false';
+        $multiSelectActive = $selectMulti || $unselectMulti;
         $this->changeConfigs(
             [
                 'facets' => [
                     'Results_Settings' => [
-                        'multiFacetsSelection' => $multiSelectActive,
+                        'multiFacetsSelection' => $multiSelectActive ? 'unchecked' : 'false',
                     ],
                     'CheckboxFacets' => [
                         'format:Book' => 'Books',
