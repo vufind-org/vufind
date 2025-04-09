@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\EDS;
 
 use InvalidArgumentException;
+use Laminas\Log\LoggerInterface;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Query\Query;
 
@@ -333,10 +334,13 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             return new Backend($connector, $factory, $cache, $container, new \VuFind\Config\Config($settings));
         } else {
             $params = [$connector, $factory, $cache, $container, new \VuFind\Config\Config($settings)];
-            return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
+            $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
                 ->onlyMethods($mock)
                 ->setConstructorArgs($params)
                 ->getMock();
+            $logger = $this->createMock(LoggerInterface::class);
+            $backend->setLogger($logger);
+            return $backend;
         }
     }
 

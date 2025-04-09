@@ -1257,6 +1257,8 @@ class BackendTest extends TestCase
             ->onlyMethods(['getAuthenticationToken', 'getSessionToken'])
             ->setConstructorArgs($params)
             ->getMock();
+        $logger = $this->createMock(LoggerInterface::class);
+        $backend->setLogger($logger);
 
         $backend->expects($this->any())
             ->method('getAuthenticationToken')

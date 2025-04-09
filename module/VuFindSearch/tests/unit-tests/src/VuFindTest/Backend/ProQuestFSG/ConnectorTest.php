@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\ProQuestFSG;
 
 use Laminas\Http\Client;
+use VuFind\Config\Config;
 use VuFindSearch\Backend\ProQuestFSG\Connector;
 use VuFindSearch\ParamBag;
 
@@ -118,7 +119,8 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConnector($client)
     {
-        $connector = new Connector($client);
+        $config = $this->createMock(Config::class);
+        $connector = new Connector($client, $config);
         return $connector;
     }
 }
