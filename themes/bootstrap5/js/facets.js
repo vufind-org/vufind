@@ -13,6 +13,10 @@ const getMultiFacetsSelectionPageLoadValue = () => {
   return multiFacetsSelection === 'always' || multiFacetsSelection === 'checked';
 };
 
+const getMultiFacetsSelectionState = () => {
+  return multiFacetsSelection;
+};
+
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
   function getCurrentContainsValue() {
@@ -490,9 +494,14 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     initFacetClickHandler(context);
     initRangeSelection(context);
     // Synchronize the state of multi-facet checkboxes in case there's e.g. a lightbox with its own controls:
-    let state = getUserSelectionLastState();
-    if (state === undefined) {
-      state = getMultiFacetsSelectionPageLoadValue() ? true : undefined;
+    let state;
+    if (getMultiFacetsSelectionState() === 'always') {
+      state = true;
+    } else {
+      state = getUserSelectionLastState();
+      if (state === undefined) {
+        state = getMultiFacetsSelectionPageLoadValue() ? true : undefined;
+      }
     }
     VuFind.multiFacetsSelection.toggleMultiFacetsSelection(state);
   }
