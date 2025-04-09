@@ -65,7 +65,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * Constructor
      *
      * @param \Laminas\Http\Client $client An HTTP client object
-     * @param Config ProQuestFSG config
+     * @param Config               $config ProQuestFSG config
      */
     public function __construct(
         \Laminas\Http\Client $client,
