@@ -151,6 +151,13 @@ class Backend extends AbstractBackend
     protected $backendType = null;
 
     /**
+     * Validation config
+     *
+     * @var Config
+     */
+    protected $validationConfig = null;
+
+    /**
      * Constructor.
      *
      * @param Connector                        $client  EdsApi client to use
@@ -181,6 +188,7 @@ class Backend extends AbstractBackend
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
+        $this->validationConfig = $config->Validation ?? null;
 
         // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;
@@ -427,7 +435,10 @@ class Backend extends AbstractBackend
             $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
         }
-        return new SearchRequestModel($options);
+        $model = new SearchRequestModel($options);
+        $model->setValidationConfig($this->validationConfig);
+        $model->setLogger($this->logger);
+        return $model;
     }
 
     /**

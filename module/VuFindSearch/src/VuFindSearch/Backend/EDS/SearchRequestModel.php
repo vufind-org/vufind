@@ -29,6 +29,9 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
+
 use function array_key_exists;
 use function count;
 use function intval;
@@ -43,8 +46,10 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchRequestModel
+class SearchRequestModel implements LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * What to search for, formatted as [{boolean operator},][{field code}:]{term}
      *
@@ -139,6 +144,13 @@ class SearchRequestModel
     protected $actions = [];
 
     /**
+     * Validation config
+     *
+     * @var Config
+     */
+    protected $validationConfig = null;
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Search Request model
@@ -212,17 +224,33 @@ class SearchRequestModel
     }
 
     /**
+     * Set validation config
+     *
+     * @param ?Config $validationConfig Validation config
+     *
+     * @return void
+     */
+    public function setValidationConfig($validationConfig)
+    {
+        $this->validationConfig = $validationConfig;
+    }
+
+    /**
      * Checks whether the search model is valid for the EDS API.
      *
      * @return bool Returns false if any model parameters are invalid.
      */
     public function isValid()
     {
+        if (!($this->validationConfig->ContentProvider ?? true)) {
+            return true;
+        }
         $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
         $invalidContentProviderCharacters = '|';
         foreach ($contentProviderValues as $value) {
             foreach (str_split($invalidContentProviderCharacters) as $invalidCharacter) {
                 if (str_contains($value, $invalidCharacter)) {
+                    $this->debug("Invalid database code '$value'; should skip EDS query.");
                     return false;
                 }
             }
