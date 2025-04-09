@@ -1367,7 +1367,7 @@ class DefaultRecord extends AbstractBase
     public function getTitleSection()
     {
         // Not currently stored in the default index schema
-        return null;
+        return '';
     }
 
     /**
@@ -1379,7 +1379,7 @@ class DefaultRecord extends AbstractBase
     public function getTitleStatement()
     {
         // Not currently stored in the default index schema
-        return null;
+        return '';
     }
 
     /**

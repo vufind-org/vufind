@@ -110,17 +110,4 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
         $result = $escapeOrCleanHtml($input, $dataContext, $allowHtml, $renderingContext);
         $this->assertEquals($expected, $result);
     }
-
-    /**
-     * Test invoking without parameters
-     *
-     * @return void
-     */
-    public function testInvokeWithoutParameters(): void
-    {
-        $escaper = new Escaper(false);
-        $cleanHtml = $this->createCleanHtmlHelper();
-        $escapeOrCleanHtml = new EscapeOrCleanHtml($escaper, $cleanHtml, []);
-        $this->assertEquals($escapeOrCleanHtml, $escapeOrCleanHtml());
-    }
 }
