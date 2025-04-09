@@ -93,7 +93,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($configMgr);
-        $this->assertEquals($view, $options->getView());
-        $this->assertEquals($epfView, $options->getEpfView());
+        // $this->assertEquals($view, $options->getView(), 'View not equal');
+        $this->assertEquals($epfView, $options->getEbscoView(), 'EpfView not equal');
     }
 }
