@@ -207,8 +207,8 @@ class Mailer implements
      * @param string|string[]|Address|Address[]|null $cc            CC recipient(s) (null for none)
      * @param string|string[]|Address|Address[]|null $replyTo       Reply-To address(es) (or delimited list, null for
      * none)
-     * @param bool                                   $subjectInBody Allow subject to be extracted from body (string
-     * only)?
+     * @param bool                                   $subjectInBody Allow subject to be extracted from body when
+     * body text begins with "Subject: " (string only)?
      *
      * @throws MailException
      * @return void
