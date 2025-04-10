@@ -193,41 +193,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Figure out which version(s) are being used.
-     *
-     * @return mixed
-     * @throws Exception
-     */
-    public function establishversionsAction()
-    {
-        $this->cookie->newVersion = Version::getBuildVersion();
-        $this->cookie->oldVersion = Version::getBuildVersion($this->getSourceDir());
-
-        // Block upgrade when encountering common errors:
-        if (empty($this->cookie->oldVersion)) {
-            $this->flashMessenger()
-                ->addMessage('Cannot determine source version.', 'error');
-            unset($this->cookie->oldVersion);
-            return $this->forwardTo('Upgrade', 'Error');
-        }
-        if (empty($this->cookie->newVersion)) {
-            $this->flashMessenger()
-                ->addMessage('Cannot determine destination version.', 'error');
-            unset($this->cookie->newVersion);
-            return $this->forwardTo('Upgrade', 'Error');
-        }
-        if ($this->cookie->newVersion == $this->cookie->oldVersion) {
-            $this->flashMessenger()
-                ->addMessage('Cannot upgrade version to itself.', 'error');
-            unset($this->cookie->newVersion);
-            return $this->forwardTo('Upgrade', 'Error');
-        }
-
-        // If we got this far, everything is okay:
-        return $this->forwardTo('Upgrade', 'Home');
-    }
-
-    /**
      * Upgrade the configuration files.
      *
      * @return mixed
@@ -235,13 +200,10 @@ class UpgradeController extends AbstractBase
     public function fixconfigAction()
     {
         $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
-        $confDir = Comparator::lessThan($this->cookie->oldVersion, '2.0')
-            ? $this->getSourceDir() . '/web/conf'
-            : $localConfig;
         $upgrader = new Upgrade(
             $this->cookie->oldVersion,
             $this->cookie->newVersion,
-            $confDir,
+            $localConfig,
             dirname($this->getBaseConfigFilePath('config.ini')),
             $localConfig
         );
@@ -823,36 +785,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Prompt the user for a source directory (to upgrade from 1.x).
-     *
-     * @return mixed
-     */
-    public function getsourcedirAction()
-    {
-        // Process form submission:
-        $dir = $this->params()->fromPost('sourcedir');
-        if (!empty($dir)) {
-            if (!$this->isSourceDirValid($dir)) {
-                $this->flashMessenger()
-                    ->addMessage($dir . ' does not exist.', 'error');
-            } elseif (!file_exists($dir . '/build.xml')) {
-                $this->flashMessenger()->addMessage(
-                    'Could not find build.xml in source directory;'
-                    . ' upgrade does not support VuFind versions prior to 1.1.',
-                    'error'
-                );
-            } else {
-                $this->setSourceDir(rtrim($dir, '\/'));
-                // Clear out request to avoid infinite loop:
-                $this->getRequest()->getPost()->set('sourcedir', '');
-                return $this->forwardTo('Upgrade', 'Home');
-            }
-        }
-
-        return $this->createViewModel();
-    }
-
-    /**
      * Make sure we only skip the actions the user wants us to.
      *
      * @return void
@@ -877,9 +809,10 @@ class UpgradeController extends AbstractBase
         $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
             $this->cookie->newVersion = $newVersion = Version::getBuildVersion();
-            if (Comparator::lessThan($version, '2.0')) {
-                $this->flashMessenger()
-                    ->addMessage('Illegal version number.', 'error');
+            if (Comparator::lessThan($version, '10.0')) {
+                $this->flashMessenger()->addErrorMessage(
+                    'Illegal version number; please upgrade to at least version 10.x before proceeding.'
+                );
             } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
                 $this->flashMessenger()->addMessage(
                     "Source version must be less than {$newVersion}.",
@@ -887,16 +820,12 @@ class UpgradeController extends AbstractBase
                 );
             } else {
                 $this->cookie->oldVersion = $version;
-                $this->setSourceDir(realpath(APPLICATION_PATH));
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourceversion', '');
                 $this->processSkipParam();
                 return $this->forwardTo('Upgrade', 'Home');
             }
         }
-
-        // If we got this far, we need to send the user back to the form:
-        return $this->forwardTo('Upgrade', 'GetSourceDir');
     }
 
     /**
@@ -910,50 +839,6 @@ class UpgradeController extends AbstractBase
         return $this->criticalCheckForInsecureDatabase()
             ?? $this->criticalCheckForBlowfishEncryption()
             ?? null;
-    }
-
-    /**
-     * Validate a source directory string.
-     *
-     * @param string $dir Directory string to check
-     *
-     * @return bool
-     */
-    protected function isSourceDirValid(string $dir): bool
-    {
-        // Prevent abuse of stream wrappers:
-        if (empty($dir) || str_contains($dir, '://')) {
-            return false;
-        }
-        return is_dir($dir);
-    }
-
-    /**
-     * Set the source directory for the upgrade
-     *
-     * @param string $dir Directory to set
-     *
-     * @return void
-     */
-    protected function setSourceDir(string $dir): void
-    {
-        $this->cookie->sourceDir = $dir;
-    }
-
-    /**
-     * Get the source directory for the upgrade
-     *
-     * @param bool $validate Should we validate the directory?
-     *
-     * @return string
-     */
-    protected function getSourceDir($validate = true): string
-    {
-        $sourceDir = $this->cookie->sourceDir ?? '';
-        if ($validate && !$this->isSourceDirValid($sourceDir)) {
-            throw new \Exception('Unexpected source directory value!');
-        }
-        return $sourceDir;
     }
 
     /**
@@ -971,16 +856,8 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (!$this->isSourceDirValid($this->getSourceDir(false))) {
-            return $this->forwardTo('Upgrade', 'GetSourceDir');
-        }
-
-        // Next figure out which version(s) are involved:
-        if (
-            !isset($this->cookie->oldVersion)
-            || !isset($this->cookie->newVersion)
-        ) {
-            return $this->forwardTo('Upgrade', 'EstablishVersions');
+        if (!isset($this->cookie->oldVersion) || !isset($this->cookie->newVersion)) {
+            return $this->forwardTo('Upgrade', 'GetSourceVersion');
         }
 
         // Check for critical upgrades
@@ -1017,12 +894,7 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(
-            [
-                'configDir'
-                    => dirname($this->getForcedLocalConfigPath('config.ini')),
-                'importDir' => LOCAL_OVERRIDE_DIR . '/import',
-                'oldVersion' => $this->cookie->oldVersion,
-            ]
+            ['configDir' => dirname($this->getForcedLocalConfigPath('config.ini'))]
         );
     }
 

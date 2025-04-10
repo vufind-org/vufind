@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for helpers relying on asset pipeline configuration.
+ * Factory for AssetPipeline class.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,19 +27,18 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindTheme\View\Helper;
+namespace VuFindTheme;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Config;
 
 use function count;
 
 /**
- * Factory for helpers relying on asset pipeline configuration.
+ * Factory for AssetPipeline class.
  *
  * @category VuFind
  * @package  Theme
@@ -47,16 +46,16 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PipelineInjectorFactory implements FactoryInterface
+class AssetPipelineFactory implements FactoryInterface
 {
     /**
      * Split config and return prefixed setting with current environment.
      *
-     * @param Config $config Configuration settings
+     * @param array $config Configuration settings
      *
      * @return string|bool
      */
-    protected function getPipelineConfig(Config $config)
+    protected function getPipelineConfig(array $config)
     {
         $default = false;
         if (isset($config['Site']['asset_pipeline'])) {
@@ -101,13 +100,11 @@ class PipelineInjectorFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
-        $nonce = $nonceGenerator->getNonce();
-        $config = $configManager->get('config');
+        $config = $configManager->get('config')?->toArray() ?? [];
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
+            $container->get('ViewHelperManager')->get('url'),
             $this->getPipelineConfig($config),
-            $nonce,
             $config['Site']['asset_pipeline_max_css_import_size'] ?? null
         );
     }

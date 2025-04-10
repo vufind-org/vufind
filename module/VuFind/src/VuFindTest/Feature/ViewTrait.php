@@ -39,7 +39,9 @@ use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
+use VuFindTest\Container\MockContainer;
 use VuFindTheme\View\Helper\AssetManager;
+use VuFindTheme\View\Helper\AssetManagerFactory;
 
 /**
  * Trait for tests involving Laminas Views.
@@ -61,7 +63,9 @@ trait ViewTrait
      */
     protected function getAssetManager(PhpRenderer $renderer): AssetManager
     {
-        $helper = new AssetManager();
+        $container = new MockContainer($this);
+        $factory = new AssetManagerFactory();
+        $helper = $factory($container, AssetManager::class);
         $helper->setView($renderer);
         return $helper;
     }
