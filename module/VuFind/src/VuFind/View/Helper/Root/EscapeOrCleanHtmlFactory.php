@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for DefaultRecord specs.
+ * EscapeOrCleanHtml helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2025.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,16 +21,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  RecordDataFormatter
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @package  View_Helpers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
- * Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\RecordDataFormatter\Specs;
+namespace VuFind\View\Helper\Root;
 
+use Laminas\Escaper\Escaper;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -38,17 +37,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for DefaultRecord specs.
+ * EscapeOrCleanHtml helper factory.
  *
  * @category VuFind
- * @package  RecordDataFormatter
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @package  View_Helpers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
- * Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class DefaultRecordFactory implements FactoryInterface
+class EscapeOrCleanHtmlFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -63,8 +60,6 @@ class DefaultRecordFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -74,8 +69,9 @@ class DefaultRecordFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('RecordDataFormatter')->toArray();
-        $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
-        return new $requestedName($config, $schemaOrgHelper);
+
+        $helpers = $container->get('ViewHelperManager');
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        return new $requestedName(new Escaper(), $helpers->get('cleanHtml'), $config->toArray());
     }
 }

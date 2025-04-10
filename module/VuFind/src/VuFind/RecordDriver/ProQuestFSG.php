@@ -33,6 +33,7 @@ namespace VuFind\RecordDriver;
 use VuFind\RecordDriver\Feature\MarcAdvancedTrait;
 use VuFind\RecordDriver\Feature\MarcBasicTrait;
 use VuFind\RecordDriver\Feature\MarcReaderTrait;
+use VuFind\String\PropertyString;
 
 /**
  * Model for MARC records in ProQuest Federated Search Gateway.
@@ -83,7 +84,7 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getShortTitle()
     {
-        return html_entity_decode(strip_tags($this->marcGetShortTitle()));
+        return PropertyString::fromHtml($this->marcGetShortTitle());
     }
 
     /**
@@ -93,7 +94,7 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getTitle()
     {
-        return html_entity_decode(strip_tags($this->marcGetTitle()));
+        return PropertyString::fromHtml($this->marcGetTitle());
     }
 
     /**

@@ -276,16 +276,6 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        return $this->getApiProperty('defaultView');
-    }
-
-    /**
      * Get an array of search mode options
      *
      * @return array

@@ -92,17 +92,18 @@ trait HoldsTrait
             return $this->redirectToRecord('#top');
         }
 
-        // Send various values to the view so we can build the form:
-        $requestGroups = $catalog->checkCapability(
-            'getRequestGroups',
-            [$driver->getUniqueID(), $patron, $gatheredDetails]
-        ) ? $catalog->getRequestGroups(
-            $driver->getUniqueID(),
-            $patron,
-            $gatheredDetails
-        ) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(':', $checkHolds['extraHoldFields']) : [];
+
+        // Send various values to the view so we can build the form:
+        $requestGroups = [];
+        $requestGroupsArgs = [$driver->getUniqueID(), $patron, $gatheredDetails];
+        if (
+            in_array('requestGroup', $extraHoldFields)
+            && $catalog->checkCapability('getRequestGroups', $requestGroupsArgs)
+        ) {
+            $requestGroups = $catalog->getRequestGroups(...$requestGroupsArgs);
+        }
 
         $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
             && !empty($requestGroups)
@@ -119,14 +120,16 @@ trait HoldsTrait
             // group, so make sure pickup locations match with the group
             $pickupDetails['requestGroupId'] = $requestGroups[0]['id'];
         }
-        $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
 
         // Check that there are pick up locations to choose from if the field is
         // required:
-        if (in_array('pickUpLocation', $extraHoldFields) && !$pickup) {
-            $this->flashMessenger()
-                ->addErrorMessage('No pickup locations available');
-            return $this->redirectToRecord('#top');
+        $pickup = [];
+        if (in_array('pickUpLocation', $extraHoldFields)) {
+            $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
+            if (!$pickup) {
+                $this->flashMessenger()->addErrorMessage('No pickup locations available');
+                return $this->redirectToRecord('#top');
+            }
         }
 
         $proxiedUsers = [];
@@ -231,20 +234,27 @@ trait HoldsTrait
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
-        $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
-            $checkHolds,
-            $catalog,
-            $patron,
-            $gatheredDetails
-        );
-        $defaultRequiredDate = $defaultRequiredTS
-            ? $dateConverter->convertToDisplayDate(
-                'U',
-                $defaultRequiredTS
-            ) : '';
+        $defaultRequiredDate = '';
+        if (
+            in_array('requiredByDate', $extraHoldFields)
+            || in_array('requiredByDateOptional', $extraHoldFields)
+        ) {
+            $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
+                $checkHolds,
+                $catalog,
+                $patron,
+                $gatheredDetails
+            );
+            $defaultRequiredDate = $defaultRequiredTS
+                ? $dateConverter->convertToDisplayDate(
+                    'U',
+                    $defaultRequiredTS
+                ) : '';
+        }
         try {
-            $defaultPickup
-                = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+            $defaultPickup = empty($pickup)
+                ? false
+                : $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
         } catch (\Exception $e) {
             $defaultPickup = false;
         }
