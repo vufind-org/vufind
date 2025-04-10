@@ -91,14 +91,7 @@
                   $hostRecords = $this->driver->tryMethod('getHostRecords');
                 ?>
                 <?php if ($hostRecords): ?>
-                  <?php foreach ($hostRecords as $i => $hostRecord): ?>
-                    <?=$i > 0 ? '<br>' : ''?>
-                    <?php if ($hostRecord['id'] || $hostRecord['title']): ?>
-                      <?php $link = $hostRecord['id'] ? $recordLinker->getUrl($hostRecord['sourceId'] . '|' . $hostRecord['id']) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
-                      <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$hostRecord['title'] !== '' ? $hostRecord['title'] : $hostRecord['mainHeading']?></a>
-                    <?php endif; ?>
-                    <?=$this->escapeHtml($hostRecord['reference']); ?>
-                  <?php endforeach; ?>
+                  <?= $this->record($this->driver)->renderTemplate('host-records.phtml', compact('hostRecords', 'driver')); ?>
                 <?php else: ?>
                   <?php $link = $containerID ? $recordLinker->getUrl($containerSource . '|' . $containerID) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
                   <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->escapeHtml($containerTitle)?></a>

@@ -138,6 +138,12 @@ archiveRequestRequireFilingUnit = true
 ;hidden_record_fields[] = 'Archive'
 ;hidden_record_fields[] = 'Subject'
 
+; Used for linking records with linkingId. Checks if prefix in 003 should match with the linkable records
+;prefixIn003 = true
+
+; Use legacy linking id (datasource.id) for records in this datasource
+;legacy_settings[linking_id] = true
+
 ; Permissive settings for a datasource
 ; Allow piping images from provider, must have a permission which is granted by the
 ; provider. Used in CoverController::PipeAction.

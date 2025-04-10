@@ -1,0 +1,18 @@
+<?php foreach ($hostRecords as $i => $hostRecord): ?>
+  <?=$i > 0 ? '<br>' : ''?>
+  <?php
+    $label = $hostRecord['title'] ?: $hostRecord['mainHeading'];
+    $link = '';
+    if ($hostRecord['id']) {
+      $link = $this->recordLinker()->getUrl($hostRecord['sourceId'] . '|' . $hostRecord['id']);
+    } elseif ($linkingId = $hostRecord['linkingId']) {
+      $link = $this->recordLinker()->related(['type' => 'linkingId', 'value' => $linkingId]);
+    } else {
+      $link = $this->record($this->driver)->getLink('title', $hostRecord['title']);
+    }
+  ?>
+  <?php if ($link): ?>
+    <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$label?></a>
+  <?php endif; ?>
+  <?=$this->escapeHtml($hostRecord['reference']); ?>
+<?php endforeach; ?>

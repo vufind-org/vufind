@@ -1222,7 +1222,7 @@ marc_links = "760,762,765,767,770,772,775,776,780,785"
 ; until it finds one that matches. If you don't have id numbers in the fields,
 ; you can also use title to construct a title based search. id represents a raw
 ; bib id, dlc represents an LCCN.  Default setting:
-;marc_links_link_types = id,oclc,dlc,isbn,issn,title
+;marc_links_link_types = linkingId,id,oclc,dlc,isbn,issn,title
 ; Set use_visibility_indicator to false if you want to show links that are marked as
 ; "Do not show" in the MARC record (indicator 1). Otherwise, these links will be
 ; suppressed. (Default = true)

@@ -34,6 +34,8 @@ namespace Finna\View\Helper\Root;
 use Finna\Search\UrlQueryHelper;
 use VuFind\Search\Memory;
 
+use function sprintf;
+
 /**
  * RecordLinker view helper
  *
@@ -147,18 +149,41 @@ class RecordLinker extends \VuFind\View\Helper\Root\RecordLinker
      */
     public function related($link, $source = DEFAULT_SEARCH_BACKEND)
     {
+        $driver = $this->getView()->plugin('record')->getDriver();
+
         if ('identifier' === $link['type']) {
             $urlHelper = $this->getView()->plugin('url');
-            $baseUrl = $urlHelper($this->getSearchActionForSource($source));
-
-            $result = $baseUrl
-                . '?lookfor=' . urlencode($link['value'])
-                . '&type=Identifier&jumpto=1';
+            $result = $urlHelper(
+                $this->getSearchActionForSource($source),
+                [],
+                [
+                    'query' => [
+                        'lookfor' => $link['value'],
+                        'type' => 'Identifier',
+                        'jumpto' => 1,
+                    ],
+                ],
+            );
+        } elseif ('linkingId' === $link['type']) {
+            $urlHelper = $this->getView()->plugin('url');
+            $lookFor = sprintf(
+                'linking_id_str_mv:"%s" AND datasource_str_mv:"%s"',
+                $link['value'],
+                $driver->getDataSource()
+            );
+            $result = $urlHelper(
+                $this->getSearchActionForSource($source),
+                [],
+                [
+                        'query' => [
+                            'lookfor' => $lookFor,
+                            'jumpto' => 1,
+                        ],
+                    ],
+            );
         } else {
             $result = parent::related($link, $source);
         }
-
-        $driver = $this->getView()->plugin('record')->getDriver();
 
         $prepend = (!str_contains($result, '?')) ? '?' : '&amp;';
         $hiddenFilters = null;

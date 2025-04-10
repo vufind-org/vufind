@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -30,6 +31,7 @@
 namespace FinnaTest\RecordDriver;
 
 use Finna\RecordDriver\SolrMarc;
+use Generator;
 
 /**
  * SolrMarc Record Driver Test Class
@@ -37,6 +39,7 @@ use Finna\RecordDriver\SolrMarc;
  * @category VuFind
  * @package  Tests
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -106,5 +109,380 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertEquals($expected, $record->getTitle());
+    }
+
+    /**
+     * Data provider for testHostRecordsData
+     *
+     * @return Generator
+     */
+    public static function getTestHostRecordsData(): Generator
+    {
+        yield 'legacy host record links' => [
+            'marc/legacy_linking_ids.xml',
+            [],
+            [
+                [
+                    'id' => 'test.123456',
+                    'linkingId' => '',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records parent',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+                [
+                    'id' => '',
+                    'linkingId' => '',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records parent',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+            ],
+        ];
+        yield 'host record link with prefix' => [
+            'marc/linking_ids.xml',
+            [
+                'test' => [
+                    'prefixIn003' => true,
+                ],
+            ],
+            [
+                [
+                    'id' => '',
+                    'linkingId' => '(FI-MELINDA)123456789',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records parent',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+                [
+                    'id' => '',
+                    'linkingId' => '(FI-MELINDA)555',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records Top',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+            ],
+        ];
+        yield 'host record link with prefix mismatch' => [
+            'marc/linking_ids_prefix_mismatch.xml',
+            [
+                'test' => [
+                    'prefixIn003' => true,
+                ],
+            ],
+            [
+                [
+                    'id' => '',
+                    'linkingId' => '',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records parent',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+                [
+                    'id' => '',
+                    'linkingId' => '',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records Top',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+            ],
+        ];
+        yield 'host record link with dots' => [
+            'marc/linking_ids_with_dots.xml',
+            [
+                'test' => [
+                    'prefixIn003' => true,
+                ],
+            ],
+            [
+                [
+                    'id' => '',
+                    'linkingId' => '(FI-MELINDA)link.withdot1',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records parent',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+                [
+                    'id' => '',
+                    'linkingId' => '(FI-MELINDA)link.withdot2',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records parent',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+            ],
+        ];
+        yield 'host record link with no prefix' => [
+            'marc/linking_ids_no_prefix.xml',
+            [
+                'test' => [
+                    'prefixIn003' => false,
+                ],
+            ],
+            [
+                [
+                    'id' => '',
+                    'linkingId' => '123456789',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records parent',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+                [
+                    'id' => '',
+                    'linkingId' => '555',
+                    'sourceId' => 'Solr',
+                    'title' => 'United records Top',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test record linking with Legacy and new way
+     *
+     * @param string $fixture  Fixture path to test file
+     * @param array  $dsConfig Datasource configuration
+     * @param array  $expected Array of expected results
+     *
+     * @dataProvider getTestHostRecordsData
+     *
+     * @return void
+     */
+    public function testGetHostRecords(string $fixture, array $dsConfig, array $expected): void
+    {
+        $xml = $this->getFixture($fixture, 'Finna');
+        $config = new \VuFind\Config\Config([
+            'Record' => [
+                'marc_links' => '760,762,765,767,770,772,773,775,776,780,785',
+                'marc_links_link_types' => 'linkingId,id,oclc,dlc,isbn,issn,title',
+            ],
+        ]);
+
+        $obj = new SolrMarc($config);
+        $obj->setRawData(
+            [
+                'datasource_str_mv' => ['test'],
+                'fullrecord' => $xml,
+            ],
+        );
+        $obj->attachDatasourceSettings($dsConfig);
+
+        $this->assertEquals($expected, $obj->getHostRecords());
+    }
+
+    /**
+     * Data provider for testRecordLinking
+     *
+     * @return Generator
+     */
+    public static function getTestAllRecordLinksData(): Generator
+    {
+        yield 'legacy record links' => [
+            'marc/legacy_linking_ids.xml',
+            [],
+            [
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'bib',
+                        'value' => 'test.123456',
+                    ],
+                ],
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'title',
+                        'value' => 'United records parent',
+                    ],
+                ],
+            ],
+        ];
+        yield 'record link with prefixes' => [
+            'marc/linking_ids.xml',
+            [
+                'test' => [
+                    'prefixIn003' => true,
+                ],
+            ],
+            [
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'linkingId',
+                        'value' => '(FI-MELINDA)123456789',
+                    ],
+                ],
+                [
+                    'value' => 'United records Top',
+                    'title' => 'Another United',
+                    'link' => [
+                        'type' => 'linkingId',
+                        'value' => '(FI-MELINDA)555',
+                    ],
+                ],
+            ],
+        ];
+        yield 'record link without prefixes' => [
+            'marc/linking_ids_no_prefix.xml',
+            [
+                'test' => [
+                    'prefixIn003' => false,
+                ],
+            ],
+            [
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'linkingId',
+                        'value' => '123456789',
+                    ],
+                ],
+                [
+                    'value' => 'United records Top',
+                    'title' => 'Another United',
+                    'link' => [
+                        'type' => 'linkingId',
+                        'value' => '555',
+                    ],
+                ],
+            ],
+        ];
+        yield 'record link check linking id with wrong prefix' => [
+            'marc/linking_ids_prefix_mismatch.xml',
+            [
+                'test' => [
+                    'prefixIn003' => true,
+                ],
+            ],
+            [
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'title',
+                        'value' => 'United records parent',
+                    ],
+                ],
+                [
+                    'value' => 'United records Top',
+                    'title' => 'Another United',
+                    'link' => [
+                        'type' => 'title',
+                        'value' => 'United records Top',
+                    ],
+                ],
+            ],
+        ];
+        yield 'record link check linking id with a dot' => [
+            'marc/linking_ids_with_dots.xml',
+            [
+                'test' => [
+                    'prefixIn003' => true,
+                ],
+            ],
+            [
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'linkingId',
+                        'value' => '(FI-MELINDA)link.withdot1',
+                    ],
+                ],
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'linkingId',
+                        'value' => '(FI-MELINDA)link.withdot2',
+                    ],
+                ],
+            ],
+        ];
+        yield 'record link force checking legacy ids' => [
+            'marc/linking_ids.xml',
+            [
+                'test' => [
+                    'prefixIn003' => false,
+                    'legacy_settings' => [
+                        'linking_id' => true,
+                    ],
+                ],
+            ],
+            [
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'title',
+                        'value' => 'United records parent',
+                    ],
+                ],
+                [
+                    'value' => 'United records Top',
+                    'title' => 'Another United',
+                    'link' => [
+                        'type' => 'title',
+                        'value' => 'United records Top',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test getAllRecordLinks
+     *
+     * @param string $fixture  Fixture path to test file
+     * @param array  $dsConfig Datasource configuration
+     * @param array  $expected Array of expected results
+     *
+     * @dataProvider getTestAllRecordLinksData
+     *
+     * @return void
+     */
+    public function testGetAllRecordLinks(string $fixture, array $dsConfig, array $expected): void
+    {
+        $xml = $this->getFixture($fixture, 'Finna');
+        $config = new \VuFind\Config\Config([
+            'Record' => [
+                'marc_links' => '760,762,765,767,770,772,773,775,776,780,785',
+                'marc_links_link_types' => 'linkingId,id,oclc,dlc,isbn,issn,title',
+            ],
+        ]);
+
+        $obj = new SolrMarc($config);
+        $obj->setRawData(
+            [
+                'datasource_str_mv' => ['test'],
+                'fullrecord' => $xml,
+            ],
+        );
+        $obj->attachDatasourceSettings($dsConfig);
+
+        $this->assertEquals($expected, $obj->getAllRecordLinks());
     }
 }
