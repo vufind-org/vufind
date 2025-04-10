@@ -242,7 +242,7 @@ class SearchRequestModel implements LoggerAwareInterface
      */
     public function isValid()
     {
-        if (!($this->validationConfig['ContentProvider'] ?? true)) {
+        if (!($this->validationConfig['ContentProvider'] ?? false)) {
             return true;
         }
         $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];

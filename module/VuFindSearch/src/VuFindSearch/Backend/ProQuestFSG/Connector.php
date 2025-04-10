@@ -179,7 +179,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     protected function validateDatabaseValue(string $value)
     {
-        if (!($this->config['Validation']['database_codes'] ?? true)) {
+        if (!($this->config['Validation']['database_codes'] ?? false)) {
             return true;
         }
 

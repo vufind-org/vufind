@@ -78,7 +78,12 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     {
         $responseBody = $this->getFixture('proquestfsg/searchresult.xml');
         $connector = $this->getConnector(
-            $this->getMockClient($responseBody, false)
+            $this->getMockClient($responseBody, false),
+            [
+                'Validation' => [
+                    'database_codes' => true,
+                ]
+            ]
         );
         $params = new ParamBag([
             'query' => '(cql.serverChoice all "painted pomegranates and needlepoint rabbis")',
@@ -139,12 +144,13 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      * Get a connector.
      *
      * @param Client $client HTTP client
+     * @param array  $config ProQuestFSG configuration
      *
      * @return Connector
      */
-    protected function getConnector($client)
+    protected function getConnector($client, $config = [])
     {
-        $connector = new Connector($client, []);
+        $connector = new Connector($client, $config);
         return $connector;
     }
 }
