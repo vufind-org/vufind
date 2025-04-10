@@ -105,12 +105,10 @@ class RecordDataFormatterFactory implements FactoryInterface
         // for legacy backward compatibility check if getDefault*Specs methods got overridden.
         $this->schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         $this->defaultRecordSpec = $specPluginManager->get(DefaultRecordSpec::class);
-        $methodMapping = [
-            'collection-info' => 'getDefaultCollectionInfoSpecs',
-            'collection-record' => 'getDefaultCollectionRecordSpecs',
-            'core' => 'getDefaultCoreSpecs',
-            'description' => 'getDefaultDescriptionSpecs',
-        ];
+        $methodMapping =  $container
+                            ->get(\VuFind\Config\PluginManager::class)
+                            ->get('RecordDataFormatter')
+                            ->Defaults_Function_Mapping ?? [];
         $showDeprecationWarning = false;
         foreach ($methodMapping as $context => $method) {
             $reflector = new \ReflectionMethod($this, $method);

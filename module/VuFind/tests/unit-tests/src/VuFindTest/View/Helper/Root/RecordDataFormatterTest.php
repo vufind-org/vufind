@@ -213,6 +213,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $factory = new RecordDataFormatterFactory();
         $container = new \VuFindTest\Container\MockContainer($this);
         $recordDataFormatterConfig = array_merge($additionalConfig, [
+            'Defaults_Function_Mapping' => [
+                'collection-info' => 'getDefaultCollectionInfoSpecs',
+                'collection-record' => 'getDefaultCollectionRecordSpecs',
+                'core' => 'getDefaultCoreSpecs',
+                'description' => 'getDefaultDescriptionSpecs',
+            ],
             'Defaults' => [
                 'core' => ['Extra'],
             ],
