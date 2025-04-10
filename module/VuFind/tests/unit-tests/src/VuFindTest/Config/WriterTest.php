@@ -52,9 +52,10 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     public function testReadFile()
     {
-        $test = new Writer($this->getFixtureDir() . 'configs/1.1/sms.ini');
+        $fixture = 'configs/defaultgenerator/config.ini';
+        $test = new Writer($this->getFixtureDir() . $fixture);
         $this->assertEquals(
-            $this->getFixture('configs/1.1/sms.ini'),
+            $this->getFixture($fixture),
             $test->getContent()
         );
     }

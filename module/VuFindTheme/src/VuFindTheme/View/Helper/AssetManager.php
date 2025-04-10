@@ -30,6 +30,8 @@
 namespace VuFindTheme\View\Helper;
 
 use Laminas\View\Helper\HeadScript;
+use VuFindTheme\AssetPipeline;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Asset manager view helper (for pre-processing, combining when appropriate, etc.)
@@ -42,6 +44,29 @@ use Laminas\View\Helper\HeadScript;
  */
 class AssetManager extends \Laminas\View\Helper\AbstractHelper
 {
+    use RelativePathTrait;
+
+    /**
+     * Array of accumulated scripts, indexed by position (header/footer).
+     *
+     * @var array
+     */
+    protected $scripts;
+
+    /**
+     * Array of accumulated styles.
+     *
+     * @var array
+     */
+    protected $styles;
+
+    /**
+     * Array of accumulated stylesheets.
+     *
+     * @var array
+     */
+    protected $stylesheets;
+
     /**
      * Should we allow arbitrary attributes on scripts by default?
      *
@@ -50,19 +75,33 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     protected bool $allowArbitraryScriptAttributesByDefault = false;
 
     /**
+     * Constructor
+     *
+     * @param ThemeInfo     $themeInfo Theme information service
+     * @param AssetPipeline $pipeline  Asset pipeline helper
+     * @param string        $cspNonce  Nonce from nonce generator (for content security policy)
+     */
+    public function __construct(
+        protected ThemeInfo $themeInfo,
+        protected AssetPipeline $pipeline,
+        protected string $cspNonce = ''
+    ) {
+        $this->clearScriptList();
+        $this->clearStyleList();
+    }
+
+    /**
      * Add raw CSS to the pipeline.
      *
      * @param string $css        Raw CSS.
      * @param array  $attributes Extra attributes for style tag
-     * @param array  $options    Additional options (not yet used; for forward-compatibility)
+     * @param array  $options    Additional options (supported: exclude_from_pipeline)
      *
      * @return static
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function appendStyleString(string $css, array $attributes = [], array $options = []): static
     {
-        $this->getView()->plugin('headStyle')->appendStyle($css, $attributes);
+        $this->styles[] = compact('css', 'attributes', 'options');
         return $this;
     }
 
@@ -73,11 +112,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $media                 Media
      * @param string $conditionalStylesheet Any conditions
      * @param array  $extras                Array of extra attributes
-     * @param array  $options               Additional options (not yet used; for forward-compatibility)
+     * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function appendStyleLink(
         string $href,
@@ -86,7 +123,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         array $extras = [],
         array $options = []
     ): static {
-        $this->getView()->plugin('headLink')->appendStylesheet($href, $media, $conditionalStylesheet, $extras);
+        $this->stylesheets[] = compact('href', 'media', 'conditionalStylesheet', 'extras', 'options');
         return $this;
     }
 
@@ -97,11 +134,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $media                 Media
      * @param string $conditionalStylesheet Any conditions
      * @param array  $extras                Array of extra attributes
-     * @param array  $options               Additional options (not yet used; for forward-compatibility)
+     * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
      * @return static
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function forcePrependStyleLink(
         string $href,
@@ -110,7 +145,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         array $extras = [],
         array $options = []
     ): static {
-        $this->getView()->plugin('headLink')->forcePrependStylesheet($href, $media, $conditionalStylesheet, $extras);
+        $newSheets = [compact('href', 'media', 'conditionalStylesheet', 'extras', 'options')];
+        foreach ($this->stylesheets as $sheet) {
+            if ($sheet['href'] !== $newSheets[0]['href']) {
+                $newSheets[] = $sheet;
+            }
+        }
+        $this->stylesheets = $newSheets;
         return $this;
     }
 
@@ -121,28 +162,30 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function clearStyleList(): static
     {
-        $this->getView()->plugin('headStyle')->deleteContainer();
-        $this->getView()->plugin('headLink')->deleteContainer();
+        $this->styles = [];
+        $this->stylesheets = [];
         return $this;
     }
 
     /**
-     * Turn on the arbitraryAttributesAllowed behavior only if necessary.
+     * Apply the appropriate arbitraryAttributesAllowed value to the provided view helper, using global
+     * default and any override options. If the value was changed, return the original value that should be
+     * restored after processing.
      *
-     * @param HeadScript $helper  View helper to configure (supports InlineScript and FootScript as well)
+     * @param HeadScript $helper  View helper to configure (note that InlineScript is a child of HeadScript)
      * @param array      $options Options array to evaluate
      *
-     * @return void
+     * @return ?bool
      */
-    protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): void
+    protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): ?bool
     {
-        // Because of the workflow of the 10.x code, we have to turn the setting on and leave it on if ANY
-        // scripts require it. This logic will be refined and better restricted when things are refactored
-        // in 11.0.
         $newValue = $options['allow_arbitrary_attributes'] ?? $this->allowArbitraryScriptAttributesByDefault;
-        if ($newValue && $helper->arbitraryAttributesAllowed() !== $newValue) {
+        $resetValue = null;
+        if ($helper->arbitraryAttributesAllowed() !== $newValue) {
             $helper->setAllowArbitraryAttributes($newValue);
+            $resetValue = !$newValue;
         }
+        return $resetValue;
     }
 
     /**
@@ -151,11 +194,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $script   Script code
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function appendScriptString(
         string $script,
@@ -163,12 +204,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $position = 'header',
         array $options = []
     ): static {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $helper = $this->getView()->plugin($helperName);
-        $this->applyArbitraryScriptAttributesOption($helper, $options);
-        $type = $attrs['type'] ?? 'text/javascript';
-        unset($attrs['type']);
-        $helper->appendScript($script, $type, $attrs);
+        $this->scripts[$position][] = compact('script', 'attrs', 'options');
         return $this;
     }
 
@@ -178,11 +214,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $src      Script src
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function appendScriptLink(
         string $src,
@@ -190,12 +224,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $position = 'header',
         array $options = []
     ): static {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $helper = $this->getView()->plugin($helperName);
-        $this->applyArbitraryScriptAttributesOption($helper, $options);
-        $type = $attrs['type'] ?? 'text/javascript';
-        unset($attrs['type']);
-        $helper->appendFile($src, $type, $attrs);
+        $this->scripts[$position][] = compact('src', 'attrs', 'options');
         return $this;
     }
 
@@ -205,11 +234,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $src      Script src
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function forcePrependScriptLink(
         string $src,
@@ -217,12 +244,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $position = 'header',
         array $options = []
     ): static {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $helper = $this->getView()->plugin($helperName);
-        $this->applyArbitraryScriptAttributesOption($helper, $options);
-        $type = $attrs['type'] ?? 'text/javascript';
-        unset($attrs['type']);
-        $helper->forcePrependFile($src, $type, $attrs);
+        $newScripts = [compact('src', 'attrs', 'options')];
+        foreach ($this->scripts[$position] as $script) {
+            if (($script['src'] ?? null) !== $newScripts[0]['src']) {
+                $newScripts[] = $script;
+            }
+        }
+        $this->scripts[$position] = $newScripts;
         return $this;
     }
 
@@ -232,11 +260,9 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      * @param string $script   Script code
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported option: allow_arbitrary_attributes)
+     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
      *
      * @return static
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function prependScriptString(
         string $script,
@@ -244,12 +270,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         string $position = 'header',
         array $options = []
     ): static {
-        $helperName = $position === 'header' ? 'headScript' : 'footScript';
-        $helper = $this->getView()->plugin($helperName);
-        $this->applyArbitraryScriptAttributesOption($helper, $options);
-        $type = $attrs['type'] ?? 'text/javascript';
-        unset($attrs['type']);
-        $helper->prependScript($script, $type, $attrs);
+        array_unshift($this->scripts[$position], compact('script', 'attrs', 'options'));
         return $this;
     }
 
@@ -260,9 +281,91 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function clearScriptList(): static
     {
-        $this->getView()->plugin('headScript')->deleteContainer();
-        $this->getView()->plugin('footScript')->deleteContainer();
+        $this->scripts = ['header' => [], 'footer' => []];
         return $this;
+    }
+
+    /**
+     * Given a relative JS or CSS path, apply appropriate theme prefixing if possible; return null if
+     * the resource could not be found in a theme.
+     *
+     * @param string $relPath Relative path to find in theme
+     *
+     * @return ?string
+     */
+    protected function applyThemeToRelativePath(string $relPath): ?string
+    {
+        $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
+        if (!empty($details)) {
+            $urlHelper = $this->getView()->plugin('url');
+            $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url .= filemtime($details['path']);
+            return $url;
+        }
+        // Cannot find in theme? Return null.
+        return null;
+    }
+
+    /**
+     * Return the HTML to output script assets in the requested position.
+     *
+     * @param mixed $position Position of assets (header or footer)
+     *
+     * @return string
+     */
+    protected function outputScriptAssets($position): string
+    {
+        $output = [];
+        $processedScripts = $this->pipeline->process($this->scripts[$position], 'js');
+        foreach ($processedScripts as $script) {
+            $options = $script['options'] ?? [];
+            // Every $script will have either a script attribute (inline JS) or a src attribute (file):
+            if (isset($script['script'])) {
+                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs'], $options);
+            } else {
+                if ($this->isRelativePath($script['src'])) {
+                    if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
+                        $script['src'] = $themePath;
+                    }
+                }
+                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs'], $options);
+            }
+        }
+        return implode("\n", $output);
+    }
+
+    /**
+     * Return the HTML to output style assets.
+     *
+     * @return string
+     */
+    protected function outputStyleAssets(): string
+    {
+        $headLink = $this->getView()->plugin('headLink');
+        $processedStylesheets = $this->pipeline->process($this->stylesheets, 'css');
+        foreach ($processedStylesheets as $sheet) {
+            // Account for the theme system (when appropriate):
+            if ($this->isRelativePath($sheet['href'])) {
+                if ($themePath = $this->applyThemeToRelativePath('css/' . $sheet['href'])) {
+                    $sheet['href'] = $themePath;
+                }
+            }
+
+            $headLink->appendStylesheet(
+                $sheet['href'],
+                $sheet['media'],
+                $sheet['conditionalStylesheet'],
+                $sheet['extras']
+            );
+        }
+
+        $headStyle = $this->getView()->plugin('headStyle');
+        foreach ($this->styles as $style) {
+            $headStyle->appendStyle($style['css'], $style['attributes']);
+        }
+
+        return ($headLink)() . "\n" . ($headStyle)();
     }
 
     /**
@@ -272,9 +375,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function outputHeaderAssets(): string
     {
-        return ($this->getView()->plugin('headLink'))() . "\n"
-            . ($this->getView()->plugin('headStyle'))() . "\n"
-            . ($this->getView()->plugin('headScript'))();
+        return $this->outputStyleAssets() . "\n" . $this->outputScriptAssets('header');
     }
 
     /**
@@ -291,12 +392,18 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         array $attrs = [],
         array $options = []
     ): string {
+        if (!empty($this->cspNonce)) {
+            $attrs['nonce'] = $this->cspNonce;
+        }
         $inlineScript = $this->getView()->plugin('inlineScript');
-        $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setScript($script, $type, $attrs);
         $result = ($inlineScript)();
+        if ($resetArbitraryAttributes !== null) {
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+        }
         return $result;
     }
 
@@ -314,12 +421,21 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         array $attrs = [],
         array $options = []
     ): string {
+        if (!empty($this->cspNonce)) {
+            $attrs['nonce'] = $this->cspNonce;
+        }
         $inlineScript = $this->getView()->plugin('inlineScript');
-        $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        if ($this->isRelativePath($src)) {
+            $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
+        }
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setFile($src, $type, $attrs);
         $result = ($inlineScript)();
+        if ($resetArbitraryAttributes !== null) {
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+        }
         return $result;
     }
 
@@ -330,6 +446,6 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function outputFooterAssets(): string
     {
-        return ($this->getView()->plugin('footScript'))();
+        return $this->outputScriptAssets('footer');
     }
 }

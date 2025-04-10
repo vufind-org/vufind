@@ -1,0 +1,293 @@
+# This configuration file controls the menu displayed by the menu/menu console command.
+# It must begin with a "main:" container; all of its contents must be either nested submenus
+# or commands.
+#
+# Every section of the configuration MUST have a label and a type. Each supported type has
+# different requirements.
+#
+# type = menu
+#   Purpose: Display a sub-menu
+#   Attributes:
+#     - contents (required): a list of sub-menus and/or commands in the menu
+#
+# type = external-command
+#   Purpose: Run a command-line command
+#   Attributes:
+#     - command (required): the command to run (relative to VUFIND_HOME)
+#     - winCommand (optional): an override of command to use on Windows platforms.
+#     - arguments (optional): a list of arguments for the command. Each entry contains:
+#         - label (required): A description of the argument
+#         - required (optional): Set to true if the argument is required
+#         - default (optional): A default value to use
+#     - options (optional): a list of options for the command. Each entry contains:
+#         - label (required): A description of the option
+#         - switch (required): The switch text to add to the command line for the option
+#         - type (optional, defaults to 'string'): 'string' for arguments that require
+#           a string value; 'no-value' for arguments that are simple toggle switches.
+#         - default (optional): A default value to use
+#
+# type = internal-command
+#   Purpose: Run an internal Symfony console command
+#   Attributes:
+#     - command (required): the name of the command in the plugin manager
+#
+# type = summary
+#   Purpose: Output a summary of the full menu structure
+main:
+  label: Main Menu
+  type: menu
+  contents:
+    - label: List All Menu Contents
+      type: summary
+    - label: Code Generation Tools
+      type: menu
+      contents:
+      - label: Generate a dynamic route
+        type: internal-command
+        command: generate/dynamicroute
+      - label: Generate a subclass, with lookup by class name
+        type: internal-command
+        command: generate/extendclass
+      - label: Generate a service (override with a new child class)
+        type: internal-command
+        command: generate/extendservice
+      - label: Generate a non-tab record action route
+        type: internal-command
+        command: generate/nontabrecordaction
+      - label: Generate a new plugin class
+        type: internal-command
+        command: generate/plugin
+      - label: Generate a record route
+        type: internal-command
+        command: generate/recordroute
+      - label: Generate a static route
+        type: internal-command
+        command: generate/staticroute
+      - label: Generate and configure a new theme
+        type: internal-command
+        command: generate/theme
+      - label: Generate and configure a new theme mixin
+        type: internal-command
+        command: generate/thememixin
+      - label: Compile theme (flatten hierarchy)
+        type: internal-command
+        command: compile/theme
+    - label: Configuration and Installation Tools
+      type: menu
+      contents:
+      - label: Manage VuFind installation
+        type: internal-command
+        command: install/install
+      - label: Manage the browscap cache
+        type: internal-command
+        command: util/browscap
+      - label: Switch the encryption algorithm in the database and config
+        type: internal-command
+        command: switch_db_hash
+    - label: Data Cleanup and Expiration Tools
+      type: menu
+      contents:
+      - label: Remove unused cached records from the database
+        type: internal-command
+        command: util/cleanup_record_cache
+      - label: Purge a cached record (and optionally a resource) from the database
+        type: internal-command
+        command: util/purge_cached_record
+      - label: Expire old access tokens in the database
+        type: internal-command
+        command: util/expire_access_tokens
+      - label: Expire old authentication hashes in the database
+        type: internal-command
+        command: util/expire_auth_hashes
+      - label: Expire old external sessions in the database
+        type: internal-command
+        command: util/expire_external_sessions
+      - label: Expire old login tokens in the database
+        type: internal-command
+        command: util/expire_login_tokens
+      - label: Expire old searches in the database
+        type: internal-command
+        command: util/expire_searches
+      - label: Expire old sessions in the database
+        type: internal-command
+        command: util/expire_sessions
+    - label: Data Management Tools
+      type: menu
+      contents:
+      - label: Populate the hierarchy tree cache
+        type: internal-command
+        command: util/createHierarchyTrees
+      - label: Generate XML sitemap files
+        type: internal-command
+        command: util/sitemap
+      - label: Send scheduled search email notifications
+        type: internal-command
+        command: scheduledsearch/notify
+    - label: Harvest Tools
+      type: menu
+      contents:
+      - label: Batch import harvested MARC records
+        type: external-command
+        command: harvest/batch-import-marc.sh
+        winCommand: harvest/batch-import-marc.bat
+        arguments:
+          - label: Harvest subdirectory
+            required: true
+        options:
+          - label: Use the directory path as-is, do not append it to $VUFIND_LOCAL_DIR/harvest.
+            switch: -d
+            type: no-value
+          - label: Do not move the data files after importing.
+            switch: -m
+            type: no-value
+          - label: Use specified SolrMarc configuration properties file.
+            switch: -p
+            type: string
+          - label: Maximum number of files to send in batches to import-marc.sh (default is MAX_BATCH_COUNT or 10)
+            switch: -x
+            type: string
+          - label: No logging.
+            switch: -z
+            type: no-value
+      - label: Batch import harvested MARC authority records
+        type: external-command
+        command: harvest/batch-import-marc-auth.sh
+        winCommand: harvest/batch-import-marc-auth.bat
+        arguments:
+          - label: Harvest subdirectory
+            required: true
+          - label: SolrMARC properties file
+            required: true
+        options:
+          - label: Use the directory path as-is, do not append it to $VUFIND_LOCAL_DIR/harvest.
+            switch: -d
+            type: no-value
+          - label: Do not move the data files after importing.
+            switch: -m
+            type: no-value
+          - label: No logging.
+            switch: -z
+            type: no-value
+      - label: Batch import harvested XML records
+        type: external-command
+        command: harvest/batch-import-xsl.sh
+        winCommand: harvest/batch-import-xsl.bat
+        arguments:
+          - label: Harvest subdirectory
+            required: true
+          - label: Properties file
+            required: true
+        options:
+          - label: Skip optimize operation after importing.
+            switch: -s
+            type: no-value
+      - label: Harvest metadata using OAI-PMH
+        type: internal-command
+        command: harvest/harvest_oai
+      - label: Merge harvested MARCXML files into a collection
+        type: internal-command
+        command: harvest/merge-marc
+      - label: Batch delete records based on files created by the OAI-PMH harvester
+        type: external-command
+        command: harvest/batch-delete.sh
+        winCommand: harvest/batch-delete.bat
+        arguments:
+          - label: Harvest subdirectory
+            required: true
+          - label: Index type
+            required: false
+        options:
+          - label: Skip optimize
+            switch: -s
+            type: no-value
+          - label: Specify ID prefix
+            switch: --id-prefix
+            type: string
+    - label: Import Tools
+      type: menu
+      contents:
+      - label: Import MARC
+        type: external-command
+        command: import-marc.sh
+        winCommand: import-marc.bat
+        arguments:
+          - label: Filename
+            required: true
+        options:
+          - label: Properties File
+            switch: -p
+            type: string
+      - label: Import MARC authority records
+        type: external-command
+        command: import-marc-auth.sh
+        winCommand: import-marc-auth.bat
+        arguments:
+          - label: Filename
+            required: true
+          - label: Properties file
+            required: false
+      - label: Import XML
+        type: internal-command
+        command: import/import-xsl
+      - label: Import CSV
+        type: internal-command
+        command: import/import-csv
+      - label: Import via webcrawl
+        type: internal-command
+        command: import/webcrawl
+      - label: Index all alphabetic browse entries
+        type: external-command
+        command: index-alphabetic-browse.sh
+        winCommand: index-alphabetic-browse.bat
+      - label: Populate the course reserves Solr index
+        type: internal-command
+        command: util/index_reserves
+    - label: Language Tools
+      type: menu
+      contents:
+      - label: Add new language strings based on existing ones, using a template
+        type: internal-command
+        command: language/addusingtemplate
+      - label: Copy a language string
+        type: internal-command
+        command: language/copystring
+      - label: Remove a language string from all files
+        type: internal-command
+        command: language/delete
+      - label: Load and normalize language strings from Lokalise export files
+        type: internal-command
+        command: language/importlokalise
+      - label: Normalize a file or directory of language strings
+        type: internal-command
+        command: language/normalize
+    - label: Solr Management Tools
+      type: menu
+      contents:
+      - label: Manage Solr service
+        type: external-command
+        command: solr.sh
+        winCommand: solr.bat
+        arguments:
+          - label: Action to take (start, stop, restart, or status)
+            required: true
+      - label: Send a commit command to a Solr index
+        type: internal-command
+        command: util/commit
+      - label: Delete a set of records from the Solr index
+        type: internal-command
+        command: util/deletes
+      - label: Send an optimize command to a Solr index
+        type: internal-command
+        command: util/optimize
+      - label: Remove ILS-suppressed records from Solr
+        type: internal-command
+        command: util/suppressed
+    - label: Utilities
+      type: menu
+      contents:
+      - label: Deduplicate lines in a sorted file
+        type: internal-command
+        command: util/dedupe
+      - label: Validate MARC file contents
+        type: internal-command
+        command: util/lint_marc

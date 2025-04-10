@@ -89,17 +89,6 @@ class Options extends AbstractEDSOptions
         return 'epf-search';
     }
 
-    // /**
-    //  * Return the view associated with this configuration
-    //  *
-    //  * @return string
-    //  */
-    // public function getView()
-    // {
-    //     return 'foo';
-    //     // return $this->defaultView;
-    // }
-
     /**
      * Return the route name of the action used for performing advanced searches.
      * Returns false if the feature is not supported.

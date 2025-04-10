@@ -274,16 +274,6 @@ class Options extends AbstractEDSOptions
         return 'eds-search';
     }
 
-    // /**
-    //  * Return the view associated with this configuration
-    //  *
-    //  * @return string
-    //  */
-    // public function getView()
-    // {
-    //     return $this->getApiProperty('defaultView');
-    // }
-
     /**
      * Get an array of search mode options
      *
