@@ -153,9 +153,9 @@ class Backend extends AbstractBackend
     /**
      * Validation config
      *
-     * @var Config
+     * @var array
      */
-    protected $validationConfig = null;
+    protected $validationConfig = [];
 
     /**
      * Constructor.
@@ -188,7 +188,7 @@ class Backend extends AbstractBackend
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
-        $this->validationConfig = $config->Validation ?? null;
+        $this->validationConfig = $config->Validation->toArray() ?? [];
 
         // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;

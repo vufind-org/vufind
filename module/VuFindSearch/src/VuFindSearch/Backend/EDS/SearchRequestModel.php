@@ -146,9 +146,9 @@ class SearchRequestModel implements LoggerAwareInterface
     /**
      * Validation config
      *
-     * @var Config
+     * @var array
      */
-    protected $validationConfig = null;
+    protected $validationConfig = [];
 
     /**
      * Constructor
@@ -226,11 +226,11 @@ class SearchRequestModel implements LoggerAwareInterface
     /**
      * Set validation config
      *
-     * @param ?Config $validationConfig Validation config
+     * @param array $validationConfig Validation config
      *
      * @return void
      */
-    public function setValidationConfig($validationConfig)
+    public function setValidationConfig(array $validationConfig)
     {
         $this->validationConfig = $validationConfig;
     }
@@ -242,7 +242,7 @@ class SearchRequestModel implements LoggerAwareInterface
      */
     public function isValid()
     {
-        if (!($this->validationConfig->ContentProvider ?? true)) {
+        if (!($this->validationConfig['ContentProvider'] ?? true)) {
             return true;
         }
         $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
