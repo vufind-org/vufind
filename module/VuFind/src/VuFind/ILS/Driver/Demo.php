@@ -2747,6 +2747,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if ($this->isFailing(__METHOD__, 33)) {
             return ['success' => false, 'error' => 'Demonstrating failure; keep trying and it will work eventually.'];
         }
+
+        if (isset($this->config['Users']) && !isset($this->config['Users'][$params['cat_username']])) {
+            return [
+                'success' => false,
+                'error' => 'recovery_user_not_found',
+            ];
+        }
+
         return [
             'success' => true,
             'data' => [
