@@ -1305,7 +1305,7 @@ class Quria extends AxiellWebServices
             'overdueFeeInvoiceDebt' => '',
             'photocopyFeeDebt' => '',
             'renewFeeDebt' => '',
-            'replacementFeeDebt' => '',
+            'replacementFeeDebt' => 'Lost Item Replacement',
             'reservationFeeDebt' => 'Hold Expired',
             'reservationPickupFeeDebt' => '',
             'smsIllFeeDebt' => '',
