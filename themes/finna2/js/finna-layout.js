@@ -177,18 +177,6 @@ finna.layout = (function finnaLayout() {
     }
   }
 
-  /**
-   * Toggle visibility of sidebar on mobile
-   * @param {object} e Event object
-   */
-  function toggleMobileSidebar(e) {
-    e.stopImmediatePropagation();
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.querySelectorAll('.mobile-navigation .sidebar-navigation .expand-icon, .mobile-navigation .sidebar-navigation .collapse-icon').forEach(el => {
-      el.classList.toggle('hidden');
-    });
-    document.querySelector('body').classList.toggle('prevent-scroll');
-  }
 
   /**
    * Check and keep focus within the search facet list
@@ -197,28 +185,55 @@ finna.layout = (function finnaLayout() {
   function onFocusOutOfFacetContainer(e) {
     const container = document.querySelector('.side-facets-container-ajax');
     if (!container.contains(e.relatedTarget)) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      document.activeElement.blur();
       container.focus();
+    }
+  }
+
+  /**
+   * Toggle visibility of sidebar on mobile
+   * @param {object} e Event object
+   */
+  function toggleMobileSidebar(e) {
+    e.stopImmediatePropagation();
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('open');
+      const container = document.querySelector('.side-facets-container-ajax');
+      document.querySelectorAll('.mobile-navigation .sidebar-navigation .expand-icon, .mobile-navigation .sidebar-navigation .collapse-icon').forEach(el => {
+        el.classList.toggle('hidden');
+      });
+      document.querySelector('body').classList.toggle('prevent-scroll');
+      if (container) {
+        if (sidebar.classList.contains('open')) {
+          container.addEventListener('focusout', onFocusOutOfFacetContainer, e);
+          container.ariaModal = true;
+          container.tabIndex = '0';
+          container.querySelector('h1').tabIndex = '0';
+          document.activeElement.blur();
+          container.querySelector('h1').focus();
+        } else {
+          container.removeEventListener('focusout', onFocusOutOfFacetContainer, e);
+          document.activeElement.blur();
+          document.querySelector('.finna-search-filter-toggle .btn-search-filter').focus();
+          container.removeAttribute('aria-modal');
+          container.removeAttribute('tabindex');
+          container.querySelector('h1').removeAttribute('tabindex');
+        }
+      }
     }
   }
 
   /**
    * On keypress of mobile sidebar
    * @param {object} e Event object
-   * @param {HTMLElement} container Container of elements
    */
-  function onKeyPressMobileSidebar(e, container) {
+  function onKeyPressMobileSidebar(e) {
     if (e.which === 32 || e.which === 13) {
       e.preventDefault();
       toggleMobileSidebar(e);
-      if (document.querySelector('.sidebar').classList.contains('open')) {
-        container.addEventListener('focusout', onFocusOutOfFacetContainer);
-        document.activeElement.blur();
-        container.querySelector('h1').focus();
-      } else {
-        document.activeElement.blur();
-        document.querySelector('.finna-search-filter-toggle .btn-search-filter').focus();
-        container.removeEventListener('focusout', onFocusOutOfFacetContainer);
-      }
     }
   }
 
@@ -234,12 +249,9 @@ finna.layout = (function finnaLayout() {
       document.querySelectorAll('.finna-search-filter-toggle .btn-search-filter, .sidebar .sidebar-close-btn').forEach(el => {
         el.addEventListener('click', toggleMobileSidebar);
       });
-      container.tabIndex = '0';
-      container.ariaModal = true;
-      container.querySelector('h1').tabIndex = '0';
       document.querySelectorAll('.finna-search-filter-toggle .btn-search-filter, .sidebar .sidebar-close-btn').forEach(el => {
         el.addEventListener('keydown', function onKeyDownMobileFacets(e) {
-          onKeyPressMobileSidebar(e, container);
+          onKeyPressMobileSidebar(e);
         });
       });
     }
