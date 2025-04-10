@@ -74,7 +74,7 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the view type to request from the Ebsco API.
+     * Return the view type to request from the EBSCO API.
      *
      * @return string
      */
