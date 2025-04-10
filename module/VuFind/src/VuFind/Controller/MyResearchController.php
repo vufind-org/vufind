@@ -1756,6 +1756,9 @@ class MyResearchController extends AbstractBase
      */
     protected function sendRecoveryEmail(array $recoveryData)
     {
+        if (empty($recoveryData['email'])) {
+            throw new AuthException('no_email_address');
+        }
         $emailAuthenticator = $this->getService(EmailAuthenticator::class);
         $authHelper = $this->getViewRenderer()->plugin('auth');
         $target = $this->params()->fromPost('target');
