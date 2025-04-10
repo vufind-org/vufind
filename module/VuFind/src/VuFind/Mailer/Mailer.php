@@ -208,7 +208,7 @@ class Mailer implements
      * @param string|string[]|Address|Address[]|null $replyTo       Reply-To address(es) (or delimited list, null for
      * none)
      * @param bool                                   $subjectInBody Allow subject to be extracted from body when
-     * body text begins with "Subject: " (string only)?
+     * body text begins with "Subject: " and $body is a string (ignored when $body is an Email object)
      *
      * @throws MailException
      * @return void
