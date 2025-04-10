@@ -108,7 +108,13 @@ class RecordDataFormatterFactory implements FactoryInterface
         $methodMapping =  $container
                             ->get(\VuFind\Config\PluginManager::class)
                             ->get('RecordDataFormatter')
-                            ->Defaults_Function_Mapping ?? [];
+                            ->Defaults_Function_Mapping
+                            ?? [
+                                'collection-info' => 'getDefaultCollectionInfoSpecs',
+                                'collection-record' => 'getDefaultCollectionRecordSpecs',
+                                'core' => 'getDefaultCoreSpecs',
+                                'description' => 'getDefaultDescriptionSpecs',
+                            ];
         $showDeprecationWarning = false;
         foreach ($methodMapping as $context => $method) {
             $reflector = new \ReflectionMethod($this, $method);
