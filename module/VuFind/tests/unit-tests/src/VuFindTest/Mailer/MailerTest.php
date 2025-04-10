@@ -224,6 +224,64 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test sending an email with subject in the body
+     *
+     * @return void
+     */
+    public function testSendWithSubjectInBody()
+    {
+        $callback = function ($message): bool {
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
+                && 'overridden subject' == $message->getSubject();
+        };
+        $mailer = $this->getMailer($callback);
+        $mailer->send(
+            'to@example.com',
+            'from@example.com',
+            'subject',
+            <<<EOT
+                Subject: overridden subject
+
+                body
+                EOT
+        );
+    }
+
+    /**
+     * Test sending an email with subject not allowed in the body
+     *
+     * @return void
+     */
+    public function testSendWithSubjectNotAllowedInBody()
+    {
+        $body = <<<EOT
+            Subject: overridden subject
+
+            body
+            EOT;
+        $callback = function ($message) use ($body): bool {
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && $body == $message->getBody()->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $mailer = $this->getMailer($callback);
+        $mailer->send(
+            'to@example.com',
+            'from@example.com',
+            'subject',
+            <<<EOT
+                Subject: overridden subject
+
+                body
+                EOT,
+            subjectInBody: false
+        );
+    }
+
+    /**
      * Test bad to address.
      *
      * @return void
