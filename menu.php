@@ -1,11 +1,10 @@
 <?php
-
 /**
- * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
+ * Command-line tool to launch menu.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,26 +20,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @package  Utilities
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/administration:command_line_utilities Wiki
  */
 
-namespace VuFindTheme\View\Helper;
-
-/**
- * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
- *
- * @category VuFind
- * @package  View_Helpers
- * @author   Chris Hallberg <challber@villanova.edu>
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- */
-class FootScript extends HeadScript
-{
-    // pass
-}
+// Manipulate command line to load correct route, then run the main index page:
+array_unshift($_SERVER['argv'], array_shift($_SERVER['argv']), 'menu', 'menu');
+$_SERVER['argc'] += 2;
+require_once __DIR__ . '/public/index.php';

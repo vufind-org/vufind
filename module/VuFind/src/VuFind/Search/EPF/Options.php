@@ -92,16 +92,6 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getView()
-    {
-        return $this->defaultView;
-    }
-
-    /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
     public function getEpfView()
     {
         $viewArr = explode('_', $this->defaultView);
