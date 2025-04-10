@@ -30,7 +30,6 @@
 
 namespace VuFindSearch\Backend\ProQuestFSG;
 
-use VuFind\Config\Config;
 use VuFindSearch\ParamBag;
 
 use function intval;
@@ -65,11 +64,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * Constructor
      *
      * @param \Laminas\Http\Client $client An HTTP client object
-     * @param Config               $config ProQuestFSG config
+     * @param array                $config ProQuestFSG config
      */
     public function __construct(
         \Laminas\Http\Client $client,
-        protected Config $config
+        protected array $config
     ) {
         parent::__construct(
             'https://fedsearch.proquest.com/search/sru',
@@ -180,7 +179,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     protected function validateDatabaseValue(string $value)
     {
-        if (!($this->config->Validation->database_codes ?? true)) {
+        if (!($this->config['Validation']['database_codes'] ?? true)) {
             return true;
         }
 
