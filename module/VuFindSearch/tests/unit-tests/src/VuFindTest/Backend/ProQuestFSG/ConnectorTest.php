@@ -82,7 +82,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
             [
                 'Validation' => [
                     'database_codes' => true,
-                ]
+                ],
             ]
         );
         $params = new ParamBag([
