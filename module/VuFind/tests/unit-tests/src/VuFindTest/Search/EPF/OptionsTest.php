@@ -75,7 +75,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test that the Options object returns correct data .
      *
-     * @param array  $config  Blender configuration
+     * @param array  $config    Blender configuration
      * @param string $ebscoView Expected epfView
      *
      * @return void
