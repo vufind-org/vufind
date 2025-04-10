@@ -70,6 +70,29 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test search on invalid database key
+     *
+     * @return void
+     */
+    public function testSearchInvalidDatabase()
+    {
+        $responseBody = $this->getFixture('proquestfsg/searchresult.xml');
+        $connector = $this->getConnector(
+            $this->getMockClient($responseBody, false)
+        );
+        $params = new ParamBag([
+            'query' => '(cql.serverChoice all "painted pomegranates and needlepoint rabbis")',
+            'filters' => [
+                'Databases:Complementary Index', // this is an EDS database
+            ],
+        ]);
+        $searchResult = $connector->search($params, 0, 2);
+
+        // Expecting zero results, since an invalid DB for ProQuest
+        $this->assertEquals(0, $searchResult['total']);
+    }
+
+    /**
      * Test getRecord.
      *
      * @return void
@@ -91,21 +114,24 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      * Get a mock HTTP client.
      *
      * @param string $responseBody Response body returned by client.
+     * @param bool   $toBeUsed     Whether the client will actually be used.
      *
      * @return MockObject&Client
      */
-    protected function getMockClient($responseBody)
+    protected function getMockClient(string $responseBody, bool $toBeUsed = true)
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         $response = $this->createMock(\Laminas\Http\Response::class);
-        $response->expects($this->once())->method('isSuccess')
-            ->willReturn(true);
-        $response->expects($this->once())->method('getBody')
-            ->willReturn($responseBody);
-        $client->expects($this->once())->method('setMethod')
-            ->willReturn($client);
-        $client->expects($this->once())->method('send')
-            ->willReturn($response);
+        if ($toBeUsed) {
+            $response->expects($this->once())->method('isSuccess')
+                ->willReturn(true);
+            $response->expects($this->once())->method('getBody')
+                ->willReturn($responseBody);
+            $client->expects($this->once())->method('setMethod')
+                ->willReturn($client);
+            $client->expects($this->once())->method('send')
+                ->willReturn($response);
+        }
         return $client;
     }
 
