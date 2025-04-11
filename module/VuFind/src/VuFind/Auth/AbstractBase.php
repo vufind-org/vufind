@@ -52,6 +52,7 @@ use function is_callable;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
+    AuthInterface,
     \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface

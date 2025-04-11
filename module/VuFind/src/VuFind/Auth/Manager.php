@@ -61,7 +61,7 @@ class Manager implements
     /**
      * Authentication modules
      *
-     * @var \VuFind\Auth\AbstractBase[]
+     * @var AuthInterface[]
      */
     protected array $auth = [];
 
@@ -148,9 +148,9 @@ class Manager implements
      *
      * @param ?string $name Auth module to load (null for currently active one)
      *
-     * @return AbstractBase
+     * @return AuthInterface
      */
-    protected function getAuth(?string $name = null): AbstractBase
+    protected function getAuth(?string $name = null): AuthInterface
     {
         $name = empty($name) ? $this->activeAuth : $name;
         if (!isset($this->auth[$name])) {
@@ -172,9 +172,9 @@ class Manager implements
      *
      * @param string $method auth method to instantiate
      *
-     * @return AbstractBase
+     * @return AuthInterface
      */
-    protected function makeAuth(string $method): AbstractBase
+    protected function makeAuth(string $method): AuthInterface
     {
         $legalAuthList = array_map('strtolower', $this->legalAuthOptions);
         // If an illegal option was passed in, don't allow the object to load:
