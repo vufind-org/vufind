@@ -29,7 +29,6 @@
 
 namespace VuFind\Config;
 
-use Composer\Semver\Comparator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
 
@@ -48,41 +47,6 @@ use function is_array;
  */
 class Upgrade
 {
-    /**
-     * Version we're upgrading from
-     *
-     * @var string
-     */
-    protected $from;
-
-    /**
-     * Version we're upgrading to
-     *
-     * @var string
-     */
-    protected $to;
-
-    /**
-     * Directory containing configurations to upgrade
-     *
-     * @var string
-     */
-    protected $oldDir;
-
-    /**
-     * Directory containing unmodified new configurations
-     *
-     * @var string
-     */
-    protected $rawDir;
-
-    /**
-     * Directory where new configurations should be written (null for test mode)
-     *
-     * @var string
-     */
-    protected $newDir;
-
     /**
      * Parsed old configurations
      *
@@ -128,20 +92,20 @@ class Upgrade
     /**
      * Constructor
      *
-     * @param string $from   Version we're upgrading from.
-     * @param string $to     Version we're upgrading to.
-     * @param string $oldDir Directory containing old configurations.
-     * @param string $rawDir Directory containing raw new configurations.
-     * @param string $newDir Directory to write updated new configurations into
+     * @param string  $from   Version we're upgrading from.
+     * @param string  $to     Version we're upgrading to.
+     * @param string  $oldDir Directory containing old configurations.
+     * @param string  $rawDir Directory containing raw new configurations.
+     * @param ?string $newDir Directory to write updated new configurations into
      * (leave null to disable writes -- used in test mode).
      */
-    public function __construct($from, $to, $oldDir, $rawDir, $newDir = null)
-    {
-        $this->from = $from;
-        $this->to = $to;
-        $this->oldDir = $oldDir;
-        $this->rawDir = $rawDir;
-        $this->newDir = $newDir;
+    public function __construct(
+        protected string $from,
+        protected string $to,
+        protected string $oldDir,
+        protected string $rawDir,
+        protected ?string $newDir = null
+    ) {
         $this->inPlaceUpgrade = ($this->oldDir == $this->newDir);
     }
 
@@ -174,13 +138,6 @@ class Upgrade
         // so we should save it last. It doesn't have its own upgrade routine.
         $this->saveModifiedConfig('permissions.ini');
 
-        // The following routines load special configurations that were not
-        // explicitly loaded by loadConfigs... note that some pieces only apply to
-        // the 1.x upgrade!
-        if (Comparator::lessThan($this->from, '2.0')) {
-            $this->upgradeSolrMarc();
-            $this->upgradeSearchSpecs();
-        }
         $this->upgradeILS();
     }
 
@@ -480,31 +437,6 @@ class Upgrade
     }
 
     /**
-     * Is this a default BulkExport options setting?
-     *
-     * @param string $eo Bulk export options
-     *
-     * @return bool
-     */
-    protected function isDefaultBulkExportOptions($eo)
-    {
-        if (Comparator::greaterThanOrEqualTo($this->from, '2.4')) {
-            $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
-        } elseif (Comparator::greaterThanOrEqualTo($this->from, '2.0')) {
-            $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
-        } elseif (Comparator::greaterThanOrEqualTo($this->from, '1.4')) {
-            $default = 'MARC:MARCXML:EndNote:RefWorks:BibTeX';
-        } elseif (Comparator::greaterThanOrEqualTo($this->from, '1.3')) {
-            $default = 'MARC:EndNote:RefWorks:BibTeX';
-        } elseif (Comparator::greaterThanOrEqualTo($this->from, '1.2')) {
-            $default = 'MARC:EndNote:BibTeX';
-        } else {
-            $default = 'MARC:EndNote';
-        }
-        return $eo == $default;
-    }
-
-    /**
      * Add warnings if Amazon problems were found.
      *
      * @param array $config Configuration to check
@@ -538,21 +470,6 @@ class Upgrade
 
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
-
-        // If the [BulkExport] options setting is present and non-default, warn
-        // the user about its deprecation.
-        if (isset($newConfig['BulkExport']['options'])) {
-            $default = $this->isDefaultBulkExportOptions(
-                $newConfig['BulkExport']['options']
-            );
-            if (!$default) {
-                $this->addWarning(
-                    'The [BulkExport] options setting is deprecated; please '
-                    . 'customize the [Export] section instead.'
-                );
-            }
-            unset($newConfig['BulkExport']['options']);
-        }
 
         // If [Statistics] is present, warn the user about its removal.
         if (isset($newConfig['Statistics'])) {
@@ -854,21 +771,6 @@ class Upgrade
     }
 
     /**
-     * Update an old VuFind 1.x-style autocomplete handler name to the new style.
-     *
-     * @param string $name Name of module.
-     *
-     * @return string
-     */
-    protected function upgradeAutocompleteName($name)
-    {
-        if ($name == 'NoAutocomplete') {
-            return 'None';
-        }
-        return str_replace('Autocomplete', '', $name);
-    }
-
-    /**
      * Upgrade searches.ini.
      *
      * @throws FileAccessException
@@ -883,23 +785,8 @@ class Upgrade
         ];
         $this->applyOldSettings('searches.ini', $groups);
 
-        // Fix autocomplete settings in case they use the old style:
-        $newConfig = & $this->newConfigs['searches.ini'];
-        if (isset($newConfig['Autocomplete']['default_handler'])) {
-            $newConfig['Autocomplete']['default_handler']
-                = $this->upgradeAutocompleteName(
-                    $newConfig['Autocomplete']['default_handler']
-                );
-        }
-        if (isset($newConfig['Autocomplete_Types'])) {
-            foreach ($newConfig['Autocomplete_Types'] as $k => $v) {
-                $parts = explode(':', $v);
-                $parts[0] = $this->upgradeAutocompleteName($parts[0]);
-                $newConfig['Autocomplete_Types'][$k] = implode(':', $parts);
-            }
-        }
-
         // fix call number sort settings:
+        $newConfig = & $this->newConfigs['searches.ini'];
         if (isset($newConfig['Sorting']['callnumber'])) {
             $newConfig['Sorting']['callnumber-sort']
                 = $newConfig['Sorting']['callnumber'];
@@ -912,60 +799,9 @@ class Upgrade
                 }
             }
         }
-        $this->upgradeSpellingSettings('searches.ini', ['CallNumber', 'WorkKeys']);
 
         // save the file
         $this->saveModifiedConfig('searches.ini');
-    }
-
-    /**
-     * Upgrade spelling settings to account for refactoring of spelling as a
-     * recommendation module starting in release 2.4.
-     *
-     * @param string $ini  .ini file to modify
-     * @param array  $skip Keys to skip within [TopRecommendations]
-     *
-     * @return void
-     */
-    protected function upgradeSpellingSettings($ini, $skip = [])
-    {
-        // Turn on the spelling recommendations if we're upgrading from a version
-        // prior to 2.4.
-        if (Comparator::lessThan($this->from, '2.4')) {
-            // Fix defaults in general section:
-            $cfg = & $this->newConfigs[$ini]['General'];
-            $keys = ['default_top_recommend', 'default_noresults_recommend'];
-            foreach ($keys as $key) {
-                if (!isset($cfg[$key])) {
-                    $cfg[$key] = [];
-                }
-                if (!in_array('SpellingSuggestions', $cfg[$key])) {
-                    $cfg[$key][] = 'SpellingSuggestions';
-                }
-            }
-
-            // Fix settings in [TopRecommendations]
-            $cfg = & $this->newConfigs[$ini]['TopRecommendations'];
-            // Add SpellingSuggestions to all non-skipped handlers:
-            foreach ($cfg as $key => & $value) {
-                if (
-                    !in_array($key, $skip)
-                    && !in_array('SpellingSuggestions', $value)
-                ) {
-                    $value[] = 'SpellingSuggestions';
-                }
-            }
-            // Define handlers with no spelling support as the default minus the
-            // Spelling option:
-            foreach ($skip as $key) {
-                if (!isset($cfg[$key])) {
-                    $cfg[$key] = array_diff(
-                        $this->newConfigs[$ini]['General']['default_top_recommend'],
-                        ['SpellingSuggestions']
-                    );
-                }
-            }
-        }
     }
 
     /**
@@ -1095,22 +931,8 @@ class Upgrade
         ];
         $this->applyOldSettings('Summon.ini', $groups);
 
-        // Turn on advanced checkbox facets if we're upgrading from a version
-        // prior to 2.3.
-        if (Comparator::lessThan($this->from, '2.3')) {
-            $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
-            $specialFacets = $cfg['special_facets'] ?? null;
-            if (empty($specialFacets)) {
-                $cfg['special_facets'] = 'checkboxes:Summon';
-            } elseif (!str_contains('checkboxes', (string)$specialFacets)) {
-                $cfg['special_facets'] .= ',checkboxes:Summon';
-            }
-        }
-
         // update permission settings
         $this->upgradeSummonPermissions();
-
-        $this->upgradeSpellingSettings('Summon.ini');
 
         // save the file
         $this->saveModifiedConfig('Summon.ini');
@@ -1276,65 +1098,6 @@ class Upgrade
     }
 
     /**
-     * Upgrade SolrMarc configurations.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeSolrMarc()
-    {
-        if (null === $this->newDir) {   // skip this step if no write destination
-            return;
-        }
-
-        // Is there a marc_local.properties file?
-        $src = realpath($this->oldDir . '/../../import/marc_local.properties');
-        if (empty($src) || !file_exists($src)) {
-            return;
-        }
-
-        // Copy the file if it contains customizations:
-        if ($this->fileContainsMeaningfulLines($src)) {
-            $dest = realpath($this->newDir . '/../../import')
-                . '/marc_local.properties';
-            if (!copy($src, $dest) || !file_exists($dest)) {
-                throw new FileAccessException(
-                    "Cannot copy {$src} to {$dest}."
-                );
-            }
-        }
-    }
-
-    /**
-     * Upgrade .yaml configurations.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeSearchSpecs()
-    {
-        if (null === $this->newDir) {   // skip this step if no write destination
-            return;
-        }
-
-        // VuFind 1.x uses *_local.yaml files as overrides; VuFind 2.x uses files
-        // with the same filename in the local directory. Copy any old override
-        // files into the new expected location:
-        $files = ['searchspecs', 'authsearchspecs', 'reservessearchspecs'];
-        foreach ($files as $file) {
-            $old = $this->oldDir . '/' . $file . '_local.yaml';
-            $new = $this->newDir . '/' . $file . '.yaml';
-            if (file_exists($old)) {
-                if (!copy($old, $new)) {
-                    throw new FileAccessException(
-                        "Cannot copy {$old} to {$new}."
-                    );
-                }
-            }
-        }
-    }
-
-    /**
      * Upgrade ILS driver configuration.
      *
      * @throws FileAccessException
@@ -1359,10 +1122,7 @@ class Upgrade
         }
 
         // If we're set to load NoILS.ini on failure, copy that over as well:
-        if (
-            isset($this->newConfigs['config.ini']['Catalog']['loadNoILSOnFailure'])
-            && $this->newConfigs['config.ini']['Catalog']['loadNoILSOnFailure']
-        ) {
+        if ($this->newConfigs['config.ini']['Catalog']['loadNoILSOnFailure'] ?? false) {
             // If NoILS is also the main driver, we don't need to copy it twice:
             if ($driver != 'NoILS') {
                 $this->saveUnmodifiedConfig('NoILS.ini');
