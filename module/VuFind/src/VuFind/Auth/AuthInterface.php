@@ -95,7 +95,6 @@ interface AuthInterface
      */
     public function getDelegateAuthMethod(Request $request);
 
-
     /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
