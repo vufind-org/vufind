@@ -216,7 +216,7 @@ class Manager implements
      *   string auth_method Authentication method
      *   string target      Authentication target for methods that support target selection (e.g. MultiILS)
      *   int    timestamp   Request timestamp (unix time)
-     *   array  details  Array of user details required for resetPassword request
+     *   array  details     Array of user details required for resetPassword request
      */
     public function getPasswordRecoveryData(array $params): ?array
     {
