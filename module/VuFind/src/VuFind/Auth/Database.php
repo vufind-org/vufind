@@ -384,6 +384,8 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function supportsPasswordRecovery(?string $target = null)
     {
@@ -423,7 +425,7 @@ class Database extends AbstractBase
     /**
      * Reset a user's password.
      *
-     * @param array $recoveryData Account recovery data from getAccountRecoveryData.
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
      * @param array $params       User-entered form parameters.
      *
      * @throws AuthException
@@ -460,6 +462,8 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPasswordPolicy(?string $target = null)
     {

@@ -119,6 +119,8 @@ class ILS extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function supportsPasswordRecovery(?string $target = null)
     {
@@ -152,6 +154,7 @@ class ILS extends AbstractBase
      */
     public function getPasswordPolicy(?string $target = null)
     {
+        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
         $patron = $target ? ['cat_username' => "$target.123"] : $this->getLoggedInPatron();
         $policy = $this->getCatalog()->getPasswordPolicy($patron);
         if ($policy === false) {
@@ -230,7 +233,7 @@ class ILS extends AbstractBase
     /**
      * Reset a user's password.
      *
-     * @param array $recoveryData Account recovery data from getAccountRecoveryData.
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
      * @param array $params       User-entered form parameters.
      *
      * @throws AuthException

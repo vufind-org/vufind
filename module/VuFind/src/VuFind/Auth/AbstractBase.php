@@ -268,11 +268,13 @@ abstract class AbstractBase implements
     /**
      * Reset a user's password.
      *
-     * @param array $recoveryData Account recovery data from getAccountRecoveryData.
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
      * @param array $params       User-entered form parameters.
      *
      * @throws AuthException
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function resetPassword(array $recoveryData, array $params)
     {
@@ -353,6 +355,8 @@ abstract class AbstractBase implements
      *   string email    User's email address
      *   string username Username (optional, for display)
      *   array  details  Array of user details required for resetPassword request
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPasswordRecoveryData(array $params): ?array
     {

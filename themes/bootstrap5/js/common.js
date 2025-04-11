@@ -898,7 +898,7 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
 /**
  * MultiILS: Display password recovery link for enabled login targets
  * @param {Object} links Recovery links
- * @param {*} idPrefix
+ * @param {?String} idPrefix
  */
 function displayILSPasswordRecoveryLink(links, idPrefix) {
   const searchPrefix = idPrefix ? '#' + idPrefix : '#';

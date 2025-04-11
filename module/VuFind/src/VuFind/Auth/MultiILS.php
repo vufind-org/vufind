@@ -139,6 +139,7 @@ class MultiILS extends ILS
         if (!$target) {
             throw new \Exception(__METHOD__ . ' requires the target parameter!');
         }
+        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
         $recoveryConfig = $this->getCatalog()->checkFunction(
             'resetPassword',
             ['cat_username' => "$target.123"]

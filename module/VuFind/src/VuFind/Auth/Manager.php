@@ -697,7 +697,7 @@ class Manager implements
     /**
      * Reset a user's password.
      *
-     * @param array $recoveryData Account recovery data from getAccountRecoveryData.
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
      * @param array $params       User-entered form parameters.
      *
      * @throws AuthException
