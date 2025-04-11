@@ -288,14 +288,9 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (
-            isset($config->Shibboleth->logout)
-            && !empty($config->Shibboleth->logout)
-        ) {
-            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&'
-                : '?';
-            $url = $config->Shibboleth->logout . $append . 'return='
-                . urlencode($url);
+        if (!empty($config->Shibboleth->logout)) {
+            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&' : '?';
+            $url = $config->Shibboleth->logout . $append . 'return=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):

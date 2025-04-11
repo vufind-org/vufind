@@ -231,10 +231,7 @@ class CAS extends AbstractBase
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (
-            isset($config->CAS->logout)
-            && !empty($config->CAS->logout)
-        ) {
+        if (!empty($config->CAS->logout)) {
             $url = $config->CAS->logout . '?service=' . urlencode($url);
         }
 
