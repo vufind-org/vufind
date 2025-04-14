@@ -14,4 +14,6 @@
     }
     $this->slot('empty-message')->set($this->transEsc('course_reserves_empty_list'));
     $this->breadcrumbs()->set($this->translate('Search For Items on Reserve'), $this->url('search-reserves'));
+    // Disable loading of results with JS for now since it doesn't handle the special parameters:
+    $this->results->getOptions()->setLoadResultsWithJs(false);
     echo $this->render('search/results.phtml');

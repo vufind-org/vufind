@@ -64,6 +64,10 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
     public function __construct(protected array $config)
     {
         $this->init();
+
+        foreach ($config['Defaults_Function_Mapping'] ?? [] as $key => $value) {
+            $this->setDefaults($key, [$this, $value]);
+        }
     }
 
     /**

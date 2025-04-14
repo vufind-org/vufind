@@ -74,7 +74,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('getSessionInitiator')
-            ->with($this->equalTo('foo'))->will($this->returnValue('bar'));
+            ->with($this->equalTo('foo'))->willReturn('bar');
         $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals('bar', $manager->getSessionInitiator('foo'));
     }
@@ -99,7 +99,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(false));
+        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->willReturn(false);
         $pm->setService('ChoiceAuth2', $mockChoice);
         $config = ['Authentication' => ['method' => 'ChoiceAuth2']];
         $manager = $this->getManager($config, null, null, $pm);
@@ -116,7 +116,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $pm = $this->getMockPluginManager();
         $targets = ['a', 'b', 'c'];
         $multi = $pm->get('MultiILS');
-        $multi->expects($this->once())->method('getLoginTargets')->will($this->returnValue($targets));
+        $multi->expects($this->once())->method('getLoginTargets')->willReturn($targets);
         $config = ['Authentication' => ['method' => 'MultiILS']];
         $this->assertEquals($targets, $this->getManager($config, null, null, $pm)->getLoginTargets());
     }
@@ -131,43 +131,56 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $pm = $this->getMockPluginManager();
         $target = 'foo';
         $multi = $pm->get('MultiILS');
-        $multi->expects($this->once())->method('getDefaultLoginTarget')->will($this->returnValue($target));
+        $multi->expects($this->once())->method('getDefaultLoginTarget')->willReturn($target);
         $config = ['Authentication' => ['method' => 'MultiILS']];
         $this->assertEquals($target, $this->getManager($config, null, null, $pm)->getDefaultLoginTarget());
     }
 
     /**
-     * Test logout (with destruction)
+     * Test getLogoutRedirectUrl
      *
      * @return void
      */
-    public function testLogoutWithDestruction(): void
+    public function testGetLogoutRedirectUrl(): void
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')
-            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
-        $sm = $this->getMockSessionManager();
-        $sm->expects($this->once())->method('destroy');
-        $manager = $this->getManager([], null, $sm, $pm);
-        $this->assertEquals('http://baz', $manager->logout('http://foo/bar'));
+        $db->expects($this->once())->method('getLogoutRedirectUrl')
+            ->with($this->equalTo('http://foo/bar'))->willReturn('http://baz');
+        $manager = $this->getManager([], null, null, $pm);
+        $this->assertEquals('http://baz', $manager->getLogoutRedirectUrl('http://foo/bar'));
     }
 
     /**
-     * Test logout (without destruction)
+     * Test clearLoginState (with destruction)
      *
      * @return void
      */
-    public function testLogoutWithoutDestruction(): void
+    public function testClearLoginStateWithDestruction(): void
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')
-            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $db->expects($this->once())->method('clearLoginState');
+        $sm = $this->getMockSessionManager();
+        $sm->expects($this->once())->method('destroy');
+        $manager = $this->getManager([], null, $sm, $pm);
+        $manager->clearLoginState();
+    }
+
+    /**
+     * Test clearLoginState (without destruction)
+     *
+     * @return void
+     */
+    public function testClearLoginStateWithoutDestruction(): void
+    {
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('clearLoginState');
         $sm = $this->getMockSessionManager();
         $sm->expects($this->exactly(0))->method('destroy');
         $manager = $this->getManager([], null, $sm, $pm);
-        $this->assertEquals('http://baz', $manager->logout('http://foo/bar', false));
+        $manager->clearLoginState(false);
     }
 
     /**
@@ -235,9 +248,9 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('supportsCreation')->will($this->returnValue(true));
+        $db->expects($this->once())->method('supportsCreation')->willReturn(true);
         $shib = $pm->get('Shibboleth');
-        $shib->expects($this->once())->method('supportsCreation')->will($this->returnValue(false));
+        $shib->expects($this->once())->method('supportsCreation')->willReturn(false);
         $manager = $this->getManager($config, null, null, $pm);
         $this->assertTrue($manager->supportsCreation('Database'));
         $this->assertFalse($manager->supportsCreation('Shibboleth'));
@@ -256,7 +269,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('supportsPasswordRecovery')->will($this->returnValue(true));
+        $db->expects($this->once())->method('supportsPasswordRecovery')->willReturn(true);
         $config = ['Authentication' => ['recover_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsRecovery());
     }
@@ -292,7 +305,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->any())->method('supportsPasswordChange')->will($this->returnValue(true));
+        $db->expects($this->any())->method('supportsPasswordChange')->willReturn(true);
         $config = ['Authentication' => ['change_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsPasswordChange());
         $config = ['Authentication' => ['change_password' => false]];
@@ -313,7 +326,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         // Complex case involving proxied authenticator in ChoiceAuth:
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $choice = $pm->get('ChoiceAuth');
-        $choice->expects($this->once())->method('getSelectedAuthOption')->will($this->returnValue('Shibboleth'));
+        $choice->expects($this->once())->method('getSelectedAuthOption')->willReturn('Shibboleth');
         $manager = $this->getManager($config, null, null, $pm);
         $this->assertEquals(get_class($pm->get('Shibboleth')), $manager->getAuthClassForTemplateRendering());
     }
@@ -358,7 +371,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->returnValue($user));
+        $db->expects($this->once())->method('authenticate')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $this->assertNull($manager->getUserObject());
@@ -470,7 +483,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('updatePassword')->with($request)->will($this->returnValue($user));
+        $db->expects($this->once())->method('updatePassword')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals($user, $manager->updatePassword($request));
         $this->assertEquals($user, $manager->getUserObject());
@@ -491,8 +504,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
-        $db->expects($this->once())->method('isExpired')->will($this->returnValue(true));
+        $db->expects($this->once())->method('create')->with($request)->willReturn($user);
+        $db->expects($this->once())->method('isExpired')->willReturn(true);
         $manager = $this->getManager([], null, null, $pm);
         $manager->create($request);
         $this->assertTrue($manager->checkForExpiredCredentials());
