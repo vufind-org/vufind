@@ -926,15 +926,15 @@ class Manager implements
      *
      * @param string $target Login target (MultiILS only)
      *
-     * @return string|false
+     * @return ?string
      */
-    public function getILSLoginMethod(string $target = ''): string|false
+    public function getILSLoginMethod(string $target = ''): ?string
     {
         $auth = $this->getAuth();
         if (is_callable([$auth, 'getILSLoginMethod'])) {
             return $auth->getILSLoginMethod($target);
         }
-        return false;
+        return null;
     }
 
     /**
