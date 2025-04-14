@@ -6,6 +6,7 @@
     'data-toggle' => 'finna-toggletip',
     'data-toggletip-placement' => $placement ?? 'bottom',
     'data-toggletip-content' => $contentHtml ?? '',
+    'aria-expanded' => 'false',
   ]);
   if (empty($labelHtml) && !empty($ariaLabel)) {
     $__attributes['aria-label'] = $ariaLabel;

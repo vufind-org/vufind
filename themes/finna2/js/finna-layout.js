@@ -391,6 +391,57 @@ finna.layout = (function finnaLayout() {
    * @param {HTMLElement} holder Holder to look for toggletip elements from
    */
   function initToggleTips(holder) {
+
+    /**
+     * Close a ToggleTip
+     * @param {HTMLElement} tipEl Tip container element
+     */
+    function closeToggleTip(tipEl) {
+      // Reset focus from any active element in the toggletip:
+      const activeElement = document.activeElement;
+      const parentEl = tipEl.closest('.finna-toggletip');
+      if (parentEl) {
+        const buttonEl = parentEl.querySelector('.finna-toggletip__button');
+        if (buttonEl) {
+          buttonEl.setAttribute('aria-expanded', 'false');
+          if (parentEl.contains(activeElement)) {
+            buttonEl.focus();
+          }
+        }
+      }
+
+      tipEl.classList.remove('show');
+      const tipInnerEl = tipEl.querySelector('.js-status-inner');
+      if (tipInnerEl) {
+        tipInnerEl.innerHTML = '';
+      }
+      // If focus was in the toggletip, return it to the button:
+    }
+
+    /**
+     * Click event handler that closes all toggletips not being clicked
+     * @param {object} e Event object
+     */
+    function closeToggleTipsOnClick(e) {
+      document.querySelectorAll('.finna-toggletip .js-status.show').forEach((tipEl) => {
+        if (tipEl !== e.target && !tipEl.contains(e.target)) {
+          closeToggleTip(tipEl);
+        }
+      });
+    }
+
+    /**
+     * Keydown event handler that closes all toggletips
+     * @param {object} e Event object
+     */
+    function closeToggleTipsOnEsc(e) {
+      if ((e.keyCode || e.which) === 27) {
+        document.querySelectorAll('.finna-toggletip .js-status.show').forEach((tipEl) => {
+          closeToggleTip(tipEl);
+        });
+      }
+    }
+
     holder.querySelectorAll('[data-toggle="finna-toggletip"]').forEach(toggletip => {
       if (toggletip.dataset.initialized) {
         return;
@@ -429,38 +480,22 @@ finna.layout = (function finnaLayout() {
       );
       toggletip.addEventListener('click', () => {
         if (tipEl.classList.contains('show')) {
-          tipEl.classList.remove('show');
-          tipInnerEl.innerHTML = '';
+          closeToggleTip(tipEl);
         } else {
           window.setTimeout(() => {
             tipInnerEl.innerHTML = message;
             tipEl.classList.add('show');
             popperInst.update();
+            toggletip.setAttribute('aria-expanded', 'true');
           }, 100);
         }
       });
 
       // Close on outside click
-      document.addEventListener('click', (e) => {
-        if (toggletip !== e.target) {
-          tipEl.classList.remove('show');
-          tipInnerEl.innerHTML = '';
-        }
-      });
+      document.addEventListener('click', closeToggleTipsOnClick);
 
       // Remove toggletip on Esc
-      toggletip.addEventListener('keydown', (e) => {
-        if ((e.keyCode || e.which) === 27) {
-          tipEl.classList.remove('show');
-          tipInnerEl.innerHTML = '';
-        }
-      });
-
-      // Remove on blur
-      toggletip.addEventListener('blur', () => {
-        tipEl.classList.remove('show');
-        tipInnerEl.innerHTML = '';
-      });
+      document.addEventListener('keydown', closeToggleTipsOnEsc);
     });
   }
 
