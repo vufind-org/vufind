@@ -92,7 +92,7 @@ class DeleteCommand extends AbstractCommand
         $target = $input->getArgument('target');
 
         [$domain, $key] = $this->extractTextDomain($target);
-        $target = $key . ' = "';
+        $target = $key . ' = ';
 
         if (!($dir = $this->getLangDir($output, $domain))) {
             return 1;
@@ -102,7 +102,7 @@ class DeleteCommand extends AbstractCommand
             $out = '';
             $found = false;
             foreach ($lines as $line) {
-                if (!str_starts_with($line, $target)) {
+                if (!str_starts_with($line, $target . '"') && !str_starts_with($line, $target . "'")) {
                     $out .= $line;
                 } else {
                     $found = true;

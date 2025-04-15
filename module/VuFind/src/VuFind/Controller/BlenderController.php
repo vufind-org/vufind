@@ -52,15 +52,4 @@ class BlenderController extends AbstractSearch
         $this->searchClassId = 'Blender';
         parent::__construct($sm);
     }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        return $config->Record->next_prev_navigation ?? false;
-    }
 }

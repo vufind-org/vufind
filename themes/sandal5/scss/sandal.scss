@@ -45,7 +45,7 @@ body {
   height: $banner-height-sm;
   display: inline-block;
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
   .banner .navbar-brand {
     width: calc((170 / 65) * #{$banner-height});
@@ -166,7 +166,12 @@ a:hover .login-dropdown-caret {
 .myresearch-menu a:hover { background-color: $white; }
 .myresearch-menu a.active:hover {
   color: $white;
-  background-color: $brand-primary;
+  background-color: $primary;
+}
+
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  outline-color: #afafaf54; // selection color
 }
 
 /* --- Record --- */
@@ -194,7 +199,8 @@ a:hover .login-dropdown-caret {
 
   h1,h2,h3,h4 { margin-top: 0; }
 
-  .facet-group {
+  .facet-group,
+  .datevis-form {
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }
@@ -225,7 +231,7 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    border-bottom: 1px solid $list-group-border;
+    border-bottom: 1px solid $list-group-border-color;
     border-radius: 0;
   }
 
@@ -241,7 +247,7 @@ a:hover .login-dropdown-caret {
   background-color: $sidebar-item-badge;
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
+@include media-breakpoint-between(sm, md) {
   .sidebar .facet {
     flex-flow: wrap;
 
@@ -254,7 +260,7 @@ a:hover .login-dropdown-caret {
   }
 }
 
-@media (max-width: 1399px) {
+@include media-breakpoint-down(xl) {
   .sidebar {
     padding: 1rem 0.5rem 0.5rem 0.5rem;
   }

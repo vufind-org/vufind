@@ -53,6 +53,7 @@
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.3",
         "endroid/qr-code": "5.1.0",
+        "ezyang/htmlpurifier": "4.17.0",
         "firebase/php-jwt": "6.10.1",
         "guzzlehttp/guzzle": "7.9.2",
         "jaybizzle/crawler-detect": "^1.2",

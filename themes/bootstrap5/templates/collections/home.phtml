@@ -1,6 +1,6 @@
 <?php
   $this->headTitle($this->translate('Collection Browse'));
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li>';
+  $this->breadcrumbs()->set($this->translate('Collections'), $this->url('collections-home'));
   $filterList = [];
   $filterString = '';
   foreach ($filters ?? [] as $label => $filterBatch) {

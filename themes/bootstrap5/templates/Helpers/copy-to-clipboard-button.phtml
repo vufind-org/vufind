@@ -1,41 +1,29 @@
 <?php
-  $buttonNumber ??= bin2hex(random_bytes(5));
+  $this->buttonNumber ??= bin2hex(random_bytes(5));
+  $buttonAttributes = [
+    'type' => 'button',
+    'class' => ['btn', 'hidden', 'copy-to-clipboard-button', 'toolbar-btn'],
+    'role' => 'button',
+    'tabindex' => '0',
+    'data-number' => $this->buttonNumber,
+    'data-target' => $this->selector,
+  ];
+  $buttonText = $this->icon('clone');
+  if ($this->hideButtonText) {
+    $buttonAttributes['title'] = $this->transEscAttr('copy_to_clipboard_button_label');
+  }
 ?>
-<p>
-    <button type="button" id="copyToClipboard<?=$buttonNumber?>" class="btn btn-primary hidden" role="button" tabindex="0"><?=$this->translate('copy_to_clipboard_button_label')?></button>
-    <span id="copySuccessMessage<?=$buttonNumber?>" class="copyMessage hidden text-success"><small><?=$this->translate('copy_to_clipboard_success_message');?></small></span>
-    <span id="copyFailureMessage<?=$buttonNumber?>" class="copyMessage hidden text-danger"><small><?=$this->translate('copy_to_clipboard_failure_message');?></small></span>
-</p>
-<?php
-$script = <<<JS
-      $(document).ready(function copyToClipboard() {
-        if (navigator.clipboard) {
-          function copySuccess() {
-            $("#copyFailureMessage{$buttonNumber}").addClass("hidden");
-            $("#copySuccessMessage{$buttonNumber}").removeClass("hidden");
-          }
-          function copyFailure() {
-            $("#copySuccessMessage{$buttonNumber}").addClass("hidden");
-            $("#copyFailureMessage{$buttonNumber}").removeClass("hidden");
-          }
-          const button = $("#copyToClipboard{$buttonNumber}");
-          button.removeClass('hidden');
-          button.click(function copyToClipboard() {
-            const text = $('{$selector}').text();
-            if (typeof ClipboardItem === 'undefined') {
-              navigator.clipboard.writeText(text).then(copySuccess, copyFailure);
-              return;
-            }
-            const html = $('{$selector}').html();
-            const data = [ new ClipboardItem({
-              ['text/plain']: new Blob([text], {type: 'text/plain'}),
-              ['text/html']: new Blob([html], {type: 'text/html'})
-            })];
-            navigator.clipboard.write(data).then(copySuccess, copyFailure);
-          });
-        }
-      });
-    JS;
-// Inline the script for lightbox compatibility
-echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
-?>
+<span class="copy-to-clipboard">
+  <button <?=$this->htmlAttributes($buttonAttributes)?>>
+    <?=$this->icon('clone')?>
+    <span class="icon-link__label <?=$this->hideButtonText ? 'visually-hidden' : ''?>">
+      <?=$this->transEsc('copy_to_clipboard_button_label')?>
+    </span>
+  </button>
+  <span id="copySuccessMessage<?=$this->buttonNumber?>" class="hidden">
+    <span class="copyMessage text-success"><small><?=$this->translate('copy_to_clipboard_success_message')?></small></span>
+  </span>
+  <span id="copyFailureMessage<?=$this->buttonNumber?>" class="hidden">
+    <span class="copyMessage text-danger"><small><?=$this->translate('copy_to_clipboard_failure_message')?></small></span>
+  </span>
+</span>

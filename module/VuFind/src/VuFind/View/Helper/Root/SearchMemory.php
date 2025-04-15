@@ -115,6 +115,11 @@ class SearchMemory extends AbstractHelper
 
             $url .= $queryHelper->getParams(false);
 
+            // Make sure the URL stored in search memory stays in sync; if the stored URL has been manipulated
+            // through the EditMemory action and the user goes back to a page with a sid parameter, things can
+            // get into a bad state. Refreshing the value here ensures consistent behavior.
+            $this->memory->rememberSearch($url);
+
             return $url;
         }
         return null;

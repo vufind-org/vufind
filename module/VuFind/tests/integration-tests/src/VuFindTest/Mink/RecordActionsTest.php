@@ -98,6 +98,25 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Open the login modal before adding a comment.
+     *
+     * @param string Element $page Page element
+     *
+     * @return void
+     */
+    protected function openCommentsLoginModal(Element $page): void
+    {
+        $this->waitForPageLoad($page);
+        $this->assertEquals(// Can Comment?
+            'You must be logged in first',
+            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
+        );
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->findCss($page, $this->openModalSelector); // Lightbox open
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
+    }
+
+    /**
      * Test adding comments on records.
      *
      * @return void
@@ -107,17 +126,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        // TODO Rewrite for comment and login coming
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
-        $this->assertEquals(// Can Comment?
-            'You must be logged in first',
-            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
-        );
-        $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, $this->openModalSelector); // Lightbox open
-        $this->findCss($page, '.modal [name="username"]');
         // Create new account
+        $this->openCommentsLoginModal($page);
         $this->makeAccount($page, 'username1');
         $this->waitForLightboxHidden();
         // Make sure page updated for login
@@ -161,17 +173,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        // TODO Rewrite for comment and login coming
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
-        $this->assertEquals(// Can Comment?
-            'You must be logged in first',
-            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
-        );
-        $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, $this->openModalSelector); // Lightbox open
-        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Log in to existing account
+        $this->openCommentsLoginModal($page);
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Make sure page updated for login

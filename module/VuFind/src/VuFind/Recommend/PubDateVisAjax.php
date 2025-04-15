@@ -44,33 +44,42 @@ use function array_slice;
  */
 class PubDateVisAjax implements RecommendInterface
 {
+    use DateFacetTrait;
+
     /**
      * Raw settings string
      *
      * @var string
      */
-    protected $settings;
+    protected string $settings;
 
     /**
      * Search results object
      *
      * @var \VuFind\Search\Base\Results
      */
-    protected $searchObject;
+    protected \VuFind\Search\Base\Results $searchObject;
 
     /**
-     * Should we allow zooming? (String of "true" or "false")
+     * Should we allow zooming?
      *
-     * @var string
+     * @var bool
      */
-    protected $zooming;
+    protected bool $zooming = false;
+
+    /**
+     * Should we initially hide controls?
+     *
+     * @var bool
+     */
+    protected bool $initiallyHideControls = false;
 
     /**
      * Facet fields to use
      *
      * @var array
      */
-    protected $dateFacets = [];
+    protected array $dateFacets = [];
 
     /**
      * Store the configuration of the recommendation module.
@@ -87,12 +96,14 @@ class PubDateVisAjax implements RecommendInterface
         // Parse the additional settings:
         $params = explode(':', $settings);
         if ($params[0] == 'true' || $params[0] == 'false') {
-            $this->zooming = $params[0];
-            $this->dateFacets = array_slice($params, 1);
-        } else {
-            $this->zooming = 'false';
-            $this->dateFacets = $params;
+            $this->zooming = $params[0] === 'true';
+            $params = array_slice($params, 1);
         }
+        if ($params[0] == 'true' || $params[0] == 'false') {
+            $this->initiallyHideControls = $params[0] === 'true';
+            $params = array_slice($params, 1);
+        }
+        $this->dateFacets = $params;
     }
 
     /**
@@ -132,36 +143,45 @@ class PubDateVisAjax implements RecommendInterface
      *
      * @return array
      */
-    public function getVisFacets()
+    public function getVisFacets(): array
     {
         // Don't bother processing if the result set is empty:
         if ($this->searchObject->getResultTotal() <= 0) {
             return [];
         }
         return $this->processDateFacets(
-            $this->searchObject->getParams()->getRawFilters()
+            $this->searchObject,
+            $this->searchObject->getParams()->getRawFilters(),
+            $this->dateFacets
         );
     }
 
     /**
      * Get zoom setting
      *
-     * @return array
+     * @return bool
      */
-    public function getZooming()
+    public function getZooming(): bool
     {
-        if (isset($this->zooming)) {
-            return $this->zooming;
-        }
-        return 'false';
+        return $this->zooming;
+    }
+
+    /**
+     * Get zoom setting
+     *
+     * @return bool
+     */
+    public function getInitiallyHideControlsSetting(): bool
+    {
+        return $this->initiallyHideControls;
     }
 
     /**
      * Get facet fields
      *
-     * @return array
+     * @return string
      */
-    public function getFacetFields()
+    public function getFacetFields(): string
     {
         return implode(':', $this->dateFacets);
     }
@@ -171,38 +191,9 @@ class PubDateVisAjax implements RecommendInterface
      *
      * @return string of params
      */
-    public function getSearchParams()
+    public function getSearchParams(): string
     {
         // Get search parameters and return them minus the leading ?:
         return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
-    }
-
-    /**
-     * Support method for getVisData() -- extract details from applied filters.
-     *
-     * @param array $filters Current filter list
-     *
-     * @return array
-     */
-    protected function processDateFacets($filters)
-    {
-        $result = [];
-        foreach ($this->dateFacets as $current) {
-            $from = $to = '';
-            if (isset($filters[$current])) {
-                foreach ($filters[$current] as $filter) {
-                    if (preg_match('/\[\d+ TO \d+\]/', $filter)) {
-                        $range = explode(' TO ', trim($filter, '[]'));
-                        $from = $range[0] == '*' ? '' : $range[0];
-                        $to = $range[1] == '*' ? '' : $range[1];
-                        break;
-                    }
-                }
-            }
-            $result[$current] = [$from, $to];
-            $result[$current]['label']
-                = $this->searchObject->getParams()->getFacetLabel($current);
-        }
-        return $result;
     }
 }

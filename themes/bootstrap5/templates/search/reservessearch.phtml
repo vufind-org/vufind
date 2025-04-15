@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Reserves Search'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Reserves') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Reserves'), active: true);
 
     // Convenience variables:
     $reservesLookfor = $this->params->getDisplayQuery();
@@ -48,10 +48,10 @@
         ]
     );
   ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
+  <?=$this->assetManager()->outputInlineScriptString("$('#reservesSearchForm_lookfor').focus()")?>
 
   <div class="resulthead">
-    <div class="pull-left flip">
+    <div class="float-start">
       <?php $qtime = $this->results->getQuerySpeed(); ?>
       <?php if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
         <?php
@@ -70,7 +70,7 @@
     </div>
 
     <?php if ($recordTotal > 0): ?>
-      <div class="pull-right flip">
+      <div class="float-end">
         <?=$this->render('search/controls/sort.phtml')?>
       </div>
     <?php endif; ?>
