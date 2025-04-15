@@ -128,6 +128,8 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 if (empty($args['ignorePcAvailabilityHiddenFilter'])) {
                     $args['pcAvailability'] = (bool)$value;
                 }
+            } elseif ($filter == 'cdiFulltext') {
+                // Not supported!
             } else {
                 $args['filterList'][] = [
                     'field' => $filter,
