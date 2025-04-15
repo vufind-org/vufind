@@ -2580,10 +2580,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
     /**
      * Get a language-specific item from an element array
      *
-     * @param SimpleXMLElement $element  Element to use
-     * @param string           $language Language to look for
+     * @param \SimpleXMLElement $element  Element to use
+     * @param string            $language Language to look for
      *
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     protected function getLanguageSpecificItem($element, $language)
     {

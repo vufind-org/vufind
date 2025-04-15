@@ -1069,7 +1069,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
     /**
      * Get all original records as a SimpleXML object
      *
-     * @return SimpleXMLElement The record as SimpleXML
+     * @return \SimpleXMLElement The record as SimpleXML
      */
     protected function getAllRecordsXML()
     {
@@ -1218,7 +1218,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
     /**
      * Get the original main record as a SimpleXML object
      *
-     * @return SimpleXMLElement The record as SimpleXML
+     * @return \SimpleXMLElement The record as SimpleXML
      */
     protected function getRecordXML()
     {

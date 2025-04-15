@@ -235,7 +235,7 @@ class SolrAuthForward extends SolrAuthDefault implements \Laminas\Log\LoggerAwar
     /**
      * Get the main metadata element
      *
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     protected function getMainElement()
     {
@@ -276,7 +276,7 @@ class SolrAuthForward extends SolrAuthDefault implements \Laminas\Log\LoggerAwar
     /**
      * Get all original records as a SimpleXML object
      *
-     * @return SimpleXMLElement The record as SimpleXML
+     * @return \SimpleXMLElement The record as SimpleXML
      */
     protected function getAllRecordsXML()
     {
