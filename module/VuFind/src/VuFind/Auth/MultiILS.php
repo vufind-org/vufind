@@ -97,7 +97,7 @@ class MultiILS extends ILS
     /**
      * Get default login target (ILS driver/source ID)
      *
-     * @return array
+     * @return string
      */
     public function getDefaultLoginTarget()
     {

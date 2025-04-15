@@ -29,6 +29,7 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\SessionManager;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Config\Config;
@@ -61,44 +62,44 @@ class Manager implements
     /**
      * Authentication modules
      *
-     * @var \VuFind\Auth\AbstractBase[]
+     * @var AuthInterface[]
      */
-    protected $auth = [];
+    protected array $auth = [];
 
     /**
      * Currently selected authentication module
      *
      * @var string
      */
-    protected $activeAuth;
+    protected string $activeAuth;
 
     /**
      * List of values allowed to be set into $activeAuth
      *
      * @var array
      */
-    protected $legalAuthOptions;
+    protected array $legalAuthOptions;
 
     /**
      * Cache for current logged in user object
      *
      * @var ?UserEntityInterface
      */
-    protected $currentUser = null;
+    protected ?UserEntityInterface $currentUser = null;
 
     /**
      * Cache for hideLogin setting
      *
      * @var ?bool
      */
-    protected $hideLogin = null;
+    protected ?bool $hideLogin = null;
 
     /**
      * ILS Authenticator
      *
      * @var ?ILSAuthenticator
      */
-    protected $ilsAuthenticator = null;
+    protected ?ILSAuthenticator $ilsAuthenticator = null;
 
     /**
      * Constructor
@@ -146,15 +147,23 @@ class Manager implements
     /**
      * Get the authentication handler.
      *
-     * @param string $name Auth module to load (null for currently active one)
+     * @param ?string $name Auth module to load (null for currently active one)
      *
-     * @return AbstractBase
+     * @return AuthInterface
      */
-    protected function getAuth($name = null)
+    protected function getAuth(?string $name = null): AuthInterface
     {
         $name = empty($name) ? $this->activeAuth : $name;
         if (!isset($this->auth[$name])) {
             $this->auth[$name] = $this->makeAuth($name);
+            // check if authentication handler still has the legacy methods "logout" or "resetState" that
+            // need to be replaced by "getLogoutRedirectUrl" and "clearLoginState".
+            if (is_callable([$this->auth[$name], 'logout']) || is_callable([$this->auth[$name], 'resetState'])) {
+                throw new \Exception(
+                    'Deprecated methods "logout" and "resetState" need'
+                    . 'to be replaced by "getLogoutRedirectUrl" and "clearLoginState"'
+                );
+            }
         }
         return $this->auth[$name];
     }
@@ -164,9 +173,9 @@ class Manager implements
      *
      * @param string $method auth method to instantiate
      *
-     * @return AbstractBase
+     * @return AuthInterface
      */
-    protected function makeAuth($method)
+    protected function makeAuth(string $method): AuthInterface
     {
         $legalAuthList = array_map('strtolower', $this->legalAuthOptions);
         // If an illegal option was passed in, don't allow the object to load:
@@ -181,12 +190,12 @@ class Manager implements
     /**
      * Does the current configuration support account creation?
      *
-     * @param string $authMethod optional; check this auth method rather than
+     * @param ?string $authMethod optional; check this auth method rather than
      *  the one in config file
      *
      * @return bool
      */
-    public function supportsCreation($authMethod = null)
+    public function supportsCreation(?string $authMethod = null): bool
     {
         return $this->getAuth($authMethod)->supportsCreation();
     }
@@ -194,12 +203,12 @@ class Manager implements
     /**
      * Does the current configuration support password recovery?
      *
-     * @param string $authMethod optional; check this auth method rather than the one in config file
-     * @param string $target     Login target (only for MultiILS)
+     * @param ?string $authMethod optional; check this auth method rather than the one in config file
+     * @param ?string $target     Login target (only for MultiILS)
      *
      * @return bool
      */
-    public function supportsRecovery($authMethod = null, $target = '')
+    public function supportsRecovery(?string $authMethod = null, ?string $target = null): bool
     {
         return ($this->config->Authentication->recover_password ?? false)
             && $this->getAuth($authMethod)->supportsPasswordRecovery($target);
@@ -230,12 +239,12 @@ class Manager implements
     /**
      * Is email changing currently allowed?
      *
-     * @param string $authMethod optional; check this auth method rather than
+     * @param ?string $authMethod optional; check this auth method rather than
      * the one in config file
      *
      * @return bool
      */
-    public function supportsEmailChange($authMethod = null)
+    public function supportsEmailChange(?string $authMethod = null): bool
     {
         return $this->config->Authentication->change_email ?? false;
     }
@@ -243,12 +252,12 @@ class Manager implements
     /**
      * Is new passwords currently allowed?
      *
-     * @param string $authMethod optional; check this auth method rather than
+     * @param ?string $authMethod optional; check this auth method rather than
      * the one in config file
      *
      * @return bool
      */
-    public function supportsPasswordChange($authMethod = null)
+    public function supportsPasswordChange(?string $authMethod = null): bool
     {
         return ($this->config->Authentication->change_password ?? false)
             && $this->getAuth($authMethod)->supportsPasswordChange();
@@ -257,12 +266,12 @@ class Manager implements
     /**
      * Is connecting library card allowed and supported?
      *
-     * @param string $authMethod optional; check this auth method rather than
+     * @param ?string $authMethod optional; check this auth method rather than
      * the one in config file
      *
      * @return bool
      */
-    public function supportsConnectingLibraryCard($authMethod = null)
+    public function supportsConnectingLibraryCard(?string $authMethod = null): bool
     {
         return ($this->config->Catalog->auth_based_library_cards ?? false)
             && $this->getAuth($authMethod)->supportsConnectingLibraryCard();
@@ -271,15 +280,15 @@ class Manager implements
     /**
      * Is persistent login supported by the authentication method?
      *
-     * @param string $method Authentication method (overrides currently selected method)
+     * @param ?string $authMethod Authentication method (overrides currently selected method)
      *
      * @return bool
      */
-    public function supportsPersistentLogin(?string $method = null): bool
+    public function supportsPersistentLogin(?string $authMethod = null): bool
     {
         if (!empty($this->config->Authentication->persistent_login)) {
             return in_array(
-                strtolower($method ?? $this->getSelectedAuthMethod()),
+                strtolower($authMethod ?? $this->getSelectedAuthMethod() ?? ''),
                 explode(',', strtolower($this->config->Authentication->persistent_login))
             );
         }
@@ -291,7 +300,7 @@ class Manager implements
      *
      * @return int
      */
-    public function getPersistentLoginLifetime()
+    public function getPersistentLoginLifetime(): int
     {
         return $this->config->Authentication->persistent_login_lifetime ?? 14;
     }
@@ -299,12 +308,12 @@ class Manager implements
     /**
      * Username policy for a new account (e.g. minLength, maxLength)
      *
-     * @param string $authMethod optional; check this auth method rather than
+     * @param ?string $authMethod optional; check this auth method rather than
      * the one in config file
      *
      * @return array
      */
-    public function getUsernamePolicy($authMethod = null)
+    public function getUsernamePolicy(?string $authMethod = null): array
     {
         return $this->processPolicyConfig(
             $this->getAuth($authMethod)->getUsernamePolicy()
@@ -314,13 +323,12 @@ class Manager implements
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
-     * @param string  $authMethod optional; check this auth method rather than
-     * the one in config file
+     * @param ?string $authMethod optional; check this auth method rather than the one in config file
      * @param ?string $target     Authentication target for methods that support target selection
      *
      * @return array
      */
-    public function getPasswordPolicy($authMethod = null, ?string $target = null)
+    public function getPasswordPolicy(?string $authMethod = null, ?string $target = null): array
     {
         return $this->processPolicyConfig(
             $this->getAuth($authMethod)->getPasswordPolicy($target)
@@ -336,7 +344,7 @@ class Manager implements
      *
      * @return bool|string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): bool|string
     {
         try {
             return $this->getAuth()->getSessionInitiator($target);
@@ -351,7 +359,7 @@ class Manager implements
             if (!$this->getIdentity()) {
                 throw $e;
             }
-            $this->logout('');
+            $this->clearLoginState();
             return $this->getAuth()->getSessionInitiator($target);
         }
     }
@@ -364,7 +372,7 @@ class Manager implements
      *
      * @return string
      */
-    public function getAuthClassForTemplateRendering()
+    public function getAuthClassForTemplateRendering(): string
     {
         $auth = $this->getAuth();
         if (is_callable([$auth, 'getSelectedAuthOption'])) {
@@ -377,13 +385,13 @@ class Manager implements
     }
 
     /**
-     * Return an array of all of the authentication options supported by the
+     * Return an array of all the authentication options supported by the
      * current auth class. In most cases (except for ChoiceAuth), this will
      * just contain a single value.
      *
      * @return array
      */
-    public function getSelectableAuthOptions()
+    public function getSelectableAuthOptions(): array
     {
         $auth = $this->getAuth();
         if (is_callable([$auth, 'getSelectableAuthOptions'])) {
@@ -401,7 +409,7 @@ class Manager implements
      *
      * @return array
      */
-    public function getLoginTargets()
+    public function getLoginTargets(): array
     {
         $auth = $this->getAuth();
         return is_callable([$auth, 'getLoginTargets'])
@@ -413,9 +421,9 @@ class Manager implements
      * one target? (e.g. MultiILS)
      * If so return the default target.
      *
-     * @return string
+     * @return ?string
      */
-    public function getDefaultLoginTarget()
+    public function getDefaultLoginTarget(): ?string
     {
         $auth = $this->getAuth();
         return is_callable([$auth, 'getDefaultLoginTarget'])
@@ -427,7 +435,7 @@ class Manager implements
      *
      * @return string
      */
-    public function getAuthMethod()
+    public function getAuthMethod(): string
     {
         return $this->activeAuth;
     }
@@ -436,14 +444,18 @@ class Manager implements
      * Get the name of the currently selected authentication method (if applicable)
      * or the active authentication method.
      *
-     * @return string
+     * @return ?string
      */
-    public function getSelectedAuthMethod()
+    public function getSelectedAuthMethod(): ?string
     {
         $auth = $this->getAuth();
-        return is_callable([$auth, 'getSelectedAuthOption'])
+        $selectedAuthMethod = is_callable([$auth, 'getSelectedAuthOption'])
             ? $auth->getSelectedAuthOption()
             : $this->getAuthMethod();
+        if (!$selectedAuthMethod) {
+            return null;
+        }
+        return (string)$selectedAuthMethod;
     }
 
     /**
@@ -451,7 +463,7 @@ class Manager implements
      *
      * @return bool
      */
-    public function loginEnabled()
+    public function loginEnabled(): bool
     {
         if (null === $this->hideLogin) {
             // Assume login is enabled unless explicitly turned off:
@@ -480,7 +492,7 @@ class Manager implements
      *
      * @return bool
      */
-    public function ajaxEnabled()
+    public function ajaxEnabled(): bool
     {
         // Assume ajax is enabled unless explicitly turned off:
         return $this->config->Authentication->enableAjax ?? true;
@@ -491,14 +503,14 @@ class Manager implements
      *
      * @return bool
      */
-    public function dropdownEnabled()
+    public function dropdownEnabled(): bool
     {
         // Assume dropdown is disabled unless explicitly turned on:
         return $this->config->Authentication->enableDropdown ?? false;
     }
 
     /**
-     * Log out the current user.
+     * Legacy method that logs out the current user.
      *
      * @param string $url     URL to redirect user to after logging out.
      * @param bool   $destroy Should we destroy the session (true) or just reset it
@@ -506,15 +518,28 @@ class Manager implements
      *
      * @return string     Redirect URL (usually same as $url, but modified in
      * some authentication modules).
+     *
+     * @deprecated Use clearLoginState() and getLogoutRedirectUrl() instead.
      */
-    public function logout($url, $destroy = true)
+    public function logout(string $url, bool $destroy = true): string
     {
-        // Perform authentication-specific cleanup and modify redirect URL if
-        // necessary.
-        $url = $this->getAuth()->logout($url);
+        $url = $this->getLogoutRedirectUrl($url);
+        $this->clearLoginState($destroy);
+        return $url;
+    }
 
+    /**
+     * Clear the logged in state of the current user.
+     *
+     * @param bool $destroy Should we destroy the session (true) or just reset it
+     * (false); destroy is for log out, reset is for expiration.
+     *
+     * @return void
+     */
+    public function clearLoginState(bool $destroy = true): void
+    {
         // Reset authentication state
-        $this->getAuth()->resetState();
+        $this->getAuth()->clearLoginState();
 
         // Clear out the cached user object and session entry.
         $this->currentUser = null;
@@ -531,8 +556,18 @@ class Manager implements
             // apparently isn't (TODO -- do this better):
             $_SESSION = [];
         }
+    }
 
-        return $url;
+    /**
+     * Get URL users should be redirected to for logout in external services if necessary.
+     *
+     * @param string $url Internal URL to redirect user to after logging out.
+     *
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
+     */
+    public function getLogoutRedirectUrl(string $url): string
+    {
+        return $this->getAuth()->getLogoutRedirectUrl($url);
     }
 
     /**
@@ -540,21 +575,9 @@ class Manager implements
      *
      * @return bool
      */
-    public function userHasLoggedOut()
+    public function userHasLoggedOut(): bool
     {
         return (bool)$this->cookieManager->get('loggedOut');
-    }
-
-    /**
-     * Checks whether the user is logged in.
-     *
-     * @return UserEntityInterface|false Object if user is logged in, false otherwise.
-     *
-     * @deprecated Use getIdentity() or getUserObject() instead.
-     */
-    public function isLoggedIn()
-    {
-        return $this->getUserObject() ?? false;
     }
 
     /**
@@ -571,7 +594,7 @@ class Manager implements
                 $this->currentUser = $this->userSession->getUserFromSession();
                 // End the session if the logged-in user cannot be found:
                 if (null === $this->currentUser) {
-                    $this->logout('');
+                    $this->clearLoginState();
                 }
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                 if ($this->getAuth() instanceof ChoiceAuth) {
@@ -602,7 +625,7 @@ class Manager implements
      *
      * @return string
      */
-    public function getCsrfHash($regenerate = false, $maxTokens = 5)
+    public function getCsrfHash(bool $regenerate = false, int $maxTokens = 5): string
     {
         // Reset token store if we've overflowed the limit:
         $this->csrf->trimTokenList($maxTokens);
@@ -614,7 +637,7 @@ class Manager implements
      *
      * @return ?IdentityInterface
      */
-    public function getIdentity()
+    public function getIdentity(): ?IdentityInterface
     {
         return $this->getUserObject();
     }
@@ -624,10 +647,10 @@ class Manager implements
      *
      * @return bool True if session has expired.
      */
-    public function checkForExpiredCredentials()
+    public function checkForExpiredCredentials(): bool
     {
         if ($this->getIdentity() && $this->getAuth()->isExpired()) {
-            $this->logout(null, false);
+            $this->clearLoginState(false);
             return true;
         }
         return false;
@@ -638,7 +661,7 @@ class Manager implements
      *
      * @return bool
      */
-    public function inPrivacyMode()
+    public function inPrivacyMode(): bool
     {
         return $this->config->Authentication->privacy ?? false;
     }
@@ -650,7 +673,7 @@ class Manager implements
      *
      * @return void
      */
-    public function updateSession($user)
+    public function updateSession(UserEntityInterface $user): void
     {
         $this->currentUser = $user;
         if ($this->inPrivacyMode()) {
@@ -664,13 +687,12 @@ class Manager implements
     /**
      * Create a new user account from the request.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
      * @return UserEntityInterface New user entity.
      */
-    public function create($request)
+    public function create(Request $request): UserEntityInterface
     {
         $user = $this->getAuth()->create($request);
         $this->updateUser($user, $this->getSelectedAuthMethod());
@@ -681,13 +703,12 @@ class Manager implements
     /**
      * Update a user's password from the request.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * password change details.
+     * @param Request $request Request object containing password change details.
      *
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword($request)
+    public function updatePassword(Request $request): UserEntityInterface
     {
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
@@ -719,7 +740,7 @@ class Manager implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function updateEmail(UserEntityInterface $user, $email)
+    public function updateEmail(UserEntityInterface $user, string $email): void
     {
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
@@ -755,15 +776,14 @@ class Manager implements
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @throws \VuFind\Exception\PasswordSecurity
      * @throws \VuFind\Exception\AuthInProgress
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function login($request)
+    public function login(Request $request): UserEntityInterface
     {
         // Wrap everything in try-catch so that we can reset the state on failure:
         try {
@@ -786,7 +806,7 @@ class Manager implements
                 && $this->getAuth()->needsCsrfCheck($request)
             ) {
                 if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
-                    $this->getAuth()->resetState();
+                    $this->getAuth()->clearLoginState();
                     $this->logWarning('Invalid CSRF token passed to login');
                     throw new AuthException('authentication_error_technical');
                 } else {
@@ -857,7 +877,7 @@ class Manager implements
             // Send user back to caller:
             return $user;
         } catch (\Exception $e) {
-            $this->getAuth()->resetState();
+            $this->getAuth()->clearLoginState();
             throw $e;
         }
     }
@@ -869,7 +889,7 @@ class Manager implements
      *
      * @return void
      */
-    public function deleteToken(string $series)
+    public function deleteToken(string $series): void
     {
         $this->loginTokenManager->deleteTokenSeries($series);
     }
@@ -881,7 +901,7 @@ class Manager implements
      *
      * @return void
      */
-    public function deleteUserLoginTokens(int $userId)
+    public function deleteUserLoginTokens(int $userId): void
     {
         $this->loginTokenManager->deleteUserLoginTokens($userId);
     }
@@ -894,7 +914,7 @@ class Manager implements
      *
      * @return void
      */
-    public function setAuthMethod($method, $forceLegal = false)
+    public function setAuthMethod(string $method, bool $forceLegal = false): void
     {
         // Change the setting:
         $this->activeAuth = $method;
@@ -928,13 +948,12 @@ class Manager implements
      * of the current logged-in user. Return true for valid credentials, false
      * otherwise.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return bool
      */
-    public function validateCredentials($request)
+    public function validateCredentials(Request $request): bool
     {
         return $this->getAuth()->validateCredentials($request);
     }
@@ -944,29 +963,28 @@ class Manager implements
      *
      * @param string $target Login target (MultiILS only)
      *
-     * @return array|false
+     * @return ?string
      */
-    public function getILSLoginMethod($target = '')
+    public function getILSLoginMethod(string $target = ''): ?string
     {
         $auth = $this->getAuth();
         if (is_callable([$auth, 'getILSLoginMethod'])) {
             return $auth->getILSLoginMethod($target);
         }
-        return false;
+        return null;
     }
 
     /**
      * Connect authenticated user as library card to his account.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object
-     * containing account credentials.
-     * @param UserEntityInterface                  $user    Connect newly created
+     * @param Request             $request Request object containing account credentials.
+     * @param UserEntityInterface $user    Connect newly created
      * library card to this user.
      *
      * @return void
      * @throws \Exception
      */
-    public function connectLibraryCard($request, $user)
+    public function connectLibraryCard(Request $request, UserEntityInterface $user): void
     {
         $auth = $this->getAuth();
         if (!$auth->supportsConnectingLibraryCard()) {
@@ -983,7 +1001,7 @@ class Manager implements
      *
      * @return void
      */
-    protected function updateUser($user, $authMethod)
+    protected function updateUser(UserEntityInterface $user, ?string $authMethod): void
     {
         if ($authMethod) {
             $user->setAuthMethod(strtolower($authMethod));

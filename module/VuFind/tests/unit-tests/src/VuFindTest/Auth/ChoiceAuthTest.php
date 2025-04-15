@@ -153,21 +153,21 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test logout
+     * Test getLogoutRedirectUrl
      *
      * @return void
      */
-    public function testLogout(): void
+    public function testGetLogoutRedirectUrl(): void
     {
         $session = $this->getSessionContainer('Shibboleth');
         $pm = $this->getMockPluginManager();
         $shib = $pm->get('Shibboleth');
         $shib->expects($this->once())
-            ->method('logout')
+            ->method('getLogoutRedirectUrl')
             ->with($this->equalTo('http://foo'))
             ->willReturn('http://bar');
         $ca = $this->getChoiceAuth($pm, $session);
-        $this->assertEquals('http://bar', $ca->logout('http://foo'));
+        $this->assertEquals('http://bar', $ca->getLogoutRedirectUrl('http://foo'));
     }
 
     /**
