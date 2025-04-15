@@ -2743,6 +2743,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     public function getPasswordRecoveryData($params)
     {
+        if (empty($params['cat_username']) || empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
         $this->checkIntermittentFailure();
         if ($this->isFailing(__METHOD__, 33)) {
             return ['success' => false, 'error' => 'Demonstrating failure; keep trying and it will work eventually.'];
@@ -2779,13 +2785,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     public function resetPassword(array $details, array $params)
     {
-        $this->checkIntermittentFailure();
-        if (empty($details['cat_username']) || empty($details['email'])) {
+        if (empty($details['cat_username']) || empty($details['email']) || empty($params['password'])) {
             return [
                 'success' => false,
                 'error' => 'error_inconsistent_parameters',
             ];
         }
+        $this->checkIntermittentFailure();
         if (!$this->isFailing(__METHOD__, 33)) {
             return ['success' => true];
         }

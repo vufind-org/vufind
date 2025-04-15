@@ -1748,6 +1748,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getPasswordRecoveryData($params)
     {
+        if (empty($params['cat_username']) || empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
         $result = $this->makeRequest(
             [
                 'path' => 'v1/patrons',
@@ -1800,6 +1806,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function resetPassword(array $details, array $params)
     {
+        if (empty($details['id']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
         $request = [
             'password' => $params['password'],
             'password_2' => $params['password'],

@@ -1649,6 +1649,12 @@ class SierraRest extends AbstractBase implements
      */
     public function getPasswordRecoveryData($params)
     {
+        if (empty($params['cat_username']) || empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
         $request = [
             'queries' => [
                 [
@@ -1753,6 +1759,12 @@ class SierraRest extends AbstractBase implements
      */
     public function resetPassword(array $details, array $params)
     {
+        if (empty($details['id']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
         $request = [
             'pin' => $params['password'],
         ];
