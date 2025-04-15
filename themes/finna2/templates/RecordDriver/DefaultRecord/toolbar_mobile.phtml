@@ -24,14 +24,14 @@
 ?>
 <div class="visible-xs">
   <div class="mobile-toolbar">
-    <ul class="nav nav-pills mobile-actions hidden-print">
+    <ul class="nav nav-pills mobile-actions hidden-print" aria-label="<?=$this->transEsc('ajaxview_label_tools'); ?>">
           <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><a class="save-record-mobile" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><?=$this->icon('favorite') ?> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
+          <li><a class="save-record-mobile" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><?=$this->icon('favorite') ?> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
           <?php endif; ?>
 
           <li class="dropdown dropup nav-pills mobile-sharing">
-            <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" rel="nofollow" aria-expanded="false"><?=$this->icon('share') ?><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
-            <ul class="dropdown-menu" role="menu">
+            <a class="dropdown-toggle" role="button" aria-label="<?=$this->transEsc('Share') ?>" data-bs-toggle="dropdown" href="#" rel="nofollow" aria-expanded="false"><?=$this->icon('share') ?><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
+            <ul class="dropdown-menu">
               <?php if (!empty($shareUrl)): ?>
                 <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
                 <?php // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
@@ -53,15 +53,15 @@
           <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
 
           <?php if(count($exportFormats) > 0): ?>
-            <li role="none" class="dropdown dropup">
-              <a class="export-toggle toolbar-btn dropdown-toggle" data-bs-toggle="dropdown" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options-mobile">
+            <li class="dropdown dropup">
+              <a class="export-toggle toolbar-btn dropdown-toggle" role="button" data-bs-toggle="dropdown" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options-mobile">
                 <?=$this->icon('export') ?>
                 <span class="sr-only"><?=$this->transEsc('Export Record') ?></span>
               </a>
-              <ul class="dropdown-menu" id="export-options-mobile" role="menu">
+              <ul class="dropdown-menu" id="export-options-mobile">
                 <?php foreach ($exportFormats as $exportFormat): ?>
-                  <li role="none">
-                    <a class="dropdown-item" <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem">
+                  <li>
+                    <a class="dropdown-item" role="button" <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem">
                       <?=$this->transEsc('export_to', ['%%target%%' => $this->translate($this->export()->getLabelForFormat($exportFormat))])?>
                     </a>
                   </li>
@@ -71,16 +71,16 @@
           <?php endif; ?>
 
           <?php if (count($this->driver->getCitationFormats()) > 0): ?>
-          <li><a class="cite-record-mobile" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite')) ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><?=$this->icon('cite') ?> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
+          <li><a class="cite-record-mobile" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite')) ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><?=$this->icon('cite') ?> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
           <?php endif; ?>
           <?php if ($cart->isActive()): ?>
             <?php $cartId = $this->driver->getSourceIdentifier() . '|' . $this->driver->getUniqueId(); ?>
             <li class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" data-cart-source="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-              <a class="cart-add-mobile cart-add<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>" title="<?=$this->transEsc('Add to Book Bag')?>" rel="nofollow" href="#">
+              <a class="cart-add-mobile cart-add<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Add to Book Bag')?>" rel="nofollow" href="#">
                 <?=$this->icon('cart') ?>
                 <span class="sr-only"><?=$this->transEsc('Add to Book Bag')?></span>
               </a>
-              <a class="cart-remove-mobile cart-remove<?php if($cart->contains($cartId)): ?> correct<?php endif ?>" title="<?=$this->transEsc('Remove from Book Bag')?>" rel="nofollow" href="#">
+              <a class="cart-remove-mobile cart-remove<?php if($cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Remove from Book Bag')?>" rel="nofollow" href="#">
                 <?=$this->icon('cart') ?>
                 <?=$this->icon('cart-remove', 'cart-remove-mobile-icon') ?>
                 <span class="sr-only"><?=$this->transEsc('Remove from Book Bag')?></span>
@@ -89,7 +89,7 @@
             </li>
           <?php endif; ?>
     </ul>
-    <ul class="nav nav-pills library-link hidden-print">
+    <ul class="nav nav-pills library-link hidden-print" role="presentation">
       <li class="hidden">
         <a href="#">
           <?= $this->transEsc('Holdings'); ?>
