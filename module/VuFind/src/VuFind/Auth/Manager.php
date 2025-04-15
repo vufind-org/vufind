@@ -37,7 +37,6 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Http\PhpEnvironment\Request;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
