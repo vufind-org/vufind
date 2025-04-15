@@ -52,16 +52,4 @@ class L1Controller extends SearchController
         $this->searchClassId = 'L1';
         parent::__construct($sm);
     }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('L1');
-        return $config->Record->next_prev_navigation ?? false;
-    }
 }
