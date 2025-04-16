@@ -2,16 +2,14 @@
   $this->assetManager()->appendScriptLink('vendor/nouislider.min.js');
   $this->assetManager()->appendStyleLink('vendor/nouislider.min.css');
   $this->assetManager()->appendScriptLink('date_range_slider.js');
-  $past = 1400;
-  $future = (int)date('Y', time() + 31536000); // next year
-  $low = !empty($this->values[0]) ? (int)$this->values[0] : $past;
-  $high = !empty($this->values[1]) ? (int)$this->values[1] : $future;
-  $min = min($low, $past);
-  $max = max($high, $future);
+  $rangeMin ??= 1400;
+  $rangeMax ??= (int)date('Y') + 1;
+  $low = ('' !== $this->values[0] ?? '') ? (int)$this->values[0] : $rangeMin;
+  $high = ('' !== $this->values[1] ?? '') ? (int)$this->values[1] : $rangeMax;
   $sliderOptions = [
     'range' => [
-      'min' => $min,
-      'max' => $max,
+      'min' => min($low, $rangeMin),
+      'max' => max($high, $rangeMax),
     ],
     'start' => [$low, $high],
   ];
