@@ -20,11 +20,14 @@
         </div>
       </div>
       <?php if ($isDateRange): ?>
+        <?php $options = $params->getOptions(); ?>
         <?=$this->component('date-range-slider', [
           'values' => $current['values'] ?? [],
           'sliderId' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
           'inputMinId' => $escField . 'from',
           'inputMaxId' => $escField . 'to',
+          'rangeMin' => $options->getDateRangeSliderMin(),
+          'rangeMax' => $options->getDateRangeSliderMax(),
         ])?>
       <?php endif; ?>
     </fieldset>

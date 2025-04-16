@@ -408,6 +408,20 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $showRestrictedViewWarning;
 
     /**
+     * Minimum value for date range sliders
+     *
+     * @var ?int
+     */
+    protected ?int $dateRangeSliderMin;
+
+    /**
+     * Maximum value for date range sliders
+     *
+     * @var ?int
+     */
+    protected ?int $dateRangeSliderMax;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -453,6 +467,10 @@ abstract class Options implements TranslatorAwareInterface
         $this->displayCitationLinksInResults
             = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
         $this->showRestrictedViewWarning = (bool)($searchSettings->General->show_restricted_view_warning ?? false);
+        $this->dateRangeSliderMin
+            = $this->parseDateRangeSliderSetting($searchSettings->General->date_range_slider_min ?? '');
+        $this->dateRangeSliderMax
+            = $this->parseDateRangeSliderSetting($searchSettings->General->date_range_slider_max ?? '');
     }
 
     /**
@@ -1424,6 +1442,26 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get minimum value for date range sliders.
+     *
+     * @return ?int
+     */
+    public function getDateRangeSliderMin(): ?int
+    {
+        return $this->dateRangeSliderMin;
+    }
+
+    /**
+     * Get maximum value for date range sliders.
+     *
+     * @return ?int
+     */
+    public function getDateRangeSliderMax(): ?int
+    {
+        return $this->dateRangeSliderMax;
+    }
+
+    /**
      * Configure autocomplete preferences from an .ini file.
      *
      * @param ?Config $searchSettings Object representation of .ini file
@@ -1462,5 +1500,27 @@ abstract class Options implements TranslatorAwareInterface
                 'pattern' => $pattern,
             ];
         }
+    }
+
+    /**
+     * Parse a date range slider value setting.
+     *
+     * @param string $setting Setting to parse
+     *
+     * @return ?int
+     */
+    protected function parseDateRangeSliderSetting(string $setting): ?int
+    {
+        if ('' === $setting) {
+            return null;
+        }
+
+        if (preg_match('/^-?\d+$/', $setting)) {
+            return (int)$setting;
+        }
+        if (false !== ($time = strtotime($setting))) {
+            return date('Y', $time);
+        }
+        return null;
     }
 }
