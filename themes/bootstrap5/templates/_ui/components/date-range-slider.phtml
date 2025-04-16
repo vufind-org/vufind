@@ -4,8 +4,8 @@
   $this->assetManager()->appendScriptLink('date_range_slider.js');
   $rangeMin ??= 1400;
   $rangeMax ??= (int)date('Y') + 1;
-  $low = ('' !== $this->values[0] ?? '') ? (int)$this->values[0] : $rangeMin;
-  $high = ('' !== $this->values[1] ?? '') ? (int)$this->values[1] : $rangeMax;
+  $low = ('' !== ($this->values[0] ?? '')) ? (int)$this->values[0] : $rangeMin;
+  $high = ('' !== ($this->values[1] ?? '')) ? (int)$this->values[1] : $rangeMax;
   $sliderOptions = [
     'range' => [
       'min' => min($low, $rangeMin),
