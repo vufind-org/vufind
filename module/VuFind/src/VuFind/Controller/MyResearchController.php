@@ -2322,6 +2322,24 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Get User Reviews (comments, ratings, tags)
+     *
+     * @return mixed
+     */
+    public function userReviewsAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+        $tabs = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserReviewTabs();
+        if (empty($tabs)) {
+            throw new ForbiddenException('User reviews disabled.');
+        }
+        return $this->redirect()->toRoute($tabs[0] . '-user' . $tabs[0]);
+    }
+
+    /**
      * Get the ILS pagination helper
      *
      * @return PaginationHelper

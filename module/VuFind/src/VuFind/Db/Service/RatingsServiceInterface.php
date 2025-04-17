@@ -111,4 +111,21 @@ interface RatingsServiceInterface extends DbServiceInterface
         UserEntityInterface|int $userOrId,
         ?int $rating
     ): int;
+
+    /**
+     * Get a paginated result of all ratings by user id
+     *
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return \Laminas\Paginator\Paginator
+     */
+    public function getRatingsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort,
+    ): \Laminas\Paginator\Paginator;
 }

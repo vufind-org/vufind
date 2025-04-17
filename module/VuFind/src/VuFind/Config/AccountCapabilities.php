@@ -102,13 +102,33 @@ class AccountCapabilities
     }
 
     /**
-     * Get page size for comments and ratings in user account
+     * Get page size for comments, ratings and tags in user account
      *
      * @return int
      */
-    public function getUserCommentsPageSize(): int
+    public function getUserReviewsPageSize(): int
     {
-        return $this->config->Social->user_comments_page_size ?? 50;
+        return $this->config->Social->user_reviews_page_size ?? 50;
+    }
+
+    /**
+     * Get enabled tabs for user reviews
+     *
+     * @return array
+     */
+    public function getUserReviewTabs(): array
+    {
+        $tabs = [];
+        if ('enabled' === $this->getCommentSetting()) {
+            $tabs[] = 'comments';
+        }
+        if ('enabled' === $this->getRatingSetting()) {
+            $tabs[] = 'ratings';
+        }
+        if ('enabled' === $this->getTagSetting()) {
+            $tabs[] = 'tag';
+        }
+        return $tabs;
     }
 
     /**

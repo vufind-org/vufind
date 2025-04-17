@@ -1,28 +1,28 @@
 <?php
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
-    ->add($this->translate('Comments'), active: true);
+    ->add($this->translate('Tags'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
   $tabs = $this->accountCapabilities()->getUserReviewTabs();
 ?>
-<?php $this->headTitle($this->translate('Comments'));?>
+<?php $this->headTitle($this->translate('Tags'));?>
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-tabs" role="tablist">
     <?php foreach ($tabs as $tab): ?>
-      <li class="nav-item" role="presentation" id="user-review-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='comments' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'user' . $tab)?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
+      <li class="nav-item" role="presentation" id="user-review-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='tag' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'user' . $tab)?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
     <?php endforeach; ?>
   </ul>
   <div class="userreviews-header">
-    <h2><?=$this->transEsc('Your Comments')?></h2>
+  <h2><?=$this->transEsc('Your Tags')?></h2>
     <?php if ($this->sortList): ?>
       <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
     <?php endif; ?>
   </div>
-  <?php if (count($this->comments) !== 0): ?>
-    <form action="<?=$this->url('comments-deletecomments')?>" name="updateForm" id="select_all_comments" method="post">
+  <?php if (count($this->tags) !== 0): ?>
+    <form action="<?=$this->url('tag-deletetags')?>" name="updateForm" id="select_all_tags" method="post">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
       <label>
         <div class="checkbox">
@@ -37,7 +37,7 @@
                 'buttonId' => 'cancelSelected',
                 'buttonName' => 'cancelSelected',
                 'buttonLabel' => 'delete_selected',
-                'header' => 'confirm_usercomment_delete_selected_text',
+                'header' => 'confirm_usertag_delete_selected_text',
                 'confirmId' => 'confirm_cancel_selected_yes',
                 'cancelClass' => 'confirm_cancel_no',
                 'ignoreLightbox' => true,
@@ -50,29 +50,28 @@
             <th></th>
             <th><?=$this->transEsc('Created')?></th>
             <th><?=$this->transEsc('Title')?></th>
-            <th><?=$this->transEsc('Comment')?></th>
+            <th><?=$this->transEsc('Tag')?></th>
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($this->comments as $comment):?>
+          <?php foreach ($this->tags as $tag):?>
             <tr>
               <td class="checkbox-col">
                 <div class="checkbox-container result">
                   <div class="checkbox">
                     <label>
-                      <span class="sr-only"><?=$this->transEsc('Select');?></span>
-                      <input class="checkbox-select-item" type="checkbox" name="deleteSelectedcomment[]" value="<?=$this->escapeHtmlAttr(($comment['id'] ?? ''))?>" id="checkbox_comment_<?=$comment['id']?>">
+                    <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                    <input class="checkbox-select-item" type="checkbox" name="deleteSelectedtag[]" value="<?=$this->escapeHtmlAttr(($tag['id'] ?? ''))?>" id="checkbox_tag_<?=$tag['id']?>">
                     </label>
                   </div>
                 </div>
               </td>
-              <td><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $comment['created'])?></td>
+              <td><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $tag['posted'])?></td>
               <td>
-                <a href="<?=$this->url('record', ['id' => $comment['record_id']])?>"><?=$comment['recordTitle']?></a>
+                <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$tag['recordTitle']?></a>
               </td>
-              <td class="user-comment">
-                <?php $truncateSettings = ['rows' => 1]?>
-                <div class="user-comment-truncate" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"><?=$this->escapeHtml($comment['comment'] ?? '')?></div>
+              <td class="user-tag">
+                <div><?=$this->escapeHtml($tag['tag'])?></div>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -80,15 +79,9 @@
       </table>
     </form>
   <?php endif;?>
-  <?=$this->paginationControl($this->comments, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
+  <?=$this->paginationControl($this->tags, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->accountMenu()->render('userreviews')?>
 </div>
-<?php
-  $script = <<<JS
-      VuFind.truncate.initTruncate('.user-comment-truncate');
-      JS;
-?>
-<?=$this->assetManager()->outputInlineScriptString($script);?>

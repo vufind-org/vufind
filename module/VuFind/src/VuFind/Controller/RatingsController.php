@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Comments Controller
+ * Ratings Controller
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Validator\CsrfInterface;
 
 /**
- * Comments controller.
+ * Ratings controller.
  *
  * @category VuFind
  * @package  Controller
@@ -41,33 +41,32 @@ use VuFind\Validator\CsrfInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CommentsController extends AbstractBase
+class RatingsController extends AbstractBase
 {
     /**
-     * Get all comments for the logged in user
+     * Get all ratings for the logged in user
      *
      * @return View
      */
-    public function userCommentsAction()
+    public function userRatingsAction()
     {
         $user = $this->getUser();
         if (!$user) {
             return $this->forceLogin();
         }
-        if (!$this->commentsEnabled()) {
-            throw new ForbiddenException('Comments disabled.');
+        if (!$this->ratingsEnabled()) {
+            throw new ForbiddenException('Ratings disabled.');
         }
         $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserReviewsPageSize();
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'created desc');
-        $service = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
-        $comments = $service->getCommentsPaginator(
+        $service = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
+        $ratings = $service->getRatingsPaginator(
             $user->getId(),
             $limit,
             $page,
             $sort,
         );
-
         $sortList = [
             'created desc'  => [
                 'desc' => 'sort_created_desc',
@@ -87,28 +86,28 @@ class CommentsController extends AbstractBase
         ];
         $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         $ids = [];
-        foreach ($comments as $comment) {
-            $ids[] = $comment['source'] . '|' . $comment['record_id'];
+        foreach ($ratings as $rating) {
+            $ids[] = $rating['source'] . '|' . $rating['record_id'];
         }
         $records = $recordLoader->loadBatch($ids, true);
-        foreach ($comments as $i => $c) {
+        foreach ($ratings as $i => $c) {
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
         }
-        return $this->createViewModel(['comments' => $comments, 'sortList' => $sortList, 'params' => $this->params()->fromQuery()]);
+        return $this->createViewModel(['ratings' => $ratings, 'sortList' => $sortList, 'params' => $this->params()->fromQuery()]);
     }
 
     /**
-     * Delete given comments by the logged in user
+     * Delete given ratings by the logged in user
      *
      * @return View
      */
-    public function deleteCommentsAction()
+    public function deleteRatingsAction()
     {
         $user = $this->getUser();
         if (!$user) {
             return $this->forceLogin();
         }
-        if ($this->formWasSubmitted(['deleteSelectedcomment'])) {
+        if ($this->formWasSubmitted(['deleteSelectedrating'])) {
             $csrf = $this->getService(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
@@ -116,12 +115,14 @@ class CommentsController extends AbstractBase
                 );
             }
         }
-
-        if (!empty($comments = $this->params()->fromPost('deleteSelectedcomment', []))) {
-            $commentsService = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
-            $commentsService->deleteByIdsAndUserId($comments, $user->getId());
+        if (
+            !empty($ratings = $this->params()->fromPost('deleteSelectedrating', []))
+            && $this->getService(\VuFind\Config\AccountCapabilities::class)->isRatingRemovalAllowed()
+        ) {
+            $ratingsService = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
+            $ratingsService->deleteByIdsAndUserId($ratings, $user->getId());
         }
 
-        return $this->redirect()->toRoute('comments-usercomments');
+        return $this->redirect()->toRoute('ratings-userratings');
     }
 }

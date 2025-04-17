@@ -122,24 +122,20 @@ interface CommentsServiceInterface extends DbServiceInterface
     public function getCommentById(int $id): ?CommentsEntityInterface;
 
     /**
-     * Get a paginated result of all comments and ratings by user id
+     * Get a paginated result of all comments by user id
      *
-     * @param int    $userId   User Id
-     * @param int    $limit    Limit
-     * @param int    $page     Page
-     * @param string $sort     Sort
-     * @param bool   $comments Whether to fetch comments
-     * @param bool   $ratings  Whether to fetch ratings
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
      *
      * @return \Laminas\Paginator\Paginator
      */
-    public function getCommentsAndRatingsPaginator(
+    public function getCommentsPaginator(
         int $userId,
         int $limit,
         int $page,
         string $sort,
-        bool $comments,
-        bool $ratings
     ): \Laminas\Paginator\Paginator;
 
     /**

@@ -626,7 +626,12 @@ body.rtl .dropdown-menu {
     vertical-align: middle;
   }
 }
-.usercomments-table {
+.userreviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.userreviews-table {
   tbody > tr > td {
     vertical-align: middle;
     &.user-comment {

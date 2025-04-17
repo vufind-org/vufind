@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Tag Controller
@@ -65,5 +66,89 @@ class TagController extends AbstractSearch
             throw new ForbiddenException('Tags disabled');
         }
         return parent::resultsAction();
+    }
+
+    /**
+     * Get all tags for the logged in user
+     *
+     * @return View
+     */
+    public function userTagAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+        if (!$this->tagsEnabled()) {
+            throw new ForbiddenException('Tags disabled.');
+        }
+        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserReviewsPageSize();
+        $page = $this->params()->fromQuery('page', 1);
+        $sort = $this->params()->fromQuery('sort', 'posted desc');
+        $service = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
+        $tags = $service->getResourceTagsPaginator(
+            $user->getId(),
+            null,
+            null,
+            $sort,
+            $page,
+            $limit,
+        );
+        $sortList = [
+            'posted desc'  => [
+                'desc' => 'sort_created_desc',
+                'url' => '?sort=' . urlencode('posted desc'),
+                'selected' => $sort === 'posted desc',
+            ],
+            'posted asc'  => [
+                'desc' => 'sort_created_asc',
+                'url' => '?sort=' . urlencode('posted asc'),
+                'selected' => $sort === 'posted asc',
+            ],
+            'title'  => [
+                'desc' => 'sort_title',
+                'url' => '?sort=' . urlencode('title'),
+                'selected' => $sort === 'title',
+            ],
+        ];
+        $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $ids = [];
+        foreach ($tags as $tag) {
+            $ids[] = $tag['source'] . '|' . $tag['record_id'];
+        }
+        $records = $recordLoader->loadBatch($ids, true);
+        foreach ($tags as $i => $c) {
+            $c['recordTitle'] = $records[$i]->getTitle() ?? '';
+        }
+        $view = $this->createViewModel(['tags' => $tags, 'sortList' => $sortList, 'params' => $this->params()->fromQuery()]);
+        $view->setTemplate('tag/usertags.phtml');
+        return $view;
+    }
+
+    /**
+     * Delete given tags by the logged in user
+     *
+     * @return View
+     */
+    public function deleteTagsAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+        if ($this->formWasSubmitted(['deleteSelectedtag'])) {
+            $csrf = $this->getService(CsrfInterface::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+        }
+        if (!empty($tags = $this->params()->fromPost('deleteSelectedtag', []))) {
+            $tagService = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
+            $tagService->deleteLinksByResourceTagsIdArray($tags);
+        }
+
+        return $this->redirect()->toRoute('tag-usertag');
     }
 }

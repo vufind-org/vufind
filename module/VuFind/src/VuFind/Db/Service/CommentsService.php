@@ -167,32 +167,26 @@ class CommentsService extends AbstractDbService implements
     }
 
     /**
-     * Get a paginated result of all comments and ratings by user id
+     * Get a paginated result of all comments by user id
      *
      * @param int    $userId   User Id
      * @param int    $limit    Limit
      * @param int    $page     Page
      * @param string $sort     Sort
-     * @param bool   $comments Whether to fetch comments
-     * @param bool   $ratings  Whether to fetch ratings
      *
      * @return Paginator
      */
-    public function getCommentsAndRatingsPaginator(
+    public function getCommentsPaginator(
         int $userId,
         int $limit,
         int $page,
         string $sort,
-        bool $comments,
-        bool $ratings
     ): \Laminas\Paginator\Paginator {
-        return $this->getDbTable('Comments')->getCommentsAndRatingsPaginator(
+        return $this->getDbTable('Comments')->getCommentsPaginator(
             $userId,
             $limit,
             $page,
             $sort,
-            $comments,
-            $ratings
         );
     }
 

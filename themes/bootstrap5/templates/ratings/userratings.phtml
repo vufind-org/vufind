@@ -1,0 +1,94 @@
+<?php
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Ratings'), active: true);
+
+  $this->assetManager()->appendScriptLink('requests.js');
+  $tabs = $this->accountCapabilities()->getUserReviewTabs();
+?>
+
+<?php $this->headTitle($this->translate('Ratings'));?>
+<?=$this->component('show-account-menu-button')?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <ul class="nav nav-tabs" role="tablist">
+    <?php foreach ($tabs as $tab): ?>
+      <li class="nav-item" role="presentation" id="user-review-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='ratings' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'user' . $tab)?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
+    <?php endforeach; ?>
+  </ul>
+  <div class="userreviews-header">
+    <h2><?=$this->transEsc('Your Ratings')?></h2>
+    <?php if ($this->sortList): ?>
+      <div class="user-reviews-sort">
+        <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+      </div>
+    <?php endif; ?>
+  </div>
+  <div><?=$this->transEsc('user_rating_info_text')?></div>
+  <?php if (count($this->ratings) !== 0): ?>  
+    <form action="<?=$this->url('ratings-deleteratings')?>" name="updateForm" id="select_all_ratings" method="post">
+      <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+        <label>
+          <div class="checkbox">
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
+            <?=$this->transEsc('select_all_on_page')?>
+          </div>
+        </label>
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelSelected',
+                  'buttonName' => 'cancelSelected',
+                  'buttonLabel' => 'delete_selected',
+                  'header' => 'confirm_userrating_delete_selected_text',
+                  'confirmId' => 'confirm_cancel_selected_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+                  'ignoreLightbox' => true,
+              ]
+          )
+        ?>
+      <?php endif; ?>
+      <table class="userreviews-table table-striped table table-responsive">
+        <thead>
+          <tr>
+            <th></th>
+            <th><?=$this->transEsc('Created')?></th>
+            <th><?=$this->transEsc('Title')?></th>
+            <th><?=$this->transEsc('Rating')?></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($this->ratings as $rating):?>
+            <tr>
+              <td class="checkbox-col">
+                <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()):?>
+                  <div class="checkbox-container result">
+                    <div class="checkbox">
+                      <label>
+                        <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                        <input class="checkbox-select-item" type="checkbox" name="deleteSelectedrating[]" value="<?=$this->escapeHtmlAttr(($rating['id'] ?? ''))?>" id="checkbox_rating_<?=$rating['id']?>">
+                      </label>
+                    </div>
+                  </div>
+                <?php endif; ?>
+              </td>
+              <td><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $rating['created'])?></td>
+              <td>
+                <a href="<?=$this->url('record', ['id' => $rating['record_id']])?>"><?=$rating['recordTitle']?></a>
+              </td>
+              <td class="user-rating">
+                <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1]])?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </form>
+  <?php endif;?>
+  <?=$this->paginationControl($this->ratings, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render('userreviews')?>
+</div>

@@ -176,81 +176,48 @@ class Comments extends Gateway implements DbServiceAwareInterface
     }
 
     /**
-     * Get a paginated result of all comments and ratings
+     * Get a paginated result of all comments
      * made by the user
      *
-     * @param int    $userId   User ID
-     * @param int    $limit    Limit
-     * @param int    $page     Page
-     * @param string $sort     Sort
-     * @param bool   $comments Whether to fetch comments
-     * @param bool   $ratings  Whether to fetch ratings
+     * @param int    $userId User ID
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
      *
      * @return \Laminas\Paginator\Paginator
      */
-    public function getCommentsAndRatingsPaginator($userId, $limit, $page, $sort, $comments, $ratings)
-    {
-        if ($comments) {
-            $commentSelect = new Select();
-            $commentSelect->from('comments')
-                ->where->equalTo('comments.user_id', $userId);
-            $commentSelect->columns([
-                'resource_id',
-                'comment_id' => 'id',
-                'comment',
-                'user_id',
-                'created',
-                'rating_id' => null,
-                'rating' => null,
-            ])
-            ->join(
-                ['re' => 'resource'],
-                'comments.resource_id = re.id',
-                ['record_id', 'source'],
-                Select::JOIN_LEFT
-            );
-        }
-
-        if ($ratings) {
-            $ratingSelect = new Select();
-            $ratingSelect->from('ratings')
-                ->where->equalTo('ratings.user_id', $userId);
-            $ratingSelect->columns([
-                'resource_id',
-                'comment_id' => null,
-                'comment' => null,
-                'user_id',
-                'created',
-                'rating_id' => 'id',
-                'rating',
-            ])
-            ->join(
-                ['re' => 'resource'],
-                'ratings.resource_id = re.id',
-                ['record_id', 'source'],
-                Select::JOIN_LEFT
-            );
-        }
-
-        $paginatedSelect = new Select();
-        if ($comments && $ratings) {
-            $commentSelect->combine($ratingSelect, Select::COMBINE_UNION);
-            $paginatedSelect->from(['c' => $commentSelect]);
-        } elseif ($ratings) {
-            $paginatedSelect = $ratingSelect;
-        } elseif ($comments) {
-            $paginatedSelect = $commentSelect;
-        }
+    public function getCommentsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort
+    ): \Laminas\Paginator\Paginator {
+        $commentSelect = new Select();
+        $commentSelect->from('comments')
+            ->where->equalTo('comments.user_id', $userId);
+        $commentSelect->columns([
+            'resource_id',
+            'id',
+            'comment',
+            'user_id',
+            'created',
+        ])
+        ->join(
+            ['re' => 'resource'],
+            'comments.resource_id = re.id',
+            ['record_id', 'source'],
+            Select::JOIN_LEFT
+        );
         $order = $sort ? $sort : 'created DESC';
-        $paginatedSelect->order($order);
+        $commentSelect->order($order);
         if ($page > 0) {
-            $paginatedSelect->offset($page);
+            $commentSelect->offset($page);
         }
         if (null !== $limit) {
-            $paginatedSelect->limit($limit);
+            $commentSelect->limit($limit);
         }
 
-        $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($paginatedSelect, $this->getSql());
+        $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($commentSelect, $this->getSql());
         $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
         if (null !== $page) {
