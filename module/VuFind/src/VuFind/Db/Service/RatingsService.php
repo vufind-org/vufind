@@ -147,10 +147,10 @@ class RatingsService extends AbstractDbService implements
     /**
      * Get a paginated result of all ratings by user id
      *
-     * @param int    $userId   User Id
-     * @param int    $limit    Limit
-     * @param int    $page     Page
-     * @param string $sort     Sort
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
      *
      * @return \Laminas\Paginator\Paginator
      */

@@ -94,7 +94,13 @@ class CommentsController extends AbstractBase
         foreach ($comments as $i => $c) {
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
         }
-        return $this->createViewModel(['comments' => $comments, 'sortList' => $sortList, 'params' => $this->params()->fromQuery()]);
+        return $this->createViewModel(
+            [
+                'comments' => $comments,
+                'sortList' => $sortList,
+                'params' => $this->params()->fromQuery(),
+            ]
+        );
     }
 
     /**

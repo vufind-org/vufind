@@ -120,7 +120,13 @@ class TagController extends AbstractSearch
         foreach ($tags as $i => $c) {
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
         }
-        $view = $this->createViewModel(['tags' => $tags, 'sortList' => $sortList, 'params' => $this->params()->fromQuery()]);
+        $view = $this->createViewModel(
+            [
+                'tags' => $tags,
+                'sortList' => $sortList,
+                'params' => $this->params()->fromQuery(),
+            ]
+        );
         $view->setTemplate('tag/usertags.phtml');
         return $view;
     }

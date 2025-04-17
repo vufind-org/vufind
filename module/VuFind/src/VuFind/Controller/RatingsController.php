@@ -93,7 +93,13 @@ class RatingsController extends AbstractBase
         foreach ($ratings as $i => $c) {
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
         }
-        return $this->createViewModel(['ratings' => $ratings, 'sortList' => $sortList, 'params' => $this->params()->fromQuery()]);
+        return $this->createViewModel(
+            [
+                'ratings' => $ratings,
+                'sortList' => $sortList,
+                'params' => $this->params()->fromQuery(),
+            ]
+        );
     }
 
     /**

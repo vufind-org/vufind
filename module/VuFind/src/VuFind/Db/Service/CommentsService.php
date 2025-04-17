@@ -169,10 +169,10 @@ class CommentsService extends AbstractDbService implements
     /**
      * Get a paginated result of all comments by user id
      *
-     * @param int    $userId   User Id
-     * @param int    $limit    Limit
-     * @param int    $page     Page
-     * @param string $sort     Sort
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
      *
      * @return Paginator
      */
