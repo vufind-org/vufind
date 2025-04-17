@@ -227,6 +227,32 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
+     * Get range facet stats.
+     *
+     * Returns an associative array with the facet name as key. The
+     * value is an associative array of the minimal and maximal value
+     * of the facet.
+     *
+     * @return array
+     */
+    public function getRangeFacetStats()
+    {
+        $result = [];
+        foreach (
+            $this->response['stats']['stats_fields'] ?? [] as $field => $stats
+        ) {
+            $result[$field] = [];
+            if (isset($stats['min'])) {
+                $result[$field]['min'] = $stats['min'];
+            }
+            if (isset($stats['max'])) {
+                $result[$field]['max'] = $stats['max'];
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get grouped results.
      *
      * @return array

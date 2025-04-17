@@ -243,6 +243,7 @@ class Results extends \VuFind\Search\Base\Results
         $this->filteredFacetCounts = $collection->getFilteredFacetCounts();
         $this->responseQueryFacets = $collection->getQueryFacets();
         $this->responsePivotFacets = $collection->getPivotFacets();
+        $this->rangeFacetStats = $collection->getRangeFacetStats();
         $this->resultTotal = $collection->getTotal();
         $this->maxScore = $collection->getMaxScore();
 
