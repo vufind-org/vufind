@@ -97,12 +97,12 @@
       <ul class="selection-controls-bar">
         <li class="bulk-checkbox">
           <?php $selectAllCheckboxId = $this->idPrefix . 'addFormCheckboxSelectAll'; ?>
-          <label <?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
+          <label<?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
             <?php $selectAllCheckboxAttrs = ['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId]; ?>
             <?php if($this->formAttr): ?>
               <?php $selectAllCheckboxAttrs['form'] = $this->formAttr; ?>
             <?php endif; ?>
-            <input <?=$this->htmlAttributes($selectAllCheckboxAttrs)?>>
+            <input<?=$this->htmlAttributes($selectAllCheckboxAttrs)?>>
             <?=$this->transEsc('select_all_on_page')?>
           </label>
         </li>
