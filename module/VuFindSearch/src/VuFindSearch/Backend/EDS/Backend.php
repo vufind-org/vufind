@@ -437,7 +437,9 @@ class Backend extends AbstractBackend
         }
         $model = new SearchRequestModel($options);
         $model->setValidationConfig($this->validationConfig);
-        $model->setLogger($this->logger);
+        if ($this->logger) {
+            $model->setLogger($this->logger);
+        }
         return $model;
     }
 
