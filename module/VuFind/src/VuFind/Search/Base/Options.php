@@ -1369,10 +1369,10 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function limitOrderOverride($limit)
     {
-        $limits = $this->facetSettings['Advanced_Settings']['limitOrderOverride'] ?? null;
+        $limits = $this->facetSettings['Advanced_Settings']['limitOrderOverride'] ?? [];
         $delimiter = $this->facetSettings['Advanced_Settings']['limitDelimiter'] ?? '::';
-        $limitConf = $limits ? $limits->get($limit) : '';
-        return array_map('trim', explode($delimiter, $limitConf ?? ''));
+        $limitConf = $limits[$limit] ?? '';
+        return array_map('trim', explode($delimiter, $limitConf));
     }
 
     /**
