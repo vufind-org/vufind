@@ -37,8 +37,8 @@
         'sliderId' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',
         'inputMinId' => $safeBaseId . 'from',
         'inputMaxId' => $safeBaseId . 'to',
-        'rangeMin' => $options->getDateRangeSliderMin(),
-        'rangeMax' => $options->getDateRangeSliderMax(),
+        'rangeMin' => $options->getDateRangeSliderMinValue($this->title),
+        'rangeMax' => $options->getDateRangeSliderMaxValue($this->title),
       ])?>
     <?php endif; ?>
     <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>">

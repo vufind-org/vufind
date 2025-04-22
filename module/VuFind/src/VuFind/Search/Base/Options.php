@@ -408,18 +408,11 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $showRestrictedViewWarning;
 
     /**
-     * Minimum value for date range sliders
+     * Facet settings
      *
-     * @var ?int
+     * @var array
      */
-    protected ?int $dateRangeSliderMin;
-
-    /**
-     * Maximum value for date range sliders
-     *
-     * @var ?int
-     */
-    protected ?int $dateRangeSliderMax;
+    protected array $facetSettings;
 
     /**
      * Constructor
@@ -432,9 +425,9 @@ abstract class Options implements TranslatorAwareInterface
 
         $id = $this->getSearchClassId();
         $baseConfig = $configLoader->get('config');
-        $facetSettings = $configLoader->get($this->facetsIni);
-        if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
-            $sortArray = $facetSettings->AvailableFacetSortOptions[$id]->toArray();
+        $this->facetSettings = $configLoader->get($this->facetsIni)?->toArray() ?? [];
+        if (isset($this->facetSettings['AvailableFacetSortOptions'][$id])) {
+            $sortArray = (array)$this->facetSettings['AvailableFacetSortOptions'][$id];
             foreach ($sortArray as $facet => $sortOptions) {
                 $this->facetSortOptions[$facet] = [];
                 foreach (explode(',', $sortOptions) as $fieldAndLabel) {
@@ -444,11 +437,9 @@ abstract class Options implements TranslatorAwareInterface
             }
         }
         $this->filterHierarchicalFacetsInAdvanced
-            = !empty($facetSettings->Advanced_Settings->enable_hierarchical_filters);
-        $this->hierarchicalExcludeFilters
-            = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
-        $this->hierarchicalFacetFilters
-            = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
+            = !empty($this->facetSettings['Advanced_Settings']['enable_hierarchical_filters']);
+        $this->hierarchicalExcludeFilters = $this->facetSettings['HierarchicalExcludeFilters'] ?? [];
+        $this->hierarchicalFacetFilters = $this->facetSettings['HierarchicalFacetFilters'] ?? [];
 
         $searchSettings = $configLoader->get($this->searchIni);
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
@@ -467,10 +458,6 @@ abstract class Options implements TranslatorAwareInterface
         $this->displayCitationLinksInResults
             = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
         $this->showRestrictedViewWarning = (bool)($searchSettings->General->show_restricted_view_warning ?? false);
-        $this->dateRangeSliderMin
-            = $this->parseDateRangeSliderSetting($searchSettings->General->date_range_slider_min ?? '');
-        $this->dateRangeSliderMax
-            = $this->parseDateRangeSliderSetting($searchSettings->General->date_range_slider_max ?? '');
     }
 
     /**
@@ -1382,9 +1369,8 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function limitOrderOverride($limit)
     {
-        $facetSettings = $this->configLoader->get($this->getFacetsIni());
-        $limits = $facetSettings->Advanced_Settings->limitOrderOverride ?? null;
-        $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?? '::';
+        $limits = $this->facetSettings['Advanced_Settings']['limitOrderOverride'] ?? null;
+        $delimiter = $this->facetSettings['Advanced_Settings']['limitDelimiter'] ?? '::';
         $limitConf = $limits ? $limits->get($limit) : '';
         return array_map('trim', explode($delimiter, $limitConf ?? ''));
     }
@@ -1444,21 +1430,25 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get minimum value for date range sliders.
      *
+     * @param string $field Field name
+     *
      * @return ?int
      */
-    public function getDateRangeSliderMin(): ?int
+    public function getDateRangeSliderMinValue(string $field): ?int
     {
-        return $this->dateRangeSliderMin;
+        return $this->parseDateRangeSliderSetting($this->facetSettings["Facet_$field"]['slider_min_value'] ?? '');
     }
 
     /**
      * Get maximum value for date range sliders.
      *
+     * @param string $field Field name
+     *
      * @return ?int
      */
-    public function getDateRangeSliderMax(): ?int
+    public function getDateRangeSliderMaxValue(string $field): ?int
     {
-        return $this->dateRangeSliderMax;
+        return $this->parseDateRangeSliderSetting($this->facetSettings["Facet_$field"]['slider_max_value'] ?? '');
     }
 
     /**
