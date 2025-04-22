@@ -626,16 +626,13 @@ body.rtl .dropdown-menu {
     vertical-align: middle;
   }
 }
-.userreviews-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.userreviews-table {
+.usercontent-table {
   tbody > tr > td {
     vertical-align: middle;
-    &.user-comment {
-      width: 40%;
+    @include media-breakpoint-up(md) {
+      &.user-comment {
+        width: 40%;
+      }
     }
   }
 }

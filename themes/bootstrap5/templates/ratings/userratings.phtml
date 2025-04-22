@@ -4,7 +4,7 @@
     ->add($this->translate('Ratings'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
-  $tabs = $this->accountCapabilities()->getUserReviewTabs();
+  $tabs = $this->accountCapabilities()->getUserContentTabs();
 ?>
 
 <?php $this->headTitle($this->translate('Ratings'));?>
@@ -12,17 +12,25 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <ul class="nav nav-tabs" role="tablist">
     <?php foreach ($tabs as $tab): ?>
-      <li class="nav-item" role="presentation" id="user-review-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='ratings' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'user' . $tab)?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
+      <li class="nav-item" role="presentation" id="user-content-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='ratings' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'user' . $tab)?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
     <?php endforeach; ?>
   </ul>
-  <div class="userreviews-header">
-    <h2><?=$this->transEsc('Your Ratings')?></h2>
-    <?php if ($this->sortList): ?>
-      <div class="user-reviews-sort">
-        <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
-      </div>
-    <?php endif; ?>
-  </div>
+  <h2><?=$this->transEsc('Your Ratings')?></h2>
+  <nav class="search-header hidden-print">
+    <?php
+      $abs = $this->ratings->getAbsoluteItemNumber($this->ratings->getItemCountPerPage());
+      $end = min($abs, $this->ratings->getTotalItemCount());
+      $transParams = [
+        '%%start%%' => $this->localizedNumber($this->ratings->getAbsoluteItemNumber(1)),
+        '%%end%%' => $this->localizedNumber($end),
+        '%%total%%' => $this->localizedNumber($this->ratings->getTotalItemCount()),
+      ];
+    ?>
+    <div class="search-stats">
+      <?=$this->translate('showing_items_of_html', $transParams); ?>
+    </div>
+    <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+  </nav>
   <div><?=$this->transEsc('user_rating_info_text')?></div>
   <?php if (count($this->ratings) !== 0): ?>  
     <form action="<?=$this->url('ratings-deleteratings')?>" name="updateForm" id="select_all_ratings" method="post">
@@ -49,7 +57,7 @@
           )
         ?>
       <?php endif; ?>
-      <table class="userreviews-table table-striped table table-responsive">
+      <table class="usercontent-table table-striped table table-responsive">
         <thead>
           <tr>
             <th></th>
@@ -73,11 +81,11 @@
                   </div>
                 <?php endif; ?>
               </td>
-              <td><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $rating['created'])?></td>
-              <td>
+              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $rating['created'])?></td>
+              <td data-label="<?=$this->transEscAttr('Title')?>">
                 <a href="<?=$this->url('record', ['id' => $rating['record_id']])?>"><?=$rating['recordTitle']?></a>
               </td>
-              <td class="user-rating">
+              <td class="user-rating" data-label="<?=$this->transEscAttr('Rating')?>">
                 <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1]])?>
               </td>
             </tr>
@@ -90,5 +98,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render('userreviews')?>
+  <?=$this->accountMenu()->render('usercontent')?>
 </div>

@@ -834,7 +834,7 @@ $staticRoutes = [
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/ScheduleSearch', 'MyResearch/StorageRetrievalRequests',
-    'MyResearch/Unsubscribe', 'MyResearch/UserLogin', 'MyResearch/UserReviews',
+    'MyResearch/Unsubscribe', 'MyResearch/UserLogin', 'MyResearch/UserContent',
     'MyResearch/Verify', 'MyResearch/VerifyEmail', 'OAI/Server',
     'Overdrive/MyContent','Overdrive/Hold',
     'Pazpar2/Home', 'Pazpar2/Search',

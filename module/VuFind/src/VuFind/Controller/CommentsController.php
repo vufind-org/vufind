@@ -57,7 +57,7 @@ class CommentsController extends AbstractBase
         if (!$this->commentsEnabled()) {
             throw new ForbiddenException('Comments disabled.');
         }
-        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserReviewsPageSize();
+        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentPageSize();
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'created desc');
         $service = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);

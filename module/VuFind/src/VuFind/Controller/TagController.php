@@ -82,7 +82,7 @@ class TagController extends AbstractSearch
         if (!$this->tagsEnabled()) {
             throw new ForbiddenException('Tags disabled.');
         }
-        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserReviewsPageSize();
+        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentPageSize();
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'posted desc');
         $service = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);

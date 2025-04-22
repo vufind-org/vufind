@@ -57,7 +57,7 @@ class RatingsController extends AbstractBase
         if (!$this->ratingsEnabled()) {
             throw new ForbiddenException('Ratings disabled.');
         }
-        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserReviewsPageSize();
+        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentPageSize();
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'created desc');
         $service = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);

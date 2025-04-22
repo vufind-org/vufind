@@ -97,11 +97,11 @@ Account:
       icon: search
       checkMethod: checkHistory
 
-    - name: userreviews
-      label: user_reviews
-      route: myresearch-userreviews
+    - name: usercontent
+      label: user_content
+      route: myresearch-usercontent
       icon: comment
-      checkMethod: checkUserReviews
+      checkMethod: checkUserContent
 
     - name: logout
       label: Log Out

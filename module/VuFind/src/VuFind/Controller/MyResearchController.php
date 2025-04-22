@@ -2322,19 +2322,19 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get User Reviews (comments, ratings, tags)
+     * Get User Content (comments, ratings, tags)
      *
      * @return mixed
      */
-    public function userReviewsAction()
+    public function userContentAction()
     {
         $user = $this->getUser();
         if (!$user) {
             return $this->forceLogin();
         }
-        $tabs = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserReviewTabs();
+        $tabs = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentTabs();
         if (empty($tabs)) {
-            throw new ForbiddenException('User reviews disabled.');
+            throw new ForbiddenException('User content disabled.');
         }
         return $this->redirect()->toRoute($tabs[0] . '-user' . $tabs[0]);
     }

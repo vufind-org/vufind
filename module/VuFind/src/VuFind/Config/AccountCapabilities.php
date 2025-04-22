@@ -106,17 +106,17 @@ class AccountCapabilities
      *
      * @return int
      */
-    public function getUserReviewsPageSize(): int
+    public function getUserContentPageSize(): int
     {
-        return $this->config->Social->user_reviews_page_size ?? 50;
+        return $this->config->Social->user_content_page_size ?? 50;
     }
 
     /**
-     * Get enabled tabs for user reviews
+     * Get enabled tabs for user content
      *
      * @return array
      */
-    public function getUserReviewTabs(): array
+    public function getUserContentTabs(): array
     {
         $tabs = [];
         if ('enabled' === $this->getCommentSetting()) {

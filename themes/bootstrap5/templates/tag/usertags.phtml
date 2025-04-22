@@ -4,23 +4,33 @@
     ->add($this->translate('Tags'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
-  $tabs = $this->accountCapabilities()->getUserReviewTabs();
+  $tabs = $this->accountCapabilities()->getUserContentTabs();
 ?>
 <?php $this->headTitle($this->translate('Tags'));?>
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-<ul class="nav nav-tabs" role="tablist">
+  <ul class="nav nav-tabs" role="tablist">
     <?php foreach ($tabs as $tab): ?>
-      <li class="nav-item" role="presentation" id="user-review-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='tag' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'user' . $tab)?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
+      <li class="nav-item" role="presentation" id="user-content-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='tag' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'user' . $tab)?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
     <?php endforeach; ?>
   </ul>
-  <div class="userreviews-header">
   <h2><?=$this->transEsc('Your Tags')?></h2>
-    <?php if ($this->sortList): ?>
-      <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
-    <?php endif; ?>
-  </div>
+  <nav class="search-header hidden-print">
+    <?php
+      $abs = $this->tags->getAbsoluteItemNumber($this->tags->getItemCountPerPage());
+      $end = min($abs, $this->tags->getTotalItemCount());
+      $transParams = [
+        '%%start%%' => $this->localizedNumber($this->tags->getAbsoluteItemNumber(1)),
+        '%%end%%' => $this->localizedNumber($end),
+        '%%total%%' => $this->localizedNumber($this->tags->getTotalItemCount()),
+      ];
+    ?>
+    <div class="search-stats">
+      <?=$this->translate('showing_items_of_html', $transParams); ?>
+    </div>
+    <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+  </nav>
   <?php if (count($this->tags) !== 0): ?>
     <form action="<?=$this->url('tag-deletetags')?>" name="updateForm" id="select_all_tags" method="post">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
@@ -44,7 +54,7 @@
             ]
         )
       ?>
-      <table class="userreviews-table table-striped table table-responsive">
+      <table class="usercontent-table table-striped table table-responsive">
         <thead>
           <tr>
             <th></th>
@@ -66,11 +76,11 @@
                   </div>
                 </div>
               </td>
-              <td><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $tag['posted'])?></td>
-              <td>
+              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $tag['posted'])?></td>
+              <td data-label="<?=$this->transEscAttr('Title')?>">
                 <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$tag['recordTitle']?></a>
               </td>
-              <td class="user-tag">
+              <td class="user-tag" data-label="<?=$this->transEscAttr('Tag')?>">
                 <div><?=$this->escapeHtml($tag['tag'])?></div>
               </td>
             </tr>
@@ -83,5 +93,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render('userreviews')?>
+  <?=$this->accountMenu()->render('usercontent')?>
 </div>

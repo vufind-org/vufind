@@ -173,11 +173,11 @@ class AccountMenu extends AbstractMenu
                         'checkMethod' => 'checkHistory',
                     ],
                     [
-                        'name' => 'userreviews',
-                        'label' => 'user_reviews',
-                        'route' => 'myresearch-userreviews',
+                        'name' => 'usercontent',
+                        'label' => 'user_content',
+                        'route' => 'myresearch-usercontent',
                         'icon' => 'comment',
-                        'checkMethod' => 'checkUserReviews',
+                        'checkMethod' => 'checkUserContent',
                     ],
                     [
                         'name' => 'logout',
@@ -360,11 +360,11 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show user reviews (comments, ratings, tags)
+     * Check whether to show user content (comments, ratings, tags)
      *
      * @return bool
      */
-    protected function checkUserReviews(): bool
+    protected function checkUserContent(): bool
     {
         return ('enabled' === $this->accountCapabilities->getCommentSetting())
             || ('enabled' === $this->accountCapabilities->getRatingSetting())
