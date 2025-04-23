@@ -57,13 +57,6 @@ class Options extends AbstractEDSOptions
     protected $defaultLimit = null;
 
     /**
-     * Default view option
-     *
-     * @var ?string
-     */
-    protected $defaultView = null;
-
-    /**
      * Available search mode options
      *
      * @var array
@@ -788,22 +781,12 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Extract a component from the defaultView API property.
-     *
-     * The defaultView API property takes the form vufindSetting_ebscoSetting -- the first component
-     * of the underscore-delimited string is the view name used by VuFind (e.g. list or grid).
-     * However, for EDS only list is suggested to be used. The second component is the format
-     * requested from the EDS API (e.g. title, brief or detailed).
-     *
-     * @param int     $index   Index of part to extract from the property
-     * @param ?string $default Default to use as a fallback if the property does not contain delimited values
+     * Get the configured default view.
      *
      * @return string
      */
-    protected function getDefaultViewPart(int $index, ?string $default = null): string
+    protected function getConfiguredDefaultView(): string
     {
-        $apiDefaultView = $this->getApiProperty('defaultView');
-        $viewArr = explode('_', $apiDefaultView);
-        return (count($viewArr) > 1) ? $viewArr[$index] : ($default ?? $apiDefaultView);
+        return $this->getApiProperty('defaultView');
     }
 }

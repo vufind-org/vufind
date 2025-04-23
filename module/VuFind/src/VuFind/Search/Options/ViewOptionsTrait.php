@@ -63,10 +63,8 @@ trait ViewOptionsTrait
         }
         if (!empty($viewOptions)) {
             $this->viewOptions = $viewOptions;
-        } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
         } else {
-            $this->viewOptions = ['list' => 'List'];
+            $this->viewOptions = [$this->defaultView => $this->defaultView];
         }
     }
 }

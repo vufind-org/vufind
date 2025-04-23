@@ -33,6 +33,8 @@
 
 namespace VuFind\Search\EDS;
 
+use function count;
+
 /**
  * Common EDS & EPF API Options
  *
@@ -49,6 +51,13 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
+     * Default view option
+     *
+     * @var string
+     */
+    protected $defaultView = 'list_brief';
+
+    /**
      * Extract a component from the defaultView API property.
      *
      * The defaultView API property takes the form vufindSetting_ebscoSetting -- the first component
@@ -56,12 +65,17 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
      * However, for EDS and EPF, only list is suggested to be used. The second component is the format
      * requested from the EBSCO API (e.g. title, brief or detailed).
      *
-     * @param int     $index   Index of part to extract from the property
-     * @param ?string $default Default to use as a fallback if the property does not contain delimited values
+     * @param int    $index   Index of part to extract from the property
+     * @param string $default Default to use as a fallback if the property does not contain delimited values
      *
      * @return string
      */
-    abstract protected function getDefaultViewPart(int $index, ?string $default = null): string;
+    protected function getDefaultViewPart(int $index, string $default): string
+    {
+        $ebscoDefaultView = $this->getConfiguredDefaultView();
+        $viewArr = explode('_', $ebscoDefaultView);
+        return (count($viewArr) > 1) ? $viewArr[$index] : $default;
+    }
 
     /**
      * Get default view setting.
@@ -80,6 +94,13 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
      */
     public function getEbscoView()
     {
-        return $this->getDefaultViewPart(1);
+        return $this->getDefaultViewPart(1, $this->getConfiguredDefaultView());
     }
+
+    /**
+     * Get the configured default view.
+     *
+     * @return string
+     */
+    abstract protected function getConfiguredDefaultView(): string;
 }
