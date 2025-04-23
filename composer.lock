@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e62b64763f41c5ad860a05cd6c900057",
+    "content-hash": "264966bd4ecfe6e7b47afeb2ac40aa02",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -3135,16 +3135,16 @@
         },
         {
             "name": "laminas/laminas-inputfilter",
-            "version": "2.31.0",
+            "version": "2.32.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-inputfilter.git",
-                "reference": "214b033769616f4211ffb63b432b716d786622c9"
+                "reference": "5f04f1e5a6b1bd3c82114b6ea748a70ce65787f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-inputfilter/zipball/214b033769616f4211ffb63b432b716d786622c9",
-                "reference": "214b033769616f4211ffb63b432b716d786622c9",
+                "url": "https://api.github.com/repos/laminas/laminas-inputfilter/zipball/5f04f1e5a6b1bd3c82114b6ea748a70ce65787f6",
+                "reference": "5f04f1e5a6b1bd3c82114b6ea748a70ce65787f6",
                 "shasum": ""
             },
             "require": {
@@ -3159,11 +3159,11 @@
             },
             "require-dev": {
                 "ext-json": "*",
-                "laminas/laminas-coding-standard": "~3.0",
-                "phpunit/phpunit": "^10.5.20",
-                "psalm/plugin-phpunit": "^0.19.0",
+                "laminas/laminas-coding-standard": "^3.0.1",
+                "phpunit/phpunit": "^10.5.45",
+                "psalm/plugin-phpunit": "^0.19.5",
                 "psr/http-message": "^2.0",
-                "vimeo/psalm": "^5.24.0",
+                "vimeo/psalm": "^6.10.0",
                 "webmozart/assert": "^1.11"
             },
             "suggest": {
@@ -3205,7 +3205,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-11-15T20:17:41+00:00"
+            "time": "2025-04-14T00:23:41+00:00"
         },
         {
             "name": "laminas/laminas-json",
@@ -6751,16 +6751,16 @@
         },
         {
             "name": "pear/http_request2",
-            "version": "v2.6.0",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/HTTP_Request2.git",
-                "reference": "f010a16ccddd1ee7d2ee085e8006ee712c00f706"
+                "reference": "b1c61b71128045734d757c4d3d436457ace80ea7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/f010a16ccddd1ee7d2ee085e8006ee712c00f706",
-                "reference": "f010a16ccddd1ee7d2ee085e8006ee712c00f706",
+                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/b1c61b71128045734d757c4d3d436457ace80ea7",
+                "reference": "b1c61b71128045734d757c4d3d436457ace80ea7",
                 "shasum": ""
             },
             "require": {
@@ -6769,6 +6769,7 @@
                 "php": ">=5.6.0"
             },
             "require-dev": {
+                "pear/log": "^1",
                 "yoast/phpunit-polyfills": "^1.0.0"
             },
             "suggest": {
@@ -6806,7 +6807,7 @@
                 "issues": "https://github.com/pear/HTTP_Request2/issues",
                 "source": "https://github.com/pear/HTTP_Request2"
             },
-            "time": "2023-11-01T19:51:41+00:00"
+            "time": "2025-04-06T13:48:50+00:00"
         },
         {
             "name": "pear/net_url2",

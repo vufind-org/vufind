@@ -1313,6 +1313,18 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Override the setting for loading results with JavaScript.
+     *
+     * @param bool $enable Enable JS?
+     *
+     * @return void
+     */
+    public function setLoadResultsWithJs(bool $enable): void
+    {
+        $this->loadResultsWithJs = $enable;
+    }
+
+    /**
      * Get top paginator style
      *
      * @return string

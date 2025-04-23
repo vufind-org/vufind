@@ -134,6 +134,7 @@ class Upgrade
         $this->upgradeEPF();
         $this->upgradeSummon();
         $this->upgradePrimo();
+        $this->upgradeRecordDataFormatter();
 
         // The previous upgrade routines may have added values to permissions.ini,
         // so we should save it last. It doesn't have its own upgrade routine.
@@ -1021,6 +1022,18 @@ class Upgrade
 
         // save the file
         $this->saveModifiedConfig('Primo.ini');
+    }
+
+    /**
+     * Upgrade RecordDataFormatter.ini.
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradeRecordDataFormatter(): void
+    {
+        $this->applyOldSettings('RecordDataFormatter.ini');
+        $this->saveModifiedConfig('RecordDataFormatter.ini');
     }
 
     /**

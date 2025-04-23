@@ -221,21 +221,17 @@ class CAS extends AbstractBase
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (
-            isset($config->CAS->logout)
-            && !empty($config->CAS->logout)
-        ) {
+        if (!empty($config->CAS->logout)) {
             $url = $config->CAS->logout . '?service=' . urlencode($url);
         }
 

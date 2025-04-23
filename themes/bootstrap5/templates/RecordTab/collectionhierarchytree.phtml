@@ -14,7 +14,7 @@
   <div class="tree-panel">
     <?=$this->render('RecordTab/hierarchytree.phtml')?>
   </div>
-  <div <?=$this->htmlAttributes($previewAttrs)?>>
+  <div<?=$this->htmlAttributes($previewAttrs)?>>
     <?php if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
       <?php if ($collectionRecord === null): ?>
         <?=$this->render('collection/collection-record-error.phtml')?>
