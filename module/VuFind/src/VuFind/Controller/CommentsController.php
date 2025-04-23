@@ -43,12 +43,25 @@ use VuFind\Validator\CsrfInterface;
  */
 class CommentsController extends AbstractBase
 {
+    use UserContentTrait;
+
+    /**
+     * Array of sort options for userListAction
+     *
+     * @var array
+     */
+    protected array $sortList = [
+        'created desc' => 'sort_created_desc',
+        'created asc' => 'sort_created_asc',
+        'title' => 'sort_title',
+    ];
+
     /**
      * Get all comments for the logged in user
      *
      * @return View
      */
-    public function userCommentsAction()
+    public function userListAction()
     {
         $user = $this->getUser();
         if (!$user) {
@@ -61,43 +74,18 @@ class CommentsController extends AbstractBase
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'created desc');
         $service = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
-        $comments = $service->getCommentsPaginator(
-            $user->getId(),
-            $limit,
-            $page,
-            $sort,
+        $comments = $this->getUserContentRecordTitles(
+            $service->getCommentsPaginator(
+                $user->getId(),
+                $limit,
+                $page,
+                $sort,
+            )
         );
-
-        $sortList = [
-            'created desc'  => [
-                'desc' => 'sort_created_desc',
-                'url' => '?sort=' . urlencode('created desc'),
-                'selected' => $sort === 'created desc',
-            ],
-            'created asc'  => [
-                'desc' => 'sort_created_asc',
-                'url' => '?sort=' . urlencode('created asc'),
-                'selected' => $sort === 'created asc',
-            ],
-            'title'  => [
-                'desc' => 'sort_title',
-                'url' => '?sort=' . urlencode('title'),
-                'selected' => $sort === 'title',
-            ],
-        ];
-        $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-        $ids = [];
-        foreach ($comments as $comment) {
-            $ids[] = $comment['source'] . '|' . $comment['record_id'];
-        }
-        $records = $recordLoader->loadBatch($ids, true);
-        foreach ($comments as $i => $c) {
-            $c['recordTitle'] = $records[$i]->getTitle() ?? '';
-        }
         return $this->createViewModel(
             [
                 'comments' => $comments,
-                'sortList' => $sortList,
+                'sortList' => $this->getSortList($this->sortList, $sort),
                 'params' => $this->params()->fromQuery(),
             ]
         );
@@ -128,6 +116,6 @@ class CommentsController extends AbstractBase
             $commentsService->deleteByIdsAndUserId($comments, $user->getId());
         }
 
-        return $this->redirect()->toRoute('comments-usercomments');
+        return $this->redirect()->toRoute('comments-userlist');
     }
 }

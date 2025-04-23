@@ -43,12 +43,25 @@ use VuFind\Validator\CsrfInterface;
  */
 class RatingsController extends AbstractBase
 {
+    use UserContentTrait;
+
+    /**
+     * Array of sort options for userListAction
+     *
+     * @var array
+     */
+    protected array $sortList = [
+        'created desc' => 'sort_created_desc',
+        'created asc' => 'sort_created_asc',
+        'title' => 'sort_title',
+    ];
+
     /**
      * Get all ratings for the logged in user
      *
      * @return View
      */
-    public function userRatingsAction()
+    public function userListAction()
     {
         $user = $this->getUser();
         if (!$user) {
@@ -61,42 +74,18 @@ class RatingsController extends AbstractBase
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'created desc');
         $service = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
-        $ratings = $service->getRatingsPaginator(
-            $user->getId(),
-            $limit,
-            $page,
-            $sort,
+        $ratings = $this->getUserContentRecordTitles(
+            $service->getRatingsPaginator(
+                $user->getId(),
+                $limit,
+                $page,
+                $sort,
+            )
         );
-        $sortList = [
-            'created desc'  => [
-                'desc' => 'sort_created_desc',
-                'url' => '?sort=' . urlencode('created desc'),
-                'selected' => $sort === 'created desc',
-            ],
-            'created asc'  => [
-                'desc' => 'sort_created_asc',
-                'url' => '?sort=' . urlencode('created asc'),
-                'selected' => $sort === 'created asc',
-            ],
-            'title'  => [
-                'desc' => 'sort_title',
-                'url' => '?sort=' . urlencode('title'),
-                'selected' => $sort === 'title',
-            ],
-        ];
-        $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-        $ids = [];
-        foreach ($ratings as $rating) {
-            $ids[] = $rating['source'] . '|' . $rating['record_id'];
-        }
-        $records = $recordLoader->loadBatch($ids, true);
-        foreach ($ratings as $i => $c) {
-            $c['recordTitle'] = $records[$i]->getTitle() ?? '';
-        }
         return $this->createViewModel(
             [
                 'ratings' => $ratings,
-                'sortList' => $sortList,
+                'sortList' => $this->getSortList($this->sortList, $sort),
                 'params' => $this->params()->fromQuery(),
             ]
         );
@@ -129,6 +118,6 @@ class RatingsController extends AbstractBase
             $ratingsService->deleteByIdsAndUserId($ratings, $user->getId());
         }
 
-        return $this->redirect()->toRoute('ratings-userratings');
+        return $this->redirect()->toRoute('ratings-userlist');
     }
 }

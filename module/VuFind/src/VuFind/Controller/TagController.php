@@ -44,6 +44,19 @@ use VuFind\Validator\CsrfInterface;
  */
 class TagController extends AbstractSearch
 {
+    use UserContentTrait;
+
+    /**
+     * Array of sort options for userListAction
+     *
+     * @var array
+     */
+    protected array $sortList = [
+        'posted desc' => 'sort_created_desc',
+        'posted asc' => 'sort_created_asc',
+        'title' => 'sort_title',
+    ];
+
     /**
      * Constructor
      *
@@ -73,7 +86,7 @@ class TagController extends AbstractSearch
      *
      * @return View
      */
-    public function userTagAction()
+    public function userListAction()
     {
         $user = $this->getUser();
         if (!$user) {
@@ -86,49 +99,23 @@ class TagController extends AbstractSearch
         $page = $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'posted desc');
         $service = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
-        $tags = $service->getResourceTagsPaginator(
-            $user->getId(),
-            null,
-            null,
-            $sort,
-            $page,
-            $limit,
+        $tags = $this->getUserContentRecordTitles(
+            $service->getResourceTagsPaginator(
+                $user->getId(),
+                null,
+                null,
+                $sort,
+                $page,
+                $limit,
+            )
         );
-        $sortList = [
-            'posted desc'  => [
-                'desc' => 'sort_created_desc',
-                'url' => '?sort=' . urlencode('posted desc'),
-                'selected' => $sort === 'posted desc',
-            ],
-            'posted asc'  => [
-                'desc' => 'sort_created_asc',
-                'url' => '?sort=' . urlencode('posted asc'),
-                'selected' => $sort === 'posted asc',
-            ],
-            'title'  => [
-                'desc' => 'sort_title',
-                'url' => '?sort=' . urlencode('title'),
-                'selected' => $sort === 'title',
-            ],
-        ];
-        $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-        $ids = [];
-        foreach ($tags as $tag) {
-            $ids[] = $tag['source'] . '|' . $tag['record_id'];
-        }
-        $records = $recordLoader->loadBatch($ids, true);
-        foreach ($tags as $i => $c) {
-            $c['recordTitle'] = $records[$i]->getTitle() ?? '';
-        }
-        $view = $this->createViewModel(
+        return $this->createViewModel(
             [
                 'tags' => $tags,
-                'sortList' => $sortList,
+                'sortList' => $this->getSortList($this->sortList, $sort),
                 'params' => $this->params()->fromQuery(),
             ]
         );
-        $view->setTemplate('tag/usertags.phtml');
-        return $view;
     }
 
     /**
@@ -155,6 +142,6 @@ class TagController extends AbstractSearch
             $tagService->deleteLinksByResourceTagsIdArray($tags);
         }
 
-        return $this->redirect()->toRoute('tag-usertag');
+        return $this->redirect()->toRoute('tag-userlist');
     }
 }

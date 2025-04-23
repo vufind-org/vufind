@@ -176,7 +176,7 @@ class AccountMenu extends AbstractMenu
                         'name' => 'usercontent',
                         'label' => 'user_content',
                         'route' => 'myresearch-usercontent',
-                        'icon' => 'comment',
+                        'icon' => 'user-content',
                         'checkMethod' => 'checkUserContent',
                     ],
                     [

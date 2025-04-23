@@ -100,7 +100,7 @@ Account:
     - name: usercontent
       label: user_content
       route: myresearch-usercontent
-      icon: comment
+      icon: user-content
       checkMethod: checkUserContent
 
     - name: logout

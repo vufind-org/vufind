@@ -2336,7 +2336,7 @@ class MyResearchController extends AbstractBase
         if (empty($tabs)) {
             throw new ForbiddenException('User content disabled.');
         }
-        return $this->redirect()->toRoute($tabs[0] . '-user' . $tabs[0]);
+        return $this->redirect()->toRoute($tabs[0] . '-userlist');
     }
 
     /**
