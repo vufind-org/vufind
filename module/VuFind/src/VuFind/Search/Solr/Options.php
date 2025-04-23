@@ -166,7 +166,7 @@ class Options extends \VuFind\Search\Base\Options
         if ($delimiter = $this->facetSettings['Advanced_Settings']['delimiter'] ?? null) {
             $this->setDefaultFacetDelimiter($delimiter);
         }
-        if ($delimitedFacets = $this->facetSettings['Advanced_Settings']['translated_facets'] ?? null) {
+        if ($delimitedFacets = $this->facetSettings['Advanced_Settings']['delimited_facets'] ?? null) {
             $this->setDelimitedFacets((array)$delimitedFacets);
         }
         if ($specialFacets = $this->facetSettings['Advanced_Settings']['special_facets'] ?? null) {
