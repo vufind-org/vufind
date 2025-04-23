@@ -160,42 +160,27 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load facet preferences
-        $facetSettings = $configLoader->get($this->facetsIni);
-        if (
-            isset($facetSettings->Advanced_Settings->translated_facets)
-            && count($facetSettings->Advanced_Settings->translated_facets) > 0
-        ) {
-            $this->setTranslatedFacets(
-                $facetSettings->Advanced_Settings->translated_facets->toArray()
-            );
+        if ($translatedFacets = $this->facetSettings['Advanced_Settings']['translated_facets'] ?? null) {
+            $this->setTranslatedFacets((array)$translatedFacets);
         }
-        if (isset($facetSettings->Advanced_Settings->delimiter)) {
-            $this->setDefaultFacetDelimiter(
-                $facetSettings->Advanced_Settings->delimiter
-            );
+        if ($delimiter = $this->facetSettings['Advanced_Settings']['delimiter'] ?? null) {
+            $this->setDefaultFacetDelimiter($delimiter);
         }
-        if (
-            isset($facetSettings->Advanced_Settings->delimited_facets)
-            && count($facetSettings->Advanced_Settings->delimited_facets) > 0
-        ) {
-            $this->setDelimitedFacets(
-                $facetSettings->Advanced_Settings->delimited_facets->toArray()
-            );
+        if ($delimitedFacets = $this->facetSettings['Advanced_Settings']['delimited_facets'] ?? null) {
+            $this->setDelimitedFacets((array)$delimitedFacets);
         }
-        if (isset($facetSettings->Advanced_Settings->special_facets)) {
-            $this->specialAdvancedFacets
-                = $facetSettings->Advanced_Settings->special_facets;
+        if ($specialFacets = $this->facetSettings['Advanced_Settings']['special_facets'] ?? null) {
+            $this->specialAdvancedFacets = $specialFacets;
         }
-        if (isset($facetSettings->SpecialFacets->hierarchical)) {
-            $this->hierarchicalFacets
-                = $facetSettings->SpecialFacets->hierarchical->toArray();
+        if ($hierarchical = $this->facetSettings['SpecialFacets']['hierarchical'] ?? null) {
+            $this->hierarchicalFacets = (array)$hierarchical;
         }
-        if (isset($facetSettings->SpecialFacets->hierarchicalFacetSeparators)) {
-            $this->hierarchicalFacetSeparators = $facetSettings->SpecialFacets
-                ->hierarchicalFacetSeparators->toArray();
+        if ($separators = $this->facetSettings['SpecialFacets']['hierarchicalFacetSeparators'] ?? null) {
+            $this->hierarchicalFacetSeparators = (array)$separators;
         }
+
         $this->hierarchicalFacetSortSettings
-            = $facetSettings?->SpecialFacets?->hierarchicalFacetSortOptions?->toArray() ?? [];
+            = (array)($this->facetSettings['SpecialFacets']['hierarchicalFacetSortOptions'] ?? []);
 
         // Load Spelling preferences
         $config = $configLoader->get($this->mainIni);
