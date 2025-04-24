@@ -667,7 +667,7 @@ class EDS extends DefaultRecord
                 $pattern = "/<\/?ephtml>/";
                 $splitParts = preg_split($pattern, $data);
                 $data = '';
-                foreach ($result as $part) {
+                foreach ($splitParts as $part) {
                     if (strpos($part, 'table') > -1 && strpos($part, 'table') < 6) {
                         $data .= '<div class="eds_html_table">';
                         $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
