@@ -92,7 +92,7 @@ class MockContainer implements ServiceLocatorInterface
     /**
      * Add an entry to the container
      *
-     * @param string $name  Name
+     * @param string $id    Entry identifier
      * @param mixed  $value Value
      *
      * @return void
