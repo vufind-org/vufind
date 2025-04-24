@@ -8,7 +8,7 @@
     $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver));
   } else {
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'));
-  };
+  }
   $this->breadcrumbs()->add($pageTitle, active: true);
 ?>
 
