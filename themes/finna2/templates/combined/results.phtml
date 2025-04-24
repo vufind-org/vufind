@@ -29,7 +29,7 @@
   $combinedResults = $this->results;
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active">' . $this->escapeHtml($headTitle) . '</li>';
+  $this->breadcrumbs()->set($headTitle, active: true);
 
   // Check if any results have version support enabled:
   $displayVersions = false;

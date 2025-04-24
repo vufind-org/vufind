@@ -15,7 +15,7 @@
   $basicSearch = $options->getSearchAction();
   $advSearch = $options->getAdvancedSearchAction();
 
-  $this->layout()->breadcrumbs = false;
+  $this->breadcrumbs()->disable();
   $this->layout()->logosection = true;
   $this->layout()->ignoreHiddenFilterMemory = true;
 ?>

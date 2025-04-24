@@ -5,8 +5,8 @@
     $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc('recovery_title') . '</h3></div>';
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('recovery_title') . '</li>';
-
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('recovery_title'), active: true);
 ?>
 <h2><?=$this->transEsc('recovery_title') ?></h2>
 <?=$this->flashmessages()?>

@@ -1,11 +1,15 @@
 <?php
   // Set up page title:
-  $pageTitle = 'ReservationList::Create New Reservation List';
-  $this->headTitle($this->translate($pageTitle));
+  $pageTitle = $this->translate('ReservationList::Create New Reservation List');
+  $this->headTitle($pageTitle);
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('reservationlist-createlist') . '">' . $this->transEsc('ReservationList::Add List') . '</a></li>'
-    . '<li class="breadcrumb-item active">' . $this->transEsc($pageTitle) . '</li>';
+  if ($this->driver) {
+    $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver));
+  } else {
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'));
+  };
+  $this->breadcrumbs()->add($pageTitle, active: true);
 ?>
 
 <?=$this->flashmessages()?>

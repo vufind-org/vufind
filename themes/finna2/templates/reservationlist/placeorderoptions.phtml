@@ -1,14 +1,16 @@
 <?php
-  $pageTitle = 'ReservationList::Add To Reservation List';
+  $pageTitle = $this->translate('ReservationList::Add To Reservation List');
   // Set up page title:
   $this->headTitle($this->translate($pageTitle));
   $user = $this->auth()->getUserObject();
+
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('reservationlist-placeorderoptions') . '">' . $this->transEsc('ReservationList::Choose Option For The Record') . '</a></li>'
-    . '<li>' . $this->transEsc($pageTitle) . '</li>';
+  $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($pageTitle, active: true);
+
   $listTranslations = $this->reservationList()->getListProperties($this->params['institution'], $this->params['listIdentifier'])['translation_keys'];
 ?>
-<h2><?= $this->transEsc($pageTitle); ?></h2>
+<h2><?= $this->escapeHtml($pageTitle); ?></h2>
 <div>
   <div>
     <label for="list_title"><?=$this->transEsc('ReservationList::Reservation List')?>:</label>

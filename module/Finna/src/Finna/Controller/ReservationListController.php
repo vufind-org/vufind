@@ -144,6 +144,7 @@ class ReservationListController extends AbstractBase
             $view->source ?: DEFAULT_SEARCH_BACKEND,
             false
         );
+        $view->driver = $driver;
         $listProperties = $this->reservationListService->getListProperties(
             $view->institution,
             $view->listIdentifier
@@ -218,6 +219,14 @@ class ReservationListController extends AbstractBase
         if (!$listProperties || !$listProperties['Enabled']) {
             throw new \VuFind\Exception\Forbidden('List is not enabled');
         }
+        if ($view->recordId && $view->source) {
+            $view->driver = $this->getRecordLoader()->load(
+                $view->recordId,
+                $view->source,
+                false
+            );
+        }
+
         if ($this->formWasSubmitted('list_created')) {
             if (!$this->validateCsrf()) {
                 $this->flashMessenger()->addErrorMessage('csrf_validation_failed');
@@ -291,13 +300,18 @@ class ReservationListController extends AbstractBase
      */
     public function placeOrderOptionsAction()
     {
+        $driver = $this->getRecordLoader()->load(
+            $this->params()->fromQuery('recordId'),
+            $this->params()->fromQuery('source') ?: DEFAULT_SEARCH_BACKEND,
+            false
+        );
         $viewParams = [
             'institution' => $this->params()->fromQuery('institution'),
             'listIdentifier' => $this->params()->fromQuery('listIdentifier'),
             'source' => $this->params()->fromQuery('source'),
             'recordId' => $this->params()->fromQuery('recordId'),
         ];
-        return $this->createViewModel(['params' => $viewParams]);
+        return $this->createViewModel(['driver' => $driver, 'params' => $viewParams]);
     }
 
     /**

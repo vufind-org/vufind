@@ -9,7 +9,8 @@
   $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc('Sort manually') . '</h3></div>';
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Sort manually') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Sort manually'), active: true);
 ?>
 
 <h2><?=$this->transEsc('Sort manually') ?></h2>

@@ -1,13 +1,16 @@
 <!-- START of: finna - holds/list.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('My Holds'));
-    $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
-    // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('My Holds') . '</li>';
-    $user = $this->auth()->getUserObject();
-    $patron = $user ? $this->auth()->getILSPatron() : false;
-    $sortList = $this->sortList;
+  // Set up page title:
+  $this->headTitle($this->translate('My Holds'));
+  $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
+
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('My Holds'), active: true);
+
+  $user = $this->auth()->getUserObject();
+  $patron = $user ? $this->auth()->getILSPatron() : false;
+  $sortList = $this->sortList;
 ?>
 
 <!-- Leftside navigationbar -->

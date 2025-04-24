@@ -245,13 +245,7 @@
       <?=$this->render($template)?>
     <?php endif; ?>
     </section>
-    <?php if (!empty($this->layout()->showBreadcrumbs ?? true) && !empty($this->layout()->breadcrumbs)): ?>
-      <nav class="breadcrumbs hidden-print" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
-        <div class="container">
-          <ul class="breadcrumb"><?=$this->layout()->breadcrumbs ?></ul>
-        </div>
-      </nav>
-    <?php endif; ?>
+    <?=$this->breadcrumbs()->render(); ?>
     <?php // TODO: get rid of template-dir-* and template-name-* here ?>
     <section id="main" role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?=$this->browse ? ' browse' : '' ?><?=$currentTabClass?>">
       <?php if (!empty($this->layout()->advSearchHeader)): ?>

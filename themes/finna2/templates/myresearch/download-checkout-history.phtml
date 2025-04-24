@@ -3,7 +3,11 @@
     $this->headScript()->prependFile('finna-checkout-history.js');
     // Set page title.
     $this->headTitle($this->translate('loan_history_download'));
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('loan_history_download') . '</li>';
+
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('loan_history_download'), active: true);
+
     $inLightBox = $this->inLightbox ?? false;
 ?>
 <?php if (!$inLightBox): ?>

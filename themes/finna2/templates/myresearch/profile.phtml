@@ -3,8 +3,11 @@
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
     $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
+
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Profile') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Profile'), active: true);
+
     // Only display home library form if we have multiple pickup locations:
     $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
     $user = $this->auth()->getUserObject();

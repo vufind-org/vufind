@@ -1,20 +1,21 @@
 <!-- START of: finna - myresearch/checkedout.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('Checked Out Items'));
-    $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
+  // Set up page title:
+  $this->headTitle($this->translate('Checked Out Items'));
+  $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
-    // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('Checked Out Items') . '</li>';
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Checked Out Items'), active: true);
 
-    // Check if "Renew All" button can be displayed:
-    $renewAll = !$this->ilsPaging || !$paginator;
+  // Check if "Renew All" button can be displayed:
+  $renewAll = !$this->ilsPaging || !$paginator;
 
-    $user = $this->auth()->getUserObject();
+  $user = $this->auth()->getUserObject();
 
-    $totalCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions ?? []);
+  $totalCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions ?? []);
 
-    $sortList = $this->sortList;
+  $sortList = $this->sortList;
 ?>
 
 <!-- Leftside navigationbar -->

@@ -30,6 +30,8 @@
     $titleLink .= ' - <a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)) . '">' . $this->driver->getBreadcrumb() . '</a>';
   }
 
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item active">' . $this->transEsc('Versions') . $titleLink . '</li>';
+  // Override breadcrumbs:
+  $this->breadcrumbs()->set($this->driver->getBreadcrumb(), $this->recordLinker()->getUrl($this->driver))
+    ->add($this->translate('Versions'), active: true);
 
   $this->layout()->advSearchHeader = '<div class="container"><div class="finna-main-header"><h1 class="search-result-header">' . $this->transEsc('Versions') . $titleLink . '</h1></div></div>';

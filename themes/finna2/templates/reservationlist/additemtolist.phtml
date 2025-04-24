@@ -1,11 +1,13 @@
 <?php
-  $pageTitle = 'ReservationList::Add To Reservation List';
+  $pageTitle = $this->translate('ReservationList::Add To Reservation List');
   // Set up page title:
-  $this->headTitle($this->translate($pageTitle));
+  $this->headTitle($pageTitle);
   $user = $this->auth()->getUserObject();
+
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('reservationlist-additemtolist') . '">' . $this->transEsc('ReservationList::Add To Reservation List') . '</a></li>'
-    . '<li class="breadcrumb-item active">' . $this->transEsc($pageTitle) . '</li>';
+  $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($pageTitle, active: true);
+
   $listTranslations = $this->reservationList($user)->getListProperties($this->institution, $this->listIdentifier)['translation_keys'];
 ?>
 

@@ -3,9 +3,12 @@
     $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
-        . '<li class="breadcrumb-item">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-        . '<li class="breadcrumb-item active">' . $this->transEsc('request_place_text') . '</li>';
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+      ->add($this->translate('request_place_text'), active: true);
 
     // Make sure extra hold fields is an array (might not be if ILS connection failed):
     $this->extraHoldFields ??= [];

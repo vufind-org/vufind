@@ -5,7 +5,8 @@
   $this->headTitle($title);
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('reservationlist-displaylists') . '">' . $title . '</a></li> <li class="breadcrumb-item active">' . $this->transEsc('ReservationList::Reservation List') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($title, active: true);
 ?>
 
 <!-- Leftside navigationbar -->
