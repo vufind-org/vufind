@@ -660,8 +660,25 @@ class EDS extends DefaultRecord
                 '<a id="$1" href="#$2"',
                 $data
             );
-
             $data = $this->replaceBRWithCommas($data, $group);
+            
+            // ensure tables are not shown as raw html
+            if(strpos($data, 'ephtml') > -1) {
+                $pattern = "/<\/?ephtml>/";
+                $result = preg_split($pattern, $data);
+                $data = '';
+                foreach ($result as $part) {
+                    if(strpos($part, 'table') > -3 && strpos($part, 'table') < 6) {
+                        // wrapping table in div with class - for styling
+                        $data .= '<div class="eds_html_table">';
+                        $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
+                        $data .= '</div>';
+                    }
+                    else {
+                        $data .= $part;
+                    }
+                }
+            }
         }
 
         return $data;
