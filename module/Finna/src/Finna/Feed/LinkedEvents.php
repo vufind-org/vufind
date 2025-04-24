@@ -30,10 +30,10 @@
 
 namespace Finna\Feed;
 
-use Finna\View\Helper\Root\CleanHtml;
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Config;
+use VuFind\View\Helper\Root\CleanHtml;
 
 use function is_array;
 use function strlen;

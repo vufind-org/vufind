@@ -31,7 +31,6 @@
 namespace Finna\Feed;
 
 use Finna\OrganisationInfo\OrganisationInfo;
-use Finna\View\Helper\Root\CleanHtml;
 use Laminas\Feed\Reader\Entry\AbstractEntry;
 use Laminas\Feed\Reader\Feed\AbstractFeed;
 use Laminas\Feed\Reader\Reader;
@@ -40,6 +39,7 @@ use Laminas\View\Helper\ServerUrl;
 use Psr\Container\ContainerInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Config;
+use VuFind\View\Helper\Root\CleanHtml;
 use VuFindTheme\View\Helper\ImageLink;
 
 use function in_array;

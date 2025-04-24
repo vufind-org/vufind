@@ -15,7 +15,6 @@ return [
             'Finna\View\Helper\Root\Browse' => 'Finna\View\Helper\Root\BrowseFactory',
             'Finna\View\Helper\Root\Callnumber' => 'Finna\View\Helper\Root\CallNumberFactory',
             'Finna\View\Helper\Root\Citation' => 'Finna\View\Helper\Root\CitationFactory',
-            'Finna\View\Helper\Root\CleanHtml' => 'Finna\View\Helper\Root\CleanHtmlFactory',
             'Finna\View\Helper\Root\Combined' => 'Finna\View\Helper\Root\CombinedFactory',
             'Finna\View\Helper\Root\Component' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
@@ -78,6 +77,7 @@ return [
             'Finna\View\Helper\Root\UserListEmbed' => 'Finna\View\Helper\Root\UserListEmbedFactory',
             'Finna\View\Helper\Root\UserPublicName' => 'Laminas\ServiceManager\Factory\InvokableFactory',
 
+            'VuFind\View\Helper\Root\CleanHtml' => 'Finna\View\Helper\Root\CleanHtmlFactory',
             'VuFind\View\Helper\Root\Linkify' => 'Finna\View\Helper\Root\LinkifyFactory',
         ],
         'aliases' => [
@@ -91,7 +91,6 @@ return [
             'barcode' => 'Finna\View\Helper\Root\Barcode',
             'bazaarSession' => 'Finna\View\Helper\Root\BazaarSession',
             'callnumber' => 'Finna\View\Helper\Root\Callnumber',
-            'cleanHtml' => 'Finna\View\Helper\Root\CleanHtml',
             'combined' => 'Finna\View\Helper\Root\Combined',
             'content' => 'Finna\View\Helper\Root\Content',
             'cookie' => 'Finna\View\Helper\Root\Cookie',

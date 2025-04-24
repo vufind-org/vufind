@@ -34,8 +34,6 @@ use Finna\View\CustomElement\FinnaPanel;
 use Finna\View\CustomElement\FinnaTruncate;
 use Finna\View\CustomElement\PluginManager;
 use Finna\View\Helper\Root\AdjustHeadingLevel;
-use Finna\View\Helper\Root\CleanHtml;
-use Finna\View\Helper\Root\CleanHtmlFactory;
 use Finna\View\Helper\Root\CustomElement;
 use Finna\View\Helper\Root\Markdown;
 use League\CommonMark\Environment\Environment;
@@ -56,6 +54,7 @@ use VuFind\View\Helper\Root\Translate;
 class MarkdownTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ViewTrait;
+    use \FinnaTest\Traits\ViewTrait;
 
     protected Markdown $helper;
 
@@ -79,10 +78,7 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
         $view = $this->getPhpRenderer(
             [
                 'adjustHeadingLevel' => new AdjustHeadingLevel(),
-                'cleanHtml' => new CleanHtml(
-                    null,
-                    CleanHtmlFactory::getAllowedElements($elements)
-                ),
+                'cleanHtml' => $this->getCleanHtml($elements),
                 'transEsc' => $transEsc,
                 'translate' => new Translate(),
             ],

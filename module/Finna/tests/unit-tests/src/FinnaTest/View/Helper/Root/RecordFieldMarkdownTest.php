@@ -29,7 +29,6 @@
 
 namespace FinnaTest\View\Helper\Root;
 
-use Finna\View\Helper\Root\CleanHtml;
 use Finna\View\Helper\Root\RecordFieldMarkdown;
 
 /**
@@ -44,6 +43,7 @@ use Finna\View\Helper\Root\RecordFieldMarkdown;
 class RecordFieldMarkdownTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ViewTrait;
+    use \FinnaTest\Traits\ViewTrait;
 
     /**
      * Get view helper to test.
@@ -53,7 +53,9 @@ class RecordFieldMarkdownTest extends \PHPUnit\Framework\TestCase
     protected function getHelper(): RecordFieldMarkdown
     {
         $view = $this->getPhpRenderer(
-            ['cleanHtml' => new CleanHtml(null, [])],
+            [
+                'cleanHtml' => $this->getCleanHtml([]),
+            ],
             'finna2'
         );
         $markdown = new RecordFieldMarkdown(
