@@ -43,7 +43,7 @@ use VuFind\Validator\CsrfInterface;
  */
 class CommentsController extends AbstractBase
 {
-    use UserContentTrait;
+    use Feature\UserContentTrait;
 
     /**
      * Array of sort options for userListAction

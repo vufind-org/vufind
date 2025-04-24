@@ -44,7 +44,7 @@ use VuFind\Validator\CsrfInterface;
  */
 class TagController extends AbstractSearch
 {
-    use UserContentTrait;
+    use Feature\UserContentTrait;
 
     /**
      * Array of sort options for userListAction

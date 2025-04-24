@@ -27,7 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Controller\Feature;
 
 /**
  * User Content trait
@@ -76,7 +76,7 @@ trait UserContentTrait
             $ids[] = $content['source'] . '|' . $content['record_id'];
         }
         $records = $recordLoader->loadBatch($ids, true);
-        foreach ($contents as $i => $c) {
+        foreach ($contents as $i => &$c) {
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
         }
         return $contents;
