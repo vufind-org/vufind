@@ -76,6 +76,8 @@ class SearchController extends \VuFind\Controller\SearchController
         $range = [
             'type' => 'date',
             'field' => $params->getDateRangeSearchField(),
+            'rangeMin' => $ticks[0],
+            'rangeMax' => $rangeEnd,
         ];
 
         if (

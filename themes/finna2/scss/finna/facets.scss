@@ -467,3 +467,43 @@ span.badge.cb-facet {
     padding-left: .1rem;
   }
 }
+
+/* ------ Ranges ------ */
+.facet-range-form {
+  width: 100%;
+}
+.date-fields {
+  display: flex;
+
+  .date-from, .date-to { flex: 0 1 100%; }
+  .date-from { padding-right: .25rem; }
+  .date-to   { padding-left:  .25rem; }
+}
+// These includes Primo
+#creationdateFilter, #publishDateFilter, #PublicationDateFilter {
+  input[type="text"], input[type="number"] {
+    width: 40%;
+    max-width: 70px;
+    padding: 0px 5px;
+    display: inline-block;
+  }
+  input[type="number"] {
+    /* Firefox */
+    -moz-appearance: textfield;
+
+    /* Chrome, Safari, Edge, Opera */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+  .slider-container {
+    margin: 1rem 0;
+  }
+}
+
+/* ------ New items filter ------ */
+.btn.new-items-apply {
+  margin-top: 4px;
+}

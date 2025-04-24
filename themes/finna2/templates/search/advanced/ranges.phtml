@@ -2,7 +2,10 @@
 <?php if (isset($this->ranges) && !empty($this->ranges)): ?>
   <?php $params = $this->searchParams($this->searchClassId); ?>
   <?php foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
-    <fieldset>
+    <?php
+      $isDateRange = $current['type'] == 'date';
+    ?>
+    <fieldset class="range" id="<?=$escField?>-range-container">
       <legend class="sr-only"><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
       <div>
         <span class="label-block form-inline"><?=$this->transEsc($params->getFacetLabel($current['field']))?>:</span>
@@ -20,54 +23,17 @@
           <input id="<?=$escField?>to" type="number" class="form-control form-inline input-year" value="<?=isset($current['values'][1]) ? $this->escapeHtmlAttr($current['values'][1]) : ''?>" size="5">
         </div>
         <div class="information"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_range')?></p></div>
-        <?php if ($current['type'] == 'date'): ?>
-        <div aria-hidden="true" class="slider-container">
-          <label for="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider" class="sr-only"><?=$this->transEsc('year_slider');?></label>
-          <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
-        </div>
-        <?php endif; ?>
       </div>
-      <?php if ($current['type'] == 'date'): ?>
-      <?php
-        $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
-        $min = $current['ticks'][0];
-        $max = end($current['ticks']);
-        $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
-        $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
-        $min = intval($min);
-        $max = intval($max);
-        $low = intval($low);
-        $high = intval($high);
-        $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
-        $ticks = $ticks_labels = '[' . implode(', ', $current['ticks']) . ']';
-        $ticks_positions = '[' . implode(', ', $current['ticks_positions']) . ']';
-        $script = <<<JS
-            $(document).ready(function() {
-              var fillTexts = function() {
-                var v = {$escField}dateSlider.getValue();
-                $('#${escField}from').val(v[0]).change();
-                $('#${escField}to').val(v[1]).change();
-              };
-              var {$escField}dateSlider = $('#{$escField}dateSlider')
-                .slider({
-                   'min':{$min},
-                   'max':{$max},
-                   'handle':"square",
-                   'tooltip':"hide",
-                   'value':[{$low},{$high}],
-                   'id': '{$escField}date_slider_control',
-            	     'ticks':{$ticks},
-            	     'ticks_labels':{$ticks_labels},
-            	     'ticks_positions':{$ticks_positions}
-                })
-                .change(fillTexts)
-                .data('slider');
-              {$init}
-            });
-            JS;
-      ?>
-      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-    <?php endif; ?>
+      <?php if ($isDateRange): ?>
+        <?=$this->component('date-range-slider', [
+          'values' => $current['values'] ?? [],
+          'sliderId' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
+          'inputMinId' => $escField . 'from',
+          'inputMaxId' => $escField . 'to',
+          'rangeMin' => $current['rangeMin'] ?? null,
+          'rangeMax' => $current['rangeMax'] ?? null,
+        ])?>
+      <?php endif; ?>
     </fieldset>
   <?php endforeach; ?>
 <?php endif; ?>

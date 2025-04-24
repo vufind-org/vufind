@@ -13,10 +13,10 @@ $newItemValues = [
 <?php endforeach; ?>
 <div class="facet list-group-item">
     <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
-        <?=$results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$title}:.*/"])?>
-        <div class="form-group">
+      <?=$results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$title}:.*/"])?>
+      <div class="form-group">
         <?=$this->component('finna-dateinput', ['dateinputId' => $this->escapeHtmlAttr($title . 'from'), 'dateinputPicker' => 'single', 'dateinputName' => $this->escapeHtmlAttr($title . 'from'), 'dateinputLabel' => $this->transEsc('date_from'), 'dateinputValue' => $this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacets[$title]['date']))]) ?>
-        <button class="btn btn-xs btn-primary" type="submit" value=""><?=$this->transEsc('search_date_from');?></button>
+        <button class="btn btn-xs btn-primary new-items-apply" type="submit" value=""><?=$this->transEsc('search_date_from');?></button>
       </div>
     </form>
     <?php

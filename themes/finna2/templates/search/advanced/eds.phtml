@@ -65,46 +65,11 @@
             <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control form-inline input-year">
         </div>
     </div>
-      <?php
-        $current = $this->daterange;
-        $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
-        $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
-        $min = $current['ticks'][0];
-        $max = end($current['ticks']);
-        $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
-        $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
-        $min = intval($min);
-        $max = intval($max);
-        $low = intval($low);
-        $high = intval($high);
-        $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
-        $ticks = $ticks_labels = '[' . implode(', ', $current['ticks']) . ']';
-        $ticks_positions = '[' . implode(', ', $current['ticks_positions']) . ']';
-        $script = <<<JS
-            $(document).ready(function() {
-              var fillTexts = function() {
-                var v = PublicationDateSlider.getValue();
-                $('#PublicationDatefrom').val(v[0]);
-                $('#PublicationDateto').val(v[1]);
-              };
-              var PublicationDateSlider = $('#PublicationDateSlider')
-                .slider({
-                   'min':{$min},
-                   'max':{$max},
-                   'handle':"square",
-                   'tooltip':"hide",
-                   'value':[{$low},{$high}],
-                   'ticks':{$ticks},
-                   'ticks_labels':{$ticks_labels},
-                   'ticks_positions':{$ticks_positions}
-                })
-                .change(fillTexts)
-                .data('slider');
-              {$init}
-            });
-            JS;
-    ?>
-    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-    </div>
+    <?=$this->component('date-range-slider', [
+      'values' => $current['values'] ?? [],
+      'sliderId' => 'PublicationDateSlider',
+      'inputMinId' => 'PublicationDatefrom',
+      'inputMaxId' => 'PublicationDateto',
+    ])?>
   </fieldset>
 <?php endif; ?>
