@@ -588,7 +588,7 @@ class EDS extends DefaultRecord
                 '</text'       => '</div',
                 '<title'       => '<h2',
                 '</title'      => '</h2',
-                '<anid'        => '<p',
+                '<anid'        => '<p class="eds_html_anid"',
                 '</anid'       => '</p',
                 '<aug'         => '<p class="aug"',
                 '</aug'        => '</p',
