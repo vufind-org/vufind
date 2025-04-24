@@ -662,7 +662,7 @@ class EDS extends DefaultRecord
             );
             $data = $this->replaceBRWithCommas($data, $group);
             
-            // ensure tables are not shown as raw html
+            // ensure tables & mathML are not shown as raw html
             if(strpos($data, 'ephtml') > -1) {
                 $pattern = "/<\/?ephtml>/";
                 $result = preg_split($pattern, $data);
