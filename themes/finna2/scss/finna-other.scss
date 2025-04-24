@@ -148,11 +148,6 @@ i.fa.fa-search.backgrounding:before {
     color: rgba(255,255,255,0.5);
 }
 
-.modal-body.in {
-    /* These combat the bootstrap weirdness with trying to compensate for scrollbars */
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-}
 /* Input styles */
 input[type=number].input-year {
     -moz-appearance:textfield !important;
