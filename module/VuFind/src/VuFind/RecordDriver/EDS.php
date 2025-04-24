@@ -665,9 +665,9 @@ class EDS extends DefaultRecord
             // ensure tables & mathML are not shown as raw html
             if(strpos($data, 'ephtml') > -1) {
                 $pattern = "/<\/?ephtml>/";
-                $result = preg_split($pattern, $data);
+                $splitParts = preg_split($pattern, $data);
                 $data = '';
-                foreach ($result as $part) {
+                foreach ($splitParts as $part) {
                     if(strpos($part, 'table') > -1 && strpos($part, 'table') < 6) {
                         $data .= '<div class="eds_html_table">';
                         $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
