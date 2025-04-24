@@ -2,8 +2,7 @@
 <?php
   $openUrl = $this->openUrl($this->driver, 'record');
   $openUrlActive = $openUrl->isActive();
-  $doi = $this->doi($this->driver, 'record');
-  $doiActive = $doi->isActive();
+  $identifierLinks = $this->identifierLinker($this->driver, 'record');
 
   $recordHelper = $this->record($this->driver);
   // Account for replace_other_urls setting
@@ -85,8 +84,8 @@
       <?=$this->record($this->driver)->renderTemplate('cached-record-warning.phtml', ['driver' => $this->driver])?>
       <?=$this->record($this->driver)->getLabelList() ?>
 
-      <?php if (!empty($urls) || $openUrlActive || $doiActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-        <?php if ($hasOnlineURLs || $openUrlActive || $doiActive): ?>
+      <?php if (!empty($urls) || $openUrlActive || $identifierLinks || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+        <?php if ($hasOnlineURLs || $openUrlActive || $identifierLinks): ?>
         <div class="recordURLs local-available-online-record">
           <div class="truncate-field">
             <?php if (!empty($otherUrls)): ?>
@@ -118,9 +117,7 @@
             <?php endif; ?>
           </div>
 
-          <?php if ($doiActive): ?>
-            <?=$doi->renderTemplate()?>
-          <?php endif; ?>
+          <?=$identifierLinks?>
           <?php if ($openUrlActive): ?>
             <?=$openUrl->renderTemplate()?><br>
           <?php endif; ?>

@@ -4,8 +4,6 @@
 
   $openUrl = $this->openUrl($this->driver, 'record');
   $openUrlActive = $openUrl->isActive();
-  $doi = $this->doi($this->driver, 'record');
-  $doiActive = $doi->isActive();
   // Account for replace_other_urls setting
   $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   $onlineURLs = $this->driver->getOnlineURLs();
@@ -137,9 +135,7 @@
             <?php endif; ?>
           <?php endif; ?>
 
-          <?php if ($doiActive): ?>
-            <?=$doi->renderTemplate()?>
-          <?php endif; ?>
+          <?=$this->identifierLinker($this->driver, 'record')?>
 
           <?php if ($openUrlActive): ?>
             <?=$openUrl->renderTemplate()?>

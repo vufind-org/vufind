@@ -2,8 +2,6 @@
 <?php
 $openUrl = $this->openUrl($this->driver, 'results');
 $openUrlActive = $openUrl->isActive();
-$doi = $this->doi($this->driver, 'results');
-$doiActive = $doi->isActive();
 // Account for replace_other_urls setting
 $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 $fulltextAvailable = $this->driver->getFulltextAvailable();
@@ -16,9 +14,7 @@ $fulltextAvailable = $this->driver->getFulltextAvailable();
     <?php endif; ?>
   <?php endif; ?>
 
-  <?php if ($doiActive): ?>
-    <?=$doi->renderTemplate()?>
-  <?php endif; ?>
+  <?=$this->identifierLinker($this->driver, 'results')?>
 
   <?php if ($openUrlActive): ?>
     <?=$openUrl->renderTemplate()?>

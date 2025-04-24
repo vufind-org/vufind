@@ -1455,7 +1455,7 @@ class Record extends \VuFind\View\Helper\Root\Record
         if (
             !empty($this->driver)
             && ($this->driver->supportsAjaxStatus()
-            || $this->getView()->plugin('doi')($this->driver, 'results')->isActive())
+            || $this->getView()->plugin('identifierLinker')($this->driver, 'results') !== '')
         ) {
             $classes[] = 'ajaxItem';
         }

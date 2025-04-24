@@ -33,18 +33,15 @@
     <?php
       $openUrl = $this->openUrl($this->driver, 'record');
       $openUrlActive = $openUrl->isActive();
-      $doi = $this->doi($this->driver, 'record');
-      $doiActive = $doi->isActive();
+      $identifierLinks = $this->identifierLinker($this->driver, 'record');
       // Account for replace_other_urls setting
       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     ?>
 
-    <?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
+    <?php if (!empty($urls) || $openUrlActive || $identifierLinks): ?>
       <div class="recordURLs eds-available-online-record">
         <?=$this->partial('RecordDriver/EDS/online-url-list.phtml', ['driver' => $this->driver, 'urls' => $urls])?>
-        <?php if ($doiActive): ?>
-          <?=$doi->renderTemplate()?>
-        <?php endif; ?>
+        <?=$identifierLinks?>
         <?php if ($openUrlActive): ?>
           <?=$openUrl->renderTemplate()?>
         <?php endif; ?>

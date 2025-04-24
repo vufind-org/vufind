@@ -2,14 +2,13 @@
 <?php
   $openUrl = $this->openUrl($this->driver, 'holdings');
   $openUrlActive = $openUrl->isActive();
-  $doi = $this->doi($this->driver, 'holdings');
-  $doiActive = $doi->isActive();
+  $identifierLinks = $this->identifierLinker($this->driver, 'holdings');
   // Account for replace_other_urls setting
   $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 ?>
 
 <?php
-  if (empty($urls) && !$openUrlActive && !$doiActive) {
+  if (empty($urls) && !$openUrlActive && !$identifierLinks) {
     return;
   }
 ?>
@@ -24,9 +23,7 @@
         <a class="holdings-url-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><?=$this->icon($current['linkType'] ?? 'external-link')?> <?=$this->transEsc('default::link_' . $current['desc'], null, $current['desc'])?> <?=$current['part'] ?? ''?></a>
       <?php endif; ?>
     <?php endforeach; ?>
-    <?php if ($doiActive): ?>
-      <?=$doi->renderTemplate()?>
-    <?php endif; ?>
+    <?=$identifierLinks?>
     <?php if ($openUrlActive): ?>
       <?=$openUrl->renderTemplate()?>
       <?php
