@@ -1,7 +1,8 @@
 <?php if (isset($this->ranges) && !empty($this->ranges)): ?>
   <?php $params = $this->searchParams($this->searchClassId); ?>
-  <?php foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
+  <?php foreach ($this->ranges as $current): ?>
     <?php
+      $escField = $this->escapeHtmlAttr($current['field']);
       $isDateRange = $current['type'] == 'date';
       $inputType = $isDateRange ? 'number' : 'text';
       $extraInputAttribs = $isDateRange ? 'min="-9999" max="9999"' : '';
@@ -20,11 +21,14 @@
         </div>
       </div>
       <?php if ($isDateRange): ?>
+        <?php $options = $params->getOptions(); ?>
         <?=$this->component('date-range-slider', [
           'values' => $current['values'] ?? [],
           'sliderId' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
           'inputMinId' => $escField . 'from',
           'inputMaxId' => $escField . 'to',
+          'rangeMin' => $options->getDateRangeSliderMinValue($current['field']),
+          'rangeMax' => $options->getDateRangeSliderMaxValue($current['field']),
         ])?>
       <?php endif; ?>
     </fieldset>

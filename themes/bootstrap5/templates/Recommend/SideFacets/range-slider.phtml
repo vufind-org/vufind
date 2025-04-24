@@ -31,11 +31,14 @@
       </div>
     </div>
     <?php if ($isDateRange): ?>
+      <?php $options = $this->searchOptions($this->searchClassId); ?>
       <?=$this->component('date-range-slider', [
         'values' => $cleanValues,
         'sliderId' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',
         'inputMinId' => $safeBaseId . 'from',
         'inputMaxId' => $safeBaseId . 'to',
+        'rangeMin' => $options->getDateRangeSliderMinValue($this->title),
+        'rangeMax' => $options->getDateRangeSliderMaxValue($this->title),
       ])?>
     <?php endif; ?>
     <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>">

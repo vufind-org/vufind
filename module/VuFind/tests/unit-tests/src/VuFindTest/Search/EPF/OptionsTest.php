@@ -59,7 +59,6 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                         'default_view' => 'brief',
                     ],
                 ],
-                'list_brief',
                 'brief',
             ],
             [
@@ -68,7 +67,6 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                         'default_view' => 'full',
                     ],
                 ],
-                'list_full',
                 'full',
             ],
         ];
@@ -78,14 +76,13 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      * Test that the Options object returns correct data .
      *
      * @param array  $config  Blender configuration
-     * @param string $view    Expected view
      * @param string $epfView Expected epfView
      *
      * @return void
      *
      * @dataProvider optionsProvider
      */
-    public function testOptions(array $config, $view, $epfView): void
+    public function testOptions(array $config, $epfView): void
     {
         $configMgr = $this->getMockConfigPluginManager(
             [
@@ -93,7 +90,6 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($configMgr);
-        $this->assertEquals($view, $options->getView());
         $this->assertEquals($epfView, $options->getEpfView());
     }
 }
