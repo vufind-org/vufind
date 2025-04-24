@@ -45,7 +45,7 @@ $that = $this;
                   finna.authority.initAuthorityRecommendTabs();
                 });
                 JS;
-        $this->headScript()->appendScript($js);
+        $this->assetManager()->appendScriptString($js);
       ?>
     <?php endif; ?>
     <?php

@@ -1,6 +1,6 @@
 <!-- START of: finna - myresearch/download-checkout-history.phtml -->
 <?php
-    $this->headScript()->prependFile('finna-checkout-history.js');
+    $this->assetManager()->prependScriptLink('finna-checkout-history.js');
     // Set page title.
     $this->headTitle($this->translate('loan_history_download'));
 
@@ -15,8 +15,8 @@
   <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'historicLoans']); ?>
   <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
 <?php else: ?>
-  <?php // Print headscript in lightbox so the loading of the script works properly ?>
-  <?= $this->headScript(); ?>
+  <?php // Print assets in lightbox so the loading of the script works properly ?>
+  <?=$this->assetManager()->outputHeaderAssets()?>
 <?php endif; ?>
 
 <h2><?=$this->transEsc('loan_history_download') . ': ' . $this->transEscWithPrefix('loan_history_download_', $this->format); ?></h2>
@@ -43,6 +43,6 @@ $js = <<<JS
       }
     JS;
 
-echo $this->inlineScript()->appendScript($js);
+echo $this->assetManager()->outputScriptString($js);
 ?>
 <!-- END of: finna - myresearch/download-checkout-history.phtml -->

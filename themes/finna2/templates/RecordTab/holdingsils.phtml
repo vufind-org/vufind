@@ -401,11 +401,6 @@
 <?php endif; ?>
 
 <?php
-  $this->inlineScript(
-      \Laminas\View\Helper\HeadScript::SCRIPT,
-      'finna.record.setupHoldingsTab();',
-      'SET'
-  );
-  echo $this->inlineScript();
+  echo $this->assetManager()->outputInlineScriptString('finna.record.setupHoldingsTab();');
 ?>
 <!-- END of: finna - RecordTab/holdingsils.phtml -->

@@ -1,6 +1,6 @@
 <!-- START of: finna - Recommend/OntologyDeferred.phtml -->
 <?php
-  $this->headScript()->appendFile('finna-recommendation-memory.js');
+  $this->assetManager()->appendScriptLink('finna-recommendation-memory.js');
   // Set up Javascript for use below:
   $loadJs = 'var url = VuFind.path + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
     . "var deferred = \$('#ontology-recommendations-deferred');"
@@ -9,6 +9,6 @@
     . '});'
 ?>
 <div id="ontology-recommendations-deferred">
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+  <?=$this->assetManager()->outputInlineScriptString($loadJs)?>
 </div>
 <!-- END of: finna - Recommend/OntologyDeferred.phtml -->

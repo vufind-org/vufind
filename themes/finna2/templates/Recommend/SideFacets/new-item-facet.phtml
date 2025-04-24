@@ -32,6 +32,6 @@ $newItemValues = [
         }
         EOT
     ;
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    echo $this->assetManager()->outputInlineScriptString($script);
     ?>
 </div>

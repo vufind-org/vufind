@@ -16,7 +16,7 @@
          finna.organisationInfo.init({$initParams});
       });
       JS;
-   $this->headScript()->appendScript($setupJS);
+   $this->assetManager()->appendScriptString($setupJS);
 ?>
 
 <?php if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-start')): ?>

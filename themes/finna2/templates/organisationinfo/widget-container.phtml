@@ -13,7 +13,7 @@
          finna.organisationInfo.initWidget({$initParams});
       });
       JS;
-   $this->headScript()->appendScript($setupJS);
+   $this->assetManager()->appendScriptString($setupJS);
 ?>
 <div class="organisation-info organisation-info-widget js-widget-<?=$id?>">
   <div>

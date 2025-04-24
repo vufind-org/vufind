@@ -1,6 +1,6 @@
 <!-- START of: finna - feedcontent/content.phtml -->
 <?php
-  $this->headScript()->appendFile('finna-content-feed.js');
+  $this->assetManager()->appendScriptLink('finna-content-feed.js');
   $this->headTitle($this->translate(''));
   $this->content()->setHeading($this->translate(''));
   $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
@@ -21,7 +21,7 @@
           finna.contentFeed.loadFeed($('#modal .feed-content'), true);
         });
         JS;
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $setupJS, 'SET');
+    echo $this->assetManager()->outputInlineScriptString($setupJS);
   }
 ?>
 <?php if ($this->modal): ?><h2></h2><?php endif; ?>

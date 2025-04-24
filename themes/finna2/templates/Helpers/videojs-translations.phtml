@@ -6,6 +6,6 @@
                 'Open AirPlay menu' => 'Open AirPlay menu',
             ]
         );
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "VuFind.addTranslations($translations);", 'SET');
+    echo $this->assetManager()->outputInlineScriptString("VuFind.addTranslations($translations);");
 ?>
 <?php /*Don't add start or end tags*/ ?>

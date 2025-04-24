@@ -6,7 +6,7 @@
         finna.layout.initTruncate(document.querySelector('.authority-records'));
       });
       JS;
-  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  echo $this->assetManager()->outputInlineScriptString($script);
 
   $results = $this->tab->loadRecords($this->driver);
   $resultCnt = $results->getResultTotal();

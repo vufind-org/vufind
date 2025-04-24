@@ -35,13 +35,13 @@
     </div>
   </div>
   <?php
-    $this->headScript()->appendFile('finna-encapsulated-records.js');
+    $this->assetManager()->appendScriptLink('finna-encapsulated-records.js');
     $js = <<<JS
         $(document).ready(function(){
           finna.encapsulatedRecords.init();
         });
         JS;
-    $this->headScript()->appendScript($js);
+    $this->assetManager()->appendScriptString($js);
   ?>
 <?php endif; ?>
 <!-- END of: finna - RecordDriver/DefaultRecord/encapsulated-records.phtml -->

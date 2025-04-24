@@ -1,6 +1,6 @@
 <!-- START of: finna - myresearch/sortlist.phtml -->
 <?php
-  $this->headScript()->appendFile('finna-mylist.js');
+  $this->assetManager()->appendScriptLink('finna-mylist.js');
   $list = $this->results->getListObject();
   $user = $this->auth()->getUserObject();
 
@@ -47,7 +47,7 @@ $script = <<<EOT
     EOT;
 
 // Inline the script for lightbox compatibility
-echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+echo $this->assetManager()->outputInlineScriptString($script);
 ?>
 <!-- END of: finna - myresearch/sortlist.phtml -->
 

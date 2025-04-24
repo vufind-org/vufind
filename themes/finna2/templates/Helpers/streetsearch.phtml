@@ -1,6 +1,6 @@
 <!-- START of: finna - Helpers/streetsearch.phtml -->
 <?php
-  $this->headScript()->appendFile('finna-street-search.js');
+  $this->assetManager()->appendScriptLink('finna-street-search.js');
   $this->jsTranslations()->addStrings(
       [
           'geolocation_inactive' => 'geolocation_inactive',

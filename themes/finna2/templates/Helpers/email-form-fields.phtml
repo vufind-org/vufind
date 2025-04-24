@@ -47,4 +47,4 @@
         });
     JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $emailFormScript, 'SET');
+<?=$this->assetManager()->outputInlineScriptString($emailFormScript);

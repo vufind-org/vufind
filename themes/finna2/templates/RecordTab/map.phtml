@@ -60,6 +60,6 @@
         tileLayer.on('load', onLoad);
       });
       JS;
-  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  echo $this->assetManager()->outputInlineScriptString($script);
 ?>
 <!-- END of: finna - RecordTab/map.phtml -->

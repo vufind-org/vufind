@@ -121,5 +121,5 @@ $this->matomo([
   $script = <<<JS
       finna.layout.initOrganisationPageLinks();
       JS;
-  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  echo $this->assetManager()->outputInlineScriptString($script);
 ?>

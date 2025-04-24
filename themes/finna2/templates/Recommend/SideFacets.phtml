@@ -1,6 +1,6 @@
 <!-- START of: finna - Recommend/SideFacets.phtml -->
 <?php
-  $this->headScript()->appendFile('facets.js');
+  $this->assetManager()->appendScriptLink('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
@@ -85,5 +85,5 @@ if ($this->fromStreetSearch) {
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'registerSideFacetTruncation();', 'SET');?>
+<?=$this->assetManager()->outputInlineScriptString('registerSideFacetTruncation();');?>
 <!-- END of: finna - Recommend/SideFacets.phtml -->

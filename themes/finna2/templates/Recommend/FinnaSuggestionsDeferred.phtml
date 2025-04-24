@@ -7,7 +7,7 @@
   ?>
   <div id="finna-suggestions-deferred">
     <p><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></p>
-    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+    <?=$this->assetManager()->outputInlineScriptString($loadJs)?>
   </div>
 <?php endif ?>
 <!-- END of: finna - Recommend/FinnaSuggestionsDeferred.phtml -->

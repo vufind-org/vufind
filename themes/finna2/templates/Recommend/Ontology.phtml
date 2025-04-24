@@ -39,7 +39,7 @@
     <?php endforeach; ?>
   </div>
   <?php
-    $this->headScript()->appendFile('finna-recommendation-memory.js');
+    $this->assetManager()->appendScriptLink('finna-recommendation-memory.js');
     $script = <<<EOT
             $('.ontology-recommendation a').each(function() {
               $(this).on('click', function() {
@@ -56,7 +56,7 @@
               });
             });
         EOT;
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    echo $this->assetManager()->outputInlineScriptString($script);
   ?>
   <?= $this->piwik(['customVars' => ['RecommendationShown' => 'OntologyRecommendation']]) ?>
   <?= $this->matomo(['customData' => ['RecommendationShown' => 'OntologyRecommendation']]) ?>

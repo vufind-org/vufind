@@ -87,6 +87,6 @@ $js = <<<JS
       VuFind.addTranslations({$translations});
     });
     JS;
-$this->headScript()->appendScript($js);
+$this->assetManager()->appendScriptString($js);
 ?>
 <!-- END of: finna - Helpers/linkedeventstabs.phtml -->

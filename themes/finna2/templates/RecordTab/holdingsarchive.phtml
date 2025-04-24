@@ -97,7 +97,7 @@
   <?php endforeach; ?>
 <?php endif; ?>
 <?php
-  $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'finna.record.setupHoldingsArchiveTab();', 'SET');
+  $this->assetManager()->outputInlineScriptString('finna.record.setupHoldingsArchiveTab();');
   echo $this->inlineScript();
 ?>
 <!-- END of: finna - RecordTab/holdingsarchive.phtml -->

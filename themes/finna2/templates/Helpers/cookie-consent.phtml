@@ -1,7 +1,7 @@
 <?php
   // Render the new cookie consent initialization script if necessary:
  if (!empty($this->consentDialogConfig)) {
-  $this->headScript()->appendFile('vendor/cookieconsent.umd.js');
+  $this->assetManager()->appendScriptLink('vendor/cookieconsent.umd.js');
 
   // Quick fix for null domain:
   $consentDialogConfig = $this->consentDialogConfig;
@@ -14,7 +14,7 @@
           'controlledVuFindServices' => $this->controlledVuFindServices,
       ]
   );
-  $this->headScript()->appendScript("window.addEventListener('load', function() { VuFind.cookie.setupConsent($configJson); });");
+  $this->assetManager()->appendScriptString("window.addEventListener('load', function() { VuFind.cookie.setupConsent($configJson); });");
   return;
 }
 ?>

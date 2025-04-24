@@ -28,7 +28,7 @@
       <?=$openUrl->renderTemplate()?>
       <?php
         $loadOpenURLs = "finna.openUrl.initLinks($('.holdings-urls'));";
-        echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadOpenURLs, 'SET')
+        echo $this->assetManager()->outputInlineScriptString($loadOpenURLs)
       ?>
     <?php endif; ?>
   </div>

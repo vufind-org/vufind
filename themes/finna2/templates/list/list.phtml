@@ -13,9 +13,9 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
 
 $this->hideCartControls = true;
 
-$this->headScript()->appendFile('check_item_statuses.js');
-$this->headScript()->appendFile('finna-item-status.js');
-$this->headScript()->prependScript("var listId = {$list->getId()}; var publicList = 1;");
+$this->assetManager()->appendScriptLink('check_item_statuses.js');
+$this->assetManager()->appendScriptLink('finna-item-status.js');
+$this->assetManager()->prependScriptString("var listId = {$list->getId()}; var publicList = 1;");
 ?>
 <?=$this->flashmessages() ?>
 <div class="clearfix hidden-print">

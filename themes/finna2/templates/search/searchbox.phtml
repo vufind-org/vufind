@@ -203,9 +203,9 @@
           // We don't include these by default in theme config to avoid bloat, but
           // since searchbox is on almost every page, it doesn't make a huge a huge
           // difference.
-          $this->headScript()->appendFile('vendor/simple-keyboard/index.js');
-          $this->headScript()->appendFile('vendor/simple-keyboard-layouts/index.js');
-          $this->headLink()->appendStylesheet('vendor/simple-keyboard/index.css');
+          $this->assetManager()->appendScriptLink('vendor/simple-keyboard/index.js');
+          $this->assetManager()->appendScriptLink('vendor/simple-keyboard-layouts/index.js');
+          $this->assetManager()->appendStyleLink('vendor/simple-keyboard/index.css');
           ?>
           <div class="keyboard-selection dropdown">
             <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-expanded="false">

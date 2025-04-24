@@ -21,8 +21,7 @@
     $dom->formatOutput = true;
     if ($dom->loadXML($rawFieldData['fullrecord'])) {
       echo '<pre id="record-data">' . $this->escapeHtml($dom->saveXML()) . '</pre>';
-      $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/highlight.pack.js');
-      echo $this->inlineScript();
+      echo $this->assetManager()->outputInlineScriptLink('vendor/highlight.pack.js');
       $script = <<<JS
             $(document).ready(function() {
               $('#record-data').each(function(i, block) {
@@ -30,7 +29,7 @@
               });
             });
           JS;
-      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+      echo $this->assetManager()->outputInlineScriptString($script);
     } else {
       echo '<pre id="record-data">' . $this->escapeHtml($rawFieldData['fullrecord']) . '</pre>';
     }

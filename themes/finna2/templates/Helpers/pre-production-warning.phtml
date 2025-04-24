@@ -37,6 +37,6 @@
   </div>
   <div class="nav navbar-nav nav-absolute cookie-consent-button">
     <button class="btn btn-primary preproduction-warning-dismiss" aria-label="<?=$this->transEscAttr('close')?>"><?=$this->transEsc('OK')?></button>
-    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET')?>
+    <?=$this->assetManager()->outputInlineScriptString($script)?>
   </div>
 </div>

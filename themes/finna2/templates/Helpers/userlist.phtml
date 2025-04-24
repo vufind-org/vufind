@@ -56,11 +56,11 @@
   </div>
 </div>
 <?php
-$this->headScript()->appendFile('finna-userlist-embed.js');
+$this->assetManager()->appendScriptLink('finna-userlist-embed.js');
 $js = <<<JS
     $(document).ready(function(){
       finna.userListEmbed.init();
     });
     JS;
-$this->headScript()->appendScript($js);
+$this->assetManager()->appendScriptString($js);
 ?>

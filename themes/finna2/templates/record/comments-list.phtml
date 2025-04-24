@@ -59,13 +59,11 @@
   <?php endforeach; ?>
 <?php endif; ?>
 <?=
-  $this->inlineScript(
-      \Laminas\View\Helper\HeadScript::SCRIPT,
+  $this->assetManager()->outputInlineScriptString(
       '$(document).ready(function() { finna.comments.initCommentList('
       . 'true,'
       . ($ratingAllowed ? 'true' : 'false') . ','
       . count($comments)
-      . '); });',
-      'SET'
+      . '); });'
   )?>
 <!-- END of: finna - record/comments-list.phtml -->

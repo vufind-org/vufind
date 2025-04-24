@@ -70,9 +70,9 @@
   <div class="back-to-up hidden"><?=$this->transEsc('Back to top')?> <?=$this->icon('back-to-up') ?></div>
 </div>
 <?php
-  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchy_tree.js');
+  $this->assetManager()->outputInlineScriptLink('hierarchy_tree.js');
   $js = <<<JS
         document.querySelectorAll('.js-hierarchy-tree-container').forEach((el) => VuFind.hierarchyTree.initTree(el));
       JS;
-  echo $this->inlineScript()->appendScript($js);
+  echo $this->assetManager()->outputInlineScriptString($js);
 ?>

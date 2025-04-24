@@ -36,6 +36,6 @@
          finna.linkedEvents.getEventContent("$id");
       });
       JS;
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $setupJS, 'SET');
+    echo $this->assetManager()->outputInlineScriptString($setupJS);
 ?>
 <!-- END of: finna - feedcontent/linkedevents.phtml -->

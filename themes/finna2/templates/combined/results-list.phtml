@@ -49,7 +49,7 @@
                     $('i', this).toggleClass('fa-arrow-up');
                   });
           JS;
-      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+      echo $this->assetManager()->outputInlineScriptString($script);
     ?>
   <?php endif; ?>
 </div>

@@ -44,7 +44,7 @@
   // Load Javascript dependencies into header:
   $this->render('search/results-scripts.phtml', compact('displayVersions'));
   // Style
-  $this->headLink()->appendStylesheet('combined-search.css');
+  $this->assetManager()->appendStyleLink('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">

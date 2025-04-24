@@ -14,10 +14,10 @@
     </button>
     </div>
     <div class="content">
-      <?php $this->headScript()->appendFile('vendor/jquery.colorhelpers.min.js'); ?>
-      <?php $this->headScript()->appendFile('vendor/jquery.flot.min.js'); ?>
-      <?php $this->headScript()->appendFile('vendor/jquery.flot.selection.min.js'); ?>
-      <?php $this->headScript()->appendFile('finna-daterange-vis.js'); ?>
+      <?php $this->assetManager()->appendScriptLink('vendor/jquery.colorhelpers.min.js'); ?>
+      <?php $this->assetManager()->appendScriptLink('vendor/jquery.flot.min.js'); ?>
+      <?php $this->assetManager()->appendScriptLink('vendor/jquery.flot.selection.min.js'); ?>
+      <?php $this->assetManager()->appendScriptLink('finna-daterange-vis.js'); ?>
       <div class="date-vis"></div>
       <?=$this->icon('spinner') ?>
     </div>
@@ -58,5 +58,5 @@ $script .= '
   );
 });';
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<?=$this->assetManager()->outputInlineScriptString($script); ?>
 <!-- END of: finna - Recommend/DateRangeVisAjax.phtml -->

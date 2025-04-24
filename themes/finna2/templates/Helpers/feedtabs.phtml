@@ -45,12 +45,12 @@
   <finna-feed></finna-feed>
 </div>
 <?php
-$this->headScript()->appendFile('finna-feed-tabs.js');
+$this->assetManager()->appendScriptLink('finna-feed-tabs.js');
 $js = <<<JS
     $(document).ready(function(){
       finna.feedTabs.init("feed-tabs-{$this->id}");
     });
     JS;
-$this->headScript()->appendScript($js);
+$this->assetManager()->appendScriptString($js);
 ?>
 <!-- END of: finna - Helpers/feedtabs.phtml -->
