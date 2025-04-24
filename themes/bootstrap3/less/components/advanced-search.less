@@ -50,8 +50,13 @@
     vertical-align: middle;
   }
 }
-.adv-submit { .clearfix(); }
-.adv-submit .clear-btn { float: right; }
+
+.adv-submit {
+  .clearfix();
+  margin-block: 1rem;
+
+  .clear-btn { float: right; }
+}
 
 @media (min-width: 768px) {
   .adv-group-terms {
@@ -85,7 +90,18 @@
 
 #groupPlaceHolder {
   display: block;
-  padding: 1rem;
+  width: fit-content;
+  margin-block: 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid @btn-default-border;
+  border-radius: @border-radius-base;
+
+  &:hover,
+  &:focus {
+    color: @btn-default-bg;
+    background-color: @btn-default-color;
+    border-color: @btn-default-color;
+  }
 }
 
 /* --- Fieldsets --- */
