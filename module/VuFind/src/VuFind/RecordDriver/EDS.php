@@ -674,9 +674,9 @@ class EDS extends DefaultRecord
                         $data .= '</div>';
                     }
                     elseif(strpos($part, 'math') > -1 && strpos($part, 'math') < 6) {
-                        $data .= '<div class="eds_html_math">';
+                        $data .= '<span class="eds_html_math">';
                         $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
-                        $data .= '</div>';
+                        $data .= '</span>';
                     }
                     else {
                         $data .= $part;
