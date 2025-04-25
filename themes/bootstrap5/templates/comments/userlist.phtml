@@ -78,7 +78,7 @@
               </td>
               <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $comment['created'])?></td>
               <td data-label="<?=$this->transEscAttr('Title')?>">
-                <a href="<?=$this->url('record', ['id' => $comment['record_id']])?>"><?=$comment['recordTitle']?></a>
+                <a href="<?=$this->url('record', ['id' => $comment['record_id']])?>"><?=$this->escapeHtml($comment['recordTitle'])?></a>
               </td>
               <td class="user-comment" data-label="<?=$this->transEscAttr('Comment')?>">
                 <?php $truncateSettings = ['rows' => 1]?>
