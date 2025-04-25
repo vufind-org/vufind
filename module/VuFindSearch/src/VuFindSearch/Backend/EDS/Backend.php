@@ -435,8 +435,7 @@ class Backend extends AbstractBackend
             $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
         }
-        $model = new SearchRequestModel($options);
-        $model->setValidationConfig($this->validationConfig);
+        $model = new SearchRequestModel($options, $this->validationConfig);
         if ($this->logger) {
             $model->setLogger($this->logger);
         }

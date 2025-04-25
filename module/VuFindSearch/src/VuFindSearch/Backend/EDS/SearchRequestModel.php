@@ -148,18 +148,20 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @var array
      */
-    protected $validationConfig = [];
+    protected $validationConfig;
 
     /**
      * Constructor
      *
      * Sets up the EDS API Search Request model
      *
-     * @param array $parameters parameters to populate request
+     * @param array $parameters       parameters to populate request
+     * @param array $validationConfig Validation config
      */
-    public function __construct($parameters = [])
+    public function __construct(array $parameters = [], array $validationConfig = [])
     {
         $this->setParameters($parameters);
+        $this->setValidationConfig($validationConfig);
     }
 
     /**
