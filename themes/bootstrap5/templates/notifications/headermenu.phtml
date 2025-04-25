@@ -1,6 +1,9 @@
 <?php
   $pages = $this->notifications()->getPages();
-  $maxWidth = round((100/sizeof($pages))-10);
+  $maxWidth = 90;
+  if (sizeof($pages) > 0) {
+      $maxWidth = round((100 / sizeof($pages)) - 10);
+  }
 ?>
 <ul class="nav navbar-nav navbar-left flip notifications-nav">
   <?php foreach($pages as $page): ?>
