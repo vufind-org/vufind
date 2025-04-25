@@ -96,7 +96,7 @@ interface CommentsServiceInterface extends DbServiceInterface
     public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
-     * Deletes comments by given comment ids and user id
+     * Deletes comments by given comment ids and user id.
      *
      * @param array $ids    Array of comment ids
      * @param int   $userId User ID
