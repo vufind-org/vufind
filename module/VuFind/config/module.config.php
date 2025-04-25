@@ -805,7 +805,7 @@ $staticRoutes = [
     'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk',
     'Channels/Home', 'Channels/Record', 'Channels/Search',
     'Checkouts/History', 'Checkouts/PurgeHistory',
-    'Comments/UserList', 'Comments/DeleteComments',
+    'Comments/DeleteComments', 'Comments/UserList',
     'Collections/ByTitle',
     'Collections/Home', 'Combined/Home', 'Combined/Results', 'Combined/SearchBox',
     'Confirm/Confirm', 'Cover/Show', 'Cover/Unavailable',
