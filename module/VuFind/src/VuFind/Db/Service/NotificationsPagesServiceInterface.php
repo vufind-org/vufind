@@ -79,7 +79,7 @@ interface NotificationsPagesServiceInterface extends DbServiceInterface
 
     /**
      * Get a page object by id
-     * This returns a specific page objects
+     * This returns a specific page object
      *
      * @param int $id Id of the page
      *

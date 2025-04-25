@@ -68,6 +68,7 @@ interface NotificationsBroadcastsServiceInterface extends DbServiceInterface
 
     /**
      * Get all data for a broadcast
+     * This returns a specific broadcast object
      *
      * @param mixed $broadcast_id Id of the broadcast
      */
@@ -75,6 +76,7 @@ interface NotificationsBroadcastsServiceInterface extends DbServiceInterface
 
     /**
      * Get a broadcast object by id
+     * This returns all the objects in all languages for one broadcast
      *
      * @param int $id Id of the broadcast
      *
