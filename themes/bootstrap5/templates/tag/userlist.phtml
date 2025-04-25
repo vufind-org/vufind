@@ -71,14 +71,14 @@
                   <div class="checkbox">
                     <label>
                     <span class="sr-only"><?=$this->transEsc('Select');?></span>
-                    <input class="checkbox-select-item" type="checkbox" name="deleteSelectedtag[]" value="<?=$this->escapeHtmlAttr(($tag['id'] ?? ''))?>" id="checkbox_tag_<?=$tag['id']?>">
+                    <input class="checkbox-select-item" type="checkbox" name="deleteSelectedtag[]" value="<?=$this->escapeHtmlAttr(($tag['id']))?>" id="checkbox_tag_<?=$tag['id']?>">
                     </label>
                   </div>
                 </div>
               </td>
               <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $tag['posted'])?></td>
               <td data-label="<?=$this->transEscAttr('Title')?>">
-                <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$tag['recordTitle']?></a>
+                <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$this->escapeHtml($tag['recordTitle'])?></a>
               </td>
               <td class="user-tag" data-label="<?=$this->transEscAttr('Tag')?>">
                 <div><?=$this->escapeHtml($tag['tag'])?></div>
