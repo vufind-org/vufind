@@ -176,8 +176,7 @@ class Comments extends Gateway implements DbServiceAwareInterface
     }
 
     /**
-     * Get a paginated result of all comments
-     * made by the user
+     * Get a paginated result of all comments made by the user.
      *
      * @param int    $userId User ID
      * @param int    $limit  Limit
@@ -213,16 +212,12 @@ class Comments extends Gateway implements DbServiceAwareInterface
         if ($page > 0) {
             $commentSelect->offset($page);
         }
-        if (null !== $limit) {
-            $commentSelect->limit($limit);
-        }
+        $commentSelect->limit($limit);
 
         $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($commentSelect, $this->getSql());
         $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
-        if (null !== $page) {
-            $paginator->setCurrentPageNumber($page);
-        }
+        $paginator->setCurrentPageNumber($page);
         return $paginator;
     }
 }

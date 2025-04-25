@@ -70,22 +70,20 @@ class CommentsController extends AbstractBase
         if (!$this->commentsEnabled()) {
             throw new ForbiddenException('Comments disabled.');
         }
-        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentPageSize();
-        $page = $this->params()->fromQuery('page', 1);
-        $sort = $this->params()->fromQuery('sort', 'created desc');
+        $paging = $this->getPagingParams($this->params());
         $service = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
         $comments = $this->getUserContentRecordTitles(
             $service->getCommentsPaginator(
                 $user->getId(),
-                $limit,
-                $page,
-                $sort,
+                $paging['limit'],
+                $paging['page'],
+                $paging['sort'],
             )
         );
         return $this->createViewModel(
             [
                 'comments' => $comments,
-                'sortList' => $this->getSortList($this->sortList, $sort),
+                'sortList' => $this->getSortList($this->sortList, $paging['sort']),
                 'params' => $this->params()->fromQuery(),
             ]
         );

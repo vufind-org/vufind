@@ -128,7 +128,7 @@ class RatingsService extends AbstractDbService implements
     }
 
     /**
-     * Delete ratings by given user and rating ids
+     * Delete ratings by given user and rating ids.
      *
      * @param array $ids    Array of rating ids
      * @param int   $userId User ID
@@ -145,7 +145,7 @@ class RatingsService extends AbstractDbService implements
     }
 
     /**
-     * Get a paginated result of all ratings by user id
+     * Get a paginated result of all ratings by user id.
      *
      * @param int    $userId User Id
      * @param int    $limit  Limit

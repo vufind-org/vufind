@@ -167,7 +167,7 @@ class CommentsService extends AbstractDbService implements
     }
 
     /**
-     * Get a paginated result of all comments by user id
+     * Get a paginated result of all comments by user id.
      *
      * @param int    $userId User Id
      * @param int    $limit  Limit
@@ -191,7 +191,7 @@ class CommentsService extends AbstractDbService implements
     }
 
     /**
-     * Delete comments by given user and comment ids
+     * Delete comments by given user and comment ids.
      *
      * @param array $ids    Array of comment ids
      * @param int   $userId User ID

@@ -70,22 +70,20 @@ class RatingsController extends AbstractBase
         if (!$this->ratingsEnabled()) {
             throw new ForbiddenException('Ratings disabled.');
         }
-        $limit = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentPageSize();
-        $page = $this->params()->fromQuery('page', 1);
-        $sort = $this->params()->fromQuery('sort', 'created desc');
+        $paging = $this->getPagingParams($this->params());
         $service = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
         $ratings = $this->getUserContentRecordTitles(
             $service->getRatingsPaginator(
                 $user->getId(),
-                $limit,
-                $page,
-                $sort,
+                $paging['limit'],
+                $paging['page'],
+                $paging['sort'],
             )
         );
         return $this->createViewModel(
             [
                 'ratings' => $ratings,
-                'sortList' => $this->getSortList($this->sortList, $sort),
+                'sortList' => $this->getSortList($this->sortList, $paging['sort']),
                 'params' => $this->params()->fromQuery(),
             ]
         );

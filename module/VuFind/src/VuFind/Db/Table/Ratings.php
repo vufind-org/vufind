@@ -236,8 +236,7 @@ class Ratings extends Gateway implements DbServiceAwareInterface
     }
 
     /**
-     * Get a paginated result of all ratings
-     * made by the user
+     * Get a paginated result of all ratings made by the user.
      *
      * @param int    $userId User ID
      * @param int    $limit  Limit
@@ -273,16 +272,12 @@ class Ratings extends Gateway implements DbServiceAwareInterface
         if ($page > 0) {
             $ratingSelect->offset($page);
         }
-        if (null !== $limit) {
-            $ratingSelect->limit($limit);
-        }
+        $ratingSelect->limit($limit);
 
         $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($ratingSelect, $this->getSql());
         $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
-        if (null !== $page) {
-            $paginator->setCurrentPageNumber($page);
-        }
+        $paginator->setCurrentPageNumber($page);
         return $paginator;
     }
 }

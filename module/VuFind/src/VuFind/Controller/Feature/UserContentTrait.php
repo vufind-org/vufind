@@ -29,6 +29,10 @@
 
 namespace VuFind\Controller\Feature;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+
+use function in_array;
+
 /**
  * User Content trait
  *
@@ -80,5 +84,27 @@ trait UserContentTrait
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
         }
         return $contents;
+    }
+
+    /**
+     * Get paging parameters from query parameters
+     *
+     * @param Params $params Parameter helper from controller
+     *
+     * @return array
+     */
+    public function getPagingParams(Params $params): array
+    {
+        $result = [];
+        $result['limit'] = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentPageSize();
+        $page = (int)$params->fromQuery('page', 1);
+        $result['page'] = $page < 1 ? 1 : $page;
+        $sort = $params->fromQuery('sort', '');
+        if (in_array($sort, array_keys($this->sortList))) {
+            $result['sort'] = $sort;
+        } else {
+            $result['sort'] = array_keys($this->sortList)[0];
+        }
+        return $result;
     }
 }

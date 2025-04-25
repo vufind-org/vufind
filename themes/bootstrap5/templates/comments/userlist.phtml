@@ -12,7 +12,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <ul class="nav nav-tabs" role="tablist">
     <?php foreach ($tabs as $tab): ?>
-      <li class="nav-item" role="presentation" id="user-content-<?=$tab?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='comments' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'userlist')?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
+      <li class="nav-item" role="presentation" id="user-content-<?=$this->escapeHtmlAttr($tab)?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='comments' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'userlist')?>"><?=$this->transEsc(ucfirst($tab))?></a></li>
     <?php endforeach; ?>
   </ul>
   <h2><?=$this->transEsc('Your Comments')?></h2>
