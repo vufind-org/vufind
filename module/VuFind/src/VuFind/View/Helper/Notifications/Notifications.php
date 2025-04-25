@@ -36,7 +36,8 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Autolink\AutolinkExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
-use VuFind\Db\Service\PagesServiceInterface;
+use VuFind\Db\Service\NotificationsBroadcastsServiceInterface;
+use VuFind\Db\Service\NotificationsPagesServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function in_array;
@@ -97,7 +98,10 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
      * @param PluginManager $database Database
      * @param mixed         $config   Notifications config
      */
-    public function __construct(\VuFind\Db\Table\PluginManager $database, $config, protected PagesServiceInterface $pagesService)
+    public function __construct(\VuFind\Db\Table\PluginManager $database,
+                                $config,
+                                protected NotificationsBroadcastsServiceInterface $broadcastsService,
+                                protected NotificationsPagesServiceInterface $pagesService)
     {
         $this->database = $database;
         $this->config = $config;
@@ -168,8 +172,6 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
             $closedBroadcasts = [];
         }
 
-        $broadcastsTable = $this->database->get('notifications_broadcasts');
-
         $environment = new Environment([]);
         $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addExtension(new AutolinkExtension());
@@ -182,8 +184,8 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
         }
 
         // Retrieve all broadcasts from the database in both the selected and default languages
-        $broadcastsSelection = $broadcastsTable->getBroadcastsList([$visibility => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, id ASC');
-        $broadcastsSelectionDefaultLanguage = $broadcastsTable->getBroadcastsList([$visibility => true, 'language' => $this->defaultLanguage], 'priority ASC, id ASC');
+        $broadcastsSelection = $this->broadcastsService->getBroadcastsList([$visibility => true, 'language' => $this->getTranslatorLocale()], 'priority ASC, id ASC');
+        $broadcastsSelectionDefaultLanguage = $this->broadcastsService->getBroadcastsList([$visibility => true, 'language' => $this->defaultLanguage], 'priority ASC, id ASC');
         $lookupBroadcastsSelectionDefaultLanguage = array_column($broadcastsSelectionDefaultLanguage, null, 'broadcast_id');
 
         // If the content in the selected language is empty, use the content from the default language instead

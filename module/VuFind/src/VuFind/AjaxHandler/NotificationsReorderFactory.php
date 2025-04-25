@@ -71,8 +71,8 @@ class NotificationsReorderFactory implements FactoryInterface
         }
         $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $tablePluginManager->get(\VuFind\Db\Table\Pages::class),
-            $tablePluginManager->get(\VuFind\Db\Table\Broadcasts::class),
+            $tablePluginManager->get(\VuFind\Db\Table\NotificationsPages::class),
+            $tablePluginManager->get(\VuFind\Db\Table\NotificationsBroadcasts::class),
         );
     }
 }

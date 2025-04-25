@@ -72,6 +72,8 @@ class NotificationsControllerFactory extends AbstractBaseFactory
         $servicePluginManager = $container->get(
             \VuFind\Db\Service\PluginManager::class
         );
-        return parent::__invoke($container, $requestedName, [$servicePluginManager->get(\VuFind\Db\Service\PagesServiceInterface::class)]);
+        $broadcastsService = $servicePluginManager->get(\VuFind\Db\Service\NotificationsBroadcastsServiceInterface::class);
+        $pagesService = $servicePluginManager->get(\VuFind\Db\Service\NotificationsPagesServiceInterface::class);
+        return parent::__invoke($container, $requestedName, [$broadcastsService, $pagesService]);
     }
 }

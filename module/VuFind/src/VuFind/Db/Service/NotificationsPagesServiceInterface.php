@@ -31,7 +31,7 @@
 namespace VuFind\Db\Service;
 
 use Exception;
-use VuFind\Db\Entity\PagesEntityInterface;
+use VuFind\Db\Entity\NotificationsPagesInterface;
 
 /**
  * Database service interface for notification pages.
@@ -43,7 +43,7 @@ use VuFind\Db\Entity\PagesEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface PagesServiceInterface extends DbServiceInterface
+interface NotificationsPagesServiceInterface extends DbServiceInterface
 {
     /**
      * Insert a new page into the database or update an existing one.
@@ -51,6 +51,8 @@ interface PagesServiceInterface extends DbServiceInterface
      * @param array $data Data to be written to the database
      * @param array|null $pageData Data of an existing page
      * @param int|null $page_id Id of the page to be edited
+     *
+     * @return void
      *
      * @throws Exception
      */
@@ -61,6 +63,8 @@ interface PagesServiceInterface extends DbServiceInterface
      *
      * @param array|null $where Filter setting for the request
      * @param array|null $order Order settings for the request
+     *
+     * @return array
      */
     public function getPagesList(array $where = null, array $order = null);
 
@@ -68,26 +72,30 @@ interface PagesServiceInterface extends DbServiceInterface
      * Get all data for a page
      *
      * @param array $page_id Id of the page
+     *
+     * @return array
      */
-    public function getPagesDataByPageId(array $page_id);
+    public function getPagesDataByPageId(array $page_id): array;
 
     /**
      * Get a page object by id
+     * This returns a specific page objects
      *
      * @param int $id Id of the page
      *
-     * @return ?PagesEntityInterface page object
+     * @return ?NotificationsPagesInterface page object
      */
-    public function getPageById(int $id): ?PagesEntityInterface;
+    public function getPageById(int $id): ?NotificationsPagesInterface;
 
     /**
      * Get all page objects with the same page_id
+     * This returns all the objects in all languages for one page
      *
-     * @param int $page_id Id of the page
+     * @param int $page_id Page_id of the page
      *
-     * @return mixed Array of page objects
+     * @return array Array of page objects
      */
-    public function getPagesByPageId(int $page_id): mixed;
+    public function getPagesByPageId(int $page_id): array;
 
     /**
      * Get a page object by page_id and language
@@ -95,15 +103,17 @@ interface PagesServiceInterface extends DbServiceInterface
      * @param int    $page_id  Id of the page
      * @param string $language Language of the page
      *
-     * @return ?PagesEntityInterface page object
+     * @return ?NotificationsPagesInterface page object
      */
-    public function getPageByPageIdAndLanguage(int $page_id, string $language): ?PagesEntityInterface;
+    public function getPageByPageIdAndLanguage(int $page_id, string $language): ?NotificationsPagesInterface;
 
     /**
      * Set the priority of a page
      *
      * @param int $index   New position of the page
      * @param int $page_id Id of the page
+     *
+     * @return void
      */
     public function setPriorityForPageId(int $index, int $page_id);
 
@@ -112,6 +122,8 @@ interface PagesServiceInterface extends DbServiceInterface
      *
      * @param int $visibility New visibility of the page
      * @param int $page_id    Id of the page
+     *
+     * @return void
      */
     public function setVisibilityForPageId(int $visibility, int $page_id);
 
@@ -120,6 +132,8 @@ interface PagesServiceInterface extends DbServiceInterface
      *
      * @param int $visibility_global New visibility of the page
      * @param int $page_id           Id of the page
+     *
+     * @return void
      */
     public function setVisibilityGlobalForPageId(int $visibility_global, int $page_id);
 }

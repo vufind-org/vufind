@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for broadcasts form
+ * Row Definition for notifications pages
  *
  * PHP version 8
  *
@@ -21,54 +21,44 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Table
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Form;
+namespace VuFind\Db\Row;
 
-use Interop\Container\ContainerInterface;
-use Laminas\Mvc\I18n\Translator;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\Db\Entity\NotificationsPagesEntityInterface;
 
 /**
- * Factory for broadcasts form
+ * Row Definition for notifications pages
  *
  * @category VuFind
- * @package  Db_Table
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class BroadcastsFormFactory implements FactoryInterface
+class NotificationsPages extends RowGateway implements NotificationsPagesEntityInterface
 {
     /**
-     * Create an object
+     * Constructor
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
-     *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __construct($adapter)
     {
-        $translator = $container->get(Translator::class);
+        parent::__construct('id', 'notifications_pages', $adapter);
+    }
 
-        return new BroadcastsForm(
-            $translator,
-            $container->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml')
-        );
+    public function getPrimaryKeyId(): ?int
+    {
+        if (isset($this->primaryKeyData['id'])) {
+            return $this->primaryKeyData['id'];
+        }
+        return null;
     }
 }

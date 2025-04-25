@@ -31,8 +31,8 @@
 namespace VuFind\Db\Service;
 
 use Exception;
-use VuFind\Db\Entity\PagesEntityInterface;
-use VuFind\Db\Table\Pages;
+use VuFind\Db\Entity\NotificationsPagesInterface;
+use VuFind\Db\Table\NotificationsPages;
 
 
 /**
@@ -45,14 +45,14 @@ use VuFind\Db\Table\Pages;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PagesService extends AbstractDbService implements PagesServiceInterface
+class NotificationsPagesService extends AbstractDbService implements NotificationsPagesServiceInterface
 {
     /**
      * Constructor
      *
-     * @param Pages $pages Session table object
+     * @param NotificationsPages $pages Notifications pages table object
      */
-    public function __construct(protected Pages $pages)
+    public function __construct(protected NotificationsPages $pages)
     {
     }
 
@@ -62,6 +62,8 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      * @param array $data     Data to be written to the database
      * @param array $pageData Data of an existing page
      * @param int   $page_id  Id of the page to be edited
+     *
+     * @return void
      *
      * @throws Exception
      */
@@ -75,6 +77,8 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      *
      * @param array $where Filter setting for the request
      * @param array $order Order settings for the request
+     *
+     * @return array
      */
     public function getPagesList($where = null, $order = null): array
     {
@@ -85,6 +89,8 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      * Get all data for a page
      *
      * @param array $page_id Id of the page
+     *
+     * @return array
      */
     public function getPagesDataByPageId($page_id): array
     {
@@ -96,9 +102,9 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      *
      * @param int $id Id of the page
      *
-     * @return mixed page object
+     * @return ?NotificationsPagesInterface page object
      */
-    public function getPageById($id): ?PagesEntityInterface
+    public function getPageById($id): ?NotificationsPagesInterface
     {
         return $this->pages->getPageById($id);
     }
@@ -108,9 +114,9 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      *
      * @param int $page_id Id of the page
      *
-     * @return mixed Array of page objects
+     * @return array Array of page objects
      */
-    public function getPagesByPageId($page_id): mixed
+    public function getPagesByPageId($page_id): array
     {
         return $this->pages->getPagesByPageId($page_id);
     }
@@ -121,9 +127,9 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      * @param int    $page_id  Id of the page
      * @param string $language Language of the page
      *
-     * @return mixed page object
+     * @return ?NotificationsPagesInterface page object
      */
-    public function getPageByPageIdAndLanguage($page_id, $language): ?PagesEntityInterface
+    public function getPageByPageIdAndLanguage($page_id, $language): ?NotificationsPagesInterface
     {
         return $this->pages->getPageByPageIdAndLanguage($page_id, $language);
     }
@@ -133,6 +139,8 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      *
      * @param int $index   New position of the page
      * @param int $page_id Id of the page
+     *
+     * @return void
      */
     public function setPriorityForPageId($index, $page_id): void
     {
@@ -144,6 +152,8 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      *
      * @param int $visibility New visibility of the page
      * @param int $page_id    Id of the page
+     *
+     * @return void
      */
     public function setVisibilityForPageId($visibility, $page_id): void
     {
@@ -155,6 +165,8 @@ class PagesService extends AbstractDbService implements PagesServiceInterface
      *
      * @param int $visibility_global New visibility of the page
      * @param int $page_id           Id of the page
+     *
+     * @return void
      */
     public function setVisibilityGlobalForPageId($visibility_global, $page_id): void
     {

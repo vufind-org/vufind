@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for broadcasts
+ * Interface for representing a notifications pages record.
  *
  * PHP version 8
  *
- * Copyright (C) effective WEBWORK GmbH 2023.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,44 +21,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
+
+use DateTime;
 
 /**
- * Row Definition for broadcasts
+ * Interface for representing a notifications pages record.
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Broadcasts extends \VuFind\Db\Row\RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+interface NotificationsPagesEntityInterface extends EntityInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
-
     /**
-     * Constructor
+     * Primary key id getter
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @return int|null
      */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'notifications_broadcasts', $adapter);
-    }
 
-    public function getPrimaryKeyId()
-    {
-        if (isset($this->primaryKeyData['id'])) {
-            return $this->primaryKeyData['id'];
-        }
-        return null;
-    }
+    public function getPrimaryKeyId(): ?int;
 }

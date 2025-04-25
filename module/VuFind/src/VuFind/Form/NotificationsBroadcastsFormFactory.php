@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for pages form
+ * Factory for broadcasts form
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\Mvc\I18n\Translator;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for pages form
+ * Factory for broadcasts form
  *
  * @category VuFind
  * @package  Db_Table
@@ -44,7 +44,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PagesFormFactory implements FactoryInterface
+class NotificationsBroadcastsFormFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -66,7 +66,7 @@ class PagesFormFactory implements FactoryInterface
     {
         $translator = $container->get(Translator::class);
 
-        return new PagesForm(
+        return new NotificationsBroadcastsForm(
             $translator,
             $container->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml')
         );

@@ -73,7 +73,8 @@ class NotificationsFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFind\Db\Table\PluginManager::class),
             $container->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml'),
-            $servicePluginManager->get(\VuFind\Db\Service\PagesServiceInterface::class)
+            $servicePluginManager->get(\VuFind\Db\Service\NotificationsBroadcastsServiceInterface::class),
+            $servicePluginManager->get(\VuFind\Db\Service\NotificationsPagesServiceInterface::class),
         );
     }
 }

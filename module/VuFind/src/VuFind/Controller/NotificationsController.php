@@ -37,9 +37,10 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Autolink\AutolinkExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
-use VuFind\Db\Service\PagesServiceInterface;
-use VuFind\Form\BroadcastsForm;
-use VuFind\Form\PagesForm;
+use VuFind\Db\Service\NotificationsBroadcastsServiceInterface;
+use VuFind\Db\Service\NotificationsPagesServiceInterface;
+use VuFind\Form\NotificationsBroadcastsForm;
+use VuFind\Form\NotificationsPagesForm;
 
 /**
  * Controls the configuration and display of notifications
@@ -75,7 +76,9 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function __construct(ServiceLocatorInterface $sm, protected PagesServiceInterface $pagesService)
+    public function __construct(ServiceLocatorInterface $sm,
+                                protected NotificationsBroadcastsServiceInterface $broadcastsService,
+                                protected NotificationsPagesServiceInterface $pagesService)
     {
         parent::__construct($sm);
         $this->config = $sm->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml');
@@ -162,8 +165,6 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $this->redirect()->toRoute('myresearch-home');
         }
 
-        $broadcastsTable = $this->getTable('notifications_broadcasts');
-
         $view = $this->createViewModel();
 
         $environment = new Environment([]);
@@ -173,8 +174,8 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $converter = new MarkdownConverter($environment);
 
         // Retrieve all broadcasts from the database in both the selected and default languages
-        $broadcastsSelection = $broadcastsTable->getBroadcastsList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC', false);
-        $broadcastsSelectionDefaultLanguage = $broadcastsTable->getBroadcastsList(['language' => $this->defaultLanguage], 'priority ASC, id ASC', false);
+        $broadcastsSelection = $this->broadcastsService->getBroadcastsList(['language' => $this->getTranslatorLocale()], 'priority ASC, id ASC', false);
+        $broadcastsSelectionDefaultLanguage = $this->broadcastsService->getBroadcastsList(['language' => $this->defaultLanguage], 'priority ASC, id ASC', false);
         $lookupBroadcastsSelectionDefaultLanguage = array_column($broadcastsSelectionDefaultLanguage, null, 'broadcast_id');
 
         // If the content in the selected language is empty, use the content from the default language instead
@@ -227,7 +228,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         }
 
         $formElementManager = $this->serviceLocator->get('FormElementManager');
-        $pagesForm = $formElementManager->get(PagesForm::class);
+        $pagesForm = $formElementManager->get(NotificationsPagesForm::class);
 
         $page_id = $this->params()->fromPost('id', $this->params()->fromQuery('page_id', []));
         if (!$page_id) {
@@ -293,9 +294,8 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);
         }
 
-        $broadcastsTable = $this->getTable('notifications_broadcasts');
         $formElementManager = $this->serviceLocator->get('FormElementManager');
-        $broadcastsForm = $formElementManager->get(BroadcastsForm::class);
+        $broadcastsForm = $formElementManager->get(NotificationsBroadcastsForm::class);
 
         $broadcast_id = $this->params()->fromPost('broadcast_id', $this->params()->fromQuery('broadcast_id', []));
         if (!$broadcast_id) {
@@ -308,7 +308,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $view->languages = $this->config['Notifications']['languages'];
 
         if ($broadcast_id != 'NEW') {
-            $broadcast = $broadcastsTable->getBroadcastsDataByBroadcastId($broadcast_id);
+            $broadcast = $this->broadcastsService->getBroadcastsDataByBroadcastId($broadcast_id);
             $broadcastsForm->setAttribute(
                 'action',
                 $this->url()->fromRoute('admin/notifications-broadcasts', ['action' => 'EditBroadcast','broadcast_id' => $broadcast_id])
@@ -342,7 +342,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             $data['author_id'] = $user->id;
         }
 
-        $broadcastsTable->insertOrUpdateBroadcast($data, $broadcast, $broadcast_id);
+        $this->broadcastsService->insertOrUpdateBroadcast($data, $broadcast, $broadcast_id);
 
         return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);
     }
@@ -410,8 +410,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);
         }
 
-        $broadcastsTable = $this->getTable('notifications_broadcasts');
-        $broadcast = $broadcastsTable->getBroadcastByBroadcastIdAndLanguage($broadcast_id, $this->getTranslatorLocale());
+        $broadcast = $this->broadcastsService->getBroadcastByBroadcastIdAndLanguage($broadcast_id, $this->getTranslatorLocale());
 
         $environment = new Environment([]);
         $environment->addExtension(new CommonMarkCoreExtension());
@@ -441,7 +440,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);
         }
 
-        foreach ($broadcast = $broadcastsTable->getBroadcastsByBroadcastId($broadcast_id) as $broadcast) {
+        foreach ($broadcast = $this->broadcastsService->getBroadcastsByBroadcastId($broadcast_id) as $broadcast) {
             $broadcast->delete();
         }
 
@@ -459,7 +458,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!$page_id) {
             return $this->redirect()->toRoute('search-home');
         }
-        
+
         $page = $this->pagesService->getPageByPageIdAndLanguage($page_id, $this->getTranslatorLocale());
         if ($page['content'] == '') {
             $page = $this->pagesService->getPageByPageIdAndLanguage($page_id, $this->defaultLanguage);

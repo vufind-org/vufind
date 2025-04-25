@@ -45,7 +45,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BroadcastsFactory extends \VuFind\Db\Table\GatewayFactory
+class NotificationsBroadcastsFactory extends \VuFind\Db\Table\GatewayFactory
 {
     /**
      * Return row prototype object (null if unavailable)

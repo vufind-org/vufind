@@ -47,7 +47,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Broadcasts extends Gateway
+class NotificationsBroadcasts extends Gateway
 {
     /**
      * Notifications config
@@ -124,7 +124,7 @@ class Broadcasts extends Gateway
      * Get a list of broadcasts from the database
      *
      * @param array $where Filter setting for the request
-     * @param array $order Order settings for the request
+     * @param string $order Order settings for the request
      */
     public function getBroadcastsList($where = null, $order = null, $use_dates = true)
     {

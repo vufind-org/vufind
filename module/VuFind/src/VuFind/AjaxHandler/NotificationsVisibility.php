@@ -31,8 +31,8 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Db\Table\Broadcasts;
-use VuFind\Db\Table\Pages;
+use VuFind\Db\Table\NotificationsBroadcasts;
+use VuFind\Db\Table\NotificationsPages;
 
 /**
  * AJAX handler to change the visibility of a notification.
@@ -56,17 +56,17 @@ class NotificationsVisibility extends AbstractBase
     /**
      * Database table for broadcasts
      *
-     * @var Broadcasts
+     * @var NotificationsBroadcasts
      */
     private $broadcastsTable;
 
     /**
      * Constructor
      *
-     * @param Pages      $pagesTable      Database table for pages
-     * @param Broadcasts $broadcastsTable Database table for broadcasts
+     * @param NotificationsPages      $pagesTable      Database table for pages
+     * @param NotificationsBroadcasts $broadcastsTable Database table for broadcasts
      */
-    public function __construct(Pages $pagesTable, Broadcasts $broadcastsTable)
+    public function __construct(NotificationsPages $pagesTable, NotificationsBroadcasts $broadcastsTable)
     {
         $this->pagesTable = $pagesTable;
         $this->broadcastsTable = $broadcastsTable;

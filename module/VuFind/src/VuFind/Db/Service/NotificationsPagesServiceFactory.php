@@ -45,7 +45,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PagesServiceFactory extends AbstractDbServiceFactory
+class NotificationsPagesServiceFactory extends AbstractDbServiceFactory
 {
     /**
      * Create an object

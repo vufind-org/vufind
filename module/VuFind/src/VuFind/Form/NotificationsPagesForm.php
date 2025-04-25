@@ -50,7 +50,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PagesForm extends Form implements InputFilterProviderInterface, TranslatorAwareInterface
+class NotificationsPagesForm extends Form implements InputFilterProviderInterface, TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 

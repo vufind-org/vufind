@@ -48,7 +48,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Pages extends Gateway
+class NotificationsPages extends Gateway
 {
     /**
      * Notifications config
@@ -223,9 +223,7 @@ class Pages extends Gateway
      */
     public function getPageById($id)
     {
-        if ($id) {
-            return $this->select(['id' => $id])->current();
-        }
+        return $this->select(['id' => $id])->current();
     }
 
     /**
@@ -237,9 +235,7 @@ class Pages extends Gateway
      */
     public function getPagesByPageId($page_id)
     {
-        if ($page_id) {
-            return $this->select(['page_id' => $page_id]);
-        }
+        return $this->select(['page_id' => $page_id]);
     }
 
     /**

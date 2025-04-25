@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Interface for representing a notifications pages record.
+ * Row Definition for notifications broadcasts
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2025.
+ * Copyright (C) effective WEBWORK GmbH 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,34 +21,44 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db\Entity;
-
-use DateTime;
+namespace VuFind\Db\Row;
 
 /**
- * Interface for representing a notifications pages record.
+ * Row Definition for notifications broadcasts
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface PagesEntityInterface extends EntityInterface
+class NotificationsBroadcasts extends \VuFind\Db\Row\RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
-    /**
-     * Primary key id getter
-     *
-     * @return int|null
-     */
+    use \VuFind\Db\Table\DbTableAwareTrait;
 
-    public function getPrimaryKeyId(): ?int;
+    /**
+     * Constructor
+     *
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     */
+    public function __construct($adapter)
+    {
+        parent::__construct('id', 'notifications_broadcasts', $adapter);
+    }
+
+    public function getPrimaryKeyId()
+    {
+        if (isset($this->primaryKeyData['id'])) {
+            return $this->primaryKeyData['id'];
+        }
+        return null;
+    }
 }

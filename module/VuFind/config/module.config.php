@@ -403,8 +403,8 @@ $config = [
     ],
     'form_elements' => [
         'factories' => [
-            'VuFind\Form\BroadcastsForm' => 'VuFind\Form\BroadcastsFormFactory',
-            'VuFind\Form\PagesForm' => 'VuFind\Form\PagesFormFactory',
+            'VuFind\Form\NotificationsBroadcastsForm' => 'VuFind\Form\NotificationsBroadcastsFormFactory',
+            'VuFind\Form\NotificationsPagesForm' => 'VuFind\Form\NotificationsPagesFormFactory',
         ],
     ],
     'service_manager' => [
