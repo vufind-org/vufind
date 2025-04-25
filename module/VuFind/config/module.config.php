@@ -841,7 +841,7 @@ $staticRoutes = [
     'Primo/Advanced', 'Primo/CitedBy', 'Primo/Cites', 'Primo/Home', 'Primo/Search',
     'ProQuestFSG/Advanced', 'ProQuestFSG/Home', 'ProQuestFSG/Results',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
-    'Ratings/UserList', 'Ratings/DeleteRatings',
+    'Ratings/DeleteRatings', 'Ratings/UserList',
     'Relais/Login', 'Relais/Request',
     'Search/Advanced',
     'Search/CollectionFacetList', 'Search/EditMemory', 'Search/Email',
