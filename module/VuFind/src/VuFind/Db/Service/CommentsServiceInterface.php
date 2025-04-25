@@ -122,7 +122,7 @@ interface CommentsServiceInterface extends DbServiceInterface
     public function getCommentById(int $id): ?CommentsEntityInterface;
 
     /**
-     * Get a paginated result of all comments by user id
+     * Get a paginated result of all comments by user id.
      *
      * @param int    $userId User Id
      * @param int    $limit  Limit
