@@ -231,7 +231,7 @@ class NotificationsPages extends Gateway
      *
      * @param int $page_id Id of the page
      *
-     * @return mixed Array of page objects
+     * @return array Array of page objects
      */
     public function getPagesByPageId($page_id)
     {
@@ -258,6 +258,8 @@ class NotificationsPages extends Gateway
      *
      * @param int $index   New position of the page
      * @param int $page_id Id of the page
+     *
+     * @return void
      */
     public function setPriorityForPageId($index, $page_id)
     {
@@ -273,6 +275,8 @@ class NotificationsPages extends Gateway
      *
      * @param int $visibility New visibility of the page
      * @param int $page_id    Id of the page
+     *
+     * @return void
      */
     public function setVisibilityForPageId($visibility, $page_id)
     {
@@ -288,6 +292,8 @@ class NotificationsPages extends Gateway
      *
      * @param int $visibility_global New visibility of the page
      * @param int $page_id           Id of the page
+     *
+     * @return void
      */
     public function setVisibilityGlobalForPageId($visibility_global, $page_id)
     {
