@@ -248,7 +248,12 @@ class SearchRequestModel implements LoggerAwareInterface
             return true;
         }
         $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
+
+        // There are no EBSCO subscription databases that contain a pipe character.
+        // Note that individual customer-specific databases may do so; those should
+        // not enable ContentProvider validation.
         $invalidContentProviderCharacters = '|';
+
         foreach ($contentProviderValues as $value) {
             foreach (str_split($invalidContentProviderCharacters) as $invalidCharacter) {
                 if (str_contains($value, $invalidCharacter)) {
