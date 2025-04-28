@@ -29,7 +29,7 @@
         </div>
       <?php endif; ?>
       <fieldset class="well limit-to facets">
-        <legend class="sr-only"><?=$this->transEsc('Limit To')?></legend>
+        <legend class="visually-hidden"><?=$this->transEsc('Limit To')?></legend>
         <div class="facet-container">
           <?php foreach ($this->facetList as $field => $list): ?>
             <?= $this->render('search/advanced/multiselect.phtml', ['field' => $field, 'list' => $list, 'hierarchicalFacets' => $this->hierarchicalFacets]); ?>

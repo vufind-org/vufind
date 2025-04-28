@@ -26,7 +26,7 @@
           <div>
             <a href="<?= $this->url('reservationlist-displaylist', ['listId' => $list->getId()])?>"><?= $this->escapeHtml($list->getTitle()) ?></a>
           </div>
-          <div class="pull-right">
+          <div class="float-end">
             <?=
               $this->component(
                   'confirm-button',

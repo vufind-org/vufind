@@ -57,11 +57,11 @@
                   <?php if ($this->scrollData['previousRecord']): ?>
                       <?php if ($this->scrollData['firstRecord']): ?>
                       <li>
-                        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['firstRecord']))?>" rel="nofollow"><?=$this->icon('pager-first') ?><span class="sr-only"><?=$this->transEsc('First Record')?></span></a>
+                        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['firstRecord']))?>" rel="nofollow"><?=$this->icon('pager-first') ?><span class="visually-hidden"><?=$this->transEsc('First Record')?></span></a>
                       </li>
                       <?php endif; ?>
                     <li class="pager-previous-record">
-                      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['previousRecord']))?>" rel="nofollow"><?=$this->icon('pager-prev') ?><span class="sr-only"><?=$this->transEsc('Previous Record')?></span></a>
+                      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['previousRecord']))?>" rel="nofollow"><?=$this->icon('pager-prev') ?><span class="visually-hidden"><?=$this->transEsc('Previous Record')?></span></a>
                     </li>
                   <?php else: ?>
                       <?php if ($this->scrollData['firstRecord']): ?>
@@ -77,11 +77,11 @@
                 </li>
                   <?php if ($this->scrollData['nextRecord']): ?>
                     <li class="pager-next-record">
-                      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['nextRecord']))?>" rel="nofollow"><?=$this->icon('pager-next') ?><span class="sr-only"><?=$this->transEsc('Next Record')?></span></a>
+                      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['nextRecord']))?>" rel="nofollow"><?=$this->icon('pager-next') ?><span class="visually-hidden"><?=$this->transEsc('Next Record')?></span></a>
                     </li>
                       <?php if ($this->scrollData['lastRecord']): ?>
                       <li>
-                        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['lastRecord']))?>" rel="nofollow"><?=$this->icon('pager-last') ?><span class="sr-only"><?=$this->transEsc('Last Record')?></span></a>
+                        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['lastRecord']))?>" rel="nofollow"><?=$this->icon('pager-last') ?><span class="visually-hidden"><?=$this->transEsc('Last Record')?></span></a>
                       </li>
                       <?php endif; ?>
                   <?php else: ?>

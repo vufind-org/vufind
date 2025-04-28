@@ -44,7 +44,7 @@ if ($img):
               <?=implode('<br>', array_map([$this, 'escapeHtml'], $altTitles))?>
             </div>
           <?php endif; ?>
-          <span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+          <span class="visually-hidden"> <?=$this->transEsc('To the record')?></span>
         </div>
 
         <div class="dateyeartype">
@@ -77,7 +77,7 @@ if ($img):
         <?php endif; ?>
 
         <?php if ($this->driver->tryMethod('getWorkKeys') && $this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
-          <div class="record-versions ajax"></div>
+          <div class="record-versions ajax hidden-print"></div>
         <?php endif; ?>
 
         <?php $recordHelper = $this->record($this->driver); ?>
@@ -113,7 +113,7 @@ if ($img):
             <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
                 <?php /* Add to favorites */ ?>
               <div>
-                <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><?=$this->icon('favorite') ?><span class="hidden-sm hidden-md hidden-lg"> <?=$this->transEsc('Add to favorites')?></span><span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+                <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><?=$this->icon('favorite') ?><span class="hidden-sm hidden-md hidden-lg"> <?=$this->transEsc('Add to favorites')?></span><span class="visually-hidden hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
               </div>
             <?php endif; ?>
 

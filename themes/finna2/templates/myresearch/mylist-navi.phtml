@@ -17,8 +17,8 @@
   <li role="none" class="favorites-menulist-item">
     <a role="menuitem" href="<?=$this->url('myresearch-favorites')?>?limit=<?=$currentLimit;?>" class="dropdown-item<?=!$activeId ? ' active' : ''?>" aria-current="<?= !$activeId ? 'page' : 'false' ?>">
       <div class="favorite-list-holder">
-        <div class="pull-left favorite-list-title"><?=$this->transEsc('default_list_title')?></div>
-        <div class="pull-right">(<?=$numOfResources;?>)</div>
+        <div class="float-start favorite-list-title"><?=$this->transEsc('default_list_title')?></div>
+        <div class="float-end">(<?=$numOfResources;?>)</div>
       </div>
     </a>
   </li>
@@ -31,11 +31,11 @@
     <li role="none" class="favorites-menulist-item">
       <a role="menuitem" href="<?= $active ? '#' : $this->url('userList', ['id' => $list->getId()])?>?limit=<?=$currentLimit;?>" class="dropdown-item<?=$list && $active ? ' active' : ''?>" aria-current="<?=$active ? 'page' : 'false' ?>">
         <div class="favorite-list-holder">
-          <div class="pull-left favorite-list-title"><?=$this->escapeHtml($list->getTitle())?></div>
+          <div class="float-start favorite-list-title"><?=$this->escapeHtml($list->getTitle())?></div>
           <?php if ($list->isPublic()): ?>
             <?=$this->icon('public') ?>
           <?php endif; ?>
-          <div class="pull-right">(<?=$current['count']?>)</div>
+          <div class="float-end">(<?=$current['count']?>)</div>
         </div>
       </a>
       <?php if ($active): ?>

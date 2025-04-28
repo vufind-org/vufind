@@ -31,7 +31,7 @@
 ?>
 <?php if ('building' === $this->title && count($this->cluster['list']) > 15): ?>
   <div class="building-filter">
-    <label for="building_filter" class="sr-only"><?=$this->transEsc('Organisation')?></label>
+    <label for="building_filter" class="visually-hidden"><?=$this->transEsc('Organisation')?></label>
     <input type="search" class="form-control" id="building_filter" placeholder="<?=$this->transEscAttr('Organisation') . '...'?>">
   </div>
   <?php $script = <<<JS

@@ -498,7 +498,7 @@ finna.myList = (function finnaMyList() {
     }
     const updateFunctionButtons = function updateButtonStatesFunc() {
       var actions = $('.mylist-functions button, .mylist-functions select');
-      var aria = $('.mylist-functions .sr-only');
+      var aria = $('.mylist-functions .visually-hidden');
       var noneChecked = VuFind.listItemSelection.getAllSelected(favoriteForm).length === 0;
       if (noneChecked) {
         actions.attr('disabled', true);

@@ -23,11 +23,11 @@
   <input type="hidden" name="institution" value="<?=$this->escapeHtmlAttr($this->institution)?>">
   <input type="hidden" name="csrf" value="<?=$this->auth()->getManager()->getCsrfHash()?>">
   <div class="form-group">
-    <label class="control-label" for="list_title"><?=$this->transEsc('ReservationList::Reservation List Name'); ?>*:</label>
+    <label class="form-label" for="list_title"><?=$this->transEsc('ReservationList::Reservation List Name'); ?>*:</label>
     <input id="list_title" class="form-control" type="text" name="title" value="" required>
   </div>
   <div class="form-group">
-    <label class="control-label" for="list_desc"><?=$this->transEsc('ReservationList::Description') ?></label>
+    <label class="form-label" for="list_desc"><?=$this->transEsc('ReservationList::Description') ?></label>
     <textarea id="list_desc" class="form-control" name="desc" rows="3"></textarea>
   </div>
   <div class="form-group">

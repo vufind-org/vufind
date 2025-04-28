@@ -7,7 +7,7 @@
   <?php return; ?>
 <?php endif; ?>
 
-<span class="sr-only" aria-live="polite"><?=$this->transEsc('result_count', ['%%count%%' => count($results)])?></span>
+<span class="visually-hidden" aria-live="polite"><?=$this->transEsc('result_count', ['%%count%%' => count($results)])?></span>
 <?php foreach ($results as $result): ?>
   <div class="location-search-result">
     <div class="location-search-result-main">

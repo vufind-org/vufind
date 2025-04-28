@@ -12,7 +12,7 @@
     <div class="dedupInformation">
       <label>
         <?=$this->transEsc('Holdings')?>:
-        <select class="dedup-select form-control form-select" title="<?=$this->transEscAttr('select_dedup_organisation');?>" aria-label="<?=$this->transEscAttr('select_dedup_organisation');?>">
+        <select class="dedup-select form-select" title="<?=$this->transEscAttr('select_dedup_organisation');?>" aria-label="<?=$this->transEscAttr('select_dedup_organisation');?>">
           <?php if (!$preferredSource):?>
             <option class="js-dedup-placeholder" value="" disabled selected><?= $this->transEsc('Show Holdings')?></option>
           <?php endif;?>

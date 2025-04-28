@@ -11,7 +11,7 @@
       <?php $newParams = $this->params;
       $newParams['page'] = $this->previous; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-        <span class="sr-only"><?=$this->transEsc('page_prev')?></span><?=$this->icon('page-simple-prev') ?>
+        <span class="visually-hidden"><?=$this->transEsc('page_prev')?></span><?=$this->icon('page-simple-prev') ?>
       </a>
     <?php endif; ?>
     </li>
@@ -29,7 +29,7 @@
       <?php $newParams = $this->params;
       $newParams['page'] = $this->next; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-        <span class="sr-only"><?=$this->transEsc('page_next')?></span><?=$this->icon('page-simple-next') ?>
+        <span class="visually-hidden"><?=$this->transEsc('page_next')?></span><?=$this->icon('page-simple-next') ?>
       </a>
     <?php endif; ?>
     </li>

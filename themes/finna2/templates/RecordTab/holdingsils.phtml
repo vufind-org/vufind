@@ -103,7 +103,7 @@
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <?php if (!$user): ?>
       <?php if (!$repositoryLibraryRequestAllowed): ?>
-        <div class="pull-right">
+        <div class="float-end">
           <a href="<?=$this->serverUrl($this->url('myresearch-completelogin', [], ['query' => ['target' => $recordSource ?? '']]))?>" class="btn btn-primary login-link" data-lightbox><?=$this->transEsc('title_hold_login')?></a>
         </div>
         <div class="clearfix"></div>
@@ -163,12 +163,12 @@
     <?php if ($repositoryLibraryRequestAllowed): ?>
       <?php if ($user): ?>
         <?php if ($this->libraryCards()->getCardsForUser($user)): ?>
-          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'RepositoryLibraryRequest'))?>" data-lightbox class="btn btn-primary repository-library-request-order"><?=$this->transEsc('repository_library_request_order')?><span class="sr-only"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'RepositoryLibraryRequest'))?>" data-lightbox class="btn btn-primary repository-library-request-order"><?=$this->transEsc('repository_library_request_order')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
         <?php else: ?>
-          <a href="<?=$this->url('editLibraryCard', ['id' => 'NEW'])?>" class="btn btn-primary login-link hidden-print"><?=$this->transEsc('repository_library_request_add_library_card')?><span class="sr-only"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
+          <a href="<?=$this->url('editLibraryCard', ['id' => 'NEW'])?>" class="btn btn-primary login-link hidden-print"><?=$this->transEsc('repository_library_request_add_library_card')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
         <?php endif; ?>
       <?php else: ?>
-        <a href="?login=true&catalogLogin=true" class="btn btn-primary login-link hidden-print" data-lightbox><?=$this->transEsc('repository_library_request_login')?><span class="sr-only"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
+        <a href="?login=true&catalogLogin=true" class="btn btn-primary login-link hidden-print" data-lightbox><?=$this->transEsc('repository_library_request_login')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
       <?php endif; ?>
     <?php endif; ?>
   </div>
@@ -190,7 +190,7 @@
     <div class="dedup-information">
       <span class="holdings-title"><?=$this->transEsc("source_$recordSource", null, $recordSource) ?></span>
       <?php if ($mergedData && count($mergedData['records']) > 1): ?>
-        <select class="dedup-select form-control jumpMenuUrl hidden-print form-select" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
+        <select class="dedup-select form-select jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
           <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
           <?php foreach ($mergedData['records'] as $current): ?>
             <?php if ($recordSource != $current['source']): ?>

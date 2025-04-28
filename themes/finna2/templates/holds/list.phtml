@@ -100,7 +100,7 @@
           </div>
         <?php endif; ?>
         <table class="myresearch-table" aria-label="<?=$this->transEscAttr('Your Holds and Recalls');?>" tabindex="0">
-          <tr class="sr-only myresearch-row" aria-hidden="true">
+          <tr class="visually-hidden myresearch-row" aria-hidden="true">
             <th id="label-select-column"><?=$this->transEsc('Select');?></th>
             <th class="hidden-xs"></th>
             <th id="label-title-column"><?=$this->transEsc('Hold Details');?></th>
@@ -116,7 +116,7 @@
                 <div class="checkbox-container">
                   <div class="checkbox">
                     <label>
-                      <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                      <span class="visually-hidden"><?=$this->transEsc('Select');?></span>
                       <input type="checkbox" name="selectedIDS[]" class="checkbox-select-item" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
                     </label>
                   </div>
@@ -246,7 +246,7 @@
             </tr>
           <?php endforeach; ?>
         </table>
-        <h3 class="sr-only"><?=$this->transEsc('End of List')?></h3>
+        <h3 class="visually-hidden"><?=$this->transEsc('End of List')?></h3>
         <?php if ($this->cancelForm): ?>
               <div class="dropdown button-bottom">
                 <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('hold_cancel_all') ?>" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" data-lightbox-ignore aria-expanded="false">

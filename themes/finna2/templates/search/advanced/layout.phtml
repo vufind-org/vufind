@@ -92,15 +92,15 @@
             'icon' => 'help',
             'contentHtml' => $this->translate("tooltip_{$tooltipSource}_advanced_html"),
             'labelHtml' => $this->transEsc('Help with Advanced Search'),
-            'class' => 'tooltip-pci-advanced pull-right',
+            'class' => 'tooltip-pci-advanced float-end',
           ])?>
         <?php endif; ?>
       </div>
       <input type="hidden" name="sort" value="relevance">
 
       <?php /* An empty div. This is the target for the javascript that builds this screen */ ?>
-      <h3 id="adv-search-groups-header" class="sr-only"><?=$this->transEsc('search_groups')?></h3>
-      <div id="groupPlaceHolder" class="hidden pull-left">
+      <h3 id="adv-search-groups-header" class="visually-hidden"><?=$this->transEsc('search_groups')?></h3>
+      <div id="groupPlaceHolder" class="hidden float-start">
         <button type="button" class="btn btn-primary"><?=$this->icon('adv-search-group-add') ?> <?= $this->transEsc('add_search_group') ?></button>
       </div>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
@@ -128,7 +128,7 @@
               <div class="adv-search-group">
                 <div class="adv-group-match match">
                   <label class="search_bool"><?=$msgSearchMatch?>:</label>
-                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline form-select">
+                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-select form-inline">
                     <option value="AND"<?php if (isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?php endif;?>><?=$msgSearchAnd?></option>
                     <option value="OR"<?php if (isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?php endif;?>><?=$msgSearchOr?></option>
                     <option value="NOT"<?php if (isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif;?>><?=$msgSearchNot?></option>
@@ -211,7 +211,7 @@
       <div class="group-join-container">
         <div id="groupJoin" class="form text-center">
           <label for="groupJoinOptions"><?=$this->transEsc('adv_search_group_join')?>:</label>
-          <select id="groupJoinOptions" name="join" class="form-control form-inline form-select">
+          <select id="groupJoinOptions" name="join" class="form-select form-inline">
             <option value="AND"<?php if ($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?php endif?>><?= $this->transEsc('group_AND') ?></option>
             <option value="OR"<?php if ($searchDetails && $searchDetails->getOperator() == 'OR'):?> selected<?php endif?>><?= $this->transEsc('group_OR') ?></option>
           </select>
@@ -225,7 +225,7 @@
        <span class="limit-container">
           <?=$this->render('search/advanced/limit.phtml')?>
         </span>
-        <button class="btn btn-lg btn-primary pull-right" type="submit" value="<?= $this->transEscAttr('Find')?>"><?=$this->icon('search-advanced') ?> <?= $this->transEsc('Find')?></button>
+        <button class="btn btn-lg btn-primary float-end" type="submit" value="<?= $this->transEscAttr('Find')?>"><?=$this->icon('search-advanced') ?> <?= $this->transEsc('Find')?></button>
       </div>
     </div>
     <?php if ($hasDefaultsApplied): ?>

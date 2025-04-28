@@ -66,7 +66,7 @@
       max-width: 80px;
     }
     @media (max-width: $screen-xxs) {
-      @include sr-only();
+      @include visually-hidden();
     }
   }
   .description {

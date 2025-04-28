@@ -53,7 +53,7 @@
   ?>
   <?php if ($checkboxesShown): ?>
     <fieldset>
-      <legend class="sr-only"><?=$this->transEsc('checkbox_filter')?></legend>
+      <legend class="visually-hidden"><?=$this->transEsc('checkbox_filter')?></legend>
       <div class="checkbox-filters">
         <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results, 'counts' => false]); ?>
       </div>

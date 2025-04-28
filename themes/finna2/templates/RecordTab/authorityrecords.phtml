@@ -26,7 +26,7 @@
   </div>
   <?php foreach ($results->getResults() as $current): ?>
     <div id="result<?=$i++ ?>" class="result condensed-list-view clearfix<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
-      <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$i ?></span>
+      <span class="visually-hidden"><?=$this->transEsc('Search Result');?> <?=$i ?></span>
       <?=$this->record($current)->getSearchResult('condensed', $this->results)?>
     </div>
   <?php endforeach ?>

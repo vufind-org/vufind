@@ -70,19 +70,11 @@
  border: solid 0.08em #eeeeee;
  border-radius: .1em;
 }
-.pull-right
-{
- float: right;
-}
-.pull-left
-{
- float: left;
-}
-.cc.pull-left
+.cc.float-start, .cc.pull-left
 {
  margin-right: .3em;
 }
-.cc.pull-right
+.cc.float-end, .cc.pull-right
 {
  margin-left: .3em;
 }
@@ -195,35 +187,35 @@ Round Icons
 ===========================*/
 
 /*Share Alike*/
-.cc-sa:before 
+.cc-sa:before
 {
  content: "\E800";
 }
 /*Attribution*/
-.cc-by:before 
+.cc-by:before
 {
  content: "\E862";
 }
 /* CC */
-.cc-cc:before 
+.cc-cc:before
 {
  content: "\E905";
 }
 
 /* Non Derivative */
-.cc-nd:before 
+.cc-nd:before
 {
  content: "\E864";
 }
 
 /* Non Commercial Euro */
-.cc-nc-eu:before 
+.cc-nc-eu:before
 {
  content: "\E865";
 }
 
 /* Non Commercial Japan Yen */
-.cc-nc-jp:before 
+.cc-nc-jp:before
 {
  content: "\E866";
 }

@@ -40,7 +40,7 @@
     <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
   <?php endif; ?>
   <?php if (isset($currentSearch['sublabel'])): ?>
-    <p class="show-list-details pull-right"><?=$this->transEsc('More Information');?> <?=$this->icon('show-more') ?></p>
+    <p class="show-list-details float-end"><?=$this->transEsc('More Information');?> <?=$this->icon('show-more') ?></p>
     <p class="sub-label hidden"><?=$this->translate($currentSearch['sublabel'])?></p>
     <?php
       $script = <<<JS
@@ -64,7 +64,7 @@
     <?php endif; ?>
     </h4>
     <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-      <strong><a href="<?=$this->escapeHtmlAttr($moreUrl)?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+      <strong><a href="<?=$this->escapeHtmlAttr($moreUrl)?>" class="float-end"><?=$this->transEsc('More')?> &raquo;</a></strong>
     <?php endif; ?>
   </div>
   <?php endif; ?>
@@ -123,7 +123,7 @@
         <?php endif; ?>
         </h4>
         <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-          <strong><a href="<?=$this->escapeHtmlAttr($moreUrl)?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+          <strong><a href="<?=$this->escapeHtmlAttr($moreUrl)?>" class="float-end"><?=$this->transEsc('More')?> &raquo;</a></strong>
         <?php endif; ?>
       </div>
     <?php endif; ?>

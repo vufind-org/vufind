@@ -10,7 +10,7 @@
     <?php if ($locationCount > 1): ?>
       <div class="location-filter">
         <form class="location-selection">
-          <h2 class="sr-only"><?=$this->transEscAttr('organisation_info_location_search')?></h2>
+          <h2 class="visually-hidden"><?=$this->transEscAttr('organisation_info_location_search')?></h2>
           <label for="location_select"><?=$this->transEscAttr('Search')?></label>
           <select id="location_select" class="js-location-select form-select">
               <option hidden value=""><?=$this->transEsc('organisation_info_autocomplete', ['%%count%%' => $locationCount])?></option>

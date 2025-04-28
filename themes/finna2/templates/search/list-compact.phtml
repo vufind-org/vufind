@@ -15,7 +15,7 @@
           <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
         </div>
       <?php endif; ?>
-      <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
+      <span class="visually-hidden"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
       <?=$this->record($current)->getSearchResult('compact', $this->results)?>
     </div>
   <?php endforeach; ?>

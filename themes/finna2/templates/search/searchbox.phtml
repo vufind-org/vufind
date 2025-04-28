@@ -166,7 +166,7 @@
         <div class="simple-keyboard"></div>
       </div>
       <form id="searchForm" role="search" class="searchForm navbar-form navbar-left  <?=$handlerCount < 2 ? 'input-field-only' : ''; ?>" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-      <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc('Find')?></label>
+      <label for="searchForm_lookfor" class="visually-hidden" hidden><?=$this->transEsc('Find')?></label>
       <input<?=$this->htmlAttributes($searchboxAttributes)?>>
       <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
       <?php if ($handlerCount > 1): ?>
@@ -196,7 +196,7 @@
       <?php elseif ($handlerCount == 1): ?>
         <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" class="searchForm_type">
       <?php endif; ?>
-      <button type="submit" class="btn btn-primary <?= $handlerCount <= 1 ? 'wider-searchbutton' : '' ?>"><?=$this->icon('search') ?> <span class="sr-only"><?=$this->transEsc('Find')?></span></button>
+      <button type="submit" class="btn btn-primary <?= $handlerCount <= 1 ? 'wider-searchbutton' : '' ?>"><?=$this->icon('search') ?> <span class="visually-hidden"><?=$this->transEsc('Find')?></span></button>
       <div id="searchForm_controls">
         <?php if (!empty($keyboardLayouts)): ?>
           <?php
@@ -320,11 +320,11 @@
             <?php if ($scrollData['previousRecord']): ?>
                 <?php if ($scrollData['firstRecord']): ?>
                 <li>
-                  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['firstRecord']))?>" rel="nofollow"><?=$this->icon('pager-first') ?></i><span class="sr-only"><?=$this->transEsc('First Record')?></span></a>
+                  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['firstRecord']))?>" rel="nofollow"><?=$this->icon('pager-first') ?></i><span class="visually-hidden"><?=$this->transEsc('First Record')?></span></a>
                 </li>
                 <?php endif; ?>
               <li class="pager-previous-record">
-                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['previousRecord']))?>" rel="nofollow"><?=$this->icon('pager-prev') ?><span class="sr-only"><?=$this->transEsc('Previous Record')?></span></a>
+                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['previousRecord']))?>" rel="nofollow"><?=$this->icon('pager-prev') ?><span class="visually-hidden"><?=$this->transEsc('Previous Record')?></span></a>
               </li>
             <?php else: ?>
               <?php if ($scrollData['firstRecord']): ?>
@@ -340,11 +340,11 @@
           </li>
             <?php if ($scrollData['nextRecord']): ?>
               <li class="pager-next-record">
-                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['nextRecord']))?>" rel="nofollow"><?=$this->icon('pager-next') ?><span class="sr-only"><?=$this->transEsc('Next Record')?></span></a>
+                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['nextRecord']))?>" rel="nofollow"><?=$this->icon('pager-next') ?><span class="visually-hidden"><?=$this->transEsc('Next Record')?></span></a>
               </li>
               <?php if ($scrollData['lastRecord']): ?>
                 <li>
-                  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['lastRecord']))?>" rel="nofollow"><?=$this->icon('pager-last') ?><span class="sr-only"><?=$this->transEsc('Last Record')?></span></a>
+                  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($scrollData['lastRecord']))?>" rel="nofollow"><?=$this->icon('pager-last') ?><span class="visually-hidden"><?=$this->transEsc('Last Record')?></span></a>
                 </li>
               <?php endif; ?>
             <?php else: ?>

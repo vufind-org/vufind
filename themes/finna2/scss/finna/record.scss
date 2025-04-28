@@ -591,7 +591,6 @@ a.authority {
       text-decoration: none;
     }
     > li:not(.share-buttons):not(.whatsapp) {
-      float: left;
       // Links rendered as pills
       > a, > .btn-bookbag-toggle > a {
         border-radius: $nav-pills-border-radius;
@@ -622,7 +621,7 @@ a.authority {
     }
   }
 }
-.record-toolbar .nav-pills li {
+.record-toolbar .nav-pills > li {
   > a,
   > .btn-bookbag-toggle > a {
     padding: 0px;

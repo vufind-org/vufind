@@ -48,7 +48,7 @@
           <?php endif; ?>
           <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
           <?php if (!$missing): ?>
-            <span class="sr-only"> <?=$this->transEsc('To the record')?></span></a>
+            <span class="visually-hidden"> <?=$this->transEsc('To the record')?></span></a>
           <?php endif; ?>
           <?php if ($altTitles = $this->driver->tryMethod('getAlternativeTitles')): ?>
             <div class="result-alt-titles truncate-field" data-rows="5">

@@ -3,7 +3,7 @@
   <?=$results->getUrlQuery()->asHiddenFields(['page' => '/./'])?>
   <?php $searchFilters = $results->getParams()->getFilterList(true);?>
   <div class="modal-map"></div>
-  <button class="btn btn-lg btn-primary pull-right" type="submit"><?=$this->transEsc('Find')?></button>
+  <button class="btn btn-lg btn-primary float-end" type="submit"><?=$this->transEsc('Find')?></button>
 </form>
 
 <?php

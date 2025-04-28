@@ -165,7 +165,7 @@
     <?php endif;?>
   </div>
   <?php if ($user && $list): ?>
-    <form class="pull-left delete-list" action="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->getId())?>&confirm=1" method="post">
+    <form class="float-start delete-list" action="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->getId())?>&confirm=1" method="post">
       <ul class="dropdown-menu useraccount-confirm">
         <li class="disabled"><?=$this->transEsc('confirm_delete_list_text')?></li>
         <li>

@@ -46,7 +46,7 @@
       </div>
       <div class="embedded-content-actions">
         <a class="btn btn-primary" href="<?=$this->escapeHtmlAttr($this->serviceUrl)?>" target="_blank">
-          <?=$this->translate('embedded_content_external_link')?> <?= $this->icon('new-window') ?> <span class="sr-only">(<?=$this->transEsc('Open in a new window')?>)</span>
+          <?=$this->translate('embedded_content_external_link')?> <?= $this->icon('new-window') ?> <span class="visually-hidden">(<?=$this->transEsc('Open in a new window')?>)</span>
         </a>
         <a class="btn btn-default" href="#" data-cc="show-preferencesModal" aria-haspopup="dialog"><?=$this->transEsc('Cookie Settings')?></a>
       </div>

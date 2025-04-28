@@ -1,11 +1,11 @@
 <!-- START of: finna - search/logosection.phtml -->
 <?php /*
 <?php if (($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo'))): ?>
-  <a href="<?=$this->url('home');?>"><span class="sr-only"><?=$this->transEsc('Home');?></span>
+  <a href="<?=$this->url('home');?>"><span class="visually-hidden"><?=$this->transEsc('Home');?></span>
     <img src="<?=$srcUrl; ?>" alt="Logo">
   </a>
 <?php else: ?>
-  <a href="<?=$this->url('home');?>" class="finnalogo"><span class="sr-only"><?=$this->transEsc('Home');?></span></a>
+  <a href="<?=$this->url('home');?>" class="finnalogo"><span class="visually-hidden"><?=$this->transEsc('Home');?></span></a>
 <?php endif; ?>
 <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir == 'search') : ?>
 <hr>

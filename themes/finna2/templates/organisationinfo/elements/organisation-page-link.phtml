@@ -2,7 +2,7 @@
 <?php if ($orgInfo['logo']): ?>
   <a href="<?=$url?>">
     <img src="<?=$orgInfo['logo']?>" class="consortium-logo" alt="" title="<?=$this->transEscAttr('organisation_info_link')?>">
-    <span class="sr-only"><?=$this->transEsc('organisation_info_link')?></span>
+    <span class="visually-hidden"><?=$this->transEsc('organisation_info_link')?></span>
   </a>
 <?php endif ?>
 <span class="organisation-name"><?=$orgInfo['name'] ?: $parentName?></span>

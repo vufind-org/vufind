@@ -236,7 +236,7 @@ fieldset.profile-group {
   legend.form-field {
     font-size: ($font-size-base * 1.1);
   }
-  legend.control-label {
+  legend.form-label, legend.control-label {
     font-size: 100%;
     font-weight: 700;
     border: 0;

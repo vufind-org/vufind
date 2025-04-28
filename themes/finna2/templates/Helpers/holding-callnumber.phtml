@@ -4,7 +4,7 @@
     <template class="js-wayfinder-link">
       <a class="location-service icon-link__label" target="_blank" href="#">
         <?=$this->icon('location-service', 'location-service-icon');?>
-        <span class="sr-only"><?=$this->transEsc('Location Service')?></span>
+        <span class="visually-hidden"><?=$this->transEsc('Location Service')?></span>
       </a>
     </template>
   </span>
@@ -25,7 +25,7 @@
 <?php if ($this->qrCode): ?>
   <div class="dropdown location-service-qrcode">
     <a href="#" class="dropdown-toggle qrcodeLink" data-bs-toggle="dropdown" title="<?=$this->transEsc('QR Code')?>" rel="nofollow" aria-expanded="false">
-      <?=$this->icon('qrcode', 'location-service-qrcode-icon')?><span class="sr-only"><?=$this->transEsc('QR Code')?></span>
+      <?=$this->icon('qrcode', 'location-service-qrcode-icon')?><span class="visually-hidden"><?=$this->transEsc('QR Code')?></span>
     </a>
     <ul class="dropdown-menu qrcode" role="menu">
       <li>

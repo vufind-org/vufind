@@ -119,7 +119,7 @@
               </div>
 
               <table class="myresearch-table" aria-label="<?=$this->transEscAttr('Loan History')?>" tabindex="0">
-                <tr class="sr-only myresearch-row" aria-hidden="true">
+                <tr class="visually-hidden myresearch-row" aria-hidden="true">
                   <th id="label-select-column"><?=$this->transEsc('Select');?></th>
                   <th class="hidden-xs"></th>
                   <th id="label-title-column"><?=$this->transEsc('Loan Details');?></th>
@@ -184,7 +184,7 @@
                   </tr>
                 <?php endforeach; ?>
               </table>
-              <h3 class="sr-only"><?=$this->transEsc('End of List')?></h3>
+              <h3 class="visually-hidden"><?=$this->transEsc('End of List')?></h3>
               <div class="loan-history-buttons-bottom">
                 <?php if ($purgeAllAllowed): ?>
                   <div class="dropdown loan-history-purge-all">

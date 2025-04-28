@@ -4,7 +4,7 @@
   $dateinputClass = $this->dateinputClass ?? '';
   $dateinputLabel = $this->dateinputLabel ?? '';
   $dateinputPlaceholder = $this->dateinputPlaceholder ?? '';
-  $dateinputDateFormatHint = '<span class="sr-only">' . $this->transEsc('dateformat_hint_screenreader') . '</span>' . $this->dateTime()->getDisplayDateFormat();
+  $dateinputDateFormatHint = '<span class="visually-hidden">' . $this->transEsc('dateformat_hint_screenreader') . '</span>' . $this->dateTime()->getDisplayDateFormat();
   $dateinputValue = $this->dateinputValue ?? '';
   $dateinputPicker = $this->dateinputPicker ?? '';
   $dateinputRequired = $this->dateinputRequired ?? false;
@@ -19,12 +19,12 @@
       <input type="text" class="input-field form-control <?=$dateinputClass ?>" id="<?=$dateinputId ?>" <?php if (isset($dateinputName)): ?>name="<?=$dateinputName ?>"<?php endif; ?> value="<?=$dateinputValue ?>" placeholder="<?=$dateinputPlaceholder ?>" size="<?=$dateinputSize ?>" maxlength="<?=$dateinputMaxlength ?>" <?php if ($dateinputRequired): ?>required<?php endif; ?> autocomplete="<?=$dateinputAutocomplete ?>">
       <button type="button" class="btn btn-default datepicker-toggle">
         <?=$this->icon('calendar') ?>
-        <span class="sr-only"><?=$this->transEsc('datepicker_select_date')?> <span class="datepicker-date-selected"></span></span>
+        <span class="visually-hidden"><?=$this->transEsc('datepicker_select_date')?> <span class="datepicker-date-selected"></span></span>
       </button>
     </span>
     <span role="dialog" tabindex="-1" id="datepicker-<?=$dateinputId ?>" class="datepicker-dialog">
       <calendar-date locale="<?=$this->layout()->userLang?>">
-        <span class="btn-datepicker-prev" role="button" slot="previous"><?=$this->icon('datepicker-prev') ?><span class="sr-only"><?=$this->transEsc('Prev')?></span></span><span class="btn-datepicker-next" role="button" slot="next"><?=$this->icon('datepicker-next') ?><span class="sr-only"><?=$this->transEsc('Next')?></span></span>
+        <span class="btn-datepicker-prev" role="button" slot="previous"><?=$this->icon('datepicker-prev') ?><span class="visually-hidden"><?=$this->transEsc('Prev')?></span></span><span class="btn-datepicker-next" role="button" slot="next"><?=$this->icon('datepicker-next') ?><span class="visually-hidden"><?=$this->transEsc('Next')?></span></span>
         <calendar-month></calendar-month>
       </calendar-date>
       <button type="button" class="btn btn-primary btn-xs btn-datepicker-close"><?=$this->transEsc('close')?></button>

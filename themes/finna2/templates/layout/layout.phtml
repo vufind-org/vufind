@@ -156,7 +156,7 @@
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <?=$this->render('search/modals.phtml') ?>
     <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-      <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+      <span class="visually-hidden"><?=$this->layout()->srmessage ?></span>
     <?php endif; ?>
       <?php if (isset($this->layout()->skiplink)): // additional skip links ?>
         <?=$this->layout()->skiplink ?>
@@ -204,7 +204,7 @@
       <?php if ($isLandingPage): ?>
         <a class="btn btn-primary btn-uppercase floating-feedback-btn" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
       <?php endif; ?>
-      <h1 class="sr-only"><?=$this->transEsc('Search')?></h1>
+      <h1 class="visually-hidden"><?=$this->transEsc('Search')?></h1>
       <?php if (!empty($this->layout()->infoMessage)): ?>
         <div class="alert alert-info street-info">
           <div class="container">

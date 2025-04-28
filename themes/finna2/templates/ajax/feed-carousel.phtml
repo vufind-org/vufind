@@ -4,7 +4,7 @@
   $linkTextEsc = $this->transEsc($this->linkText ? $this->linkText : 'To the record');
   if (!$this->translateTitle): // Translated title is displayed in the container, so ignore it here
 ?>
-  <h2 class="carousel-header <?php if ($this->type === 'slider'):?> sr-only<?php endif;?>"><?=$this->escapeHtml($this->title)?></h2>
+  <h2 class="carousel-header <?php if ($this->type === 'slider'):?> visually-hidden<?php endif;?>"><?=$this->escapeHtml($this->title)?></h2>
 <?php endif; ?>
 <?php if (isset($this->description)): ?>
   <p class="additional-description"><?=$this->translate($this->description) // HTML, intentionally left unescaped ?></p>

@@ -155,7 +155,7 @@ FinnaPopup.prototype.show = function show() {
   const next = '<button class="popup-arrow popup-right-arrow next-record" type="button">' + VuFind.icon('record-next', 'record-next-icon') + '</button>';
   const previous = '<button class="popup-arrow popup-left-arrow previous-record" type="button">' + VuFind.icon('record-prev', 'record-prev-icon') + '</button>';
   const closeTemplate = '<button class="finna-popup close-button" title="close_translation" aria-label="close_translation">' + VuFind.icon('popup-close', 'popup-close-icon') + '</button>';
-  const srElement = '<span class="sr-only"></span>';
+  const srElement = '<span class="visually-hidden"></span>';
   var _ = this;
   var hasParent = typeof _.parent !== 'undefined';
   if (!hasParent) {
@@ -349,7 +349,7 @@ FinnaPopup.prototype.focusTrap = function focusTrap(e) {
   if (!$.contains(element, e.target)) {
     const nodes = getFocusableNodes(element);
     if (nodes.length) {
-      nodes[0].focus();    
+      nodes[0].focus();
     }
   }
 };

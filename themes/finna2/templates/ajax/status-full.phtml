@@ -330,13 +330,13 @@ if (!$disableTitleHold
         if ($logged) {
 ?>
     <div class="title-hold">
-      <a href="<?=$this->escapeHtmlAttr($addSid($link))?>" class="placehold btn btn-primary hidden-print" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $driver->getTitle()) ?>" <?=$lightbox ? ' data-lightbox' : ''?>><?=$this->transEsc('title_hold_place')?><span class="sr-only">: <?=$this->escapeHtml($driver->getTitle())?></span></a>
+      <a href="<?=$this->escapeHtmlAttr($addSid($link))?>" class="placehold btn btn-primary hidden-print" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $driver->getTitle()) ?>" <?=$lightbox ? ' data-lightbox' : ''?>><?=$this->transEsc('title_hold_place')?><span class="visually-hidden">: <?=$this->escapeHtml($driver->getTitle())?></span></a>
     </div>
 <?php
         } else {
 ?>
     <div class="title-hold">
-      <a href="<?=$this->escapeHtmlAttr($addSid($link))?>" class="login btn btn-primary hidden-print" data-lightbox><?=$this->transEsc('title_hold_login')?><span class="sr-only">: <?=$this->escapeHtml($driver->getTitle())?></span></a>
+      <a href="<?=$this->escapeHtmlAttr($addSid($link))?>" class="login btn btn-primary hidden-print" data-lightbox><?=$this->transEsc('title_hold_login')?><span class="visually-hidden">: <?=$this->escapeHtml($driver->getTitle())?></span></a>
     </div>
 <?php
         }
@@ -350,13 +350,13 @@ if (!$disableTitleHold
     <?php $user = $this->auth()->getUserObject();
     if ($user): ?>
       <?php if ($this->libraryCards()->getCardsForUser($user)): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($driver, 'RepositoryLibraryRequest'))?>" data-lightbox class="btn btn-primary repository-library-request-order"><?=$this->transEsc('repository_library_request_order')?><span class="sr-only"> - <?=$this->escapeHtml($driver->getTitle())?></span></a>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($driver, 'RepositoryLibraryRequest'))?>" data-lightbox class="btn btn-primary repository-library-request-order"><?=$this->transEsc('repository_library_request_order')?><span class="visually-hidden"> - <?=$this->escapeHtml($driver->getTitle())?></span></a>
       <?php else: ?>
-        <a href="<?=$this->url('editLibraryCard', ['id' => 'NEW'])?>" class="btn btn-primary login-link hidden-print"><?=$this->transEsc('repository_library_request_add_library_card')?><span class="sr-only"> - <?=$this->escapeHtml($driver->getTitle())?></span></a>
+        <a href="<?=$this->url('editLibraryCard', ['id' => 'NEW'])?>" class="btn btn-primary login-link hidden-print"><?=$this->transEsc('repository_library_request_add_library_card')?><span class="visually-hidden"> - <?=$this->escapeHtml($driver->getTitle())?></span></a>
       <?php endif; ?>
     <?php else: ?>
       <?php $link = $holdingsLink . (!str_contains($holdingsLink, '?') ? '?' : '&') . 'login=true&catalogLogin=true'; ?>
-      <a href="<?=$this->escapeHtmlAttr($addSid($link))?>" class="btn btn-primary login-link hidden-print" data-lightbox><?=$this->transEsc('repository_library_request_login')?><span class="sr-only"> - <?=$this->escapeHtml($driver->getTitle())?></span></a>
+      <a href="<?=$this->escapeHtmlAttr($addSid($link))?>" class="btn btn-primary login-link hidden-print" data-lightbox><?=$this->transEsc('repository_library_request_login')?><span class="visually-hidden"> - <?=$this->escapeHtml($driver->getTitle())?></span></a>
     <?php endif; ?>
   </div>
   <div class="clearfix"></div>

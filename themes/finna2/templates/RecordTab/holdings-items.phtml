@@ -80,7 +80,7 @@
             <?php if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
               &ndash;&nbsp;<span class="small"><?=$this->translate('status_requests_html', ['%%count%%' => $this->escapeHtml($row['requests_placed'])])?></span>
             <?php endif; ?>
-            <div class="pull-right">
+            <div class="float-end">
             <?php if (!$journal): ?>
               <?php if (!$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
                 <a class="<?=$check ? "{$this->mode}CheckRequest request-check " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($row['link']))?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('Place a Hold') . $dialogTitle); ?>"><?=$this->transEsc($check ? 'Check Hold' : 'Place a Hold')?></a>
@@ -104,7 +104,7 @@
               &ndash;&nbsp;<span class="small"><?=$this->translate('status_requests_html', ['%%count%%' => $this->escapeHtml($row['requests_placed'])])?></span>
             <?php endif; ?>
             <?php if (!$journal && !$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
-              <div class="pull-right">
+              <div class="float-end">
                 <a class="<?=$check ? "{$this->mode}CheckRequest request-check " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($row['link']))?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('Recall This') . $dialogTitle); ?>"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></a>
               </div>
             <?php endif; ?>

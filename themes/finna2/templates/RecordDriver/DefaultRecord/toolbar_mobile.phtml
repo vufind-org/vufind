@@ -26,7 +26,7 @@
   <div class="mobile-toolbar">
     <ul class="nav nav-pills mobile-actions hidden-print" aria-label="<?=$this->transEsc('ajaxview_label_tools'); ?>">
           <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><a class="save-record-mobile" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><?=$this->icon('favorite') ?> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
+          <li><a class="save-record-mobile" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><?=$this->icon('favorite') ?> <span class="visually-hidden"><?=$this->transEsc('Add to favorites')?></span></a></li>
           <?php endif; ?>
 
           <li class="dropdown dropup nav-pills mobile-sharing">
@@ -43,10 +43,10 @@
                 <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>">
                 -->
               <li class="whatsapp">
-                <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLinker()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><?=$this->icon('whatsapp', 'whatsapp-icon') ?><span class="sr-only">Whatsapp</span></a></span>
+                <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLinker()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><?=$this->icon('whatsapp', 'whatsapp-icon') ?><span class="visually-hidden">Whatsapp</span></a></span>
               </li>
               <?php endif; ?>
-              <li class="mail-record"><a class="mail-record-mobile" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email')) ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><?=$this->icon('email') ?> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
+              <li class="mail-record"><a class="mail-record-mobile" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email')) ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><?=$this->icon('email') ?> <span class="visually-hidden"><?=$this->transEsc('Email this')?></span></a></li>
             </ul>
           </li>
 
@@ -56,7 +56,7 @@
             <li class="dropdown dropup">
               <a class="export-toggle toolbar-btn dropdown-toggle" role="button" data-bs-toggle="dropdown" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options-mobile">
                 <?=$this->icon('export') ?>
-                <span class="sr-only"><?=$this->transEsc('Export Record') ?></span>
+                <span class="visually-hidden"><?=$this->transEsc('Export Record') ?></span>
               </a>
               <ul class="dropdown-menu" id="export-options-mobile">
                 <?php foreach ($exportFormats as $exportFormat): ?>
@@ -71,19 +71,19 @@
           <?php endif; ?>
 
           <?php if (count($this->driver->getCitationFormats()) > 0): ?>
-          <li><a class="cite-record-mobile" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite')) ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><?=$this->icon('cite') ?> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
+          <li><a class="cite-record-mobile" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite')) ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><?=$this->icon('cite') ?> <span class="visually-hidden"><?=$this->transEsc('Cite this')?></span></a></li>
           <?php endif; ?>
           <?php if ($cart->isActive()): ?>
             <?php $cartId = $this->driver->getSourceIdentifier() . '|' . $this->driver->getUniqueId(); ?>
             <li class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" data-cart-source="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
               <a class="cart-add-mobile cart-add<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Add to Book Bag')?>" rel="nofollow" href="#">
                 <?=$this->icon('cart') ?>
-                <span class="sr-only"><?=$this->transEsc('Add to Book Bag')?></span>
+                <span class="visually-hidden"><?=$this->transEsc('Add to Book Bag')?></span>
               </a>
               <a class="cart-remove-mobile cart-remove<?php if($cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Remove from Book Bag')?>" rel="nofollow" href="#">
                 <?=$this->icon('cart') ?>
                 <?=$this->icon('cart-remove', 'cart-remove-mobile-icon') ?>
-                <span class="sr-only"><?=$this->transEsc('Remove from Book Bag')?></span>
+                <span class="visually-hidden"><?=$this->transEsc('Remove from Book Bag')?></span>
                 <div class="blinker"></div>
               </a>
             </li>

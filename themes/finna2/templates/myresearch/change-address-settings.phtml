@@ -57,8 +57,8 @@
           }
         ?>
         <?php if ('select' === $data['type']): ?>
-          <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
-          <select id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" class="form-control form-select">
+          <label class="form-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
+          <select id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" class="form-select">
             <option value=""><?=$this->transEsc('choose_from_list')?></option>
             <?php foreach($data['options'] as $optionId => $option): ?>
               <?php $name = is_string($option) ? $option : ($option['name'] ?? $optionId); ?>
@@ -78,11 +78,11 @@
           </fieldset>
         <?php elseif ('radio' === $data['type']): ?>
           <fieldset id="<?=$this->escapeHtmlAttr($field)?>">
-            <legend class="control-label radio-label"><?=$this->transEsc($data['label']) ?>:</legend>
+            <legend class="form-label radio-label"><?=$this->transEsc($data['label']) ?>:</legend>
             <?php foreach($data['options'] as $optionId => $option): ?>
               <?php $name = is_string($option) ? $option : ($option['name'] ?? $optionId); ?>
               <input type="radio" name="<?=$this->escapeHtmlAttr($field)?>" id="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>" class="form-control" value="<?=$this->escapeHtmlAttr($optionId)?>"<?=$optionId == $value ? ' checked' : ''?><?=$data['required'] ?? false ? ' required aria-required="true"' : ''?><?=$data['readonly'] ?? false ? ' readonly' : ''?>>
-              <label class="control-label" for="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>"><?=$this->transEsc($name) ?></label>
+              <label class="form-label" for="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>"><?=$this->transEsc($name) ?></label>
               <br>
             <?php endforeach; ?>
           </fieldset>
@@ -92,11 +92,11 @@
             <?=$this->transEsc($data['label']) ?>
           </label>
         <?php elseif ('pin4' === $data['type']): ?>
-          <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
+          <label class="form-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
           <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="password" data-minlength="4" data-minlength-error="<?=$this->transEscAttr('password_minimum_length', ['%%minlength%%' => 4])?>" maxlength="4" pattern="\d+" value="" class="form-control"<?=$data['required'] ? ' required' : ''?>>
           <div class="help-block"><?=$this->transEsc('password_only_numeric') ?></div>
         <?php else: ?>
-          <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
+          <label class="form-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
           <?php
               $attrs = [
                 'id' => $field,

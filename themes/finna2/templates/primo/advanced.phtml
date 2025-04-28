@@ -51,7 +51,7 @@
             'icon' => 'help',
             'contentHtml' => $this->translate('tooltip_pci_advanced_html'),
             'labelHtml' => $this->transEsc('Help with Advanced Search'),
-            'class' => 'tooltip-pci-advanced pull-right',
+            'class' => 'tooltip-pci-advanced float-end',
           ])?>
         <?php endif; ?>
       </h2>
@@ -74,13 +74,13 @@
         <?php for ($j = 0; $j < $numRows; $j++): ?>
           <?php $currRow = $currentGroup[$j] ?? false; ?>
         <div class="primo-advanced-search-fields">
-            <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control form-inline form-select">
+            <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-select form-inline">
             <?php foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
               <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
             <?php endforeach; ?>
             </select>
             <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow ? $this->escapeHtmlAttr($currRow->getString()) : ''?>" size="30" name="lookfor<?=$i?>[]" class="form-control form-inline responsive-field" placeholder="<?=$this->transEscAttr('Search words')?><?=$this->transEscAttr('eol_ellipsis')?>">
-            <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control form-inline responsive-field form-select">
+            <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-select form-inline responsive-field">
             <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
               <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
             <?php endforeach; ?>

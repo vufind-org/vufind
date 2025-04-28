@@ -93,7 +93,7 @@ class FinnaCookieConsentElement extends HTMLElement {
     aOuterLink.append(' ', linkIcon);
 
     const linkSpan = document.createElement('span');
-    linkSpan.classList.add('sr-only');
+    linkSpan.classList.add('visually-hidden');
     linkSpan.append(VuFind.translate('Open in a new window'));
     aOuterLink.append(linkSpan);
     divActions.append(aOuterLink);

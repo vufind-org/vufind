@@ -39,7 +39,7 @@
             <label for="due-date-reminder"><?=$this->transEsc('messaging_settings_type_dueDateAlertEmail')?>:</label>
         </div>
         <div class="my-profile-col">
-          <select id="due-date-reminder" name="due_date_reminder" class="jumpMenu form-control form-select">
+          <select id="due-date-reminder" name="due_date_reminder" class="jumpMenu form-select">
             <option value="0" <?= $user->getFinnaDueDateReminder() == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc('due_date_reminder_none') ?></option>
             <option value="1" <?= $user->getFinnaDueDateReminder() == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc('due_date_reminder_one_day') ?></option>
             <option value="2" <?= $user->getFinnaDueDateReminder() == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc('due_date_reminder_two_days') ?></option>

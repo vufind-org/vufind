@@ -25,16 +25,16 @@
   <?php if ($xcal = $item['xcal'] ?? []): ?>
     <?php if (!empty($xcal['startDate'])): ?>
       <?php if ($xcal['singleDay']): ?>
-        <div class="xcal xcal-date"><?=$this->icon('feed-xcal-date') ?><span class="sr-only"><?=$this->transEscAttr('xcal_date') ?></span> <?=$this->escapeHtml($xcal['startDate']) ?></div>
+        <div class="xcal xcal-date"><?=$this->icon('feed-xcal-date') ?><span class="visually-hidden"><?=$this->transEscAttr('xcal_date') ?></span> <?=$this->escapeHtml($xcal['startDate']) ?></div>
         <?php if (!empty($xcal['startTime'])): ?>
-          <div class="xcal xcal-time"><?=$this->icon('feed-xcal-time') ?><span class="sr-only"><?=$this->transEscAttr('xcal_time') ?></span> <?=$this->escapeHtml($xcal['startTime']) ?>&nbsp;&ndash;&nbsp;<?=$this->escapeHtml($xcal['endTime'] ?? '') ?></div>
+          <div class="xcal xcal-time"><?=$this->icon('feed-xcal-time') ?><span class="visually-hidden"><?=$this->transEscAttr('xcal_time') ?></span> <?=$this->escapeHtml($xcal['startTime']) ?>&nbsp;&ndash;&nbsp;<?=$this->escapeHtml($xcal['endTime'] ?? '') ?></div>
         <?php endif; ?>
       <?php else: ?>
-        <div class="xcal xcal-date"><?=$this->icon('feed-xcal-date') ?><span class="sr-only"><?=$this->transEscAttr('xcal_date') ?></span> <?=$this->escapeHtml($xcal['startDate']) ?> &ndash;&nbsp;<?=$this->escapeHtml($xcal['endDate'])?></div>
+        <div class="xcal xcal-date"><?=$this->icon('feed-xcal-date') ?><span class="visually-hidden"><?=$this->transEscAttr('xcal_date') ?></span> <?=$this->escapeHtml($xcal['startDate']) ?> &ndash;&nbsp;<?=$this->escapeHtml($xcal['endDate'])?></div>
       <?php endif; ?>
     <?php endif; ?>
     <?php if (!empty($xcal['location'])): ?>
-      <div class="xcal xcal-location"><?=$this->icon('feed-xcal-location') ?><span class="sr-only"><?=$this->transEscAttr('Location') ?></span> <?=$this->escapeHtml($this->truncate($xcal['location'], 40)) ?></div>
+      <div class="xcal xcal-location"><?=$this->icon('feed-xcal-location') ?><span class="visually-hidden"><?=$this->transEscAttr('Location') ?></span> <?=$this->escapeHtml($this->truncate($xcal['location'], 40)) ?></div>
     <?php endif; ?>
   <?php endif; ?>
   <?php if (isset($item['text'])): ?>

@@ -33,7 +33,7 @@
             <?php endforeach; ?>
           </fieldset>
         <?php else: ?>
-          <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
+          <label class="form-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
           <br>
           <input type="<?=$this->escapeHtmlAttr($data['type'])?>" name="<?=$this->escapeHtmlAttr($field)?>" id="<?=$this->escapeHtmlAttr($field)?>" class="form-control" value="<?=$this->escapeHtmlAttr($data['value'])?>"<?=$data['required'] ?? false ? ' required aria-required="true"' : ''?><?=$data['readonly'] ?? false ? ' readonly' : ''?>>
         <?php endif; ?>
@@ -42,7 +42,7 @@
     <?php endforeach; ?>
     <div class="form-group">
       <input id="acceptTerms" type="checkbox" name="acceptTerms" required>
-      <label for="acceptTerms" class="control-label"><?=$this->translate('new_ils_account_terms_accept_html', ['%%url%%' => $this->escapeHtmlAttr($this->termsUrl)])?></label>
+      <label for="acceptTerms" class="form-label"><?=$this->translate('new_ils_account_terms_accept_html', ['%%url%%' => $this->escapeHtmlAttr($this->termsUrl)])?></label>
     </div>
     <div class="form-group">
       <input class="btn btn-primary" name="submitButton" type="submit" value="<?=$this->transEscAttr('Submit') ?>">

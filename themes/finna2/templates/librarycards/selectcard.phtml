@@ -28,7 +28,7 @@
           <div class="library-card">
             <?=$selectedCard ? $this->icon('library-card-selected', 'selected-icon') : '<span class="selected-icon"></span>'?>
             <a class="card-name" aria-describedby="select-card-label-dropdown" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->getId())?>" data-clear-account-cache>
-              <?=$selectedCard ? '<span class="sr-only">(' . $this->transEsc('selected') . ')</span> ' : '' ?><span><?=$display?></span>
+              <?=$selectedCard ? '<span class="visually-hidden">(' . $this->transEsc('selected') . ')</span> ' : '' ?><span><?=$display?></span>
             </a>
             <div class="barcode-container">
               <a href="<?=$this->url('librarycards-displaybarcode', ['id' => $card->getId()])?>">

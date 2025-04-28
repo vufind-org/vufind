@@ -216,7 +216,7 @@ button.multiselect {
     .form-group.radio {
         padding-left: 0;
         margin-bottom: 15px;
-        label.control-label {
+        label.form-label, label.control-label {
             padding-left: 0;
             font-weight: 700;
             margin-bottom: 5px;

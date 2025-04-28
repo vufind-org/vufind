@@ -3,10 +3,10 @@
   <form action="<?= $this->formAction; ?>" class="year-form">
     <div class="form-ui">
 	  <div class="year-range">
-      <label for="year-from" class="sr-only"><?=$this->transEsc('year_from');?></label>
+      <label for="year-from" class="visually-hidden"><?=$this->transEsc('year_from');?></label>
 	    <input id="year-from" class="form-control form-inline input-year year-from" type="number" value="<?=$this->escapeHtmlAttr($this->from) ?>">
 	    <span class="year-separator">&ndash;</span>
-      <label for="year-to" class="sr-only"><?=$this->transEsc('year_to');?></label>
+      <label for="year-to" class="visually-hidden"><?=$this->transEsc('year_to');?></label>
 	    <input id="year-to" class="form-control form-inline input-year year-to" type="number" value="<?=$this->escapeHtmlAttr($this->to) ?>">
 	  </div>
 	  <button class="btn btn-primary submit" type="submit">

@@ -23,7 +23,7 @@
     <li role="none" class="favorites-menulist-item">
       <a role="menuitem" href="<?= $active ? '#' : $this->url('reservationlist-displaylist', ['listId' => $list->getId()])?>?limit=<?=$currentLimit;?>" class="dropdown-item<?=$list && $active ? ' active' : ''?>" aria-current="<?=$active ? 'page' : 'false' ?>">
         <div class="favorite-list-holder">
-          <div class="pull-left favorite-list-title"><?=$this->escapeHtml($list->getTitle())?></div><?php if ($list->getOrdered()): ?><div>(<?= $this->transEsc('ReservationList::Ordered')?>)</div><?php endif; ?>
+          <div class="float-start favorite-list-title"><?=$this->escapeHtml($list->getTitle())?></div><?php if ($list->getOrdered()): ?><div>(<?= $this->transEsc('ReservationList::Ordered')?>)</div><?php endif; ?>
         </div>
       </a>
     </li>

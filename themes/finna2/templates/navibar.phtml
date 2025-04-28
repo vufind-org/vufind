@@ -76,7 +76,7 @@
               <span class="icon-link__label">
                 <strong><?=count($cart->getItems())?></strong>
               </span>
-              <span class="sr-only"><?=$this->transEsc('items')?></span>
+              <span class="visually-hidden"><?=$this->transEsc('items')?></span>
             </a>
           </li>
         <?php endif; ?>
@@ -224,7 +224,7 @@
               </li>
             <?php endif; ?>
             <li>
-              <a <?=$this->url('myresearch-logout') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('myresearch-logout')?>" title="<?=$this->transEsc('Log Out')?>"><?=$this->transEsc('Log Out')?><?=$this->icon('sign-out', 'sign-out-icon pull-right') ?></a>
+              <a <?=$this->url('myresearch-logout') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('myresearch-logout')?>" title="<?=$this->transEsc('Log Out')?>"><?=$this->transEsc('Log Out')?><?=$this->icon('sign-out', 'sign-out-icon float-end') ?></a>
             </li>
           </ul>
         </li>

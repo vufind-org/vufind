@@ -29,7 +29,7 @@
           } ?>
           <div class="form-group">
             <?php $name = !empty($setting['name']) ? $setting['name'] : $settingId; ?>
-            <label<?='select' == $setting['type'] ? ' class="control-label"' : ''?>><?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?>:</label>
+            <label<?='select' == $setting['type'] ? ' class="form-label"' : ''?>><?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?>:</label>
             <?php if ('boolean' == $setting['type']): ?>
               <div class="checkbox">
                 <label>
@@ -50,7 +50,7 @@
                 <?php endforeach; ?>
               </div>
             <?php elseif ('select' == $setting['type']): ?>
-              <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-control form-select" <?php if (!empty($setting['readonly'])): ?> readonly<?php endif; ?>>
+              <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-select" <?php if (!empty($setting['readonly'])): ?> readonly<?php endif; ?>>
                 <?php foreach($setting['options'] as $optionId => $option): ?>
                   <?php $name = $option['name'] ?? $optionId; ?>
                   <option value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if ($optionId == $setting['value']): ?> selected<?php endif; ?>><?=$this->transEsc("messaging_settings_option_$name", null, $name)?></option>

@@ -29,7 +29,7 @@
       <div class="result-body">
         <div class="resultItemLine1">
           <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>">
-            <h3 class="record-title"><?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span></h3>
+            <h3 class="record-title"><?=$this->record($this->driver)->getTitleHtml()?><span class="visually-hidden"> <?=$this->transEsc('To the record')?></span></h3>
           </a>
         </div>
 

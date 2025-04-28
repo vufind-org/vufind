@@ -39,7 +39,7 @@
               } else {
                 echo $this->transEsc('Title not available');
               }
-            ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+            ?><span class="visually-hidden"> <?=$this->transEsc('To the record')?></span>
             </a>
           </h2>
         </div>
@@ -186,7 +186,7 @@
               <div>
                 <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" class="save-record hidden-print" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>">
                   <?=$this->icon('favorite') ?>
-                  <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span>
+                  <span class="visually-hidden"><?=$this->transEsc('Add to favorites')?></span>
                   <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span>
                 </a>
               </div>

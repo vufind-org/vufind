@@ -32,7 +32,7 @@
     <div class="text-center grid-title">
       <h2 class="title">
         <a class="title" href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" title="<?=$this->escapeHtmlAttr($this->driver->getTitle())?>">
-          <?= $this->record($this->driver)->getTitleHtml(50); ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+          <?= $this->record($this->driver)->getTitleHtml(50); ?><span class="visually-hidden"> <?=$this->transEsc('To the record')?></span>
         </a>
       </h2>
       <div class="dateyeartype">

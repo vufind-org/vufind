@@ -10,13 +10,13 @@
       <?php if (isset($brandContent)): ?>
         <span class="navbar-brand">
           <?php if (isset($brandLink)): ?><a href="<?= $brandLink ?>"><?php endif; ?>
-          <?php if (isset($brandSrOnly)): ?><span class="sr-only"><?= $brandSrOnly ?></span><?php endif; ?>
+          <?php if (isset($brandSrOnly)): ?><span class="visually-hidden"><?= $brandSrOnly ?></span><?php endif; ?>
           <?= $brandContent ?>
           <?php if (isset($brandLink)): ?></a><?php endif; ?>
         </span>
       <?php endif; ?>
       <button type="button" class="navbar-toggler navbar-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#<?= $collapseId ?? '' ?>" aria-expanded="false">
-        <?php if (isset($toggleBtnSrOnly)): ?><span class="sr-only"><?= $toggleBtnSrOnly ?></span><?php endif; ?>
+        <?php if (isset($toggleBtnSrOnly)): ?><span class="visually-hidden"><?= $toggleBtnSrOnly ?></span><?php endif; ?>
         <?php if (isset($toggleBtnLabel)): ?><?= $toggleBtnLabel ?><?php endif; ?>
         <?php if (isset($toggleBtnIconClass)): ?><i class="<?= $toggleBtnIconClass ?>"></i><?php endif; ?>
       </button>

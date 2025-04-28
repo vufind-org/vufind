@@ -437,7 +437,7 @@ class ModelViewerClass extends HTMLElement {
           this.loadInfo.textContent = this.translations['An error has occurred'] || 'An error has occurred';
         });
     }, {once: true});
-    
+
     this.root.append(this.loadInfo);
     const highlight = () => {
       this.root.classList.add('filedrop');
@@ -539,7 +539,7 @@ class ModelViewerClass extends HTMLElement {
     info.classList.add('fa');
 
     const srOnly = document.createElement('span');
-    srOnly.classList.add('sr-only');
+    srOnly.classList.add('visually-hidden');
 
     const button = document.createElement('button');
     button.classList.add('collapsed', 'viewer-btn');

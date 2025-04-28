@@ -15,7 +15,7 @@
   <div class="imagepopup-holder" aria-hidden="true">
     <div class="imagepopup-container">
       <div class="popup-canvas paginator-canvas">
-        <button class="next-image left" title="<?= $this->transEsc('previous_image'); ?>" type="button"><?=$this->icon('image-previous') ?><span class="sr-only"><?= $this->transEsc('previous_image'); ?></span></button>
+        <button class="next-image left" title="<?= $this->transEsc('previous_image'); ?>" type="button"><?=$this->icon('image-previous') ?><span class="visually-hidden"><?= $this->transEsc('previous_image'); ?></span></button>
         <div class="popup-nonzoom non-zoomable">
           <div class="iconlabel"></div>
           <img src="<?= $this->imageSrc()->getDataPixel() ?>" alt="">
@@ -23,15 +23,15 @@
         <div class="leaflet-map-image image-wrapper">
           <img src="<?=$this->imageSrc()->getDataPixel()?>" alt="">
           <div class="imagepopup-zoom-container">
-            <button class="zoom-in zoom-button" title="<?= $this->transEsc('zoom_in'); ?>"><?=$this->icon('image-zoom-in') ?><span class="sr-only"><?= $this->transEsc('zoom_in'); ?></span></button>
-            <button class="zoom-out zoom-button" title="<?= $this->transEsc('zoom_out'); ?>"><?=$this->icon('image-zoom-out') ?><span class="sr-only"><?= $this->transEsc('zoom_out'); ?></span></button>
-            <button class="zoom-reset zoom-button" title="<?= $this->transEsc('zoom_center'); ?>"><?=$this->icon('image-zoom-reset') ?><span class="sr-only"><?= $this->transEsc('zoom_center'); ?></span></button>
+            <button class="zoom-in zoom-button" title="<?= $this->transEsc('zoom_in'); ?>"><?=$this->icon('image-zoom-in') ?><span class="visually-hidden"><?= $this->transEsc('zoom_in'); ?></span></button>
+            <button class="zoom-out zoom-button" title="<?= $this->transEsc('zoom_out'); ?>"><?=$this->icon('image-zoom-out') ?><span class="visually-hidden"><?= $this->transEsc('zoom_out'); ?></span></button>
+            <button class="zoom-reset zoom-button" title="<?= $this->transEsc('zoom_center'); ?>"><?=$this->icon('image-zoom-reset') ?><span class="visually-hidden"><?= $this->transEsc('zoom_center'); ?></span></button>
           </div>
           <div class="leaflet-image-loading">
           </div>
         </div>
         <div class="popup-video video-popup"></div>
-        <button class="next-image right" title="<?= $this->transEsc('next_image'); ?>" type="button"><?=$this->icon('image-next') ?><span class="sr-only"><?= $this->transEsc('next_image'); ?></span></button>
+        <button class="next-image right" title="<?= $this->transEsc('next_image'); ?>" type="button"><?=$this->icon('image-next') ?><span class="visually-hidden"><?= $this->transEsc('next_image'); ?></span></button>
       </div>
       <div class="finna-image-pagination">
       </div>

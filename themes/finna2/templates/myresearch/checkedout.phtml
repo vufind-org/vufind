@@ -133,11 +133,11 @@
             <?php endif; ?>
             <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
               <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-              <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
+              <input class="float-start" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
             <?php endif; ?>
           <?php endforeach; ?>
           <table class="myresearch-table" aria-label="<?=$this->transEscAttr('Your Checked Out Items')?>" tabindex="0">
-            <tr class="sr-only myresearch-row" aria-hidden="true">
+            <tr class="visually-hidden myresearch-row" aria-hidden="true">
               <th id="label-select-column"><?=$this->transEsc('Select');?></th>
               <th class="hidden-xs"></th>
               <th id="label-title-column"><?=$this->transEsc('Loan Details');?></th>
@@ -153,7 +153,7 @@
                     <div class="checkbox-container">
                       <div class="checkbox">
                         <label>
-                          <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                          <span class="visually-hidden"><?=$this->transEsc('Select');?></span>
                           <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>">
                         </label>
                       </div>
@@ -251,7 +251,7 @@
               </tr>
             <?php endforeach; ?>
             </table>
-            <h3 class="sr-only"><?=$this->transEsc('End of List')?></h3>
+            <h3 class="visually-hidden"><?=$this->transEsc('End of List')?></h3>
             </form>
           <?php if ($template = $this->content()->findTemplateForLng('content/Additions/checkedout-post-list')): ?>
             <div class="checkedout-post-list"><?=$this->render($template)?></div>

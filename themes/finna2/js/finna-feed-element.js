@@ -84,14 +84,14 @@ class FinnaFeedElement extends HTMLElement {
     autoPlayButton.type = 'button';
 
     const playSpan = document.createElement('span');
-    playSpan.className = 'sr-only';
+    playSpan.className = 'visually-hidden';
     playSpan.innerHTML = VuFind.translate('Carousel::Start Autoplay');
     const playIcon = document.createElement('span');
     playIcon.className = 'splide__toggle__play';
     playIcon.innerHTML = VuFind.icon('feed-play', 'play-icon');
 
     const pauseSpan = document.createElement('span');
-    pauseSpan.className = 'sr-only';
+    pauseSpan.className = 'visually-hidden';
     pauseSpan.innerHTML = VuFind.translate('Carousel::Stop Autoplay');
     const pauseIcon = document.createElement('span');
     pauseIcon.className = 'splide__toggle__pause';
