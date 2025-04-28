@@ -925,6 +925,10 @@ class Quria extends AxiellWebServices
         $status = $result->$functionResult->status;
 
         if ($status->type != 'ok') {
+            // Quria returns InvalidLogin error for GetLoanHistory if patron has loan history disabled.
+            if ($status->message == 'InvalidLogin') {
+                return ['transactions' => [], 'count' => 0];
+            }
             $message = $this->handleError($function, $status, $username);
             if ($message == 'ils_connection_failed' || $status->type === 'error') {
                 throw new ILSException($message);
