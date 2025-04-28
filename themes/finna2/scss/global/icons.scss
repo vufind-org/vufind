@@ -288,7 +288,7 @@ table .iconlabel {
     background: url('../../finna/images/finnafi-logo.svg');
     background-repeat: no-repeat;
     background-size: 100%;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
            width: (250px*0.8);
            height: (63px*0.8);
     }

@@ -68,7 +68,7 @@
   line-height: 60px;
   float: left;
 }
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(sm) {
   .browsebar {
     .dropdown-menu {
       position: absolute;
@@ -154,14 +154,14 @@
     }
   }
   & ~ nav.navbar {
-    @media(min-width: $screen-sm) and (max-width: $screen-sm-max){
+    @include media-breakpoint-only(sm) {
       width: 65%;
     }
-    @media(min-width: $screen-md){
+    @include media-breakpoint-up(md) {
       width: 70%;
     }
   }
-  @media(max-width: $screen-sm-max){
+  @include media-breakpoint-down(md) {
     width: 35%;
   }
 }

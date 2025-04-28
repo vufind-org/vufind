@@ -100,7 +100,7 @@
     background-color: white;
     box-shadow: 2px 4px 3px $gray-lighter;
     overflow: hidden;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       width: 100%;
     }
     .icon {

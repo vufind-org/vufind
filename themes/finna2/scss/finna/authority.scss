@@ -131,7 +131,7 @@ a.authority-link {
     flex-wrap: wrap;
     flex-direction: row;
 
-    @media (min-width: $screen-md) {
+    @include media-breakpoint-up(md) {
       .media-left {
         width: initial;
       }
@@ -152,7 +152,7 @@ a.authority-link {
         }
       }
     }
-    @media (min-width: $screen-sm) {
+    @include media-breakpoint-up(sm) {
       .media-left {
         flex-basis: 60%;
       }
@@ -193,10 +193,10 @@ a.authority-link {
       position: relative;
       display: flex;
       border-bottom: 1px solid $gray-lighter;
-      @media(max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         padding-top: 10px;
       }
-      @media(max-width: 390px) {
+      @media (max-width: 390px) {
         &.many-tabs > li {
           max-width: 64px;
           a {
@@ -214,7 +214,7 @@ a.authority-link {
         cursor: pointer;
         //margin-bottom: 4px;
         border: none;
-        @media (max-width: $screen-sm) {
+        @include media-breakpoint-down(md) {
           &:not(.many-tabs) {
             flex-basis: 50%;
           }
@@ -261,7 +261,7 @@ a.authority-link {
           font-weight: 600;
           color: $main-tabs-text-color;
           transition: none;
-          @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+          @include media-breakpoint-only(sm) {
             word-break: break-word;
           }
           .icon {

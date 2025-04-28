@@ -75,7 +75,7 @@
     .searchterms {
       font-weight: bold;
     }
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       display: block;
     }
   }
@@ -97,7 +97,7 @@
   &::-webkit-scrollbar {
     display: none;
   }
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     > .recordTabs {
       width: 150%;
       margin-left: 0px;
@@ -118,13 +118,13 @@
     color: $nav-tabs-text-color;
     padding: .6em 0 0 0;
     cursor: pointer;
-    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    @include media-breakpoint-only(sm) {
       .icon {
         display: block;
         text-align: center;
       }
     }
-    @media (max-width: $screen-sm-max) {
+    @include media-breakpoint-down(md) {
       font-size: .9em;
     }
     &:hover {
@@ -156,10 +156,10 @@
   border-bottom: none;
   // style 5 tabs to make sure they stay as tabs
   > li:first-child:nth-last-child(5), li:first-child:nth-last-child(5) ~ li {
-    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    @include media-breakpoint-only(sm) {
       max-width: 100%;
     }
-    @media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+    @include media-breakpoint-only(md) {
       max-width: 100%;
     }
   }
@@ -215,7 +215,7 @@
   .staff-view-icon {
     line-height: 1em;
   }
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     margin-left: -15px;
     margin-right: -15px;
   }

@@ -17,7 +17,7 @@
 }
 
 .audio-accordion {
-  @media (min-width: $screen-sm-max) {
+  @include media-breakpoint-up(md) {
     max-width: 300px;
   }
 }

@@ -15,7 +15,7 @@
   .button-label {
     padding: 3px;
   }
-  @media (max-width: $screen-xxs) {
+  @include media-breakpoint-down(xs) {
     & .view-options, & .view-dropdown, & .sort-button {
       &  .dropdown > a {
         max-width: 150px;
@@ -26,7 +26,7 @@
       }
     }
   }
-  @media (max-width: $screen-xxs) {
+  @include media-breakpoint-down(xs) {
     .view-dropdown .dropdown-menu {
       left: -50%;
     }
@@ -41,7 +41,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .search-header { display: flex; }
   .search-stats { flex-grow: 1; }
   .search-controls {
@@ -100,11 +100,11 @@
       }
     }
   }
-  @media(min-width: $screen-lg-min){
+  @include media-breakpoint-up(lg) {
     display: inline-block;
   }
   .dropdown-menu &:not(.sort-button) {
-    @media(max-width:$screen-sm-max) {
+    @include media-breakpoint-down(md) {
       font-size: 1.1em;
     }
   }

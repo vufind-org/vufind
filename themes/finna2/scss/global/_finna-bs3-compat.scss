@@ -4,14 +4,6 @@
 
 // *** Variables ***
 
-// Legacy brand colors forced from current colors:
-$brand-primary:               $primary;
-$brand-secondary:             $secondary;
-$brand-success:               $success;
-$brand-warning:               $warning;
-$brand-danger:                $danger;
-$brand-info:                  $info;
-
 $border-radius-base:   $border-radius !default;
 $border-radius-large:  $border-radius-lg !default;
 
@@ -53,6 +45,8 @@ $panel-default-border:   $primary-border-subtle !default;
 $panel-bg:               #f5f5f5 !default;
 $panel-footer-bg:        $panel-bg !default;
 
+$screen-xxs:             map.get($grid-breakpoints, "xxs");
+$screen-xxs-min:         $screen-xxs;
 $screen-xs:              map.get($grid-breakpoints, "xs");
 $screen-xs-min:          $screen-xs;
 $screen-sm:              map.get($grid-breakpoints, "sm");
@@ -64,13 +58,14 @@ $screen-lg-min:          $screen-lg;
 $screen-xl:              map.get($grid-breakpoints, "xl");
 $screen-xl-min:          $screen-xl;
 
-$screen-xs-max:          ($screen-sm-min - 1);
-$screen-sm-max:          ($screen-md-min - 1);
-$screen-md-max:          ($screen-lg-min - 1);
-$screen-lg-max:          ($screen-xl-min - 1);
+$screen-xs-max:          ($screen-sm-min - 0.02);
+$screen-sm-max:          ($screen-md-min - 0.02);
+$screen-md-max:          ($screen-lg-min - 0.02);
+$screen-lg-max:          ($screen-xl-min - 0.02);
+$screen-xxs-max:         ($screen-xs-min - 0.02);
 
-$grid-float-breakpoint:     $screen-sm-min !default;
-$grid-float-breakpoint-max: ($grid-float-breakpoint - 1) !default;
+$grid-float-breakpoint:     map.get($grid-breakpoints, "md") !default;
+$grid-float-breakpoint-max: $grid-float-breakpoint - 0.02;
 
 $state-danger-text:           var(--#{$prefix}danger) !default;
 $state-danger-bg:             var(--#{$prefix}danger-bg-subtle) !default;
@@ -260,7 +255,7 @@ button.list-group-item {
     display: block;
     width: 100%;
 
-    @media (min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       display: inline-block;
       width: auto;
     }
@@ -289,7 +284,7 @@ textarea.form-control {
   height: auto;
 }
 
-@media (min-width: map.get($grid-breakpoints, "sm")) {
+@include media-breakpoint-up(sm) {
   .form-inline {
     .control-label {
       margin-bottom: 0;
@@ -405,7 +400,7 @@ h6, .h6 {
 }
 
 // Responsive utilities (that avoid `display: *` that would override any existing value)
-@media(max-width: $screen-xs-max) {
+@include media-breakpoint-down(sm) {
   .hidden-xs {
     display: none !important;
   }
@@ -415,7 +410,7 @@ h6, .h6 {
     }
   }
 }
-@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+@include media-breakpoint-only(sm) {
   .hidden-sm {
     display: none !important;
   }
@@ -425,7 +420,7 @@ h6, .h6 {
     }
   }
 }
-@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+@include media-breakpoint-only(md) {
   .hidden-md {
     display: none !important;
   }
@@ -435,7 +430,7 @@ h6, .h6 {
     }
   }
 }
-@media (min-width: $screen-lg-min) {
+@include media-breakpoint-only(lg) {
   .hidden-lg {
     display: none !important;
   }
@@ -636,11 +631,11 @@ $input-border:                $input-border-color;
 .finna-navbar {
   @extend .container-fluid;
 
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     padding: 0;
   }
 }
-@media (min-width: $screen-md-min) {
+@include media-breakpoint-up(md) {
   .navbar-nav.header-navbar-right {
     flex-shrink: 0;
   }

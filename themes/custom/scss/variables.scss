@@ -30,7 +30,7 @@
 //$header-background-color: rgba(1,1,1,0.8) !default; // Color of main navigation bar top
 //$footer-background: $gray !default;
 //$footer-text-color: $body-bg !default;
-//$finna-main-header-background: $brand-secondary !default; // Color of page header background and search results tabs
+//$finna-main-header-background: $secondary !default; // Color of page header background and search results tabs
 //$finna-searchbox-link-color: #fff !default; // style searchbox link text color contrast with background
 //$finna-searchbox-link-background: rgba(100,100,100,0.3) !default; // style searchbox links (advanced search etc.) background contrast with background
 //$finna-record-header-background: $gray-lighter !default;
@@ -39,7 +39,7 @@
 //$finna-button-radius: 10px !default; // Defines some radiuses
 //$finna-header-font-size: 1.6em !default; // Adjust header of each page
 //$record-title-font-size: 1.7em !default; // adjust record view header title size
-//$main-tabs-background-color: $brand-primary !default;
+//$main-tabs-background-color: $primary !default;
 //$main-tabs-link-color: #fff !default;
 
 //== Finna home page
@@ -51,7 +51,7 @@
 //$home-4-background: $body-bg !default;
 //$home-left-column-background: $body-bg !default;
 //$home-right-column-background: $body-bg !default;
-//$infobox-background: $brand-third !default;
+//$infobox-background: $third !default;
 //$infobox-border: none !default;
 //$infobox-text-color: $gray !default;
 //$infobox-box-shadow: none !default;
@@ -59,7 +59,7 @@
 //== Finna facets
 //$sidebar-header-text-color: #fff !default;   // adjust all sidebar headers text color
 //$sidebar-header-icon-color: #fff !default; // adjust sidebar headers icon color
-//$sidebar-background: $brand-primary !default;    // adjust all sidebar headers background
+//$sidebar-background: $primary !default;    // adjust all sidebar headers background
 //$facet-background:  $gray !default;  // adjust finna facet headers
 // $facet-text-color: $body-bg !default;
 // $facet-link-hover-background: rgba(1,1,1,0.05) !default;
@@ -102,10 +102,10 @@
 
 //$body-bg: #fff !default;
 //$text-color: $gray !default;
-//$link-color: $brand-primary !default; // defines all link color, also for linked icons
+//$link-color: $primary !default; // defines all link color, also for linked icons
 //$link-hover-color: $link-color !default;
 //$link-hover-decoration: #fff !default;
-// $component-active-bg: $brand-primary !default;
+// $component-active-bg: $primary !default;
 
 
 //== Typography
@@ -133,7 +133,7 @@
 //** Global color for active items (e.g., navs or dropdowns).
 //$component-active-color:    #fff !default;
 //** Global background color for active items (e.g., navs or dropdowns).
-//$component-active-bg:       $brand-primary !default;
+//$component-active-bg:       $primary !default;
 
 //** Width of the `border` for generating carets that indicator dropdowns.
 //$caret-width-base:          4px !default;
@@ -171,16 +171,16 @@
 //$btn-primary-bg: $link-color !default;  // search button background
 //$btn-primary-border: darken($btn-primary-bg, 0%) !default;
 //$btn-success-color: #fff !default;
-//$btn-success-bg: $brand-success !default;
+//$btn-success-bg: $success !default;
 //$btn-success-border: darken($btn-success-bg, 5%) !default;
 //$btn-warning-color: $gray-light !default;
-//$btn-warning-bg: $brand-warning !default;
+//$btn-warning-bg: $warning !default;
 //$btn-warning-border: darken($btn-warning-bg, 5%) !default;
 //$btn-danger-color: #fff !default;
-//$btn-danger-bg: $brand-danger !default;
+//$btn-danger-bg: $danger !default;
 //$btn-danger-border: darken($btn-danger-bg, 5%) !default;
 //$btn-info-color: #fff !default;
-//$btn-info-bg: $brand-info !default;
+//$btn-info-bg: $info !default;
 //$btn-info-border: darken($btn-info-bg, 5%) !default;
 //$btn-link-disabled-color: $gray-light !default;
 
@@ -297,8 +297,8 @@
 //== Finna record Tabs
 //$nav-tabs-background-color:                 #fff !default;
 //$nav-tabs-text-color:                       $gray !default;
-//$nav-tabs-border-color:                     $brand-secondary !default;   // this will set the background and border color of tabs in record
-//$nav-tabs-link-hover-border-color:          $brand-secondary !default;
+//$nav-tabs-border-color:                     $secondary !default;   // this will set the background and border color of tabs in record
+//$nav-tabs-link-hover-border-color:          $secondary !default;
 //$nav-tabs-link-hover-color:                 $nav-tabs-active-link-hover-color !default;
 //$tabs-border-radius:                        10px !default;
 
@@ -344,7 +344,7 @@
 //$pager-border:                         $pagination-border !default;
 //$pager-border-radius:                  15px !default;
 
-//$pager-hover-bg:                       $brand-primary !default;
+//$pager-hover-bg:                       $primary !default;
 
 //$pager-active-bg:                      $pagination-active-bg !default;
 //$pager-active-color:                   $pagination-active-color !default;
@@ -388,15 +388,15 @@
 //** Default label background color
 //$label-default-bg:            $gray-light !default;
 //** Primary label background color
-//$label-primary-bg:            $brand-primary !default;
+//$label-primary-bg:            $primary !default;
 //** Success label background color
-//$label-success-bg:            $brand-success !default;
+//$label-success-bg:            $success !default;
 //** Info label background color
-//$label-info-bg:               $brand-info !default;
+//$label-info-bg:               $info !default;
 //** Warning label background color
-//$label-warning-bg:            $brand-warning !default;
+//$label-warning-bg:            $warning !default;
 //** Danger label background color
-//$label-danger-bg:             $brand-danger !default;
+//$label-danger-bg:             $danger !default;
 
 //** Default label text color
 //$label-color:                 #fff !default;
@@ -407,7 +407,7 @@
 //== Modals
 //
 //##
-//$modal-header-background: $brand-primary !default;
+//$modal-header-background: $primary !default;
 //$modal-header-color: $body-bg !default;
 //** Padding applied to the modal body
 //$modal-inner-padding:         20px !default;

@@ -63,14 +63,14 @@
         }
         .tbl-row:not(.external-data-headers) {
             .tbl-left, .tbl-right {
-                @media (max-width: $screen-xs-max) {
+                @include media-breakpoint-down(sm) {
                     width: 100%;
                 }
             }
         }
         .tbl-row.external-data-headers {
             .tbl-left, .tbl-right {
-                @media (max-width: $screen-xs-max) {
+                @include media-breakpoint-down(sm) {
                     width: 50%;
                 }
             }

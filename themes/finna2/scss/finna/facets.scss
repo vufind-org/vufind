@@ -78,7 +78,7 @@ div.facet {
 
   .usage-right-group {
     padding: 3px 0 3px 8px;
-    @media(max-width:$screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       padding: 6px 10px 3px 14px;
     }
   }
@@ -124,7 +124,7 @@ div.facet {
   }
 
   // tablet mobile facet adjustments
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     .facet:not(.facet-group), .usage-right-group {
       font-size: 1.15em;
       line-height: 1.15em;
@@ -133,7 +133,7 @@ div.facet {
       font-size: 0.8em;
     }
   }
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     .datepicker.datepicker-dropdown {
         font-size: 1.4em;
     }
@@ -157,12 +157,12 @@ h4 + .list-group.facet {
 
 .building-filter {
     padding: 5px 0px 5px 6px;
-    @media (max-width:$screen-xs-max) {
+    @include media-breakpoint-down(sm) {
         padding-left: 30px;
     }
     input {
         width: 190px;
-        @media (min-width: $screen-sm-min) and (max-width:$screen-sm-max) {
+        @include media-breakpoint-only(sm) {
             width: 135px;
         }
     }
@@ -366,7 +366,7 @@ span.badge.cb-facet {
       &:last-child {
         border-left: 0;
       }
-      @media(max-width: $screen-md-max){
+      @include media-breakpoint-down(lg) {
         white-space: normal;
       }
     }
@@ -424,7 +424,7 @@ span.badge.cb-facet {
   width: 1rem;
   text-align: center;
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .top-title { padding-top: 0; }
   .top-title .fa { display: none; }
   .top-facets .collapse {

@@ -1,7 +1,7 @@
 .reservation-list-body {
   padding: 0;
 
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     width: 100%;
   }
   .list-info {

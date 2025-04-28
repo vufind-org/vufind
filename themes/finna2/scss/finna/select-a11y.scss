@@ -102,8 +102,10 @@
   @include box-shadow(0 6px 12px rgba(0, 0, 0, .275));
   background: $gray-ultralight;
   font-size: 16px; // Avoid automatic zoom-in on mobile.
-  @media only screen and (min-width : 480px) {
-    font-size: 1em;
+  @media screen {
+    @include media-breakpoint-up(xs) {
+      font-size: 1em;
+    }
   }
 }
 .select-a11y__input {

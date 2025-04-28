@@ -1,6 +1,6 @@
 .template-name-profile {
   .my-research-content {
-    @media (min-width: $screen-md) {
+    @include media-breakpoint-up(md) {
       width: 100%;
     }
     .logged-in-as {
@@ -10,7 +10,7 @@
       > div {
         display: flex;
         flex-direction: row;
-        @media (max-width: $screen-md) {
+        @include media-breakpoint-down(md) {
           &:not(.display-name) {
             flex-direction: column;
           }
@@ -26,7 +26,7 @@
       }
       > div div {
         padding-right: 20px;
-        @media (max-width: $screen-md) {
+        @include media-breakpoint-down(md) {
           padding: 0 0 5px 0;
         }
       }
@@ -57,7 +57,7 @@
   #email, #finna_nickname {
     width: 100%;
     margin-bottom: 5px;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       max-width: 320px;
     }
   }
@@ -106,7 +106,7 @@
       display: inline-block;
       width: 100%;
       padding: 8px;
-      @media(max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         padding: 10px 8px 8px;
       }
       >.my-profile-col {
@@ -116,14 +116,14 @@
     &.profile-title {
       line-height: 1.5;
       font-weight: bold;
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         padding-bottom: 0;
       }
     }
     &.profile-text-value {
       line-height: 1.5;
       padding-left: 0px;
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         padding: 0px 8px 8px;
       }
     }
@@ -165,10 +165,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  @media(min-width: $screen-sm-min) {
+  @include media-breakpoint-up(sm) {
     max-width: 250px;
   }
-  @media(max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     width: 100%;
     float: left;
     display: block;
@@ -178,7 +178,7 @@
   }
 }
 
-@media (min-width: $screen-sm ) {
+@include media-breakpoint-up(sm) {
   .my-profile-col {
     width: 33.33%;
     float: left;
@@ -213,7 +213,7 @@
 
 .myresearch-notification {
   padding-left: 0;
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     margin-top: 0;
   }
 }

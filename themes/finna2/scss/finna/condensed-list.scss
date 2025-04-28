@@ -31,7 +31,7 @@
         right: -7px;
         color: $gray-light;
         font-size: 1.1em;
-        @media(max-width: $screen-xs-max) {
+        @include media-breakpoint-down(sm) {
             left: -8px;
             top: 8px;
         }
@@ -85,25 +85,25 @@
         }
         .condensed-body {
             width: 50%;
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 width: 100%;
             }
         }
         .condensed-links {
             width: 50%;
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 width: 100%;
             }
         }
         .condensed-col-title {
             width: 50%;
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 width: 100%;
             }
         }
         .condensed-col-link {
              width: 50%;
-             @media (min-width: $screen-md-min) {
+             @include media-breakpoint-up(md) {
                  width: 25%;
              }
         }
@@ -112,7 +112,7 @@
             .hierarchyTreeLink {
                 margin-top: 0;
             }
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 width: 100%;
             }
         }
@@ -137,18 +137,18 @@
         .media-left {
             width: 40%;
             min-width: 120px;
-            @media (min-width: $screen-md-min) {
+            @include media-breakpoint-up(md) {
                 width: 25%;
                 min-width: 100px;
             }
         }
-        @media (min-width: $screen-sm-min) {
+        @include media-breakpoint-up(sm) {
             .media-body {
                 width: 10000px;
             }
         }
         .result-database {
-            @media (min-width: $screen-sm-min) {
+            @include media-breakpoint-up(sm) {
                 display: flex;
                 .database-subject {
                     min-width: 200px;

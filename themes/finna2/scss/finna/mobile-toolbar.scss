@@ -1,5 +1,5 @@
 .mobile-toolbar {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     border-top: 1px solid $body-bg;
     position: fixed;
     height: 44px;
@@ -112,7 +112,7 @@ section.template-name-blended .sidebar,
 section.template-name-mylist .sidebar,
 section.template-dir-record.template-name-view .sidebar.search-facets,
 section.template-dir-collection.template-name-view .sidebar {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     position: fixed;
     background: $body-bg;
     z-index: $zindex-sidebar;
@@ -143,7 +143,7 @@ section.template-dir-collection.template-name-view .sidebar {
 }
 .mobile-navigation {
   @extend .mobile-toolbar;
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     left: 0;
     z-index: 60;
     i {
@@ -169,7 +169,7 @@ section.template-dir-collection.template-name-view .sidebar {
   }
 }
 .finna-search-filter-toggle {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     position: sticky;
     top: $navbar-height;
     margin-left: calc((#{$grid-gutter-width} / 2) * -1);

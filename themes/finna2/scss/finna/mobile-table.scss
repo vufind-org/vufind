@@ -1,4 +1,4 @@
-@media(max-width: $screen-xs-max) {
+@include media-breakpoint-down(sm) {
   table.mobile-table {
     border: 0;
   }

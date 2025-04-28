@@ -42,7 +42,7 @@
     margin-left: 12px;
   }
   .pager {
-    @media (max-width: $screen-lg) {
+    @include media-breakpoint-down(lg) {
       margin-left: 6px;
     }
     li.pager-text {
@@ -63,7 +63,7 @@
       }
     }
   }
-  @media (max-width: $screen-sm) {
+  @include media-breakpoint-down(md) {
     .dropdown.form-control.type-dropdown {
       display: none;
     }
@@ -120,14 +120,14 @@
   }
   .search {
     flex: 1;
-    @media (min-width: $screen-md) {
+    @include media-breakpoint-up(md) {
       max-width: 70%;
     }
   }
   .pager {
     display: flex;
     align-items: center;
-    @media (max-width: $screen-lg) {
+    @include media-breakpoint-down(lg) {
       margin-left: 6px;
     }
     .disabled {
@@ -174,14 +174,14 @@
       }
     }
   }
-  @media(max-width: $screen-md) {
+  @include media-breakpoint-down(md) {
     .pager {
       li.pager-text {
         margin: 0 5px;
       }
     }
   }
-  @media(max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     .pager {
       min-width: 70px;
       margin-left: 10px;

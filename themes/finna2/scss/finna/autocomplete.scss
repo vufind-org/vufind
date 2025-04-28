@@ -4,7 +4,7 @@
     border: 1px solid $list-group-border;
     background-color: #fff;
     border-radius: 10px;
-    @media (max-width: $screen-sm-max) {
+    @include media-breakpoint-down(md) {
         max-width: 85% !important;
     }
     &.checkbox-active {

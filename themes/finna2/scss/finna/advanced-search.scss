@@ -31,7 +31,7 @@
       line-height: 64px;
       text-align: center;
       font-size: 32px;
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         top: -7px;
         bottom: -7px;
         width: 48px;
@@ -58,7 +58,7 @@
         cursor: pointer;
       }
 
-      @media (max-width: $screen-xxs) {
+      @include media-breakpoint-down(xs) {
         i {
           font-size: 24px;
         }
@@ -106,7 +106,7 @@
       display: inline-block;
       margin-top: 10px;
       padding: 6px;
-      @media (max-width: $screen-xxs) {
+      @include media-breakpoint-down(xs) {
         width: 100%;
       }
     }
@@ -114,7 +114,7 @@
       max-width: 49%;
     }
     .match {
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         margin-bottom: 10px;
       }
     }
@@ -125,7 +125,7 @@
       padding: 6px;
       color: $link-color;
       float: right;
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         font-size: $font-size-small;
       }
     }
@@ -136,7 +136,7 @@
         margin-bottom: 3px;
       }
       .close {opacity: .8;}
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         select:first-child {
           display: block;
         }
@@ -232,7 +232,7 @@
   .primo-advanced-search-fields {
     margin-bottom: 10px;
     label {
-      @media(max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         margin-top: 10px;
         margin-bottom: 20px;
       }
@@ -259,7 +259,7 @@
       display: block;
     }
     .language-container, .format-container {
-      @media(max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         .btn-group {
           width: 100%;
           text-align: left;
@@ -270,8 +270,8 @@
       }
     }
   }
-  .adv-search-group {
-    @media (min-width: $screen-xs) {
+  @include media-breakpoint-up(xs) {
+    .adv-search-group {
       .search-text {
         min-width: initial;
         max-width: initial;
@@ -283,15 +283,14 @@
       }
     }
   }
-  .adv-group-match {
-    @media (min-width: $screen-sm){
+  @include media-breakpoint-up(sm) {
+    .adv-group-match {
       width: 40%;
       position: relative;
       padding-bottom: 15px;
     }
-  }
-  .adv-group-terms {
-    @media (min-width: $screen-sm){
+
+    .adv-group-terms {
       position: relative;
       padding-right: 15px;
     }
@@ -355,7 +354,7 @@
   .finna-main-header {
     background-color: $well-bg;
     color: $gray;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       padding: 7px 0;
     }
     .container {
@@ -368,7 +367,7 @@
   .ranges-container .year-input-container {
     width: 100%;
     vertical-align: top;
-    @media (min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       width: 30%;
     }
   }
@@ -377,7 +376,7 @@
     .information {
       width: 100%;
       margin: 10px 0;
-      @media (min-width: $screen-sm-min) {
+      @include media-breakpoint-up(sm) {
         width: 69%;
         margin: 0;
       }
@@ -386,7 +385,7 @@
   .finna-main-tabs {
     padding-top: 15px;
   }
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     .well, .adv-group__blender {
       padding: 10px;
     }
@@ -397,7 +396,7 @@
     }
   }
   .slider-container {
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       padding: 5px;
     }
   }
@@ -428,11 +427,9 @@
   }
   .facet {
     margin-bottom: 30px;
-    @media (min-width: $screen-xs-min) {
+    width: 100%;
+    @include media-breakpoint-up(xs) {
       width: 45%;
-    }
-    @media (max-width: $screen-xxs-max) {
-      width: 100%;
     }
     label {
       margin-bottom: 10px;
@@ -510,21 +507,21 @@
       position: absolute;
       top: 4px;
       right: 0;
+      @include media-breakpoint-down(xs) {
+        max-width: 50%;
+      }
       &::before {
         top: -1px;
       }
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         .information-text {
           padding-left: 26px;
         }
       }
-      @media (max-width: $screen-xxs-max) {
-        max-width: 50%;
-      }
     }
   }
   .facets {
-    @media (max-width: $screen-xxs-max) {
+    @include media-breakpoint-down(xs) {
       margin-top: 30px;
     }
   }
@@ -534,7 +531,7 @@
 .adv-term-input,
 .adv-term-op { margin-bottom: .25rem; }
 .adv-search:first-of-type .adv-term-op { display: none; }
-@media (min-width: $screen-sm-min) {
+@include media-breakpoint-up(sm) {
   .eds-adv .adv-term-op {
     float: left;
     width: 16%;
@@ -556,7 +553,7 @@
 .advanced-search,
 .advanced-search .input-group {
   width: 100%;
-  @media(min-width: $screen-md){
+  @include media-breakpoint-up(md) {
     width: 75%;
   }
 }

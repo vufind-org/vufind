@@ -1,6 +1,20 @@
 .collection-list-controls {
   display: flex;
   margin-bottom: 0.5em;
+
+  @include media-breakpoint-down(xs) {
+    flex-direction: column;
+    .sort-and-view-buttons {
+      margin-top: 10px;
+    }
+  }
+  @include media-breakpoint-up(xs) {
+    .dropdown-menu {
+      right: 0;
+      left: auto;
+    }
+  }
+
   .sort-and-view-buttons {
     display: flex;
     flex-direction: row;
@@ -34,21 +48,9 @@
     margin: auto 0 auto 5px;
     .view-dropdown i:first-child {
       margin-right: 5px;
-      @media (max-width: $screen-sm-max) {
+      @include media-breakpoint-down(md) {
         margin-right: 20px;
       }
-    }
-  }
-  @media (min-width: $screen-xs-min) {
-    .dropdown-menu {
-      right: 0;
-      left: auto;
-    }
-  }
-  @media(max-width: $screen-xxs-max) {
-    flex-direction: column;
-    .sort-and-view-buttons {
-      margin-top: 10px;
     }
   }
 }

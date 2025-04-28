@@ -56,7 +56,7 @@
 // Selector specificity is increased to override current global Bootstrap defaults.
 .finna-nav.finna-nav-lg {
   font-size: 1.14em;
-  @media (min-width: $screen-lg-min) {
+  @include media-breakpoint-up(lg) {
     font-size: 1.357em;
   }
 }

@@ -126,7 +126,7 @@
         display: none;
         margin-top: 0;
         padding-top: 0;
-        @media (max-width: $screen-xs-max) {
+        @include media-breakpoint-down(sm) {
             margin-top: 10px;
             padding-top: 10px;
             background-color: $body-bg;
@@ -160,11 +160,13 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 10px;
-            @media screen and (min-width: $screen-sm-min) {
-                grid-template-columns: 1fr 1fr;
-            }
-            @media screen and (min-width:$screen-lg-min) {
-                grid-template-columns: 1fr 1fr 1fr;
+            @media screen {
+                @include media-breakpoint-up(sm) {
+                    grid-template-columns: 1fr 1fr;
+                }
+                @include media-breakpoint-up(lg) {
+                    grid-template-columns: 1fr 1fr 1fr;
+                }
             }
             .article {
                 display: flex;
@@ -301,10 +303,10 @@
         max-height: 125px;
         margin-bottom: 20px;
         overflow: hidden;
-        @media (max-width: $screen-sm-max) {
+        @include media-breakpoint-down(md) {
             flex-basis: 50%;
         }
-        @media (max-width: $screen-xs-max) {
+        @include media-breakpoint-down(sm) {
             flex-basis: 100%;
         }
         .grid-info {
@@ -439,7 +441,7 @@
     &.open .show-more-icon {
         transform: rotate(180deg);
     }
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
         display: block;
     }
 }
@@ -449,7 +451,7 @@
     align-items: flex-end;
     gap: 15px;
     margin-bottom: 30px;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
         display: none;
         &.open {
             display: flex;
@@ -465,7 +467,7 @@
         gap: 10px;
         .input-field {
             width: 100px;
-            @media (min-width: $screen-sm) {
+            @include media-breakpoint-up(sm) {
                 width: 140px;
             }
         }
@@ -482,7 +484,7 @@
         column-gap: 5px;
     }
     .event-date-title {
-        @media (max-width: $screen-xs-max) {
+        @include media-breakpoint-down(sm) {
             display: block;
         }
     }
@@ -527,7 +529,7 @@
         width: 65%;
         float: left;
         margin-top: 20px;
-        @media (max-width: $screen-sm-max) {
+        @include media-breakpoint-down(md) {
             width: 100%;
         }
         .linked-event-image {
@@ -553,7 +555,7 @@
         width: 30%;
         float: right;
         margin-top: 20px;
-        @media (max-width: $screen-sm-max) {
+        @include media-breakpoint-down(md) {
             width: 100%;
         }
         .linked-event-map-info {
@@ -588,7 +590,7 @@ finna-feed {
         flex-direction: row;
         align-items: center;
         position: relative;
-        @media (max-width: $screen-sm-max) {
+        @include media-breakpoint-down(md) {
             // Leave room for scroll buttons
             margin-left: 1rem;
             margin-right: 1rem;
@@ -725,7 +727,7 @@ finna-feed {
                         outline-offset: 3px;
                     }
                 }
-                @media (min-width: $screen-md) {
+                @include media-breakpoint-up(md) {
                     padding: 8px;
                 }
             }

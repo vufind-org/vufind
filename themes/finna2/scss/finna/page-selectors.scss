@@ -67,7 +67,7 @@
     }
     > a {
       border-radius: $border-radius-base;
-      @media(max-width:$screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         font-size: 1em;
         padding: calc(#{$padding-base-horizontal}/1.5);
       }

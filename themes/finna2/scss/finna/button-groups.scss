@@ -40,7 +40,7 @@
       color: $text-color;
       padding: 5px 10px;
       font-size: 0.9em;
-      @media(max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         padding: 5px;
       }
     }

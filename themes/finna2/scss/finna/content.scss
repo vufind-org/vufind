@@ -103,7 +103,7 @@ h1.content-header {
         width: 25%;
         float: left;
         padding: 15px;
-        @media(max-width: $screen-sm){
+        @include media-breakpoint-down(sm) {
             width: 50%;
         }
         a {
@@ -132,7 +132,7 @@ ul.nav-tabs.help-tabs {
         color: $header-text-color;
         font-size: 24px;
         font-weight: 500;
-        @media(max-width: $screen-lg){
+        @include media-breakpoint-down(lg) {
             font-size: 20px;
         }
     }
@@ -145,7 +145,7 @@ ul.nav-tabs.help-tabs {
     width: 260px;
     margin-left: 25px;
     margin-bottom: 25px;
-    @media(min-width: $screen-xs){
+    @include media-breakpoint-up(xs) {
         float: right !important;
     }
     & img {

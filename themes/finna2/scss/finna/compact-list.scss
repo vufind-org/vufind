@@ -22,7 +22,7 @@
   }
   .record-container {
     .add-to-favorite-col {
-      @media (min-width: $screen-sm) {
+      @include media-breakpoint-up(sm) {
         position: absolute;
         top: 0px;
         right: 0px;

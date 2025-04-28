@@ -10,11 +10,11 @@
         margin-top: 0.4em;
         margin-left: 0.5em;
         color: $primary;
-        @media (max-width: $screen-xs-max) {
+        @include media-breakpoint-down(sm) {
             margin-top: 0;
         }
     }
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
         .form-control {
             font-size: 16px;
         }
@@ -47,13 +47,13 @@
 }
 
 .login-col {
-    @media (min-width: $screen-sm) {
+    @include media-breakpoint-up(sm) {
         width: 50%;
         float: left;
     }
 }
 #accountForm {
-    @media (min-width: $screen-sm) {
+    @include media-breakpoint-up(sm) {
         .form-control {
             width: 80%;
         }

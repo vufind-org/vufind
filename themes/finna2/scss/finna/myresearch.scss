@@ -2,7 +2,7 @@
   padding: 10px;
   margin: 0;
   word-wrap: break-word;
-  @media(max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     margin-right: calc(-0.5 * var(--bs-gutter-x));
     margin-left: calc(-0.5 * var(--bs-gutter-x));
     @include clearfix;
@@ -27,7 +27,7 @@
   }
   // row for holds information
   .holds-status-information, .checkedout-status-information {
-    @media(min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       text-align: right;
     }
   }
@@ -72,7 +72,7 @@
 }
 
 .librarycard-barcode {
-  @media (min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     margin-bottom: 0.5em;
   }
   svg {
@@ -105,7 +105,7 @@
     &.no-list-functions {
       justify-content: space-between;
       align-items: baseline;
-      @media(max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         flex-direction: column-reverse;
         align-items: flex-start;
       }
@@ -115,7 +115,7 @@
     }
     .btn-finna-toolbar {
       margin: 3px 0px;
-      @media (max-width: $screen-sm-max) {
+      @include media-breakpoint-down(md) {
         font-size: 0.9em;
       }
     }
@@ -130,7 +130,7 @@
       &:last-child {
         margin-right: 0;
       }
-      @media(max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         margin-right: 10px;
       }
     }
@@ -146,7 +146,7 @@
       align-items: baseline;
       justify-content: space-between;
     }
-    @media(max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       align-items: baseline;
     }
   }
@@ -154,7 +154,7 @@
     font-size: 1em;
   }
 
-  @media(min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     .half-table-column {
       width: 50%;
       float: left;
@@ -222,16 +222,16 @@
       margin-bottom: 0;
       height: 30px;
       font-size: 0.9em;
-      @media (max-width: $screen-md) {
+      @include media-breakpoint-down(md) {
         margin-top: 6px;
       }
-      @media (max-width: $screen-sm) {
+      @include media-breakpoint-down(md) {
         span {
           max-width: 200px;
         }
       }
     }
-    @media (max-width: $screen-sm) {
+    @include media-breakpoint-down(md) {
       .dropdown-menu > li > a {
         max-width: 270px;
       }
@@ -322,7 +322,7 @@
   .my-research-content {
     width: 100%;
     border-radius: $border-radius-base;
-    @media (max-width: $screen-sm) {
+    @include media-breakpoint-down(md) {
       .select-card-wrapper .select-card .library_card {
         right: auto;
         left: 0;
@@ -357,7 +357,7 @@
     overflow-x: hidden;
     position: absolute;
     right: 0;
-    @media(max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       left: -40px;
       right: auto;
     }
@@ -381,7 +381,7 @@
     padding-left: 5px;
     color: $gray-light;
   }
-  @media(max-width:$screen-md-max) {
+  @include media-breakpoint-down(lg) {
     .pagination-simple {
       margin-top: 0;
     }
@@ -428,7 +428,7 @@
   justify-content: space-between;
   margin-top: 5px;
   margin-bottom: 5px;
-  @media (max-width: $screen-md-max) {
+  @include media-breakpoint-down(lg) {
     margin-top: 10px;
   }
   h2, h3 {
@@ -452,13 +452,13 @@
   }
 }
 .sort-col.sort-col-mobile {
-    @media(min-width: $screen-sm) {
+    @include media-breakpoint-up(sm) {
     display: none;
   }
 }
 
 .toolbar .list-functions .sort-col {
-    @media(max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       display: none;
     }
   }
@@ -475,14 +475,14 @@
       }
     }
   }
-  @media (min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     > img {
       position: relative;
       bottom: 100px;
       float: right;
     }
   }
-  @media (max-width: $screen-sm-min) {
+  @include media-breakpoint-down(sm) {
     position: -webkit-sticky;
     position: sticky;
     top: 64px;
@@ -545,7 +545,7 @@
 
 .toolbar-sticky-container {
   margin: 0;
-  @media (max-width: $screen-md) {
+  @include media-breakpoint-down(md) {
     padding: 0px 15px;
     margin-right: calc(-0.5 * var(--bs-gutter-x));
     margin-left: calc(-0.5 * var(--bs-gutter-x));
@@ -559,10 +559,10 @@
     &.isSticky {
       margin: 0px -15px;
       padding: 0px 15px;
-      @media (max-width: $screen-md) {
+      @include media-breakpoint-down(md) {
         top: $navbar-height;
       }
-      @media (max-width: $screen-sm) {
+      @include media-breakpoint-down(md) {
         box-shadow: 0 3px 3px rgba(0,0,0,.3);
         .toolbar {
           border-bottom: none;
@@ -586,7 +586,7 @@
   margin-top: 5px;
   border-bottom: 1px solid $gray-lighter;
   padding: 3px 0;
-  @media(max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     margin-top: 0;
   }
   .status-text {
@@ -611,7 +611,7 @@
 
 form#renewals, form#update_holds, form#purge_history {
   .toolbar {
-    @media (max-width: $screen-xs) {
+    @include media-breakpoint-down(xs) {
       flex-direction: column-reverse;
     }
   }
@@ -621,7 +621,7 @@ form#renewals, form#update_holds, form#purge_history {
   font-size: 1.2em;
   margin-bottom: 40px;
   padding-right: 8px;
-  @media (min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     width: 50%;
     float: right;
   }
@@ -632,7 +632,7 @@ form#renewals, form#update_holds, form#purge_history {
 
 .online-payment-note {
   margin-bottom: 40px;
-  @media (min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     width: 50%;
     float: left;
   }
@@ -650,13 +650,13 @@ form#renewals, form#update_holds, form#purge_history {
   &.online-payment {
     margin-bottom: 15px;
     td {
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         white-space: normal !important;
       }
     }
   }
   &.library-cards {
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       table-layout: fixed;
     }
   }
@@ -679,7 +679,7 @@ form#renewals, form#update_holds, form#purge_history {
   }
   .user-account-table-title {
     min-width: 25%;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       white-space: normal !important;
       min-width: 30%;
     }
@@ -694,9 +694,11 @@ form#renewals, form#update_holds, form#purge_history {
       font-weight: bold;
     }
   }
-  @media screen and (min-width: 769px) {
-    .balance {
-      text-align: right;
+  @media screen {
+    @include media-breakpoint-up(sm) {
+      .balance {
+        text-align: right;
+      }
     }
   }
   .online-payment-remark {
@@ -736,7 +738,7 @@ form#renewals, form#update_holds, form#purge_history {
 
 .myresearch-body {
   margin-top: 15px;
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     margin-top: 0px;
     &.mainbody.right {
       padding-left: 0px;
@@ -757,7 +759,7 @@ form#renewals, form#update_holds, form#purge_history {
   .status {
     padding-left: 5px;
   }
-  @media (min-width: $screen-md) {
+  @include media-breakpoint-up(md) {
     &.move-list {
       position: -webkit-sticky;
       position: sticky;
@@ -820,7 +822,7 @@ form#renewals, form#update_holds, form#purge_history {
         }
       }
     }
-    @media (max-width: $screen-md-max) {
+    @include media-breakpoint-down(lg) {
       font-size: 14px;
       a {
         padding: 10px;
@@ -945,7 +947,7 @@ form#renewals, form#update_holds, form#purge_history {
   top: auto;
 }
 .template-dir-myresearch .toolbar > .btn-group:last-of-type .dropdown-menu.useraccount-confirm {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     left: auto;
     right: 0;
   }
@@ -969,13 +971,13 @@ form#renewals, form#update_holds, form#purge_history {
 }
 
 .history-controls {
-  @media (min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     display: flex;
     flex-direction: row-reverse;
     align-items: baseline;
   }
   .right-control {
-    @media (max-width: $screen-sm) {
+    @include media-breakpoint-down(md) {
       text-align: right;
       float: right;
       width: 50%;
@@ -984,24 +986,24 @@ form#renewals, form#update_holds, form#purge_history {
   .left-control {
     margin-bottom: 10px;
 
-    @media (min-width: $screen-sm) {
+    @include media-breakpoint-up(sm) {
       flex-grow: 1;
       text-align:left;
     }
-    @media (max-width: $screen-sm) {
+    @include media-breakpoint-down(md) {
       text-align: left;
       width: 35%;
     }
   }
   .pagination-container {
-    @media (min-width: $screen-sm) {
+    @include media-breakpoint-up(sm) {
       flex-grow: 1;
       text-align:left;
     }
   }
 }
 
-@media(max-width: $screen-sm-max) {
+@include media-breakpoint-down(md) {
   .hidden-print.nav-tabs-personal.list-group {
     position: fixed;
     top: 120%;

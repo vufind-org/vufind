@@ -7,7 +7,7 @@ footer {
   & hr {
     border-top: none;
   }
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     text-align: center;
     padding-top: 35px;
     padding-bottom: 50px;
@@ -42,7 +42,7 @@ footer {
     max-height: 65px;
   }
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .footer-container {
     display: flex;
     width: 100%;

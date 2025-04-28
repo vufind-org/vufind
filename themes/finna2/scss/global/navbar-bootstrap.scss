@@ -15,13 +15,13 @@
       font-size: 1.2em;
     }
     .login-text {
-      @media (max-width: $screen-xxs) {
+      @include media-breakpoint-down(xs) {
         display: none;
       }
     }
   }
   .login-text {
-    @media (max-width: $screen-xxs) {
+    @include media-breakpoint-down(xs) {
       display: inherit;
     }
   }
@@ -54,7 +54,7 @@
   display: flex;
   align-items: center;
 
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     min-height: 64px;
 
   }
@@ -195,7 +195,7 @@
 }
 
 .navbar-nav {
-  @media(max-width: $screen-sm) {
+  @include media-breakpoint-down(sm) {
     margin: 0;
   }
 }
@@ -221,7 +221,7 @@
 }
 
 // Fix dropdowns in navbar for wide screen
-@media (min-width: $screen-md-min) {
+@include media-breakpoint-up(md) {
   .navbar li:not(#language_menu) .dropdown-menu > li > a {
     width: 280px;
     white-space: normal;
@@ -277,7 +277,7 @@
     position: relative;
   }
 
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     position: absolute;
     top: 0;
     display: flex;
@@ -331,7 +331,7 @@
   }
 }
 
-@media(max-width: $screen-sm) {
+@include media-breakpoint-down(sm) {
   #header-collapse {
     padding-left: 0;
     padding-right: 0;

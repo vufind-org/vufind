@@ -5,7 +5,7 @@ $thumbnail-width-large:  200px !default;
 
 /* Results */
 /* --- Layout --- */
-@media (min-width: $screen-sm-min) {
+@include media-breakpoint-up(sm) {
   .mainbody { width: 75%; }
   .sidebar { width: 25%; }
   .sidebar.left { float: left; }
@@ -28,7 +28,7 @@ $thumbnail-width-large:  200px !default;
     position: relative;
   }
 }
-@media (max-width: $screen-sm-max) {
+@include media-breakpoint-down(md) {
   .template-dir-myresearch .container.main-content > .mainbody,
   .template-dir-holds .container.main-content > .mainbody,
   .template-dir-librarycards .container.main-content > .mainbody,
@@ -37,7 +37,7 @@ $thumbnail-width-large:  200px !default;
     width: 100%;
   }
 }
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(sm) {
   .media-left {
     float: right;
   }
@@ -106,7 +106,7 @@ mark, .highlight {
   &:last-child {
     padding-bottom: 15px;
   }
-  @media (max-width:$screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     border-bottom: 1px solid $gray-lighter;
     &#result0, &:first-child {
       border-top: 1px solid $gray-lighter;
@@ -136,7 +136,7 @@ mark, .highlight {
 }
 
 .add-to-favorites {
-  @media(max-width: $screen-xxs) {
+  @include media-breakpoint-down(xs) {
     padding-right: 5px;
   }
 }
@@ -144,7 +144,7 @@ mark, .highlight {
 .result .cart-add,
 .result .cart-remove {
   font-size: medium;
-  @media(max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     font-size: 1em;
     float: none;
     margin-top: 10px;
@@ -184,7 +184,7 @@ mark, .highlight {
   margin: 0.5rem 0;
 }
 .add-to-favorite-col {
-  @media(max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     margin-top: 10px;
   }
   a {
@@ -235,7 +235,7 @@ mark, .highlight {
 }
 
 .result-body { padding-left: 1rem; }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .result-body {
     position: relative;
     float: left;
@@ -364,7 +364,7 @@ mark, .highlight {
   margin-bottom: 1em;
 }
 
-@media(min-width: $screen-md) {
+@include media-breakpoint-up(md) {
   .search-home-left {
     width: 40%;
     float: left;
@@ -416,7 +416,7 @@ h2 {
 }
 
 // mobile toolbar
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(sm) {
   .prevent-scroll {
     overflow: hidden;
   }
@@ -452,7 +452,7 @@ h2 {
     background-color: $background-color;
     background-image: $background-image-url;
     background-repeat: no-repeat;
-    @media(max-width:$screen-sm-max) {
+    @include media-breakpoint-down(md) {
       background-size: 150% auto;
       background-position: 50% 0;
       .record-view-header > .container {
@@ -460,7 +460,7 @@ h2 {
         padding-right: 0;
       }
     }
-    @media(max-width:$screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       background-size: 350% auto;
     }
   }
@@ -546,17 +546,18 @@ table.search-history-table {
     white-space: nowrap;
   }
 
-  @media screen and (min-width: 768px) {
-    border: 1px solid $gray-lighter;
-    tbody > tr > td { vertical-align: middle; }
-    .history_time {
-      width: 20%;
-    }
-  }
-
-  @media screen and (max-width: 767px) {
-    tbody > tr {
+  @media screen {
+    @include media-breakpoint-up(sm) {
       border: 1px solid $gray-lighter;
+      tbody > tr > td { vertical-align: middle; }
+      .history_time {
+        width: 20%;
+      }
+    }
+    @include media-breakpoint-down(sm) {
+      tbody > tr {
+        border: 1px solid $gray-lighter;
+      }
     }
   }
 }

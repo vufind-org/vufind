@@ -1,7 +1,7 @@
 .authoritybox,
 .record {
   .media-body {
-    @media(max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       width: 100%;
     }
   }
@@ -9,7 +9,7 @@
   .media-left,
   .media-right {
     width: 25%;
-    @media(max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       display: block;
       width: 100%;
       float: none;
@@ -23,7 +23,7 @@
       justify-content: center;
     }
   }
-  @media(min-width: $screen-xs){
+  @include media-breakpoint-up(xs) {
     .media-left { padding-right: 20px; }
     .media-right { padding-left: 20px; }
   }
@@ -100,7 +100,7 @@
     margin-bottom: 3px;
     font-size: $record-title-font-size;
     line-height: 1.2;
-    @media (max-width: $screen-sm) {
+    @include media-breakpoint-down(md) {
       margin-bottom: 20px;
     }
   }
@@ -175,7 +175,7 @@ a.authority {
 .large-image-layout.record .record-main > .media {
   .media-left,
   .media-right {
-    @media (min-width: $screen-sm) {
+    @include media-breakpoint-up(sm) {
       width: 50%;
     }
     .record-image-container {
@@ -202,7 +202,7 @@ a.authority {
   .sidebar .organisation-menu {
     display: none
   }
-  @media(max-width: $screen-md-max){
+  @include media-breakpoint-down(lg) {
     .mainbody.record-tabs {
       width: 100%;
     }
@@ -248,7 +248,7 @@ a.authority {
     border-radius: 5px;
     padding: 2px 6px;
 
-    @media(max-width:$screen-xs) {
+    @include media-breakpoint-down(sm) {
       left: -4%;
     }
     > li {
@@ -336,7 +336,7 @@ a.authority {
       width: 100%;
       padding: 10px 0;
       text-align: left;
-      @media(max-width: $screen-md) {
+      @include media-breakpoint-down(md) {
         top: $navbar-height;
       }
     }
@@ -487,7 +487,7 @@ a.authority {
   }
 }
 
-@media(max-width:$screen-xs-max) {
+@include media-breakpoint-down(sm) {
   .cover-wrapper {
     text-align: center;
   }
@@ -538,7 +538,7 @@ a.authority {
   }
 }
 
-@media(max-width: $screen-sm-max) {
+@include media-breakpoint-down(md) {
   .large-image-sidebar {
     width: 100%;
   }
@@ -663,7 +663,7 @@ a.authority {
       margin-top: 1em;
       margin-left: 2em;
     }
-    @media (min-width: $screen-md) {
+    @include media-breakpoint-up(md) {
       .comment-info-icon {
         margin-top: 2.7em;
         margin-left: 1em;
@@ -784,7 +784,7 @@ a.authority {
   h2 {
     font-size: 20px;
   }
-  @media (min-width: $screen-sm-min) {
+  @include media-breakpoint-up(sm) {
     max-width: 300px;
   }
 }

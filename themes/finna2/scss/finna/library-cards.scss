@@ -35,7 +35,7 @@
     }
 
     .dropdown-menu {
-      @media (max-width: $screen-sm) {
+      @include media-breakpoint-down(md) {
         right: 0;
         left: auto;
       }

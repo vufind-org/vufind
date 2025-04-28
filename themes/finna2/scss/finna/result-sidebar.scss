@@ -25,7 +25,7 @@
   }
   .badge {
     margin-top: 4px;
-    @media(min-width: $screen-sm-min) and (max-width: $screen-md-max) {
+    @include media-breakpoint-between(sm, md) {
       max-width: 56px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -36,7 +36,7 @@
 
 .sidebar {
   margin-bottom: 30px;
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     clear: both;
   }
 }
@@ -63,7 +63,7 @@
 .sidebar > h1,
 .sidebar > h2 {
   margin-bottom: 5px;
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     position: sticky;
     top:0;
     z-index: 1000;

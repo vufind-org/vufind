@@ -57,7 +57,7 @@
 .tooltip-local-advanced, .tooltip-pci-advanced, .tooltip-eds-advanced, .tooltip-summon-advanced {
   color: $link-color;
   font-size: 1rem;
-  @media(max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     font-weight: 500;
   }
 }
@@ -82,7 +82,7 @@
       opacity: 0.8;
     }
   }
-  @media (max-width: $screen-sm) {
+  @include media-breakpoint-down(md) {
     display: none;
    }
 }

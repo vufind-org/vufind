@@ -28,13 +28,13 @@
       margin-bottom: 0;
       border-radius: 0;
       transition: none;
-      @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      @include media-breakpoint-only(sm) {
         i {
           display: block;
           text-align: center;
         }
       }
-      @media (max-width: $screen-sm-max) {
+      @include media-breakpoint-down(md) {
         font-size: .9em;
       }
     }
@@ -50,7 +50,7 @@
   }
 }
 
-@media (max-width:$screen-xs-max) {
+@include media-breakpoint-down(sm) {
   .nav-tabs {
     text-align: center;
     flex-wrap: nowrap;
@@ -121,7 +121,7 @@
   }
 }
 
-@media (max-width: $screen-sm-max) {
+@include media-breakpoint-down(md) {
   .nav.nav-absolute {
     right: $navbar-right;
   }

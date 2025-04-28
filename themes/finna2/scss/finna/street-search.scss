@@ -38,7 +38,7 @@
   .highlight {
     color: $primary;
   }
-  @media(max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     font-size: 18px;
   }
 }

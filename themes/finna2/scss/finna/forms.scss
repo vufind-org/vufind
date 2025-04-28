@@ -29,7 +29,7 @@ input, input.form-control {
 
 .form-inline {
   display: inline-block;
-  @media (min-width: $screen-sm-min) {
+  @include media-breakpoint-up(sm) {
     .form-control {
       width: auto;
     }
@@ -105,7 +105,7 @@ input, input.form-control {
       box-shadow: $focus-ring-box-shadow;
     }
 
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       width: percentage(($finna-search-input-width - 0.06));
       font-size: 1.1em;
     }
@@ -113,7 +113,7 @@ input, input.form-control {
   /* --- Autocomplete and form adjust accordingly --- */
   &.input-field-only .form-control.search-query {
     width: 85%;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       width: 80%;
     }
   }

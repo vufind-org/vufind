@@ -6,20 +6,20 @@
         .timeline_within {
             margin-left: 10px;
         }
-        @media (min-width: $screen-sm-min) {
+        @include media-breakpoint-up(sm) {
             box-shadow: -4px 0px 13px -5px #000;
             padding: 10px;
             z-index: 4;
         }
-        @media (min-width: $screen-lg-min) {
+        @include media-breakpoint-up(lg) {
             width: 1140px;
             margin-left: -878px;
         }
-        @media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+        @include media-breakpoint-only(md) {
             width: 940px;
             margin-left: -728px;
         }
-        @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+        @include media-breakpoint-only(sm) {
             width: 720px;
             margin-left: -562px;
         }
@@ -43,7 +43,7 @@
                 margin-left: 10px;
                 margin-top: 1px;
                 margin-bottom: 10px;
-                @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+                @include media-breakpoint-only(sm) {
                     margin-left: 0;
                 }
             }
@@ -118,7 +118,7 @@
                         margin-right: 9px;
                         font-size: .8em;
                         margin-top: 4px;
-                        @media (max-width: $screen-xs-max) {
+                        @include media-breakpoint-down(sm) {
                            display: none;
                         }
                     }
@@ -152,7 +152,7 @@
     &.sidebar-on-left {
         & .list-group-item:not(.title).daterange.expand {
             margin-left: 0;
-            @media (min-width: $screen-sm-min) {
+            @include media-breakpoint-up(sm) {
                 box-shadow: 4px 0px 13px -5px #000;
             }
         }

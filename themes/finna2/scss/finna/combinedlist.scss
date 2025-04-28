@@ -1,13 +1,13 @@
 .combined-list {
     margin-top: 1em;
-    @media(min-width:$screen-sm-min) {
+    @include media-breakpoint-up(sm) {
         margin-top: 70px;
     }
     .combined-titles {
         border-bottom: 4px solid $gray-lighter;
         padding-bottom: 10px;
 
-        @media(min-width:$screen-sm-min) {
+        @include media-breakpoint-up(sm) {
             margin-top: -50px;
         }
     }
@@ -44,7 +44,7 @@
 }
 
 /* ------ COMBINED ------ */
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
     .combined-search-container {
         display: flex;
         .result { margin-left: 0; }
@@ -60,7 +60,7 @@
         &:first-child {
             border-right: 4px solid $gray-lighter;
             padding-right: 1rem;
-            @media(max-width:$screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 border-right: none;
                 & .combined-titles {
                     margin-top: 20px;
@@ -71,7 +71,7 @@
         &:last-child {
             border-left: 4px solid $gray-lighter;
             margin-left: -4px;
-            @media(max-width:$screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 border-left: none;
                 border-top: 4px solid $gray-lighter;
                 margin-left: 0px;

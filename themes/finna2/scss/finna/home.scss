@@ -11,7 +11,7 @@
   background: $home-4-background;
 }
 
-@media(min-width: $screen-sm) {
+@include media-breakpoint-up(sm) {
   .home-column {
     width: 50%;
     float: left;
@@ -34,7 +34,7 @@
 .introduction h1 {
   font-size: $introduction-header;
   line-height: calc(#{$introduction-header}/2.1);
-  @media(max-width:$screen-xs-max) {
+  @include media-breakpoint-down(sm) {
       font-size: calc(#{$introduction-header}/1.5);
   }
 }
@@ -60,7 +60,7 @@ h2.introductionText {
 
 .left-column-content {
   background: $home-left-column-background;
-  @media (min-width: $screen-sm){
+  @include media-breakpoint-up(sm){
     width: 60%;
     float: left;
     padding-right: 15px;
@@ -68,7 +68,7 @@ h2.introductionText {
 }
 .right-column-content {
   background: $home-right-column-background;
-  @media (min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     width: 40%;
     float: left;
     padding-left: 15px;
@@ -104,13 +104,13 @@ h2.introductionText {
 }
 .popular-search-col {
   width: 100%;
-  @media (min-width: $screen-sm) {
+  @include media-breakpoint-up(sm) {
     width: 50%;
     float: left
   }
 }
 
-@media(min-width: $screen-md) {
+@include media-breakpoint-up(md) {
   .info-col {
     width: 33.333%;
     float: left;

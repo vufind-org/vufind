@@ -9,7 +9,7 @@ section.main.template-dir-search.template-name-results.browse {
 
 section.template-dir-browse {
     & .browse.list-group {
-        @media (max-width: $screen-xs-max) {
+        @include media-breakpoint-down(sm) {
             margin-top: 20px;
         }
         a.list-group-item:hover {
@@ -46,7 +46,7 @@ section.template-dir-browse {
             text-align: center;
             margin-bottom: 2px;
         }
-        @media(min-width: $screen-sm) {
+        @include media-breakpoint-up(sm) {
             width: 50%;
             float: left;
         }
@@ -55,7 +55,7 @@ section.template-dir-browse {
         margin-bottom: 20px;
     }
     & #list4 {
-        @media(min-width: $screen-sm) {
+        @include media-breakpoint-up(sm) {
             width: 50%;
             float: right;
         }

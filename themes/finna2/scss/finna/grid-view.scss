@@ -16,12 +16,7 @@
   float: left;
   width: 33%;
   border-bottom: none;
-  @media (max-width: $screen-md) {
-    width: 50%;
-  }
-  @media (max-width: $screen-xs) {
-    width: 100%;
-  }
+
   .grid-checkbox {
     min-width: 0;
   }
@@ -38,9 +33,20 @@
     border-top: none;
   }
 }
+@include media-breakpoint-down(xs) {
+  .grid.result {
+    width: 100%;
+  }
+}
+@include media-breakpoint-down(md) {
+  .grid.result {
+    width: 50%;
+  }
+}
+
 .grid-large-break,
 .grid-small-break { clear: both; }
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .grid.result{ width: 33%; }
   .grid-small-break { display: none; }
 }
@@ -114,7 +120,7 @@
       box-shadow: none;
     }
 
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       .recordcover {
         width: 100%;
       }

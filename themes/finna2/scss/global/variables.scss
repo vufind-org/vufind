@@ -3,6 +3,7 @@
 // --------------------------------------------------
 
 @use "sass:color";
+@use "sass:map";
 @use "sass:math";
 
 
@@ -14,14 +15,6 @@
 $logo-color: #fff !default;
 $aoe-brand-primary: #ccf5e7 !default;
 $action-link-color: $primary !default;
-
-// Extra extra small screen / phone (e.g. iPhone 5)
-$screen-xxs: 400px !default;
-$screen-xxs-min: $screen-xxs !default;
-$screen-xxs-max: ($screen-xs-min - 1) !default;
-
-$screen-xlg: 1400px !default;
-$screen-xlg-min: $screen-xlg !default;
 
 $alert-default-bg: #f5f5f5 !default;
 $alert-default-border-color: darken($alert-default-bg, 7%) !default;
@@ -138,7 +131,7 @@ $similar-carousel-format-text-color: $text-color !default;
 $similar-carousel-format-background: #f2f2f2 !default;
 
 //== Breakpoint for slider layout
-$slider-stacked-breakpoint: $screen-sm !default;
+$slider-stacked-breakpoint: map.get($grid-breakpoints, "sm") !default;
 
 //== List feed styles
 $list-feed-background: $body-bg !default;

@@ -20,7 +20,7 @@ $organisation-info-max-w: 400px !default;
         font-weight: bold;
         margin-bottom: 10px;
         font-size: 1.1em;
-        @media (max-width: $screen-sm-max) {
+        @include media-breakpoint-down(md) {
             max-width: $organisation-info-max-w;
         }
         .js-week-navi-btn {
@@ -48,7 +48,7 @@ $organisation-info-max-w: 400px !default;
             font-size: 1.0em;
             width: 100%;
             margin-bottom: 20px;
-            @media (max-width: $screen-sm-max) {
+            @include media-breakpoint-down(md) {
                 max-width: $organisation-info-max-w;
             }
             .date-rows {
@@ -126,7 +126,7 @@ $organisation-info-max-w: 400px !default;
         .schedules-info {
             margin-top: 20px;
             margin-bottom: 10px;
-            @media (max-width: $screen-sm-max) {
+            @include media-breakpoint-down(md) {
                 max-width: $organisation-info-max-w;
             }
         }
@@ -161,7 +161,7 @@ $organisation-info-max-w: 400px !default;
                 max-height: 150px;
                 margin-right: 30px;
             }
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 margin-bottom: 10px;
                 margin-right: 0px;
                 float: none;
@@ -172,7 +172,7 @@ $organisation-info-max-w: 400px !default;
             width: 70%;
             float: right;
             max-width: 900px;
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 float: none;
                 width: 100%;
             }
@@ -182,7 +182,7 @@ $organisation-info-max-w: 400px !default;
             float: right;
             margin-top: 20px;
             margin-bottom: 0;
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 float: none;
                 width: 100%;
             }
@@ -193,7 +193,7 @@ $organisation-info-max-w: 400px !default;
             float: right;
             width: 70%;
             margin-top: 15px;
-            @media (max-width: $screen-xs-max) {
+            @include media-breakpoint-down(sm) {
                 float: none;
                 width: 100%;
             }
@@ -203,7 +203,7 @@ $organisation-info-max-w: 400px !default;
                 width: 50%;
                 #finna-coverage-gauge {
                     float: left;
-                    @media (min-width: $screen-sm-min) {
+                    @include media-breakpoint-up(sm) {
                         margin-left: -20px;
                     }
                 }
@@ -217,7 +217,7 @@ $organisation-info-max-w: 400px !default;
                     margin-top: 15px;
                     position: absolute;
                 }
-                @media (max-width: $screen-md-max) {
+                @include media-breakpoint-down(lg) {
                     display: block;
                     float: none;
                     margin-top: 20px;
@@ -265,7 +265,7 @@ $organisation-info-max-w: 400px !default;
     .location-information {
         margin-bottom: 2rem;
 
-        @media (min-width: $screen-sm-min) {
+        @include media-breakpoint-up(sm) {
             display: flex;
             gap: 1rem;
         }
@@ -362,7 +362,7 @@ $organisation-info-max-w: 400px !default;
                     margin-left: 20px;
                     margin-right: 0px;
                 }
-                @media (max-width: $screen-xs-max) {
+                @include media-breakpoint-down(sm) {
                     margin-left: -3px;
                     font-size: 1em;
                     .icon {
@@ -508,7 +508,7 @@ $organisation-info-max-w: 400px !default;
     .location-details {
         margin-top: 1em;
 
-        @media (max-width: $screen-xs-max) {
+        @include media-breakpoint-down(sm) {
             // Override negative margins of .row on narrow screens:
             margin-left: 0;
             margin-right: 0;
@@ -519,7 +519,7 @@ $organisation-info-max-w: 400px !default;
             margin-bottom: 1rem;
             &.js-opening-times {
                 .panel-title {
-                    @media (max-width: $screen-xs-max) {
+                    @include media-breakpoint-down(sm) {
                         max-width: none;
                     }
                 }
@@ -624,7 +624,7 @@ $organisation-info-max-w: 400px !default;
             }
         }
         .location-row-general {
-            @media (min-width: $screen-sm-min) {
+            @include media-breakpoint-up(sm) {
                 display: flex;
                 justify-content: space-between;
             }
@@ -632,7 +632,7 @@ $organisation-info-max-w: 400px !default;
         .location-col {
             position:relative;
 
-            @media (min-width: $screen-sm-min) {
+            @include media-breakpoint-up(sm) {
                 width: 32%;
                 float: left;
             }
@@ -652,13 +652,13 @@ $organisation-info-max-w: 400px !default;
             .service-header {
                 font-size: 1.5em;
             }
-            @media (min-width: $screen-sm-min) {
+            @include media-breakpoint-up(sm) {
                 width: 100%;
                 display: inline-block;
             }
             .service-list {
                 column-count: 1;
-                @media (min-width: $screen-sm-min) {
+                @include media-breakpoint-up(sm) {
                     column-count: 3;
                 }
                 .service-tooltip {
@@ -682,7 +682,7 @@ $organisation-info-max-w: 400px !default;
             @media (max-width: 375px) {
                 clear: both;
             }
-            @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+            @include media-breakpoint-only(sm) {
                 clear: both;
             }
         }
@@ -744,7 +744,7 @@ $organisation-info-max-w: 400px !default;
         @media (max-width: 375px) {
             clear: both;
         }
-        @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+        @include media-breakpoint-only(sm) {
             clear: both;
         }
     }
@@ -760,7 +760,7 @@ $organisation-info-max-w: 400px !default;
         margin-bottom: 5px;
     }
 
-    @media (min-width: $screen-md-min) {
+    @include media-breakpoint-up(md) {
         .info-col {
             width: 65%;
             padding-right: 15px
@@ -773,7 +773,7 @@ $organisation-info-max-w: 400px !default;
             float: left;
         }
     }
-    @media (min-width: $screen-lg-min) {
+    @include media-breakpoint-up(lg) {
         .info-col { width: 60%; }
         .details-col { width: 40%; }
     }
@@ -877,9 +877,11 @@ $organisation-info-max-w: 400px !default;
     img.consortium-logo {
         margin: -3px 0 12px;
     }
-    @media screen and (max-width: $screen-xs-max) {
-        img.consortium-logo {
-            max-height: 70px;
+    @media screen {
+        @include media-breakpoint-down(sm) {
+            img.consortium-logo {
+                max-height: 70px;
+            }
         }
     }
 }
@@ -888,9 +890,11 @@ $organisation-info-max-w: 400px !default;
         margin-bottom: 5px;
         display: inline-block;
     }
-    @media screen and (min-width: $screen-sm-min) and (max-width: $screen-md-max) {
-        img.consortium-logo {
-            max-height: 95px;
+    @media screen {
+        @include media-breakpoint-between(sm, md) {
+            img.consortium-logo {
+                max-height: 95px;
+            }
         }
     }
 }

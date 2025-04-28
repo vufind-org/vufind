@@ -25,7 +25,7 @@
   }
 }
 
-@media (max-width: $screen-sm-max) {
+@include media-breakpoint-down(md) {
   .finna-navbar {
     min-height: 64px;
 
@@ -38,7 +38,7 @@
 
 // fix navbar for logoutoptions
 .finna-navbar .navbar-nav .logoutOptions {
-  @media(max-width: $screen-sm) {
+  @include media-breakpoint-down(sm) {
     margin: 0;
   }
   .dropdown-menu {
@@ -51,7 +51,7 @@
         }
       }
     }
-    @media (max-width: $screen-xxs) {
+    @include media-breakpoint-down(xs) {
       right: -30px;
     }
   }
@@ -62,10 +62,10 @@
     overflow: hidden;
     white-space: nowrap;
     vertical-align: top;
-    @media (max-width: $screen-sm) {
+    @include media-breakpoint-down(md) {
       max-width: 80px;
     }
-    @media (max-width: $screen-xxs) {
+    @include media-breakpoint-down(xs) {
       @include visually-hidden();
     }
   }
@@ -172,7 +172,7 @@
   @include box-shadow(0 6px 12px rgba(0, 0, 0, .275));
 
   .card-selection {
-    @media (max-width: $screen-sm-max) {
+    @include media-breakpoint-down(md) {
       overflow-y: auto;
       overflow-x: hidden;
       height: 100%;

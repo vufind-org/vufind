@@ -15,11 +15,11 @@
   width: 100%;
   .filter-options {
     display: flex;
-    @media (min-width: $screen-md-min) {
+    @include media-breakpoint-up(md) {
       padding-right: 10px;
       align-items: flex-start;
     }
-    @media (max-width: $screen-md-min) {
+    @include media-breakpoint-down(md) {
       align-items: center;
       justify-content: space-between;
       width: 100%;
@@ -44,7 +44,7 @@
           display: initial;
         }
       }
-      @media (max-width: $screen-md-min) {
+      @include media-breakpoint-down(md) {
         font-size: 80%;
         display: flex !important
       }
@@ -60,7 +60,7 @@
         display: inline-block;
         padding: 10px 0px;
 
-        @media (max-width: $screen-xxs) {
+        @include media-breakpoint-down(xs) {
           font-size: 80%;
         }
       }
@@ -183,7 +183,7 @@
   }
 }
 
-@media (max-width: $screen-sm) {
+@include media-breakpoint-down(md) {
   .filters {
     width: 100%;
     font-size: 80%;

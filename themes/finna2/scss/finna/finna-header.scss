@@ -37,7 +37,7 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
 }
 
 .template-name-results, .template-name-search {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     & .finna-main-header {
       & .search-result-header {
         font-size: 1.3em;
@@ -53,18 +53,18 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
   padding: 15px 0;
   background-color: $well-bg;
   border-bottom: 1px solid $filterContent-border-color;
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(md) {
     border-top: 1px solid white;
   }
   .container {
-    @media (max-width: $screen-sm-max) {
+    @include media-breakpoint-down(md) {
       padding-left: 0;
     }
   }
   #searchForm {
     flex: 1;
     position: relative;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       width: 55%;
     }
   }
@@ -73,7 +73,7 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
 
     .record-back {
       margin-right: 10px;
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         margin-right: 0px;
         margin-left: 15px;
         i {
@@ -82,14 +82,14 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
       }
     }
     .pager {
-      @media (max-width: $screen-xs-max) {
+      @include media-breakpoint-down(sm) {
         margin-left: 0px;
       }
     }
   }
   .adv-search-menu {
     display: inline-block;
-    @media (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       position: absolute;
       top: 30px;
       right: 0;
@@ -122,7 +122,7 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
 }
 .adv-search-header .adv_search_links {
   line-height: 1em;
-  @media (max-width:$screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     position: relative;
   }
   a {
@@ -133,7 +133,7 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
     .icon {
       font-size: 1.2em;
     }
-    @media (max-width:$screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       margin-left: 15px;
       margin-right: 0;
     }
@@ -143,7 +143,7 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
     color: $gray;
     cursor: pointer;
     font-size: $font-size-small;
-    @media (max-width:$screen-xs-max) {
+    @include media-breakpoint-down(sm) {
       display: inline-block !important;
     }
   }
@@ -151,7 +151,7 @@ section.main.template-dir-feedcontent.template-name-content .container-fluid.fin
 .adv-search-header {
   padding: 20px 0;
   border-bottom: none;
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     a {
       display: block;
       margin-bottom: 5px;
