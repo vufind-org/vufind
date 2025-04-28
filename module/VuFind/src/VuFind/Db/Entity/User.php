@@ -49,6 +49,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User implements UserEntityInterface
 {
+    use ExchangeArrayTrait;
+
     /**
      * Unique ID.
      *
@@ -760,5 +762,15 @@ class User implements UserEntityInterface
     public function getEmailVerified(): ?DateTime
     {
         return $this->emailVerified;
+    }
+
+    /**
+     * Get the list of roles of this identity
+     *
+     * @return string[]|\Rbac\Role\RoleInterface[]
+     */
+    public function getRoles()
+    {
+        return ['loggedin'];
     }
 }

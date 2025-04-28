@@ -40,7 +40,11 @@ use DateTime;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface UserEntityInterface extends EntityInterface, \LmcRbacMvc\Identity\IdentityInterface
+
+interface UserEntityInterface extends
+    EntityInterface,
+    ExchangeArrayInterface,
+    \LmcRbacMvc\Identity\IdentityInterface
 {
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).

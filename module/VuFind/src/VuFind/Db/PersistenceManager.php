@@ -31,7 +31,11 @@ namespace VuFind\Db;
 
 use Doctrine\ORM\EntityManager;
 use Laminas\Db\RowGateway\AbstractRowGateway;
+use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\EntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 
 /**
  * Class to manage database persistence operations.
@@ -42,15 +46,19 @@ use VuFind\Db\Entity\EntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PersistenceManager
+class PersistenceManager implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
      * @param EntityManager $entityManager Doctrine ORM entity manager
+     * @param bool          $privacy       Is user privacy mode enabled?
      */
     public function __construct(
         protected EntityManager $entityManager,
+        protected bool $privacy = false
     ) {
     }
 
@@ -68,6 +76,12 @@ class PersistenceManager
             $entity->save();
             return;
         }
+        if ($this->privacy && $entity instanceof UserEntityInterface) {
+            $this->getDbService(UserSessionPersistenceInterface::class)->addUserDataToSession($entity);
+            return;
+        }
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
     }

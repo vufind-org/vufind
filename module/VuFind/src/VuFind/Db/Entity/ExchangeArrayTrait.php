@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database row plugin manager
+ * Trait providing a basic implementation of ExchangeArrayInterface.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,57 +21,48 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Database
+ * @author   Padmasree Gade <pgade@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 /**
- * Database row plugin manager
+ * Trait providing a basic implementation of ExchangeArrayInterface.
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+trait ExchangeArrayTrait
 {
     /**
-     * Default plugin aliases.
+     * Populate entity data from an associative array.
      *
-     * @var array
-     */
-    protected $aliases = [
-        'ratings' => Ratings::class,
-        'search' => Search::class,
-        'session' => Session::class,
-        'userresource' => UserResource::class,
-    ];
-
-    /**
-     * Default plugin factories.
+     * @param array $data Key-value pairs representing entity properties.
      *
-     * @var array
+     * @return void
      */
-    protected $factories = [
-        Ratings::class => RowGatewayFactory::class,
-        Search::class => RowGatewayFactory::class,
-        Session::class => RowGatewayFactory::class,
-        UserResource::class => RowGatewayFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
+    public function exchangeArray(array $data): void
     {
-        return RowGateway::class;
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->$key = $value;
+            }
+        }
+    }
+
+    /**
+     * Get an array representation of the entity.
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return get_object_vars($this);
     }
 }

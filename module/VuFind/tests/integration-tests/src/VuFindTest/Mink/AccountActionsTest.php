@@ -31,7 +31,8 @@
 
 namespace VuFindTest\Mink;
 
-use VuFind\Db\Table\User;
+use Doctrine\ORM\EntityManager;
+use VuFind\Db\Service\UserService;
 
 use function count;
 
@@ -329,8 +330,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Check the default library and possible values:
-        $userTable = $this->getTable(User::class);
-        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
+        $userService = $this->getDbService(UserService::class);
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
         $this->assertEquals(
             '',
             $this->findCssAndGetValue($page, '#home_library')
@@ -355,9 +356,11 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
+        $entityManager = $this->getLiveDatabaseContainer()->get(EntityManager::class);
+        $entityManager->clear();
         $this->assertEquals(
             'B',
-            $userTable->getByUsername('username2')->getHomeLibrary()
+            $userService->getUserByUsername('username2')->getHomeLibrary()
         );
 
         // Change to "Always ask me":
@@ -368,7 +371,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ' ** ',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertNull($userTable->getByUsername('username2')->getHomeLibrary());
+        $entityManager->clear();
+        $this->assertNull($userService->getUserByUsername('username2')->getHomeLibrary());
 
         // Back to default:
         $this->findCssAndSetValue($page, '#home_library', '');
@@ -378,7 +382,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
+        $entityManager->clear();
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
     }
 
     /**

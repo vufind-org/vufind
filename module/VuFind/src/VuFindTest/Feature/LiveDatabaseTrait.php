@@ -39,6 +39,7 @@ use VuFind\Db\Service\PluginManager as ServiceManager;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Db\Table\Gateway;
 use VuFind\Db\Table\PluginManager as TableManager;
 use VuFind\Favorites\FavoritesService;
@@ -367,9 +368,9 @@ trait LiveDatabaseTrait
                 return;
             }
             // Delete test user
-            $userTable = $test->getTable(\VuFind\Db\Table\User::class);
+            $userService = $test->getDbService(UserService::class);
             foreach ((array)$users as $username) {
-                $user = $userTable->getByUsername($username, false);
+                $user = $userService->getUserByUsername($username);
                 if (!empty($user)) {
                     $purgeService = new UserAccountService($test->getFavoritesService());
                     $purgeService->setDbServiceManager($test->getLiveDbServiceManager());

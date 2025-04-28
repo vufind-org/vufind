@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Fake database row to represent a user in privacy mode.
+ * Interface for translating an entity to and from array format.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2015.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,65 +21,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db\Row;
-
-use VuFind\Auth\UserSessionPersistenceInterface;
-
-use function array_key_exists;
+namespace VuFind\Db\Entity;
 
 /**
- * Fake database row to represent a user in privacy mode.
+ * Interface for translating an entity to and from array format.
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PrivateUser extends User
+interface ExchangeArrayInterface extends EntityInterface
 {
     /**
-     * __get
+     * Populate entity data from an associative array.
      *
-     * @param string $name Field to retrieve.
-     *
-     * @throws \Laminas\Db\RowGateway\Exception\InvalidArgumentException
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return array_key_exists($name, $this->data) ? parent::__get($name) : null;
-    }
-
-    /**
-     * Save
-     *
-     * @return int
-     */
-    public function save()
-    {
-        $this->initialize();
-        $this->id = -1; // fake ID
-        $this->getDbService(UserSessionPersistenceInterface::class)->addUserDataToSession($this);
-        return 1;
-    }
-
-    /**
-     * Set session container
-     *
-     * @param \Laminas\Session\Container $session Session container
+     * @param array $data Key-value pairs representing entity properties.
      *
      * @return void
-     *
-     * @deprecated No longer used or needed
      */
-    public function setSession(\Laminas\Session\Container $session)
-    {
-    }
+    public function exchangeArray(array $data): void;
+
+    /**
+     * Get an array representation of the entity.
+     *
+     * @return array
+     */
+    public function toArray(): array;
 }

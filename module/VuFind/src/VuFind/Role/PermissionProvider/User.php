@@ -81,6 +81,9 @@ class User implements
         if (!($user = $this->auth->getIdentity())) {
             return [];
         }
+        if (!($user instanceof \VuFind\Db\Entity\UserEntityInterface)) {
+            throw new \Exception('Unexpected user object provided!');
+        }
 
         // which user attribute has to match which pattern to get permissions?
         foreach ((array)$options as $option) {
@@ -95,9 +98,13 @@ class User implements
                 if (! preg_match('/^\/.*\/$/', $pattern)) {
                     $pattern = '/' . $pattern . '/';
                 }
-
-                if (preg_match($pattern, $user[$attribute])) {
-                    return ['loggedin'];
+                $methodMap = ['cat_id' => 'getCatId', 'cat_username' => 'getCatUsername'];
+                $method = $methodMap[$attribute] ?? 'get' . ucfirst($attribute);
+                if (method_exists($user, $method)) {
+                    $userValue = $user->$method();
+                    if (preg_match($pattern, $userValue)) {
+                        return ['loggedin'];
+                    }
                 }
             }
         }

@@ -32,11 +32,11 @@ namespace VuFindTest\OAuth2\Repository;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\AccessToken;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AccessTokenService;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\ClientEntity;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
 use VuFind\OAuth2\Repository\AuthCodeRepository;
@@ -112,48 +112,6 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create User table
-     *
-     * @return MockObject&User
-     */
-    protected function getMockUserTable(): User
-    {
-        $getByIdCallback = function (
-            $id
-        ): ?UserRow {
-            $username = 'test';
-            return $this->createUserRow(compact('id', 'username'));
-        };
-
-        $accessTokenTable = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getById'])
-            ->getMock();
-        $accessTokenTable->expects($this->any())
-            ->method('getById')
-            ->willReturnCallback($getByIdCallback);
-
-        return $accessTokenTable;
-    }
-
-    /**
-     * Create User row
-     *
-     * @param array $data Row data
-     *
-     * @return MockObject&UserRow
-     */
-    protected function createUserRow(array $data): UserRow
-    {
-        $result = $this->getMockBuilder(UserRow::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['initialize'])
-            ->getMock();
-        $result->populate($data);
-        return $result;
-    }
-
-    /**
      * Mock entity manager.
      *
      * @return MockObject
@@ -209,8 +167,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         $mock->method('getUser')->willReturnCallback(function () use ($i) {
             $userId = $this->accessTokenTable[$i]['user_id'] ?? null;
             if ($userId) {
-                $userTable = $this->getMockUserTable();
-                return $userTable->getById($userId);
+                return $this->getMockUserService()->getUserByField('id', $userId);
             }
             return null;
         });
@@ -261,22 +218,8 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @return MockObject&AccessTokenServiceInterface
      */
-    protected function getMockAccessTokenService(): AccessTokenServiceInterface
+    protected function getMockAccessTokenService(): AccessTokenServiceInterface&MockObject
     {
-        $entityManager = $this->getEntityManager();
-        $pluginManager = $this->getPluginManager(true);
-        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'createEntity',
-                    'getByIdAndType',
-                    'getNonce',
-                    'storeNonce',
-                ]
-            )
-            ->setConstructorArgs([$entityManager, $pluginManager])
-            ->getMock();
         $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getByIdAndType', 'persistEntity', 'storeNonce', 'getNonce'])
@@ -356,23 +299,43 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
+     * Create User entity mock.
+     *
+     * @param ?int   $id       User ID
+     * @param string $username User's name
+     *
+     * @return MockObject&UserEntityInterface&null
+     */
+    protected function createMockUserEntity(?int $id, string $username): UserEntityInterface&MockObject
+    {
+        $mockUser = $this->createMock(UserEntityInterface::class);
+        if ($id !== null) {
+            $mockUser->expects($this->any())
+                ->method('getId')
+                ->willReturn($id);
+            $mockUser->expects($this->any())
+                ->method('getUsername')
+                ->willReturn($username);
+        }
+        return $mockUser;
+    }
+
+    /**
      * Create User service
      *
      * @return MockObject&UserServiceInterface
      */
-    protected function getMockUserService(): UserServiceInterface
+    protected function getMockUserService(): UserServiceInterface&MockObject
     {
-        $userTable = $this->getMockUserTable();
-        $userService = $this->createMock(UserServiceInterface::class);
-        $userService->expects($this->any())
+        $mockUserService = $this->createMock(UserServiceInterface::class);
+        $mockUserService->expects($this->any())
             ->method('getUserByField')
-            ->willReturnCallback(
-                function ($fieldName, $fieldValue) use ($userTable) {
-                    $this->assertEquals('id', $fieldName);
-                    return $userTable->getById($fieldValue);
-                }
-            );
-        return $userService;
+            ->willReturnCallback(function (string $fieldName, $fieldValue) {
+                $this->assertEquals('id', $fieldName);
+                return $this->createMockUserEntity($fieldValue, 'test');
+            });
+
+        return $mockUserService;
     }
 
     /**

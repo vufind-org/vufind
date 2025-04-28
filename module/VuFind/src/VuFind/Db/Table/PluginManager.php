@@ -49,7 +49,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ratings' => Ratings::class,
         'search' => Search::class,
         'session' => Session::class,
-        'user' => User::class,
         'userresource' => UserResource::class,
     ];
 
@@ -62,7 +61,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Ratings::class => GatewayFactory::class,
         Search::class => GatewayFactory::class,
         Session::class => GatewayFactory::class,
-        User::class => UserFactory::class,
         UserResource::class => GatewayFactory::class,
     ];
 

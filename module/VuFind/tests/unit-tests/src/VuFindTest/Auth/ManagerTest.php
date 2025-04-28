@@ -629,9 +629,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockUser(): MockObject&UserEntityInterface
     {
-        // Temporary workaround until Laminas --> Doctrine migration is complete:
-        $user = $this->createMock(\VuFind\Db\Row\User::class);
-        //$user = $this->createMock(UserEntityInterface::class);
+        $user = $this->createMock(UserEntityInterface::class);
         $user->method('getId')->willReturn(-1);
         return $user;
     }
