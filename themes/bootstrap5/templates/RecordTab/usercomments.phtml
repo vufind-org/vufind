@@ -17,7 +17,7 @@
       <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">
           <?php $ratingData = $this->ratings()->getRatingData($this->driver, $user->getId()); ?>
-          <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $ratingData, 'allowClear' => 0 === $ratingData['count'] || $this->accountCapabilities()->isRatingRemovalAllowed()]);?>
+          <?=$this->component('star-rating', ['ratingData' => $ratingData, 'allowClear' => 0 === $ratingData['count'] || $this->accountCapabilities()->isRatingRemovalAllowed()]);?>
         </div>
       <?php endif; ?>
       <?php if ($this->tab->isCaptchaActive()): ?>

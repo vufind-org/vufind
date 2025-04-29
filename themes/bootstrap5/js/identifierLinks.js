@@ -28,14 +28,13 @@ VuFind.register('identifierLinks', function identifierLinks() {
     queryParams.set("method", "identifierLinksLookup");
     var url = VuFind.path + '/AJAX/JSON?' + queryParams.toString();
     fetch(url, { method: "POST", body: JSON.stringify(postBody) })
-      .then(function embedIdentifierLinksDone(rawResponse) {
-        elements.forEach(function populateIdentifierLinks(identifierEl) {
+      .then((rawResponse) => rawResponse.json())
+      .then((response) => {
+        elements.forEach((identifierEl) => {
           var currentInstance = identifierEl.dataset.instance;
-          rawResponse.json().then(response => {
-            if ("undefined" !== typeof response.data[currentInstance]) {
-              VuFind.setInnerHtml(identifierEl, response.data[currentInstance]);
-            }
-          });
+          if ("undefined" !== typeof response.data[currentInstance]) {
+            VuFind.setInnerHtml(identifierEl, response.data[currentInstance]);
+          }
         });
       });
   }

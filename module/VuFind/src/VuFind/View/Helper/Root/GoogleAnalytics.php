@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\HeadScript;
-
 use function is_array;
 
 /**
@@ -107,11 +105,11 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
         if (!$this->key) {
             return '';
         }
-        $inlineScript = $this->getView()->plugin('inlinescript');
+        $assetManager = $this->getView()->plugin('assetManager');
         $url = 'https://www.googletagmanager.com/gtag/js?id=' . urlencode($this->key);
         $code = $this->getRawJavascript($customUrl);
         return
-            $inlineScript(HeadScript::FILE, $url, 'SET', ['async' => true]) . "\n"
-            . $inlineScript(HeadScript::SCRIPT, $code, 'SET');
+            $assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
+            . $assetManager->outputInlineScriptString($code);
     }
 }

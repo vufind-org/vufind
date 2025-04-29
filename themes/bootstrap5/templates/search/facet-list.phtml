@@ -19,8 +19,7 @@
     $urlBase .= '&baseUriExtra=' . urlencode($this->baseUriExtra);
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
-  $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
-  $this->assetManager()->appendScriptString('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
+  $this->assetManager()->appendScriptString('var multiFacetsSelection = "' . $this->multiFacetsSelection . '";');
   $this->assetManager()->appendScriptLink('facets.js');
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
