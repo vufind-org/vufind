@@ -1,0 +1,78 @@
+; This file controls the Collection module (the page accessed by viewing a record
+; which is a collection).
+
+; These settings control the top and side recommendations (see searches.ini for
+; details on recommendation modules).
+[Recommend]
+;top[] = "PubDateVisAjax:true:publishDate"
+side[]  = "CollectionSideFacets:Facets::Collection:true"
+
+; This is a facet section similar to those found in facets.ini, but this is used for
+; the Collection module screen.
+[Facets]
+format                  = Format
+hierarchy_parent_title  = Subcollection
+author_facet            = Author
+era_facet               = Era
+search_daterange_mv     = "Main Year"
+geographic_facet        = Region
+topic_facet             = Topic
+language                = Language
+usage_rights_ext_str_mv = usage_rights_ext
+
+; This section is used to identify facets for special treatment by the SideFacets
+; recommendations module.
+[SpecialFacets]
+; Date visualisations
+dateVis[] = main_date_str
+dateRangeVis = search_daterange_mv:main_date_str
+; These settings affect the way the facets are displayed
+hierarchical[] = format
+hierarchical[] = usage_rights_ext
+
+[Results_Settings]
+; By default, how many values should we show for each facet? (-1 for no limit)
+facet_limit = 30
+; Override facet_limit on a per-field basis using this array:
+;facet_limit_by_field[format] = 50
+
+; By default, the side facets will only show 6 facets and then the "show more"
+; button. This can get configured with the showMore settings.
+; You can use the * to set a new default setting.
+showMore[*] = 6
+; Or you can set a facet specific value by using the facet name as index.
+;showMore['format'] = 10
+
+; Show more facets in a lightbox (paginated, no limit)
+; If false, facets expand in side bar to show facets up to the above limit
+; If "more", facets expand and offer an option at the bottom to open the lightbox
+; If true, facets immediately open in the lightbox
+showMoreInLightbox[*] = more
+;lightboxLimit = 50 ; page size for the lightbox
+
+; Should we show "exclude" links for some or all of the facets? Set to * for
+; all facets, use a comma-separated list to show for some of the facets, set
+; to false or omit to disable "exclude" links
+;exclude = *
+; Should we OR together facets rather than ANDing them? Set to * for
+; all facets, use a comma-separated list to apply to some of the facets, set
+; to false or omit to disable ORed facets.
+;orFacets = *
+; Do we want any facets to be collapsed by default?
+;collapsedFacets = *
+;collapsedFacets = search_daterange_mv
+
+; These settings control which fields are available to sort on in the Collection
+; module.
+[Sort]
+title = sort_title
+year = sort_year
+year asc = sort_year_asc
+author = sort_author
+
+; See searches.ini for documentation on these sections. Collections will always
+; use the filters applied in searches.ini; any additional filters defined here
+; will be combined with those existing filters. Use these if you want to apply
+; additional filtering to records displayed in the collection context.
+;[HiddenFilters]
+;[RawHiddenFilters]

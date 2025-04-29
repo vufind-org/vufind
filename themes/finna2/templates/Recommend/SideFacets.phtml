@@ -31,29 +31,20 @@
     </fieldset>
   <?php endif; ?>
 <?php endif; ?>
-<?php $extraFilters = $this->extraSideFacetFilters ?? []; ?>
-<?php $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
-<?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
-<?php $module = $this->layout()->templateDir; ?>
 <?php
+  $extraFilters = $this->extraSideFacetFilters ?? [];
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters);
   $plotFrom = null;
   $daterangeFacetField = null;
-  if (null === $module || in_array($module, ['blender', 'search', 'primo'])) {
-    $options = $results->getOptions();
-    if (is_callable([$options, 'getDateRangeSearchField'])) {
-      $daterangeFacetField = $options->getDateRangeSearchField();
-    }
-    if (is_callable([$params, 'getDateRangeFilter'])) {
-      $dateRangeFilter = $params->getDateRangeFilter();
+  if (is_callable([$options, 'getDateRangeSearchField'])) {
+    $daterangeFacetField = $options->getDateRangeSearchField();
+  }
+  if ($this->fromStreetSearch) {
+    if (($key = array_search('geographic_facet', $collapsedFacets)) !== false) {
+      unset($collapsedFacets[$key]);
     }
   }
-?>
-<?php
-if ($this->fromStreetSearch) {
-  if (($key = array_search('geographic_facet', $collapsedFacets)) !== false) {
-    unset($collapsedFacets[$key]);
-  }
-}
 ?>
 <?=$this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
@@ -79,6 +70,7 @@ if ($this->fromStreetSearch) {
                   'facet' => $title,
                   'cluster' => $cluster,
                   'collapsedFacets' => $collapsedFacets,
+                  'plotImmediately' => false,
               ]
           )?>
       </div>

@@ -49,6 +49,7 @@ use function strlen;
  */
 class Params extends \VuFind\Search\Solr\Params
 {
+    use \Finna\Search\DateRangeFilterTrait;
     use \Finna\Search\FinnaParams;
     use ParamsSharedTrait;
 
@@ -79,13 +80,6 @@ class Params extends \VuFind\Search\Solr\Params
      * @var bool
      */
     protected $debugQuery = false;
-
-    // Date range index field (VuFind1)
-    public const SPATIAL_DATERANGE_FIELD_VF1 = 'search_sdaterange_mv';
-    public const SPATIAL_DATERANGE_FIELD_TYPE_VF1 = 'search_sdaterange_mvtype';
-
-    // Default daterange type value
-    public const DATERANGE_DEFAULT_TYPE = 'overlap';
 
     /**
      * Helper for formatting authority id filter display texts.
@@ -146,9 +140,9 @@ class Params extends \VuFind\Search\Solr\Params
             return;
         }
         // Convert any VuFind 1 spatial date range filter
-        if (isset($this->filterList[self::SPATIAL_DATERANGE_FIELD_VF1])) {
-            $dateRangeFilters = $this->filterList[self::SPATIAL_DATERANGE_FIELD_VF1];
-            unset($this->filterList[self::SPATIAL_DATERANGE_FIELD_VF1]);
+        if (isset($this->filterList[$this->spatialDateRangeFieldVF1])) {
+            $dateRangeFilters = $this->filterList[$this->spatialDateRangeFieldVF1];
+            unset($this->filterList[$this->spatialDateRangeFieldVF1]);
 
             foreach ($dateRangeFilters as $filter) {
                 if ($range = $this->parseDateRangeFilter($filter)) {
@@ -160,47 +154,6 @@ class Params extends \VuFind\Search\Solr\Params
                 }
             }
         }
-    }
-
-    /**
-     * Does the object already contain the specified filter?
-     *
-     * @param string $filter A filter string from url : "field:value"
-     *
-     * @return void
-     */
-    public function addFilter($filter)
-    {
-        // Extract field and value from URL string:
-        [$field, $value] = $this->parseFilter($filter);
-
-        if (
-            $field == $this->getDateRangeSearchField()
-            || $field == self::SPATIAL_DATERANGE_FIELD_VF1
-        ) {
-            // Date range filters are processed
-            // separately (see initSpatialDateRangeFilter)
-            return;
-        }
-        parent::addFilter($filter);
-    }
-
-    /**
-     * Return current date range filter.
-     *
-     * @return mixed false|array Filter
-     */
-    public function getDateRangeFilter()
-    {
-        $filterList = $this->getFilterList();
-        foreach ($filterList as $facet => $filters) {
-            foreach ($filters as $filter) {
-                if ($this->isDateRangeFilter($filter['field'])) {
-                    return $filter;
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -227,35 +180,6 @@ class Params extends \VuFind\Search\Solr\Params
             $this->dateConverter->convertToDisplayDate('Y-m-d', $date),
             true,
         ];
-    }
-
-    /**
-     * Return the current filters as an array of strings ['field:filter']
-     *
-     * @return array $filterQuery
-     */
-    public function getFilterSettings()
-    {
-        $result = parent::getFilterSettings();
-
-        // Special processing for date range filters
-        $dateRangeField = $this->getDateRangeSearchField();
-        if ($dateRangeField) {
-            foreach ($result as &$filter) {
-                $dateRange = strncmp(
-                    $filter,
-                    "$dateRangeField:",
-                    strlen($dateRangeField) + 1
-                ) == 0;
-                if ($dateRange) {
-                    [$field, $value] = $this->parseFilter($filter);
-                    [$op, $range] = explode('|', $value);
-                    $op = $op == 'within' ? 'Within' : 'Intersects';
-                    $filter = "{!field f=$dateRangeField op=$op}$range";
-                }
-            }
-        }
-        return $result;
     }
 
     /**
@@ -360,80 +284,6 @@ class Params extends \VuFind\Search\Solr\Params
             '{!score=none}location_geo:"Intersects('
             . str_replace('"', '\"', $coordinates) . ')"'
         );
-    }
-
-    /**
-     * Initialize date range filter (search_daterange_mv)
-     *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    public function initSpatialDateRangeFilter($request)
-    {
-        $dateRangeField = $this->getDateRangeSearchField();
-        if (!$dateRangeField) {
-            return;
-        }
-        $type = $request->get("{$dateRangeField}_type");
-        if (!$type) {
-            // VuFind 1
-            $type = $request->get(self::SPATIAL_DATERANGE_FIELD_TYPE_VF1);
-        }
-        if (!$type) {
-            $type = self::DATERANGE_DEFAULT_TYPE;
-        }
-
-        $from = $to = null;
-        $found = false;
-        // Date range filter
-        if (($reqFilters = $request->get('filter')) && is_array($reqFilters)) {
-            foreach ($reqFilters as $f) {
-                [$field, $value] = $this->parseFilter($f);
-                if (
-                    $field == $dateRangeField
-                    || $field == self::SPATIAL_DATERANGE_FIELD_VF1
-                ) {
-                    if ($range = $this->parseDateRangeFilter($f)) {
-                        $from = $range['from'];
-                        $to = $range['to'];
-                        if (
-                            isset($range['type'])
-                            && $range['type'] !== self::DATERANGE_DEFAULT_TYPE
-                        ) {
-                            $type = $range['type'];
-                        }
-                        $found = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Uninitialized VuFind1 date range query
-        if (!$found && $request->get('sdaterange')) {
-            // Search for VuFind1 search_sdaterange_mvfrom, search_sdaterange_mvto
-            $from = $request->get('search_sdaterange_mvfrom');
-            $to = $request->get('search_sdaterange_mvto');
-            if (!empty($from) || !empty($to)) {
-                if (empty($from)) {
-                    $from = -9999;
-                }
-                if (empty($to)) {
-                    $to = 9999;
-                }
-                $found = true;
-            }
-        }
-
-        if (!$found) {
-            return;
-        }
-
-        // Add filter. The final Solr filter is constructed in getFilterSettings.
-        $filter = "$dateRangeField:$type|[$from TO $to]";
-        parent::addFilter($filter);
     }
 
     /**

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Solr aspect of the Search Multi-class (Results)
+ * Solr Collection aspect of the Search Multi-class (Results)
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,10 +27,10 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace Finna\Search\Solr;
+namespace Finna\Search\SolrCollection;
 
 /**
- * Solr Search Parameters
+ * Solr Collection Search Results
  *
  * @category VuFind
  * @package  Search_Solr
@@ -38,7 +38,7 @@ namespace Finna\Search\Solr;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Results extends \VuFind\Search\Solr\Results
+class Results extends \VuFind\Search\SolrCollection\Results
 {
     use \Finna\Search\Results\SearchResultsTrait;
 }

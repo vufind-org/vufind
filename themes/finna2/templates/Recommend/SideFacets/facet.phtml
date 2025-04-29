@@ -71,7 +71,7 @@
       'backend' => $backendId,
       'daterangeFacet' => $daterangeFacetField,
       'plotFrom' => $plotFrom,
-      'plotImmediately' => !in_array($facet, $collapsedFacets) ? 'true' : 'false',
+      'plotImmediately' => $this->plotImmediately ?? !in_array($facet, $collapsedFacets),
     ]);
     ?>
   </div>
