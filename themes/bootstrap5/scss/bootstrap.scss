@@ -629,6 +629,12 @@ body.rtl .dropdown-menu {
 .usercontent-table {
   tbody > tr > td {
     vertical-align: middle;
+    .checkbox-container {
+      padding-top: 0rem;
+      .checkbox-select-item {
+        float: none;
+      }
+    }
     @include media-breakpoint-up(md) {
       &.user-comment {
         width: 40%;

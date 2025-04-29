@@ -2332,7 +2332,7 @@ class MyResearchController extends AbstractBase
         if (!$user) {
             return $this->forceLogin();
         }
-        $tabs = $this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentTabs();
+        $tabs = array_keys($this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentTabs());
         if (empty($tabs)) {
             throw new ForbiddenException('User content disabled.');
         }

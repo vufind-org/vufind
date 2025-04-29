@@ -102,7 +102,7 @@ class AccountCapabilities
     }
 
     /**
-     * Get page size for comments, ratings and tags in user account
+     * Get page size for comments, ratings and tags in user account.
      *
      * @return int
      */
@@ -112,7 +112,8 @@ class AccountCapabilities
     }
 
     /**
-     * Get enabled tabs for user content
+     * Get enabled tabs for user content as an array with controller names
+     * as keys and tab titles as values.
      *
      * @return array
      */
@@ -120,13 +121,13 @@ class AccountCapabilities
     {
         $tabs = [];
         if ('enabled' === $this->getCommentSetting()) {
-            $tabs[] = 'comments';
+            $tabs['comments'] = 'Comments';
         }
         if ('enabled' === $this->getRatingSetting()) {
-            $tabs[] = 'ratings';
+            $tabs['ratings'] = 'Ratings';
         }
         if ('enabled' === $this->getTagSetting()) {
-            $tabs[] = 'tag';
+            $tabs['tag'] = 'Tags';
         }
         return $tabs;
     }

@@ -45,7 +45,7 @@ use function in_array;
 trait UserContentTrait
 {
     /**
-     * Get sort list for user content
+     * Get sort list for user content.
      *
      * @param array  $options Array of sort options
      * @param string $active  Currently active sort
@@ -66,7 +66,7 @@ trait UserContentTrait
     }
 
     /**
-     * Get record titles for user content
+     * Get record titles for user content.
      *
      * @param Paginator $contents User content
      *
@@ -75,10 +75,10 @@ trait UserContentTrait
     public function getUserContentRecordTitles(\Laminas\Paginator\Paginator $contents)
     {
         $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-        $ids = [];
-        foreach ($contents as $content) {
-            $ids[] = $content['source'] . '|' . $content['record_id'];
-        }
+        $ids = array_map(
+            fn ($content) => $content['source'] . '|' . $content['record_id'],
+            iterator_to_array($contents)
+        );
         $records = $recordLoader->loadBatch($ids, true);
         foreach ($contents as $i => &$c) {
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
@@ -87,7 +87,7 @@ trait UserContentTrait
     }
 
     /**
-     * Get paging parameters from query parameters
+     * Get paging parameters from query parameters.
      *
      * @param Params $params Parameter helper from controller
      *
