@@ -16,7 +16,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts" !default;
 @import "bootstrap/scss/variables";
 
 // Include any map overrides here
-@import "bootstrap-map-overrides";
+@import "global/bootstrap-map-overrides";
 
 // Include remainder of required parts
 @import "bootstrap/scss/maps";
