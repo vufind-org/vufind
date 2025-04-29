@@ -34,7 +34,6 @@ namespace VuFind\Controller;
 use ArrayObject;
 use Composer\Semver\Comparator;
 use Exception;
-use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
@@ -47,7 +46,8 @@ use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
 use VuFind\Crypt\BlockCipher;
-use VuFind\Db\AdapterFactory;
+use VuFind\Db\Connection;
+use VuFind\Db\ConnectionFactory;
 use VuFind\Db\MigrationManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
@@ -61,6 +61,7 @@ use VuFind\Tags\TagsService;
 
 use function count;
 use function dirname;
+use function get_class;
 use function in_array;
 use function strlen;
 
@@ -225,23 +226,23 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Get a database adapter for root access using credentials in session.
+     * Get a database connection for root access using credentials in session.
      *
-     * @return Adapter
+     * @return Connection
      */
-    protected function getRootDbAdapter()
+    protected function getRootDbConnection(): Connection
     {
-        // Use static cache to avoid loading adapter more than once on
+        // Use static cache to avoid loading connection more than once on
         // subsequent calls.
-        static $adapter = false;
-        if (!$adapter) {
-            $factory = $this->getService(AdapterFactory::class);
-            $adapter = $factory->getAdapter(
+        static $connection = false;
+        if (!$connection) {
+            $factory = $this->getService(ConnectionFactory::class);
+            $connection = $factory->getConnection(
                 $this->session->dbRootUser,
                 $this->session->dbRootPass
             );
         }
-        return $adapter;
+        return $connection;
     }
 
     /**
@@ -335,12 +336,9 @@ class UpgradeController extends AbstractBase
      */
     public function getDatabaseMigrations(): string
     {
-        $adapter = $this->getService(Adapter::class);
-        $rawPlatform = strtolower($adapter->getDriver()->getDatabasePlatformName());
-        $platform = match ($rawPlatform) {
-            'postgresql' => 'pgsql',
-            default => $rawPlatform,
-        };
+        $connection = $this->getService(Connection::class);
+        $rawPlatform = strtolower(get_class($connection->getDatabasePlatform()));
+        $platform = str_contains($rawPlatform, 'postgres') ? 'pgsql' : 'mysql';
         $migrationManager = new MigrationManager();
         $sql = '';
         foreach ($migrationManager->getMigrations($platform, $this->cookie->oldVersion) as $migration) {
@@ -362,11 +360,11 @@ class UpgradeController extends AbstractBase
             if (!$this->hasDatabaseRootCredentials()) {
                 return $this->forwardTo('Upgrade', 'GetDbCredentials');
             }
-            $adapter = $this->getRootDbAdapter();
+            $connection = $this->getRootDbConnection();
             foreach (explode(';', $migrationSql) as $sqlLine) {
                 $trimmedLine = trim($sqlLine);
                 if (!empty($trimmedLine)) {
-                    $adapter->query($trimmedLine, $adapter::QUERY_MODE_EXECUTE);
+                    $connection->executeQuery($trimmedLine);
                 }
             }
             // Don't keep DB credentials in session longer than necessary:
@@ -488,9 +486,9 @@ class UpgradeController extends AbstractBase
                 // Test the connection:
                 try {
                     // Query a table known to exist
-                    $factory = $this->getService(AdapterFactory::class);
-                    $db = $factory->getAdapter($dbrootuser, $pass);
-                    $db->query('SELECT * FROM user;');
+                    $factory = $this->getService(ConnectionFactory::class);
+                    $db = $factory->getConnection($dbrootuser, $pass);
+                    $db->executeQuery('SELECT * FROM user;');
                     $this->session->dbRootUser = $dbrootuser;
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
