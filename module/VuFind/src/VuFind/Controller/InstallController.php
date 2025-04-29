@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Crypt\PasswordHasher;
+use VuFind\Db\ConnectionFactory;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -415,14 +416,15 @@ class InstallController extends AbstractBase
                 try {
                     // We need a default database name to use to establish a connection:
                     $dbName = ($view->driver == 'pgsql') ? 'template1' : 'mysql';
+                    $dbFactory = $this->serviceLocator->get(ConnectionFactory::class);
                     $connectionParams = [
-                        'driver' => $view->driver,
-                        'hostname' => $view->dbhost,
-                        'username' => $view->dbrootuser,
+                        'driver' => $dbFactory->getDriverName($view->driver),
+                        'host' => $view->dbhost,
+                        'user' => $view->dbrootuser,
                         'password' => $this->params()->fromPost('dbrootpass'),
                     ];
-                    $db = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
-                        $connectionParams + ['database' => $dbName]
+                    $db = $dbFactory->getConnectionFromOptions(
+                        $connectionParams + ['dbname' => $dbName]
                     );
                 } catch (\Exception $e) {
                     $this->flashMessenger()
@@ -438,7 +440,7 @@ class InstallController extends AbstractBase
                     // Get SQL together
                     $escapedPass = $skip
                         ? "'" . addslashes($newpass) . "'"
-                        : $db->getPlatform()->quoteValue($newpass);
+                        : $db->quote($newpass);
                     $preCommands = $this->getPreCommands($view, $escapedPass);
                     $postCommands = $this->getPostCommands($view);
                     // We use the same file to initialize the MariaDB and MySQL databases:
@@ -459,10 +461,10 @@ class InstallController extends AbstractBase
                         return $this->forwardTo('Install', 'showsql');
                     } else {
                         foreach ($preCommands as $query) {
-                            $db->query($query, $db::QUERY_MODE_EXECUTE);
+                            $db->executeQuery($query);
                         }
-                        $db = $this->getService(\VuFind\Db\AdapterFactory::class)->getAdapterFromArray(
-                            $connectionParams + ['database' => $view->dbname]
+                        $db = $dbFactory->getConnectionFromOptions(
+                            $connectionParams + ['dbname' => $view->dbname]
                         );
                         $statements = explode(';', $sql);
                         foreach ($statements as $current) {
@@ -470,10 +472,10 @@ class InstallController extends AbstractBase
                             if (strlen(trim($current)) == 0) {
                                 continue;
                             }
-                            $db->query($current, $db::QUERY_MODE_EXECUTE);
+                            $db->executeQuery($current);
                         }
                         foreach ($postCommands as $query) {
-                            $db->query($query, $db::QUERY_MODE_EXECUTE);
+                            $db->executeQuery($query);
                         }
                         // If we made it this far, we can update the config file and
                         // forward back to the home action!

@@ -456,6 +456,7 @@ $config = [
             'VuFind\Crypt\SecretCalculator' => 'VuFind\Crypt\SecretCalculatorFactory',
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
+            'VuFind\Db\ConnectionFactory' => 'VuFind\Db\ConnectionFactoryFactory',
             'VuFind\Db\Connection' => 'VuFind\Db\ConnectionFactory',
             'VuFind\Db\Entity\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\PersistenceManager' => 'VuFind\Db\PersistenceManagerFactory',

@@ -126,7 +126,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     /**
      * Facet configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $facetConfig;
 
