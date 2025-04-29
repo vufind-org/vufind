@@ -234,34 +234,6 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get notes associated with this record in user lists.
-     *
-     * @param int $list_id ID of list to load tags from (null for all lists)
-     * @param int $user_id ID of user to load tags from (null for all users)
-     *
-     * @return array
-     *
-     * @deprecated Use \VuFind\View\Helper\Root\Record::getListNotes()
-     */
-    public function getListNotes($list_id = null, $user_id = null)
-    {
-        $db = $this->getDbTable('UserResource');
-        $data = $db->getSavedData(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            $list_id,
-            $user_id
-        );
-        $notes = [];
-        foreach ($data as $current) {
-            if (!empty($current->notes)) {
-                $notes[] = $current->notes;
-            }
-        }
-        return $notes;
-    }
-
-    /**
      * Get a list of lists containing this record.
      *
      * @param int $user_id ID of user to load tags from (null for all users)
