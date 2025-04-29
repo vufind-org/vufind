@@ -145,9 +145,11 @@ indexBasedNewItems = true
 ; Whether to hide email address in patron profile. Default is false
 ;hideProfileEmailAddress = true
 ; Scale for advanced search year slider. Current year + 1 is always added to the end.
-; Default scale is "0,900,1800,1910"
-; PARTIALLY DEPRECATED. Only the first value is used.
-;advSearchYearScale = "1600,1800,2000,2010"
+; Default scale is "-1000,0,900,1800,1910"
+; DEPRECATED - Only the first value is used as fallback. Use the facet-specific settings in facets configuration
+; (e.g. [Facet_search_daterange_mv] in facets.ini or [Facet_creationdate] in Primo.ini) instead.
+;
+;advSearchYearScale = "1600"
 
 ; This section allows you to configure the mechanism used for storing user
 ; sessions.  Available types: File, Memcache, Database.

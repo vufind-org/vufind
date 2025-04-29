@@ -296,3 +296,28 @@ Solr[author2_id_role_str_mv] = "count=sort_count"
 
 ; Example: sort Solr author_facet only alphabetically
 ; Solr[author_facet] = "index=sort_alphabetic"
+
+; Settings specific to a facet field. Each section is named [Facet_<field_name>].
+; The example section is used for publishDate. Additional sections can be added for
+; other fields as needed.
+[Facet_publishDate]
+; Minimum value for date range sliders in search forms (default is 1400). Value
+; must be a number or a string that PHP's strtotime can parse. Only the year part
+; is used.
+;slider_min_value = "1400"
+
+; Maximum value for date range sliders in search forms (default is current
+; year + 1). Value must be a number or a string that PHP's strtotime can parse.
+; Only the year part is used.
+;slider_max_value = "+1 year"
+
+[Facet_search_daterange_mv]
+; Minimum value for date range sliders in search forms (default is 1400). Value
+; must be a number or a string that PHP's strtotime can parse. Only the year part
+; is used.
+;slider_min_value = "1400"
+
+; Maximum value for date range sliders in search forms (default is current
+; year + 1). Value must be a number or a string that PHP's strtotime can parse.
+; Only the year part is used.
+;slider_max_value = "+1 year"

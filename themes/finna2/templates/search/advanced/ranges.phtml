@@ -25,13 +25,14 @@
         <div class="information"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_range')?></p></div>
       </div>
       <?php if ($isDateRange): ?>
+        <?php $options = $params->getOptions(); ?>
         <?=$this->component('date-range-slider', [
           'values' => $current['values'] ?? [],
           'sliderId' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
           'inputMinId' => $escField . 'from',
           'inputMaxId' => $escField . 'to',
-          'rangeMin' => $current['rangeMin'] ?? null,
-          'rangeMax' => $current['rangeMax'] ?? null,
+          'rangeMin' => $options->getDateRangeSliderMinValue($current['field']) ?? $current['rangeMin'] ?? null,
+          'rangeMax' => $options->getDateRangeSliderMaxValue($current['field']) ?? $current['rangeMax'] ?? null,
         ])?>
       <?php endif; ?>
     </fieldset>

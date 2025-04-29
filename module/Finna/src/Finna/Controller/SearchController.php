@@ -61,12 +61,14 @@ class SearchController extends \VuFind\Controller\SearchController
         $view = parent::advancedAction();
 
         $config = $this->getConfig();
+        $rangeMin = null;
         $ticks = [-1000, 0, 900, 1800, 1900];
         if (!empty($config->Site->advSearchYearScale)) {
             $ticks = array_map(
                 'trim',
                 explode(',', $config->Site->advSearchYearScale)
             );
+            $rangeMin = (int)$ticks[0];
         }
         $rangeEnd = date('Y', strtotime('+1 year'));
 
@@ -76,8 +78,8 @@ class SearchController extends \VuFind\Controller\SearchController
         $range = [
             'type' => 'date',
             'field' => $params->getDateRangeSearchField(),
-            'rangeMin' => $ticks[0],
-            'rangeMax' => $rangeEnd,
+            'rangeMin' => $rangeMin,
+            'rangeMax' => null,
         ];
 
         if (
