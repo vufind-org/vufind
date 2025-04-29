@@ -1332,6 +1332,10 @@ arranger_roles[] = "arrangör"
 arranger_roles[] = "sov"
 arranger_roles[] = "sovittaja"
 
+; Hidden author roles for authors that are not displayed as authors at all
+hidden_author_roles[] = "kustantaja"
+hidden_author_roles[] = "utgivare"
+
 ; Datasource specific EAD record link templates
 ; Currently supports the following placeholders for record data:
 ; {id} Record ID
