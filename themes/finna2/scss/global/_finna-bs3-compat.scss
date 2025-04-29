@@ -430,7 +430,7 @@ h6, .h6 {
     }
   }
 }
-@include media-breakpoint-only(lg) {
+@include media-breakpoint-up(lg) {
   .hidden-lg {
     display: none !important;
   }
