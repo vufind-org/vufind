@@ -265,7 +265,7 @@ button.list-group-item {
   }
 }
 
-.form-control:not([multiple]):not([size]) {
+.form-control:not([multiple]):not([size]), .form-select:not([multiple]):not([size]){
   appearance: auto;
   height: $input-height;
 }
@@ -290,7 +290,7 @@ textarea.form-control {
       margin-bottom: 0;
       vertical-align: middle;
     }
-    .form-control, .form-group {
+    .form-control, .form-group, .form-select {
       display: inline-block;
       width: auto;
       vertical-align: middle;

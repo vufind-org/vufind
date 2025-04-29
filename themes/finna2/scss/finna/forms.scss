@@ -2,7 +2,7 @@ input, input.form-control {
   font-size: 16px; // avoid the automatic zoom-in on input fields
 }
 
-.form-control {
+.form-control, .form-select {
   width: initial;
   padding: 0px 5px;
   max-width: 100%; // make sure dropdowns don't overflow elementss
