@@ -7,7 +7,7 @@
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
     $this->breadcrumbs()->add($this->translate('Search'), $url);
   }
-  $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'));
+  $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'), active: true);
 ?>
 <h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
