@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<response>
+  <contact_info>
+    <addresses>
+      
+      <address>
+        <address_types>
+          <address_type>
+            not preferred
+          </address_type>
+        </address_types>
+        <line1>not preferred</line1>
+      </address>
+    <address preferred="true"><address_types><address_type>
+            preferred address type
+          </address_type></address_types><line1></line1></address></addresses>
+    <emails>
+      
+    <email preferred="true"><email_types><email_type>
+            preferred email type
+          </email_type></email_types><email_address></email_address></email></emails>
+    <phones>
+      
+    </phones>
+  </contact_info>
+  
+</response>

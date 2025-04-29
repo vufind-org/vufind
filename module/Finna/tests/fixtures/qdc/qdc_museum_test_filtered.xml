@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <dcterms schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dcterms/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
   <title comment="Wikidata Label">Ducks living in harmony</title>
-  <title lang="fi" comment="Wikidata Label">Ankat elävät harmoniassa</title>
+  <title lang="fi" comment="Wikidata Label">Ankat el&#xE4;v&#xE4;t harmoniassa</title>
   <title lang="en" comment="Wikidata Label">Ducks living in harmony</title>
   <description comment="Wikidata description">maalaus: Kuoma, Juha</description>
   <description lang="fi" comment="Wikidata description">maalaus: Kuoma, Juha</description>
   <description lang="sv" comment="Wikidata description">m&#xE5;lning av Juha Kuoma</description>
   <description lang="en" comment="Wikidata description">painting by Juha Kuoma</description>
-  <description lang="en" comment="Wikidata description">abstract should be removed</description>
+  
   <creator href="http://www.wikidata.org/entity/Q11868768" comment="">Juha Kuoma</creator>
   <publisher href="http://www.wikidata.org/entity/Q4412746" comment="P276 (location)">Savannin taidepaja</publisher>
   <date comment="P571 (inception)&#13;&#10;">2022</date>

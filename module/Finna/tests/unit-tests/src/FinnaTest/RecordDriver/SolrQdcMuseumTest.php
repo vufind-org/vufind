@@ -154,6 +154,7 @@ class SolrQdcMuseumTest extends \PHPUnit\Framework\TestCase
                 'getDescriptions',
                 [
                     0 => 'painting by Juha Kuoma',
+                    1 => 'abstract should be removed',
                 ],
             ],
             [
@@ -265,6 +266,18 @@ class SolrQdcMuseumTest extends \PHPUnit\Framework\TestCase
             $expected,
             $record->getPublicationDateRange()
         );
+    }
+
+    /**
+     * Simple function to test element filtering works properly
+     *
+     * @return void
+     */
+    public function testXmlElementFilter(): void
+    {
+        $driver = $this->getDriver();
+        $filtered = $this->getFixture('qdc/qdc_museum_test_filtered.xml', 'Finna');
+        $this->assertEquals($filtered, $driver->getFilteredXML());
     }
 
     /**

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<response>
+  <contact_info>
+    <addresses>
+      <address preferred="true">
+        <address_types>
+          <address_type>
+            preferred address type
+          </address_type>
+        </address_types>
+        preferred address
+      </address>
+      <address>
+        <address_types>
+          <address_type>
+            not preferred
+          </address_type>
+        </address_types>
+        <line1>not preferred</line1>
+      </address>
+    </addresses>
+    <emails>
+      <email preferred="true">
+        <email_types>
+          <email_type>
+            preferred email type
+          </email_type>
+        </email_types>
+        <email_address>old@email.fi</email_address>
+      </email>
+    </emails>
+    <phones>
+      <phone preferred="true">
+        <phone_types>
+          <phone_type>
+            mobile
+          </phone_type>
+        </phone_types>
+        <phone_number>0123456789</phone_number>
+      </phone>
+    </phones>
+  </contact_info>
+  <user_roles>
+    <user_role>
+      role1
+    </user_role>
+    <user_role>
+      role2
+    </user_role>
+  </user_roles>
+</response>
