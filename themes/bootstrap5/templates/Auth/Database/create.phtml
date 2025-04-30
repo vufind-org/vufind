@@ -16,7 +16,7 @@
     $attrs = $this->htmlAttributes($this->usernamePolicy['inputAttrs'] ?? []);
     $attrs->merge(['id' => 'account_username', 'type' => 'text', 'name' => 'username', 'value' => $this->request->get('username'), 'class' => 'form-control', 'autocomplete' => 'username']);
   ?>
-  <input <?=$attrs?> required>
+  <input<?=$attrs?> required>
   <?php if ($this->usernamePolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->usernamePolicy['hint']) ?></div>
   <?php endif; ?>
@@ -27,7 +27,7 @@
     $attrs = $this->htmlAttributes($this->passwordPolicy['inputAttrs'] ?? []);
     $attrs->merge(['id' => 'account_password', 'type' => 'password', 'name' => 'password', 'class' => 'form-control', 'autocomplete' => 'new-password']);
   ?>
-  <input <?=$attrs?> required>
+  <input<?=$attrs?> required>
   <?php if ($this->passwordPolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->passwordPolicy['hint']) ?></div>
   <?php endif; ?>

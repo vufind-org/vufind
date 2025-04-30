@@ -432,9 +432,10 @@ class MyResearchController extends AbstractBase
                 $logoutTarget = $this->getServerUrl('home');
             }
         }
-
-        return $this->redirect()
-            ->toUrl($this->getAuthManager()->logout($logoutTarget));
+        $authManager = $this->getAuthManager();
+        $redirectUrl = $authManager->getLogoutRedirectUrl($logoutTarget);
+        $authManager->clearLoginState();
+        return $this->redirect()->toUrl($redirectUrl);
     }
 
     /**
@@ -2277,9 +2278,9 @@ class MyResearchController extends AbstractBase
                 $config->Authentication->delete_ratings_with_user ?? true
             );
             $view->accountDeleted = true;
-            $view->redirectUrl = $this->getAuthManager()->logout(
-                $this->getServerUrl('home')
-            );
+            $authManager = $this->getAuthManager();
+            $view->redirectUrl = $authManager->getLogoutRedirectUrl($this->getServerUrl('home'));
+            $authManager->clearLoginState();
         } elseif ($this->formWasSubmitted('reset')) {
             return $this->redirect()->toRoute('myresearch-profile');
         }

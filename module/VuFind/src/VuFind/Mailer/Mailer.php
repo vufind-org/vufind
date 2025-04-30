@@ -200,12 +200,15 @@ class Mailer implements
     /**
      * Send an email message.
      *
-     * @param string|string[]|Address|Address[]      $to      Recipient email address(es) (or delimited list)
-     * @param string|Address                         $from    Sender name and email address
-     * @param string                                 $subject Subject line for message
-     * @param string|Email                           $body    Message body
-     * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
-     * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
+     * @param string|string[]|Address|Address[]      $to            Recipient email address(es) (or delimited list)
+     * @param string|Address                         $from          Sender name and email address
+     * @param string                                 $subject       Subject line for message
+     * @param string|Email                           $body          Message body
+     * @param string|string[]|Address|Address[]|null $cc            CC recipient(s) (null for none)
+     * @param string|string[]|Address|Address[]|null $replyTo       Reply-To address(es) (or delimited list, null for
+     * none)
+     * @param bool                                   $subjectInBody Allow subject to be extracted from body when
+     * body text begins with "Subject: " and $body is a string (ignored when $body is an Email object)
      *
      * @throws MailException
      * @return void
@@ -216,7 +219,8 @@ class Mailer implements
         string $subject,
         string|Email $body,
         string|Address|array|null $cc = null,
-        string|Address|array|null $replyTo = null
+        string|Address|array|null $replyTo = null,
+        bool $subjectInBody = true
     ) {
         try {
             if (!($from instanceof Address)) {
@@ -271,7 +275,6 @@ class Mailer implements
             $from = new Address($this->fromAddressOverride, $name);
         }
 
-        // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
             if ($body instanceof Email) {
@@ -280,6 +283,17 @@ class Mailer implements
                     $email->subject($subject);
                 }
             } else {
+                if ($subjectInBody) {
+                    // Extract any subject line at the beginning of the message body:
+                    $body = preg_replace_callback(
+                        '/^Subject: (.+)\n+/',
+                        function ($matches) use (&$subject) {
+                            $subject = $matches[1];
+                            return '';
+                        },
+                        $body
+                    );
+                }
                 $email = $this->getNewMessage();
                 $email->text($body);
                 $email->subject($subject);
@@ -303,7 +317,8 @@ class Mailer implements
                 file_put_contents($logFile, $data, FILE_APPEND);
             }
         } catch (\Exception $e) {
-            $this->logError($e->getMessage());
+            $this->logError((string)$e);
+            // Convert all exceptions thrown by mailer into MailException objects:
             throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN, $e);
         }
     }

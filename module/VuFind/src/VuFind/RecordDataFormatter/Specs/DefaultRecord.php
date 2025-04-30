@@ -62,10 +62,10 @@ class DefaultRecord extends AbstractBase
     /**
      * Constructor
      *
-     * @param ?SchemaOrg $schemaOrgHelper schema.org helper
      * @param array      $config          Config
+     * @param ?SchemaOrg $schemaOrgHelper schema.org helper
      */
-    public function __construct(protected ?SchemaOrg $schemaOrgHelper, array $config)
+    public function __construct(array $config, protected ?SchemaOrg $schemaOrgHelper = null)
     {
         parent::__construct($config);
     }
