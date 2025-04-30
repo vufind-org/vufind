@@ -40,8 +40,6 @@ namespace VuFind\Search\LibGuides;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    use \VuFind\Config\Feature\ExplodeSettingTrait;
-
     /**
      * Name of .ini file to use for LibGuides API and display settings.
      *
@@ -58,13 +56,6 @@ class Options extends \VuFind\Search\Base\Options
     {
         $this->searchIni = $this->facetsIni = $this->iniName;
         parent::__construct($configLoader);
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
-        }
     }
 
     /**

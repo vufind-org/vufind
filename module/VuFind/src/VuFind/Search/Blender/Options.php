@@ -58,7 +58,7 @@ class Options extends \VuFind\Search\Solr\Options
     {
         $this->facetsIni = $this->searchIni = 'Blender';
         parent::__construct($configLoader);
-        // Make sure first-last navigation is never enabled since we cannot support:
+        // Make sure first-last navigation is never enabled since we cannot support it:
         $this->firstLastNavigationSupported = false;
     }
 

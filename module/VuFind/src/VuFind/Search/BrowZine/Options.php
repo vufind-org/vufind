@@ -53,8 +53,7 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
 
         // Set up views
-        $searchSettings = $configLoader->get($this->searchIni);
-        $this->initViewOptions($searchSettings);
+        $this->initViewOptions($this->searchSettings);
     }
 
     /**
