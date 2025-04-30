@@ -81,7 +81,7 @@
                 <a href="<?=$this->url('record', ['id' => $comment['record_id']])?>"><?=$this->escapeHtml($comment['recordTitle'])?></a>
               </td>
               <td class="user-comment" data-label="<?=$this->transEscAttr('Comment')?>">
-                <?php $truncateSettings = ['rows' => 1]?>
+                <?php $truncateSettings = ['rows' => 5]?>
                 <div class="user-comment-truncate" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"><?=$this->escapeHtml($comment['comment'] ?? '')?></div>
               </td>
             </tr>

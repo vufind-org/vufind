@@ -631,6 +631,7 @@ body.rtl .dropdown-menu {
     vertical-align: middle;
     .checkbox-container {
       padding-top: 0rem;
+      border-bottom: 0px;
       .checkbox-select-item {
         float: none;
       }
@@ -638,6 +639,9 @@ body.rtl .dropdown-menu {
     @include media-breakpoint-up(md) {
       &.user-comment {
         width: 40%;
+      }
+      &.user-tag {
+        width: 15%;
       }
     }
   }
