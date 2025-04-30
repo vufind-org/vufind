@@ -69,6 +69,13 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                 ],
                 'full',
             ],
+            [
+                [
+                    'General' => [
+                    ],
+                ],
+                null,
+            ],
         ];
     }
 

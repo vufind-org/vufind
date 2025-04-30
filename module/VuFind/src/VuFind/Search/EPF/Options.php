@@ -88,9 +88,9 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the view associated with this configuration
+     * Return the view associated with this configuration (or null if none set)
      *
-     * @return string
+     * @return ?string
      */
     public function getEpfView()
     {
