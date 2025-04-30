@@ -86,7 +86,7 @@
               </td>
               <td class="user-rating" data-label="<?=$this->transEscAttr('Rating')?>">
                 <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($rating['source'] . '|' . $rating['record_id'], 'Rating'))?>" data-lightbox>
-                  <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1]])?>
+                  <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1]])?>
                 </a>
               </td>
             </tr>
