@@ -132,7 +132,7 @@
   <?=$this->render('error/restrictedViewWarning.phtml')?>
 <?php endif; ?>
 
-<?php foreach($this->extraErrors ?? [] as $error): ?>
+<?php foreach ($this->extraErrors ?? [] as $error): ?>
   <div class="alert alert-danger"><?=$this->transEsc($error)?></div>
 <?php endforeach; ?>
 
