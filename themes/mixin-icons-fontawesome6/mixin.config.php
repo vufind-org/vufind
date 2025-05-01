@@ -14,7 +14,7 @@ return [
              */
             'FontAwesome6' => [
                 'template' => 'font',
-                'src' => 'vendor/fontawesome-free-6.6.0-web/css/all.min.css',
+                'src' => 'vendor/fontawesome-free-6/css/all.min.css',
             ],
         ],
         'aliases' => [
