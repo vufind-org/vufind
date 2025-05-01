@@ -6,8 +6,22 @@
   . '<li class="breadcrumb-item active" aria-current="page">' . $titleEsc . '</li>';
 ?>
 <h1><?=$titleEsc?></h1>
-<div>
-  <?php foreach ($aliases as $icon): ?>
-    <?=$this->icon($icon)?>: <?=$this->escapeHtml($icon)?><br>
-  <?php endforeach; ?>
-</div>
+<table class="table table-striped" style="width: fit-content;text-align: end">
+  <thead>
+    <tr>
+      <th>Index</th>
+      <th>Alias</th>
+      <th>Icon</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach ($aliases as $index => $icon): ?>
+      <tr>
+        <td><?=$index ?></td>
+        <td><?=$this->escapeHtml($icon)?></td>
+        <td style="text-align: center"><?=$this->icon($icon)?></td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
+
