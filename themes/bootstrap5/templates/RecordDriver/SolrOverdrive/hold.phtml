@@ -1,5 +1,5 @@
 <div class="odaction">
-  <?php if($action == 'getTitle'): ?>
+  <?php if ($action == 'getTitle'): ?>
     <h2><?=$this->transEsc($actionTitleCode)?>
         <span class="odbrand pull-left">
           <img class="media-left" alt="OverDrive" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
@@ -80,7 +80,7 @@
                     <?=$this->transEsc('od_is_on_hold');
                     if ($hold->holdReadyForCheckout):
                         echo $this->transEsc('od_hold_now_avail', ['%%expireDate%%' => $result->data->hold->holdExpires]);
-                    else:
+                        else:
                         echo $this->transEsc(
                             'od_hold_queue',
                             [
@@ -121,7 +121,7 @@
                 <?=$this->transEsc('od_is_on_hold');
                 if ($hold->holdReadyForCheckout):
                     echo $this->transEsc('od_hold_now_avail', ['%%expireDate%%' => $result->data->hold->holdExpires]);
-                else:
+                    else:
                     echo $this->transEsc(
                         'od_hold_queue',
                         [
