@@ -1,5 +1,4 @@
 {
-  "Record": {
     "ResultId": 1,
     "Header": {
       "DbId": "bsu",
@@ -195,5 +194,4 @@
     },
     "IllustrationInfo": {
     }
-  }
 }
