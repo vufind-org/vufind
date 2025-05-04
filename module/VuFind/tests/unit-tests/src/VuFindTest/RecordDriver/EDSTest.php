@@ -989,7 +989,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test HTML FT with tables & mathML will be parsed correctly
-     * 
+     *
      * @return void
      */
     public function testHTMLParsingWithEPHTML(): void
