@@ -10,7 +10,7 @@ return [
              * - 'template': which template the icon renders with
              * - 'src': the location of the relevant resource (font, css, images)
              * - 'prefix': prefix to place before each icon name for convenience
-             *             (ie. fa fa- for FontAwesome, default "")
+             *             (ie. fa fa- for FontAwesome 4, default "")
              */
             'FontAwesome6' => [
                 'template' => 'font',
@@ -20,13 +20,17 @@ return [
         'aliases' => [
             /**
              * Icons can be assigned or overridden here
+             * Format: 'alias' => '[set:]icon[:extra_classes]'
+             * Use: <?=$this->icon('alias') ?>
              *
-             * Format: 'icon' => [set:]icon[:extra_classes]
-             * Icons assigned without set will use the defaultSet.
-             * In order to specify extra CSS classes, you must also specify a set.
+             * Icons assigned without set will use the defaultSet (above):
+             * - xmark == FontAwesome6:xmark
              *
-             * All of the items below have been specified with FontAwesome to allow
-             * for a strong inheritance safety net but this is not required.
+             * You can include a set to borrow aliases from other icon sets
+             * - Unicode:cites (see root theme.config.php)
+             *
+             * When you use extra_classes, you must include a set.
+             * - FontAwesome6:spinner:animation-spin-1s
              */
             'addthis-bookmark' => 'fa-regular fa-bookmark-o',
             'barcode' => 'fa-solid fa-barcode',

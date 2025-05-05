@@ -218,6 +218,8 @@ return [
              * - 'prefix': prefix to place before each icon name for convenience
              *             (ie. fa fa- for FontAwesome, default "")
              */
+
+            // Automates toggling between 'collapse-close' and 'collapse-open'.
             'Collapse' => [
                 'template' => 'collapse',
             ],
@@ -239,7 +241,8 @@ return [
              */
             'cites' => 'Unicode:275D',
             'cited-by' => 'Unicode:275E',
-            'collapse' => 'Collapse:_', // uses the icons below
+            // Customize by editting 'collapse-close' and 'collapse-open'.
+            'collapse' => 'Collapse:_',
         ]
     ]
 ];
