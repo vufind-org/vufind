@@ -8,7 +8,7 @@
 <div id="requestButton"></div>
 
 <?php
-  $this->headScript()->appendFile('relais.js');
+  $this->assetManager()->appendScriptLink('relais.js');
   $activateRelais = "$(document).ready(function () { VuFind.relais.addItem('$oclc', '$failLink'); });\n";
-  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET')
+  echo $this->assetManager()->outputInlineScriptString($activateRelais);
 ?>

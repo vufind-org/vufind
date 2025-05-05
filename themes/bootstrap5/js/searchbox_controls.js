@@ -269,10 +269,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       // Bind autocomplete auto submit
       if ($searchbox.hasClass("ac-auto-submit")) {
         input.addEventListener("ac-select", (event) => {
-          const value = typeof event.detail === "string"
+          input.value = typeof event.detail === "string"
             ? event.detail
             : event.detail.value;
-          input.value = value;
           input.form.submit();
         });
       }
@@ -294,7 +293,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _resetButton.classList.toggle("hidden", _textInput.value === "");
     });
 
-    _resetButton.addEventListener("click", function resetOnClick() {
+    _resetButton.addEventListener("click", function resetOnClick(e) {
+      e.preventDefault();
       requestAnimationFrame(() => {
         _textInput.value = "";
         _textInput.dispatchEvent(new Event("input"));

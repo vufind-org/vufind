@@ -179,14 +179,8 @@ class Options extends \VuFind\Search\Base\Options
             $this->setOptionsFromApi();
         }
         $this->setOptionsFromConfig();
-        $facetConf = $configLoader->get($this->facetsIni);
-        if (
-            isset($facetConf->Advanced_Facet_Settings->translated_facets)
-            && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
-        ) {
-            $this->setTranslatedFacets(
-                $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
-            );
+        if ($translatedFacets = $this->facetSettings['Advanced_Facet_Settings']['translated_facets'] ?? null) {
+            $this->setTranslatedFacets((array)$translatedFacets);
         }
         // Make sure first-last navigation is never enabled since we cannot support:
         $this->firstLastNavigationSupported = false;
@@ -273,16 +267,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getSearchAction()
     {
         return 'eds-search';
-    }
-
-    /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        return $this->getApiProperty('defaultView');
     }
 
     /**

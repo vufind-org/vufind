@@ -6,9 +6,8 @@
   $this->layout()->searchbox = false;
 
   // Set up breadcrumbs:
-  $searchCrumb = $this->searchMemory()->getLastSearchLink($this->transEsc('Search')) ?: $this->transEsc('Search');
-  $this->layout()->breadcrumbs = "<li class=\"breadcrumb-item\">$searchCrumb</li> ";
-  $this->layout()->breadcrumbs .= '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Advanced') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Search'), $this->searchMemory()->getLastSearchUrl())
+    ->add($this->translate('Advanced'), active: true);
 
   // Set up saved search details:
   if (isset($this->saved) && is_object($this->saved)) {
@@ -34,11 +33,11 @@
   }
 
   // Step 1: Load the javascript
-  $this->headScript()->appendFile(
+  $this->assetManager()->appendScriptLink(
       $this->advancedSearchJsOverride ?? 'advanced_search.js'
   );
   // Step 2: Build the page
-  $this->headScript()->appendScript(
+  $this->assetManager()->appendScriptString(
       $this->partial(
           $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
           ['options' => $this->options, 'searchDetails' => $searchDetails]
@@ -235,4 +234,4 @@ $script = <<<JS
     })
     JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+<?=$this->assetManager()->outputInlineScriptString($script);

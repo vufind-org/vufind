@@ -3,9 +3,12 @@
   $this->headTitle($this->translate('rating_add_or_update'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li class="breadcrumb-item">', '</li> ')
-    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('rating_add_or_update') . '</li>';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('rating_add_or_update'), active: true);
 
   $ratingData = $this->ratings()->getRatingBreakdown($this->driver, [1 => [10, 29], 2 => [30, 49], 3 => [50, 69], 4 => [70, 89], 5 => [90, 100]]);
   krsort($ratingData['groups']);
@@ -26,7 +29,7 @@
   <div class="rating-breakdown">
     <?php foreach ($ratingData['groups'] as $group => $groupCount): ?>
       <div class="rating-breakdown-stars" title="<?=$groupTitleTransEscAttr[$group]?>">
-        <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['count' => 1, 'rating' => $group / 5 * 100]]);?>
+        <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['count' => 1, 'rating' => $group / 5 * 100]]);?>
       </div>
       <div class="rating-breakdown-percentage">
         <?=$this->transEsc('rating_breakdown_percentage', ['%%count%%' => $ratingData['count'], '%%percentage%%' => floor($groupCount / $ratingData['count'] * 100)])?>
@@ -45,7 +48,7 @@
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
     <div class="form-group">
       <label class="form-label"><?=$this->transEsc('rating_prompt')?>:</label>
-      <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->currentRating, 'inputAttrs' => ['data-submit-on-change']]);?>
+      <?=$this->component('star-rating', ['ratingData' => $this->currentRating, 'inputAttrs' => ['data-submit-on-change']]);?>
     </div>
     <div class="form-group">
       <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>">

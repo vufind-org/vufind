@@ -62,18 +62,11 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
 
         // Load facet preferences:
-        $facetSettings = $configLoader->get($this->facetsIni);
-        if (
-            isset($facetSettings->Advanced_Facet_Settings->translated_facets)
-            && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
-        ) {
-            $this->setTranslatedFacets(
-                $facetSettings->Advanced_Facet_Settings->translated_facets->toArray()
-            );
+        if ($translatedFacets = $this->facetSettings['Advanced_Facet_Settings']['translated_facets'] ?? null) {
+            $this->setTranslatedFacets((array)$translatedFacets);
         }
-        if (isset($facetSettings->Advanced_Facet_Settings->special_facets)) {
-            $this->specialAdvancedFacets
-                = $facetSettings->Advanced_Facet_Settings->special_facets;
+        if ($specialFacets = $this->facetSettings['Advanced_Facet_Settings']['special_facets'] ?? null) {
+            $this->specialAdvancedFacets = $specialFacets;
         }
 
         // Load the search configuration file:

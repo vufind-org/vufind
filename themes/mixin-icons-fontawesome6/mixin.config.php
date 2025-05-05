@@ -191,6 +191,7 @@ return [
             'status-pending' => 'fa-regular fa-clock',
             'status-ready' => 'fa-solid fa-bell',
             'status-unavailable' => 'fa-solid fa-xmark',
+            'status-uncertain' => 'fa-regular fa-circle',
             'status-unknown' => 'fa-solid fa-circle-question',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',

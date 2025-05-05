@@ -107,7 +107,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to render the identifier links template
+     * Render the identifier links template
      *
      * @param RecordDriver $driver The current record driver
      *
@@ -151,7 +151,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to check whether identifier links are active for current record
+     * Check whether identifier links are active for current record
      *
      * @param RecordDriver $driver  The current record driver
      * @param string       $context Display context ('results', 'record' or 'holdings')

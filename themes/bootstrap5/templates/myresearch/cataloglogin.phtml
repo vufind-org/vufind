@@ -3,7 +3,8 @@
     $this->headTitle($this->translate('Login'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Login') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Login'), active: true);
 
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
@@ -69,7 +70,7 @@
       $script = "setupMultiILSLoginFields($methods, 'profile_cat_');";
 
       // Inline the script for lightbox compatibility
-      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+      echo $this->assetManager()->outputInlineScriptString($script);
     }
   ?>
 <?php endif; ?>

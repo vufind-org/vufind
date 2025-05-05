@@ -60,7 +60,6 @@ use function is_object;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  *
  * @method Plugin\Captcha captcha() Captcha plugin
- * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
@@ -575,7 +574,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     ) {
         $buttonFound = false;
         // Use of 'submit' as an input name was deprecated in release 10.0, but the
-        // check is retained for backward compatibility with custom templates.
+        // check is retained for backward compatibility with legacy custom templates.
         $defaultSubmitElements = ['submitButton', 'submit'];
         foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
             if ($this->params()->fromPost($submitElement, false)) {

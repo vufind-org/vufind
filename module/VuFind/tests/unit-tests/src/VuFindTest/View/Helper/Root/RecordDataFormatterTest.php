@@ -250,7 +250,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             new \Laminas\View\Helper\HtmlAttributes()
         );
         $specManager = $this->createMock(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
-        $specs = new DefaultRecordSpec($schemaOrgHelper, $recordDataFormatterConfig);
+        $specs = new DefaultRecordSpec($recordDataFormatterConfig, $schemaOrgHelper);
         foreach ($additionalSpecs as $context => $additionalContextSpec) {
             $contextSpec = $specs->getDefaults($context);
             $specs->setDefaults($context, array_merge($additionalContextSpec, $contextSpec));

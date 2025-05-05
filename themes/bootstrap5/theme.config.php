@@ -22,7 +22,7 @@ return [
          * - media: e.g. 'print'
          * - extras: array of additional attributes
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for legacy backwards compatibility reasons. examples:
          * - 'example.css' => same as ['file' => 'example.css']
          * - 'example.css:print' => same as
          *   ['file' => 'example.css', 'media' => 'print']
@@ -51,7 +51,7 @@ return [
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
          *
-         * Strings are supported for backwards compatibility reasons. example:
+         * Strings are supported for legacy backwards compatibility reasons. example:
          * - 'example.js' => same as ['file' => 'example.js']
          */
         ['file' => 'polyfills.js', 'priority' => 100],
@@ -72,6 +72,7 @@ return [
         ['file' => 'list_item_selection.js', 'priority' => 400],
         ['file' => 'covers.js', 'priority' => 410],
         ['file' => 'validation.js', 'priority' => 420],
+        ['file' => 'copy_to_clipboard.js', 'priority' => 430],
     ],
     /**
      * Configuration for a single or multiple favicons.

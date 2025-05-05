@@ -516,7 +516,7 @@ class Params
             $lookfor = $lookfor[0];
         }
 
-        // Flatten type arrays for backward compatibility:
+        // Flatten type arrays for backward compatibility with legacy URLs:
         $handler = $request->get('type');
         if (is_array($handler)) {
             $handler = $handler[0];
@@ -1410,13 +1410,15 @@ class Params
     protected function formatYearForDateRange($year, $rangeEnd = false)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
-        $year = ($year && preg_match('/\d{2,4}/', $year)) ? $year : '*';
+        $year = preg_match('/^-?\d+$/', $year ?? '') ? $year : '*';
 
-        // Pad to four digits:
-        if (strlen($year) == 2) {
-            $year = '19' . $year;
-        } elseif (strlen($year) == 3) {
-            $year = '0' . $year;
+        // Pad two or three character positive range to four digits:
+        if (!str_starts_with($year, '-')) {
+            if (strlen($year) == 2) {
+                $year = '19' . $year;
+            } elseif (strlen($year) == 3) {
+                $year = '0' . $year;
+            }
         }
 
         return $year;

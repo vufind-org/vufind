@@ -122,7 +122,7 @@ class Holds extends AbstractRequestBase
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
         } elseif (!empty($selected)) {
-            // Include cancelSelectedIDS for backwards-compatibility:
+            // Include cancelSelectedIDS for backwards-compatibility with legacy code:
             $details = $params->fromPost('selectedIDS')
                 ?? $params->fromPost('cancelSelectedIDS');
         } else {
