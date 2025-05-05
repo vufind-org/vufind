@@ -270,7 +270,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      *
      * @return string|null $itemId for the selected item
      */
-    private function getItemId(string $itemId = null): ?string
+    private function getItemId(?string $itemId = null): ?string
     {
         if (null !== $itemId) {
             return $itemId; // use the one passed as a parameter first
@@ -390,7 +390,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         $link = '';
         foreach ($holdings['holdings'] as $location) {
             if (isset($location['items'])) {
-                foreach ((array) $location['items'] as $item) {
+                foreach ((array)$location['items'] as $item) {
                     if (
                         $itemId === null || (isset($item['item_id']) && $item['item_id'] == $itemId)
                     ) {
