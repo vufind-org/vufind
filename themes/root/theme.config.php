@@ -247,6 +247,6 @@ return [
             'cited-by' => 'Unicode:275E',
             // Customize by editting 'collapse-close' and 'collapse-open'.
             'collapse' => 'Collapse:_',
-        ]
-    ]
+        ],
+    ],
 ];
