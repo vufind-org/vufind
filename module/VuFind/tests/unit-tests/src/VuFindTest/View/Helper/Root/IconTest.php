@@ -278,7 +278,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         string|array $attrs
     ): void {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon icon--font icon--unicode'
+        $expected = '<span class="icon icon--text icon--unicode'
             . ($expectedClasses ? " $expectedClasses" : '') . '"'
             . ($expectedAttrs ? " $expectedAttrs" : '')
             . ' role="img" aria-hidden="true">&#x' . $expectedIcon . ';</span>';
