@@ -244,6 +244,12 @@
         <RegionName>Norja</RegionName>
       </Region>
     </ProductionEvent>
+    <ProductionEvent elonet-tag="eloulkomaanmyynti">
+      <ProductionEventType>PRL</ProductionEventType>
+      <Region>
+        <RegionName>Tanska</RegionName>
+      </Region>
+    </ProductionEvent>
     <ProductionEvent elonet-tag="teatterikopioidenlkm">
       <ProductionEventType elokuva-teatterikopioidenlkm="1">SCR</ProductionEventType>
     </ProductionEvent>

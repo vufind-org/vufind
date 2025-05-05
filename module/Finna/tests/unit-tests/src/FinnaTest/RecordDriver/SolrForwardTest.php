@@ -710,6 +710,10 @@ class SolrForwardTest extends \PHPUnit\Framework\TestCase
                         'name' => 'Pat',
                         'region' => 'Norja',
                     ],
+                    [
+                        'name' => 'Tanska',
+                        'region' => '',
+                    ],
                 ],
             ],
             [

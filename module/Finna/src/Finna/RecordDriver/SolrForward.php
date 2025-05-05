@@ -353,9 +353,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
         'festivalSubjectMappings' => [
             'elokuva-elofestivaaliosallistuminen-aihe' => 'festivalInfo',
         ],
-        'foreignDistributorMappings' => [
-            'elokuva-eloulkomaanmyynti-levittaja' => 'foreignDistribution',
-        ],
         'otherScreeningMappings' => [
             'elokuva-muuesitys-aihe' => 'otherScreenings',
         ],
@@ -1135,19 +1132,28 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
             $type = (string)($event->ProductionEventType ?? '');
             $regionName = (string)($event->Region->RegionName ?? '');
             $dateText = (string)($event->DateText ?? '');
-            // Get premiere theater information
-            if ('PRE' === $type) {
-                if (!empty($regionName)) {
-                    $results['premiereTheater'] = explode(';', $regionName);
-                }
-                if (!empty($dateText)) {
-                    $results['premiereTime'] = $dateText;
-                }
-            }
 
             $attributes = $event->ProductionEventType->attributes();
             $broadcastingResult = [];
             $inspectionResult = [];
+
+            switch ($type) {
+                case 'PRL':
+                    $distributorName = trim((string)$attributes->{'elokuva-eloulkomaanmyynti-levittaja'});
+                    $results['foreignDistribution'][] = [
+                        'name' => $distributorName ?: $regionName,
+                        'region' => $distributorName ? $regionName : '',
+                    ];
+                    break;
+                case 'PRE':
+                    if (!empty($regionName)) {
+                        $results['premiereTheater'] = explode(';', $regionName);
+                    }
+                    if (!empty($dateText)) {
+                        $results['premiereTime'] = $dateText;
+                    }
+                    break;
+            }
             foreach ($attributes as $key => $value) {
                 $stringValue = (string)$value;
                 // Get production attribute
@@ -1166,15 +1172,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
                         'date' => $dateText,
                     ];
                 }
-                // Get foreign distribution info
-                if (
-                    $distributor = $config['foreignDistributorMappings'][$key] ?? ''
-                ) {
-                    $results[$distributor][] = [
-                        'name' => $stringValue,
-                        'region' => $regionName,
-                    ];
-                }
+
                 // Get other screening info
                 if ($screening = $config['otherScreeningMappings'][$key] ?? '') {
                     $results[$screening][] = [
