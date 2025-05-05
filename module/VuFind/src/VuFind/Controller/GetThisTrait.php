@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Controller
+ * GetThis trait
  *
  * PHP version 8
  *
@@ -22,44 +22,51 @@
  *
  * @category VuFind
  * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   MSUL <LIB.DL.pubcat@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Config;
+use Laminas\View\Model\ViewModel;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use VuFind\GetThis\GetThisLoader;
 
 /**
- * Record Controller
+ * GetThis trait
  *
  * @category VuFind
  * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   MSUL <LIB.DL.pubcat@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RecordController extends AbstractRecord
+trait GetThisTrait
 {
-    use HoldsTrait;
-    use ILLRequestsTrait;
-    use StorageRetrievalRequestsTrait;
-    use GetThisTrait;
-
     /**
-     * Constructor
+     * Display the "Get this" dialog content.
      *
-     * @param ServiceLocatorInterface $sm     Service manager
-     * @param Config                  $config VuFind configuration
+     * @return ViewModel
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public function __construct(ServiceLocatorInterface $sm, Config $config)
+    public function getThisAction(): ViewModel
     {
-        // Call standard record controller initialization:
-        parent::__construct($sm);
+        $view = $this->createViewModel();
 
-        // Load default tab setting:
-        $this->fallbackDefaultTab = $config->Site->defaultRecordTab ?? 'Holdings';
+        $items = $this->getILS()->getHolding($this->params()->fromRoute('id'));
+        $itemId = $this->params()->fromQuery('item_id');
+        $getThis = $this->serviceLocator->get(GetThisLoader::class);
+        $getThis->setItemId($itemId);
+        if (isset($view->driver)) {
+            $getThis->setRecord($view->driver);
+        }
+        $getThis->setItems($items['holdings']);
+
+        $view->setVariable('getThis', $getThis);
+        $view->setTemplate('record/get-this');
+        return $view;
     }
 }

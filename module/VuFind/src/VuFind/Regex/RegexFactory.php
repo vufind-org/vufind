@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for GetItemStatus AJAX handler.
+ * Factory for Regex
  *
  * PHP version 8
  *
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Regex
+ * @author   Robby Roudon <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\Regex;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,24 +35,26 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for GetItemStatus AJAX handler.
+ * Factory for GetThisLoader
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  GetThis
+ * @author   Robby Roudon <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class RegexFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
+     * @param class-string<T>    $requestedName Service being created
      * @param null|array         $options       Extra options (optional)
      *
-     * @return object
+     * @template T
+     *
+     * @return T
      *
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
@@ -66,22 +68,8 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $getThisEnabled = ($config?->Record?->getThisEnabled ?? null) == true;
-        $getThis = $getThisEnabled ? $container->get(\VuFind\GetThis\GetThisLoader::class) : null;
-        $handler = new $requestedName(
-            $container->get(\VuFind\Session\Settings::class),
-            $config,
-            $container->get(\VuFind\ILS\Connection::class),
-            $container->get('ViewRenderer'),
-            $container->get(\VuFind\ILS\Logic\Holds::class),
-            $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class),
-            $getThis,
+        return new $requestedName(
+            $container->get(\VuFind\Config\YamlReader::class),
         );
-        $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
-        return $handler;
     }
 }

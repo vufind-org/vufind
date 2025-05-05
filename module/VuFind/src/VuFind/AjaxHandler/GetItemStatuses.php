@@ -37,6 +37,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\GetThis\GetThisLoader;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
@@ -82,6 +83,7 @@ class GetItemStatuses extends AbstractBase implements
      * @param RendererInterface         $renderer                  View renderer
      * @param Holds                     $holdLogic                 Holds logic
      * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
+     * @param ?GetThisLoader            $getThis                   Get this loader or null if not enabled
      */
     public function __construct(
         SessionSettings $ss,
@@ -89,7 +91,8 @@ class GetItemStatuses extends AbstractBase implements
         protected Connection $ils,
         protected RendererInterface $renderer,
         protected Holds $holdLogic,
-        protected AvailabilityStatusManager $availabilityStatusManager
+        protected AvailabilityStatusManager $availabilityStatusManager,
+        protected ?GetThisLoader $getThis,
     ) {
         $this->sessionSettings = $ss;
     }
@@ -279,6 +282,17 @@ class GetItemStatuses extends AbstractBase implements
         $locationSetting,
         $callnumberSetting
     ) {
+        if (isset($this->getThis)) {
+            $urlHelper = $this->renderer->plugin('url');
+            $itemIdParams = !empty($record[0]['item_id']) ? ['query' => ['item_id' => $record[0]['item_id']]] : null;
+            $getThisURI = $urlHelper(
+                'record-getthis',
+                ['id' => $record[0]['id']],
+                $itemIdParams
+            );
+        } else {
+            $getThisURI = '';
+        }
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
         $services = [];
@@ -331,6 +345,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
             'callnumberHtml' => $this->renderCallnumbers($callnumberSetting, $callNumber),
+            'getThisURI' => $getThisURI,
         ];
     }
 
@@ -463,6 +478,7 @@ class GetItemStatuses extends AbstractBase implements
 
         $values = array_merge(
             [
+                'getThis' => $this->getThis,
                 'statusItems' => $record,
                 'simpleStatus' => $simpleStatus,
                 'callnumberHandler' => $this->getCallnumberHandler(),

@@ -1,3 +1,11 @@
+<?php
+$isEDS = $this->driver instanceof VuFind\RecordDriver\EDS;
+$getThisEnabled = isset($this->getThis) && !$isEDS;
+if ($getThisEnabled) {
+    $this->getThis->setItems($this->statusItems);
+    $this->getThis->setRecord($this->record($this->driver));
+}
+?>
 <table class="table table-condensed">
   <tr>
     <th><?=$this->transEsc('Location')?></th>
@@ -10,6 +18,14 @@
       if (++$i == 5) {
         // Show no more than 5 items
         break;
+      }
+      if ($getThisEnabled) {
+        $isOnlineResource = $this->getThis->isOnlineResource($item['item_id']);
+        $getThisURI = !$isOnlineResource ? $this->escapeHtmlAttr($this->url(
+            'record-getthis',
+            ['id' => $item['id']],
+            ['query' => ['item_id' => $item['item_id']]]
+        )) : '';
       }
       $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';
 
@@ -49,6 +65,9 @@
             $statusDescriptionTokens = $availabilityStatus->getStatusDescriptionTokens();
           ?>
           <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription, $statusDescriptionTokens)?></span>
+          <?php if ($getThisEnabled && !$isOnlineResource): ?>
+            <span class="getThis"><a rel="nofollow" data-lightbox href="<?= $getThisURI ?>"><?=$this->transEsc('Get This')?></a></span>
+          <?php endif; ?>
       </td>
     </tr>
 

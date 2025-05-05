@@ -1,0 +1,27 @@
+<!-- Get-this: remote-patron -->
+<?php
+$data = [
+    '{{item}}' => $this->getThis->getItem(),
+    '{{location}}' => $this->getThis->getLocation(),
+    '{{status}}' => $this->getThis->getStatus(),
+    '{{callNum}}' => $this->getThis->getCallNumber(),
+    '{{title}}' => $this->driver->getTitle(),
+    '{{author}}' => $this->driver->getPrimaryAuthor(),
+    '{{isbn}}' => $this->driver->getCleanISBN(),
+];
+$link = $this->getThisParams['general_link'] ?? '';
+$requestCopyLink = $this->translate($this->getThisParams['request_link'] ?? '', $data);
+?>
+<div>
+  <p>
+    <b><a href="<?= $this->escapeHtml($link) ?>" target="_blank"><?= $this->transEsc('delivery_request_distance') ?></a> :</b>
+    <?= $this->transEsc('delivery_request_distance_text') ?>
+  </p>
+  <ul>
+    <li>
+      <a href="<?= $this->escapeHtml($requestCopyLink) ?>" target="_blank">
+        <?= $this->transEsc('delivery_request_distance_user') ?>
+      </a>
+    </li>
+  </ul>
+</div>

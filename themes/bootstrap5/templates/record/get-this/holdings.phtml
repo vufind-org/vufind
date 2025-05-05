@@ -1,0 +1,68 @@
+<!-- Get-this: holdings -->
+<?php
+$selectedItem = $this->getThis->getItem();
+$items = $this->getThis->getItems();
+
+function getDisplay($view, $item)
+{
+    $item['item_id'] ??= null;
+    $location = $view->getThis->getLocation($item['item_id']);
+    if ($callNumber = $view->getThis->getCallNumber($item['item_id'])) {
+        $callNumber = $view->transEsc($callNumber);
+    } else {
+        $callNumber = $view->transEsc('Alternative');
+    }
+    if ($view->getThis->showCopyNumber() && $copyNumber = $view->getThis->getCopyNumber($item['item_id'])) {
+        $copyNumber = ' (' . $view->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) . ')';
+    } else {
+        $copyNumber = '';
+    }
+    return empty($location) ? $callNumber . $copyNumber : $location . ': ' . $callNumber . $copyNumber;
+}
+
+function getLink($view, $item)
+{
+    return $view->url(
+        'record-getthis',
+        [
+            'id' => $view->driver->getUniqueId(),
+            'action' => 'GetThis',
+        ],
+        [
+            'query' => [
+                'item_id' => $item['item_id'],
+            ],
+        ]
+    );
+}
+
+?>
+
+<strong><?= $this->transEsc('Items') ?> :</strong>
+<nav role="navigation" class="get-this-dropdown">
+  <ul>
+    <li><a href="#" aria-expanded="false"><?= getDisplay($this, $selectedItem) ?></a>
+      <div tabindex="-1">
+        <ul class="dropdown">
+          <?php
+          $selectedItem['item_id'] ??= -1;
+          foreach ($items as $item) {
+            $item['item_id'] ??= null;
+            $itemClass = $selectedItem['item_id'] == $item['item_id'] ? 'current' : '';
+            ?>
+            <li>
+              <a
+                  href="<?= getLink($this, $item) ?>"
+                  class="<?= $this->escapeUrl($itemClass) ?>"
+                  rel="nofollow"
+              >
+                <?= getDisplay($this, $item) ?>
+              </a>
+            </li>
+          <?php } ?>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</nav>
+<br>

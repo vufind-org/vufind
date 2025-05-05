@@ -1,0 +1,26 @@
+<!-- Get-this: staff-delivery -->
+<?php
+$data = [
+    '{{item}}' => $this->getThis->getItem(),
+    '{{location}}' => $this->getThis->getLocation(),
+    '{{callNum}}' => $this->getThis->getCallNumber(),
+    '{{title}}' => $this->driver->getTitle(),
+    '{{author}}' => $this->driver->getPrimaryAuthor(),
+    '{{isbn}}' => $this->driver->getCleanISBN(),
+];
+$link = $this->getThisParams['general_link'] ?? '';
+$requestCopyLink = $this->translate($this->getThisParams['request_link'] ?? '', $data);
+?>
+<div>
+  <p>
+    <strong><a href="<?= $this->escapeHtml($link) ?>"
+               target="_blank"><?= $this->transEsc('staff_office_delivery') ?></a>:</strong>
+    <?= $this->transEsc('staff_office_delivery_text') ?>
+  </p>
+  <ul>
+    <li>
+      <a href="<?= $this->escapeHtml($requestCopyLink) ?>"
+         target="_blank"><?= $this->transEsc('delivery_request') ?></a>
+    </li>
+  </ul>
+</div>

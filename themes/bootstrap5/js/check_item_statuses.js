@@ -31,6 +31,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         VuFind.setInnerHtml(callnumAndLocation, VuFind.updateCspNonce(result.full_status));
       });
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.status').forEach((e) => { e.classList.add('hidden'); });
+      el.querySelectorAll('.getThis').forEach((link) => {
+        VuFind.lightbox.bind(link);
+      });
     } else if (typeof(result.missing_data) !== 'undefined'
       && result.missing_data
     ) {
@@ -50,6 +53,13 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           VuFind.setInnerHtml(callnumber, result.callnumberHtml + '<br>');
         } else {
           callnumber.textContent = '';
+        }
+      });
+      el.querySelectorAll('.getThis').forEach((link) => {
+        if (result.getThisURI) {
+          link.getElementsByTagName('a')[0].href = result.getThisURI;
+        } else {
+          link.textContent = '';
         }
       });
       el.querySelectorAll('.location').forEach((location) => {

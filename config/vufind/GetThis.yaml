@@ -1,0 +1,61 @@
+---
+# This file contains the settings for the GetThis feature
+
+# Either to display the copy number (next to the call number), default false
+showCopyNumber: true
+
+# The order changes the order it's displayed
+#template_name_within_get-this:
+#  enabled: true/false
+#  condition_function: my_function_within_GetThisLoader (optional / can be a list), the function can be negated with leading "!"
+#  view_variables:
+#    - my_var: Value
+#    - my_link_with_placeholder: https://mylib.edu/{{location}}/open_hours # Placeholder can be used
+# If the function does not exist, the condition will evaluate to false
+# Exemple of nested conditions
+#  holdings:
+#    conditions:
+#      - conditions:
+#          - conditions:
+#              - condition_function: showHoldings
+#              - and
+#              - condition_function: and_other_function
+#          - condition_function: showHoldings
+#      - conditions:
+#          - condition_function: showHoldings
+#          - condition_function: or_other_function
+#      - condition_function: showHoldings
+templates:
+  holdings:
+    condition_function: showHoldings
+
+  biblio-info:
+    enabled: true
+
+  micro-form:
+    condition_function: showMicroForm
+    view_variables:
+      open_hours: https://your_lib.edu/hours
+
+  message:
+    condition_function: showMessage
+
+  staff-office-delivery:
+    condition_function: showStaffDelivery
+    view_variables:
+      general_link: https://your_lib.msu.edu/facstaffdelivery
+      request_link: https://interlib.your_lib.edu/request_link/{{title}}?author={{author}}&rft.isbn={{isbn}}&loc={{location}}&callno={{callNum}}&CAT=1
+
+
+  inter-library:
+    condition_function: showInterLibrary
+    view_variables:
+      general_link: https://your_lib.edu/ils/
+      request_link: https://interlib.your_lib.edu/request_link/{{title}}?author={{author}}&rft.isbn={{isbn}}&loc={{location}}&callno={{callNum}}&CAT=1
+
+
+  remote-delivery:
+    condition_function: showRemotePatron
+    view_variables:
+      general_link: https://your_lib.edu/ils/distance
+      request_link: https://interlib.your_lib.edu/request_link/{{title}}?author={{author}}&rft.isbn={{isbn}}&loc={{location}}&callno={{callNum}}&CAT=1

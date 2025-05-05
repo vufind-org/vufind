@@ -1,0 +1,24 @@
+<!-- Get-this: inter-library -->
+<?php
+$data = [
+    '{{item}}' => $this->getThis->getItem(),
+    '{{location}}' => $this->getThis->getLocation(),
+    '{{status}}' => $this->getThis->getStatus(),
+    '{{callNum}}' => $this->getThis->getCallNumber(),
+    '{{title}}' => $this->driver->getTitle(),
+    '{{author}}' => $this->driver->getPrimaryAuthor(),
+    '{{isbn}}' => $this->driver->getCleanISBN(),
+];
+$link = $this->getThisParams['general_link'] ?? '';
+$requestCopyLink = $this->translate($this->getThisParams['request_link'] ?? '', $data);
+?>
+<div>
+  <p>
+    <strong><a href="<?= $this->escapeHtml($link) ?>"
+               target="_blank"><?= $this->transEsc('Interlibrary Loan Requests') ?></a>:</strong>
+    <?= $this->transEsc('interlibrary_loan_requests_text') ?>
+  </p>
+  <ul>
+    <li><a href="<?= $this->escapeHtml($requestCopyLink) ?>" target='_blank'><?= $this->transEsc('delivery_request') ?></a></li>
+  </ul>
+</div>

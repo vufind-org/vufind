@@ -1,0 +1,56 @@
+---
+# This file contains the settings for the Regex feature
+
+# Status
+AVAILABLE:
+  - '/^AVAILABLE/i'
+  - '/ITEM IN LIBRARY/i'
+LIB_USE_ONLY:
+  - '/RESTRICTED/i'
+OUT:
+  - '/CHECKED/i'
+  - '/BILLED/i'
+  - '/ON SEARCH/i'
+  - '/LOST/i'
+  - '/HOLD/i'
+  - '/AWAITING PICKUP/i'
+  - '/AWAITING DELIVERY/i'
+  - '/IN TRANSIT/i'
+  - '/PAGES/i'
+UNAVAILABLE:
+  - '/AGED TO LOST/i'
+  - '/CLAIMED RETURNED/i'
+  - '/DECLARED LOST/i'
+  - '/IN PROCESS/i'
+  - '/IN PROCESS (NON-REQUESTABLE)/i'
+  - '/LONG MISSING/i'
+  - '/LOST AND PAID/i'
+  - '/MISSING/i'
+  - '/ON ORDER/i'
+  - '/ORDER CLOSED/i'
+  - '/UNKNOWN/i'
+  - '/WITHDRAWN/i'
+
+# Description / Call Number
+AV_MEDIA:
+  - '/DISC/i'
+  - '/VIDEO/i'
+  - '/CD/i'
+  - '/DVD/i'
+  - '/BLU-RAY/i'
+  - '/VINYL/i'
+  - '/AUDIOCASSETTE/i'
+
+# Location
+EXCLUSIVE:
+#  - CAMPUS
+MICROFORMS:
+  - '/MICROFORMS/i'
+ONLINE:
+  - '/ONLINE RESOURCE/i'
+  - '/ELECTRONIC RESOURCES/i'
+  - '/INTERNET/i'
+
+# Format
+SERIAL:
+  - '/SERIAL/i'

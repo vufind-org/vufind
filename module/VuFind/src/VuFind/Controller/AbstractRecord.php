@@ -34,6 +34,7 @@ use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\GetThis\GetThisLoader;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
@@ -962,6 +963,8 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
+        $getThisEnabled = ($config?->Record?->getThisEnabled ?? null) == true;
+        $view->getThis = $getThisEnabled ? $this->serviceLocator->get(GetThisLoader::class) : null;
         $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');

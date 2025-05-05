@@ -1,0 +1,33 @@
+<!-- Get-this: biblio-info -->
+<?php
+if ($callNum = $this->getThis->getCallNumber()) {
+    $callNum = $this->transEsc($callNum);
+} else {
+    $callNum = $this->transEsc('Not available');
+}
+?>
+<div>
+  <p>
+    <strong><?= $this->transEsc('Title') ?> :</strong>
+    <?=$this->escapeHtml($this->driver->getRawData()['title_full'] ?? '') ?>
+  </p>
+  <p>
+    <strong><?= $this->transEsc('Call Number') ?> :</strong>
+    <span><?= $callNum ?></span>
+    <?php if ($this->getThis->showCopyNumber() && $copyNumber = $this->getThis->getCopyNumber()): ?>
+      <span> (<?= $this->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) ?>)</span>
+    <?php endif; ?>
+  </p>
+  <?php if ($location = $this->getThis->getLocation()): ?>
+    <p>
+      <strong><?= $this->transEsc('Location') ?> :</strong>
+      <span><?=$this->escapeHtml($location) ?></span>
+    </p>
+  <?php endif; ?>
+  <p>
+    <strong><?= $this->transEsc('Status') ?> :</strong>
+    <?= $this->transEsc($this->getThis->getStatus()) ?>
+  </p>
+  <hr/>
+  <?=$this->render('record/get-this/place-request.phtml')?>
+</div>

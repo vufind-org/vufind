@@ -4,6 +4,18 @@
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
+    $isEDS = $this->driver instanceof VuFind\RecordDriver\EDS;
+    $getThisEnabled = isset($this->getThis) && !$isEDS;
+    if ($getThisEnabled) {
+        $this->getThis->setItems([$holding]);
+        $this->getThis->setRecord($this->record($this->driver));
+        $isOnlineResource = $this->getThis->isOnlineResource($holding['item_id']);
+        $getThisURI = $this->escapeHtmlAttr($this->url(
+            'record-getthis',
+            ['id' => $holding['id']],
+            ['query' => ['item_id' => $holding['item_id']]]
+        ));
+    }
   ?>
   <tr class="holding-row"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'typeof' => 'Offer'])?>>
     <th class="copy-number"><?=$this->transEsc('Copy')?> <?=$this->escapeHtml($holding['number'])?>
@@ -51,6 +63,11 @@
             <span class="icon-link__label"><?=$this->transEsc($checkILLRequest ? 'ill_request_check_text' : 'ill_request_place_text')?></span>
           </a>
         <?php endif; ?>
+        <?php if ($getThisEnabled && !$isOnlineResource): ?>
+          <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold" data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
+            <?=$this->transEsc('Get this')?>
+          </a>
+        <?php endif; ?>
       <?php else: ?>
         <?php /* Begin Unavailable Items (Recalls) */ ?>
           <?php if ($holding['returnDate'] ?? false): ?>&ndash; <span class="small"><?=$this->escapeHtml($holding['returnDate'])?></span><?php endif; ?>
@@ -64,6 +81,11 @@
             <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
               <?=$this->icon('place-recall', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
+            </a>
+          <?php endif; ?>
+          <?php if ($getThisEnabled && !$isOnlineResource): ?>
+            <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold" data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
+              <?=$this->transEsc('Get this')?>
             </a>
           <?php endif; ?>
           <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>

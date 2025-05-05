@@ -1,0 +1,11 @@
+<?php
+# Usually this is displayed in a modal, but if it is not (coming back from login), we don't want the search box and
+# we want a link back to search results if possible.
+$this->layout()->searchbox = false;
+$this->layout()->showSearchBacklink = true;
+$templates = $this->getThis->getSubTemplates();
+foreach ($templates as $template) {
+    $this->getThisParams = $this->getThis->getSubTemplateParams($template);
+    echo $this->render('record/get-this/' . $template . '.phtml');
+}
+unset($this->getThisParams);
