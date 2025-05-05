@@ -402,6 +402,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
         'animaatio',
         'dokumentti',
         'fiktio',
+        'elokuva',
         'katsaus',
         'luokittelematon',
         'mainos',
@@ -1259,8 +1260,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
                     continue;
                 }
                 $attributes = $titleValue->attributes();
-                $videoType = (string)($attributes->{'video-tyyppi'} ?? 'elokuva');
-                if (empty($attributes->{'online-video'}) && !in_array($videoType, $this->relatedVideoTypes)) {
+                $videoType = (string)($attributes->{'video-tyyppi'} ?? '');
+                if (!in_array($videoType, $this->relatedVideoTypes)) {
                     continue;
                 }
                 $warnings = [];
