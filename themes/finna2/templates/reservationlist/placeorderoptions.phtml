@@ -31,9 +31,11 @@
     <p id="resource_institution"><?=$this->transEscWithPrefix('source_', $this->params['institution']);?></p>
   </div>
 </div>
-<div class="btn-group">
-  <a class="btn btn-primary" href="<?=$this->url('reservationlist-placesingleorder', ['id' => \Finna\ReservationList\Form\Form::RESERVATION_LIST_REQUEST], ['query' => $this->params])?>"><?=$this->transEsc('ReservationList::Reserve only this item')?></a>
-</div>
+<?php if ($this->reservationList()->singleOrderEnabled()): ?>
+  <div class="btn-group">
+    <a class="btn btn-primary" href="<?=$this->url('reservationlist-placesingleorder', ['id' => \Finna\ReservationList\Form\Form::RESERVATION_LIST_REQUEST], ['query' => $this->params])?>"><?=$this->transEsc('ReservationList::Reserve only this item')?></a>
+  </div>
+<?php endif; ?>
 <div class="btn-group">
   <a class="btn btn-primary" href="<?=$this->url('reservationlist-additemtolist', [], ['query' => $this->params])?>"><?=$this->transEsc('ReservationList::Add To Reservation List')?></a>
 </div>

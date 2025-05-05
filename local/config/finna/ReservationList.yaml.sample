@@ -112,3 +112,6 @@ Forms:
           label: ReservationList::Message
           settings:
             - [rows, 3]
+    single:
+      extends: default
+      formActionRoute: reservationlist-placesingleorder

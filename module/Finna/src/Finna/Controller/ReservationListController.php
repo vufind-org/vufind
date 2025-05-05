@@ -381,7 +381,10 @@ class ReservationListController extends AbstractBase
      */
     public function placeSingleOrderAction()
     {
-        if (!$this->reservationListHelper->isFunctionalityEnabled()) {
+        if (
+            !$this->reservationListHelper->isFunctionalityEnabled()
+            || !$this->reservationListService->singleOrderEnabled()
+        ) {
             throw new ForbiddenException(self::RESERVATION_LISTS_DISABLED);
         }
         $user = $this->getUser();

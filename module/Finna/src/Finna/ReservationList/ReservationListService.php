@@ -626,4 +626,14 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
         }
         return $merged;
     }
+
+    /**
+     * Check if single order form is set in the config file
+     *
+     * @return bool
+     */
+    public function singleOrderEnabled(): bool
+    {
+        return isset($this->reservationListConfig['Forms']['PlaceOrder']['single']);
+    }
 }

@@ -212,14 +212,24 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
      */
     public function init(array $config): static
     {
-        $orderFormKey = $config['Forms']['PlaceOrder'] ?? 'default';
         $definedForms = $this->getService(\Finna\Config\YamlReader::class)
             ->getFinna('ReservationList.yaml', 'config/finna', true)['Forms'] ?? [];
-        if (!$definedForms) {
+        // Check that single order and multi order forms exist
+        $orderFormConfig = $definedForms['PlaceOrder']['default'] ?? [];
+        if (!$orderFormConfig) {
             throw new Exception('ReservationList: No forms defined.');
         }
-        $this->orderFormConfig = $definedForms['PlaceOrder'][$orderFormKey];
-        $this->singleOrderFormConfig = $definedForms['PlaceOrder']['single'];
+        // Allow selecting preferred forms in future.
+        $selectedOrderForm = $config['Forms']['PlaceOrder'] ?? 'default';
+        $this->orderFormConfig = $definedForms['PlaceOrder'][$selectedOrderForm]
+            ?? $orderFormConfig;
+
+        $singleOrderFormConfig = $definedForms['PlaceOrder']['single'] ?? [];
+        $selectedSingleOrderForm = $config['Forms']['PlaceSingleOrder'] ?? 'single';
+        $this->singleOrderFormConfig = $definedForms['PlaceOrder'][$selectedSingleOrderForm]
+            ?? $singleOrderFormConfig;
+
+        // Extend form as required
         if ($extend = $this->singleOrderFormConfig['extends'] ?? false) {
             $this->singleOrderFormConfig = array_merge(
                 $definedForms['PlaceOrder'][$extend],
