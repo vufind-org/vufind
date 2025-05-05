@@ -89,18 +89,15 @@
 }
 
 #groupPlaceHolder {
+  &:extend(.btn all);
+  &:extend(.btn-default all);
+
   display: block;
   width: fit-content;
   margin-block: 1rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid @btn-default-border;
-  border-radius: @border-radius-base;
 
-  &:hover,
-  &:focus {
-    color: @btn-default-bg;
-    background-color: @btn-default-color;
-    border-color: @btn-default-color;
+  * {
+    text-decoration: none;
   }
 }
 
