@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Tag Controller
+ * Admin Overdrive Controller
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindAdmin\Controller;
 
 /**
- * Class controls distribution of tags and resource tags.
+ * Admin Overdrive Controller
  *
  * @category VuFind
  * @package  Controller
@@ -41,29 +41,7 @@ namespace VuFindAdmin\Controller;
 class OverdriveController extends AbstractAdmin
 {
     /**
-     * Params
-     *
-     * @var array
-     */
-    protected $params;
-
-    /**
-     * Get the url parameters
-     *
-     * @param string $param A key to check the url params for
-     *
-     * @return string
-     */
-    protected function getParam($param)
-    {
-        return $this->params[$param] ?? $this->params()->fromPost(
-            $param,
-            $this->params()->fromQuery($param, null)
-        );
-    }
-
-    /**
-     * Tag Details
+     * Overdrive Details
      *
      * @return \Laminas\View\Model\ViewModel
      */

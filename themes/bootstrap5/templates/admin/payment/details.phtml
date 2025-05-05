@@ -1,0 +1,50 @@
+<h2><?=$this->transEsc('Payment::Details')?></h2>
+
+<?=$this->paymentEntity ? $this->render('admin/payment/details-table.phtml') : $this->transEsc('An error has occurred')?>
+
+<h2><?=$this->transEsc('Events')?></h2>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><?=$this->transEsc('Date')?></th>
+      <th><?=$this->transEsc('Server IP')?></th>
+      <th><?=$this->transEsc('Server Name')?></th>
+      <th><?=$this->transEsc('Request')?></th>
+      <th><?=$this->transEsc('Message')?></th>
+      <th><?=$this->transEsc('Added Details')?></th>
+  </thead>
+  <tbody>
+    <?php foreach ($this->paymentEvents as $event): ?>
+      <tr>
+        <td>
+          <time datetime="<?=$this->escapeHtmlAttr($event->getDate()->format('Y-m-d\TH:i:s'))?>">
+            <span title="<?=$this->escapeHtmlAttr($event->getDate()->format('Y-m-d H:i:s'))?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $event->getDate()->getTimestamp())?>
+          </time>
+        </td>
+        <td>
+          <?=$this->escapeHtml($event->getServerIp())?>
+        </td>
+        <td>
+          <?=$this->escapeHtml($event->getServerName())?>
+        </td>
+        <td>
+          <?=$this->escapeHtml(json_decode($event->getData(), true)['__request_uri'] ?? '')?>
+        </td>
+        <td>
+          <?=$this->transEsc($event->getMessage())?>
+        </td>
+        <td>
+          <?php
+            if ($data = $event->getData()) {
+              $details = json_decode($data, true);
+              if ($error = $details['error'] ?? null) {
+                echo $this->transEsc($error);
+              }
+            }
+          ?>
+        </td>
+      </tr>
+    <?php endforeach;?>
+  </tbody>
+</table>

@@ -70,17 +70,19 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
         ?array $options = null
     ) {
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
-        $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? '');
+        $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? 'payment');
         $sessionId = null;
         $clientIp = null;
         $serverIp = null;
         $serverName = null;
+        $requestUri = null;
         if ('cli' !== PHP_SAPI) {
             $sessionId = $container->get(SessionManager::class)->getId();
             $clientIp = $container->get(UserIpReader::class)->getUserIp();
             $serverParams = $container->get('Request')->getServer();
             $serverIp = $serverParams->get('SERVER_ADDR');
             $serverName = $serverParams->get('SERVER_NAME');
+            $requestUri = $serverParams->get('REQUEST_URI');
         }
         return parent::__invoke(
             $container,
@@ -91,6 +93,7 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
                 $clientIp,
                 $serverIp,
                 $serverName,
+                $requestUri,
             ]
         );
     }
