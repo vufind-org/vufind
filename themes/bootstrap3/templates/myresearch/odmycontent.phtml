@@ -36,14 +36,14 @@
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
 
-          if ($resource['checkout']->isMagazine):
+          if ($resource['checkout']->isMagazine) {
               $od_id = $resource['checkout']->reserveId;
               $edition = $resource['checkout']->metadata->edition;
               $coverAlt = $this->transEscAttr('Cover Image');
               $cover = "<a href='{$this->recordLinker()->getUrl($resource['record'])}'><img alt='$coverAlt' data-linkpreview='true' class='recordcover' src='{$resource['checkout']->metadata->images->thumbnail->href}'></a>";
-              else:
+          } else {
             $edition = '';
-          endif;
+          }
   ?>
           <div id="record<?=urlencode($rec_id)?>" class="well result">
    <?php
