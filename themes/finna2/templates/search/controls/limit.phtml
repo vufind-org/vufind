@@ -13,7 +13,7 @@
           </a>
           <?php endif; ?>
         <?php endforeach; ?>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="limit-label">
+        <ul class="dropdown-menu" role="menu">
           <?php foreach ($limitList as $limitVal => $limitData): ?>
           <li>
             <a class="dropdown-item" href="Results<?=$this->results->getUrlQuery()->setLimit($limitVal)?>" role="menuitem" <?php if ($limitData['selected']):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>><?=$this->transEsc($limitData['desc'])?></a>

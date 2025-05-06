@@ -23,10 +23,10 @@
             <span><?=$this->transEsc('choose_from_list')?></span> <?=$this->icon('dropdown-open') ?>
           </a>
         <?php endif; ?>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="sort-label">
+        <ul class="dropdown-menu" role="menu">
           <?php foreach ($list as $sortType => $sortData): ?>
             <li>
-              <a class="dropdown-item" href="<?=$this->escapeHtmlAttr($context) ?><?=isset($sortData['url']) ? $this->escapeHtmlAttr($sortData['url']) : $this->results->getUrlQuery()->setSort($sortType)?>" role="menuitem" <?php if ($sortData['selected']):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>><?=$this->transEsc($sortData['desc'])?></a>
+              <a class="dropdown-item" href="<?=$this->escapeHtmlAttr($context) ?><?=isset($sortData['url']) ? $this->escapeHtmlAttr($sortData['url']) : $this->results->getUrlQuery()->setSort($sortType)?><?php if ($context === 'CollectionList'): ?>#tabnav<?php endif; ?>" role="menuitem" <?php if ($sortData['selected']):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>><?=$this->transEsc($sortData['desc'])?></a>
             </li>
           <?php endforeach; ?>
         </ul>

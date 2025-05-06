@@ -98,14 +98,14 @@ finna.common = (function finnaCommon() {
         type: 'sort',
         hiddenSelectSelector: '.search-controls form.search-sort select',
         ariaLabelTemplate: `${VuFind.translate('Sort')}: %%linkText%% ${VuFind.translate('selected')}`,
-        sessionSaveSelector: 'sort-dropdown a.dropdown-toggle',
+        sessionSaveSelector: '.sort-option-container a.dropdown-toggle',
       },
       {
         dropdownWrapperSelector: '.search-controls .limit-option-container .dropdown',
         type: 'limit',
         hiddenSelectSelector: '.search-controls form.search-result-limit select',
         ariaLabelTemplate: `${VuFind.translate('Results per page')}: %%linkText%% ${VuFind.translate('selected')}`,
-        sessionSaveSelector: 'limit-dropdown a.dropdown-toggle',
+        sessionSaveSelector: '.limit-option-container a.dropdown-toggle',
       }
     ];
     dropdownMappings.forEach(mapping => {
