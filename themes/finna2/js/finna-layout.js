@@ -373,10 +373,18 @@ finna.layout = (function finnaLayout() {
     $('.select-type').on('click', function onClickSelectType(event) {
       event.preventDefault();
       var dropdownToggle = $('.type-dropdown .dropdown-toggle');
+      var dropdownItems = $('.type-dropdown .dropdown-menu .dropdown-item');
 
       $('input[name=type]:hidden').val($(this).siblings().val());
-      dropdownToggle.find('span:not(.icon)').text($(this).text());
-      dropdownToggle.attr('aria-label', ($(this).text()));
+      var itemText = $(this).text();
+      dropdownToggle.find('span:not(.icon)').text(itemText);
+      dropdownToggle.attr('aria-label', VuFind.translate('Narrow Search') + ': ' + (itemText) + ' ' + VuFind.translate('selected'));
+      dropdownItems.removeAttr('aria-description');
+      $.each (dropdownItems, function changeDescription(index, value) {
+        if (itemText === $(value).text()) {
+          $(value).attr('aria-description', 'selected');
+        }
+      });
       dropdownToggle.dropdown('toggle');
       dropdownToggle.focus();
     });

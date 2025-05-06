@@ -474,7 +474,7 @@ return [
             'twitter' => 'FinnaIcons:x-twitter',
             'ui-close' => 'FontAwesome:times',
             'ui-edit' => 'FontAwesome:pen',
-            'ui-reset-search' => 'FinnaIcons:reset',
+            'ui-reset-search' => 'FinnaIcons:remove',
             'user' => 'FinnaIcons:user',
             'view-condensed' => 'FinnaIcons:list-compressed',
             'view-grid' => 'FinnaIcons:image-gallery',

@@ -25,9 +25,13 @@
       font-weight: normal;
       line-height: 25px;
       margin-top: 1em;
-      padding: 0px 5px;
+      padding: 0px 8px 0 5px;
       overflow: hidden;
       text-transform: none;
+      display: inline-flex;
+      &.btn-advanced {
+        gap: 5px;
+      }
       .icon {
         font-size: 1.5em;
       }

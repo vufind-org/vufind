@@ -165,7 +165,7 @@
       <div class="keyboard-box">
         <div class="simple-keyboard"></div>
       </div>
-      <form id="searchForm" role="search" class="searchForm navbar-form navbar-left  <?=$handlerCount < 2 ? 'input-field-only' : ''; ?>" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
+      <form id="searchForm" class="searchForm navbar-form navbar-left  <?=$handlerCount < 2 ? 'input-field-only' : ''; ?>" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
       <label for="searchForm_lookfor" class="visually-hidden" hidden><?=$this->transEsc('Find')?></label>
       <input<?=$this->htmlAttributes($searchboxAttributes)?>>
       <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
@@ -183,12 +183,14 @@
           }
         ?>
         <input id="searchForm_type" type="hidden" name="type" value="<?=$this->escapeHtmlAttr($value)?>" class="searchForm_type">
-        <a role="button" href="#" class="dropdown-toggle" aria-expanded="false" aria-label="<?= $this->transEsc('Narrow Search') ?>" data-bs-toggle="dropdown"><span><?=$this->transEsc($label)?></span> <?=$this->icon('type-dropdown-open') ?></a>
+        <a role="button" href="#" class="dropdown-toggle" aria-expanded="false" aria-label="<?=$this->transEsc('Narrow Search') . ': ' . $this->transEsc($label) . ' ' . $this->transEsc('selected')?>" data-bs-toggle="dropdown"><span><?=$this->transEsc($label)?></span> <?=$this->icon('type-dropdown-open') ?></a>
         <ul class="dropdown-menu" role="menu">
           <?php foreach ($handlers as $handler): ?>
             <li>
               <input type="hidden" value="<?=$this->escapeHtmlAttr($handler['value'])?>">
-              <a role="menuitem" class="dropdown-item select-type" href="#"><?=$this->transEsc($handler['label'])?></a>
+              <a role="menuitem" class="dropdown-item select-type" href="#" <?php if ($handler['label'] === $label):?>aria-description="<?=$this->transEsc('selected')?>"<?php endif;?>>
+                <?=$this->transEsc($handler['label'])?>
+              </a>
             </li>
           <?php endforeach; ?>
         </ul>
