@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Global Configuration Override
  *
