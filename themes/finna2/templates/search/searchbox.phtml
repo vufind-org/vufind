@@ -270,7 +270,11 @@
     </form>
     </div>
     <?php if (!$browse && !$mainPage && $advSearch): ?>
-      <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced hidden-xs"><?=$this->icon('search-advanced', 'search-advanced-icon') ?><?=$this->transEsc('Advanced Search')?></a>
+      <?php
+        $advSearchQuery = $results ? ['sid' => $results->getSearchId()] : $hiddenFilters;
+        $advSearchLink = $this->url($advSearch, [], ['query' => $advSearchQuery]);
+      ?>
+      <a href="<?=$advSearchLink?>" class="btn btn-link btn-advanced hidden-xs"><?=$this->icon('search-advanced', 'search-advanced-icon') ?><?=$this->transEsc('Advanced Search')?></a>
     <?php endif; ?>
     <?php
       $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'summon' => 'summon'];
