@@ -544,8 +544,7 @@
     margin-right: 0;
   }
   .eds-adv .help-block {
-    float: left;
-    width: 8%;
+    padding: 0 0.5rem;
     text-align: center;
   }
 }
@@ -558,7 +557,7 @@
   }
 }
 
-.adv-term-input.form-control, .adv-term-type.form-control {
+.adv-term-input.form-control, .adv-term-type.form-control, .adv-term-type.form-select {
   display: initial;
 }
 .template-dir-eds .template-name-advanced {
