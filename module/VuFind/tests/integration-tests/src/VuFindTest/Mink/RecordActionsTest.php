@@ -947,6 +947,82 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test adding comments, rating and tag to a record and then
+     * delete them from user account menu
+     *
+     * @return void
+     */
+    public function testUserContentDeletion()
+    {
+        $page = $this->gotoRecord();
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Social' => [
+                        'rating' => true,
+                        'remove_rating' => true,
+                    ],
+                ],
+            ]
+        );
+
+        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->findCss($page, '.comment-form');
+        $this->openCommentsLoginModal($page);
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+
+        $page = $this->gotoRecord();
+
+        // Add two comments
+        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'two');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Add a rating
+        $this->clickCss($page, 'div.rating-average a');
+        $this->clickCss($page, '.modal form div.star-rating label', null, 10);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
+        $this->waitForPageLoad($page);
+
+        // Add a tag
+        $this->addTagsToRecord($page, 'testtag');
+
+        // Remove comments, tags and ratings from user account menu
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/UserContent');
+        $page = $session->getPage();
+        $this->findCss($page, '.usercontent-table');
+        $this->assertCount(2, $page->findAll('css', 'div.user-comment-truncate'));
+        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, 'usercontent-table');
+
+        $this->clickCss($page, 'li#user-content-tag a.nav-link');
+        $this->waitForPageLoad($page);
+        $this->findCss($page, '.usercontent-table');
+        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, 'usercontent-table');
+
+        $this->clickCss($page, 'li#user-content-ratings a.nav-link');
+        $this->waitForPageLoad($page);
+        $this->findCss($page, '.usercontent-table');
+        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, 'usercontent-table');
+    }
+
+    /**
      * Test export button found in toolbar
      *
      * @return void
