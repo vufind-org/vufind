@@ -4,9 +4,9 @@
 
 <div class="container ">
 
-<div class="col-9 logoLock">
+<div class="col-sm-9 col-xs-11 logoLock">
   <div class="libLogo"></div>
-  <div class="nameBrand"><a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="https://library.tamu.edu/">Texas A&amp;M University Libraries</a></div>
+  <div class="nameBrand"><a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">Texas A&amp;M University Libraries</a></div>
 </div>
 
 
@@ -114,19 +114,10 @@
                 </div>
                 </div>
 </div> 
-<?php if (
-
-  (strpos(strtolower($_SERVER['REDIRECT_URL']), 'alphabrowse') == 0) &&
-  (strpos(strtolower($_SERVER['REDIRECT_URL']), 'search/reserves') == 0) &&
-  ($this->layout()->searchbox !== false)
-):
-
-?>
+<?php if ($this->layout()->searchbox !== false): ?>
   <div class="search container navbar">
     <div class="nav searchbox hidden-print" role="search">
       <?=$this->layout()->searchbox ?>
     </div>
   </div>
-  <?php else: ?>
-  <br />
 <?php endif; ?>
