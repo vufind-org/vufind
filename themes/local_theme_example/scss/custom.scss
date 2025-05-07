@@ -27,7 +27,20 @@ header {
   border-radius: 0;
 }
 footer .container { border-bottom: 2px solid #137752; }
+
 .alert { padding: 8px; }
+
+/* Fix breadcrumbs margins */
+.breadcrumbs {
+  .container {
+    background-color: $breadcrumb-bg;
+  }
+
+  .breadcrumb {
+    margin: 0;
+    padding-inline: 0;
+  }
+}
 
 /* You can also organize these styles in separate files and @import them */
 @import "home-page";
