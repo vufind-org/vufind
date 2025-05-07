@@ -43,29 +43,7 @@
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
   $thumbnailAlignment = false;
-  ob_start(); ?>
-  <div class="media-<?=$thumbnailAlignment ?><?=!empty($audioUrls) ? ' audio' : ''?>">
-
-    <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img]);?>
-
-    <?php if (!empty($videoUrls)): ?>
-      <?=$this->record($this->driver)->renderTemplate('record-video-player.phtml', ['videoUrls' => $videoUrls]);?>
-    <?php endif; ?>
-
-    <?php if (!empty($audioUrls)): ?>
-      <?=$this->record($this->driver)->renderTemplate('record-audio-player.phtml', ['audioUrls' => $audioUrls]);?>
-    <?php endif; ?>
-
-    <?php if ($this->record($this->driver)->getOrganisationMenuPosition() === 'inline'): ?>
-      <div class="organisation-menu">
-        <?=$this->render('record/record-organisation-menu.phtml') ?>
-      </div>
-    <?php endif; ?>
-
-    <?=$this->record($this->driver)->renderTemplate('record-post-thumbnail.phtml');?>
-  </div>
-  <?php $thumbnail = ob_get_contents(); ?>
-<?php ob_end_clean(); ?>
+?>
 
 <?php $this->metadata()->generateMetatags($this->driver);?>
 <div class="media">
@@ -88,6 +66,18 @@
         <?php if ($hasOnlineURLs || $openUrlActive || $identifierLinks): ?>
         <div class="recordURLs local-available-online-record">
           <div class="truncate-field">
+            <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+              <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+                <?php if (isset($images[$url['url']])) {
+                  continue;
+                } ?>
+                <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><?=$this->icon('external-link') ?> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+                <?php if ($url['source']): ?>
+                  <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
+                <?php endif; ?>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
             <?php if (!empty($otherUrls)): ?>
               <?php foreach ($otherUrls as $url): ?>
                 <?php if (isset($images[$url['url']])) {
@@ -100,18 +90,6 @@
                   >
                     <?=$this->icon('external-link') ?> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?>
                   </a>
-                </div>
-              <?php endforeach; ?>
-            <?php endif; ?>
-            <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-              <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
-                <?php if (isset($images[$url['url']])) {
-                  continue;
-                } ?>
-                <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><?=$this->icon('external-link') ?> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
-                <?php if ($url['source']): ?>
-                  <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
-                <?php endif; ?>
                 </div>
               <?php endforeach; ?>
             <?php endif; ?>
@@ -142,9 +120,9 @@
         <div class="truncate-field recordAuthors">
           <strong><?= $this->transEsc('Aipa::Curated By') ?>:</strong>
           <span>
-            <?php foreach($results as $index => $author): ?>
-              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><?php endif; ?>
-            <?php endforeach; ?>
+          <?php foreach($results as $index => $author): ?>
+            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><?php endif; ?>
+          <?php endforeach; ?>
           </span>
         </div>
         <?php endif; ?>
@@ -154,7 +132,16 @@
         <?php endif; ?>
       </div>
 
-      <?= $this->aipa($this->driver)->renderAllSubjectHeadings() ?>
+      <?php /* Display Main Details */?>
+      <?=
+        $this->record($this->driver)->renderTemplate(
+            'core-fields.phtml',
+            [
+              'driver' => $this->driver,
+            ]
+        );
+      ?>
+      <?php /* End Main Details */?>
 
       <?php if ($abstracts = $this->driver->getAbstracts()): ?>
         <div class="wide summary recordSummary">
@@ -183,16 +170,22 @@
         </div>
       <?php endif; ?>
 
-      <?php /* Display Main Details */?>
-      <?=
-        $this->record($this->driver)->renderTemplate(
-            'core-fields.phtml',
-            [
-              'driver' => $this->driver,
-            ]
-        );
-      ?>
-      <?php /* End Main Details */?>
+      <?php ob_start(); ?>
+      <?= $this->record($this->driver)->renderTemplate('aipa-fields.phtml', [
+          'fields' => $this->aipa($this->driver)->getAipaFieldGroup(\Finna\View\Helper\Root\Aipa::AIPA_ADDITIONAL_FIELDS),
+        ]) ?>
+      <?php $additionalInfo = trim(ob_get_contents()); ?>
+      <?php ob_end_clean(); ?>
+      <?php if (!empty($additionalInfo)): ?>
+        <?= $this->component('finna-panel', [
+            'attributes' => ['class' => ['finna-panel-default']],
+            'heading' => $this->transEsc('Additional Information'),
+            'headingLevel' => 3,
+            'content' => $additionalInfo,
+            'headingId' => uniqid('heading-'),
+            'collapseId' => uniqid('collapse-'),
+          ]); ?>
+      <?php endif; ?>
 
       <?php if (count($contents) > 1): ?>
         <div class="record-toc">

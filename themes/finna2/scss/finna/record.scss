@@ -1199,6 +1199,7 @@ finna-model-viewer .object-editor {
     margin-bottom: 21px;
   }
   .record-core-metadata,
+  .aipa-field,
   .finna-tag-list,
   .summary,
   .record-toc,
@@ -1206,6 +1207,9 @@ finna-model-viewer .object-editor {
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 15px;
+  }
+  .aipa-field-label {
+    font-weight: bold;
   }
   h1,
   .record-title {

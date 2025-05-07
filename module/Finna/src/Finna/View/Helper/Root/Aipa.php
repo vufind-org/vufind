@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023-2024.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -53,6 +53,22 @@ use function count;
 class Aipa extends AbstractHelper
 {
     use ClassBasedTemplateRendererTrait;
+
+    // AIPA core fields.
+    // Boolean value indicates if the field's label is rendered as part of its value.
+    public const AIPA_CORE_FIELDS = [
+        'subjects_extended' => true,
+    ];
+
+    // AIPA additional fields.
+    // Boolean value indicates if the field's label is rendered as part of its value.
+    public const AIPA_ADDITIONAL_FIELDS = [
+        'Additional Information AIPA' => false,
+        'Provenance' => false,
+        'Related Events' => true,
+        'Subject Date' => true,
+        'Subject Place' => true,
+    ];
 
     // Sort order for educational levels.
     protected const EDUCATIONAL_LEVEL_SORT_ORDER = [
@@ -126,7 +142,8 @@ class Aipa extends AbstractHelper
     ) {
         $template = 'RecordDriver/%s/' . $name;
         $className = match ($this->driver->getType()) {
-            'aipa:education' => AipaLrmi::class,
+            'aipa:education' => AipaLrmi::class, // For BC, to be removed later.
+            SolrAipa::AIPA_TYPE_EDUCATION => AipaLrmi::class,
             default => SolrQdc::class,
         };
         return $this->renderClassTemplate(
@@ -138,45 +155,27 @@ class Aipa extends AbstractHelper
     }
 
     /**
-     * Render all subject headings.
+     * Get specified AIPA fields.
      *
-     * @return string
+     * @param array $fieldGroup One of the class constant field groups
+     *
+     * @return array
      */
-    public function renderAllSubjectHeadings(): string
+    public function getAipaFieldGroup(array $fieldGroup): array
     {
-        $headings = $this->driver->getAllSubjectHeadings();
-        if (empty($headings)) {
-            return '';
-        }
-
-        $recordHelper = $this->getView()->plugin('record');
-        $items = [];
-        foreach ($headings as $field) {
-            $item = '';
-            $subject = '';
-            if (count($field) == 1) {
-                $field = explode('--', $field[0]);
+        $formatter = $this->getView()->plugin('recordDataFormatter')($this->driver);
+        $fields = array_intersect_key($formatter->getDefaults(), $fieldGroup);
+        foreach (array_keys($fields) as $fieldName) {
+            // Add title to context if the field's label is rendered as part of its
+            // value and the title has not already been set.
+            if (true === $fieldGroup[$fieldName]) {
+                $fields[$fieldName]['context']['labelRendered'] = true;
+                if (!isset($fields[$fieldName]['context']['title'])) {
+                    $fields[$fieldName]['context']['title'] = $fieldName;
+                }
             }
-            $i = 0;
-            foreach ($field as $subfield) {
-                $item .= ($i++ == 0) ? '' : ' &#8594; ';
-                $subject = trim($subject . ' ' . $subfield);
-                $item .= $recordHelper($this->driver)->getLinkedFieldElement(
-                    'subject',
-                    $subfield,
-                    ['name' => $subject],
-                    ['class' => ['backlink']]
-                );
-            }
-            $items[] = $item;
         }
-
-        $component = $this->getView()->plugin('component');
-        return $component('finna-tag-list', [
-            'title' => 'Subjects',
-            'items' => $items,
-            'htmlItems' => true,
-        ]);
+        return $formatter->getData($fields);
     }
 
     /**

@@ -706,7 +706,7 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
         $setTemplateLine(
             'Subject Date',
             'getSubjectDates',
-            'data-escapeHtml.phtml',
+            'data-subjectDate.phtml',
             [
                 'context' => ['class' => 'recordSubjects'],
             ]
@@ -1717,6 +1717,33 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
             'data-citations.phtml',
             [
                 'context' => ['class' => 'record-citations'],
+            ]
+        );
+        $setTemplateLine(
+            'Related Events',
+            'getRelatedEventsExtended',
+            'data-allSubjectHeadingsExtended.phtml',
+            [
+                'context' => ['class' => 'recordRelatedEvents'],
+            ]
+        );
+        $setTemplateLine(
+            'Provenance',
+            'getProvenance',
+            'data-provenance.phtml',
+            [
+                'context' => ['class' => 'recordProvenance'],
+            ]
+        );
+        $setTemplateLine(
+            'Additional Information AIPA',
+            'getAdditionalInformation',
+            'data-additionalInformation.phtml',
+            [
+                'context' => [
+                    'class' => 'recordAdditionalInformation',
+                    'title' => 'Additional Information',
+                ],
             ]
         );
 

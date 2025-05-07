@@ -1,0 +1,9 @@
+<!-- START of: finna - RecordDriver/CuratedRecordList/core.phtml -->
+<h2><?= $this->escapeHtml($this->driver->getTitle()) ?></h2>
+<?php if (!empty($description = $this->driver->getDescription())): ?>
+  <?= $this->markdown()->toHtml($description) ?>
+<?php endif; ?>
+<?= $this->record($this->driver)->renderEncapsulatedRecords([
+    'view' => $this->driver->getEncapsulatedRecordViewType(),
+  ]) ?>
+<!-- END of: finna - RecordDriver/CuratedRecordList/core.phtml -->

@@ -1,0 +1,21 @@
+<?php if (!empty($fields)): ?>
+<!-- START of: finna - RecordDriver/SolrAipa/aipa-fields.phtml -->
+<?php foreach ($fields as $field): ?>
+  <?php
+    $attributes = $this->htmlAttributes(['class' => 'aipa-field']);
+    if ($class = $field['context']['class'] ?? null) {
+      $attributes->add('class', $class);
+    }
+  ?>
+  <div<?= $attributes ?>>
+    <?php if (
+      !($field['context']['labelRendered'] ?? false)
+      && ($label = $this->transEsc($field['context']['title'] ?? $field['label']))
+    ): ?>
+      <div class="aipa-field-label"><?= $label ?>:</div>
+    <?php endif; ?>
+    <div class="aipa-field-value"><?= $field['value'] ?></div>
+  </div>
+<?php endforeach; ?>
+<!-- END of: finna - RecordDriver/SolrAipa/aipa-fields.phtml -->
+<?php endif; ?>

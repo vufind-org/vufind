@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2023.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -46,8 +46,13 @@ use function in_array;
  */
 class SolrAipa extends SolrQdc implements ContainerFormatInterface
 {
-    use ContainerFormatTrait;
+    use ContainerFormatTrait {
+        getEncapsulatedRecordFormat as getBaseEncapsulatedRecordFormat;
+    }
     use LrmiDriverTrait;
+
+    public const AIPA_TYPE_EDUCATION = 'aipa-education';
+    public const AIPA_TYPE_RESEARCH = 'aipa-research';
 
     /**
      * Encapsulated content type records.
@@ -117,34 +122,141 @@ class SolrAipa extends SolrQdc implements ContainerFormatInterface
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
-     * @param bool $extended Whether to return a keyed array with the following
-     * keys:
-     * - heading: the actual subject heading chunks
-     * - type: heading type
-     * - source: source vocabulary
+     * @param bool $extended Whether to return a keyed array containing data returned
+     * by SolrAipa::getFieldData()
      *
      * @return array
      */
     public function getAllSubjectHeadings($extended = false)
     {
+        return $this->getFieldData('subject', $extended);
+    }
+
+    /**
+     * Get all subject headings associated with this record with extended data.
+     * (see getAllSubjectHeadings).
+     *
+     * @return array
+     */
+    public function getAllSubjectHeadingsExtended()
+    {
+        return $this->getAllSubjectHeadings(true);
+    }
+
+    /**
+     * Get subject dates.
+     *
+     * @return array Keyed array containing data returned by SolrAipa::getFieldData()
+     */
+    public function getSubjectDates(): array
+    {
+        return $this->getFieldData('coverage', true, 'subject', 'temporal');
+    }
+
+    /**
+     * Get subject places.
+     *
+     * @param bool $extended Whether to return a keyed array containing data returned
+     * by SolrAipa::getFieldData()
+     *
+     * @return array
+     */
+    public function getSubjectPlaces(bool $extended = false)
+    {
+        return $this->getFieldData('coverage', true, 'place', 'spatial');
+    }
+
+    /**
+     * Get extended subject places
+     *
+     * @return array
+     */
+    public function getSubjectPlacesExtended(): array
+    {
+        return $this->getSubjectPlaces(true);
+    }
+
+    /**
+     * Get related events.
+     *
+     * @param bool $extended Whether to return a keyed array containing data returned
+     * by SolrAipa::getFieldData()
+     *
+     * @return array
+     */
+    public function getRelatedEvents(bool $extended = false)
+    {
+        return $this->getFieldData('relatedEvent', $extended);
+    }
+
+    /**
+     * Get extended related events.
+     *
+     * @return array
+     */
+    public function getRelatedEventsExtended(): array
+    {
+        return $this->getRelatedEvents(true);
+    }
+
+    /**
+     * Helper method for getting field data.
+     *
+     * @param string  $xmlElementName XML element name to select
+     * @param bool    $extended       Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - detail: addition details
+     * - source: source vocabulary
+     * - id: authority id (if defined)
+     * - ids: multiple authority ids (if defined)
+     * - authType: authority type (if id is defined)
+     * @param string  $headingType    Heading type for extended data
+     * @param ?string $requiredType   Required type for selected elements
+     *
+     * @return array
+     */
+    protected function getFieldData(
+        string $xmlElementName,
+        bool $extended = false,
+        string $headingType = 'subject',
+        ?string $requiredType = null
+    ) {
         $lang = $this->getLocale();
         $lang = $lang === 'en-gb' ? 'en' : $lang;
         $xml = $this->getXmlRecord();
-        $headings = [];
-        foreach ($xml->subject as $heading) {
-            $subjectLang = $heading->attributes()->{'lang'} ?? null;
-            if ($subjectLang && $lang !== (string)$subjectLang) {
+        $elements = [];
+        foreach ($xml->{$xmlElementName} as $xmlElement) {
+            if ($requiredType) {
+                $type = $xmlElement->attributes()->{'type'} ?? null;
+                if (!$type || $requiredType !== (string)$type) {
+                    continue;
+                }
+            }
+            $elementLang = $xmlElement->attributes()->{'lang'} ?? null;
+            if ($elementLang && $lang !== (string)$elementLang) {
                 continue;
             }
-            $headings[] = (string)$heading;
+            $element = (string)$xmlElement;
+            if ($extended) {
+                $element = [
+                    'heading' => [$element],
+                    'type' => $headingType,
+                    'detail' => '',
+                    'authType' => '',
+                ];
+                if ($source = $xmlElement->attributes()->{'source'} ?? '') {
+                    $element['source'] = (string)$source;
+                }
+                if ($id = $xmlElement->attributes()->{'identifier'} ?? null) {
+                    $element['id'] = (string)$id;
+                    $element['ids'][] = $element['id'];
+                }
+            }
+            $elements[] = $element;
         }
-
-        $callback = function ($i) use ($extended) {
-            return $extended
-                ? ['heading' => [$i], 'type' => '', 'source' => '']
-                : [$i];
-        };
-        return array_map($callback, array_unique($headings));
+        return $elements;
     }
 
     /**
@@ -169,16 +281,6 @@ class SolrAipa extends SolrQdc implements ContainerFormatInterface
             return $rights;
         }
         return false;
-    }
-
-    /**
-     * Return rights coverage for the record.
-     *
-     * @return string
-     */
-    public function getRightsCoverage(): string
-    {
-        return (string)($this->getXmlRecord()->rightsCoverage ?? '');
     }
 
     /**
@@ -214,6 +316,26 @@ class SolrAipa extends SolrQdc implements ContainerFormatInterface
     }
 
     /**
+     * Return provenance.
+     *
+     * @return string
+     */
+    public function getProvenance(): string
+    {
+        return (string)($this->getXmlRecord()->provenance ?? '');
+    }
+
+    /**
+     * Return additional information.
+     *
+     * @return string
+     */
+    public function getAdditionalInformation(): string
+    {
+        return (string)($this->getXmlRecord()->additionalInformation ?? '');
+    }
+
+    /**
      * Return encapsulated content type records.
      *
      * @return array Array of encapsulated content type records keyed by unique ID
@@ -223,13 +345,44 @@ class SolrAipa extends SolrQdc implements ContainerFormatInterface
         if (!isset($this->encapsulatedContentTypeRecords)) {
             $this->encapsulatedContentTypeRecords = [];
             foreach ($this->getEncapsulatedRecords() as $encapsulatedRecord) {
-                if ($encapsulatedRecord->getType() === 'content') {
+                // Assume type is 'content' if driver does not support the method.
+                if ($encapsulatedRecord->tryMethod('getType', [], 'content') === 'content') {
                     $this->encapsulatedContentTypeRecords[$encapsulatedRecord->getUniqueId()]
                         = $encapsulatedRecord;
                 }
             }
         }
         return $this->encapsulatedContentTypeRecords;
+    }
+
+    /**
+     * Returns the tag name of XML elements containing an encapsulated record.
+     *
+     * @return string
+     */
+    public function getEncapsulatedRecordElementTagName(): string
+    {
+        return match ($this->getType()) {
+            'aipa:education' => 'item', // For BC, to be removed later.
+            self::AIPA_TYPE_EDUCATION => 'item',
+            default => 'curatedRecords',
+        };
+    }
+
+    /**
+     * Return format for an encapsulated record.
+     *
+     * @param mixed $item Encapsulated record item
+     *
+     * @return string
+     */
+    protected function getEncapsulatedRecordFormat($item): string
+    {
+        return match ($this->getType()) {
+            'aipa:education' => $this->getBaseEncapsulatedRecordFormat($item), // For BC, to be removed later.
+            self::AIPA_TYPE_EDUCATION => $this->getBaseEncapsulatedRecordFormat($item),
+            default => 'CuratedRecordList',
+        };
     }
 
     /**

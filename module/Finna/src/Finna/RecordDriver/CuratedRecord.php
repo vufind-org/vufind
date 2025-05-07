@@ -135,26 +135,6 @@ class CuratedRecord extends SolrDefault implements
     }
 
     /**
-     * Get the full title of the record.
-     *
-     * @return string
-     */
-    public function getTitle(): string
-    {
-        return $this->fields['title'] ?? '';
-    }
-
-    /**
-     * Get the position of the record.
-     *
-     * @return int
-     */
-    public function getPosition(): int
-    {
-        return $this->fields['position'] ?? 0;
-    }
-
-    /**
      * Get record notes.
      *
      * @return string

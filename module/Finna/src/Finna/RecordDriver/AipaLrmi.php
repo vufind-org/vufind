@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2024.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -261,17 +261,6 @@ class AipaLrmi extends SolrLrmi implements
     }
 
     /**
-     * Return encapsulated record view type.
-     *
-     * @return string
-     */
-    public function getEncapsulatedRecordViewType(): string
-    {
-        $attributes = $this->getXmlRecord()->attributes();
-        return (string)($attributes->{'display'} ?? 'grid');
-    }
-
-    /**
      * Returns the tag name of XML elements containing an encapsulated record.
      *
      * @return string
@@ -361,33 +350,5 @@ class AipaLrmi extends SolrLrmi implements
                 unset($baseElement->{$filterField}[0]);
             }
         }
-    }
-
-    /**
-     * Return record driver instance for an encapsulated curated record.
-     *
-     * @param \SimpleXMLElement $item Curated record item XML
-     *
-     * @return CuratedRecord
-     *
-     * @see ContainerFormatTrait::getEncapsulatedRecordDriver()
-     */
-    protected function getCuratedRecordDriver(\SimpleXMLElement $item): CuratedRecord
-    {
-        /* @var CuratedRecord $driver */
-        $driver = $this->recordDriverManager->get('CuratedRecord');
-
-        $driver->setContainerRecord($this);
-
-        $data = [
-            'id' => (string)$item->identifier,
-            'position' => (int)$item->position,
-            'notes' => (string)$item->comment,
-            'fullrecord' => $item->asXML(),
-        ];
-
-        $driver->setRawData($data);
-
-        return $driver;
     }
 }

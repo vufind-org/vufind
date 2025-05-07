@@ -1,0 +1,17 @@
+<?php //Don't add START and END comments
+if (!empty($data)) {
+    $items = [];
+    foreach ($data as $field) {
+        $items[] = $this->record($driver)->getLinkedFieldElement(
+            $field['type'],
+            $field['heading'][0],
+            $field,
+            ['class' => ['backlink']]
+        );
+    }
+    echo $this->component('finna-tag-list', [
+        'title' => $title,
+        'items' => $items,
+        'htmlItems' => true,
+    ]);
+}

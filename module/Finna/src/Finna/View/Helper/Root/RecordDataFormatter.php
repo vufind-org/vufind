@@ -569,10 +569,15 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterAipaFields($coreFields)
     {
-        $aipaFields = $this->filterQDCFields($coreFields);
-        unset($aipaFields['Language']);
-        unset($aipaFields['Subjects']);
-        return $aipaFields;
+        $include = [
+            'Additional Information AIPA',
+            'Provenance',
+            'Related Events',
+            'subjects_extended',
+            'Subject Date',
+            'Subject Place',
+        ];
+        return $this->filterFields($coreFields, $include);
     }
 
     /**

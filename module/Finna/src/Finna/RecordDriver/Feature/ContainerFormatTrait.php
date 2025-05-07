@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2024.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,6 +30,8 @@
 namespace Finna\RecordDriver\Feature;
 
 use Finna\Record\Loader;
+use Finna\RecordDriver\CuratedRecord;
+use Finna\RecordDriver\CuratedRecordList;
 use Finna\RecordDriver\PluginManager;
 use VuFind\RecordDriver\AbstractBase;
 use VuFindSearch\ParamBag;
@@ -241,12 +243,30 @@ trait ContainerFormatTrait
     protected function getEncapsulatedRecordPosition($item): ?int
     {
         // Implementation for XML items with position optionally specified in a
-        // 'position' attribute
-        $position = $item->attributes()->{'position'} ?? null;
+        // 'position' attribute or element
+        $position = $item->attributes()->{'position'}
+            ?? $item->position
+            ?? null;
         if (isset($position)) {
-            return (int)$item->position;
+            return (int)$position;
         }
         return null;
+    }
+
+    /**
+     * Return encapsulated record view type.
+     *
+     * @return string
+     */
+    public function getEncapsulatedRecordViewType(): string
+    {
+        // Implementation for XML records with view type optionally specified in a
+        // 'display' attribute or element
+        $xml = $this->getXmlRecord();
+        $display = $xml->attributes()->{'display'}
+            ?? $xml->display
+            ?? 'grid';
+        return (string)($display);
     }
 
     /**
@@ -293,7 +313,7 @@ trait ContainerFormatTrait
                 'item' => $item,
             ];
             // Position is optional
-            if ($position = $this->getEncapsulatedRecordPosition($item)) {
+            if (null !== ($position = $this->getEncapsulatedRecordPosition($item))) {
                 $records[$position] = $record;
             } else {
                 $records[] = $record;
@@ -412,5 +432,61 @@ trait ContainerFormatTrait
     public function getFilteredXML()
     {
         return $this->getFilteredXMLElement()->asXML();
+    }
+
+    /**
+     * Return record driver instance for an encapsulated curated record.
+     *
+     * @param \SimpleXMLElement $item Curated record item XML
+     *
+     * @return CuratedRecord
+     *
+     * @see ContainerFormatTrait::getEncapsulatedRecordDriver()
+     */
+    protected function getCuratedRecordDriver(\SimpleXMLElement $item): CuratedRecord
+    {
+        /* @var CuratedRecord $driver */
+        $driver = $this->recordDriverManager->get('CuratedRecord');
+
+        $driver->setContainerRecord($this);
+
+        $data = [
+            'id' => (string)$item->identifier,
+            'notes' => (string)($item->comment ?? ''),
+            'fullrecord' => $item->asXML(),
+        ];
+
+        $driver->setRawData($data);
+
+        return $driver;
+    }
+
+    /**
+     * Return record driver instance for an encapsulated curated record list.
+     *
+     * @param \SimpleXMLElement $item Curated record list item XML
+     *
+     * @return CuratedRecordList
+     *
+     * @see ContainerFormatTrait::getEncapsulatedRecordDriver()
+     */
+    protected function getCuratedRecordListDriver(\SimpleXMLElement $item): CuratedRecordList
+    {
+        /* @var CuratedRecordList $driver */
+        $driver = $this->recordDriverManager->get('CuratedRecordList');
+
+        $driver->setContainerRecord($this);
+
+        $data = [
+            'id' => (string)$item->identifier,
+            'title' => (string)$item->name,
+            'description' => (string)($item->description ?? ''),
+            'additionalType' => (string)$item->additionalType,
+            'fullrecord' => $item->asXML(),
+        ];
+
+        $driver->setRawData($data);
+
+        return $driver;
     }
 }

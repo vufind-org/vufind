@@ -967,6 +967,8 @@ $config = [
                         'Finna\RecordDriver\AipaLrmiFactory',
                     'Finna\RecordDriver\CuratedRecord' =>
                         'VuFind\RecordDriver\AbstractBaseFactory',
+                    'Finna\RecordDriver\CuratedRecordList' =>
+                        'Finna\RecordDriver\CuratedRecordListFactory',
                     'Finna\RecordDriver\EDS' =>
                         'VuFind\RecordDriver\NameBasedConfigFactory',
                     'Finna\RecordDriver\SolrDefault' =>
@@ -999,6 +1001,7 @@ $config = [
                 'aliases' => [
                     'AipaLrmi' => 'Finna\RecordDriver\AipaLrmi',
                     'CuratedRecord' => 'Finna\RecordDriver\CuratedRecord',
+                    'CuratedRecordList' => 'Finna\RecordDriver\CuratedRecordList',
                     'SolrAipa' => 'Finna\RecordDriver\SolrAipa',
                     'SolrAuthEaccpf' => 'Finna\RecordDriver\SolrAuthEaccpf',
                     'SolrAuthForwardAuthority' => 'Finna\RecordDriver\SolrAuthForward',

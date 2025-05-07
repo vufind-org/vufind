@@ -207,7 +207,11 @@ table .iconlabel {
     content: "\e002";
 }
 .iconlabel.format-0aipa:before,
-.iconlabel.format-feed-aipa:before {
+.iconlabel.format-feed-aipa:before,
+.iconlabel.format-1aipaeducation::before,
+.iconlabel.format-feed-aipaeducation:before,
+.iconlabel.format-1aiparesearch::before,
+.iconlabel.format-feed-aiparesearch:before {
     content: "\e8cc";
 }
 .iconlabel.format-0learningmaterial:before,

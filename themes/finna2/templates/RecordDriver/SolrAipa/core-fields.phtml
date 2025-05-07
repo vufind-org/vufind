@@ -1,0 +1,5 @@
+<!-- START of: finna - RecordDriver/SolrAipa/core-fields.phtml -->
+<?= $this->record($this->driver)->renderTemplate('aipa-fields.phtml', [
+    'fields' => $this->aipa($this->driver)->getAipaFieldGroup(\Finna\View\Helper\Root\Aipa::AIPA_CORE_FIELDS),
+  ]) ?>
+<!-- END of: finna - RecordDriver/SolrAipa/core-fields.phtml -->
