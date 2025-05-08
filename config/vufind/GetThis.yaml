@@ -11,7 +11,7 @@ templates:
   #   enabled: true/false, whether to enable the template
   #   view_variables: array of extra variables made available to the templates.
   #     It can be used with placeholders if available; see example below.
-  #   condition_function: a function within GetThisLoader returning a boolean to whether display or not the template
+  #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template
   #     The result of the function can be negated if prefixed with "!"
   #     note : If the function does not exist, the condition will evaluate to false
   #   conditions: if condition_function is limiting for you, conditions replace it to give more flexibility :
@@ -21,7 +21,7 @@ templates:
   #     If any entry is true, the whole list is considered true (logical OR).
   #     Entries can be:
   #       condition_function: evaluates a single condition.
-  #       conditions: e nested conditions block used to combine conditions.
+  #       conditions: a nested conditions block used to combine conditions.
   #       The string "and": acts as a logical AND between adjacent conditions.
   #
   #   Example; Values surrounded with brackets are placeholders serving as example :
@@ -63,7 +63,7 @@ templates:
       #   %%title%%: Title
       #   %%author%%: Author
       #   %%isbn%%: ISBN
-      general_link: https://your_lib.msu.edu/facstaffdelivery
+      general_link: https://your_lib.edu/facstaffdelivery
       request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
 
 
