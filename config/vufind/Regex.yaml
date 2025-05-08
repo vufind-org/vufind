@@ -2,12 +2,17 @@
 # This file contains the settings for the Regex feature
 
 # Status
+  # Regex in this section are used to match against the specific item status value
+  # Each heading in this section is a grouping of those statuses used for logic within the GetThis feature
 AVAILABLE:
+  # Used within GetThisLoader in the following functions : showRemotePatron, showStaffDelivery
   - '/^AVAILABLE/i'
   - '/ITEM IN LIBRARY/i'
 LIB_USE_ONLY:
+  # Used within GetThisLoader in the following functions : isLibUseOnly
   - '/RESTRICTED/i'
 OUT:
+  # Used within GetThisLoader in the following functions : isOut
   - '/CHECKED/i'
   - '/BILLED/i'
   - '/ON SEARCH/i'
@@ -18,6 +23,7 @@ OUT:
   - '/IN TRANSIT/i'
   - '/PAGES/i'
 UNAVAILABLE:
+  # Used within GetThisLoader in the following functions : isUnavailable
   - '/AGED TO LOST/i'
   - '/CLAIMED RETURNED/i'
   - '/DECLARED LOST/i'
@@ -33,6 +39,7 @@ UNAVAILABLE:
 
 # Description / Call Number
 AV_MEDIA:
+  # Used within GetThisLoader in the following functions : isAudioVideoMedia
   - '/DISC/i'
   - '/VIDEO/i'
   - '/CD/i'
@@ -43,14 +50,20 @@ AV_MEDIA:
 
 # Location
 EXCLUSIVE:
+  # Used within GetThisLoader in the following functions : showInterLibrary
+  # It should include patterns that should be excluded from Inter Library Loan
+  # (i.e. will return false and not show the inter-library.phtml template)
 #  - CAMPUS
 MICROFORMS:
+  # Used within GetThisLoader in the following functions : showMicroForm
   - '/MICROFORMS/i'
 ONLINE:
+  # Used within GetThisLoader in the following functions : isOnlineResource
   - '/ONLINE RESOURCE/i'
   - '/ELECTRONIC RESOURCES/i'
   - '/INTERNET/i'
 
 # Format
 SERIAL:
+  # Used within GetThisLoader in the following functions : isSerial
   - '/SERIAL/i'

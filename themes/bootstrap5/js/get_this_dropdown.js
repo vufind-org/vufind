@@ -7,7 +7,7 @@ $(function pageLoad() {
 
   /**
    * Whether the dropdown is open
-   * @returns {boolean}
+   * @returns {boolean} Whether the dropdown is open
    */
   function isDropdownOpen() {
     return modal.querySelector(".get-this-dropdown > ul > li > div").classList.contains("active");
@@ -15,8 +15,8 @@ $(function pageLoad() {
 
   /**
    * Whether the link for the current holding is the element being clicked
-   * @param e
-   * @returns {*}
+   * @param e Event triggered by the user
+   * @returns {boolean} Whether the dropdown is targeted by the event
    */
   function isDropdownLinkTargeted(e) {
     return e.target.matches(".get-this-dropdown > ul > li > a");
@@ -44,7 +44,7 @@ $(function pageLoad() {
 
   /**
    * Listener on events to open the dropdown
-   * @param e
+   * @param e Event triggered by the user
    */
   function openDropdownListener(e) {
     if (isDropdownLinkTargeted(e)) {
@@ -68,7 +68,7 @@ $(function pageLoad() {
 
   /**
    * Listener on events to open the dropdown if bottom arrow is pressed
-   * @param e
+   * @param e Event triggered by the user
    */
   function openDropdownOnKeyDown(e) {
     if (isDropdownLinkTargeted(e) && !isDropdownOpen() && e.keyCode === KEY_CODE.DOWN_ARROW) {
@@ -79,8 +79,8 @@ $(function pageLoad() {
 
   /**
    * Switch the focus to a sibling element in the dropdown
-   * @param elem
-   * @returns {boolean}
+   * @param elem Element to focus
+   * @returns {boolean} Focus was successful
    */
   function focusSiblingElement(elem) {
     if (elem) {
@@ -93,7 +93,7 @@ $(function pageLoad() {
 
   /**
    * Listener on keys pressed (up/down) to change the element focused in the dropdown
-   * @param e
+   * @param e Event triggered by the user
    */
   function arrowKeysListener(e) {
     const dropdown = document.querySelector(".get-this-dropdown div");
