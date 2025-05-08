@@ -10,6 +10,7 @@
   $videoUrls = [];
   $audioUrls = [];
   $otherUrls = [];
+  $binding = $this->driver->tryMethod('getBinding');
 
   $addRenderedUrl = function (array $url) use (&$renderedURLs) {
     $renderedURLs[] = [
@@ -200,7 +201,7 @@
       <?php $formats = $this->driver->getFormats();
       if (!empty($formats)): ?>
         <div class="recordFormat">
-          <?=$this->record($this->driver)->getFormatList()?><br>
+          <?=$this->record($this->driver)->getFormatList()?><?php if (!empty($binding)): ?><span class="iconlabel label-binding"><?=$this->transEsc($binding)?></span><?php endif; ?><br>
         </div>
       <?php endif; ?>
 

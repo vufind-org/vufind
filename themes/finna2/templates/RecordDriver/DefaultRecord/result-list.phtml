@@ -6,6 +6,7 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   $recordLinker = $this->recordLinker($this->results);
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
+  $binding = $this->driver->tryMethod('getBinding');
   if ($img) {
     $thumbnail = $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]);
   }
@@ -44,6 +45,9 @@
         <div class="dateyeartype">
           <div class="resultItemFormat">
             <?=$this->record($this->driver)->getFormatList() ?>
+            <?php if (!empty($binding)): ?>
+              <span class="iconlabel label-binding"><?=$this->transEsc($binding)?></span>
+            <?php endif; ?>
             <?=$this->record($this->driver)->getLabelList() ?>
           </div>
 

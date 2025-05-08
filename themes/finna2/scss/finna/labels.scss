@@ -7,8 +7,18 @@
   color: $gray-light;
   @include label-variant($body-bg);
 }
+.label-info + .label-binding {
+  line-height: 1;
+  margin-left: -14px;
+  &::before {
+    content: ", ";
+    font-family: inherit;
+    font-size: inherit;
+    padding-right: 0;
+  }  
+}
 // Compensate for the smaller font size in the bordered label for source:
-.result .iconlabel {
+.result .iconlabel, .result .label-binding {
   font-size: 0.9em;
 }
 .record-labels {

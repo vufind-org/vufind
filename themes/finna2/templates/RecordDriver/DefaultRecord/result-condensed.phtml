@@ -4,6 +4,7 @@
   $formats = $this->driver->tryMethod('getFormats');
   $database = $this->record($this->driver)->getFormatClass(end($formats)) === '0database';
   $ejournal = $this->record($this->driver)->getFormatClass(end($formats)) === '1journaleserial';
+  $binding = $this->driver->tryMethod('getBinding');
   // Thumbnail
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
@@ -32,6 +33,9 @@
         <div class="resultOtherLinks">
           <div class="resultItemFormat">
             <?=$this->record($this->driver)->getFormatList() ?>
+            <?php if (!empty($binding)): ?>
+              <span class="iconlabel label-binding"><?=$this->transEsc($binding)?></span>
+            <?php endif; ?>
             <?=$this->record($this->driver)->getLabelList() ?>
           </div>
           <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>

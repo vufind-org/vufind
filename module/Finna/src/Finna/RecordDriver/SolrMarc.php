@@ -76,6 +76,24 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
     ];
 
     /**
+     * Accepted book binding strings mapped to translation key strings
+     *
+     * @var array
+     */
+    protected $bindingMappings = [
+        'nidottu'         => 'stitched',
+        'nid'             => 'stitched',
+        'häftad'          => 'stitched',
+        'hft'             => 'stitched',
+        'sidottu'         => 'bound',
+        'sid'             => 'bound',
+        'inbunden'        => 'bound',
+        'inb'             => 'bound',
+        'pehmeäkantinen'  => 'paperback',
+        'kovakantinen'    => 'hardcover',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
@@ -2715,5 +2733,48 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
             $result[] = $lang;
         }
         return array_unique(array_filter($result));
+    }
+
+    /**
+     * Get book binding from fields 020 subfield q, 340 subfield l or 500 subfield a
+     *
+     * @return string
+     */
+    public function getBinding(): string
+    {
+        $formatType = null;
+        $formats = $this->getFormats();
+        foreach ($formats as $format) {
+            $parts = explode('/', $format);
+            if ($parts[0] === '1' && isset($parts[2])) {
+                $formatType = $parts[2];
+                break;
+            }
+        }
+        if ($formatType == 'Book') {
+            $fields = [
+                '020' => ['q'],
+                '340' => ['l'],
+                '500' => ['a'],
+            ];
+            $values = [];
+            foreach ($fields as $field => $subfields) {
+                $values = array_merge(
+                    $values,
+                    $this->getFieldArray($field, $subfields),
+                );
+            }
+            $bindings = array_filter(array_map(
+                function ($s) {
+                    $s = mb_strtolower(mb_ereg_replace('[^A-ZÅÄÖa-zåäö]', '', $s));
+                    return $this->bindingMappings[$s] ?? null;
+                },
+                $values
+            ));
+            if (count(array_unique($bindings)) === 1) {
+                return $bindings[0];
+            }
+        }
+        return '';
     }
 }
