@@ -62,7 +62,7 @@ templates:
       #   %%title%%: Title
       #   %%author%%: Author
       #   %%isbn%%: ISBN
-      general_link: https://your_lib.msu.edu/facstaffdelivery
+      general_link: https://your_lib.edu/facstaffdelivery
       request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
 
 
