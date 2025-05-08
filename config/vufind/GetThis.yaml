@@ -21,7 +21,7 @@ templates:
   #     If any entry is true, the whole list is considered true (logical OR).
   #     Entries can be:
   #       condition_function: evaluates a single condition.
-  #       conditions: e nested conditions block used to combine conditions.
+  #       conditions: a nested conditions block used to combine conditions.
   #       The string "and": acts as a logical AND between adjacent conditions.
   #
   #   Example; Values surrounded with brackets are placeholders serving as example :
