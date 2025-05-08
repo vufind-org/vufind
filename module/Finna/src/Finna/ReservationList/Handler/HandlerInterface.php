@@ -45,6 +45,140 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface HandlerInterface
 {
     /**
+     * Is enabled
+     *
+     * @return bool
+     */
+    public function isEnabled(): bool;
+
+    /**
+     * Get translation for title
+     *
+     * @param string $language Language to get title for
+     *
+     * @return string
+     */
+    public function getTitle(string $language): string;
+
+    /**
+     * Get translation for description
+     *
+     * @param string $language Language to get description for
+     *
+     * @return string
+     */
+    public function getDescription(string $language): string;
+
+    /**
+     * Get address information
+     *
+     * @return array
+     */
+    public function getAddress(): array;
+
+    /**
+     * Get recipient
+     *
+     * @return array
+     */
+    public function getRecipient(): array;
+
+    /**
+     * Check if library card matches to allowed sources
+     *
+     * @param string $libraryCardSource Library card source
+     *
+     * @return bool
+     */
+    public function cardIsValid(string $libraryCardSource): bool;
+
+    /**
+     * Check if datasource matches to allowed sources
+     *
+     * @param string $datasource Datasource
+     *
+     * @return bool
+     */
+    public function datasourceIsValid(string $datasource): bool;
+
+    /**
+     * Get connection type
+     *
+     * @return string
+     */
+    public function getConnectionType(): string;
+
+    /**
+     * Get connection settings
+     *
+     * @return array
+     */
+    public function getConnectionSettings(): array;
+
+    /**
+     * Get institution
+     *
+     * @return string
+     */
+    public function getInstitution(): string;
+
+    /**
+     * Get identifier
+     *
+     * @return string
+     */
+    public function getIdentifier(): string;
+
+    /**
+     * Get all list properties
+     *
+     * @return array
+     */
+    public function getAsArray(): array;
+
+    /**
+     * Get api url
+     *
+     * @return string
+     */
+    public function getApiUrl(): string;
+
+    /**
+     * Get api secret
+     *
+     * @return string
+     */
+    public function getApiSecret(): string;
+
+    /**
+     * Get email sender name
+     *
+     * @return string
+     */
+    public function getSenderName(): string;
+
+    /**
+     * Get email sender
+     *
+     * @return string
+     */
+    public function getSenderEmail(): string;
+
+    /**
+     * Get email sender
+     *
+     * @return string
+     */
+    public function getEmailSubject(): string;
+
+    /**
+     * Use patron id to send information
+     *
+     * @return bool
+     */
+    public function getUsePatronId(): bool;
+
+    /**
      * Places an order
      *
      * @param array               $formValues Values gathered from submitted form
@@ -119,10 +253,10 @@ interface HandlerInterface
     /**
      * Initialize connection handler
      *
-     * @param array $config List specific configuration from ReservationList.yaml
+     * @param string $institution List owner institution code
+     * @param array  $config      List specific configuration as an array
      *
      * @return static
-     * @throws \Exception If connection is not configured properly
      */
-    public function init(array $config): static;
+    public function init(string $institution, array $config = []): static;
 }

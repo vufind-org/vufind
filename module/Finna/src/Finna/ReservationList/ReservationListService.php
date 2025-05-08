@@ -33,12 +33,16 @@ namespace Finna\ReservationList;
 
 use DateTime;
 use Exception;
+use Finna\Auth\ILSAuthenticator;
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
 use Finna\Db\Service\FinnaResourceListResourceServiceInterface;
 use Finna\Db\Service\FinnaResourceListServiceInterface;
+use Finna\ReservationList\Handler\HandlerInterface;
+use Finna\ReservationList\Handler\PluginManager;
 use Laminas\Session\Container;
 use Laminas\Stdlib\Parameters;
 use TypeError;
+use VuFind\Cache\Manager;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
@@ -54,8 +58,7 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordDriver\DefaultRecord;
-
-use function is_string;
+use VuFindHttp\HttpService;
 
 /**
  * Reservation list service
@@ -87,26 +90,6 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
     public const DEFAULT_CONNECTION_HANDLER = 'email';
 
     /**
-     * Default values for list config
-     *
-     * @var array
-     */
-    protected const RESERVATION_LIST_DEFAULT_VALUES  = [
-        'Enabled' => false,
-        'Recipient' => [],
-        'Datasources' => [],
-        'Information' => [],
-        'LibraryCardSources' => [],
-        'Forms' => [
-            'PlaceOrder' => 'default',
-        ],
-        'Connection' =>  [
-            'type' => self::DEFAULT_CONNECTION_HANDLER,
-        ],
-        'Identifier' => false,
-    ];
-
-    /**
      * Constructor
      *
      * @param FinnaResourceListServiceInterface         $resourceListService         Resource list database service
@@ -116,9 +99,13 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
      * @param UserServiceInterface                      $userService                 User database service
      * @param ResourcePopulator                         $resourcePopulator           Resource populator service
      * @param RecordLoader                              $recordLoader                Record loader
-     * @param ?RecordCache                              $recordCache                 Record cache (optional)
-     * @param ?Container                                $session                     Session container for remembering
-     *                                                                               state (optional)
+     * @param RecordCache                               $recordCache                 Record cache
+     * @param Container                                 $session                     Session container for remembering
+     *                                                                               state
+     * @param HttpService                               $httpService                 Http service
+     * @param ILSAuthenticator                          $ilsAuthenticator            Ils authenticator
+     * @param Manager                                   $cacheManager                Cache manager
+     * @param PluginManager                             $listPluginManager           Plugin manager for lists
      * @param array                                     $reservationListConfig       Reservation list configuration
      */
     public function __construct(
@@ -128,8 +115,12 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
         protected UserServiceInterface $userService,
         protected ResourcePopulator $resourcePopulator,
         protected RecordLoader $recordLoader,
-        protected ?RecordCache $recordCache = null,
-        protected ?Container $session = null,
+        protected RecordCache $recordCache,
+        protected Container $session,
+        protected HttpService $httpService,
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected Manager $cacheManager,
+        protected PluginManager $listPluginManager,
         protected array $reservationListConfig = []
     ) {
     }
@@ -192,27 +183,6 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
         if (null !== $this->session) {
             $this->session->lastUsed = $list->getId();
         }
-    }
-
-    /**
-     * Get a list object for the specified ID.
-     *
-     * @param int                 $listId List ID
-     * @param UserEntityInterface $user   The user saving the record
-     *
-     * @return FinnaResourceListEntityInterface
-     *
-     * @throws \VuFind\Exception\ListPermission
-     */
-    public function getAndRememberListObject(int $listId, UserEntityInterface $user): FinnaResourceListEntityInterface
-    {
-        $list = $this->resourceListService->getResourceListById($listId);
-        // Validate incoming list ID:
-        if (!$this->userCanEditList($user, $list)) {
-            throw new \VuFind\Exception\ListPermission('Access denied.');
-        }
-        $this->rememberLastUsedList($list); // handled by saveListForUser() in other case
-        return $list;
     }
 
     /**
@@ -580,51 +550,109 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
      * @param string $institution    Lists controlling institution
      * @param string $listIdentifier List identifier
      *
-     * @return array
+     * @return HandlerInterface
      */
-    public function getListProperties(
+    public function getListHandler(
         string $institution,
         string $listIdentifier
-    ): array {
-        foreach ($this->reservationListConfig['Institutions'][$institution]['Lists'] ?? [] as $list) {
-            $list = $this->ensureListKeys($list);
-            if ($list['Identifier'] === $listIdentifier) {
-                return [
-                    'properties' => $list,
-                    'institution_information'
-                        => $this->reservationListConfig['Institutions'][$institution]['Information'] ?? [],
-                    'translation_keys' => [
-                        'title' => "ReservationList::list_title_{$institution}_{$listIdentifier}",
-                        'description' => "ReservationList::list_description_{$institution}_{$listIdentifier}",
-                    ],
-                ];
+    ): HandlerInterface {
+        $config = $this->getListConfig();
+        foreach ($config['Institutions'][$institution]['Lists'] ?? [] as $list) {
+            $listHandler = $this->listPluginManager->get($list['Connection']['type']);
+            $listHandler->init($institution, $list);
+            if ($listHandler->getIdentifier() === $listIdentifier && $listHandler->isEnabled()) {
+                return $listHandler;
             }
         }
-        return [
-            'properties' => self::RESERVATION_LIST_DEFAULT_VALUES,
-            'institution_information' => [],
-            'translation_keys' => [
-                'title' => '',
-                'description' => '',
-            ],
-        ];
+        $emptyHandler = $this->listPluginManager->get('email');
+        $emptyHandler->init($institution);
+        return $emptyHandler;
     }
 
     /**
-     * Ensure that lists have all the required keys defined needed in other places.
-     * Sets the list disabled if list identifier is not set or is not a string.
+     * Get all available lists for given record
      *
-     * @param array $list Properties of the list to ensure
+     * @param DefaultRecord $driver Record to look for a matching list
      *
      * @return array
      */
-    public function ensureListKeys(array $list): array
+    public function getAvailableListsForRecord(DefaultRecord $driver): array
     {
-        $merged = array_merge(self::RESERVATION_LIST_DEFAULT_VALUES, $list);
-        if (!is_string($merged['Identifier'])) {
-            $merged['Enabled'] = false;
+        $datasource = $driver->tryMethod('getDatasource');
+        if (!$datasource) {
+            return [];
         }
-        return $merged;
+        $result = [];
+        $config = $this->getListConfig();
+        foreach ($config['Institutions'] ?? [] as $institution => $settings) {
+            foreach ($settings['Lists'] ?? [] as $list) {
+                $listHandler = $this->listPluginManager->get($list['Connection']['type']);
+                $listHandler->init($institution, $list);
+                if (
+                    $listHandler->isEnabled()
+                    && $listHandler->datasourceIsValid($datasource)
+                    && $this->checkUserRightsForList($listHandler)
+                ) {
+                    $result[] = $listHandler;
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get list configuration using configured method
+     *
+     * @return array
+     */
+    protected function getListConfig(): array
+    {
+        if (($this->reservationListConfig['Settings']['method'] ??= 'yaml') === 'yaml') {
+            return $this->reservationListConfig;
+        } elseif ($this->reservationListConfig['Settings']['method'] === 'api') {
+            $cacheDir = $this->cacheManager->getCache('object')->getOptions()->getCacheDir();
+            $cacheFile = "$cacheDir/ReservationList.json";
+            $maxAge = $this->reservationListConfig['Settings']['ttl'] ?? 60;
+            if (
+                $maxAge > 0
+                && is_readable($cacheFile)
+                && time() - filemtime($cacheFile) < $maxAge * 60
+                && ($content = file_get_contents($cacheFile)) !== false
+            ) {
+                return json_decode($content, true);
+            }
+            $client = $this->httpService->createClient($this->reservationListConfig['Settings']['url']);
+            $response = $client->send();
+
+            if ($response->isSuccess()) {
+                $config = json_decode($response->getBody(), true);
+                $config = $config['data'];
+                // Cache only if ttl is set to over 0
+                if ($maxAge > 0) {
+                    file_put_contents($cacheFile, json_encode($config));
+                }
+                return $config;
+            }
+        }
+        return [];
+    }
+
+    /**
+     * Check if the user has proper requirements to order records.
+     * Function checks if there is required LibraryCardSources
+     * which are used to check if user has an active connection to ils
+     * defined in the list.
+     *
+     * @param HandlerInterface $list List as a handler interface entity
+     *
+     * @return bool
+     */
+    public function checkUserRightsForList(HandlerInterface $list): bool
+    {
+        if ($patron = $this->ilsAuthenticator->storedCatalogLogin()) {
+            return $list->cardIsValid($patron['source']);
+        }
+        return false;
     }
 
     /**

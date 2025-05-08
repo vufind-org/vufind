@@ -92,18 +92,4 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     {
         return HandlerInterface::class;
     }
-
-    /**
-     * Get connection handler with list configuration.
-     *
-     * @param array $listProperties List properties
-     *
-     * @return HandlerInterface
-     */
-    public function getWithConfig(array $listProperties): HandlerInterface
-    {
-        $connection = parent::get($listProperties['Connection']['type']);
-        $connection->init($listProperties);
-        return $connection;
-    }
 }

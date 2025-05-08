@@ -36,6 +36,8 @@ use Psr\Container\ContainerInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Service\GetServiceTrait;
 
+use function in_array;
+
 /**
  * Abstract handler
  *
@@ -70,6 +72,281 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
      * @var array
      */
     protected array $singleOrderFormConfig = [];
+
+    /**
+     * Title translations as lang code => translation
+     *
+     * @var array
+     */
+    protected array $titleTranslations = [];
+
+    /**
+     * Description translations as lang code => translation
+     *
+     * @var array
+     */
+    protected array $descriptionTranslations = [];
+
+    /**
+     * Address information
+     *
+     * @var array
+     */
+    protected array $addressInfo = [];
+
+    /**
+     * Identifier
+     *
+     * @var string
+     */
+    protected string $identifier;
+
+    /**
+     * Library card sources
+     *
+     * @var array
+     */
+    protected array $libraryCardSources = [];
+
+    /**
+     * Datasources
+     *
+     * @var array
+     */
+    protected array $datasources = [];
+
+    /**
+     * Recipient
+     *
+     * @var array
+     */
+    protected array $recipient = [];
+
+    /**
+     * Connection type
+     *
+     * @var string
+     */
+    protected string $connectionType;
+
+    /**
+     * Connection settings
+     *
+     * @var array
+     */
+    protected array $connectionSettings = [];
+
+    /**
+     * Institution
+     *
+     * @var string
+     */
+    protected string $institution;
+
+    /**
+     * Is the list enabled
+     *
+     * @var bool
+     */
+    protected bool $enabled;
+
+    /**
+     * List configuration as an array
+     *
+     * @var array
+     */
+    protected array $listConfiguration;
+
+    /**
+     * Is enabled
+     *
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * Get translation for title
+     *
+     * @param string $language Language to get title for
+     *
+     * @return string
+     */
+    public function getTitle(string $language): string
+    {
+        return $this->titleTranslations[$language] ?? '';
+    }
+
+    /**
+     * Get translation for description
+     *
+     * @param string $language Language to get description for
+     *
+     * @return string
+     */
+    public function getDescription(string $language): string
+    {
+        return $this->descriptionTranslations[$language] ?? '';
+    }
+
+    /**
+     * Get address information
+     *
+     * @return array
+     */
+    public function getAddress(): array
+    {
+        return $this->addressInfo;
+    }
+
+    /**
+     * Get recipient
+     *
+     * @return array
+     */
+    public function getRecipient(): array
+    {
+        return $this->recipient;
+    }
+
+    /**
+     * Check if library card matches to allowed sources
+     *
+     * @param string $libraryCardSource Library card source
+     *
+     * @return bool
+     */
+    public function cardIsValid(string $libraryCardSource): bool
+    {
+        return in_array($libraryCardSource, $this->libraryCardSources);
+    }
+
+    /**
+     * Check if datasource matches to allowed sources
+     *
+     * @param string $datasource Datasource
+     *
+     * @return bool
+     */
+    public function datasourceIsValid(string $datasource): bool
+    {
+        return in_array($datasource, $this->datasources);
+    }
+
+    /**
+     * Get connection type
+     *
+     * @return string
+     */
+    public function getConnectionType(): string
+    {
+        return $this->connectionType;
+    }
+
+    /**
+     * Get connection settings
+     *
+     * @return array
+     */
+    public function getConnectionSettings(): array
+    {
+        return $this->connectionSettings;
+    }
+
+    /**
+     * Get institution
+     *
+     * @return string
+     */
+    public function getInstitution(): string
+    {
+        return $this->institution;
+    }
+
+    /**
+     * Get identifier
+     *
+     * @return string
+     */
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * Get all list properties
+     *
+     * @return array
+     */
+    public function getAsArray(): array
+    {
+        return $this->listConfiguration;
+    }
+
+    /**
+     * Get api url
+     *
+     * @return string
+     */
+    public function getApiUrl(): string
+    {
+        if ($url = $this->getConnectionSettings()['base_url'] ?? '') {
+            return str_ends_with($url, '/') ? $url : "$url/";
+        }
+        return '';
+    }
+
+    /**
+     * Get api secret
+     *
+     * @return string
+     */
+    public function getApiSecret(): string
+    {
+        return $this->getConnectionSettings()['secret'] ?? '';
+    }
+
+    /**
+     * Get email sender name
+     *
+     * @return string
+     */
+    public function getSenderName(): string
+    {
+        return $this->getConnectionSettings()['Sender']['name'] ?? '';
+    }
+
+    /**
+     * Get email sender
+     *
+     * @return string
+     */
+    public function getSenderEmail(): string
+    {
+        return $this->getConnectionSettings()['Sender']['email'] ?? '';
+    }
+
+    /**
+     * Get email sender
+     *
+     * @return string
+     */
+    public function getEmailSubject(): string
+    {
+        return $this->getConnectionSettings()['Subject'] ?? '';
+    }
+
+    /**
+     * Use patron id to send information
+     *
+     * @return bool
+     */
+    public function getUsePatronId(): bool
+    {
+        return $this->getConnectionSettings()['useKohaId'] ?? true;
+    }
 
     /**
      * Constructor
@@ -206,12 +483,26 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
     /**
      * Initialize connection handler
      *
-     * @param array $config List specific configuration from ReservationList.yaml
+     * @param string $institution List owner institution code
+     * @param array  $config      List specific configuration as an array
      *
      * @return static
      */
-    public function init(array $config): static
+    public function init(string $institution, array $config = []): static
     {
+        $this->titleTranslations = $config['Translations']['Title'] ?? [];
+        $this->descriptionTranslations = $config['Translations']['Description'] ?? [];
+        $this->addressInfo = $config['Information'] ?? [];
+        $this->identifier = $config['Identifier'] ?? '';
+        $this->libraryCardSources = $config['LibraryCardSources'] ?? [];
+        $this->datasources = $config['Datasources'] ?? [];
+        $this->recipient = $config['Recipient'] ?? [];
+        $this->connectionType = $config['Connection']['type'] ?? '';
+        $this->connectionSettings = $config['Connection'] ?? [];
+        $this->enabled = $config['Enabled'] ?? false;
+        $this->institution = $institution;
+        $this->listConfiguration = $config;
+
         $definedForms = $this->getService(\Finna\Config\YamlReader::class)
             ->getFinna('ReservationList.yaml', 'config/finna', true)['Forms'] ?? [];
         // Check that single order and multi order forms exist

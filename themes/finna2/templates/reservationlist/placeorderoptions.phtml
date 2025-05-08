@@ -8,20 +8,9 @@
   $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($pageTitle, active: true);
 
-  $listTranslations = $this->reservationList()->getListProperties($this->params['institution'], $this->params['listIdentifier'])['translation_keys'];
 ?>
 <h2><?= $this->escapeHtml($pageTitle); ?></h2>
 <div>
-  <div>
-    <label for="list_title"><?=$this->transEsc('ReservationList::Reservation List')?>:</label>
-    <p id="list_title"><?=$this->transEsc($listTranslations['title']);?></p>
-  </div>
-  <?php if (!$this->translationEmpty($listTranslations['description'])): ?>
-    <div>
-      <label for="list_description"><?=$this->transEsc('ReservationList::Description')?>:</label>
-      <p id="list_description"><?=$this->transEsc($listTranslations['description']);?></p>
-    </div>
-  <?php endif; ?>
   <div>
     <label for="resource_name"><?=$this->transEsc('ReservationList::Resource')?>:</label>
     <p id="resource_name"><?=$this->transEsc($this->params['recordId'])?></p>

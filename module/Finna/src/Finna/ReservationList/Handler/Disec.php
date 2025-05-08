@@ -44,27 +44,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 class Disec extends AbstractBase
 {
     /**
-     * Disec orders url
-     *
-     * @param string
-     */
-    protected $ordersUrl;
-
-    /**
-     * API key used for disec authorization
-     *
-     * @param string
-     */
-    protected $apiKey;
-
-    /**
-     * Use catalog id to send user data instead of users first and last name
-     *
-     * @param bool
-     */
-    protected bool $useCatId = false;
-
-    /**
      * Common headers in requests
      *
      * @var array
@@ -90,7 +69,8 @@ class Disec extends AbstractBase
     public function placeOrder(array $formValues, UserEntityInterface $user): array
     {
         $data = [];
-        $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($this->ordersUrl);
+        $orderUrl = $this->getApiUrl() . 'orders';
+        $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($orderUrl);
         $client->setHeaders($this->requestHeaders);
         $client->setMethod(\Laminas\Http\Request::METHOD_POST);
 
@@ -108,7 +88,7 @@ class Disec extends AbstractBase
         $data['contentInfo'] .= 'Delivery date: ' . $formValues['pickup_date'] . PHP_EOL;
         if ($catId = $user->getCatId()) {
             [, $id] = explode('.', $catId);
-            if ($this->useCatId) {
+            if ($this->getUsePatronId()) {
                 $data['kohaId'] = (int)$id;
             }
             $data['contentInfo'] .= 'cat_id: ' . $id;
@@ -151,7 +131,8 @@ class Disec extends AbstractBase
     public function getListStatus(FinnaResourceListEntityInterface $list): string
     {
         $externalId = $list->getExternalId();
-        $formedUrl = implode('/', [$this->ordersUrl, $externalId]);
+        $orderUrl = $this->getApiUrl() . 'orders';
+        $formedUrl = implode('/', [$orderUrl, $externalId]);
         $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($formedUrl);
         $client->setHeaders($this->requestHeaders);
         $client->setMethod(\Laminas\Http\Request::METHOD_GET);
@@ -169,25 +150,15 @@ class Disec extends AbstractBase
     /**
      * Initialize connection handler
      *
-     * @param array $config List specific configuration from ReservationList.yaml
+     * @param string $institution List owner institution code
+     * @param array  $config      List specific configuration as an array
      *
      * @return static
-     * @throws \Exception If Disec connection is not configured properly
      */
-    public function init(array $config): static
+    public function init(string $institution, array $config = []): static
     {
-        parent::init($config);
-        try {
-            $baseUrl = $config['Connection']['base_url'];
-            if (!str_ends_with($baseUrl, '/')) {
-                $baseUrl .= '/';
-            }
-            $this->ordersUrl = $baseUrl . 'orders';
-            $this->requestHeaders[] = 'X-API-Key: ' . $config['Connection']['secret'];
-            $this->useCatId = $config['Connection']['use_cat_id'] ?? false;
-        } catch (\Exception $e) {
-            throw new \Exception(__CLASS__ . ': Invalid configuration');
-        }
+        parent::init($institution, $config);
+        $this->requestHeaders[] = 'X-API-Key: ' . $this->getApiSecret();
         return $this;
     }
 }

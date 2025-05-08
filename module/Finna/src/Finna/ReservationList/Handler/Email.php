@@ -46,34 +46,6 @@ use VuFind\Exception\Mail as MailException;
 class Email extends AbstractBase
 {
     /**
-     * Recipients for email handler defined in ReservationList.yaml
-     *
-     * @var array
-     */
-    protected array $recipients;
-
-    /**
-     * Email sender email
-     *
-     * @var string
-     */
-    protected string $senderEmail;
-
-    /**
-     * Email sender name
-     *
-     * @var string
-     */
-    protected string $senderName;
-
-    /**
-     * Email subject
-     *
-     * @var string
-     */
-    protected string $emailSubject;
-
-    /**
      * Places an order
      *
      * @param array               $formValues Values gathered from submitted form
@@ -103,16 +75,16 @@ class Email extends AbstractBase
         $replyToEmail = $formValues['email'] ?: $user->getEmail();
 
         $result = true;
-        foreach ($this->recipients as $recipient) {
+        foreach ($this->getRecipient() as $recipient) {
             if ($recipient['email']) {
                 $success = $this->sendEmail(
                     $recipient['name'] ?? '',
                     $recipient['email'],
-                    $this->senderName,
-                    $this->senderEmail,
+                    $this->getSenderName(),
+                    $this->getSenderEmail(),
                     $replyToName,
                     $replyToEmail,
-                    $this->emailSubject,
+                    $this->getEmailSubject(),
                     $emailMessage
                 );
             } else {
@@ -140,28 +112,6 @@ class Email extends AbstractBase
     public function getListStatus(FinnaResourceListEntityInterface $list): string
     {
         return '';
-    }
-
-    /**
-     * Initialize connection handler
-     *
-     * @param array $config List specific configuration from ReservationList.yaml
-     *
-     * @return static
-     * @throws \Exception If Email settings are not configured properly
-     */
-    public function init(array $config): static
-    {
-        parent::init($config);
-        try {
-            $this->recipients = $config['Recipient'];
-            $this->senderName = $config['Connection']['Sender']['name'];
-            $this->senderEmail = $config['Connection']['Sender']['email'];
-            $this->emailSubject = $config['Connection']['Subject'];
-        } catch (\Exception $e) {
-            throw new \Exception(__CLASS__ . ': Invalid configuration.');
-        }
-        return $this;
     }
 
     /**

@@ -31,9 +31,12 @@ namespace FinnaTest\Traits;
 
 use Finna\Db\Service\AccessTokenService;
 use Laminas\Db\ResultSet\ResultSet;
+use Laminas\Http\Client;
+use Laminas\Http\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Row\AccessToken;
 use VuFind\Db\Table\AccessToken as TableAccessToken;
+use VuFindHttp\HttpService;
 
 /**
  * Trait which returns pre-configured db mocks
@@ -68,36 +71,78 @@ trait MockServicesTrait
     }
 
     /**
-     * Create a mocked row object
+     * Get http service
      *
-     * @param string $name Row class name
-     * @param array  $data Array containing data as key => value
+     * @param array $urlAndResponseMap Url and response map. Url is the parameter for createClient.
+     *                                 Value is an array containing keys 'success', 'body'
+     *                                 which will be returned by isSuccess and getBody functions as a response.
      *
      * @return MockObject
      */
-    public function getMockedRowObject(string $name, array $data): MockObject
+    public function getHttpService(array $urlAndResponseMap): MockObject
     {
-        $mockedRow = $this->getMockBuilder($name)->disableOriginalConstructor()->onlyMethods(['__get'])->getMock();
-        $map = [];
-        foreach ($data as $key => $value) {
-            $map[] = [$key, $value];
+        $httpService = $this->getMockBuilder(HttpService::class)
+            ->onlyMethods(['createClient'])->disableOriginalConstructor()->getMock();
+        foreach ($urlAndResponseMap as $url => $responseData) {
+            $responseMock = $this->getMockBuilder(Response::class)
+                ->onlyMethods(['isSuccess', 'getBody'])->disableOriginalConstructor()->getMock();
+            $responseMock->expects($this->any())->method('isSuccess')->willReturn($responseData['success']);
+            $responseMock->expects($this->any())->method('getBody')->willReturn($responseData['body']);
+
+            $clientMock = $this->getMockBuilder(Client::class)
+                ->onlyMethods(['send'])->disableOriginalConstructor()->getMock();
+            $clientMock->expects($this->any())->method('send')->willReturn($responseMock);
+            $httpService->expects($this->any())->method('createClient')->with($url)->willReturn($clientMock);
         }
-        $mockedRow->expects($this->any())->method('__get')->willReturnMap($map);
-        return $mockedRow;
+
+        return $httpService;
+    }
+
+    /**
+     * Create a mocked row object
+     *
+     * @param string      $name     Row class name
+     * @param array       $data     Array containing data as key => value
+     * @param ?MockObject $template Template for row object
+     *
+     * @return MockObject
+     */
+    public function getMockedRowObject(string $name, array $data, ?MockObject $template = null): MockObject
+    {
+        if (null === $template) {
+            $rowObject = $this->getMockBuilder($name)->onlyMethods([])->disableOriginalConstructor()->getMock();
+        } else {
+            $rowObject = clone $template;
+        }
+
+        foreach ($data as $key => $value) {
+            $rowObject->__set($key, $value);
+        }
+        return $rowObject;
     }
 
     /**
      * Create a mocked table object
      *
-     * @param string $name   Table class name
-     * @param array  $dbRows Database rows
+     * @param string      $name          Table class name
+     * @param array       $dbRows        Database rows
+     * @param ?MockObject $tableTemplate Mocked table
+     * @param ?MockObject $newEntity     Mocked row template as new entity
      *
      * @return MockObject
      */
-    public function getMockedTableObject(string $name, array $dbRows): MockObject
-    {
-        $mockedTable = $this->getMockBuilder($name)->onlyMethods(['select'])
+    public function getMockedTableObject(
+        string $name,
+        array $dbRows,
+        ?MockObject $tableTemplate = null,
+        ?MockObject $newEntity = null
+    ): MockObject {
+        if (null !== $tableTemplate) {
+            return clone $tableTemplate;
+        }
+        $mockedTable = $this->getMockBuilder($name)->onlyMethods(['select', 'createRow', 'delete'])
             ->disableOriginalConstructor()->getMock();
+
         $mockedTable->expects($this->any())->method('select')->willReturnCallback(function ($query) use ($dbRows) {
             $resultSetRow = $this->getMockBuilder(ResultSet::class)->onlyMethods(['current'])
                 ->disableOriginalConstructor()->getMock();
@@ -114,6 +159,10 @@ trait MockServicesTrait
             $resultSetRow->expects($this->any())->method('current')->willReturn($foundEntities[0] ?? null);
             return $resultSetRow;
         });
+        $mockedTable->expects($this->any())->method('delete')->willReturn(1);
+        if ($newEntity) {
+            $mockedTable->expects($this->any())->method('createRow')->willReturn($newEntity);
+        }
         return $mockedTable;
     }
 }

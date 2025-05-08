@@ -1,5 +1,5 @@
 <!-- START of: finna - Helpers/reservationlist-reserve.phtml -->
-<?php if (empty($this->lists)) {
+<?php if (empty($this->listHandlers)) {
 return;
 } ?>
 
@@ -10,34 +10,31 @@ return;
   <div class="headers">
     <span class="holdings-title"><?=$this->transEsc('ReservationList::Add To Reservation List')?></span>
   </div>
-  <?php foreach ($this->lists as $institution => $lists): ?>
-    <?php foreach ($lists as $list): ?>
-      <?php $listTranslations = $this->reservationList()->getListProperties($institution, $list['Identifier'])['translation_keys']; ?>
-      <div class="holdings-group">
-        <div class="holdings-container-heading">
-          <?php // TODO: create a component which handles the defaulting into prettier form ?>
-          <div class="location">
-            <?php if (!$this->translationEmpty($listTranslations['title'])): ?>
-              <?= $this->transEsc($listTranslations['title']); ?>
-            <?php else: ?>
-              <?= $this->transEscWithPrefix('source_', $institution) . ': ' . $this->escapeHtml($list['Identifier']); ?>
-            <?php endif; ?>
-          </div>
-          <div class="location-link text-right">
-            <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorderoptions', [], ['query' => ['recordId' => $this->driver->getUniqueID(), 'source' => $this->driver->getSourceIdentifier(), 'institution' => $institution, 'listIdentifier' => $list['Identifier']]]))?>" data-lightbox><?= $this->icon('save') . ' ' . $this->transEsc(['ReservationList', 'Reserve Resource'])?></a>
-          </div>
+  <?php foreach ($this->listHandlers as $listHandler): ?>
+    <div class="holdings-group">
+      <div class="holdings-container-heading">
+        <?php // TODO: create a component which handles the defaulting into prettier form ?>
+        <div class="location">
+          <?php if ($title = $listHandler->getTitle($this->layout()->userLang)): ?>
+            <?= $this->escapeHtml($title); ?>
+          <?php else: ?>
+            <?= $this->transEscWithPrefix('source_', $listHandler->getInstitution()) . ': ' . $this->escapeHtml($listHandler->getIdentifier()); ?>
+          <?php endif; ?>
+        </div>
+        <div class="location-link text-right">
+          <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorderoptions', [], ['query' => ['recordId' => $this->driver->getUniqueID(), 'source' => $this->driver->getSourceIdentifier(), 'institution' => $listHandler->getInstitution(), 'listIdentifier' => $listHandler->getIdentifier()]]))?>" data-lightbox><?= $this->icon('save') . ' ' . $this->transEsc(['ReservationList', 'Reserve Resource'])?></a>
         </div>
       </div>
-    <?php endforeach; ?>
+    </div>
   <?php endforeach; ?>
   <?php if ($listsContainingRecord = $this->reservationList($user)->getListsContainingRecord($this->driver)): ?>
     <div class="holdings-group saved-reservation-lists">
       <div class="alert alert-info savedLists loaded">
         <strong><?=$this->transEsc('Saved in')?>:</strong><br>
         <ul>
-          <?php foreach ($listsContainingRecord as $list): ?>
+          <?php foreach ($listsContainingRecord as $listEntity): ?>
             <li>
-              <a href="<?= $this->url('reservationlist-displaylist', ['listId' => $list->getId()]) ?>"><?= $this->escapeHtml($list->getTitle()); ?></a><br>
+              <a href="<?= $this->url('reservationlist-displaylist', ['listId' => $listEntity->getId()]) ?>"><?= $this->escapeHtml($listEntity->getTitle()); ?></a><br>
             </li>
           <?php endforeach; ?>
         </ul>

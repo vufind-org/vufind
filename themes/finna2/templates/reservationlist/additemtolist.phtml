@@ -8,32 +8,32 @@
   $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($pageTitle, active: true);
 
-  $listTranslations = $this->reservationList($user)->getListProperties($this->institution, $this->listIdentifier)['translation_keys'];
+  $listHandler = $this->reservationList($user)->getListHandler($this->institution, $this->listIdentifier);
 ?>
 
 <h2><?= $this->transEsc($pageTitle); ?></h2>
 
 <?php // TODO: create a component which handles the defaulting into prettier form ?>
-<?php if (!$this->translationEmpty($listTranslations['title'])): ?>
-  <strong><?= $this->transEsc($listTranslations['title']); ?></strong>
+<?php if ($title = $listHandler->getTitle($this->layout()->userLang)): ?>
+  <strong><?= $this->escapeHtml($title); ?></strong>
 <?php else: ?>
-  <strong><?= $this->transEscWithPrefix('source_', $this->institution) . ': ' . $this->escapeHtml($this->listIdentifier); ?></strong>
+  <strong><?= $this->transEscWithPrefix('source_', $listHandler->getInstitution()) . ': ' . $this->escapeHtml($listHandler->getIdentifier()); ?></strong>
 <?php endif; ?>
 
-<?php if (!$this->translationEmpty($listTranslations['description'])): ?>
-  <p><?= $this->transEsc($listTranslations['description']); ?></p>
+<?php if ($description = $listHandler->getDescription($this->layout()->userLang)): ?>
+  <p><?= $this->escapeHtml($description); ?></p>
 <?php endif; ?>
 
 <?php if (!empty($this->listsContaining)): ?>
   <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:
-  <?php foreach ($this->listsContaining as $i => $list): ?>
-    <a href="<?=$this->url('reservationlist-displaylist', ['listId' => $list->getId()]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list->getTitle())?></a><?php if ($i < count($this->listsContaining) - 1): ?>, <?php endif; ?>
+  <?php foreach ($this->listsContaining as $i => $listEntity): ?>
+    <a href="<?=$this->url('reservationlist-displaylist', ['listId' => $listEntity->getId()]) ?>" data-lightbox-ignore><?=$this->escapeHtml($listEntity->getTitle())?></a><?php if ($i < count($this->listsContaining) - 1): ?>, <?php endif; ?>
   <?php endforeach; ?>
   </p><hr>
 <?php endif; ?>
 
 <div>
-  <?php if (!empty($this->lists)): ?>
+  <?php if (!empty($this->listEntities)): ?>
     <form method="post" name="AddItemToReservationList" data-lightbox-onclose="VuFind.refreshPage" action="<?=$this->url('reservationlist-additemtolist'); ?>">
       <input type="hidden" name="recordId" value="<?=$this->escapeHtmlAttr($this->recordId)?>">
       <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->source)?>">
@@ -43,8 +43,8 @@
       <label class="form-label" for="save_list"><?=$this->transEsc('ReservationList::Choose a List') ?></label>
       <div class="form-group">
         <select class="form-select" id="save_list" name="list">
-          <?php foreach ($this->lists as $list): ?>
-            <option value="<?=$this->escapeHtmlAttr($list->getId())?>"><?=$this->escapeHtml($list->getTitle())?></option>
+          <?php foreach ($this->listEntities as $listEntity): ?>
+            <option value="<?=$this->escapeHtmlAttr($listEntity->getId())?>"><?=$this->escapeHtml($listEntity->getTitle())?></option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -57,5 +57,5 @@
       </div>
     </form>
   <?php endif; ?>
-  <a class="btn btn-link" id="make-list" href="<?=$this->url('reservationlist-createlist', [], ['query' => ['institution' => $this->institution, 'listIdentifier' => $this->listIdentifier, 'newList' => '1', 'recordId' => urlencode($this->recordId), 'source' => urlencode($this->source)]])?>"><?=$this->transEsc('ReservationList::Create New Reservation List')?></a>
+  <a class="btn btn-link" id="make-list" href="<?=$this->url('reservationlist-createlist', [], ['query' => ['institution' => $listHandler->getInstitution(), 'listIdentifier' => $listHandler->getIdentifier(), 'newList' => '1', 'recordId' => urlencode($this->recordId), 'source' => urlencode($this->source)]])?>"><?=$this->transEsc('ReservationList::Create New Reservation List')?></a>
 </div>

@@ -1,34 +1,3 @@
-# Settings for reservation lists
-# To enable lists in your site, see section ReservationList in config.ini.sample
-# Enabled key in the root defines if the list functionality is enabled
-# Root key is the identifier of institutions controlling the lists
-# Under that is general Information about institution and Lists
-# Each list entry has to contain Identifier which should be unique for each list under institution.
-# Recipient contains email address(es) where the reservation is to be sent
-# Datasources contains record datasources which can be added to the list
-# List can contain same information as under institution information to be more specific
-# about where the order is being delivered
-# LibraryCardSources is used to check for active connection to ILS to be able to use lists
-# Connection defines how the orders are handled with institutions:
-# Type:
-# email: Uses email to place orders
-#   Sender:
-#     name: Name to be shown as the sender of the email
-#     email: Email address to be shown as where the email was sent
-#   Subject: Subject to be shown in the email
-# disec: Uses Disec api for sending orders
-#   base_url: Api base url
-#   secret:   Api specific secret
-#   use_cat_id: [Optional] Use catalog id for user instead of firstName, lastName, email. Default false.
-#
-# Each list declared uses their own translation keys under translation domain ReservationList::
-#
-# "list_title_{$institution}_{$identifier}"
-# Generic title of the list i.e Order resources to Library Tests Research Room etc.
-#
-# "list_description_{$institution}_{$identifier}" 
-# Generic description about the list i.e These reservations will be delivered to nnn etc.
-#
 Institutions:
   Example Institution:
     Information:

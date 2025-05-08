@@ -1,17 +1,17 @@
 <!-- START of: finna - reservationlist/displaylist.phtml -->
 <?php
   // Set up page title:
-  $pageTitle = $this->translate('ReservationList::Reservation List') . ': ' . $this->translate($list->getTitle());
+  $pageTitle = $this->translate('ReservationList::Reservation List') . ': ' . $this->translate($this->listEntity->getTitle());
   $this->headTitle($pageTitle);
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
     ->add($this->translate('ReservationList::All Lists'), $this->url('reservationlist-displaylists'))
-    ->add($pageTitle, $this->url('reservationlist-displaylist', ['listId' => $this->list->getId()]), active: true);
+    ->add($pageTitle, $this->url('reservationlist-displaylist', ['listId' => $this->listEntity->getId()]), active: true);
 
   $user = $this->auth()->isLoggedIn();
   $recordTotal = $this->results->getResultTotal();
-  $listProperties = $this->reservationList($user)->getListProperties($this->list->getInstitution(), $this->list->getListConfigIdentifier());
+  $listHandler = $this->reservationList($user)->getListHandler($this->listEntity->getInstitution(), $this->listEntity->getListConfigIdentifier());
 ?>
 
 <?= $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'reservationlist']); ?>
@@ -24,58 +24,58 @@
     <?= $this->flashmessages() ?>
     <?php // TODO: create a component which handles the defaulting into prettier form ?>
     <div class="description-wrapper">
-      <?php if (!$this->translationEmpty($listProperties['translation_keys']['title'])): ?>
-        </p><?= $this->transEsc($listProperties['translation_keys']['title']); ?></p>
+      <?php if ($title = $listHandler->getTitle($this->layout()->userLang)): ?>
+        </p><?= $this->escapeHtml($title); ?></p>
       <?php else: ?>
-        <p><?= $this->transEscWithPrefix('source_', $this->list->getInstitution()) . ': ' . $this->escapeHtml($this->list->getListConfigIdentifier()); ?></p>
+        <p><?= $this->transEscWithPrefix('source_', $listHandler->getInstitution()) . ': ' . $this->escapeHtml($listHandler->getIdentifier()); ?></p>
       <?php endif; ?>
     </div>
-    <?php if (!$this->translationEmpty($listProperties['translation_keys']['description'])): ?>
+    <?php if ($description = $listHandler->getDescription($this->layout()->userLang)): ?>
       <div class="description-wrapper">
-        <p><?= $this->transEsc($listProperties['translation_keys']['description']); ?></p>
+        <p><?= $this->escapeHtml($description); ?></p>
       </div>
     <?php endif; ?>
     <div class="description-wrapper">
-      <?php foreach ($listProperties['properties']['Information'] ?: $listProperties['institution_information'] as $value): ?>
+      <?php foreach ($listHandler->getAddress() as $value): ?>
         <p><?=$this->escapeHtml($value);?></p>
       <?php endforeach; ?>
     </div>
-    <?php if ($this->list->getDescription() ?? false): ?>
+    <?php if ($this->listEntity->getDescription() ?? false): ?>
       <div class="description-wrapper">
-        <p><?=$this->escapeHtml($this->list->getDescription()); ?></p>
+        <p><?=$this->escapeHtml($this->listEntity->getDescription()); ?></p>
       </div>
     <?php endif; ?>
-    <?php if ($this->list->getCreated() ?? false): ?>
+    <?php if ($this->listEntity->getCreated() ?? false): ?>
       <div class="list-info">
-        <p><?= $this->transEsc('ReservationList::list_created', ['%%date%%' => $this->list->getCreated()->format('d.m.Y')]) ?></p>
+        <p><?= $this->transEsc('ReservationList::list_created', ['%%date%%' => $this->listEntity->getCreated()->format('d.m.Y')]) ?></p>
       </div>
     <?php endif; ?>
-    <?php if ($this->list->getOrdered() ?? false): ?>
+    <?php if ($this->listEntity->getOrdered() ?? false): ?>
       <div class="list-info">
-        <p><?= $this->transEsc('ReservationList::list_ordered', ['%%date%%' => $this->list->getOrdered()->format('d.m.Y')]) ?></p>
+        <p><?= $this->transEsc('ReservationList::list_ordered', ['%%date%%' => $this->listEntity->getOrdered()->format('d.m.Y')]) ?></p>
       </div>
     <?php endif; ?>
-    <?php if ($this->list->getPickupDate() ?? false): ?>
+    <?php if ($this->listEntity->getPickupDate() ?? false): ?>
       <div class="list-info">
-        <p><?= $this->transEsc('ReservationList::list_pickup_date', ['%%date%%' => $this->list->getPickupDate()->format('d.m.Y')]) ?></p>
+        <p><?= $this->transEsc('ReservationList::list_pickup_date', ['%%date%%' => $this->listEntity->getPickupDate()->format('d.m.Y')]) ?></p>
       </div>
     <?php endif; ?>
-    <?php if ($this->list->getOrdered() && $this->list->getExternalId()): ?>
-      <div class="list-info js-reservation-list-status pending" data-list-id="<?=$this->escapeHtmlAttr($this->list->getId());?>">
+    <?php if ($this->listEntity->getOrdered() && $this->listEntity->getExternalId()): ?>
+      <div class="list-info js-reservation-list-status pending" data-list-id="<?=$this->escapeHtmlAttr($this->listEntity->getId());?>">
       </div>
     <?php endif; ?>
     <div class="list-controls">
-      <?php if (!$this->list->getOrdered() && $this->results->getResults() && $listProperties['properties']['Enabled']): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorder', [], ['query' => ['listId' => $this->list->getId()]]))?>" class="btn btn-primary" data-lightbox><?=$this->transEsc('ReservationList::Order List')?></a>
+      <?php if ($listHandler->isEnabled() && !$this->listEntity->getOrdered() && $this->results->getResults()): ?>
+        <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorder', [], ['query' => ['listId' => $this->listEntity->getId()]]))?>" class="btn btn-primary" data-lightbox><?=$this->transEsc('ReservationList::Order List')?></a>
       <?php endif; ?>
       <?=
         $this->component(
             'confirm-button',
             [
-              'buttonLink' => $this->url('reservationlist-deletelist', ['listId' => $list->getId()]),
+              'buttonLink' => $this->url('reservationlist-deletelist', ['listId' => $this->listEntity->getId()]),
               'buttonLabel' => 'delete_list',
               'buttonClass' => 'btn btn-primary',
-              'confirmLink' => $this->url('reservationlist-deletelist', ['listId' => $list->getId()], ['query' => ['confirm' => 1]]),
+              'confirmLink' => $this->url('reservationlist-deletelist', ['listId' => $this->listEntity->getId()], ['query' => ['confirm' => 1]]),
               'header' => 'confirm_delete_list_text',
             ]
         );
@@ -96,14 +96,14 @@
         <div class="myaccount-sticky-header"></div>
           <div class="toolbar-sticky-container">
             <?php $multiPageSelection = ($this->config()->get('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
-            <form class="form<?= $multiPageSelection ?>" id="form-reservation-<?= $this->list->getId() ?? ''?>" method="post" name="bulkActionForm" action="<?=$this->url('reservationlist-deletebulk', ['listId' => $this->list->getId()])?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+            <form class="form<?= $multiPageSelection ?>" id="form-reservation-<?= $this->listEntity->getId() ?? ''?>" method="post" name="bulkActionForm" action="<?=$this->url('reservationlist-deletebulk', ['listId' => $this->listEntity->getId()])?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
               <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
               <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
               <div class="toolbar-sticky">
                 <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', [
                   'idPrefix' => 'reservationlist_',
-                  'list' => $list,
-                  'canDelete' => (!$list->getOrdered()) && $user,
+                  'list' => $this->listEntity,
+                  'canDelete' => (!$this->listEntity->getOrdered()) && $user,
                   'cartEnabled' => false,
                   'email' => false,
                   'export' => false,
