@@ -4,8 +4,7 @@
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
-    $isEDS = $this->driver instanceof VuFind\RecordDriver\EDS;
-    $getThisEnabled = isset($this->getThis) && !$isEDS;
+    $getThisEnabled = isset($this->getThis) && (!isset($this->driver) || $this->driver->supportsGetThis());
     if ($getThisEnabled) {
         $this->getThis->setItems([$holding]);
         $this->getThis->setRecord($this->record($this->driver));

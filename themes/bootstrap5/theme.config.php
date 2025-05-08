@@ -62,7 +62,6 @@ return [
         ['file' => 'lightbox.js', 'priority' => 330],
         ['file' => 'cookie.js', 'priority' => 340],
         ['file' => 'searchbox_controls.js', 'priority' => 350],
-        ['file' => 'get_this_dropdown.js', 'priority' => 355],
         ['file' => 'truncate.js', 'priority' => 360],
         ['file' => 'trigger_print.js', 'priority' => 370],
         ['file' => 'observer_manager.js', 'priority' => 380],
@@ -71,6 +70,7 @@ return [
         ['file' => 'covers.js', 'priority' => 410],
         ['file' => 'validation.js', 'priority' => 420],
         ['file' => 'copy_to_clipboard.js', 'priority' => 430],
+        ['file' => 'get_this_dropdown.js', 'priority' => 440],
     ],
     /**
      * Configuration for a single or multiple favicons.

@@ -46,6 +46,11 @@ use Psr\Container\ContainerInterface;
 class RegexFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
+     * @var string Config file to use
+     */
+    protected string $configFilename = 'Regex.yaml';
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -68,8 +73,9 @@ class RegexFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\YamlReader::class),
+            $yamlReader->get($this->configFilename),
         );
     }
 }

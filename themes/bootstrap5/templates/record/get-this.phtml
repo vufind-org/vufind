@@ -5,7 +5,9 @@ $this->layout()->searchbox = false;
 $this->layout()->showSearchBacklink = true;
 $templates = $this->getThis->getSubTemplates();
 foreach ($templates as $template) {
-    $this->getThisParams = $this->getThis->getSubTemplateParams($template);
-    echo $this->render('record/get-this/' . $template . '.phtml');
+    echo $this->context()->renderInContext(
+        'record/get-this/' . $template . '.phtml',
+        ['getThisParams' => $this->getThis->getSubTemplateParams($template)]
+    );
 }
 unset($this->getThisParams);

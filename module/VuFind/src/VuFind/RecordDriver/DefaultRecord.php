@@ -1847,4 +1847,14 @@ class DefaultRecord extends AbstractBase
         // properties):
         return is_array($value) ? $value : [$value];
     }
+
+    /**
+     * Whether the driver supports the GetThis feature
+     *
+     * @return bool
+     */
+    public function supportsGetThis(): bool
+    {
+        return true;
+    }
 }

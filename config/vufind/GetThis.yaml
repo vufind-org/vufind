@@ -4,28 +4,40 @@
 # Either to display the copy number (next to the call number), default false
 showCopyNumber: true
 
-# The order changes the order it's displayed
-#template_name_within_get-this:
-#  enabled: true/false
-#  condition_function: my_function_within_GetThisLoader (optional / can be a list), the function can be negated with leading "!"
-#  view_variables:
-#    - my_var: Value
-#    - my_link_with_placeholder: https://mylib.edu/{{location}}/open_hours # Placeholder can be used
-# If the function does not exist, the condition will evaluate to false
-# Exemple of nested conditions
-#  holdings:
-#    conditions:
-#      - conditions:
-#          - conditions:
-#              - condition_function: showHoldings
-#              - and
-#              - condition_function: and_other_function
-#          - condition_function: showHoldings
-#      - conditions:
-#          - condition_function: showHoldings
-#          - condition_function: or_other_function
-#      - condition_function: showHoldings
 templates:
+  # Elements here correspond to a template file within templates/get-this with .phtml being stripped from the end
+  # The order changes the order templates are displayed
+  # Elements parameter, all parameters are optional :
+  #   enabled: true/false, whether to enable the template
+  #   view_variables: array of extra variables made available to the templates.
+  #     It can be used with placeholders if available; see example below.
+  #   condition_function: a function within GetThisLoader returning a boolean to whether display or not the template
+  #     The result of the function can be negated if prefixed with "!"
+  #     note : If the function does not exist, the condition will evaluate to false
+  #   conditions: if condition_function is limited for you, conditions replace it to give more flexibility :
+  #     This element defines a set of logical conditions.
+  #     The structure is recursive, allowing nested combinations of AND/OR logic.
+  #     At each level, conditions is a list of entries.
+  #     If any entry is true, the whole list is considered true (logical OR).
+  #     Entries can be:
+  #       condition_function: evaluates a single condition.
+  #       conditions: e nested conditions block used to combine conditions.
+  #       The string "and": acts as a logical AND between adjacent conditions.
+  #
+  #   Example; Values surrounded with brackets are placeholders serving as example :
+  #     {template_name}:
+  #       conditions:
+  #         - conditions:
+  #             - conditions:
+  #                 - condition_function: {test_function1}
+  #                 - and
+  #                 - condition_function: {test_function2}
+  #             - condition_function: {test_function3}
+  #         - condition_function: {test_function4}
+  #       view_variables:
+  #         - {my_link}: {https://your_lib.edu}
+  #         - {my_link_with_placeholder}: {https://mylib.edu/%%location%%/open_hours}
+
   holdings:
     condition_function: showHoldings
 
@@ -43,19 +55,42 @@ templates:
   staff-office-delivery:
     condition_function: showStaffDelivery
     view_variables:
+      # Has the following placeholders available:
+      #   %%item%% : Item record
+      #   %%location%%: Location of the item
+      #   %%callNum%%: Call number
+      #   %%title%%: Title
+      #   %%author%%: Author
+      #   %%isbn%%: ISBN
       general_link: https://your_lib.msu.edu/facstaffdelivery
-      request_link: https://interlib.your_lib.edu/request_link/{{title}}?author={{author}}&rft.isbn={{isbn}}&loc={{location}}&callno={{callNum}}&CAT=1
+      request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
 
 
   inter-library:
     condition_function: showInterLibrary
     view_variables:
+      # Has the following placeholders available:
+      #   %%item%% : Item record
+      #   %%location%%: Location of the item
+      #   %%status%%: Availability status
+      #   %%callNum%%: Call number
+      #   %%title%%: Title
+      #   %%author%%: Author
+      #   %%isbn%%: ISBN
       general_link: https://your_lib.edu/ils/
-      request_link: https://interlib.your_lib.edu/request_link/{{title}}?author={{author}}&rft.isbn={{isbn}}&loc={{location}}&callno={{callNum}}&CAT=1
+      request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
 
 
   remote-delivery:
     condition_function: showRemotePatron
     view_variables:
+      # Has the following placeholders available:
+      #   %%item%% : Item record
+      #   %%location%%: Location of the item
+      #   %%status%%: Availability status
+      #   %%callNum%%: Call number
+      #   %%title%%: Title
+      #   %%author%%: Author
+      #   %%isbn%%: ISBN
       general_link: https://your_lib.edu/ils/distance
-      request_link: https://interlib.your_lib.edu/request_link/{{title}}?author={{author}}&rft.isbn={{isbn}}&loc={{location}}&callno={{callNum}}&CAT=1
+      request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1

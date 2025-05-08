@@ -1,6 +1,5 @@
 <?php
-$isEDS = $this->driver instanceof VuFind\RecordDriver\EDS;
-$getThisEnabled = isset($this->getThis) && !$isEDS;
+$getThisEnabled = isset($this->getThis) && (!isset($this->driver) || $this->driver->supportsGetThis());
 if ($getThisEnabled) {
     $this->getThis->setItems($this->statusItems);
     $this->getThis->setRecord($this->record($this->driver));

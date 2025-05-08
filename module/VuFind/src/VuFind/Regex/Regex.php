@@ -15,7 +15,6 @@
 namespace VuFind\Regex;
 
 use Exception;
-use VuFind\Config\YamlReader;
 
 use function array_key_exists;
 
@@ -30,23 +29,18 @@ use function array_key_exists;
  */
 class Regex
 {
-    protected string $configFilename = 'Regex.yaml';
-
-    /**
-     * Config pulled from the above file
-     *
-     * @var array
-     */
-    protected $config;
-
     /**
      * Initializes the loader
      *
-     * @param YamlReader $yamlReader YamlReader service
+     * @param array $config Config pulled from the file
      */
-    public function __construct(protected YamlReader $yamlReader)
+    public function __construct(protected array $config)
     {
-        $this->config = $yamlReader->get($this->configFilename);
+    }
+
+    public function setConfig(array $config): void
+    {
+        $this->config = $config;
     }
 
     /**

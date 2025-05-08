@@ -30,7 +30,11 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\View\Model\ViewModel;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use VuFind\Config\Config;
+use VuFind\GetThis\GetThisLoader;
 
 /**
  * Record Controller
@@ -46,7 +50,6 @@ class RecordController extends AbstractRecord
     use HoldsTrait;
     use ILLRequestsTrait;
     use StorageRetrievalRequestsTrait;
-    use GetThisTrait;
 
     /**
      * Constructor
@@ -61,5 +64,30 @@ class RecordController extends AbstractRecord
 
         // Load default tab setting:
         $this->fallbackDefaultTab = $config->Site->defaultRecordTab ?? 'Holdings';
+    }
+
+    /**
+     * Display the "Get this" dialog content.
+     *
+     * @return ViewModel
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function getThisAction(): ViewModel
+    {
+        $view = $this->createViewModel();
+
+        $items = $this->getILS()->getHolding($this->params()->fromRoute('id'));
+        $itemId = $this->params()->fromQuery('item_id');
+        $getThis = $this->serviceLocator->get(GetThisLoader::class);
+        $getThis->setItemId($itemId);
+        if (isset($view->driver)) {
+            $getThis->setRecord($view->driver);
+        }
+        $getThis->setItems($items['holdings']);
+
+        $view->setVariable('getThis', $getThis);
+        $view->setTemplate('record/get-this');
+        return $view;
     }
 }

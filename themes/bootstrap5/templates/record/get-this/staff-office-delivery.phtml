@@ -1,15 +1,15 @@
 <!-- Get-this: staff-delivery -->
 <?php
 $data = [
-    '{{item}}' => $this->getThis->getItem(),
-    '{{location}}' => $this->getThis->getLocation(),
-    '{{callNum}}' => $this->getThis->getCallNumber(),
-    '{{title}}' => $this->driver->getTitle(),
-    '{{author}}' => $this->driver->getPrimaryAuthor(),
-    '{{isbn}}' => $this->driver->getCleanISBN(),
+    '%%item%%' => $this->getThis->getItem(),
+    '%%location%%' => $this->getThis->getLocation(),
+    '%%callNum%%' => $this->getThis->getCallNumber(),
+    '%%title%%' => $this->driver->getTitle(),
+    '%%author%%' => $this->driver->getPrimaryAuthor(),
+    '%%isbn%%' => $this->driver->getCleanISBN(),
 ];
-$link = $this->getThisParams['general_link'] ?? '';
-$requestCopyLink = $this->translate($this->getThisParams['request_link'] ?? '', $data);
+$link = $getThisParams['general_link'] ?? '';
+$requestCopyLink = $this->translate($getThisParams['request_link'] ?? '', $data);
 ?>
 <div>
   <p>
