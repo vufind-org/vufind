@@ -46,7 +46,9 @@ use Psr\Container\ContainerInterface;
 class RegexFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * @var string Config file to use
+     * Config file to use
+     *
+     * @var string
      */
     protected string $configFilename = 'Regex.yaml';
 
