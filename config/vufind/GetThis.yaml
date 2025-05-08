@@ -25,6 +25,7 @@ templates:
   #       The string "and": acts as a logical AND between adjacent conditions.
   #
   #   Example; Values surrounded with brackets are placeholders serving as example :
+  #   These nested conditions are equivalent to ((test_function1 AND test_function2) OR test_function3) OR test_function4
   #     {template_name}:
   #       conditions:
   #         - conditions:

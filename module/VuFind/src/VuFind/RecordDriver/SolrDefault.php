@@ -354,4 +354,14 @@ class SolrDefault extends DefaultRecord implements
     {
         return $this->explainEnabled;
     }
+
+    /**
+     * Whether the driver supports the GetThis feature
+     *
+     * @return bool
+     */
+    public function supportsGetThis(): bool
+    {
+        return true;
+    }
 }

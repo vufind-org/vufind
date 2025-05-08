@@ -1070,14 +1070,4 @@ class EDS extends DefaultRecord
         }
         return count($values) == 1 ? $values[0] : $values;
     }
-
-    /**
-     * Whether the driver supports the GetThis feature
-     *
-     * @return bool
-     */
-    public function supportsGetThis(): bool
-    {
-        return false;
-    }
 }

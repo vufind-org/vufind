@@ -1,5 +1,5 @@
 <?php
-$getThisEnabled = isset($this->getThis) && (!isset($this->driver) || $this->driver->supportsGetThis());
+$getThisEnabled = isset($this->getThis) && $this->driver?->supportsGetThis();
 if ($getThisEnabled) {
     $this->getThis->setItems($this->statusItems);
     $this->getThis->setRecord($this->record($this->driver));

@@ -1855,6 +1855,6 @@ class DefaultRecord extends AbstractBase
      */
     public function supportsGetThis(): bool
     {
-        return true;
+        return false;
     }
 }
