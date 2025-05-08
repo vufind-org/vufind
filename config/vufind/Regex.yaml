@@ -4,14 +4,14 @@
 # Status
   # Regex in this section are used to match against the specific item status value
   # Each heading in this section is a grouping of those statuses used for logic within the GetThis feature
-AVAILABLE:
+STATUS_AVAILABLE:
   # Used within GetThisLoader in the following functions : showRemotePatron, showStaffDelivery
   - '/^AVAILABLE/i'
   - '/ITEM IN LIBRARY/i'
-LIB_USE_ONLY:
+STATUS_LIB_USE_ONLY:
   # Used within GetThisLoader in the following functions : isLibUseOnly
   - '/RESTRICTED/i'
-OUT:
+STATUS_CHECKED_OUT:
   # Used within GetThisLoader in the following functions : isOut
   - '/CHECKED/i'
   - '/BILLED/i'
@@ -22,7 +22,7 @@ OUT:
   - '/AWAITING DELIVERY/i'
   - '/IN TRANSIT/i'
   - '/PAGES/i'
-UNAVAILABLE:
+STATUS_UNAVAILABLE:
   # Used within GetThisLoader in the following functions : isUnavailable
   - '/AGED TO LOST/i'
   - '/CLAIMED RETURNED/i'
@@ -38,7 +38,7 @@ UNAVAILABLE:
   - '/WITHDRAWN/i'
 
 # Description / Call Number
-AV_MEDIA:
+CALLNUMBER_AV_MEDIA:
   # Used within GetThisLoader in the following functions : isAudioVideoMedia
   - '/DISC/i'
   - '/VIDEO/i'
@@ -49,21 +49,21 @@ AV_MEDIA:
   - '/AUDIOCASSETTE/i'
 
 # Location
-EXCLUSIVE:
+LOCATION_EXCLUSIVE:
   # Used within GetThisLoader in the following functions : showInterLibrary
   # It should include patterns that should be excluded from Inter Library Loan
   # (i.e. will return false and not show the inter-library.phtml template)
 #  - CAMPUS
-MICROFORMS:
+LOCATION_MICROFORMS:
   # Used within GetThisLoader in the following functions : showMicroForm
   - '/MICROFORMS/i'
-ONLINE:
+LOCATION_ONLINE:
   # Used within GetThisLoader in the following functions : isOnlineResource
   - '/ONLINE RESOURCE/i'
   - '/ELECTRONIC RESOURCES/i'
   - '/INTERNET/i'
 
 # Format
-SERIAL:
+FORMAT_SERIAL:
   # Used within GetThisLoader in the following functions : isSerial
   - '/SERIAL/i'

@@ -138,9 +138,9 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         foreach ($conditions as $condition) {
             if (isset($condition['condition_function'])) {
                 $result = $this->isConditionFunctionFilled($condition['condition_function']);
-            } elseif (isset($condition['conditions'])) {
-                $result = $this->areConditionsFilled($condition['conditions']);
-            } elseif ($condition === 'and' || array_key_exists('and', $condition)) {
+            } elseif (isset($condition['condition_group'])) {
+                $result = $this->areConditionsFilled($condition['condition_group']);
+            } elseif (isset($condition['operator']) && $condition['operator'] === 'and') {
                 $and = true;
                 $previousResult = $result;
                 continue;
@@ -227,7 +227,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
                     // If condition_function is not present we display the templates
                     // If it's present we display the template only if the function exists and return true
 
-                    if (!isset($template['condition_function']) && !isset($template['conditions'])) {
+                    if (!isset($template['condition_function']) && !isset($template['condition_group'])) {
                         $this->addSubTemplates($templateName, $template);
                     } else {
                         if (isset($template['condition_function'])) {
@@ -235,7 +235,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
                                 $this->addSubTemplates($templateName, $template);
                             }
                         } else {
-                            if ($this->areConditionsFilled($template['conditions'])) {
+                            if ($this->areConditionsFilled($template['condition_group'])) {
                                 $this->addSubTemplates($templateName, $template);
                             }
                         }
@@ -467,7 +467,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     public function isOnlineResource(?string $itemId = null): bool
     {
         $location = $this->getLocation($itemId);
-        return $this->matches('ONLINE', $location);
+        return $this->matches('LOCATION_ONLINE', $location);
     }
 
     /**
@@ -488,7 +488,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     public function isSerial(): bool
     {
         foreach ($this->record->getFormats() as $format) {
-            if ($this->matches('SERIAL', $format)) {
+            if ($this->matches('FORMAT_SERIAL', $format)) {
                 return true;
             }
         }
@@ -514,7 +514,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         if ($loanType = $item['temporary_loan_type'] ?? null) {
             $haystack[] = $loanType;
         }
-        return $this->matches('OUT', $haystack);
+        return $this->matches('STATUS_CHECKED_OUT', $haystack);
     }
 
     /**
@@ -527,7 +527,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     public function isAudioVideoMedia(?string $itemId = null): bool
     {
         if ($callNum = $this->getItem($itemId)['callnumber']) {
-            return $this->matches('AV_MEDIA', $callNum);
+            return $this->matches('CALLNUMBER_AV_MEDIA', $callNum);
         }
         return false;
     }
@@ -551,7 +551,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         if ($loanType = $item['temporary_loan_type'] ?? null) {
             $haystack[] = $loanType;
         }
-        return $this->matches('LIB_USE_ONLY', $haystack);
+        return $this->matches('STATUS_LIB_USE_ONLY', $haystack);
     }
 
     /**
@@ -567,7 +567,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
         $availability = $item['availability']?->getStatusDescription();
-        return isset($availability) && $this->matches('UNAVAILABLE', $availability);
+        return isset($availability) && $this->matches('STATUS_UNAVAILABLE', $availability);
     }
 
     /**
@@ -598,7 +598,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
         $availability = $item['availability']?->getStatusDescription();
-        return isset($availability) && $this->matches('AVAILABLE', $availability);
+        return isset($availability) && $this->matches('STATUS_AVAILABLE', $availability);
     }
 
     /**
@@ -619,7 +619,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
         $availability = $item['availability']?->getStatusDescription();
-        return isset($availability) && $this->matches('AVAILABLE', $availability);
+        return isset($availability) && $this->matches('STATUS_AVAILABLE', $availability);
     }
 
     /**
@@ -640,7 +640,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             $haystack[] = $locationCode;
         }
 
-        if (!empty($haystack) && $this->matches('EXCLUSIVE', $haystack)) {
+        if (!empty($haystack) && $this->matches('LOCATION_EXCLUSIVE', $haystack)) {
             return false;
         }
 
@@ -663,13 +663,13 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         if ($this->getItemId($itemId) !== null) {
             foreach ($this->items as $item) {
                 $location = $this->getLocation($item['item_id']);
-                if ($this->matches('MICROFORMS', $location)) {
+                if ($this->matches('LOCATION_MICROFORMS', $location)) {
                     return true;
                 }
             }
         } else {
             $location = $this->getLocation();
-            if ($this->matches('MICROFORMS', $location)) {
+            if ($this->matches('LOCATION_MICROFORMS', $location)) {
                 return true;
             }
         }

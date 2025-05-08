@@ -14,24 +14,24 @@ templates:
   #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template
   #     The result of the function can be negated if prefixed with "!"
   #     note : If the function does not exist, the condition will evaluate to false
-  #   conditions: if condition_function is limiting for you, conditions replace it to give more flexibility :
+  #   condition_group: if condition_function is limiting for you, condition_group replace it to give more flexibility :
   #     This element defines a set of logical conditions.
-  #     The structure is recursive, allowing nested combinations of AND/OR logic.
-  #     At each level, conditions is a list of entries.
   #     If any entry is true, the whole list is considered true (logical OR).
+  #     The structure is recursive, allowing nested combinations of AND/OR logic.
+  #     At each level, condition_group is a list of entries.
   #     Entries can be:
   #       condition_function: evaluates a single condition.
-  #       conditions: a nested conditions block used to combine conditions.
-  #       The string "and": acts as a logical AND between adjacent conditions.
+  #       condition_group: a nested conditions block used to combine conditions.
+  #       operator: The string "and" is the only supported, it acts as a logical AND between adjacent conditions.
   #
   #   Example; Values surrounded with brackets are placeholders serving as example :
   #   These nested conditions are equivalent to ((test_function1 AND test_function2) OR test_function3) OR test_function4
   #     {template_name}:
-  #       conditions:
-  #         - conditions:
-  #             - conditions:
+  #       condition_group:
+  #         - condition_group:
+  #             - condition_group:
   #                 - condition_function: {test_function1}
-  #                 - and
+  #                 - operator: and
   #                 - condition_function: {test_function2}
   #             - condition_function: {test_function3}
   #         - condition_function: {test_function4}
