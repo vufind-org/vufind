@@ -32,7 +32,7 @@ class Regex
     /**
      * Initializes the loader
      *
-     * @param array $config Config pulled from the file
+     * @param array $config Regular expression configuration
      */
     public function __construct(protected array $config)
     {
