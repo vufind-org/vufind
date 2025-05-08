@@ -14,7 +14,7 @@ templates:
   #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template
   #     The result of the function can be negated if prefixed with "!"
   #     note : If the function does not exist, the condition will evaluate to false
-  #   condition_group: if condition_function is limiting for you, condition_group replace it to give more flexibility :
+  #   condition_group: if condition_function is limiting for you, condition_group replaces it to give more flexibility.
   #     This element defines a set of logical conditions.
   #     If any entry is true, the whole list is considered true (logical OR).
   #     The structure is recursive, allowing nested combinations of AND/OR logic.
