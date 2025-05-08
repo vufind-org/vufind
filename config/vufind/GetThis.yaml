@@ -11,7 +11,7 @@ templates:
   #   enabled: true/false, whether to enable the template
   #   view_variables: array of extra variables made available to the templates.
   #     It can be used with placeholders if available; see example below.
-  #   condition_function: a function within GetThisLoader returning a boolean to whether display or not the template
+  #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template
   #     The result of the function can be negated if prefixed with "!"
   #     note : If the function does not exist, the condition will evaluate to false
   #   conditions: if condition_function is limiting for you, conditions replace it to give more flexibility :
