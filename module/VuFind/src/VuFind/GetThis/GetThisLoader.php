@@ -245,7 +245,24 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         } catch (Throwable $t) {
             throw new Exception('Error with the get this configuration : ' . $t->getMessage(), previous: $t);
         }
+        $this->sortSubTemplateParams();
         return $this->subTemplates;
+    }
+
+    /**
+     * Sort the sub templates to match the order in the config
+     *
+     * @return void
+     */
+    public function sortSubTemplateParams(): void
+    {
+        if (!isset($this->config['templates_order'])) {
+            return;
+        }
+        $orderMap = array_flip($this->config['templates_order']);
+        usort($this->subTemplates, function ($a, $b) use ($orderMap) {
+            return $orderMap[$a] <=> $orderMap[$b];
+        });
     }
 
     /**

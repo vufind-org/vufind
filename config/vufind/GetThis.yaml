@@ -6,7 +6,6 @@ showCopyNumber: true
 
 templates:
   # Elements here correspond to a template file within templates/get-this with .phtml being stripped from the end
-  # The order changes the order templates are displayed
   # Elements parameter, all parameters are optional :
   #   enabled: true/false, whether to enable the template
   #   view_variables: array of extra variables made available to the templates.
@@ -50,9 +49,6 @@ templates:
     view_variables:
       open_hours: https://your_lib.edu/hours
 
-  message:
-    condition_function: showMessage
-
   staff-office-delivery:
     condition_function: showStaffDelivery
     view_variables:
@@ -95,3 +91,13 @@ templates:
       #   %%isbn%%: ISBN
       general_link: https://your_lib.edu/ils/distance
       request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
+
+# The order you want the templates to be displayed
+templates_order:
+  - biblio-info
+  - holdings
+  - micro-form
+  - message
+  - staff-office-delivery
+  - inter-library
+  - remote-delivery
