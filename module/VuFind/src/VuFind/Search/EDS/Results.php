@@ -33,8 +33,6 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\Command\SearchCommand;
 
-use function strlen;
-
 /**
  * EDS API Results
  *
@@ -83,7 +81,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $query  = $this->getParams()->getQuery();
         $allTerms = $query->getAllTerms();
-        if (!strlen($allTerms)) {
+        if ($allTerms === '') {
             $this->storeErrorResponse('empty_search_disallowed');
             return;
         }
