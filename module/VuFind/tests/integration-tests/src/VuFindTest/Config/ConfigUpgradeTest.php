@@ -129,13 +129,13 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an upgrade object for the specified source version:
      *
-     * @param string $version Version
+     * @param string $fixture Fixture to use
      *
      * @return Upgrade
      */
-    protected function getUpgrader(string $version): Upgrade
+    protected function getUpgrader(string $fixture): Upgrade
     {
-        $fixtureDir = realpath($this->getFixtureDir() . 'configs/' . $version);
+        $fixtureDir = realpath($this->getFixtureDir() . 'configs/' . $fixture);
         $localDirPath = $this->localDirPath;
         if (is_dir($localDirPath)) {
             self::rmDir($localDirPath);
@@ -143,7 +143,7 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
         self::cpDir($fixtureDir, $localDirPath);
         $oldDir = realpath($localDirPath);
         $rawDir = realpath($this->baseDirPath);
-        return new Upgrade($version, self::$targetVersion, $oldDir, $rawDir, $oldDir);
+        return new Upgrade($fixture, self::$targetVersion, $oldDir, $rawDir, $oldDir);
     }
 
     /**
@@ -173,7 +173,7 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->getUpgrader('backup');
         $dirContent = scandir($this->localDirPath);
-        self::assertContains('config.ini', $dirContent);
+        $this->assertContains('config.ini', $dirContent);
         $oldContent = file_get_contents($this->localDirPath . '/config.ini');
 
         $upgrader->run();
