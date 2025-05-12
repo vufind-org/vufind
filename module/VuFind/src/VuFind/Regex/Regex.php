@@ -38,6 +38,13 @@ class Regex
     {
     }
 
+    /**
+     * Set the config to use
+     *
+     * @param array $config Config (usually from Regex.yaml)
+     *
+     * @return void
+     */
     public function setConfig(array $config): void
     {
         $this->config = $config;
