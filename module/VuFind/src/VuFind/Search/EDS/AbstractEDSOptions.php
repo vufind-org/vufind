@@ -74,6 +74,8 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     {
         $ebscoDefaultView = $this->getConfiguredDefaultView();
         $viewArr = explode('_', $ebscoDefaultView);
+        // $default is used to support legacy configs which only contain the EDS view part
+        // that is normally the second part of the delimited value
         return (count($viewArr) > 1) ? $viewArr[$index] : $default;
     }
 
