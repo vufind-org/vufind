@@ -123,6 +123,24 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Whether the condition block contains an operator "and"
+     *
+     * @param array $conditions Array of conditions to determine the result
+     *
+     * @return bool
+     * @throws Exception
+     */
+    protected function isConditionsAnd(array $conditions): bool
+    {
+        foreach ($conditions as $condition) {
+            if (isset($condition['operator']) && $condition['operator'] === 'and') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Go through an array recursively to determine if the condition functions are matched
      *
      * @param array $conditions Array of conditions to determine the result
@@ -130,40 +148,44 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      * @return bool
      * @throws Exception
      */
-    protected function areConditionsFilled(array $conditions): bool
+    protected function loopThroughConditionBlock(array $conditions): bool
     {
         $previousResult = null;
         $result = null;
-        $and = false;
+        $and = $this->isConditionsAnd($conditions);
         foreach ($conditions as $condition) {
-            if (isset($condition['condition_function'])) {
-                $result = $this->isConditionFunctionFilled($condition['condition_function']);
-            } elseif (isset($condition['condition_group'])) {
-                $result = $this->areConditionsFilled($condition['condition_group']);
-            } elseif (isset($condition['operator']) && $condition['operator'] === 'and') {
-                $and = true;
-                $previousResult = $result;
+            if (isset($condition['operator'])) {
                 continue;
             } else {
-                throw new Exception(
-                    'It seems like conditions are not properly formatted, unexpected value in array'
-                );
+                $result = $this->areConditionsFilled($condition);
             }
             if ($previousResult !== null && ($previousResult === true || $result === true) && $and === false) {
                 return true;
             }
-            if ($and) {
-                if (!isset($previousResult)) {
-                    throw new Exception(
-                        'It seems like conditions are not properly formatted, unexpected "and"'
-                    );
-                }
-                $result = $previousResult && $result;
-                $and = false;
-            }
             $previousResult = $result;
         }
         return $result || $previousResult;
+    }
+
+    /**
+     * Go through an array recursively to determine if the condition functions are matched
+     *
+     * @param array $condition Array of conditions to determine the result
+     *
+     * @return bool
+     * @throws Exception
+     */
+    protected function areConditionsFilled(array $condition): bool
+    {
+        if (isset($condition['condition_function'])) {
+            return $this->isConditionFunctionFilled($condition['condition_function']);
+        } elseif (isset($condition['condition_group'])) {
+            return $this->loopThroughConditionBlock($condition['condition_group']);
+        } else {
+            throw new Exception(
+                'It seems like conditions are not properly formatted, unexpected value in array'
+            );
+        }
     }
 
     /**
@@ -229,16 +251,8 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
 
                     if (!isset($template['condition_function']) && !isset($template['condition_group'])) {
                         $this->addSubTemplates($templateName, $template);
-                    } else {
-                        if (isset($template['condition_function'])) {
-                            if ($this->isConditionFunctionFilled($template['condition_function'])) {
-                                $this->addSubTemplates($templateName, $template);
-                            }
-                        } else {
-                            if ($this->areConditionsFilled($template['condition_group'])) {
-                                $this->addSubTemplates($templateName, $template);
-                            }
-                        }
+                    } elseif ($this->areConditionsFilled($template)) {
+                        $this->addSubTemplates($templateName, $template);
                     }
                 }
             }

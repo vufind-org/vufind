@@ -2767,4 +2767,14 @@ class Folio extends AbstractAPI implements
     {
         return [];
     }
+
+    /**
+     * Whether the driver supports the GetThis feature
+     *
+     * @return bool
+     */
+    public function supportsGetThis(): bool
+    {
+        return true;
+    }
 }

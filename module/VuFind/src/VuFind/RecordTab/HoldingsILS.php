@@ -205,4 +205,14 @@ class HoldingsILS extends AbstractBase
 
         return $paginator;
     }
+
+    /**
+     * Whether the driver supports the GetThis feature
+     *
+     * @return bool
+     */
+    public function supportsGetThis(): bool
+    {
+        return $this->catalog->getDriver()->supportsGetThis();
+    }
 }

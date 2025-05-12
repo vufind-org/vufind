@@ -21,7 +21,9 @@ templates:
   #     Entries can be:
   #       condition_function: evaluates a single condition.
   #       condition_group: a nested conditions block used to combine conditions.
-  #       operator: The string "and" is the only supported, it acts as a logical AND between adjacent conditions.
+  #       operator: The string "and" is the only supported.
+  #         It acts as a logical AND between all sibling conditions in the group (but not the descendent).
+  #         This is non-positional and can be placed anywhere within the group
   #
   #   Example; Values surrounded with brackets are placeholders serving as example :
   #   These nested conditions are equivalent to ((test_function1 AND test_function2) OR test_function3) OR test_function4
@@ -94,8 +96,8 @@ templates:
 
 # The order you want the templates to be displayed
 templates_order:
-  - biblio-info
   - holdings
+  - biblio-info
   - micro-form
   - message
   - staff-office-delivery

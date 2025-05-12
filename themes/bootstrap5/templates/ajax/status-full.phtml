@@ -1,8 +1,7 @@
 <?php
-$getThisEnabled = isset($this->getThis) && $this->driver?->supportsGetThis();
+$getThisEnabled = isset($this->getThis);
 if ($getThisEnabled) {
     $this->getThis->setItems($this->statusItems);
-    $this->getThis->setRecord($this->record($this->driver));
 }
 ?>
 <table class="table table-condensed">

@@ -518,6 +518,9 @@ class GetItemStatuses extends AbstractBase implements
                 ];
             }
         }
+        if (!$this->ils->getDriver()->supportsGetThis()) {
+            $this->getThis = null;
+        }
 
         if (!is_array($results)) {
             // If getStatuses returned garbage, let's turn it into an empty array
