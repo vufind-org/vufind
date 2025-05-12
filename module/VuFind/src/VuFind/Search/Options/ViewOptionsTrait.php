@@ -54,7 +54,7 @@ trait ViewOptionsTrait
     public function initViewOptions(?Config $searchSettings)
     {
         if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = $searchSettings->General->default_view;
+            $this->setConfiguredDefaultView($searchSettings->General->default_view);
         }
         // Load view preferences (or defaults if none in .ini file):
         $viewOptions = [];
@@ -64,7 +64,8 @@ trait ViewOptionsTrait
         if (!empty($viewOptions)) {
             $this->viewOptions = $viewOptions;
         } else {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
+            $defaultView = $this->getConfiguredDefaultView();
+            $this->viewOptions = [$defaultView => $defaultView];
         }
     }
 }

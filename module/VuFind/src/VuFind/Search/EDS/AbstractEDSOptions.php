@@ -98,11 +98,4 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     {
         return $this->getDefaultViewPart(1, $this->getConfiguredDefaultView());
     }
-
-    /**
-     * Get the configured default view.
-     *
-     * @return string
-     */
-    abstract protected function getConfiguredDefaultView(): string;
 }

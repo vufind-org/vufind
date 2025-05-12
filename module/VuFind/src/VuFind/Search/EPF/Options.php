@@ -101,14 +101,4 @@ class Options extends AbstractEDSOptions
         // View preferences
         $this->initViewOptions($this->searchSettings);
     }
-
-    /**
-     * Get the configured default view.
-     *
-     * @return string
-     */
-    protected function getConfiguredDefaultView(): string
-    {
-        return $this->defaultView;
-    }
 }
