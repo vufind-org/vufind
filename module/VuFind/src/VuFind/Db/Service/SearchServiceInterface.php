@@ -143,4 +143,13 @@ interface SearchServiceInterface extends DbServiceInterface
      * @return SearchEntityInterface[]
      */
     public function getSavedSearchesWithMissingChecksums(): array;
+
+    /**
+     * Delete a search entity.
+     *
+     * @param SearchEntityInterface|int $searchOrId Search entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteSearch(SearchEntityInterface|int $searchOrId): void;
 }
