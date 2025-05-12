@@ -7,7 +7,7 @@
     $user_id = $this->list->getUser()->getId();
   } else {
     $list_id = null;
-    $user_id = $this->user ? $this->user->id : null;
+    $user_id = $this->user ? $this->user->getId() : null;
   }
   // Thumbnail
   $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLinker()->getUrl($this->driver));

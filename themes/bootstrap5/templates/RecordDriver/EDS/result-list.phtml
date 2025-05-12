@@ -67,9 +67,9 @@
                   </p>
                 <?php endif;?>
               </div>
-            <?php endif;
-          endforeach;
-        elseif ($restrictedView): ?>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        <?php elseif ($restrictedView): ?>
           <div class="resultItemLine1">
             <p>
               <?=$this->transEsc('This result is not displayed to guests')?>

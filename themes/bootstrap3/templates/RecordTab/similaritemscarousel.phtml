@@ -6,7 +6,7 @@
     <!-- Indicators -->
     <ol class="carousel-indicators">
       <li data-target="#similar-items-carousel" data-slide-to="0" class="active"></li>
-      <?php for($i = 1;$i < count($similarRecords) / $perPage;$i++): ?>
+      <?php for ($i = 1;$i < count($similarRecords) / $perPage;$i++): ?>
         <li data-target="#similar-items-carousel" data-slide-to="<?=$i ?>"></li>
       <?php endfor; ?>
     </ol>

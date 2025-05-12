@@ -242,7 +242,7 @@ class QueryAdapter implements QueryAdapterInterface
 
         return (count($groups) > 0)
             ? new QueryGroup($request->get('join', 'AND'), $groups)
-            : new Query();
+            : new Query(handler: $request->get('type'));
     }
 
     /**
