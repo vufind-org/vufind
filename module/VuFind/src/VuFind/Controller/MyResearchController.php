@@ -522,7 +522,7 @@ class MyResearchController extends AbstractBase
             $userId
         );
         if ($duplicateId) {
-            $savedRow->delete();
+            $this->getDbService(SearchServiceInterface::class)->deleteSearch($savedRow);
             $sid = $duplicateId;
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
@@ -582,7 +582,7 @@ class MyResearchController extends AbstractBase
             $user->getId()
         );
         if ($duplicateId) {
-            $search->delete();
+            $this->getDbService(SearchServiceInterface::class)->deleteSearch($search);
             $this->redirect()->toRoute(
                 'myresearch-schedulesearch',
                 [],
