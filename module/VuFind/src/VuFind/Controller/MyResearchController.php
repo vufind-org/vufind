@@ -472,12 +472,12 @@ class MyResearchController extends AbstractBase
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
         $row = $this->getSearchRowSecurely($searchId, $userId);
-        $row->saved = $saved ? 1 : 0;
+        $row->setSaved($saved ? 1 : 0);
         if (!$saved) {
-            $row->notification_frequency = 0;
+            $row->setNotificationFrequency(0);
         }
         $row->user_id = $userId;
-        $row->save();
+        $this->getDbService(SearchServiceInterface::class)->persistEntity($row);
     }
 
     /**
