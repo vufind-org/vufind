@@ -33,6 +33,8 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function strlen;
+
 /**
  * EDS API Results
  *
@@ -59,6 +61,19 @@ class Results extends \VuFind\Search\Base\Results
     protected $responseFacets;
 
     /**
+     * Store an empty response with an error message instead of performing a search.
+     *
+     * @param string|array $error Error message(s) to display to user.
+     *
+     * @return void
+     */
+    protected function storeErrorResponse(string|array $error): void
+    {
+        parent::storeErrorResponse($error);
+        $this->responseFacets = [];
+    }
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -67,6 +82,11 @@ class Results extends \VuFind\Search\Base\Results
     protected function performSearch()
     {
         $query  = $this->getParams()->getQuery();
+        $allTerms = $query->getAllTerms();
+        if (!strlen($allTerms)) {
+            $this->storeErrorResponse('empty_search_disallowed');
+            return;
+        }
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();

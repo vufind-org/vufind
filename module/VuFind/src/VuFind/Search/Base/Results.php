@@ -301,6 +301,20 @@ abstract class Results
     }
 
     /**
+     * Store an empty response with an error message instead of performing a search.
+     *
+     * @param string|array $error Error message(s) to display to user.
+     *
+     * @return void
+     */
+    protected function storeErrorResponse(string|array $error): void
+    {
+        $this->resultTotal = 0;
+        $this->results = [];
+        $this->errors = (array)$error;
+    }
+
+    /**
      * Actually execute the search.
      *
      * @return void

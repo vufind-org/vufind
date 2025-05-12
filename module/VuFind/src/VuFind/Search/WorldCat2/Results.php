@@ -68,10 +68,8 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function storeErrorResponse(string|array $error): void
     {
-        $this->resultTotal = 0;
-        $this->results = [];
+        parent::storeErrorResponse($error);
         $this->responseFacets = [];
-        $this->errors = (array)$error;
     }
 
     /**
