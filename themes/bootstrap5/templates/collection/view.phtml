@@ -30,7 +30,7 @@
   } else {
     $this->breadcrumbs()->add($this->translate('Collections'), $this->url('collections-home'));
   }
-  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver));
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
