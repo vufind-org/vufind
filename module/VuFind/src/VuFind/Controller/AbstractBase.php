@@ -60,7 +60,6 @@ use function is_object;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  *
  * @method Plugin\Captcha captcha() Captcha plugin
- * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
