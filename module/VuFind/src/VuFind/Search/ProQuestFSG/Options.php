@@ -50,14 +50,13 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->searchIni = $this->facetsIni = 'ProQuestFSG';
-        parent::__construct($configLoader);
 
-        // Set result limit to a value we can support:
-        if (-1 === $this->resultLimit) {
-            $this->resultLimit = 400;
-        } else {
-            $this->resultLimit = min($this->resultLimit, 1000);
-        }
+        // Override the result limits with values that we can always support:
+        $this->defaultResultLimit = 400;
+        $this->maxResultLimit = 1000;
+
+        // Request a result limit that we can support:
+        parent::__construct($configLoader);
 
         // Search handler setup:
         $this->defaultHandler = 'cql.serverChoice';

@@ -304,6 +304,8 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Configuration file to read global settings from
      *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
      * @var string
      */
     protected $mainIni = 'config';
@@ -311,12 +313,16 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Configuration file to read search settings from
      *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
      * @var string
      */
     protected $searchIni = 'searches';
 
     /**
      * Configuration file to read facet settings from
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
      *
      * @var string
      */
@@ -342,6 +348,24 @@ abstract class Options implements TranslatorAwareInterface
      * @var int
      */
     protected $resultLimit;
+
+    /**
+     * Default result limit if not set in configuration.
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var int
+     */
+    protected int $defaultResultLimit = -1;
+
+    /**
+     * Maximum supported value for $resultLimit above, or null for no limit.
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var ?int
+     */
+    protected ?int $maxResultLimit = null;
 
     /**
      * Is first/last navigation supported by the backend?
@@ -456,7 +480,12 @@ abstract class Options implements TranslatorAwareInterface
         // Limit preferences:
         $this->defaultLimit = $this->searchSettings['General']['default_limit'] ?? 20;
         $this->limitOptions = $this->explodeListSetting($this->searchSettings['General']['limit_options'] ?? '');
-        $this->resultLimit = (int)($this->searchSettings['General']['result_limit'] ?? -1); // no limit by default
+        $this->resultLimit = (int)($this->searchSettings['General']['result_limit'] ?? $this->defaultResultLimit);
+        if ($this->maxResultLimit) {
+            $this->resultLimit = -1 === $this->resultLimit
+                ? $this->maxResultLimit
+                : min($this->resultLimit, $this->maxResultLimit);
+        }
 
         // Sort options:
         $this->sortOptions = $this->searchSettings['Sorting'] ?? [];

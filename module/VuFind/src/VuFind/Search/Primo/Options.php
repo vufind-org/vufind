@@ -56,14 +56,13 @@ class Options extends \VuFind\Search\Base\Options
     {
         $this->searchIni = $this->facetsIni = 'Primo';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
+
+        // Override the default result limit with a value that we can support also with blending enabled in Primo:
+        $this->defaultResultLimit = 3980;
+
         parent::__construct($configLoader);
 
         $this->highlight = !empty($this->searchSettings->General->highlighting);
-
-        // Set default result limit to a value we can support:
-        if (-1 === $this->resultLimit) {
-            $this->resultLimit = 3980;
-        }
 
         // Advanced operators:
         $this->advancedOperators = $this->searchSettings['Advanced_Operators'] ?? [];

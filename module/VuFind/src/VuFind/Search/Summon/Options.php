@@ -65,6 +65,10 @@ class Options extends \VuFind\Search\Base\Options
     {
         $this->searchIni = $this->facetsIni = 'Summon';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
+
+        // Override the default result limit with a value that we can always support:
+        $this->defaultResultLimit = 400;
+
         parent::__construct($configLoader);
 
         // Set up highlighting preference
@@ -75,11 +79,6 @@ class Options extends \VuFind\Search\Base\Options
         // Set up spelling preference
         if (null !== ($spellcheck = $this->searchSettings['Spelling']['enabled'] ?? null)) {
             $this->spellcheck = $spellcheck;
-        }
-
-        // Set default result limit to a value we can support:
-        if (-1 === $this->resultLimit) {
-            $this->resultLimit = 400;
         }
 
         $this->emptySearchRelevanceOverride
