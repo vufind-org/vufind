@@ -1,6 +1,5 @@
 <!-- START of: finna - myresearch/download-checkout-history.phtml -->
 <?php
-    $this->assetManager()->prependScriptLink('finna-checkout-history.js');
     // Set page title.
     $this->headTitle($this->translate('loan_history_download'));
 
@@ -34,15 +33,20 @@
 <?php
 // Initialize checkout history download element
 $js = <<<JS
-      if (document.readyState === 'complete') {
-        finna.checkoutHistory.init();
-      } else {
-        document.addEventListener('DOMContentLoaded', () => {
+    finna.scriptLoader.load(
+      {'finna-checkout-history': 'finna-checkout-history.js'},
+      () => {
+        if (document.readyState === 'complete') {
           finna.checkoutHistory.init();
-        });
+        } else {
+          document.addEventListener('DOMContentLoaded', () => {
+            finna.checkoutHistory.init();
+          });
+        }
       }
+    );
     JS;
 
-echo $this->assetManager()->outputScriptString($js);
+echo $this->assetManager()->outputInlineScriptString($js);
 ?>
 <!-- END of: finna - myresearch/download-checkout-history.phtml -->

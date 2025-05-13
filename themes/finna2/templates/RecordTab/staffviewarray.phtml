@@ -21,12 +21,17 @@
     $dom->formatOutput = true;
     if ($dom->loadXML($rawFieldData['fullrecord'])) {
       echo '<pre id="record-data">' . $this->escapeHtml($dom->saveXML()) . '</pre>';
-      echo $this->assetManager()->outputInlineScriptLink('vendor/highlight.pack.js');
       $script = <<<JS
             $(document).ready(function() {
-              $('#record-data').each(function(i, block) {
-                hljs.highlightBlock(block);
-              });
+              const recordData = document.getElementById('record-data');
+              if (recordData) {
+                finna.scriptLoader.load(
+                  {'vendor-highlight': 'vendor/highlight.pack.js'},
+                  () => {
+                    hljs.highlightBlock(recordData);
+                  }
+                );
+              }
             });
           JS;
       echo $this->assetManager()->outputInlineScriptString($script);
