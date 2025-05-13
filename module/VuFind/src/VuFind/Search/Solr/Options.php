@@ -139,7 +139,7 @@ class Options extends \VuFind\Search\Base\Options
         if ($this->shards) {
             // If we have a default from the configuration, use that...
             if ($defaultShards = $this->searchSettings['ShardPreferences']['defaultChecked'] ?? null) {
-                $this->defaultSelectedShards = $defaultShards;
+                $this->defaultSelectedShards = (array)$defaultShards;
             } else {
                 // If no default is configured, use all shards...
                 $this->defaultSelectedShards = array_keys($this->shards);
