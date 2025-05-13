@@ -67,9 +67,9 @@ class LinkedEvents implements
     /**
      * Publisher ID
      *
-     * @var string
+     * @var ?string
      */
-    protected $publisherId = '';
+    protected $publisherId = null;
 
     /**
      * Language
@@ -115,10 +115,18 @@ class LinkedEvents implements
 
     /**
      * Include super events in response?
+     * Legacy compatibility
      *
      * @var bool
      */
     protected $includeSuperEvents;
+
+    /**
+     * Default parameters used in search
+     *
+     * @var array
+     */
+    protected $defaultParams = [];
 
     /**
      * How many related events (if available) are displayed on
@@ -150,10 +158,15 @@ class LinkedEvents implements
         if (!str_ends_with($this->apiUrl, '/')) {
             $this->apiUrl .= '/';
         }
-        $this->publisherId = $config->LinkedEvents->publisher_id ?? '';
+        $this->publisherId = $config->LinkedEvents->publisher_id ?? null;
         // Exclude super events from results by default
         $this->includeSuperEvents
             = $config->LinkedEvents->include_super_events ?? false;
+
+        $this->defaultParams = $config->LinkedEvents?->default_params?->toArray() ?? [
+            'include' => 'location',
+            'sort' => 'start_time',
+        ];
         $this->dateConverter = $dateConverter;
         $this->url = $url;
         $this->cleanHtml = $cleanHtml;
@@ -172,7 +185,7 @@ class LinkedEvents implements
      */
     public function getEvents($params)
     {
-        if (empty($this->apiUrl) || empty($this->publisherId)) {
+        if (empty($this->apiUrl)) {
             $this->logError('Missing LinkedEvents configuration');
             return false;
         }
@@ -191,7 +204,7 @@ class LinkedEvents implements
                     $paramArray['start']
                 );
             } elseif (empty($paramArray['end'])) {
-                $paramArray['start'] = date('Y-m-d');
+                $paramArray['start'] = 'today';
             }
             if (isset($paramArray['end'])) {
                 $paramArray['end'] = $this->dateConverter->convert(
@@ -200,20 +213,23 @@ class LinkedEvents implements
                     $paramArray['end']
                 );
             }
-            $paramArray['language'] = $this->getLanguage();
             $url = $this->apiUrl . 'event/';
+
             if (!empty($paramArray['id'])) {
                 $url .= $paramArray['id'] . '/?include=location,audience,keywords,' .
                  'sub_events,super_event';
             } else {
-                $url .= '?'
-                . 'publisher=' . urlencode($this->publisherId) . '&'
-                . http_build_query($paramArray)
-                . '&sort=start_time'
-                . '&include=location';
-            }
-            if (!$this->includeSuperEvents) {
-                $url .= '&super_event_type=none';
+                $paramArray['language'] = $this->getLanguage();
+                if ($this->publisherId) {
+                    $paramArray['publisher'] = $this->publisherId;
+                }
+                if ($this->defaultParams) {
+                    $paramArray = array_merge($this->defaultParams, $paramArray);
+                }
+                if (!$this->includeSuperEvents && empty($paramArray['super_event_type'])) {
+                    $paramArray['super_event_type'] = 'none';
+                }
+                $url .= '?' . http_build_query($paramArray);
             }
         }
 
