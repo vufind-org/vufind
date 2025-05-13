@@ -47,7 +47,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'ratings' => Ratings::class,
-        'search' => Search::class,
         'session' => Session::class,
         'userresource' => UserResource::class,
     ];
@@ -59,7 +58,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Ratings::class => RowGatewayFactory::class,
-        Search::class => RowGatewayFactory::class,
         Session::class => RowGatewayFactory::class,
         UserResource::class => RowGatewayFactory::class,
     ];

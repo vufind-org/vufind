@@ -32,6 +32,9 @@ namespace VuFind\Db\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
+use function is_object;
+use function is_resource;
+
 /**
  * Search
  *
@@ -41,11 +44,13 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="search"),
+ * @ORM\Table(name="search",
+ * indexes={
  * @ORM\Index(name="notification_base_url",  columns={"notification_base_url"}),
  * @ORM\Index(name="notification_frequency", columns={"notification_frequency"}),
  * @ORM\Index(name="session_id",             columns={"session_id"}),
- * @ORM\Index(name="user_id",                columns={"user_id"})})
+ * @ORM\Index(name="user_id",                columns={"user_id"})}
+ * )
  * @ORM\Entity
  */
 class Search implements SearchEntityInterface
@@ -95,10 +100,9 @@ class Search implements SearchEntityInterface
      * @ORM\Column(name="created",
      *          type="datetime",
      *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
      * )
      */
-    protected $created = '2000-01-01 00:00:00';
+    protected $created;
 
     /**
      * Title.
@@ -116,7 +120,7 @@ class Search implements SearchEntityInterface
      *
      * @ORM\Column(name="saved", type="boolean", nullable=false)
      */
-    protected $saved = '0';
+    protected $saved = false;
 
     /**
      * Search object.
@@ -126,6 +130,13 @@ class Search implements SearchEntityInterface
      * @ORM\Column(name="search_object", type="blob", length=65535, nullable=true)
      */
     protected $searchObject;
+
+    /**
+     * Normalized search object after loading.
+     *
+     * @var ?\VuFind\Search\Minified
+     */
+    protected $deserializedSearchObject = null;
 
     /**
      * Checksum
@@ -152,11 +163,10 @@ class Search implements SearchEntityInterface
      *
      * @ORM\Column(name="last_notification_sent",
      *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
+     *          nullable=false
      * )
      */
-    protected $lastNotificationSent = '2000-01-01 00:00:00';
+    protected $lastNotificationSent;
 
     /**
      * Notification base URL.
@@ -169,6 +179,16 @@ class Search implements SearchEntityInterface
      * )
      */
     protected $notificationBaseUrl = '';
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        // Set the default value as a DateTime object
+        $this->created = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00');
+        $this->lastNotificationSent = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00');
+    }
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -291,8 +311,32 @@ class Search implements SearchEntityInterface
      */
     public function setSaved(bool $saved): static
     {
-        $this->saved = $saved ? '1' : '0';
+        $this->saved = $saved;
         return $this;
+    }
+
+    /**
+     * Post-load normalization (deserialization).
+     *
+     * @ORM\PostLoad
+     *
+     * @return static
+     */
+    public function postLoadNormalize(): void
+    {
+        // Only deserialize if searchObject is not null and not already deserialized
+        if ($this->searchObject && !is_object($this->deserializedSearchObject)) {
+            // If it's a resource (stream), convert it to a string first
+            if (is_resource($this->searchObject)) {
+                $this->searchObject = stream_get_contents($this->searchObject);
+            }
+            $unserialized = @unserialize($this->searchObject);
+            if ($unserialized && is_object($unserialized)) {
+                $this->deserializedSearchObject = $unserialized;
+            } else {
+                $this->deserializedSearchObject = null;
+            }
+        }
     }
 
     /**
@@ -302,7 +346,11 @@ class Search implements SearchEntityInterface
      */
     public function getSearchObject(): ?\VuFind\Search\Minified
     {
-        return $this->searchObject ? unserialize($this->searchObject) : null;
+        // If the search object has not been resolved, do so now:
+        if (is_resource($this->searchObject)) {
+            $this->postLoadNormalize();
+        }
+        return $this->deserializedSearchObject;
     }
 
     /**
@@ -315,6 +363,7 @@ class Search implements SearchEntityInterface
     public function setSearchObject(?\VuFind\Search\Minified $searchObject): static
     {
         $this->searchObject = $searchObject ? serialize($searchObject) : null;
+        $this->deserializedSearchObject = $searchObject;
         return $this;
     }
 
