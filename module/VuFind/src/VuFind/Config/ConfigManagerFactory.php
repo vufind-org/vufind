@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Config Plugin Factory
+ * Factory for ConfigManager.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,64 +21,58 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ServiceManager
+ * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\Config;
 
-use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Config Plugin Factory
+ * Factory for ConfigManager.
  *
  * @category VuFind
- * @package  ServiceManager
+ * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginFactory implements AbstractFactoryInterface
+class ConfigManagerFactory implements FactoryInterface
 {
     /**
-     * Can we create a service for the specified name?
+     * Create an object
      *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     *
-     * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function canCreate(ContainerInterface $container, $requestedName)
-    {
-        // Assume that configurations exist:
-        return true;
-    }
-
-    /**
-     * Create a service for the specified name.
-     *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     * @param array              $options       Options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
      * @return object
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
     ) {
-        $pathResolver = $container->get(PathResolver::class);
-        $configManager = $container->get(ConfigManager::class);
-        $configLocation = $pathResolver->getConfigLocation($requestedName);
-        $config = ($configLocation !== null) ? $configManager->loadConfig($configLocation) : [];
-        return new Config($config);
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        return new $requestedName(
+            $container->get(\VuFind\Config\Handler\PluginManager::class),
+            $container->get(PathResolver::class),
+        );
     }
 }
