@@ -38,6 +38,7 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
@@ -47,6 +48,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
 use VuFind\Crypt\BlockCipher;
 use VuFind\Db\AdapterFactory;
+use VuFind\Db\MigrationManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
@@ -60,7 +62,6 @@ use VuFind\Tags\TagsService;
 use function count;
 use function dirname;
 use function in_array;
-use function is_string;
 use function strlen;
 
 /**
@@ -328,185 +329,54 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Attempt to perform a MySQL upgrade; return either a string containing SQL
-     * (if we are in "log SQL" mode), an empty string (if we are successful but
-     * not logging SQL) or a Laminas object representing forward/redirect (if we
-     * need to obtain user input).
+     * Look up relevant database migrations and return them as a string (empty string if none needed).
      *
-     * @param Adapter $adapter Database adapter
-     *
-     * @return mixed
-     * @throws Exception
+     * @return string
      */
-    protected function upgradeMySQL($adapter)
+    public function getDatabaseMigrations(): string
     {
+        $adapter = $this->getService(Adapter::class);
+        $rawPlatform = strtolower($adapter->getDriver()->getDatabasePlatformName());
+        $platform = match ($rawPlatform) {
+            'postgresql' => 'pgsql',
+            default => $rawPlatform,
+        };
+        $migrationManager = new MigrationManager();
         $sql = '';
-
-        // Set up the helper with information from our SQL file:
-        $this->dbUpgrade()
-            ->setAdapter($adapter)
-            ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
-
-        // Check for deprecated columns. We prompt the user for action on this, so
-        // let's get that settled before doing further work.
-        $deprecatedColumns = $this->dbUpgrade()->getDeprecatedColumns();
-        if (!empty($deprecatedColumns)) {
-            if (!empty($this->session->deprecatedColumnsAction)) {
-                if ($this->session->deprecatedColumnsAction === 'delete') {
-                    // Only manipulate DB if we're not in logging mode:
-                    if (!$this->logsql) {
-                        if (!$this->hasDatabaseRootCredentials()) {
-                            return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                        }
-                        $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                        $this->session->warnings->append(
-                            'Removed deprecated column(s) from table(s): '
-                            . implode(', ', array_keys($deprecatedColumns))
-                        );
-                    }
-                    $sql .= $this->dbUpgrade()
-                        ->removeDeprecatedColumns($deprecatedColumns, $this->logsql);
-                }
-            } else {
-                return $this->forwardTo('Upgrade', 'ConfirmDeprecatedColumns');
-            }
+        foreach ($migrationManager->getMigrations($platform, $this->cookie->oldVersion) as $migration) {
+            $sql .= file_get_contents($migration) . "\n";
         }
-
-        // Check for missing tables. Note that we need to finish dealing with
-        // missing tables before we proceed to the missing columns check, or else
-        // the missing tables will cause fatal errors during the column test.
-        $missingTables = $this->dbUpgrade()->getMissingTables();
-        if (!empty($missingTables)) {
-            // Only manipulate DB if we're not in logging mode:
-            if (!$this->logsql) {
-                if (!$this->hasDatabaseRootCredentials()) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                }
-                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                $this->session->warnings->append(
-                    'Created missing table(s): ' . implode(', ', $missingTables)
-                );
-            }
-            $sql .= $this->dbUpgrade()
-                ->createMissingTables($missingTables, $this->logsql);
-        }
-
-        // Check for missing columns.
-        $mT = $this->logsql ? $missingTables : [];
-        $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
-        if (!empty($missingCols)) {
-            // Only manipulate DB if we're not in logging mode:
-            if (!$this->logsql) {
-                if (!$this->hasDatabaseRootCredentials()) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                }
-                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                $this->session->warnings->append(
-                    'Added column(s) to table(s): '
-                    . implode(', ', array_keys($missingCols))
-                );
-            }
-            $sql .= $this->dbUpgrade()
-                ->createMissingColumns($missingCols, $this->logsql);
-        }
-
-        // Check for modified columns.
-        $mC = $this->logsql ? $missingCols : [];
-        $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
-        if (!empty($modifiedCols)) {
-            // Only manipulate DB if we're not in logging mode:
-            if (!$this->logsql) {
-                if (!$this->hasDatabaseRootCredentials()) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                }
-                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                $this->session->warnings->append(
-                    'Modified column(s) in table(s): '
-                    . implode(', ', array_keys($modifiedCols))
-                );
-            }
-            $sql .= $this->dbUpgrade()
-                ->updateModifiedColumns($modifiedCols, $this->logsql);
-        }
-
-        // Check for missing constraints.
-        $missingConstraints = $this->dbUpgrade()->getMissingConstraints($mT);
-        if (!empty($missingConstraints)) {
-            // Only manipulate DB if we're not in logging mode:
-            if (!$this->logsql) {
-                if (!$this->hasDatabaseRootCredentials()) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                }
-                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                $this->session->warnings->append(
-                    'Added constraint(s) to table(s): '
-                    . implode(', ', array_keys($missingConstraints))
-                );
-            }
-            $sql .= $this->dbUpgrade()
-                ->createMissingConstraints($missingConstraints, $this->logsql);
-        }
-
-        // Check for modified constraints.
-        $mC = $this->logsql ? $missingConstraints : [];
-        $modifiedConstraints = $this->dbUpgrade()->getModifiedConstraints($mT, $mC);
-        if (!empty($modifiedConstraints)) {
-            // Only manipulate DB if we're not in logging mode:
-            if (!$this->logsql) {
-                if (!$this->hasDatabaseRootCredentials()) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                }
-                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                $this->session->warnings->append(
-                    'Modified constraint(s) in table(s): '
-                    . implode(', ', array_keys($modifiedConstraints))
-                );
-            }
-            $sql .= $this->dbUpgrade()
-                ->updateModifiedConstraints($modifiedConstraints, $this->logsql);
-        }
-
-        // Check for modified keys.
-        $modifiedKeys = $this->dbUpgrade()->getModifiedKeys($mT);
-        if (!empty($modifiedKeys)) {
-            // Only manipulate DB if we're not in logging mode:
-            if (!$this->logsql) {
-                if (!$this->hasDatabaseRootCredentials()) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                }
-                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                $this->session->warnings->append(
-                    'Modified key(s) in table(s): '
-                    . implode(', ', array_keys($modifiedKeys))
-                );
-            }
-            $sql .= $this->dbUpgrade()
-                ->updateModifiedKeys($modifiedKeys, $this->logsql);
-        }
-
-        // Check for character set and collation problems.
-        $colProblems = $this->dbUpgrade()->getCharsetAndCollationProblems();
-        if (!empty($colProblems)) {
-            if (!$this->logsql) {
-                if (!$this->hasDatabaseRootCredentials()) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                }
-                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                $this->session->warnings->append(
-                    'Modified character set(s)/collation(s) in table(s): '
-                    . implode(', ', array_keys($colProblems))
-                );
-            }
-            $sql .= $this->dbUpgrade()
-                ->fixCharsetAndCollationProblems($colProblems, $this->logsql);
-            $this->setDbEncodingConfiguration('utf8mb4');
-        }
-
-        // Don't keep DB credentials in session longer than necessary:
-        unset($this->session->dbRootUser);
-        unset($this->session->dbRootPass);
-
         return $sql;
+    }
+
+    /**
+     * Apply migrations to the database. Return null if successful, or a Laminas view model if
+     * user input is required.
+     *
+     * @return ?ViewModel
+     */
+    public function applyDatabaseMigrations(): ?ViewModel
+    {
+        $migrationSql = trim($this->getDatabaseMigrations());
+        if (!empty($migrationSql) && !$this->logsql) {
+            if (!$this->hasDatabaseRootCredentials()) {
+                return $this->forwardTo('Upgrade', 'GetDbCredentials');
+            }
+            $adapter = $this->getRootDbAdapter();
+            foreach (explode(';', $migrationSql) as $sqlLine) {
+                $trimmedLine = trim($sqlLine);
+                if (!empty($trimmedLine)) {
+                    $adapter->query($trimmedLine, $adapter::QUERY_MODE_EXECUTE);
+                }
+            }
+            // Don't keep DB credentials in session longer than necessary:
+            unset($this->session->dbRootUser);
+            unset($this->session->dbRootPass);
+            $this->session->sql = '';
+        } else {
+            $this->session->sql = $migrationSql;
+        }
+        return null;
     }
 
     /**
@@ -519,24 +389,8 @@ class UpgradeController extends AbstractBase
         try {
             // If we haven't already tried it, attempt a structure update:
             if (!isset($this->session->sql)) {
-                // If this is a MySQL connection, we can do an automatic upgrade;
-                // if VuFind is using a different database, we have to prompt the
-                // user to check the migrations directory and upgrade manually.
-                $adapter = $this->getService(Adapter::class);
-                $platform = $adapter->getDriver()->getDatabasePlatformName();
-                if (strtolower($platform) == 'mysql') {
-                    $upgradeResult = $this->upgradeMySQL($adapter);
-                    if (!is_string($upgradeResult)) {
-                        return $upgradeResult;
-                    }
-                    $this->session->sql = $upgradeResult;
-                } else {
-                    $this->session->sql = '';
-                    $this->session->warnings->append(
-                        'Automatic database upgrade not supported for ' . $platform
-                        . '. Check for manual migration scripts in the '
-                        . '$VUFIND_HOME/module/VuFind/sql/migrations directory.'
-                    );
+                if ($result = $this->applyDatabaseMigrations()) {
+                    return $result;
                 }
             }
 
@@ -611,23 +465,6 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(['sql' => $this->session->sql]);
-    }
-
-    /**
-     * Prompt the user to confirm removal of deprecated columns.
-     *
-     * @return mixed
-     */
-    public function confirmdeprecatedcolumnsAction()
-    {
-        if ($action = $this->params()->fromQuery('action')) {
-            if ($action === 'keep' || $action === 'delete') {
-                $this->session->deprecatedColumnsAction = $action;
-                return $this->redirect()->toRoute('upgrade-fixdatabase');
-            }
-        }
-        $deprecated = $this->dbUpgrade()->getDeprecatedColumns();
-        return $this->createViewModel(compact('deprecated'));
     }
 
     /**

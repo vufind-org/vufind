@@ -32,7 +32,6 @@ namespace VuFind\Search\WorldCat2;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
-use function strlen;
 
 /**
  * WorldCat v2 Search Parameters
@@ -68,10 +67,8 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function storeErrorResponse(string|array $error): void
     {
-        $this->resultTotal = 0;
-        $this->results = [];
+        parent::storeErrorResponse($error);
         $this->responseFacets = [];
-        $this->errors = (array)$error;
     }
 
     /**
@@ -84,7 +81,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $query  = $this->getParams()->getQuery();
         $allTerms = $query->getAllTerms();
-        if (!strlen($allTerms)) {
+        if ($allTerms === '') {
             $this->storeErrorResponse('empty_search_disallowed');
             return;
         }

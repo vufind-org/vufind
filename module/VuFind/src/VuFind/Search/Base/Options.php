@@ -1424,7 +1424,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function showRestrictedViewWarning(): bool
     {
-        return $this->showRestrictedViewWarning ?? false;
+        return $this->showRestrictedViewWarning;
     }
 
     /**

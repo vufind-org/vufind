@@ -31,8 +31,6 @@ namespace VuFind\Search\ProQuestFSG;
 
 use VuFindSearch\Command\SearchCommand;
 
-use function strlen;
-
 /**
  * ProQuest Federated Search Gateway Search Parameters
  *
@@ -68,7 +66,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $query  = $this->getParams()->getQuery();
         $allTerms = $query->getAllTerms();
-        if (!strlen($allTerms)) {
+        if ($allTerms === '') {
             $this->storeErrorResponse('empty_search_disallowed');
             return;
         }
@@ -103,10 +101,8 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function storeErrorResponse(string|array $error): void
     {
-        $this->resultTotal = 0;
-        $this->results = [];
+        parent::storeErrorResponse($error);
         $this->responseFacets = [];
-        $this->errors = (array)$error;
     }
 
     /**

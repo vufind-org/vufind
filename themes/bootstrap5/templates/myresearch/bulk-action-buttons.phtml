@@ -82,7 +82,7 @@
     ob_start();
   ?>
     <ul class="selection-controls-bar">
-      <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
+      <?php if (in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
         <li class="bulk-checkbox">
           <?php $selectAllCheckboxId = $this->idPrefix . 'myresearchCheckAll'; ?>
           <label<?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
@@ -91,7 +91,7 @@
           </label>
         </li>
       <?php endif; ?>
-      <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+      <?php if ($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
         <li class="bulk-checkbox">
           <div class="select-all-global hidden">
             <?php $selectAllGlobalCheckboxId = $this->idPrefix . 'myresearchCheckAllGlobal'; ?>
@@ -102,7 +102,7 @@
           </div>
         </li>
       <?php endif; ?>
-      <?php if($multiPageSelection): ?>
+      <?php if ($multiPageSelection): ?>
         <li>
           <button type="button" class="clear-selection hidden"></button>
         </li>
