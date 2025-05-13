@@ -1320,6 +1320,7 @@ ${git_status}
         <include pattern="**/*.phtml" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
+        <exclude name="record/ajaxview-accordion.phtml" />
       </fileset>
       <filterchain>
         <replaceregexp>
@@ -1348,6 +1349,7 @@ ${git_status}
           <fileset dir="${templatesdir}">
             <exclude name="header.phtml" />
             <exclude name="RecordTab/similaritemscarousel.phtml" />
+            <exclude name="record/ajaxview-accordion.phtml" />
           </fileset>
         </delete>
       </then>
@@ -1384,6 +1386,7 @@ ${git_status}
         <type type="file" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
+        <exclude name="record/ajaxview-accordion.phtml" />
         <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
       </fileset>
     </foreach>
