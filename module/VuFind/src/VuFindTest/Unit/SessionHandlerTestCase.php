@@ -59,20 +59,6 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     protected $services = false;
 
     /**
-     * Get mock database plugin manager
-     *
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    protected function getTables()
-    {
-        if (!$this->tables) {
-            $this->tables
-                = new \VuFindTest\Container\MockDbTablePluginManager($this);
-        }
-        return $this->tables;
-    }
-
-    /**
      * Get mock database service plugin manager
      *
      * @return \VuFind\Db\Service\PluginManager
