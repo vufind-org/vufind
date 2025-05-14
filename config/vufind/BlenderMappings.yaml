@@ -271,6 +271,12 @@ Facets:
           Field: creationdate
         Solr:
           Field: publishDate
+    source:
+      Mappings:
+        EDS:
+          Field: ContentProvider
+        ProQuestFSG:
+          Field: Databases
     topic:
       Mappings:
         EDS:

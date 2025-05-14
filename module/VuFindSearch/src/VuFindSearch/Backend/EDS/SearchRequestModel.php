@@ -29,6 +29,9 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
+
 use function array_key_exists;
 use function count;
 use function intval;
@@ -43,8 +46,10 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchRequestModel
+class SearchRequestModel implements LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * What to search for, formatted as [{boolean operator},][{field code}:]{term}
      *
@@ -139,15 +144,24 @@ class SearchRequestModel
     protected $actions = [];
 
     /**
+     * Validation config
+     *
+     * @var array
+     */
+    protected $validationConfig;
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Search Request model
      *
-     * @param array $parameters parameters to populate request
+     * @param array $parameters       parameters to populate request
+     * @param array $validationConfig Validation config
      */
-    public function __construct($parameters = [])
+    public function __construct(array $parameters = [], array $validationConfig = [])
     {
         $this->setParameters($parameters);
+        $this->setValidationConfig($validationConfig);
     }
 
     /**
@@ -209,6 +223,46 @@ class SearchRequestModel
                     }
             }
         }
+    }
+
+    /**
+     * Set validation config
+     *
+     * @param array $validationConfig Validation config
+     *
+     * @return void
+     */
+    public function setValidationConfig(array $validationConfig)
+    {
+        $this->validationConfig = $validationConfig;
+    }
+
+    /**
+     * Checks whether the search model is valid for the EDS API.
+     *
+     * @return bool Returns false if any model parameters are invalid.
+     */
+    public function isValid()
+    {
+        if (!($this->validationConfig['ContentProvider'] ?? false)) {
+            return true;
+        }
+        $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
+
+        // There are no EBSCO subscription databases that contain a pipe character.
+        // Note that individual customer-specific databases may do so; those should
+        // not enable ContentProvider validation.
+        $invalidContentProviderCharacters = '|';
+
+        foreach ($contentProviderValues as $value) {
+            foreach (str_split($invalidContentProviderCharacters) as $invalidCharacter) {
+                if (str_contains($value, $invalidCharacter)) {
+                    $this->debug("Invalid database code '$value'; should skip EDS query.");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
