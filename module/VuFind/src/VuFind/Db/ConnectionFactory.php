@@ -118,7 +118,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Obtain a Laminas\DB connection using standard VuFind configuration.
+     * Obtain a database connection using standard VuFind configuration.
      *
      * @param string $overrideUser Username override (leave null to use username
      * from config.ini)
@@ -206,7 +206,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Obtain a Laminas\DB connection using an option array.
+     * Obtain a database connection using an option array.
      *
      * @param array $options Options for building adapter
      *
@@ -256,7 +256,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Parse Laminas\DB connection options from a connection string.
+     * Parse database connection options from a connection string.
      *
      * @param string  $connectionString Connection string of the form
      * [db_type]://[username]:[password]@[host]/[db_name]
