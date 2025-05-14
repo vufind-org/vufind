@@ -184,7 +184,7 @@ class Database extends AbstractBase
         $user = $this->createUserFromParams($params, $userService);
         try {
             $userService->persistEntity($user);
-        } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
+        } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
             // In a scenario where the unique key of the user table is
             // shorter than the username field length, it is possible that
             // a user will pass validation but still get rejected due to
