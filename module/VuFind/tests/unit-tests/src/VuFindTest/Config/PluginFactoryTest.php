@@ -31,8 +31,6 @@ namespace VuFindTest\Config;
 
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManager;
-use VuFind\Config\Location\ConfigFile;
-use VuFind\Config\PathResolver;
 use VuFind\Config\PluginFactory;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
@@ -79,22 +77,13 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     protected function getConfig($config = []): Config
     {
         $name = 'test-config';
-        $configFile = new ConfigFile('test/test');
-
-        $mockResolver = $this->createMock(PathResolver::class);
-        $mockResolver->expects($this->any())
-            ->method('getConfigLocation')
-            ->with($name)
-            ->willReturn($configFile);
-
         $mockConfigManager = $this->createMock(ConfigManager::class);
         $mockConfigManager->expects($this->any())
-            ->method('loadConfig')
-            ->with($configFile)
+            ->method('get')
+            ->with($name)
             ->willReturn($config);
 
         $container = new \VuFindTest\Container\MockContainer($this);
-        $container->set(PathResolver::class, $mockResolver);
         $container->set(ConfigManager::class, $mockConfigManager);
         return ($this->factory)($container, $name);
     }
