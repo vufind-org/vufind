@@ -231,6 +231,27 @@ class PathResolver
     }
 
     /**
+     * Get path to base dir.
+     *
+     * @return string
+     */
+    public function getBaseConfigDirPath(): string
+    {
+        return $this->buildPath($this->baseDirectorySpec);
+    }
+
+    /**
+     * Get path to top local dir.
+     *
+     * @return ?string
+     */
+    public function getLocalConfigDirPath(): ?string
+    {
+        $localDirStack = end($this->localConfigDirStack);
+        return $localDirStack ? $this->buildPath($localDirStack) : null;
+    }
+
+    /**
      * Build a complete file path from a directory specification, optional
      * configuration file sub-directory and a filename.
      *
