@@ -29,6 +29,9 @@
 
 namespace VuFindTheme;
 
+use VuFind\Exception\FileAccess;
+use VuFind\Feature\DirUtilityTrait;
+
 /**
  * Abstract base class to hold shared logic for theme utilities.
  *
@@ -40,6 +43,8 @@ namespace VuFindTheme;
  */
 abstract class AbstractThemeUtility
 {
+    use DirUtilityTrait;
+
     /**
      * Theme info object
      *
@@ -84,30 +89,12 @@ abstract class AbstractThemeUtility
      */
     protected function copyDir($src, $dest)
     {
-        if (!is_dir($dest)) {
-            if (!mkdir($dest)) {
-                return $this->setLastError("Cannot create $dest");
-            }
+        try {
+            self::cpDir($src, $dest);
+        } catch (FileAccess $e) {
+            $this->setLastError($e->getMessage());
+            return false;
         }
-        $dir = opendir($src);
-        while ($current = readdir($dir)) {
-            if ($current === '.' || $current === '..') {
-                continue;
-            }
-            if (is_dir("$src/$current")) {
-                if (!$this->copyDir("$src/$current", "$dest/$current")) {
-                    return false;
-                }
-            } elseif (
-                !file_exists("$dest/$current")
-                && !copy("$src/$current", "$dest/$current")
-            ) {
-                return $this->setLastError(
-                    "Cannot copy $src/$current to $dest/$current."
-                );
-            }
-        }
-        closedir($dir);
         return true;
     }
 
@@ -120,21 +107,13 @@ abstract class AbstractThemeUtility
      */
     protected function deleteDir($path)
     {
-        $dir = opendir($path);
-        while ($current = readdir($dir)) {
-            if ($current === '.' || $current === '..') {
-                continue;
-            }
-            if (is_dir("$path/$current")) {
-                if (!$this->deleteDir("$path/$current")) {
-                    return false;
-                }
-            } elseif (!unlink("$path/$current")) {
-                return $this->setLastError("Cannot delete $path/$current");
-            }
+        try {
+            self::rmDir($path);
+        } catch (FileAccess $e) {
+            $this->setLastError($e->getMessage());
+            return false;
         }
-        closedir($dir);
-        return rmdir($path);
+        return true;
     }
 
     /**

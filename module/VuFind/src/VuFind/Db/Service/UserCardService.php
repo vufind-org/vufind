@@ -111,17 +111,19 @@ class UserCardService extends AbstractDbService implements
         if (!$this->capabilities->libraryCardsEnabled()) {
             return [];
         }
+        $callback = function ($select) use ($userOrId, $id, $catUsername) {
+            $select->where->equalTo('user_id', is_int($userOrId) ? $userOrId : $userOrId->getId());
+            if ($id) {
+                $select->where->equalTo('id', $id);
+            }
+            if ($catUsername) {
+                $select->where->equalTo('cat_username', $catUsername);
+            }
+            // Sort by id for consistency and duplicate removal:
+            $select->order('id');
+        };
         $userCard = $this->getDbTable('UserCard');
-        $criteria = [
-            'user_id' => is_int($userOrId) ? $userOrId : $userOrId->getId(),
-        ];
-        if ($id) {
-            $criteria['id'] = $id;
-        }
-        if ($catUsername) {
-            $criteria['cat_username'] = $catUsername;
-        }
-        return iterator_to_array($userCard->select($criteria));
+        return iterator_to_array($userCard->select($callback));
     }
 
     /**
@@ -291,20 +293,33 @@ class UserCardService extends AbstractDbService implements
         if (!$user->getCatUsername()) {
             return true; // success, because there's nothing to do
         }
-        $row = current($this->getLibraryCards($user, catUsername: $user->getCatUsername()));
-        if (empty($row)) {
-            $row = $this->createEntity()
+        $cards = $this->getLibraryCards($user, catUsername: $user->getCatUsername());
+        if (!($card = reset($cards))) {
+            $card = $this->createEntity()
                 ->setUser($user)
                 ->setCatUsername($user->getCatUsername())
                 ->setCardName($user->getCatUsername())
                 ->setCreated(new DateTime());
         }
         // Always update home library and password
-        $row->setHomeLibrary($user->getHomeLibrary());
-        $row->setRawCatPassword($user->getRawCatPassword());
-        $row->setCatPassEnc($user->getCatPassEnc());
+        $card->setHomeLibrary($user->getHomeLibrary());
+        $card->setRawCatPassword($user->getRawCatPassword());
+        $card->setCatPassEnc($user->getCatPassEnc());
 
-        $this->persistEntity($row);
+        $this->persistEntity($card);
+
+        // Re-read and verify that there are no duplicates that could have been created with concurrent
+        // requests such as a user managing to double-submit a login request:
+        $cards = $this->getLibraryCards($user, catUsername: $user->getCatUsername());
+        if (count($cards) > 1) {
+            // We have duplicates. Leave only the first one on the assumption that it has the correct card
+            // name (that could have been previously modified by the user). Plus we just updated it with current
+            // home library etc.
+            array_shift($cards);
+            foreach ($cards as $current) {
+                $this->deleteLibraryCard($user, $current);
+            }
+        }
 
         return true;
     }
