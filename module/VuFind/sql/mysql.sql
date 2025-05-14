@@ -15,7 +15,7 @@
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `change_tracker` (
+CREATE TABLE IF NOT EXISTS `change_tracker` (
   `core` varchar(30) NOT NULL,                -- solr core containing record
   `id` varchar(120) NOT NULL,                 -- ID of record within core
   `first_indexed` datetime DEFAULT NULL,      -- first time added to index
@@ -33,7 +33,7 @@ CREATE TABLE `change_tracker` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `comments` (
+CREATE TABLE IF NOT EXISTS `comments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `resource_id` int(11) NOT NULL DEFAULT '0',
@@ -53,7 +53,7 @@ CREATE TABLE `comments` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ratings` (
+CREATE TABLE IF NOT EXISTS `ratings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `resource_id` int(11) NOT NULL DEFAULT '0',
@@ -73,7 +73,7 @@ CREATE TABLE `ratings` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `oai_resumption` (
+CREATE TABLE IF NOT EXISTS `oai_resumption` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `token` varchar(255) DEFAULT NULL,
   `params` text,
@@ -89,7 +89,7 @@ CREATE TABLE `oai_resumption` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `resource` (
+CREATE TABLE IF NOT EXISTS `resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `record_id` varchar(255) NOT NULL DEFAULT '',
   `title` varchar(255) NOT NULL DEFAULT '',
@@ -108,7 +108,7 @@ CREATE TABLE `resource` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `resource_tags` (
+CREATE TABLE IF NOT EXISTS `resource_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `resource_id` int(11) DEFAULT NULL,
   `tag_id` int(11) NOT NULL DEFAULT '0',
@@ -133,7 +133,7 @@ CREATE TABLE `resource_tags` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `search` (
+CREATE TABLE IF NOT EXISTS `search` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `session_id` varchar(128) DEFAULT NULL,
@@ -160,7 +160,7 @@ CREATE TABLE `search` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `session` (
+CREATE TABLE IF NOT EXISTS `session` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) DEFAULT NULL,
   `data` mediumtext,
@@ -195,7 +195,7 @@ CREATE TABLE `external_session` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `shortlinks` (
+CREATE TABLE IF NOT EXISTS `shortlinks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `path` mediumtext NOT NULL,
   `hash` varchar(32),
@@ -211,7 +211,7 @@ CREATE TABLE `shortlinks` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tags` (
+CREATE TABLE IF NOT EXISTS `tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tag` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
@@ -224,7 +224,7 @@ CREATE TABLE `tags` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL DEFAULT '',
   `password` varchar(32) NOT NULL DEFAULT '',
@@ -261,7 +261,7 @@ CREATE TABLE `user` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user_list` (
+CREATE TABLE IF NOT EXISTS `user_list` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `title` varchar(200) NOT NULL,
@@ -280,7 +280,7 @@ CREATE TABLE `user_list` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user_resource` (
+CREATE TABLE IF NOT EXISTS `user_resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `resource_id` int(11) NOT NULL,
@@ -303,7 +303,7 @@ CREATE TABLE `user_resource` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user_card` (
+CREATE TABLE IF NOT EXISTS `user_card` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `card_name` varchar(255) NOT NULL DEFAULT '',
@@ -336,7 +336,7 @@ CREATE TABLE `user_card` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `record` (
+CREATE TABLE IF NOT EXISTS `record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `record_id` varchar(255) DEFAULT NULL,
   `source` varchar(50) DEFAULT NULL,
@@ -354,7 +354,7 @@ CREATE TABLE `record` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `auth_hash` (
+CREATE TABLE IF NOT EXISTS `auth_hash` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) DEFAULT NULL,
   `hash` varchar(255) NOT NULL DEFAULT '',
@@ -374,7 +374,7 @@ CREATE TABLE `auth_hash` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `feedback` (
+CREATE TABLE IF NOT EXISTS `feedback` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `message` longtext,
@@ -401,7 +401,7 @@ CREATE TABLE `feedback` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `access_token` (
+CREATE TABLE IF NOT EXISTS `access_token` (
   `id` varchar(255) NOT NULL,
   `type` varchar(128) NOT NULL,
   `user_id` int(11) NULL,
@@ -420,7 +420,7 @@ CREATE TABLE `access_token` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `login_token` (
+CREATE TABLE IF NOT EXISTS `login_token` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `token` varchar(255) NOT NULL,
