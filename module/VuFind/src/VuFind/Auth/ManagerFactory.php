@@ -91,7 +91,6 @@ class ManagerFactory implements FactoryInterface
             $loginTokenManager,
             $ils
         );
-        $manager->setDbTableManager($container->get(\VuFind\Db\Table\PluginManager::class));
         $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));
         $manager->checkForExpiredCredentials();
         return $manager;

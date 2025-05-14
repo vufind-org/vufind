@@ -32,7 +32,6 @@
 namespace VuFind\Session;
 
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
 
 /**
  * Session handler interface
@@ -44,7 +43,7 @@ use VuFind\Db\Table\DbTableAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
-interface HandlerInterface extends SaveHandlerInterface, DbTableAwareInterface
+interface HandlerInterface extends SaveHandlerInterface
 {
     /**
      * Enable session writing (default)

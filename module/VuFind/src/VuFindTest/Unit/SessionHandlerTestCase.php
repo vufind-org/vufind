@@ -87,18 +87,6 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set up mock databases for a session handler.
-     *
-     * @param SessionHandler $handler Session handler
-     *
-     * @return void
-     */
-    protected function injectMockDatabaseTables(SessionHandler $handler)
-    {
-        $handler->setDbTableManager($this->getTables());
-    }
-
-    /**
      * Set up mock database services for a session handler.
      *
      * @param SessionHandler $handler Session handler
@@ -107,7 +95,6 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function injectMockDatabaseDependencies(SessionHandler $handler)
     {
-        $this->injectMockDatabaseTables($handler);
         $handler->setDbServiceManager($this->getServices());
     }
 

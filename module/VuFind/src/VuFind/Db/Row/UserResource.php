@@ -58,10 +58,8 @@ use VuFind\Db\Service\UserServiceInterface;
  */
 class UserResource extends RowGateway implements
     UserResourceEntityInterface,
-    \VuFind\Db\Table\DbTableAwareInterface,
     DbServiceAwareInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
     use DbServiceAwareTrait;
 
     /**

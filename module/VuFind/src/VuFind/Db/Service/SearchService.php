@@ -33,8 +33,6 @@ use DateTime;
 use Exception;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 use function count;
 
@@ -49,11 +47,8 @@ use function count;
  */
 class SearchService extends AbstractDbService implements
     SearchServiceInterface,
-    Feature\DeleteExpiredInterface,
-    DbTableAwareInterface
+    Feature\DeleteExpiredInterface
 {
-    use DbTableAwareTrait;
-
     /**
      * Create a search entity.
      *

@@ -40,8 +40,6 @@ use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserService;
-use VuFind\Db\Table\Gateway;
-use VuFind\Db\Table\PluginManager as TableManager;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
@@ -208,21 +206,7 @@ trait LiveDatabaseTrait
     {
         if (!$this->liveDatabaseContainer) {
             $container = $this->getMockContainerWithDoctrineDependencies();
-            $configManager = $container->get(\VuFind\Config\PluginManager::class);
-            $adapterFactory = new \VuFind\Db\AdapterFactory(
-                $configManager->get('config')
-            );
-            $container->set(
-                \Laminas\Db\Adapter\Adapter::class,
-                $adapterFactory->getAdapter()
-            );
             $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
-            $container->set(
-                \VuFind\Db\Row\PluginManager::class,
-                new \VuFind\Db\Row\PluginManager($container, [])
-            );
-            $liveTableManager = new TableManager($container, []);
-            $container->set(TableManager::class, $liveTableManager);
             $liveServiceManager = new ServiceManager($container, []);
             $container->set(ServiceManager::class, $liveServiceManager);
             $container->set(
@@ -253,16 +237,6 @@ trait LiveDatabaseTrait
     }
 
     /**
-     * Get a real, working table manager.
-     *
-     * @return TableManager
-     */
-    public function getLiveTableManager(): TableManager
-    {
-        return $this->getLiveDatabaseContainer()->get(TableManager::class);
-    }
-
-    /**
      * Get a database service.
      *
      * @param string $service Name of service to load
@@ -282,18 +256,6 @@ trait LiveDatabaseTrait
     public function getFavoritesService(): FavoritesService
     {
         return $this->getLiveDatabaseContainer()->get(FavoritesService::class);
-    }
-
-    /**
-     * Get a table object.
-     *
-     * @param string $table Name of table to load
-     *
-     * @return Gateway
-     */
-    public function getTable(string $table): Gateway
-    {
-        return $this->getLiveTableManager()->get($table);
     }
 
     /**

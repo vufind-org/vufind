@@ -132,7 +132,6 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
         );
         $obj->setDbServiceManager($this->getLiveDbServiceManager());
-        $obj->setDbTableManager($this->getLiveTableManager());
         $obj->setConfig($config);
         return $obj;
     }

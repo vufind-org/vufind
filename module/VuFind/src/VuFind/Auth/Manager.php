@@ -54,10 +54,8 @@ use function is_callable;
  */
 class Manager implements
     \LmcRbacMvc\Identity\IdentityProviderInterface,
-    \Laminas\Log\LoggerAwareInterface,
-    \VuFind\Db\Table\DbTableAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**

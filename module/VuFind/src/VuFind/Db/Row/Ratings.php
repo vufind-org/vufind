@@ -55,10 +55,8 @@ use VuFind\Db\Service\UserServiceInterface;
  */
 class Ratings extends RowGateway implements
     RatingsEntityInterface,
-    \VuFind\Db\Table\DbTableAwareInterface,
     DbServiceAwareInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
     use DbServiceAwareTrait;
 
     /**

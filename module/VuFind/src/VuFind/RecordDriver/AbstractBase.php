@@ -48,12 +48,10 @@ use function is_callable;
  */
 abstract class AbstractBase implements
     \VuFind\Db\Service\DbServiceAwareInterface,
-    \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindSearch\Response\RecordInterface
 {
     use \VuFind\Db\Service\DbServiceAwareTrait;
-    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFindSearch\Response\RecordTrait;
 
