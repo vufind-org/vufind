@@ -64,6 +64,19 @@ class ConfigManager
     }
 
     /**
+     * Get config by name.
+     *
+     * @param string $configName Config name
+     *
+     * @return array
+     */
+    public function get(string $configName): array
+    {
+        $configLocation = $this->pathResolver->getConfigLocation($configName);
+        return ($configLocation !== null) ? $this->loadConfig($configLocation) : [];
+    }
+
+    /**
      * Load config from a specific location.
      *
      * @param ConfigLocationInterface $configLocation Config location

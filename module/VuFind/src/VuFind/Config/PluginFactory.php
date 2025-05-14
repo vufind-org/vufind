@@ -75,10 +75,7 @@ class PluginFactory implements AbstractFactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $pathResolver = $container->get(PathResolver::class);
         $configManager = $container->get(ConfigManager::class);
-        $configLocation = $pathResolver->getConfigLocation($requestedName);
-        $config = ($configLocation !== null) ? $configManager->loadConfig($configLocation) : [];
-        return new Config($config);
+        return new Config($configManager->get($requestedName));
     }
 }
