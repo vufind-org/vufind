@@ -73,13 +73,13 @@
     <?php endif; ?>
   </ul>
   <ul class="selection-controls-bar">
-    <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
+    <?php if (in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
       <li class="bulk-checkbox">
         <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
         <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
       </li>
     <?php endif; ?>
-    <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+    <?php if ($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
       <li class="bulk-checkbox">
         <div class="select-all-global hidden">
           <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
@@ -87,7 +87,7 @@
         </div>
       </li>
     <?php endif; ?>
-    <?php if($multiPageSelection): ?>
+    <?php if ($multiPageSelection): ?>
       <li>
         <button type="button" class="clear-selection hidden"></button>
       </li>
