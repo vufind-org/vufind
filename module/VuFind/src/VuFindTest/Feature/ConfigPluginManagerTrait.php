@@ -131,7 +131,7 @@ trait ConfigPluginManagerTrait
         $this->addPathResolverToContainer($container);
         $configHandlerPluginManager = new \VuFind\Config\Handler\PluginManager(
             $container,
-            $config['vufind']['config_reader']
+            $config['vufind']['config_handler']
         );
         $configManager = new \VuFind\Config\ConfigManager(
             $configHandlerPluginManager,
