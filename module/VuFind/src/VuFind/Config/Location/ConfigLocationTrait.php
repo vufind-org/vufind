@@ -29,6 +29,8 @@
 
 namespace VuFind\Config\Location;
 
+use function in_array;
+
 /**
  * Configuration location trait - Provides configuration location helper methods
  *
@@ -80,7 +82,7 @@ trait ConfigLocationTrait
         $dirContent = is_dir($path) ? scandir($path) : [];
         $result = [];
         foreach ($dirContent as $item) {
-            if (str_contains($item, '.bak') || str_contains($item, '.dist')) {
+            if (in_array($item, ['.', '..']) || str_contains($item, '.bak') || str_contains($item, '.dist')) {
                 continue;
             }
             $itemPath = $path . DIRECTORY_SEPARATOR . $item;

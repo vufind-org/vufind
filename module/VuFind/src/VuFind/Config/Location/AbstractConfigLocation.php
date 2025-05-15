@@ -175,6 +175,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      */
     protected function getExtension(): ?string
     {
-        return pathinfo($this->getFileName(), PATHINFO_EXTENSION);
+        $extension = pathinfo($this->getFileName(), PATHINFO_EXTENSION);
+        return !empty($extension) ? $extension : null;
     }
 }
