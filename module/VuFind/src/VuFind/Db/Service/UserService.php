@@ -75,7 +75,7 @@ class UserService extends AbstractDbService implements
      */
     public function createEntity(): UserEntityInterface
     {
-        $class = $this->getEntityClass(User::class);
+        $class = $this->getEntityClass(UserEntityInterface::class);
         return new $class();
     }
 
@@ -105,7 +105,7 @@ class UserService extends AbstractDbService implements
     public function deleteUser(UserEntityInterface|int $userOrId): void
     {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $dql = 'DELETE FROM ' . $this->getEntityClass(User::class) . ' u'
+        $dql = 'DELETE FROM ' . $this->getEntityClass(UserEntityInterface::class) . ' u'
             . ' WHERE u.id = :id';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('id', $userId);
@@ -153,7 +153,7 @@ class UserService extends AbstractDbService implements
             return null;
         }
         if (isset($legalFieldMap[$fieldName])) {
-            $dql = 'SELECT U FROM ' . $this->getEntityClass(User::class) . ' U '
+            $dql = 'SELECT U FROM ' . $this->getEntityClass(UserEntityInterface::class) . ' U '
                 . 'WHERE U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
             $parameters = compact('fieldValue');
             $query = $this->entityManager->createQuery($dql);

@@ -62,7 +62,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
     public function getChangeTrackerEntity(string $indexName, string $id): ?ChangeTrackerEntityInterface
     {
         $dql = 'SELECT c '
-            . 'FROM ' . $this->getEntityClass(ChangeTracker::class) . ' c '
+            . 'FROM ' . $this->getEntityClass(ChangeTrackerEntityInterface::class) . ' c '
             . 'WHERE c.core = :core AND c.id = :id';
         $parameters = ['core' => $indexName, 'id' => $id];
         $query = $this->entityManager->createQuery($dql);
@@ -84,7 +84,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
     public function getDeletedCount(string $indexName, DateTime $from, DateTime $until): int
     {
         $dql = 'SELECT COUNT(c) as deletedcount '
-            . 'FROM ' . $this->getEntityClass(ChangeTracker::class) . ' c '
+            . 'FROM ' . $this->getEntityClass(ChangeTrackerEntityInterface::class) . ' c '
             . 'WHERE c.core = :core AND c.deleted BETWEEN :from AND :until';
         $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
         $query = $this->entityManager->createQuery($dql);
@@ -112,7 +112,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
         ?int $limit = null
     ): array {
         $dql = 'SELECT c '
-            . 'FROM ' . $this->getEntityClass(ChangeTracker::class) . ' c '
+            . 'FROM ' . $this->getEntityClass(ChangeTrackerEntityInterface::class) . ' c '
             . 'WHERE c.core = :core AND c.deleted BETWEEN :from AND :until '
             . 'ORDER BY c.deleted';
         $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
@@ -256,7 +256,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
      */
     public function deleteRows(?string $core = null, ?string $id = null): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(ChangeTracker::class) . ' c ';
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ChangeTrackerEntityInterface::class) . ' c ';
         $parameters = $dqlWhere = [];
         if (null !== $core) {
             $dqlWhere[] = 'c.core = :core';
@@ -277,11 +277,11 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
     /**
      * Create a change tracker entity object.
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerEntityInterface
      */
-    public function createEntity(): ChangeTracker
+    public function createEntity(): ChangeTrackerEntityInterface
     {
-        $class = $this->getEntityClass(ChangeTracker::class);
+        $class = $this->getEntityClass(ChangeTrackerEntityInterface::class);
         return new $class();
     }
 }

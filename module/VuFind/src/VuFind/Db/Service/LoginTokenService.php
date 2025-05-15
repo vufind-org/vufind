@@ -30,7 +30,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use VuFind\Db\Entity\LoginToken;
 use VuFind\Db\Entity\LoginTokenEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -56,7 +55,7 @@ class LoginTokenService extends AbstractDbService implements
      */
     public function createEntity(): LoginTokenEntityInterface
     {
-        $class = $this->getEntityClass(LoginToken::class);
+        $class = $this->getEntityClass(LoginTokenEntityInterface::class);
         return new $class();
     }
 
@@ -131,7 +130,7 @@ class LoginTokenService extends AbstractDbService implements
      */
     protected function deleteById(int $id): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(LoginToken::class) . ' lt '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(LoginTokenEntityInterface::class) . ' lt '
             . 'WHERE lt.id == :id';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('id', $id);
@@ -149,7 +148,7 @@ class LoginTokenService extends AbstractDbService implements
     public function deleteBySeries(string $series, ?int $currentTokenId = null): void
     {
         $params = compact('series');
-        $dql = 'DELETE FROM ' . $this->getEntityClass(LoginToken::class) . ' lt '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(LoginTokenEntityInterface::class) . ' lt '
             . 'WHERE lt.series = :series';
         if ($currentTokenId !== null) {
             $dql .= ' AND lt.id != :currentTokenId';
@@ -170,7 +169,7 @@ class LoginTokenService extends AbstractDbService implements
     public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
         $user = $this->getDoctrineReference(User::class, $userOrId);
-        $dql = 'DELETE FROM ' . $this->getEntityClass(LoginToken::class) . ' lt '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(LoginTokenEntityInterface::class) . ' lt '
             . 'WHERE lt.user = :user';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('user', $user);

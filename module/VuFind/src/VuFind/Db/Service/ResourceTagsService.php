@@ -35,7 +35,6 @@ use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAd
 use Laminas\Paginator\Paginator;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
-use VuFind\Db\Entity\ResourceTags;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\Tags;
 use VuFind\Db\Entity\TagsEntityInterface;
@@ -145,7 +144,7 @@ class ResourceTagsService extends AbstractDbService implements
             . ' t.id AS tag_id, r.id AS resource_id, u.id AS user_id,'
             . ' lower(t.tag) AS HIDDEN tagSort, lower(u.username) AS HIDDEN usernameSort,'
             . ' lower(r.title) AS HIDDEN titleSort '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'LEFT JOIN rt.resource r '
             . 'LEFT JOIN rt.tag t '
             . 'LEFT JOIN rt.user u';
@@ -194,7 +193,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function createEntity(): ResourceTagsEntityInterface
     {
-        $class = $this->getEntityClass(ResourceTags::class);
+        $class = $this->getEntityClass(ResourceTagsEntityInterface::class);
         return new $class();
     }
 
@@ -217,7 +216,7 @@ class ResourceTagsService extends AbstractDbService implements
         ?DateTime $posted = null
     ) {
         $tag = $this->getDoctrineReference(Tags::class, $tagOrId);
-        $dql = ' SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+        $dql = ' SELECT rt FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt ';
         $dqlWhere = ['rt.tag = :tag '];
         $parameters = compact('tag');
 
@@ -278,7 +277,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function deleteLinksByResourceTagsIdArray(array $ids): int
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'WHERE rt.id IN (:ids)';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(compact('ids'));
@@ -306,7 +305,7 @@ class ResourceTagsService extends AbstractDbService implements
         $extraWhere = [],
         $extraParams = [],
     ) {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt ';
 
         $dqlWhere = ['rt.user = :user '];
         $parameters = ['user' => $this->getDoctrineReference(User::class, $userOrId)];
@@ -407,7 +406,7 @@ class ResourceTagsService extends AbstractDbService implements
     ): void {
         $list = $this->getDoctrineReference(UserList::class, $listOrId);
         $user = $this->getDoctrineReference(User::class, $userOrId);
-        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
         $parameters = compact('user', 'list');
         if (null !== $tagId) {
@@ -436,7 +435,7 @@ class ResourceTagsService extends AbstractDbService implements
         $dql = 'SELECT r.id AS resource_id, MAX(rt.tag) AS tag_id, '
             . 'MAX(rt.list) AS list_id, MAX(rt.user) AS user_id, MAX(rt.id) AS id, '
             . 'r.title AS title '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'LEFT JOIN rt.resource r ';
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
@@ -487,7 +486,7 @@ class ResourceTagsService extends AbstractDbService implements
         $dql = 'SELECT MAX(r.id) AS resource_id, MAX(t.id) AS tag_id, '
             . 'MAX(l.id) AS list_id, MAX(u.id) AS user_id, MAX(rt.id) AS id, '
             . $tagClause
-            . ' FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . ' FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'LEFT JOIN rt.resource r '
             . 'LEFT JOIN rt.tag t '
             . 'LEFT JOIN rt.list l '
@@ -532,7 +531,7 @@ class ResourceTagsService extends AbstractDbService implements
         $dql = 'SELECT MAX(rt.resource) AS resource_id, MAX(rt.tag) AS tag_id, '
             . 'MAX(rt.list) AS list_id, u.id AS user_id, MAX(rt.id) AS id, '
             . 'u.username AS username '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'INNER JOIN rt.user u ';
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
@@ -593,7 +592,7 @@ class ResourceTagsService extends AbstractDbService implements
     public function getAnonymousCount(): int
     {
         $dql = 'SELECT COUNT(rt.id) AS total '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'WHERE rt.user IS NULL';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
@@ -610,7 +609,7 @@ class ResourceTagsService extends AbstractDbService implements
     public function assignAnonymousTags(UserEntityInterface|int $userOrId): void
     {
         $id = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'SET rt.user = :id WHERE rt.user is NULL';
         $parameters = compact('id');
         $query = $this->entityManager->createQuery($dql);
@@ -628,7 +627,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function changeResourceId(int $old, int $new): void
     {
-        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTags::class) . ' e '
+        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' e '
             . 'SET e.resource = :new WHERE e.resource = :old';
         $parameters = compact('new', 'old');
         $query = $this->entityManager->createQuery($dql);
@@ -646,7 +645,7 @@ class ResourceTagsService extends AbstractDbService implements
     {
         $dql = 'SELECT MIN(rt.resource) as resource_id, MiN(rt.tag) as tag_id, MIN(rt.list) as list_id, '
             . 'MIN(rt.user) as user_id, COUNT(rt.resource) as cnt, MIN(rt.id) as id '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'GROUP BY rt.resource, rt.tag, rt.list, rt.user '
             . 'HAVING COUNT(rt.resource) > 1';
         $query = $this->entityManager->createQuery($dql);
@@ -665,7 +664,7 @@ class ResourceTagsService extends AbstractDbService implements
         // getDuplicates returns the minimum id in the set, so we want to
         // delete all of the duplicates with a higher id value.
         foreach ($this->getDuplicateResourceLinks() as $dupe) {
-            $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
                 . 'WHERE rt.resource = :resource AND rt.tag = :tag '
                 . 'AND rt.user = :user AND rt.id > :id';
             $parameters = [

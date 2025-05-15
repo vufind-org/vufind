@@ -30,7 +30,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use VuFind\Db\Entity\AuthHash;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 
 /**
@@ -53,7 +52,7 @@ class AuthHashService extends AbstractDbService implements
      */
     public function createEntity(): AuthHashEntityInterface
     {
-        $class = $this->getEntityClass(AuthHash::class);
+        $class = $this->getEntityClass(AuthHashEntityInterface::class);
         return new $class();
     }
 
@@ -66,7 +65,7 @@ class AuthHashService extends AbstractDbService implements
      */
     public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(AuthHash::class) . ' ah '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(AuthHashEntityInterface::class) . ' ah '
             . 'WHERE ah.id = :id';
         $query = $this->entityManager->createQuery($dql);
         $authHashId = $authHashOrId instanceof AuthHashEntityInterface ? $authHashOrId->getId() : $authHashOrId;
@@ -87,7 +86,7 @@ class AuthHashService extends AbstractDbService implements
     public function getByHashAndType(string $hash, string $type, bool $create = true): ?AuthHashEntityInterface
     {
         $dql = 'SELECT ah '
-            . 'FROM ' . $this->getEntityClass(AuthHash::class) . ' ah '
+            . 'FROM ' . $this->getEntityClass(AuthHashEntityInterface::class) . ' ah '
             . 'WHERE ah.hash = :hash '
             . 'AND ah.type = :type';
         $query = $this->entityManager->createQuery($dql);
@@ -114,7 +113,7 @@ class AuthHashService extends AbstractDbService implements
     public function getLatestBySessionId(string $sessionId): ?AuthHashEntityInterface
     {
         $dql = 'SELECT ah '
-            . 'FROM ' . $this->getEntityClass(AuthHash::class) . ' ah '
+            . 'FROM ' . $this->getEntityClass(AuthHashEntityInterface::class) . ' ah '
             . 'WHERE ah.sessionId = :sessionId '
             . 'ORDER BY ah.created DESC';
         $query = $this->entityManager->createQuery($dql);

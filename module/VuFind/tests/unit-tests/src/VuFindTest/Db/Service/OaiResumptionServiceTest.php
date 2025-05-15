@@ -94,7 +94,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
-                ->with($this->equalTo(OaiResumption::class))
+                ->with($this->equalTo(OaiResumptionEntityInterface::class))
                 ->willReturn(new OaiResumption());
         }
         return $pluginManager;

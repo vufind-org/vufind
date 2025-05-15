@@ -33,8 +33,8 @@ namespace VuFind\Db\Service;
 use Exception;
 use VuFind\Db\Entity\Record;
 use VuFind\Db\Entity\RecordEntityInterface;
-use VuFind\Db\Entity\Resource;
-use VuFind\Db\Entity\UserResource;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserResourceEntityInterface;
 
 use function count;
 
@@ -60,7 +60,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
     public function getRecord(string $id, string $source): ?RecordEntityInterface
     {
         $dql = 'SELECT r '
-            . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
+            . 'FROM ' . $this->getEntityClass(RecordEntityInterface::class) . ' r '
             . 'WHERE r.recordId = :id AND r.source = :source';
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
@@ -84,7 +84,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
         }
 
         $dql = 'SELECT r '
-            . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
+            . 'FROM ' . $this->getEntityClass(RecordEntityInterface::class) . ' r '
             . 'WHERE r.recordId IN (:ids) AND r.source = :source';
         $parameters = compact('ids', 'source');
         $query = $this->entityManager->createQuery($dql);
@@ -125,15 +125,15 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
     public function cleanup(): int
     {
         $dql = 'SELECT r.id '
-            . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
-            . 'JOIN ' . $this->getEntityClass(Resource::class) . ' re '
+            . 'FROM ' . $this->getEntityClass(RecordEntityInterface::class) . ' r '
+            . 'JOIN ' . $this->getEntityClass(ResourceEntityInterface::class) . ' re '
             . 'WITH r.recordId = re.recordId AND r.source = re.source '
-            . 'LEFT JOIN ' . $this->getEntityClass(UserResource::class) . ' ur '
+            . 'LEFT JOIN ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur '
             . 'WITH re.id = ur.resource '
             . 'WHERE ur.id IS NULL';
         $query = $this->entityManager->createQuery($dql);
         $ids = $query->getResult();
-        $dql = 'DELETE FROM ' . $this->getEntityClass(Record::class) . ' r '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(RecordEntityInterface::class) . ' r '
             . 'WHERE r.id IN (:ids)';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(compact('ids'));
@@ -152,7 +152,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
      */
     public function deleteRecord(string $id, string $source): bool
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(Record::class) . ' r '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(RecordEntityInterface::class) . ' r '
             . 'WHERE r.recordId = :id AND r.source = :source';
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
@@ -168,7 +168,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
      */
     public function createEntity(): RecordEntityInterface
     {
-        $class = $this->getEntityClass(Record::class);
+        $class = $this->getEntityClass(RecordEntityInterface::class);
         return new $class();
     }
 }

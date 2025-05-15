@@ -31,6 +31,7 @@ namespace VuFindTest\Db\Service;
 
 use Doctrine\ORM\Configuration;
 use VuFind\Db\Entity\Feedback;
+use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\FeedbackService;
 
@@ -151,7 +152,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager = $this->createMock(\Doctrine\ORM\EntityManager::class);
         $entityPluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         $entityPluginManager->expects($this->once())->method('get')
-            ->with($this->equalTo(Feedback::class))
+            ->with($this->equalTo(FeedbackEntityInterface::class))
             ->willReturn(new Feedback());
         $persistenceManager = $this->createMock(PersistenceManager::class);
         $feedbackService = new FeedbackService($entityManager, $entityPluginManager, $persistenceManager);

@@ -30,7 +30,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use VuFind\Db\Entity\AccessToken;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\User;
 
@@ -54,7 +53,7 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function createEntity(): AccessTokenEntityInterface
     {
-        $class = $this->getEntityClass(AccessToken::class);
+        $class = $this->getEntityClass(AccessTokenEntityInterface::class);
         return new $class();
     }
 
@@ -74,7 +73,7 @@ class AccessTokenService extends AbstractDbService implements
         bool $create = true
     ): ?AccessTokenEntityInterface {
         $dql = 'SELECT at '
-            . 'FROM ' . $this->getEntityClass(AccessToken::class) . ' at '
+            . 'FROM ' . $this->getEntityClass(AccessTokenEntityInterface::class) . ' at '
             . 'WHERE at.id = :id '
             . 'AND at.type = :type';
         $query = $this->entityManager->createQuery($dql);

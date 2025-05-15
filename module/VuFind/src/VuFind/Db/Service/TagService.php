@@ -32,14 +32,15 @@ namespace VuFind\Db\Service;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Resource;
-use VuFind\Db\Entity\ResourceTags;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\Tags;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Entity\UserResource;
+use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
 use function count;
@@ -71,7 +72,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     public function getResourceIDsForTag($tag, $user, $list = null, $caseSensitiveTags = false)
     {
         $dql = 'SELECT DISTINCT(rt.resource) AS resource_id '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'JOIN rt.tag t '
             . 'WHERE ' . ($caseSensitiveTags ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
             . 'AND rt.user = :user ';
@@ -102,7 +103,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $dql = 'SELECT COUNT(DISTINCT(rt.user)) AS users, '
             . 'COUNT(DISTINCT(rt.resource)) AS resources, '
             . 'COUNT(rt.id) AS total '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt';
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
@@ -146,7 +147,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      */
     public function getTagsByText(string $text, bool $caseSensitive = false): array
     {
-        $dql = 'SELECT t FROM ' . $this->getEntityClass(Tags::class) . ' t '
+        $dql = 'SELECT t FROM ' . $this->getEntityClass(TagsEntityInterface::class) . ' t '
             . ($caseSensitive ? 'WHERE t.tag=:tag' : 'WHERE LOWER(t.tag) = LOWER(:tag)');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(['tag' => $text]);
@@ -188,7 +189,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $tagClause = $caseSensitive ? 't.tag' : 'LOWER(t.tag)';
         $dql = 'SELECT t.id as id, COUNT(DISTINCT(rt.resource)) as cnt, MAX(rt.posted) as posted, '
             . $tagClause . ' AS tag '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'JOIN rt.tag t ';
         if (!empty($where)) {
             $dql .= ' WHERE ' . implode(' AND ', $where) . ' ';
@@ -244,9 +245,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         if (!empty($orderByDetails['extraSelect'])) {
             $dql .= ', ' . $orderByDetails['extraSelect'];
         }
-        $dql .= ' FROM ' . $this->getEntityClass(Tags::class) . ' t '
-            . 'JOIN ' . $this->getEntityClass(ResourceTags::class) . ' rt WITH t.id = rt.tag '
-            . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = rt.resource '
+        $dql .= ' FROM ' . $this->getEntityClass(TagsEntityInterface::class) . ' t '
+            . 'JOIN ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt WITH t.id = rt.tag '
+            . 'JOIN ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r WITH r.id = rt.resource '
             . 'WHERE rt.resource IS NOT NULL ';
         $parameters = compact('q');
         if ($fuzzy) {
@@ -313,9 +314,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             $fieldList .= ', MAX(CASE WHEN rt.user = :userToCheck THEN 1 ELSE 0 END) AS is_me';
             $parameters['userToCheck'] = $this->getDoctrineReference(User::class, $ownerOrId);
         }
-        $dql = 'SELECT ' . $fieldList . ' FROM ' . $this->getEntityClass(Tags::class) . ' t '
-            . 'JOIN ' . $this->getEntityClass(ResourceTags::class) . ' rt WITH t.id = rt.tag '
-            . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = rt.resource '
+        $dql = 'SELECT ' . $fieldList . ' FROM ' . $this->getEntityClass(TagsEntityInterface::class) . ' t '
+            . 'JOIN ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt WITH t.id = rt.tag '
+            . 'JOIN ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r WITH r.id = rt.resource '
             . 'WHERE r.recordId = :id AND r.source = :source ';
 
         foreach ($extraWhereClauses as $clause) {
@@ -496,7 +497,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             return;
         }
 
-        $result = $this->entityManager->getRepository($this->getEntityClass(ResourceTags::class))
+        $result = $this->entityManager->getRepository($this->getEntityClass(ResourceTagsEntityInterface::class))
             ->findBy(['tag' => $source]);
 
         foreach ($result as $current) {
@@ -607,10 +608,10 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
         $dql = 'SELECT MIN(t.id) AS id, ' . $tag . ' AS tag, COUNT(DISTINCT(rt.resource)) AS cnt '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'JOIN rt.tag t '
             . 'JOIN rt.resource r '
-            . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur '
+            . 'JOIN ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur '
             . 'WITH r.id = ur.resource '
             . 'WHERE ur.user = :userId AND rt.user = :userId AND ur.list = rt.list ';
         $parameters = compact('userId');
@@ -652,7 +653,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
 
         $dql = 'SELECT MIN(t.id) AS id, ' . $tag . ' AS tag '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
             . 'JOIN rt.tag t '
             . 'WHERE rt.list = :listId AND rt.resource IS NULL ';
         $parameters  = compact('listId');
@@ -675,9 +676,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      */
     public function deleteOrphanedTags(): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(Tags::class) . ' t '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(TagsEntityInterface::class) . ' t '
             . 'WHERE t NOT IN (SELECT IDENTITY(rt.tag) FROM '
-            . $this->getEntityClass(ResourceTags::class) . ' rt)';
+            . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt)';
         $query = $this->entityManager->createQuery($dql);
         $query->execute();
     }
@@ -691,7 +692,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      */
     public function getTagById(int $id): ?TagsEntityInterface
     {
-        return $this->entityManager->find($this->getEntityClass(Tags::class), $id);
+        return $this->entityManager->find($this->getEntityClass(TagsEntityInterface::class), $id);
     }
 
     /**
@@ -701,7 +702,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      */
     public function createEntity(): TagsEntityInterface
     {
-        $class = $this->getEntityClass(Tags::class);
+        $class = $this->getEntityClass(TagsEntityInterface::class);
         return new $class();
     }
 }

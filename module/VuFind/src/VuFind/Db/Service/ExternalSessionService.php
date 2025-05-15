@@ -30,7 +30,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use VuFind\Db\Entity\ExternalSession;
 use VuFind\Db\Entity\ExternalSessionEntityInterface;
 
 /**
@@ -53,7 +52,7 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function createEntity(): ExternalSessionEntityInterface
     {
-        $class = $this->getEntityClass(ExternalSession::class);
+        $class = $this->getEntityClass(ExternalSessionEntityInterface::class);
         return new $class();
     }
 
@@ -88,7 +87,7 @@ class ExternalSessionService extends AbstractDbService implements
     public function getAllByExternalSessionId(string $sid): array
     {
         $dql = 'SELECT es '
-            . 'FROM ' . $this->getEntityClass(ExternalSession::class) . ' es '
+            . 'FROM ' . $this->getEntityClass(ExternalSessionEntityInterface::class) . ' es '
             . 'WHERE es.externalSessionId = :esid ';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('esid', $sid);
@@ -105,7 +104,7 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function destroySession(string $sid): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(ExternalSession::class) . ' es'
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ExternalSessionEntityInterface::class) . ' es'
             . ' WHERE es.sessionId = :sid';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('sid', $sid);
@@ -124,7 +123,7 @@ class ExternalSessionService extends AbstractDbService implements
     {
         $subQueryBuilder = $this->entityManager->createQueryBuilder();
         $subQueryBuilder->select('es.id')
-            ->from($this->getEntityClass(ExternalSession::class), 'es')
+            ->from($this->getEntityClass(ExternalSessionEntityInterface::class), 'es')
             ->where('es.created < :dateLimit')
             ->setParameter('dateLimit', $dateLimit);
         if ($limit) {

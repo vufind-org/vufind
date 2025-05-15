@@ -40,7 +40,7 @@ use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Entity\UserResource;
+use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\PersistenceManager;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -132,7 +132,7 @@ class ResourceService extends AbstractDbService implements
     public function getResourceById(int $id): ?ResourceEntityInterface
     {
         $resource = $this->entityManager->find(
-            $this->getEntityClass(\VuFind\Db\Entity\Resource::class),
+            $this->getEntityClass(ResourceEntityInterface::class),
             $id
         );
         return $resource;
@@ -145,7 +145,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function createEntity(): ResourceEntityInterface
     {
-        $class = $this->getEntityClass(Resource::class);
+        $class = $this->getEntityClass(ResourceEntityInterface::class);
         return new $class();
     }
 
@@ -158,7 +158,7 @@ class ResourceService extends AbstractDbService implements
     public function findMissingMetadata(): array
     {
         $dql = 'SELECT r '
-            . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'FROM ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
             . "WHERE r.title = '' OR r.author IS NULL OR r.year IS NULL";
 
         $query = $this->entityManager->createQuery($dql);
@@ -241,7 +241,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array
     {
-        $repo = $this->entityManager->getRepository($this->getEntityClass(Resource::class));
+        $repo = $this->entityManager->getRepository($this->getEntityClass(ResourceEntityInterface::class));
         $criteria = [
             'recordId' => $ids,
             'source' => $source,
@@ -279,8 +279,8 @@ class ResourceService extends AbstractDbService implements
         if (!empty($orderByDetails['extraSelect'])) {
             $dql .= ', ' . $orderByDetails['extraSelect'];
         }
-        $dql .= ' FROM ' . $this->getEntityClass(Resource::class) . ' r '
-            . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH r.id = ur.resource ';
+        $dql .= ' FROM ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
+            . 'JOIN ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur WITH r.id = ur.resource ';
         $dqlWhere = [];
         $dqlWhere[] = 'ur.user = :user';
         $parameters = compact('user');
@@ -332,7 +332,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function deleteResourceByRecordId(string $id, string $source): bool
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(Resource::class) . ' r '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
             . 'WHERE r.recordId = :id AND r.source = :source';
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
@@ -350,7 +350,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function renameSource(string $old, string $new): int
     {
-        $dql = 'UPDATE ' . $this->getEntityClass(Resource::class) . ' r '
+        $dql = 'UPDATE ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
             . 'SET r.source=:new WHERE r.source=:old';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(compact('new', 'old'));
