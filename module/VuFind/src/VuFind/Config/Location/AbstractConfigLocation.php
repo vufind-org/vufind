@@ -29,6 +29,8 @@
 
 namespace VuFind\Config\Location;
 
+use function dirname;
+
 /**
  * Abstract config location
  *
@@ -55,7 +57,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     protected string $fileName;
 
     /**
-     * Name of the configuration
+     * Name of the configuration.
      *
      * @var string
      */
@@ -133,7 +135,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     }
 
     /**
-     * Set the file name
+     * Set the file name.
      *
      * @param string $fileName string
      *

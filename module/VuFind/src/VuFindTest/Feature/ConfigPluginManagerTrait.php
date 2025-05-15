@@ -117,7 +117,7 @@ trait ConfigPluginManagerTrait
     }
 
     /**
-     * Add config plugin manager and required services to a mock container
+     * Add config plugin manager and required services to a mock container.
      *
      * @param \VuFindTest\Container\MockContainer $container Mock Container
      * @param array                               $config    Module config
@@ -146,7 +146,7 @@ trait ConfigPluginManagerTrait
     }
 
     /**
-     * Get a mock container that has a config plugin manager and required services
+     * Get a mock container that has a config plugin manager and required services.
      *
      * @return \VuFindTest\Container\MockContainer
      */

@@ -68,7 +68,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wrapper around factory
+     * Wrapper around factory.
      *
      * @param array $config Configuration to load
      *

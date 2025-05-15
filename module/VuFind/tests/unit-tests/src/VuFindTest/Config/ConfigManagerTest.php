@@ -57,7 +57,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     use PathResolverTrait;
 
     /**
-     * Wrapper around loadConfig method
+     * Wrapper around loadConfig method.
      *
      * @param string $name Configuration to load
      *
