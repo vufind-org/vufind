@@ -971,6 +971,14 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, $this->openModalUsernameFieldSelector);
         $this->makeAccount($page, 'username5');
 
+        // Add a rating
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'div.rating-average a');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
+
         // Add two comments
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->waitForPageLoad($page);
@@ -983,14 +991,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Add a tag
         $this->addTagsToRecord($page, 'testtag');
-
-        // Add a rating
-        $this->clickCss($page, 'div.rating-average a');
-        $this->waitForPageLoad($page);
-        $this->clickCss($page, '.modal form div.star-rating label', null, 5);
-        $this->waitForPageLoad($page);
-        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
-        $this->waitForPageLoad($page);
 
         // Remove comments, tags and ratings from user account menu
         $session = $this->getMinkSession();
