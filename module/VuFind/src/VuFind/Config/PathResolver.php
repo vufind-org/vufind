@@ -110,11 +110,8 @@ class PathResolver
         string $configName,
         ?string $path = null,
     ): ?ConfigLocationInterface {
-        $localConfigLocation = $this->getLocalConfigLocation($configName, $path);
-        if ($localConfigLocation !== null) {
-            return $localConfigLocation;
-        }
-        return $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
+        return $this->getLocalConfigLocation($configName, $path)
+            ?? $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
     }
 
     /**
