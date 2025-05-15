@@ -82,6 +82,9 @@ trait ConfigLocationTrait
         $dirContent = is_dir($path) ? scandir($path) : [];
         $result = [];
         foreach ($dirContent as $item) {
+            // Files that include .bak or .dist should be skipped because they represent
+            // backups (e.g config.ini.bak.100000 for upgraded configs) or
+            // templates for configuration (e.g. DirLocations.ini.dist)
             if (in_array($item, ['.', '..']) || str_contains($item, '.bak') || str_contains($item, '.dist')) {
                 continue;
             }
