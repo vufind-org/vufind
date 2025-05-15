@@ -32,7 +32,7 @@
 namespace VuFindTest\Config;
 
 use VuFind\Config\ConfigManager;
-use VuFind\Config\Handler\PluginManager;
+use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFindTest\Feature\FixtureTrait;
@@ -57,6 +57,21 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     use PathResolverTrait;
 
     /**
+     * Get config manager.
+     *
+     * @return ConfigManager
+     */
+    protected function getConfigManager(): ConfigManager
+    {
+        $realResolver = $this->getPathResolver();
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $mockConfigHandler = new HandlerPluginManager($container);
+        $configManager = new ConfigManager($mockConfigHandler, $realResolver);
+        $container->set(ConfigManager::class, $configManager);
+        return $configManager;
+    }
+
+    /**
      * Wrapper around loadConfig method.
      *
      * @param string $name Configuration to load
@@ -78,12 +93,18 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         $realResolver = $this->getPathResolver();
         $configLocation = $fileMap[$name]
             ?? $realResolver->getConfigLocation($name);
+        return $this->getConfigManager()->loadConfig($configLocation);
+    }
 
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $mockConfigHandler = new PluginManager($container);
-        $configManager = new ConfigManager($mockConfigHandler, $realResolver);
-        $container->set(ConfigManager::class, $configManager);
-        return $configManager->loadConfig($configLocation);
+    /**
+     * Test get config by name.
+     *
+     * @return void
+     */
+    public function testGetConfigByName(): void
+    {
+        $config = $this->getConfigManager()->get('config');
+        $this->assertEquals('Library Catalog', $config['Site']['title']);
     }
 
     /**
