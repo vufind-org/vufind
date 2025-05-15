@@ -30,7 +30,9 @@
 
 namespace VuFind\Config\Handler;
 
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\Exception\FileAccess as FileAccessException;
 
 use function in_array;
 use function is_array;
@@ -47,6 +49,8 @@ use function is_array;
  */
 class Ini extends AbstractBase
 {
+    use ExplodeSettingTrait;
+
     /**
      * Parses the configuration in a config location.
      *
@@ -56,9 +60,10 @@ class Ini extends AbstractBase
      */
     public function parseConfig(ConfigLocationInterface $configLocation): array
     {
-        $data = parse_ini_file($configLocation->getPath(), true);
+        $path = $configLocation->getPath();
+        $data = parse_ini_file($path, true);
         if ($data === false) {
-            return [];
+            throw new FileAccessException('Could not read ini file ' . $path);
         }
         $parentConfig = $data['Parent_Config'] ?? [];
         unset($data['Parent_Config']);
@@ -76,12 +81,7 @@ class Ini extends AbstractBase
             $config['parentLocation'] = $this->getParentLocationOnPath($configLocation, $parentPath);
         }
 
-        $overrideSectionsConfig = str_replace(
-            ' ',
-            '',
-            $parentConfig['override_full_sections'] ?? ''
-        );
-        $overrideSections = !empty($overrideSectionsConfig) ? explode(',', $overrideSectionsConfig) : [];
+        $overrideSections = $this->explodeListSetting($parentConfig['override_full_sections'] ?? '');
         $config['mergeCallback'] = $this->getMergeCallback(
             $overrideSections,
             $parentConfig['merge_array_settings'] ?? false
