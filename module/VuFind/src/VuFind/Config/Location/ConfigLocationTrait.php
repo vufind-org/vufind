@@ -73,19 +73,22 @@ trait ConfigLocationTrait
      *
      * @param string $path Path of the directory to scan
      *
-     * @return array
+     * @return ConfigLocationInterface[]
      */
     public function getConfigLocationsInPath(string $path): array
     {
         $dirContent = is_dir($path) ? scandir($path) : [];
-        // allow all files without extensions and with extensions except .bak and .dist
-        $allowedItemsRegex = '/^([\w-]+|[\w-]+\.(?!(bak|dist))\w+)$/';
         $result = [];
         foreach ($dirContent as $item) {
-            if (!preg_match($allowedItemsRegex, $item)) {
+            if (str_contains($item, '.bak') || str_contains($item, '.dist')) {
                 continue;
             }
-            $result[] = $this->getConfigLocationOnPath($path . '/' . $item);
+            $itemPath = $path . DIRECTORY_SEPARATOR . $item;
+            $configLocation = $this->getConfigLocationOnPath($itemPath);
+            if ($configLocation === null) {
+                throw new \Exception('Could not create config location on path: ' . $itemPath);
+            }
+            $result[] = $configLocation;
         }
         return $result;
     }

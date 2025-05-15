@@ -73,8 +73,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
         if (null !== $configName) {
             $this->configName = $configName;
         } else {
-            $parts = explode('.', $this->fileName, 2);
-            $this->configName = $parts[0];
+            $this->configName = pathinfo($this->getFileName(), PATHINFO_FILENAME);
         }
     }
 
@@ -85,7 +84,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      */
     public function getPath(): string
     {
-        return $this->basePath . '/' . $this->fileName;
+        return $this->basePath . DIRECTORY_SEPARATOR . $this->fileName;
     }
 
     /**
@@ -97,16 +96,8 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      */
     public function setPath(string $path): void
     {
-        $delimiterPos = strrpos($path, '/');
-        if ($delimiterPos === false) {
-            throw new \Exception('Path does not contain a delimiter "/": ' . $path);
-        }
-        $this->setBasePath(substr($path, 0, $delimiterPos));
-        $fileName = substr($path, $delimiterPos + 1);
-        if (empty($fileName)) {
-            throw new \Exception('Path must not end with delimiter "/": ' . $path);
-        }
-        $this->setFileName($fileName);
+        $this->setBasePath(dirname($path));
+        $this->setFileName(basename($path));
     }
 
     /**
@@ -182,7 +173,6 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      */
     protected function getExtension(): ?string
     {
-        $parts = explode('.', $this->getFileName(), 2);
-        return $parts[1] ?? null;
+        return pathinfo($this->getFileName(), PATHINFO_EXTENSION);
     }
 }
