@@ -33,7 +33,6 @@ use DateTime;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
-use VuFind\Db\Table\Gateway;
 use VuFindConsole\Command\Util\AbstractExpireCommand;
 
 /**
@@ -171,13 +170,13 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get the command class
      *
-     * @param Gateway|DeleteExpiredInterface $service Table to process
-     * @param DateTime                       $date    Expiration date threshold
+     * @param DeleteExpiredInterface $service Table to process
+     * @param DateTime               $date    Expiration date threshold
      *
      * @return MockObject&AbstractExpireCommand
      */
     protected function getCommand(
-        Gateway|DeleteExpiredInterface $service,
+        DeleteExpiredInterface $service,
         DateTime $date
     ): MockObject&AbstractExpireCommand {
         $command = $this->getMockBuilder($this->targetClass)

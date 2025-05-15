@@ -30,7 +30,6 @@
 namespace VuFind\Db;
 
 use Doctrine\ORM\EntityManager;
-use Laminas\Db\RowGateway\AbstractRowGateway;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -71,11 +70,6 @@ class PersistenceManager implements DbServiceAwareInterface
      */
     public function persistEntity(EntityInterface $entity): void
     {
-        // Compatibility with legacy \VuFind\Db\Row objects:
-        if ($entity instanceof AbstractRowGateway) {
-            $entity->save();
-            return;
-        }
         if ($this->privacy && $entity instanceof UserEntityInterface) {
             $this->getDbService(UserSessionPersistenceInterface::class)->addUserDataToSession($entity);
             return;

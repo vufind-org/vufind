@@ -45,13 +45,6 @@ use VuFind\Session\AbstractBase as SessionHandler;
 abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock database tables.
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tables = false;
-
-    /**
      * Mock database services.
      *
      * @var \VuFind\Db\Service\PluginManager
