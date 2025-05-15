@@ -32,23 +32,23 @@ namespace VuFind\Config\Location;
 /**
  * Interface for configuration locations
  *
- * This is a representation for a location of a configuration. It is based on a file or directory
+ * This is a representation for the location of a configuration. It is based on a file or directory
  * on the system.
  *
  * E.g.
  * "/usr/local/vufind/local/config/vufind/config.ini"
- * is the path for file configuration or
+ * is the path for a file configuration or
  * "/usr/local/vufind/local/config/vufind/RecordDataFormatter"
- * for a path for a directory configuration.
+ * is the path for a directory configuration.
  *
  * The file name is the name of the file or directory that contains the configuration
- * ("config.ini" respectively "RecordDataFormatter")
+ * (e.g. "config.ini" or "RecordDataFormatter", respectively)
  *
  * The base path is the path without the filename
- * ("/usr/local/vufind/local/config/vufind/" in both cases)
+ * (e.g. "/usr/local/vufind/local/config/vufind/" in both cases)
  *
- * The configuration name is the name for the configuration VuFind internally. Most of the time it will
- * be the file name without extension ("config" respectively "RecordDataFormatter") but it can also be
+ * The configuration name is the name for the configuration used internally. Most of the time it will
+ * be the file name without extension ("config" or "RecordDataFormatter", respectively) but it can also be
  * something different. E.g. when myParent.ini is the parent of config.ini it will still have the config
  * name "config" even if that is not part of the file name.
  *
