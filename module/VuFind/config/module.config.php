@@ -654,8 +654,8 @@ $config = [
             ],
         ],
         'driver' => [
-            'vufind_annotation_driver' => [
-                'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
+            'vufind_attribute_driver' => [
+                'class' => \Doctrine\ORM\Mapping\Driver\AttributeDriver::class,
                 'cache' => 'filesystem',
                 'paths' => [
                     'module/VuFind/src/VuFind/Db/Entity',
@@ -663,7 +663,7 @@ $config = [
             ],
             'orm_default' => [
                 'drivers' => [
-                    'VuFind\Db\Entity' => 'vufind_annotation_driver',
+                    'VuFind\Db\Entity' => 'vufind_attribute_driver',
                 ],
             ],
         ],

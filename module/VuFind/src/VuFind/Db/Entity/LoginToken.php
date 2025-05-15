@@ -40,126 +40,84 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="login_token")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'login_token')]
+#[ORM\Entity]
 class LoginToken implements LoginTokenEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * User ID.
      *
      * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="user_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
     protected $user;
 
     /**
      * Token.
      *
      * @var string
-     *
-     * @ORM\Column(name="token",
-     *             type="string",
-     *             length=255,
-     *             nullable=false
-     * )
      */
+    #[ORM\Column(name: 'token', type: 'string', length: 255, nullable: false)]
     protected $token;
 
     /**
      * Series.
      *
      * @var string
-     *
-     * @ORM\Column(name="series",
-     *             type="string",
-     *             length=255,
-     *             nullable=false
-     * )
      */
+    #[ORM\Column(name: 'series', type: 'string', length: 255, nullable: false)]
     protected $series;
 
     /**
      * Last login date.
      *
      * @var DateTime
-     *
-     * @ORM\Column(name="last_login",
-     *          type="datetime",
-     *          nullable=false
-     * )
      */
+    #[ORM\Column(name: 'last_login', type: 'datetime', nullable: false)]
     protected $lastLogin;
 
     /**
      * Browser.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="browser",
-     *             type="string",
-     *             length=255,
-     *             nullable=true
-     * )
      */
+    #[ORM\Column(name: 'browser', type: 'string', length: 255, nullable: true)]
     protected $browser;
 
     /**
      * Platform.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="platform",
-     *             type="string",
-     *             length=255,
-     *             nullable=true
-     * )
      */
+    #[ORM\Column(name: 'platform', type: 'string', length: 255, nullable: true)]
     protected $platform;
 
     /**
      * Expires.
      *
      * @var int
-     *
-     * @ORM\Column(name="expires",
-     *             type="integer",
-     *             nullable=false
-     * )
      */
+    #[ORM\Column(name: 'expires', type: 'integer', nullable: false)]
     protected $expires;
 
     /**
      * Last session ID.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="last_session_id",
-     *             type="string",
-     *             length=255,
-     *             nullable=true
-     * )
      */
+    #[ORM\Column(name: 'last_session_id', type: 'string', length: 255, nullable: true)]
     protected $lastSessionId;
 
     /**

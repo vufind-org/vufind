@@ -42,55 +42,43 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="oai_resumption")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'oai_resumption')]
+#[ORM\Entity]
 class OaiResumption implements OaiResumptionEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Resumption parameters.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="params", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'params', type: 'text', length: 65535, nullable: true)]
     protected $params;
 
     /**
      * Expiry date.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="expires",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
-     * )
      */
+    #[ORM\Column(name: 'expires', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected $expires = '2000-01-01 00:00:00';
 
     /**
      * Token.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="token", type="string", length=255, nullable=true)
      */
+    #[ORM\Column(name: 'token', type: 'string', length: 255, nullable: true)]
     protected $token;
 
     /**

@@ -40,89 +40,63 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="resource_tags")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'resource_tags')]
+#[ORM\Entity]
 class ResourceTags implements ResourceTagsEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Posted time.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="posted",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="CURRENT_TIMESTAMP"}
-     * )
      */
+    #[ORM\Column(name: 'posted', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected $posted;
 
     /**
      * Resource ID.
      *
      * @var Resource
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="resource_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Resource::class)]
     protected $resource;
 
     /**
      * Tag ID.
      *
      * @var Tags
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Tags")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="tag_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'tag_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Tags::class)]
     protected $tag;
 
     /**
      * List ID.
      *
      * @var UserList
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\UserList")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="list_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'list_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\UserList::class)]
     protected $list;
 
     /**
      * User ID.
      *
      * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="user_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
     protected $user;
 
     /**

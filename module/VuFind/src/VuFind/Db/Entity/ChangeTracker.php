@@ -40,76 +40,60 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="change_tracker",
- * indexes={@ORM\Index(name="deleted_index", columns={"deleted"})}
- * )
- * @ORM\Entity
  */
+#[ORM\Table(name: 'change_tracker')]
+#[ORM\Index(name: 'deleted_index', columns: ['deleted'])]
+#[ORM\Entity]
 class ChangeTracker implements ChangeTrackerEntityInterface
 {
     /**
      * Solr core containing record.
      *
      * @var string
-     *
-     * @ORM\Column(name="core",
-     *          type="string",
-     *          length=30,
-     *          nullable=false
-     * )
-     * @ORM\Id
      */
+    #[ORM\Column(name: 'core', type: 'string', length: 30, nullable: false)]
+    #[ORM\Id]
     protected $core;
 
     /**
      * Id of record within core.
      *
      * @var string
-     *
-     * @ORM\Column(name="id",
-     *          type="string",
-     *          length=120,
-     *          nullable=false
-     * )
-     * @ORM\Id
      */
+    #[ORM\Column(name: 'id', type: 'string', length: 120, nullable: false)]
+    #[ORM\Id]
     protected $id;
 
     /**
      * First time added to index
      *
      * @var ?DateTime
-     *
-     * @ORM\Column(name="first_indexed", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'first_indexed', type: 'datetime', nullable: true)]
     protected $firstIndexed;
 
     /**
      * Last time changed in index.
      *
      * @var ?DateTime
-     *
-     * @ORM\Column(name="last_indexed", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'last_indexed', type: 'datetime', nullable: true)]
     protected $lastIndexed;
 
     /**
      * Last time original record was edited.
      *
      * @var ?DateTime
-     *
-     * @ORM\Column(name="last_record_change", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'last_record_change', type: 'datetime', nullable: true)]
     protected $lastRecordChange;
 
     /**
      * Time record was removed from index.
      *
      * @var ?DateTime
-     *
-     * @ORM\Column(name="deleted", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'deleted', type: 'datetime', nullable: true)]
     protected $deleted;
 
     /**

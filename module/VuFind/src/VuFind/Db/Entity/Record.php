@@ -40,75 +40,60 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="record",
- *          uniqueConstraints={@ORM\UniqueConstraint(name="record_id_source",
- *                          columns={"record_id", "source"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: 'record')]
+#[ORM\UniqueConstraint(name: 'record_id_source', columns: ['record_id', 'source'])]
+#[ORM\Entity]
 class Record implements RecordEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Record ID.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="record_id", type="string", length=255, nullable=true)
      */
+    #[ORM\Column(name: 'record_id', type: 'string', length: 255, nullable: true)]
     protected $recordId;
 
     /**
      * Record source.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="source", type="string", length=50, nullable=true)
      */
+    #[ORM\Column(name: 'source', type: 'string', length: 50, nullable: true)]
     protected $source;
 
     /**
      * Record version.
      *
      * @var string
-     *
-     * @ORM\Column(name="version", type="string", length=20, nullable=false)
      */
+    #[ORM\Column(name: 'version', type: 'string', length: 20, nullable: false)]
     protected $version;
 
     /**
      * Record Data.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="data", type="text", length=0, nullable=true)
      */
+    #[ORM\Column(name: 'data', type: 'text', length: 0, nullable: true)]
     protected $data;
 
     /**
      * Updated date.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="updated",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
-     * )
      */
+    #[ORM\Column(name: 'updated', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected $updated = '2000-01-01 00:00:00';
 
     /**

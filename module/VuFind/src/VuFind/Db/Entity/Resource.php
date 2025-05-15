@@ -39,89 +39,68 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="resource",
- * indexes={@ORM\Index(name="record_id", columns={"record_id"})}
- * )
- * @ORM\Entity
  */
+#[ORM\Table(name: 'resource')]
+#[ORM\Index(name: 'record_id', columns: ['record_id'])]
+#[ORM\Entity]
 class Resource implements ResourceEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Record ID.
      *
      * @var string
-     *
-     * @ORM\Column(name="record_id", type="string", length=255, nullable=false)
      */
+    #[ORM\Column(name: 'record_id', type: 'string', length: 255, nullable: false)]
     protected $recordId = '';
 
     /**
      * Record title.
      *
      * @var string
-     *
-     * @ORM\Column(name="title", type="string", length=255, nullable=false)
      */
+    #[ORM\Column(name: 'title', type: 'string', length: 255, nullable: false)]
     protected $title = '';
 
     /**
      * Primary author.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="author", type="string", length=255, nullable=true)
      */
+    #[ORM\Column(name: 'author', type: 'string', length: 255, nullable: true)]
     protected $author;
 
     /**
      * Published year.
      *
      * @var ?int
-     *
-     * @ORM\Column(name="year", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'year', type: 'integer', nullable: true)]
     protected $year;
 
     /**
      * Record source.
      *
      * @var string
-     *
-     * @ORM\Column(name="source",
-     *          type="string",
-     *          length=50,
-     *          nullable=false,
-     *          options={"default"="Solr"}
-     * )
      */
+    #[ORM\Column(name: 'source', type: 'string', length: 50, nullable: false, options: ['default' => 'Solr'])]
     protected $source = 'Solr';
 
     /**
      * Record Metadata
      *
      * @var ?string
-     *
-     * @ORM\Column(name="extra_metadata",
-     *          type="text",
-     *          length=16777215,
-     *          nullable=true
-     * )
      */
+    #[ORM\Column(name: 'extra_metadata', type: 'text', length: 16777215, nullable: true)]
     protected $extraMetadata;
 
     /**

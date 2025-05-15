@@ -39,33 +39,27 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="tags")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'tags')]
+#[ORM\Entity]
 class Tags implements TagsEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Name of tag.
      *
      * @var string
-     *
-     * @ORM\Column(name="tag", type="string", length=64, nullable=false)
      */
+    #[ORM\Column(name: 'tag', type: 'string', length: 64, nullable: false)]
     protected $tag = '';
 
     /**

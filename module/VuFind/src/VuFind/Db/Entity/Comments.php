@@ -40,72 +40,53 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="comments")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'comments')]
+#[ORM\Entity]
 class Comments implements CommentsEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Comment.
      *
      * @var string
-     *
-     * @ORM\Column(name="comment", type="text", length=65535, nullable=false)
      */
+    #[ORM\Column(name: 'comment', type: 'text', length: 65535, nullable: false)]
     protected $comment;
 
     /**
      * Creation date.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="created",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
-     * )
      */
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected $created = '2000-01-01 00:00:00';
 
     /**
      * User ID.
      *
      * @var ?User
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="user_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
     protected $user;
 
     /**
      * Resource ID.
      *
      * @var Resource
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="resource_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Resource::class)]
     protected $resource;
 
     /**

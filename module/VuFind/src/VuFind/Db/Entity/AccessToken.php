@@ -40,84 +40,62 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="access_token")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'access_token')]
+#[ORM\Entity]
 class AccessToken implements AccessTokenEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var string
-     *
-     * @ORM\Column(name="id",
-     *          type="string",
-     *          length=255,
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Column(name: 'id', type: 'string', length: 255, nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     protected $id;
 
     /**
      * Token type.
      *
      * @var string
-     *
-     * @ORM\Column(name="type",
-     *          type="string",
-     *          length=128,
-     *          nullable=false
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Column(name: 'type', type: 'string', length: 128, nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     protected $type;
 
     /**
      * User.
      *
      * @var UserEntityInterface
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="user_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
     protected $user;
 
     /**
      * Creation date.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="created",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
-     * )
      */
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected $created = '2000-01-01 00:00:00';
 
     /**
      * Data.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
      */
+    #[ORM\Column(name: 'data', type: 'text', length: 16777215, nullable: true)]
     protected $data;
 
     /**
      * Flag indicating status of the token.
      *
      * @var bool
-     *
-     * @ORM\Column(name="revoked", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'revoked', type: 'boolean', nullable: false)]
     protected $revoked = '0';
 
     /**

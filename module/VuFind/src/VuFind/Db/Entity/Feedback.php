@@ -40,147 +40,96 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="feedback",
- * indexes={@ORM\Index(name="created", columns={"created"}),
- * @ORM\Index(name="status",    columns={"status"}),
- * @ORM\Index(name="form_name", columns={"form_name"})}
- * )
- * @ORM\Entity
  */
+#[ORM\Table(name: 'feedback')]
+#[ORM\Index(name: 'created', columns: ['created'])]
+#[ORM\Index(name: 'status', columns: ['status'])]
+#[ORM\Index(name: 'form_name', columns: ['form_name'])]
+#[ORM\Entity]
 class Feedback implements FeedbackEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false,
-     *          options={"unsigned"=true}
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false, options: ['unsigned' => true])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Message
      *
      * @var string
-     *
-     * @ORM\Column(name="message",
-     *          type="text",
-     *          length=0,
-     *          nullable=false
-     * )
      */
+    #[ORM\Column(name: 'message', type: 'text', length: 0, nullable: false)]
     protected $message;
 
     /**
      * Form data
      *
      * @var mixed
-     *
-     * @ORM\Column(name="form_data",
-     *          type="json",
-     *          length=0,
-     *          nullable=true
-     * )
      */
+    #[ORM\Column(name: 'form_data', type: 'json', length: 0, nullable: true)]
     protected $formData;
 
     /**
      * Form name
      *
      * @var string
-     *
-     * @ORM\Column(name="form_name",
-     *          type="string",
-     *          length=255,
-     *          nullable=false
-     * )
      */
+    #[ORM\Column(name: 'form_name', type: 'string', length: 255, nullable: false)]
     protected $formName;
 
     /**
      * Creation date
      *
      * @var DateTime
-     *
-     * @ORM\Column(name="created",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="CURRENT_TIMESTAMP"}
-     * )
      */
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected $created = 'CURRENT_TIMESTAMP';
 
     /**
      * Last update date
      *
      * @var DateTime
-     *
-     * @ORM\Column(name="updated",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="CURRENT_TIMESTAMP"}
-     * )
      */
+    #[ORM\Column(name: 'updated', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected $updated = 'CURRENT_TIMESTAMP';
 
     /**
      * Status
      *
      * @var string
-     *
-     * @ORM\Column(name="status",
-     *          type="string",
-     *          length=255,
-     *          nullable=false,
-     *          options={"default"="open"}
-     * )
      */
+    #[ORM\Column(name: 'status', type: 'string', length: 255, nullable: false, options: ['default' => 'open'])]
     protected $status = 'open';
 
     /**
      * Site URL
      *
      * @var string
-     *
-     * @ORM\Column(name="site_url",
-     *          type="string",
-     *          length=255,
-     *          nullable=false
-     * )
      */
+    #[ORM\Column(name: 'site_url', type: 'string', length: 255, nullable: false)]
     protected $siteUrl;
 
     /**
      * User that created request
      *
      * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="user_id",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
     protected $user;
 
     /**
      * User that updated request
      *
      * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="updated_by",
-     *              referencedColumnName="id")
-     * })
      */
+    #[ORM\JoinColumn(name: 'updated_by', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
     protected $updatedBy;
 
     /**

@@ -40,79 +40,61 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="user_list",
- *          indexes={@ORM\Index(name="user_id", columns={"user_id"})}
- * )
- * @ORM\Entity
  */
+#[ORM\Table(name: 'user_list')]
+#[ORM\Index(name: 'user_id', columns: ['user_id'])]
+#[ORM\Entity]
 class UserList implements UserListEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(name="id",
-     *          type="integer",
-     *          nullable=false
-     * )
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Title of the list.
      *
      * @var string
-     *
-     * @ORM\Column(name="title", type="string", length=200, nullable=false)
      */
+    #[ORM\Column(name: 'title', type: 'string', length: 200, nullable: false)]
     protected $title = '';
 
     /**
      * Description of the list.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="description", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'description', type: 'text', length: 65535, nullable: true)]
     protected $description;
 
     /**
      * Creation date.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="created",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
-     * )
      */
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected $created = '2000-01-01 00:00:00';
 
     /**
      * Flag to indicate whether or not the list is public.
      *
      * @var bool
-     *
-     * @ORM\Column(name="public", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'public', type: 'boolean', nullable: false)]
     protected $public = false;
 
     /**
      * User ID.
      *
      * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="user_id",
-     *              referencedColumnName="id"
-     * )})
      */
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
     protected $user;
 
     /**

@@ -40,68 +40,53 @@ use Doctrine\ORM\Mapping as ORM;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
- *
- * @ORM\Table(name="session",
- *          uniqueConstraints={@ORM\UniqueConstraint(name="session_id",
- *                          columns={"session_id"})},
- * indexes={@ORM\Index(name="last_used", columns={"last_used"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: 'session')]
+#[ORM\Index(name: 'last_used', columns: ['last_used'])]
+#[ORM\UniqueConstraint(name: 'session_id', columns: ['session_id'])]
+#[ORM\Entity]
 class Session implements SessionEntityInterface
 {
     /**
      * Unique ID.
      *
      * @var int
-     *
-     * @ORM\Column(name="id",
-     *          type="bigint",
-     *          nullable=false,
-     *          options={"unsigned"=true}
-     * )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'bigint', nullable: false, options: ['unsigned' => true])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
     /**
      * Session ID.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="session_id", type="string", length=128, nullable=true)
      */
+    #[ORM\Column(name: 'session_id', type: 'string', length: 128, nullable: true)]
     protected $sessionId;
 
     /**
      * Session data.
      *
      * @var ?string
-     *
-     * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
      */
+    #[ORM\Column(name: 'data', type: 'text', length: 16777215, nullable: true)]
     protected $data;
 
     /**
      * Time session last used.
      *
      * @var int
-     *
-     * @ORM\Column(name="last_used", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'last_used', type: 'integer', nullable: false)]
     protected $lastUsed = '0';
 
     /**
      * Time session is created.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="created",
-     *          type="datetime",
-     *          nullable=false,
-     *          options={"default"="2000-01-01 00:00:00"}
-     * )
      */
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected $created = '2000-01-01 00:00:00';
 
     /**
