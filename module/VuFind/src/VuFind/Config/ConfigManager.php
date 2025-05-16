@@ -95,7 +95,7 @@ class ConfigManager
             // check if config was already loaded to avoid infinite loop
             $currentConfigLocationPath = realpath($currentConfigLocation->getPath());
             if (!$currentConfigLocationPath) {
-                throw new \Exception('Current path does not exist: ' . $currentConfigLocationPath);
+                throw new \Exception('Configuration does not exist: ' . $currentConfigLocationPath);
             }
             if (in_array($currentConfigLocationPath, $loadedConfigPaths)) {
                 throw new \Exception('Current path was already loaded: ' . $currentConfigLocation->getPath());
