@@ -1,20 +1,21 @@
 /*global VuFind, multiFacetsSelection, unwrapJQuery */
 
+const getMultiFacetsSelectionSetting = () => {
+  return typeof multiFacetsSelection === 'undefined' ? 'false' : multiFacetsSelection;
+};
+
 /**
  * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
  *
  * @type {Function} Function to check for multiFacetsSelectionEnabled
  */
 const isMultiFacetsSelectionEnabled = () => {
-  return multiFacetsSelection !== 'false';
+  return getMultiFacetsSelectionSetting() !== 'false';
 };
 
 const getMultiFacetsSelectionPageLoadValue = () => {
-  return multiFacetsSelection === 'always' || multiFacetsSelection === 'checked';
-};
-
-const getMultiFacetsSelectionSetting = () => {
-  return multiFacetsSelection;
+  const setting = getMultiFacetsSelectionSetting();
+  return setting === 'always' || setting === 'checked';
 };
 
 /* --- Facet List --- */
