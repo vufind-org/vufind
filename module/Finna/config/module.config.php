@@ -805,6 +805,16 @@ $config = [
                     'sidefacetsdeferred' => 'Finna\Recommend\SideFacetsDeferred',
                 ],
             ],
+            'record_fallbackloader' => [
+                'factories' => [
+                    \Finna\Record\FallbackLoader\Solr::class => \Finna\Record\FallbackLoader\SolrFactory::class,
+                    \Finna\Record\FallbackLoader\SolrAuth::class => \Finna\Record\FallbackLoader\SolrFactory::class,
+                ],
+                'aliases' => [
+                    'solrauth' => \Finna\Record\FallbackLoader\SolrAuth::class,
+                    \VuFind\Record\FallbackLoader\Solr::class => \Finna\Record\FallbackLoader\Solr::class,
+                ],
+            ],
             'recorddataformatter_specs' => [
                 'factories' => [
                     \Finna\RecordDataFormatter\Specs\DefaultRecord::class

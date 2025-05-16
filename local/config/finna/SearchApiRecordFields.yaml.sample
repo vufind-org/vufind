@@ -444,6 +444,11 @@ previousTitles:
   type: array
   items:
     type: string
+PreviousUniqueId:
+  vufind.method: getPreviousUniqueId
+  vufind.default: true
+  description: Previous unique ID of the record
+  type: string
 primaryAuthors:
   vufind.method: getPrimaryAuthors
   description: Primary authors
@@ -642,7 +647,7 @@ urls:
     $ref: '#/components/schemas/Url'
 usageRights:
   vufind.method: getUsageRights
-  description: Usage rights 
+  description: Usage rights
     (see [usage_rights_str_mv at https://www.kiwi.fi/display/Finna/Kenttien+mappaukset+eri+formaateista+Finnan+indeksiin]
     (https://github.com/NatLibFi/RecordManager-Finna/blob/dev/mappings/usage_rights.map.sample))
   type: array

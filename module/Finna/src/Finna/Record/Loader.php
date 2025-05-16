@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2023.
+ * Copyright (C) The National Library of Finland 2016-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,12 +33,7 @@ namespace Finna\Record;
 
 use Finna\RecordDriver\Feature\ContainerFormatInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\RecordDriver\DefaultRecord;
-use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
-
-use function count;
-use function in_array;
 
 /**
  * Record loader
@@ -56,9 +51,9 @@ class Loader extends \VuFind\Record\Loader
     /**
      * Preferred language for display strings from RecordDriver
      *
-     * @var string
+     * @var ?string
      */
-    protected $preferredLanguage;
+    protected $preferredLanguage = null;
 
     /**
      * Record redirection rules (see config.ini::missing_record_redirect).
@@ -121,7 +116,7 @@ class Loader extends \VuFind\Record\Loader
             );
         }
         $result = null;
-        $missingException = false;
+        $missingException = null;
 
         // Check for an encapsulated record ID
         $parts = explode(
@@ -143,25 +138,21 @@ class Loader extends \VuFind\Record\Loader
                     'Encapsulated record ' . $source . ':' . $id . ' does not exist.'
                 );
             }
+        } else {
+            $result = parent::load($id, $source, $tolerateMissing, $params);
         }
 
-        if (null === $result) {
-            try {
-                $result = parent::load($id, $source, $tolerateMissing, $params);
-            } catch (RecordMissingException $e) {
-                $missingException = $e;
-            }
-        }
+        // Check for redirect if we only got a cached record:
         if (
-            null !== $id
+            $this->fallbackLoader
+            && $this->fallbackLoader->has($source)
+            && null !== $id
             && '' !== $id
-            && in_array($source, ['Solr', 'SolrAuth'])
-            && ($missingException || $result instanceof \VuFind\RecordDriver\Missing
-            || ($result && $result->getExtraDetail('cached_record')))
+            && $result?->getExtraDetail('cached_record')
         ) {
             // Check for a redirected record without overwriting $result
-            if ($redirectedRecord = $this->handleMissingSolrRecord($id, $source)) {
-                $missingException = false;
+            if ($redirectedRecord = $this->fallbackLoader->get($source)->load($id)) {
+                $missingException = null;
                 $result = $redirectedRecord;
             }
         }
@@ -247,150 +238,11 @@ class Loader extends \VuFind\Record\Loader
             return $result;
         }
 
-        $records = parent::loadBatchForSource(
+        return parent::loadBatchForSource(
             $ids,
             $source,
             $tolerateBackendExceptions,
             $params
         );
-
-        // Check the results for missing records and try to load them with their old IDs:
-        foreach ($records as &$record) {
-            if ($record instanceof \VuFind\RecordDriver\Missing) {
-                $sourceId = $record->getSourceIdentifier();
-                if (in_array($sourceId, ['Solr', 'SolrAuth'])) {
-                    // Check for a new record without overwriting the current one:
-                    if ($newRecord = $this->handleMissingSolrRecord($record->getUniqueID(), $sourceId)) {
-                        $record = $newRecord;
-                    }
-                }
-            }
-        }
-        // Unset reference:
-        unset($record);
-
-        return $records;
-    }
-
-    /**
-     * Handle missing Solr record by trying to find the record using alternative ID.
-     *
-     * @param string $id       Record ID
-     * @param string $sourceId Source ID
-     *
-     * @return DefaultRecord|null Record or null if not found
-     */
-    protected function handleMissingSolrRecord(string $id, string $sourceId): ?DefaultRecord
-    {
-        if ('Solr' === $sourceId && preg_match('/\.(FIN\d+)/', $id, $matches)) {
-            // Probably an old MetaLib record ID. Try to find the record using
-            // its old MetaLib ID
-            if ($mlRecord = $this->loadMetaLibRecord($matches[1])) {
-                return $mlRecord;
-            }
-        } elseif ('Solr' === $sourceId && preg_match('/^musketti\..+?:(.+)/', $id, $matches)) {
-            // Old musketti record. Try to find the new record using the
-            // inventory number.
-            if ($newRecord = $this->loadRecordWithIdentifier($matches[1], $sourceId, 'museovirasto')) {
-                return $newRecord;
-            }
-        }
-        if ('SolrAuth' === $sourceId) {
-            // Try to find the record with an identifier:
-            if ($newRecord = $this->loadRecordWithIdentifier($id, $sourceId, null, 'identifier_str_mv')) {
-                return $newRecord;
-            }
-        }
-        if ($this->recordRedirectionRules) {
-            foreach ($this->recordRedirectionRules as $rule) {
-                $data = array_map('trim', explode('###', $rule, 4));
-                if (count($data) >= 3) {
-                    [$pattern, $replacement, $newDatasource] = $data;
-                    $field = $data[3] ?? 'ctrlnum';
-                    $otherId = preg_replace($pattern, $replacement, $id, -1, $count);
-                    if ($count && $otherId) {
-                        // Try to find the new record by searching for the redirected
-                        // ID in in ctrlnum field (possibly with prefix).
-                        $newRecord = $this->loadRecordWithIdentifier(
-                            $otherId,
-                            $sourceId,
-                            $newDatasource,
-                            $field
-                        );
-                        if ($newRecord) {
-                            $newRecord->setExtraDetail('redirectedFromId', $id);
-                            return $newRecord;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Try to load a record using its old MetaLib ID
-     *
-     * @param string $id Record ID (e.g. FIN12345)
-     *
-     * @return \VuFind\RecordDriver\AbstractBase|bool Record or false if not found
-     */
-    protected function loadMetalibRecord($id)
-    {
-        $safeId = addcslashes($id, '"');
-        $query = new \VuFindSearch\Query\Query(
-            'original_id_str_mv:"' . $safeId . '"'
-        );
-        $params = new \VuFindSearch\ParamBag(
-            ['hl' => 'false', 'spellcheck' => 'false']
-        );
-        $command = new SearchCommand(
-            'Solr',
-            $query,
-            0,
-            1,
-            $params
-        );
-        $results = $this->searchService->invoke($command)->getResult()
-            ->getRecords();
-        return !empty($results) ? $results[0] : false;
-    }
-
-    /**
-     * Try to load a record using its identifier field
-     *
-     * @param string  $identifier Identifier (e.g. SUK77:2)
-     * @param string  $sourceId   Source ID
-     * @param ?string $dataSource Optional data source filter
-     * @param string  $field      Index field to search from
-     *
-     * @return DefaultRecord|bool Record or false if not found
-     */
-    protected function loadRecordWithIdentifier(
-        string $identifier,
-        string $sourceId,
-        ?string $dataSource = null,
-        string $field = 'identifier'
-    ) {
-        $safeIdentifier = addcslashes($identifier, '"');
-        $queryStr = $field . ':"' . $safeIdentifier . '"';
-        if (null !== $dataSource) {
-            $queryStr .= ' AND datasource_str_mv:"' . addcslashes($dataSource, '"')
-                . '"';
-        }
-        $query = new \VuFindSearch\Query\Query($queryStr);
-        $params = new \VuFindSearch\ParamBag(
-            ['hl' => 'false', 'spellcheck' => 'false']
-        );
-        $command = new SearchCommand(
-            $sourceId,
-            $query,
-            0,
-            1,
-            $params
-        );
-        $results = $this->searchService->invoke($command)->getResult()
-            ->getRecords();
-        return !empty($results) ? $results[0] : false;
     }
 }
