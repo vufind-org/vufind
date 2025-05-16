@@ -98,7 +98,7 @@ class ConfigManager
                 throw new \Exception('Configuration does not exist: ' . $currentConfigLocationPath);
             }
             if (in_array($currentConfigLocationPath, $loadedConfigPaths)) {
-                throw new \Exception('Current path was already loaded: ' . $currentConfigLocation->getPath());
+                throw new \Exception('Configuration already loaded: ' . $currentConfigLocation->getPath());
             }
             $loadedConfigPaths[] = $currentConfigLocationPath;
 
