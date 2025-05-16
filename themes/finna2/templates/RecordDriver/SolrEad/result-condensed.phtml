@@ -81,7 +81,7 @@
     <div class="media-body">
       <div class="result-body">
         <?php if ($originations = $this->driver->tryMethod('getOriginations', [], $this->driver->getOrigination())): $originations = (array)$originations; ?>
-            <span class="archive-label"><?=$this->transEsc($typeIsArchive ? 'Archive Origination' : 'CreatorRoles::rda:collector')?>:</span>
+            <span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
             <?php foreach ($originations as $i => $origination): ?>
               <?=$i > 0 ? ' ; ' : ''?><a href="<?=$this->escapeHtmlAttr($this->url('search-results', [], ['query' => ['lookfor' => $origination, 'type' => 'Author']]))?>"><?=$this->escapeHtml($origination)?></a>
             <?php endforeach; ?>

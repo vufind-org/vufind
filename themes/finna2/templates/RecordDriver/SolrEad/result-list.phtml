@@ -67,7 +67,7 @@ if ($img):
             <?php if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><?php endif; ?>
             <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
             <?php if ($originations = $this->driver->tryMethod('getOriginationExtended', [])): ?>
-              <br><span class="archive-label"><?=$this->transEsc($typeIsArchive ? 'Archive Origination' : 'CreatorRoles::rda:collector')?>:</span>
+              <br><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
               <?php foreach ($originations as $i => $origination): ?>
                 <?=$i > 0 ? ' ; ' : ''?>
                 <?=$this->record($this->driver)->getLinkedFieldElement('author', $origination['name'], $origination, ['authorityType' => $origination['type'] ?? null, 'description' => false])?>

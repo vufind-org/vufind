@@ -366,11 +366,9 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
             'getOriginationExtended',
             'data-origination.phtml',
             [
-                'context' => ['class' => 'record-origination',],
-                'labelFunction' => function ($data, $driver) {
-                    return $driver->tryMethod('getArchiveType') === 'collection'
-                        ? 'CreatorRoles::rda:collector' : 'Archive Origination';
-                },
+                'context' => [
+                    'class' => 'record-origination',
+                ],
             ]
         );
         $setTemplateLine(
