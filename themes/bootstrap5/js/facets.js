@@ -1,7 +1,7 @@
 /*global VuFind, multiFacetsSelection, unwrapJQuery */
 
 /**
- * Get the globally-configured multi-facets selection string (or default to 'false').
+ * Get the globally-configured multi-facets selection setting (or default to 'false').
  *
  * @returns string
  */
@@ -18,6 +18,11 @@ const isMultiFacetsSelectionEnabled = () => {
   return getMultiFacetsSelectionSetting() !== 'false';
 };
 
+/**
+ * Get the default checkbox selection state to apply if overriding user state is not found.
+ *
+ * @returns boolean
+ */
 const getMultiFacetsSelectionPageLoadValue = () => {
   const setting = getMultiFacetsSelectionSetting();
   return setting === 'always' || setting === 'checked';
