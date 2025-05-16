@@ -1,13 +1,18 @@
 /*global VuFind, multiFacetsSelection, unwrapJQuery */
 
+/**
+ * Get the globally-configured multi-facets selection string (or default to 'false').
+ *
+ * @returns string
+ */
 const getMultiFacetsSelectionSetting = () => {
   return typeof multiFacetsSelection === 'undefined' ? 'false' : multiFacetsSelection;
 };
 
 /**
- * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
+ * Returns whether multi-facets selection is enabled.
  *
- * @type {Function} Function to check for multiFacetsSelectionEnabled
+ * @returns boolean
  */
 const isMultiFacetsSelectionEnabled = () => {
   return getMultiFacetsSelectionSetting() !== 'false';
