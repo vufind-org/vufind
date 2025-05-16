@@ -599,6 +599,13 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
                 ) {
                     $documentDesc = $description;
                     $linkType = $displayAsLink ? 'external-link' : 'proxy-link';
+                    // Override default linkType in datasource settings
+                    $linkTypePreference =
+                        $this->datasourceSettings[$this->getDataSource()]['display_preferences'][$type . '_link_type']
+                        ?? '';
+                    if (in_array($linkTypePreference, ['external-link', 'download', 'proxy-link'])) {
+                        $linkType = $linkTypePreference;
+                    }
                     if ($displayAsLink && !$documentDesc) {
                         $host = $this->safeParseUrl($url, PHP_URL_HOST);
                         $documentDesc = new TranslatableString(
