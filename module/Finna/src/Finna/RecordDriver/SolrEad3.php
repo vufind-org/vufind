@@ -2052,16 +2052,18 @@ class SolrEad3 extends SolrEad
         $result = $localeResult = [];
         foreach ($xml->otherfindaid ?? [] as $aid) {
             foreach ($aid->p as $p) {
-                $data = [
-                    'label' => (string)$p,
-                    'url' => $p->ref
-                        ? (string)($p->ref->attributes()->href ?? '')
-                        : '',
-                ];
-                $result[] = $data;
-                $lang = $this->detectNodeLanguage($p);
-                if ($lang['preferred'] ?? false) {
-                    $localeResult[] = $data;
+                if ($label = trim((string)$p)) {
+                    $data = [
+                        'label' => $label,
+                        'url' => $p->ref
+                            ? (string)($p->ref->attributes()->href ?? '')
+                            : '',
+                    ];
+                    $result[] = $data;
+                    $lang = $this->detectNodeLanguage($p);
+                    if ($lang['preferred'] ?? false) {
+                        $localeResult[] = $data;
+                    }
                 }
             }
         }
