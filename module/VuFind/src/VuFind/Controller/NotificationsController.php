@@ -116,14 +116,14 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
 
         // If the content in the selected language is empty, use the content from the default language instead
         foreach ($pagesSelection as &$pageSelection) {
-            if (empty($pageSelection['content']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+            if ((empty($pageSelection['content']) || $pageSelection['content'] == '') && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
                 $pageSelection['content'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
             }
-            if (empty($pageSelection['headline']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
-                $pageSelection['headline'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            if ((empty($pageSelection['headline']) || $pageSelection['headline'] == '') && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['headline'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['headline'];
             }
-            if (empty($pageSelection['nav_title']) && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
-                $pageSelection['nav_title'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['content'];
+            if ((empty($pageSelection['nav_title']) || $pageSelection['nav_title'] == '') && isset($lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']])) {
+                $pageSelection['nav_title'] = $lookupPagesSelectionDefaultLanguage[$pageSelection['page_id']]['nav_title'];
             }
         }
 
