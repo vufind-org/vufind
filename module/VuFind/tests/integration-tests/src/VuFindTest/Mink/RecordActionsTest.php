@@ -1060,6 +1060,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2', 'username3', 'username4', 'emailmaniac']);
+        static::removeUsers(['username1', 'username2', 'username3', 'username4', 'username5', 'emailmaniac']);
     }
 }
