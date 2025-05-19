@@ -429,8 +429,10 @@ class RecordService extends \VuFind\Db\Service\RecordService implements FinnaRec
                 'source' => $resource->source,
             ];
         }
+        // Try to load the records. The resources for any changed records are updated automatically.
         $records = $recordLoader->loadBatch($ids, true);
 
+        // Report results:
         $fixed = 0;
         foreach ($records as $idx => $record) {
             $resource = $resources[$idx];
@@ -443,9 +445,7 @@ class RecordService extends \VuFind\Db\Service\RecordService implements FinnaRec
 
             $id = $record->getUniqueId();
             if ($id != $resource->record_id) {
-                $msgCallback("Updating resource {$resource->id} record_id from {$resource->record_id} to $id");
-                $resource->record_id = $id;
-                $resource->save();
+                $msgCallback("Resource {$resource->id} record_id updated from {$resource->record_id} to $id");
                 ++$fixed;
             }
         }
