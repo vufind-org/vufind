@@ -55,13 +55,6 @@ class Options extends \VuFind\Search\Base\Options
     protected $defaultView = null;
 
     /**
-     * Search configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $searchSettings;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
@@ -70,7 +63,6 @@ class Options extends \VuFind\Search\Base\Options
         \VuFind\Config\PluginManager $configLoader
     ) {
         $this->searchIni = $this->facetsIni = 'EPF';
-        $this->searchSettings = $configLoader->get($this->searchIni);
 
         parent::__construct($configLoader);
 
@@ -117,9 +109,8 @@ class Options extends \VuFind\Search\Base\Options
     protected function setOptionsFromConfig()
     {
         // View preferences
-        if (isset($this->searchSettings->General->default_view)) {
-            $this->defaultView
-                = 'list_' . $this->searchSettings->General->default_view;
+        if (null !== ($view = $this->searchSettings['General']['default_view'] ?? null)) {
+            $this->defaultView = 'list_' . $view;
         }
     }
 }

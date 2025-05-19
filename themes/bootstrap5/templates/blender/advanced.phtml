@@ -16,7 +16,7 @@
       <?php endif; ?>
       <div class="adv-search">
         <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="adv-term-input form-control" type="text" value="" aria-label="<?=$this->transEscAttr('search_terms')?>">
-        <select id="search_type0_<?=$search ?>" name="type0[]" class="adv-term-type form-control" aria-label="<?=$this->transEscAttr('Search type')?>">
+        <select id="search_type0_<?=$search ?>" name="type0[]" class="adv-term-type form-select" aria-label="<?=$this->transEscAttr('Search type')?>">
           <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
             <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
           <?php endforeach; ?>

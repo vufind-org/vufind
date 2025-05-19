@@ -256,6 +256,19 @@ class SearchService extends AbstractDbService implements
     }
 
     /**
+     * Delete a search entity.
+     *
+     * @param SearchEntityInterface|int $searchOrId Search entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteSearch(SearchEntityInterface|int $searchOrId): void
+    {
+        $searchId = $searchOrId instanceof SearchEntityInterface ? $searchOrId->getId() : $searchOrId;
+        $this->getDbTable('search')->delete(['id' => $searchId]);
+    }
+
+    /**
      * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
      * @param DateTime $dateLimit Date threshold of an "expired" record.

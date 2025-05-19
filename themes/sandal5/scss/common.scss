@@ -1,6 +1,7 @@
 /* ------ Border radius changes ------ */
 $list-group-border-radius: 0;
 $border-radius-lg: 0; // modal
+$btn-border-radius: .25rem;
 
 /* ------ Common element changes ------ */
 .help-block {
@@ -16,10 +17,6 @@ mark { background-color: $highlighter-color; }
 /* ------ Bootstrap class overrides ------ */
 .badge {
   margin-bottom: 1px;
-}
-.btn {
-  border-radius: .25rem;
-  border-color: $silver;
 }
 .btn-link,
 .btn-primary { border-color: transparent; }

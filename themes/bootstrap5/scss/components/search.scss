@@ -752,8 +752,6 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.toolbar-btn,
-.reset-filters-btn,
 .clear-selection {
   border: 0;
   color: $gray-dark;
@@ -766,25 +764,14 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.toolbar-btn,
 .reset-filters-btn {
-  @extend .icon-link;
+  @extend .toolbar-btn;
   gap: 0.25rem;
   margin-bottom: 4px;
   margin-top: 4px;
-  padding: $btn-padding-y $btn-padding-x;
-}
-.reset-filters-btn {
-  flex: none;
 }
 
-.toolbar-btn {
-  display: inline-block;
-  vertical-align: middle;
-  border: 1px solid rgba(0 0 0 / 0.1);
-}
-
-.clear-selection{
+.clear-selection {
   font-weight: 700;
   flex-basis: 100%;
 }
