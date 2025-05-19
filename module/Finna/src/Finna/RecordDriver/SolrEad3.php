@@ -1141,7 +1141,7 @@ class SolrEad3 extends SolrEad
         if (!isset($xml->did)) {
             return [];
         }
-        $results = $localeResults = [];
+        $results = $localeResults = $defaultResults = [];
         // Check structured physical descriptions first
         foreach ($xml->did->physdescstructured ?? [] as $desc) {
             $lang = $this->detectNodeLanguage($desc);
@@ -1152,10 +1152,13 @@ class SolrEad3 extends SolrEad
                 if ($lang['preferred'] ?? false) {
                     $localeResults[] = $result;
                 }
+                if ($lang['default'] ?? false) {
+                    $defaultResults[] = $result;
+                }
             }
         }
         // If no structured descriptions were found, use unstructured descriptions
-        return $localeResults ?: $results ?: $this->getDisplayLabel($xml->did, 'physdesc');
+        return $localeResults ?: $defaultResults ?: $results ?: $this->getDisplayLabel($xml->did, 'physdesc');
     }
 
     /**
@@ -2131,11 +2134,11 @@ class SolrEad3 extends SolrEad
     protected function getTopics(): array
     {
         $record = $this->getXmlRecord();
-        $results = $localeResults = [];
+        $results = $localeResults = $defaultResults = [];
         foreach ($record->controlaccess as $controlaccess) {
             foreach ($controlaccess->subject as $subject) {
                 $attr = $subject->attributes();
-                $parts = $localeParts = [];
+                $parts = $localeParts = $defaultParts = [];
                 $langS = $this-> detectNodeLanguage($subject);
                 // Collect all part elements to be displayed
                 foreach ($subject->part as $part) {
@@ -2150,11 +2153,21 @@ class SolrEad3 extends SolrEad
                         if ($lang['preferred'] ?? false) {
                             $localeParts[] = $name;
                         }
+                        if ($lang['default'] ?? false) {
+                            $defaultParts[] = $name;
+                        }
                     }
                 }
                 if ($localeParts) {
                     $localeResults[] = [
                         'data' => implode(', ', $localeParts),
+                        'id' => (string)$attr->identifier,
+                        'source' => (string)$attr->source,
+                        'detail' => (string)$subject->attributes()->relator,
+                    ];
+                } elseif ($defaultParts) {
+                    $defaultResults[] = [
+                        'data' => implode(', ', $defaultParts),
                         'id' => (string)$attr->identifier,
                         'source' => (string)$attr->source,
                         'detail' => (string)$subject->attributes()->relator,
@@ -2169,7 +2182,7 @@ class SolrEad3 extends SolrEad
                 }
             }
         }
-        return $localeResults ?: $results;
+        return $localeResults ?: $defaultResults ?: $results;
     }
 
     /**
@@ -2242,6 +2255,17 @@ class SolrEad3 extends SolrEad
             }
         }
         return $localeResults ?: $results;
+    }
+
+    /**
+     * Get general notes on the record.
+     *
+     * @return array
+     */
+    public function getGeneralNotes(): array
+    {
+        $xml = $this->getXmlRecord();
+        return $this->getDisplayLabel($xml->did, 'didnote');
     }
 
     /**
@@ -2405,7 +2429,7 @@ class SolrEad3 extends SolrEad
     protected function detectNodeLanguage(
         \SimpleXMLElement $node,
         string $languageAttribute = 'lang',
-        string $defaultLanguage = 'fin'
+        string $defaultLanguage = 'fi'
     ): ?array {
         if (!isset($node->attributes()->{$languageAttribute})) {
             return null;
@@ -2418,7 +2442,7 @@ class SolrEad3 extends SolrEad
         $lang = (string)$node->attributes()->{$languageAttribute};
         return [
             'value' => $lang,
-            'default' => $defaultLanguage === $lang,
+            'default' => in_array($lang, $this->mapLanguageCode($defaultLanguage)),
             'preferred' => in_array($lang, $languages),
         ];
     }

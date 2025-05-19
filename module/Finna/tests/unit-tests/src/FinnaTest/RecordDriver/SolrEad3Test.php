@@ -344,6 +344,8 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
+            ],
+            [
                 'sv',
                 [
                     'ead3_test.xml' => [
@@ -382,7 +384,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'en',
+            ],
+            [
+                'en-gb',
                 [
                     'ead3_test.xml' => [
                         [
@@ -452,6 +456,8 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
                         '9 koteloa',
                     ],
                 ],
+            ],
+            [
                 'sv',
                 [
                     'ead3_test.xml' => [
@@ -461,7 +467,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
                         '9 mappar',
                     ],
                 ],
-                'en',
+            ],
+            [
+                'en-gb',
                 [
                     'ead3_test.xml' => [
                         'Hyllymetriä järjestetty 0.96 hm',
@@ -569,6 +577,59 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver($xmlPath, ['id' => 'test_id']);
         $this->assertEquals($expected, $driver->getAllImages());
+    }
+
+    /**
+     * Function to get expected general notes data
+     *
+     * @return array
+     */
+    public static function getGeneralNotesData(): array
+    {
+        return [
+            [
+                'fi',
+                [
+                    'Aineisto on digitoitu',
+                    'Aineisto on osa Unescon maailmanperintöä',
+                ],
+            ],
+            [
+                'en-gb',
+                [
+                    'Aineisto on digitoitu',
+                    'Aineisto on osa Unescon maailmanperintöä',
+                ],
+            ],
+            [
+                'sv',
+                [
+                    'Samlingen är digitaliserad',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test getGeneralNotes
+     *
+     * @param string $language Language
+     * @param array  $expected Result to be expected
+     *
+     * @dataProvider getGeneralNotesData
+     *
+     * @return void
+     */
+    public function testGetGeneralNotes(
+        string $language,
+        array $expected
+    ): void {
+        $driver = $this->getDriver('ead3_test5.xml');
+        $driver->setPreferredLanguage($language);
+        $this->assertEquals(
+            $expected,
+            $driver->getGeneralNotes()
+        );
     }
 
     /**

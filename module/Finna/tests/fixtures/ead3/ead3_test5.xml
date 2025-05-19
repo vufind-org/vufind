@@ -2,24 +2,25 @@
 <c02 level="file">
   <did>
     <unitid id="Item_Ref" identifier="test" label="Tekninen">test</unitid>
-    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
+
     <unitdate label="Ajallinen kattavuus" normal="16uu-01-01/17uu-01-01">01.01.16uu-01.01.17uu</unitdate>
     <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
 
-    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
     <unitdate label="Ajallinen kattavuus" normal="1661-uu-u/1661-uu-uu"></unitdate>
     <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
 
-    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
     <unitdate label="Ajallinen kattavuus" normal="166u"></unitdate>
     <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
 
-    <didnote encodinganalog="ahaa:AI46">Yksityisaineisto</didnote>
     <unitdate label="Ajallinen kattavuus" normal="1600-01-01/1610-01-01"></unitdate>
     <unittitle label="Reinius Theodor S 3:b) 1" normal="Reinius Theodor S 3:b) 1" lang="fin">Reinius Theodor S 3:b) 1</unittitle>
 
     <unitdate normal="1923-XX-XX">1923</unitdate>
     <unitdate normal="1925-XX-XX/XXXX-XX-XX">1925</unitdate>
+
+    <didnote lang="fi">Aineisto on digitoitu</didnote>
+    <didnote lang="fi">Aineisto on osa Unescon maailmanperintöä</didnote>
+    <didnote lang="sv">Samlingen är digitaliserad</didnote>
 
     <physdesc lang="sv">Hyllmeter ordnat 0.96 hm</physdesc>
     <physdesc lang="fi">Hyllymetriä järjestetty 0.96 hm</physdesc>
