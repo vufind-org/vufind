@@ -149,13 +149,10 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
 
         $pages = [];
         foreach ($pagesSelection as $page) {
-            if ($page['headline'] != '') {
-                $page['headline'] = $converter->convert($page['headline']);
-            }
             if ($page['nav_title'] != '') {
                 $page['nav_title'] = $converter->convert($page['nav_title']);
+                $pages[] = $page;
             }
-            $pages[] = $page;
         }
 
         return $pages;

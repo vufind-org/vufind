@@ -2,7 +2,7 @@
   $pages = $this->notifications()->getPages();
   $maxWidth = 90;
   if (sizeof($pages) > 0) {
-      $maxWidth = round((100 / sizeof($pages)) - 10);
+      $maxWidth = round(100 / sizeof($pages));
   }
 ?>
 <ul class="nav navbar-nav navbar-left flip notifications-nav">
