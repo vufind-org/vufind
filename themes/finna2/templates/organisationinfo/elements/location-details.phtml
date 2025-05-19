@@ -10,8 +10,9 @@
     <div class="location-col">
       <?php ob_start(); ?>
         <?php $hasImages = false; ?>
+        <?php $year = $orgInfo['buildingYear'] ?? null; ?>
         <?php if ($url = $orgInfo['pictures'][0]['url'] ?? null): ?>
-          <img class="building-image" src="<?=$this->escapeHtmlAttr($url)?>" alt="">
+          <img class="building-image" src="<?=$this->escapeHtmlAttr($url)?>" alt="<?=$this->escapeHtml($orgInfo['name'])?><?php if ($year): ?> <?=$this->escapeHtml($year)?><?php endif; ?>">
           <?php $hasImages = true; ?>
         <?php endif; ?>
         <?php
@@ -26,10 +27,10 @@
         <?php endif; ?>
         */ ?>
         <?php if ($hasImages): ?>
-          <p class="building-name info-element"><?=$this->escapeHtml($orgInfo['name'])?></p>
+          <p class="building-name info-element" aria-hidden="true"><?=$this->escapeHtml($orgInfo['name'])?></p>
         <?php endif; ?>
-        <?php if ($year = $orgInfo['buildingYear'] ?? null): ?>
-          <p class="building-year info-element">
+        <?php if ($year): ?>
+          <p class="building-year info-element" aria-hidden="true">
             <?=$this->transEsc('organisation_info_building_year')?>: <?=$this->escapeHtml($year)?>
           </p>
         <?php endif; ?>
