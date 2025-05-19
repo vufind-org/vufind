@@ -378,11 +378,19 @@ trait ContainerFormatTrait
             }
         }
         if (!empty($ids)) {
+            // Load needed records and call the setLoadedRecord() method of the
+            // respective record driver in the provided array.
             $loadedRecords = $this->recordLoader->loadBatchIgnoringSourceFilter($ids);
             foreach ($loadedRecords as $loadedRecord) {
                 $loadedSource = $loadedRecord->getSourceIdentifier();
                 $loadedId = $loadedRecord->getUniqueID();
-                $records[$neededMap[$loadedSource][$loadedId]]->setLoadedRecord($loadedRecord);
+                if (isset($neededMap[$loadedSource][$loadedId])) {
+                    $records[$neededMap[$loadedSource][$loadedId]]->setLoadedRecord($loadedRecord);
+                }
+                $previousId = $loadedRecord->tryMethod('getPreviousUniqueID');
+                if ($previousId && isset($neededMap[$loadedSource][$previousId])) {
+                    $records[$neededMap[$loadedSource][$previousId]]->setLoadedRecord($loadedRecord);
+                }
             }
         }
     }
