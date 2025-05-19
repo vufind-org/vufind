@@ -269,7 +269,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
 
         $data = $pagesForm->getData();
         if (!isset($data['author_id']) || $data['author_id'] == '') {
-            $data['author_id'] = $user->id;
+            $data['author_id'] = $this->getUser()->id;
         }
 
         $this->pagesService->insertOrUpdatePage($data, $page, $page_id);
@@ -339,7 +339,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
 
         $data = $broadcastsForm->getData();
         if (!isset($data['author_id']) || $data['author_id'] == '') {
-            $data['author_id'] = $user->id;
+            $data['author_id'] = $this->getUser()->id;
         }
 
         $this->broadcastsService->insertOrUpdateBroadcast($data, $broadcast, $broadcast_id);
