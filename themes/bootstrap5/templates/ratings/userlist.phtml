@@ -94,7 +94,9 @@
         </tbody>
       </table>
     </form>
-  <?php endif;?>
+  <?php else: ?>
+    <?=$this->transEsc('No Ratings')?>
+  <?php endif; ?>
   <?=$this->paginationControl($this->ratings, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
 </div>
 

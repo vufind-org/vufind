@@ -88,7 +88,9 @@
         </tbody>
       </table>
     </form>
-  <?php endif;?>
+  <?php else: ?>
+    <?=$this->transEsc('No Tags')?>
+  <?php endif; ?>
   <?=$this->paginationControl($this->tags, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
 </div>
 

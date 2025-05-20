@@ -89,7 +89,9 @@
         </tbody>
       </table>
     </form>
-  <?php endif;?>
+  <?php else: ?>
+    <?=$this->transEsc('No Comments')?>
+  <?php endif; ?>
   <?=$this->paginationControl($this->comments, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
 </div>
 
