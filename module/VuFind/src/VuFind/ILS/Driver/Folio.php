@@ -2074,14 +2074,14 @@ class Folio extends AbstractAPI implements
     /**
      * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
-     * @param string $instanceId  Instance UUID being requested
-     * @param string $itemId      Item UUID being requested
-     * @param string $requesterId Patron UUID placing request
-     * @param string $operation   Operation type (default = create)
+     * @param string  $instanceId  Instance UUID being requested
+     * @param ?string $itemId      Item UUID being requested (or null if unavailable/inapplicable)
+     * @param string  $requesterId Patron UUID placing request
+     * @param string  $operation   Operation type (default = create)
      *
      * @return ?array
      */
-    public function getAllowedServicePoints(
+    protected function getAllowedServicePoints(
         string $instanceId,
         ?string $itemId,
         string $requesterId,
