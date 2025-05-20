@@ -668,11 +668,11 @@ class EDS extends DefaultRecord
                 $splitParts = preg_split($pattern, $data);
                 $data = '';
                 foreach ($splitParts as $part) {
-                    if (strpos($part, 'table') > -1 && strpos($part, 'table') < 6) {
+                    if (strpos($part, '&lt;table') > -1) {
                         $data .= '<div class="eds_html_table">';
                         $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
                         $data .= '</div>';
-                    } elseif (strpos($part, 'math') > -1 && strpos($part, 'math') < 6) {
+                    } elseif (strpos($part, '&lt;math') > -1) {
                         $data .= '<span class="eds_html_math">';
                         $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
                         $data .= '</span>';
