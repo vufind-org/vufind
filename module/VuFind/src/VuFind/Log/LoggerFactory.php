@@ -85,7 +85,7 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
-            $container->get(\Laminas\Db\Adapter\Adapter::class),
+            $container->get(\VuFind\Db\Connection::class),
             $table_name,
             $columnMapping
         );
