@@ -31,10 +31,8 @@ namespace VuFind\Db\Service;
 
 use Doctrine\ORM\Query\ResultSetMapping;
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
-use VuFind\Db\Entity\Tags;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -57,6 +55,7 @@ use function count;
 class TagService extends AbstractDbService implements TagServiceInterface, DbServiceAwareInterface, LoggerAwareInterface
 {
     use DbServiceAwareTrait;
+    use Feature\ResourceSortTrait;
     use LoggerAwareTrait;
 
     /**
@@ -240,7 +239,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         bool $fuzzy = true,
         bool $caseSensitive = false
     ): array {
-        $orderByDetails = empty($sort) ? [] : ResourceService::getOrderByClause($sort);
+        $orderByDetails = empty($sort) ? [] : $this->getResourceOrderByClause($sort);
         $dql = 'SELECT DISTINCT(r.id) AS resource, r';
         if (!empty($orderByDetails['extraSelect'])) {
             $dql .= ', ' . $orderByDetails['extraSelect'];

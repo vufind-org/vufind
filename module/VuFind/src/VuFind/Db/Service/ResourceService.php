@@ -44,8 +44,6 @@ use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\PersistenceManager;
 use VuFind\Log\LoggerAwareTrait;
 
-use function in_array;
-
 /**
  * Database service for resource.
  *
@@ -62,6 +60,7 @@ class ResourceService extends AbstractDbService implements
     LoggerAwareInterface
 {
     use DbServiceAwareTrait;
+    use Feature\ResourceSortTrait;
     use LoggerAwareTrait;
 
     /**
@@ -167,58 +166,6 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
-     * Apply a sort parameter to a query on the resource table. Returns an
-     * array with two keys: 'orderByClause' (the actual ORDER BY) and
-     * 'extraSelect' (extra values to add to SELECT, if necessary)
-     *
-     * @param string $sort  Field to use for sorting (may include
-     *                      'desc' qualifier)
-     * @param string $alias Alias to the resource table (defaults to 'r')
-     *
-     * @return array
-     */
-    public static function getOrderByClause(string $sort, string $alias = 'r'): array
-    {
-        // Apply sorting, if necessary:
-        $legalSorts = [
-            'title', 'title desc', 'author', 'author desc', 'year', 'year desc', 'last_saved', 'last_saved desc',
-        ];
-        $orderByClause = $extraSelect = '';
-        if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
-            // Strip off 'desc' to obtain the raw field name -- we'll need it
-            // to sort null values to the bottom:
-            $parts = explode(' ', $sort);
-            $rawField = trim($parts[0]);
-
-            // Start building the list of sort fields:
-            $order = [];
-
-            // Only include the table alias on non-virtual fields:
-            $fieldPrefix = (strtolower($rawField) === 'last_saved') ? '' : "$alias.";
-
-            // The title field can't be null, so don't bother with the extra
-            // isnull() sort in that case.
-            if (strtolower($rawField) === 'title') {
-                // Do nothing
-            } elseif (strtolower($rawField) === 'last_saved') {
-                $extraSelect = 'ur.saved AS HIDDEN last_saved, '
-                    . 'CASE WHEN ur.saved IS NULL THEN 1 ELSE 0 END AS HIDDEN last_savedsort';
-                $order[] = 'last_savedsort';
-            } else {
-                $extraSelect = 'CASE WHEN ' . $fieldPrefix . $rawField . ' IS NULL THEN 1 ELSE 0 END AS HIDDEN '
-                    . $rawField . 'sort';
-                $order[] = "{$rawField}sort";
-            }
-
-            // Apply the user-specified sort:
-            $order[] = $fieldPrefix . $sort;
-            // Inject the sort preferences into the query object:
-            $orderByClause = ' ORDER BY ' . implode(', ', $order);
-        }
-        return compact('orderByClause', 'extraSelect');
-    }
-
-    /**
      * Retrieve a single resource row by record ID/source. Return null if it does not exist.
      *
      * @param string $id     Record ID
@@ -274,7 +221,7 @@ class ResourceService extends AbstractDbService implements
     ): array {
         $user = $this->getDoctrineReference(User::class, $userOrId);
         $list = $listOrId ? $this->getDoctrineReference(UserList::class, $listOrId) : null;
-        $orderByDetails = empty($sort) ? [] : ResourceService::getOrderByClause($sort);
+        $orderByDetails = empty($sort) ? [] : $this->getResourceOrderByClause($sort);
         $dql = 'SELECT DISTINCT r';
         if (!empty($orderByDetails['extraSelect'])) {
             $dql .= ', ' . $orderByDetails['extraSelect'];
