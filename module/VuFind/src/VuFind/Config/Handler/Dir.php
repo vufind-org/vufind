@@ -63,10 +63,31 @@ class Dir extends AbstractBase
     public function parseConfig(ConfigLocationInterface $configLocation): array
     {
         $path = $configLocation->getPath();
-        $configLocations = $this->getConfigLocationsInPath($path);
+
+        $subsection = $configLocation->getSubsection();
+        $dirSubsection = [];
+        while (!empty($subsection) && is_dir($path . DIRECTORY_SEPARATOR . $subsection[0])) {
+            $subsectionPart = array_shift($subsection);
+            $dirSubsection[] = $subsectionPart;
+            $path = $path . DIRECTORY_SEPARATOR . $subsectionPart;
+        }
+
         $config = [];
-        foreach ($configLocations as $location) {
-            $config[$location->getConfigName()] = $this->configManager->loadConfig($location);
+        if (!empty($subsection)) {
+            $configName = array_shift($subsection);
+            $location = $this->getMatchingConfigLocation($path, $configName);
+            if ($subsection !== null) {
+                $location->setSubsection($subsection);
+            }
+            $config[$configName] = $this->configManager->loadConfig($location);
+        } else {
+            foreach ($this->getConfigLocationsInPath($path) as $location) {
+                $config[$location->getConfigName()] = $this->configManager->loadConfig($location);
+            }
+        }
+
+        foreach (array_reverse($dirSubsection) as $subsectionPart) {
+            $config = [$subsectionPart => $config];
         }
         return ['data' => $config];
     }

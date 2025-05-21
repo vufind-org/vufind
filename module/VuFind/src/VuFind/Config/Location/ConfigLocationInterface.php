@@ -52,6 +52,9 @@ namespace VuFind\Config\Location;
  * something different. E.g. when myParent.ini is the parent of config.ini it will still have the config
  * name "config" even if that is not part of the file name.
  *
+ * A specified subsection of the configuration can be used to optimize the loading process if only that
+ * section is required.
+ *
  * @category VuFind
  * @package  Config_Location
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
@@ -123,6 +126,22 @@ interface ConfigLocationInterface
      * @return void
      */
     public function setConfigName(string $configName): void;
+
+    /**
+     * Get subsection of the configuration.
+     *
+     * @return array
+     */
+    public function getSubsection(): array;
+
+    /**
+     * Set subsection of the configuration.
+     *
+     * @param array $subsection Subsection
+     *
+     * @return void
+     */
+    public function setSubsection(array $subsection): void;
 
     /**
      * Get the name of the configuration handler to be used for this location.

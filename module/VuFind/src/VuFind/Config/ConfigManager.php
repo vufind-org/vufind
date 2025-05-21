@@ -36,6 +36,8 @@ use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Feature\MergeRecursiveTrait;
 
 use function in_array;
+use function is_array;
+use function is_string;
 
 /**
  * Configuration manager
@@ -64,16 +66,24 @@ class ConfigManager
     }
 
     /**
-     * Get config by name.
+     * Get config by path.
      *
-     * @param string $configName Config name
+     * The path consists of a base configuration name and a path to a subsection of that configuration.
      *
-     * @return array
+     * @param string $configPath Config path
+     *
+     * @return mixed
      */
-    public function get(string $configName): array
+    public function get(string $configPath): mixed
     {
+        $subsection = explode('/', $configPath);
+        $configName = array_shift($subsection);
         $configLocation = $this->pathResolver->getConfigLocation($configName);
-        return ($configLocation !== null) ? $this->loadConfig($configLocation) : [];
+        if (!$configLocation) {
+            return [];
+        }
+        $configLocation->setSubsection($subsection);
+        return $this->loadConfig($configLocation);
     }
 
     /**
@@ -81,9 +91,9 @@ class ConfigManager
      *
      * @param ConfigLocationInterface $configLocation Config location
      *
-     * @return array
+     * @return mixed
      */
-    public function loadConfig(ConfigLocationInterface $configLocation): array
+    public function loadConfig(ConfigLocationInterface $configLocation): mixed
     {
         $loadedConfigPaths = [];
 
@@ -113,8 +123,15 @@ class ConfigManager
         $result = [];
         foreach (array_reverse($configs) as $config) {
             $data = $config['data'];
-            $mergeFunction = $config['mergeCallback'] ?? [$this, 'mergeRecursive'];
-            $result = $mergeFunction($result, $data);
+            if (is_array($data)) {
+                $mergeFunction = $config['mergeCallback'] ?? [$this, 'mergeRecursive'];
+                $result = $mergeFunction($result, $data);
+            } elseif (empty($result) && is_string($data)) {
+                return $data;
+            }
+        }
+        foreach ($configLocation->getSubsection() as $subsectionPart) {
+            $result = $result[$subsectionPart] ?? null;
         }
         return $result;
     }

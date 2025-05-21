@@ -64,6 +64,13 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     protected string $configName;
 
     /**
+     * Path to subsection of the configuration.
+     *
+     * @var array
+     */
+    protected array $subsection = [];
+
+    /**
      * Constructor
      *
      * @param string  $path       Path to configuration
@@ -166,6 +173,28 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     public function setConfigName(string $configName): void
     {
         $this->configName = $configName;
+    }
+
+    /**
+     * Get subsection of the configuration.
+     *
+     * @return array
+     */
+    public function getSubsection(): array
+    {
+        return $this->subsection;
+    }
+
+    /**
+     * Set subsection of the configuration.
+     *
+     * @param array $subsection Subsection
+     *
+     * @return void
+     */
+    public function setSubsection(array $subsection): void
+    {
+        $this->subsection = $subsection;
     }
 
     /**

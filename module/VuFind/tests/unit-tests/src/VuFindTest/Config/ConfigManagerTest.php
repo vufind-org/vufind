@@ -74,11 +74,12 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Wrapper around loadConfig method.
      *
-     * @param string $name Configuration to load
+     * @param string $name       Configuration to load
+     * @param array  $subsection Subsection
      *
-     * @return array
+     * @return mixed
      */
-    protected function getConfig(string $name): array
+    protected function getConfig(string $name, array $subsection = []): mixed
     {
         $fileMap = [
             'unit-test-parent'
@@ -93,6 +94,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         $realResolver = $this->getPathResolver();
         $configLocation = $fileMap[$name]
             ?? $realResolver->getConfigLocation($name);
+        $configLocation->setSubsection($subsection);
         return $this->getConfigManager()->loadConfig($configLocation);
     }
 
@@ -105,6 +107,20 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     {
         $config = $this->getConfigManager()->get('config');
         $this->assertEquals('Library Catalog', $config['Site']['title']);
+    }
+
+    /**
+     * Test get config with subsection.
+     *
+     * @return void
+     */
+    public function testGetConfigWithSubsection(): void
+    {
+        $config = $this->getConfigManager()->get('config/Site');
+        $this->assertEquals('Library Catalog', $config['title']);
+
+        $config = $this->getConfigManager()->get('config/Site/title');
+        $this->assertEquals('Library Catalog', $config);
     }
 
     /**
@@ -165,6 +181,39 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test inheritance features with subsections.
+     *
+     * @return void
+     */
+    public function testInheritanceWithSubsections(): void
+    {
+        // Make sure Section 1 was overridden; values from parent should not be
+        // present.
+        $config = $this->getConfig('unit-test-child', ['Section1']);
+        $this->assertArrayNotHasKey('a', $config);
+        $this->assertEquals('10', $config['j']);
+
+        // Make sure Section 2 was merged; values from parent and child should
+        // both be present.
+        $config = $this->getConfig('unit-test-child', ['Section2']);
+        $this->assertEquals('4', $config['d']);
+        $this->assertEquals('13', $config['m']);
+
+        // Make sure Section 3 was inherited; values from parent should exist.
+        $config = $this->getConfig('unit-test-child', ['Section3']);
+        $this->assertEquals('7', $config['g']);
+
+        // Make sure Section 4 arrays were overwritten.
+        $config = $this->getConfig('unit-test-child', ['Section4']);
+        $this->assertEquals([3], $config['j']);
+        $this->assertEquals(['c' => 3], $config['k']);
+
+        // Make sure Section 5 arrays passed through as-is.
+        $config = $this->getConfig('unit-test-child', ['Section5']);
+        $this->assertEquals(['a' => 1, 'b' => 2], $config['l']);
+    }
+
+    /**
      * Test inheritance features with array merging turned on.
      *
      * @return void
@@ -220,7 +269,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     {
         $config = $this->getConfig('generic-file');
         $this->assertEquals(
-            ['some config'],
+            'some config',
             $config
         );
     }
@@ -243,7 +292,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'generic' => ['some config'],
+                'generic' => 'some config',
                 'test1' => [
                     'Section1' => [
                         'c' => 2,
@@ -255,6 +304,38 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                         'e' => 4,
                         'f' => 5,
                     ],
+                ],
+            ],
+            $config
+        );
+    }
+
+    /**
+     * Test loading of configs in subdirectories with subsection.
+     *
+     * @return void
+     */
+    public function testDirConfigWithSubsection(): void
+    {
+        $config = $this->getConfig('dir-config', ['subdir']);
+        $this->assertEquals(
+            [
+                'testsubdir' => [
+                    'SectionTestSubdir' => [
+                        'a' => 0,
+                        'b' => 1,
+                    ],
+                ],
+            ],
+            $config
+        );
+
+        $config = $this->getConfig('dir-config', ['subdir', 'testsubdir']);
+        $this->assertEquals(
+            [
+                'SectionTestSubdir' => [
+                    'a' => 0,
+                    'b' => 1,
                 ],
             ],
             $config
