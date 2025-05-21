@@ -141,6 +141,10 @@ class UserService extends AbstractDbService implements
      */
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
+        // Null ID lookups cannot possibly retrieve a value:
+        if ($fieldName === 'id' && $fieldValue === null) {
+            return null;
+        }
         // Map expected incoming values (actual database columns) to legal values (Doctrine properties)
         $legalFieldMap = [
             'id' => 'id',
@@ -149,12 +153,14 @@ class UserService extends AbstractDbService implements
             'cat_id' => 'catId',
             'verify_hash' => 'verifyHash',
         ];
-        if ($fieldName === 'id' && $fieldValue === null) {
-            return null;
-        }
+        // For now, only username lookups are case-insensitive:
+        $caseInsensitive = $fieldName === 'username';
         if (isset($legalFieldMap[$fieldName])) {
+            $where = $caseInsensitive
+                ? 'LOWER(U.' . $legalFieldMap[$fieldName] . ') = LOWER(:fieldValue)'
+                : 'U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
             $dql = 'SELECT U FROM ' . $this->getEntityClass(UserEntityInterface::class) . ' U '
-                . 'WHERE U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
+                . 'WHERE ' . $where;
             $parameters = compact('fieldValue');
             $query = $this->entityManager->createQuery($dql);
             $query->setParameters($parameters);
