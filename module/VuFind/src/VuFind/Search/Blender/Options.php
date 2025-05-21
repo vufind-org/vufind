@@ -43,13 +43,6 @@ namespace VuFind\Search\Blender;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Maximum number of results (400 by default)
-     *
-     * @var int
-     */
-    protected $resultLimit = 400;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -57,8 +50,13 @@ class Options extends \VuFind\Search\Solr\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->facetsIni = $this->searchIni = 'Blender';
+
+        // Override the default result limit with a value that we can always support:
+        $this->defaultResultLimit = 400;
+
         parent::__construct($configLoader);
-        // Make sure first-last navigation is never enabled since we cannot support:
+
+        // Make sure first-last navigation is never enabled since we cannot support it:
         $this->firstLastNavigationSupported = false;
     }
 

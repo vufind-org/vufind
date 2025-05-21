@@ -38,7 +38,6 @@ use function get_class;
 use function in_array;
 use function intval;
 use function is_array;
-use function is_string;
 
 /**
  * Abstract options search model.
@@ -54,6 +53,7 @@ use function is_string;
  */
 abstract class Options implements TranslatorAwareInterface
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
@@ -61,7 +61,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $sortOptions = [];
+    protected $sortOptions;
 
     /**
      * Allowed hidden sort options
@@ -82,42 +82,42 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $defaultSort = 'relevance';
+    protected $defaultSort;
 
     /**
      * Handler-specific defaults
      *
      * @var array
      */
-    protected $defaultSortByHandler = [];
+    protected $defaultSortByHandler;
 
     /**
      * RSS-specific sort option
      *
-     * @var string
+     * @var ?string
      */
-    protected $rssSort = null;
+    protected $rssSort;
 
     /**
      * Default search handler
      *
-     * @var string
+     * @var ?string
      */
-    protected $defaultHandler = null;
+    protected $defaultHandler;
 
     /**
      * Advanced search handlers
      *
      * @var array
      */
-    protected $advancedHandlers = [];
+    protected $advancedHandlers;
 
     /**
      * Basic search handlers
      *
      * @var array
      */
-    protected $basicHandlers = [];
+    protected $basicHandlers;
 
     /**
      * Special advanced facet settings
@@ -145,21 +145,21 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $defaultFilters = [];
+    protected $defaultFilters;
 
     /**
      * Default limit option
      *
      * @var int
      */
-    protected $defaultLimit = 20;
+    protected $defaultLimit;
 
     /**
      * Available limit options
      *
      * @var array
      */
-    protected $limitOptions = [];
+    protected $limitOptions;
 
     /**
      * If result scroller is used.
@@ -199,7 +199,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Convenient field => delimiter lookup array derived from $delimitedFacets.
      *
-     * @var array
+     * @var ?array
      */
     protected $processedDelimitedFacets = null;
 
@@ -304,6 +304,8 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Configuration file to read global settings from
      *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
      * @var string
      */
     protected $mainIni = 'config';
@@ -311,12 +313,16 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Configuration file to read search settings from
      *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
      * @var string
      */
     protected $searchIni = 'searches';
 
     /**
      * Configuration file to read facet settings from
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
      *
      * @var string
      */
@@ -327,7 +333,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $listviewOption = 'full';
+    protected $listviewOption;
 
     /**
      * Configuration loader
@@ -337,11 +343,29 @@ abstract class Options implements TranslatorAwareInterface
     protected $configLoader;
 
     /**
-     * Maximum number of results (no limit by default)
+     * Maximum number of results (-1 = unlimited)
      *
      * @var int
      */
-    protected $resultLimit = -1;
+    protected $resultLimit;
+
+    /**
+     * Default result limit if not set in configuration.
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var int
+     */
+    protected int $defaultResultLimit = -1;
+
+    /**
+     * Maximum supported value for $resultLimit above, or null for no limit.
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var ?int
+     */
+    protected ?int $maxResultLimit = null;
 
     /**
      * Is first/last navigation supported by the backend?
@@ -363,21 +387,21 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $filterHierarchicalFacetsInAdvanced = false;
+    protected $filterHierarchicalFacetsInAdvanced;
 
     /**
      * Hierarchical exclude filters
      *
      * @var array
      */
-    protected $hierarchicalExcludeFilters = [];
+    protected $hierarchicalExcludeFilters;
 
     /**
      * Hierarchical facet filters
      *
      * @var array
      */
-    protected $hierarchicalFacetFilters = [];
+    protected $hierarchicalFacetFilters;
 
     /**
      * Top pagination control style (none, simple or full)
@@ -408,11 +432,32 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $showRestrictedViewWarning;
 
     /**
+     * VuFind main configuration
+     *
+     * @var array
+     */
+    protected array $mainConfig;
+
+    /**
+     * Search settings
+     *
+     * @var array
+     */
+    protected array $searchSettings;
+
+    /**
      * Facet settings
      *
      * @var array
      */
     protected array $facetSettings;
+
+    /**
+     * Section name for advanced facet settings
+     *
+     * @var string
+     */
+    protected string $advancedFacetSettingsSection = 'Advanced_Settings';
 
     /**
      * Constructor
@@ -423,9 +468,42 @@ abstract class Options implements TranslatorAwareInterface
     {
         $this->setConfigLoader($configLoader);
 
-        $id = $this->getSearchClassId();
-        $baseConfig = $configLoader->get('config');
+        $this->mainConfig = $configLoader->get($this->mainIni)?->toArray() ?? [];
+        $this->searchSettings = $configLoader->get($this->searchIni)?->toArray() ?? [];
         $this->facetSettings = $configLoader->get($this->facetsIni)?->toArray() ?? [];
+
+        // Search handlers:
+        $this->basicHandlers = $this->searchSettings['Basic_Searches'] ?? [];
+        $this->advancedHandlers = $this->searchSettings['Advanced_Searches'] ?? [];
+        $this->defaultHandler = $this->searchSettings['General']['default_handler'] ?? null;
+
+        // Limit preferences:
+        $this->defaultLimit = $this->searchSettings['General']['default_limit'] ?? 20;
+        $this->limitOptions = $this->explodeListSetting($this->searchSettings['General']['limit_options'] ?? '');
+        $this->resultLimit = (int)($this->searchSettings['General']['result_limit'] ?? $this->defaultResultLimit);
+        if ($this->maxResultLimit) {
+            $this->resultLimit = -1 === $this->resultLimit
+                ? $this->maxResultLimit
+                : min($this->resultLimit, $this->maxResultLimit);
+        }
+
+        // Sort options:
+        $this->sortOptions = $this->searchSettings['Sorting'] ?? [];
+        $this->defaultSort = $this->searchSettings['General']['default_sort'] ?? 'relevance';
+        $this->defaultSortByHandler = (array)($this->searchSettings['DefaultSortingByType'] ?? []);
+        $this->rssSort = $this->searchSettings['RSS']['sort'] ?? null;
+        $this->initializeHiddenSortOptions();
+
+        // View options:
+        $this->listviewOption = $this->searchSettings['List']['view'] ?? 'full';
+
+        // Filter options:
+        $this->defaultFilters = $this->searchSettings['General']['default_filters'] ?? [];
+        $this->retainFiltersByDefault = $this->searchSettings['General']['retain_filters_by_default'] ?? true;
+        $this->alwaysDisplayResetFilters = $this->searchSettings['General']['always_display_reset_filters'] ?? false;
+
+        // Facet settings:
+        $id = $this->getSearchClassId();
         if (isset($this->facetSettings['AvailableFacetSortOptions'][$id])) {
             $sortArray = (array)$this->facetSettings['AvailableFacetSortOptions'][$id];
             foreach ($sortArray as $facet => $sortOptions) {
@@ -436,28 +514,28 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
-        $this->filterHierarchicalFacetsInAdvanced
-            = !empty($this->facetSettings['Advanced_Settings']['enable_hierarchical_filters']);
+
+        $advancedFacetSettings = $this->facetSettings[$this->advancedFacetSettingsSection] ?? [];
+        $this->filterHierarchicalFacetsInAdvanced = !empty($advancedFacetSettings['enable_hierarchical_filters']);
         $this->hierarchicalExcludeFilters = $this->facetSettings['HierarchicalExcludeFilters'] ?? [];
         $this->hierarchicalFacetFilters = $this->facetSettings['HierarchicalFacetFilters'] ?? [];
+        $this->setTranslatedFacets((array)($advancedFacetSettings['translated_facets'] ?? []));
+        $this->specialAdvancedFacets = $advancedFacetSettings['special_facets'] ?? '';
 
-        $searchSettings = $configLoader->get($this->searchIni);
-        $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
-        $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        // Result display options:
         $this->resultScrollerActive = (bool)(
-            $searchSettings->Record->next_prev_navigation
-            ?? $baseConfig->Record->next_prev_navigation
+            $this->searchSettings['Record']['next_prev_navigation']
+            ?? $this->mainConfig['Record']['next_prev_navigation']
             ?? false
         );
-        $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
-        $this->topPaginatorStyle = $searchSettings->General->top_paginator
+        $this->loadResultsWithJs = (bool)($this->searchSettings['General']['load_results_with_js'] ?? true);
+        $this->topPaginatorStyle = $this->searchSettings['General']['top_paginator']
             ?? ($this->loadResultsWithJs ? 'simple' : false);
 
-        $this->initializeHiddenSortOptions($searchSettings);
-
         $this->displayCitationLinksInResults
-            = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
-        $this->showRestrictedViewWarning = (bool)($searchSettings->General->show_restricted_view_warning ?? false);
+            = (bool)($this->searchSettings['Results_Settings']['display_citation_links'] ?? true);
+        $this->showRestrictedViewWarning
+            = (bool)($this->searchSettings['General']['show_restricted_view_warning'] ?? false);
     }
 
     /**
@@ -1458,31 +1536,32 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function configureAutocomplete(?Config $searchSettings = null)
+    protected function configureAutocomplete(?array $searchSettings = null)
     {
         // Only change settings from current values if they are defined in .ini:
-        $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled
-            ?? $this->autocompleteEnabled;
-        $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
-            ?? $this->autocompleteAutoSubmit;
-        $formattingRules = $searchSettings->Autocomplete->formatting_rule ?? [];
-        if (!is_string($formattingRules) && count($formattingRules) > 0) {
-            $this->autocompleteFormattingRules = $formattingRules->toArray();
+        $autocompleteSettings = $searchSettings['Autocomplete'] ?? [];
+        if (null !== ($enabled = $autocompleteSettings['enabled'] ?? null)) {
+            $this->autocompleteEnabled = $enabled;
+        }
+        if (null !== ($autosubmit = $autocompleteSettings['auto_submit'] ?? null)) {
+            $this->autocompleteAutoSubmit = $autosubmit;
+        }
+        $formattingRules = $autocompleteSettings['formatting_rule'] ?? [];
+        if ($formattingRules && is_array($formattingRules)) {
+            $this->autocompleteFormattingRules = $formattingRules;
         }
     }
 
     /**
      * Initialize hidden sort options by combining the settings into a single array
      *
-     * @param ?Config $searchSettings Search configuration
-     *
      * @return void
      */
-    protected function initializeHiddenSortOptions(?Config $searchSettings): void
+    protected function initializeHiddenSortOptions(): void
     {
         $this->hiddenSortOptions = [];
-        $hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
-        $hiddenSortOptionLabels = $searchSettings?->HiddenSorting?->label?->toArray() ?? [];
+        $hiddenSortOptions = (array)($this->searchSettings['HiddenSorting']['pattern'] ?? []);
+        $hiddenSortOptionLabels = (array)($this->searchSettings['HiddenSorting']['label'] ?? []);
         foreach ($hiddenSortOptions as $key => $pattern) {
             $label = (string)($hiddenSortOptionLabels[$key] ?? $key);
             $this->hiddenSortOptions[] = [

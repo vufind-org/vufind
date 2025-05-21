@@ -29,9 +29,6 @@
 
 namespace VuFind\Search\Solr;
 
-use function count;
-use function is_object;
-
 /**
  * Solr Search Options
  *
@@ -43,7 +40,6 @@ use function is_object;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    use \VuFind\Config\Feature\ExplodeSettingTrait;
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
@@ -58,23 +54,23 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Relevance sort override for empty searches
      *
-     * @var string
+     * @var ?string
      */
-    protected $emptySearchRelevanceOverride = null;
+    protected $emptySearchRelevanceOverride;
 
     /**
      * Whether to display record versions
      *
      * @var bool
      */
-    protected $displayRecordVersions = true;
+    protected $displayRecordVersions;
 
     /**
      * Solr field to be used as a tie-breaker.
      *
-     * @var string
+     * @var ?string
      */
-    protected $sortTieBreaker = null;
+    protected $sortTieBreaker;
 
     /**
      * Constructor
@@ -84,67 +80,14 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
-        }
-        if (isset($searchSettings->General->default_sort)) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
-        if (isset($searchSettings->General->tie_breaker_sort)) {
-            $this->sortTieBreaker = $searchSettings->General->tie_breaker_sort;
-        }
-        if (isset($searchSettings->General->empty_search_relevance_override)) {
-            $this->emptySearchRelevanceOverride
-                = $searchSettings->General->empty_search_relevance_override;
-        }
-        if (
-            isset($searchSettings->DefaultSortingByType)
-            && count($searchSettings->DefaultSortingByType) > 0
-        ) {
-            foreach ($searchSettings->DefaultSortingByType as $key => $val) {
-                $this->defaultSortByHandler[$key] = $val;
-            }
-        }
-        if (isset($searchSettings->RSS->sort)) {
-            $this->rssSort = $searchSettings->RSS->sort;
-        }
-        if (isset($searchSettings->General->default_handler)) {
-            $this->defaultHandler = $searchSettings->General->default_handler;
-        }
-        if (isset($searchSettings->General->default_filters)) {
-            $this->defaultFilters = $searchSettings->General->default_filters
-                ->toArray();
-        }
-        if (isset($searchSettings->General->display_versions)) {
-            $this->displayRecordVersions
-                = $searchSettings->General->display_versions;
-        }
 
-        // Result limit:
-        if (isset($searchSettings->General->result_limit)) {
-            $this->resultLimit = $searchSettings->General->result_limit;
-        }
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->Advanced_Searches)) {
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                $this->advancedHandlers[$key] = $value;
-            }
-        }
+        $this->sortTieBreaker = $this->searchSettings['General']['tie_breaker_sort'] ?? null;
+        $this->emptySearchRelevanceOverride
+            = $this->searchSettings['General']['empty_search_relevance_override'] ?? null;
+        $this->displayRecordVersions = $this->searchSettings['General']['display_versions'] ?? true;
 
-        // Load sort preferences (or defaults if none in .ini file):
-        if (isset($searchSettings->Sorting)) {
-            foreach ($searchSettings->Sorting as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
-        } else {
+        // Use default sort options if not specified in configuration:
+        if (!$this->sortOptions) {
             $this->sortOptions = ['relevance' => 'sort_relevance',
                 'year' => 'sort_year', 'year asc' => 'sort_year_asc',
                 'callnumber-sort' => 'sort_callnumber', 'author' => 'sort_author',
@@ -152,25 +95,14 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Set up views
-        $this->initViewOptions($searchSettings);
-
-        // Load list view for result (controls AJAX embedding vs. linking)
-        if (isset($searchSettings->List->view)) {
-            $this->listviewOption = $searchSettings->List->view;
-        }
+        $this->initViewOptions($this->searchSettings);
 
         // Load facet preferences
-        if ($translatedFacets = $this->facetSettings['Advanced_Settings']['translated_facets'] ?? null) {
-            $this->setTranslatedFacets((array)$translatedFacets);
-        }
         if ($delimiter = $this->facetSettings['Advanced_Settings']['delimiter'] ?? null) {
             $this->setDefaultFacetDelimiter($delimiter);
         }
         if ($delimitedFacets = $this->facetSettings['Advanced_Settings']['delimited_facets'] ?? null) {
             $this->setDelimitedFacets((array)$delimitedFacets);
-        }
-        if ($specialFacets = $this->facetSettings['Advanced_Settings']['special_facets'] ?? null) {
-            $this->specialAdvancedFacets = $specialFacets;
         }
         if ($hierarchical = $this->facetSettings['SpecialFacets']['hierarchical'] ?? null) {
             $this->hierarchicalFacets = (array)$hierarchical;
@@ -183,58 +115,38 @@ class Options extends \VuFind\Search\Base\Options
             = (array)($this->facetSettings['SpecialFacets']['hierarchicalFacetSortOptions'] ?? []);
 
         // Load Spelling preferences
-        $config = $configLoader->get($this->mainIni);
-        if (isset($config->Spelling->enabled)) {
-            $this->spellcheck = $config->Spelling->enabled;
+        if (null !== ($spellcheck = $this->mainConfig['Spelling']['enabled'] ?? null)) {
+            $this->spellcheck = $spellcheck;
         }
 
         // Turn on first/last navigation if configured:
-        if (
-            isset($config->Record->first_last_navigation)
-            && $config->Record->first_last_navigation
-        ) {
+        if ($this->mainConfig['Record']['first_last_navigation'] ?? false) {
             $this->recordPageFirstLastNavigation = true;
         }
 
-        // Turn on highlighting if the user has requested highlighting or snippet
-        // functionality:
-        $highlight = $searchSettings->General->highlighting ?? false;
-        $snippet = $searchSettings->General->snippets ?? false;
+        // Turn on highlighting if the user has requested highlighting or snippet functionality:
+        $highlight = $this->searchSettings['General']['highlighting'] ?? false;
+        $snippet = $this->searchSettings['General']['snippets'] ?? false;
         if ($highlight || $snippet) {
             $this->highlight = true;
         }
 
         // Load autocomplete preferences:
-        $this->configureAutocomplete($searchSettings);
+        $this->configureAutocomplete($this->searchSettings);
 
         // Load shard settings
-        if (
-            isset($searchSettings->IndexShards)
-            && !empty($searchSettings->IndexShards)
-        ) {
-            foreach ($searchSettings->IndexShards as $k => $v) {
-                $this->shards[$k] = $v;
-            }
+        $this->shards = (array)($this->searchSettings['IndexShards'] ?? []);
+        if ($this->shards) {
             // If we have a default from the configuration, use that...
-            if (
-                isset($searchSettings->ShardPreferences->defaultChecked)
-                && !empty($searchSettings->ShardPreferences->defaultChecked)
-            ) {
-                $defaultChecked
-                    = is_object($searchSettings->ShardPreferences->defaultChecked)
-                    ? $searchSettings->ShardPreferences->defaultChecked->toArray()
-                    : [$searchSettings->ShardPreferences->defaultChecked];
-                foreach ($defaultChecked as $current) {
-                    $this->defaultSelectedShards[] = $current;
-                }
+            if ($defaultShards = $this->searchSettings['ShardPreferences']['defaultChecked'] ?? null) {
+                $this->defaultSelectedShards = (array)$defaultShards;
             } else {
                 // If no default is configured, use all shards...
                 $this->defaultSelectedShards = array_keys($this->shards);
             }
             // Apply checkbox visibility setting if applicable:
-            if (isset($searchSettings->ShardPreferences->showCheckboxes)) {
-                $this->visibleShardCheckboxes
-                    = $searchSettings->ShardPreferences->showCheckboxes;
+            if (null !== ($visibleCheckboxes = $this->searchSettings['ShardPreferences']['showCheckboxes'])) {
+                $this->visibleShardCheckboxes = $visibleCheckboxes;
             }
         }
     }

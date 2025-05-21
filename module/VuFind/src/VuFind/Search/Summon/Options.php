@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\Summon;
 
-use function count;
-
 /**
  * Summon Search Options
  *
@@ -42,7 +40,6 @@ use function count;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    use \VuFind\Config\Feature\ExplodeSettingTrait;
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
@@ -67,91 +64,31 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->searchIni = $this->facetsIni = 'Summon';
+        $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
+
+        // Override the default result limit with a value that we can always support:
+        $this->defaultResultLimit = 400;
+
         parent::__construct($configLoader);
-        // Load facet preferences:
-        if ($translatedFacets = $this->facetSettings['Advanced_Facet_Settings']['translated_facets'] ?? null) {
-            $this->setTranslatedFacets((array)$translatedFacets);
-        }
-        if ($specialFacets = $this->facetSettings['Advanced_Facet_Settings']['special_facets'] ?? null) {
-            $this->specialAdvancedFacets = $specialFacets;
-        }
-
-        // Load the search configuration file:
-        $searchSettings = $configLoader->get($this->searchIni);
-
-        // Set up limit preferences
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
-        }
 
         // Set up highlighting preference
-        if (isset($searchSettings->General->highlighting)) {
-            $this->highlight = $searchSettings->General->highlighting;
+        if (null !== ($highlighting = $this->searchSettings['General']['highlighting'] ?? null)) {
+            $this->highlight = $highlighting;
         }
 
         // Set up spelling preference
-        if (isset($searchSettings->Spelling->enabled)) {
-            $this->spellcheck = $searchSettings->Spelling->enabled;
+        if (null !== ($spellcheck = $this->searchSettings['Spelling']['enabled'] ?? null)) {
+            $this->spellcheck = $spellcheck;
         }
 
-        // Load search preferences:
-        if (isset($searchSettings->General->default_filters)) {
-            $this->defaultFilters = $searchSettings->General->default_filters
-                ->toArray();
-        }
-        if (isset($searchSettings->General->result_limit)) {
-            $this->resultLimit = $searchSettings->General->result_limit;
-        } else {
-            $this->resultLimit = 400;   // default
-        }
-
-        // Search handler setup:
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->Advanced_Searches)) {
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                $this->advancedHandlers[$key] = $value;
-            }
-        }
-
-        // Load sort preferences:
-        if (isset($searchSettings->Sorting)) {
-            foreach ($searchSettings->Sorting as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->General->default_sort)) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
-        if (
-            isset($searchSettings->DefaultSortingByType)
-            && count($searchSettings->DefaultSortingByType) > 0
-        ) {
-            foreach ($searchSettings->DefaultSortingByType as $key => $val) {
-                $this->defaultSortByHandler[$key] = $val;
-            }
-        }
-        if (isset($searchSettings->General->empty_search_relevance_override)) {
-            $this->emptySearchRelevanceOverride
-                = $searchSettings->General->empty_search_relevance_override;
-        }
+        $this->emptySearchRelevanceOverride
+            = $this->searchSettings['General']['empty_search_relevance_override'] ?? null;
 
         // Load autocomplete preferences:
-        $this->configureAutocomplete($searchSettings);
+        $this->configureAutocomplete($this->searchSettings);
 
         // Set up views
-        $this->initViewOptions($searchSettings);
-
-        // Load list view for result (controls AJAX embedding vs. linking)
-        if (isset($searchSettings->List->view)) {
-            $this->listviewOption = $searchSettings->List->view;
-        }
+        $this->initViewOptions($this->searchSettings);
     }
 
     /**

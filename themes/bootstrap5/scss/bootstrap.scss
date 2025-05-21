@@ -450,13 +450,6 @@ body.rtl .dropdown-menu {
 .cart-controls {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid $border-color;
-
-  .toolbar-btn {
-    @extend .toolbar-btn;
-    @extend .icon-link;
-
-    margin: 0;
-  }
 }
 
 @include media-breakpoint-up(md) {
