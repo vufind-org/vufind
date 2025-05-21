@@ -29,8 +29,6 @@
 
 namespace VuFind\Config\Location;
 
-use function in_array;
-
 /**
  * Configuration location trait - Provides configuration location helper methods
  *
@@ -82,10 +80,14 @@ trait ConfigLocationTrait
         $dirContent = is_dir($path) ? scandir($path) : [];
         $result = [];
         foreach ($dirContent as $item) {
-            // Files that include .bak or .dist should be skipped because they represent
+            // Exclude "." and "..". Files that include .bak or .dist should be skipped because they represent
             // backups (e.g config.ini.bak.100000 for upgraded configs) or
             // templates for configuration (e.g. DirLocations.ini.dist)
-            if (in_array($item, ['.', '..']) || str_contains($item, '.bak') || str_contains($item, '.dist')) {
+            $ignoredExtensions = ['bak', 'dist'];
+            $ignorePattern = "/(^\.{1,2}$|\.(" . implode('|', $ignoredExtensions) . ")(\.|$))/";
+            if (
+                preg_match($ignorePattern, $item)
+            ) {
                 continue;
             }
             $itemPath = $path . DIRECTORY_SEPARATOR . $item;
