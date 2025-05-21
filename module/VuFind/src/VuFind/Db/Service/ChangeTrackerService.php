@@ -133,24 +133,19 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
      * @param string $core The Solr core holding the record.
      * @param string $id   The ID of the record being indexed.
      *
-     * @return ChangeTracker|false
+     * @return ChangeTracker
      */
-    public function retrieveOrCreate(string $core, string $id): ChangeTracker|false
+    protected function retrieveOrCreate(string $core, string $id): ChangeTracker
     {
         $row = $this->getChangeTrackerEntity($core, $id);
         if (empty($row)) {
-            $now = new \DateTime('now', new \DateTimeZone('UTC'));
+            $now = new \DateTime();
             $row = $this->createEntity()
                 ->setIndexName($core)
                 ->setId($id)
                 ->setFirstIndexed($now)
                 ->setLastIndexed($now);
-            try {
-                $this->persistEntity($row);
-            } catch (\Exception $e) {
-                $this->logError('Could not save change tracker record: ' . $e->getMessage());
-                return false;
-            }
+            $this->persistEntity($row);
         }
         return $row;
     }
@@ -176,13 +171,8 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
         }
 
         // Save new value to the object:
-        $row->setDeleted(new \DateTime('now', new \DateTimeZone('UTC')));
-        try {
-            $this->persistEntity($row);
-        } catch (\Exception $e) {
-            $this->logError('Could not update the deleted time: ' . $e->getMessage());
-            return false;
-        }
+        $row->setDeleted(new \DateTime());
+        $this->persistEntity($row);
         return $row;
     }
 
@@ -207,7 +197,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
 
         // Flag to indicate whether we need to save the contents of $row:
         $saveNeeded = false;
-        $utcTime = \DateTime::createFromFormat('U', $change, new \DateTimeZone('UTC'));
+        $utcTime = \DateTime::createFromFormat('U', $change);
 
         // Make sure there is a change date in the row (this will be empty
         // if we just created a new row):
@@ -221,7 +211,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
         // we need to update the table!
         if (!empty($row->getDeleted()) || $row->getLastRecordChange() < $utcTime) {
             // Save new values to the object:
-            $now = new \DateTime('now', new \DateTimeZone('UTC'));
+            $now = new \DateTime();
             $row->setLastIndexed($now);
             $row->setLastRecordChange($utcTime);
 
