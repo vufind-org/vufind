@@ -82,6 +82,20 @@ class Holds
      * @var array
      */
     protected $hideHoldings = [];
+    
+    /**
+     * search backend
+     *
+     * @var string?
+     */
+    protected $searchBackend = DEFAULT_SEARCH_BACKEND;
+
+	/**
+     * original Id
+     *
+     * @var string?
+     */
+    protected $originalId = null;
 
     /**
      * Constructor
@@ -190,11 +204,20 @@ class Holds
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null, $options = [])
+    public function getHoldings($id, $ids = null, $options = [], $backend = null, $originalId)
     {
         if (!$this->catalog) {
             return [];
         }
+        
+        if ($backend) {
+            $this->searchBackend = $backend;
+        }
+
+        if ($originalId) {
+            $this->originalId = $originalId;
+        }
+
         // Retrieve stored patron credentials; it is the responsibility of the
         // controller and view to inform the user that these credentials are
         // needed for hold data.
@@ -559,8 +582,8 @@ class Holds
 
         // Build Params
         return [
-            'action' => $action, 'record' => $details['id'],
-            'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
+            'action' => $action, 'record' => $this->originalId ?? $details['id'],
+            'source' => $details['source'] ?? $this->searchBackend,
             'query' => $queryString, 'anchor' => '#tabnav',
         ];
     }

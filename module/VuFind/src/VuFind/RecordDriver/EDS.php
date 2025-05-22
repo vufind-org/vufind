@@ -46,6 +46,10 @@ use function strlen;
  */
 class EDS extends DefaultRecord
 {
+	use Feature\IlsAwareTrait {
+        Feature\IlsAwareTrait::getRealTimeHoldings as getRealTimeHoldings;
+    }
+
     /**
      * Document types that are treated as ePub links.
      *
@@ -61,9 +65,9 @@ class EDS extends DefaultRecord
     protected $pdfTypes = ['ebook-pdf', 'pdflink'];
 
     /**
-     * Return the unique identifier of this record within the Solr index;
-     * useful for retrieving additional information (like tags and user
-     * comments) from the external MySQL database.
+     * Return the unique identifier of this record within EDS API;
+     * As Accession Numbers (AN) could be repetitive, we use Database ID
+     * to ensure a unique ID exists
      *
      * @return string Unique identifier.
      */
@@ -72,6 +76,85 @@ class EDS extends DefaultRecord
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
         return $dbid . ',' . $an;
+    }
+
+	/**
+     * Return the rtac identifier of this record from EDS API;
+     * RTAC ID is basically the AN without the catalog prefix
+     *
+     * @return string unique rtac identifier
+     */
+    public function getRtacIdentifier()
+    {
+        $dbid = $this->fields['Header']['DbId'];
+        $an = $this->fields['Header']['An'];
+        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? "";
+
+        $regexArray = $this->recordConfig?->Catalog?->CatalogANRegex ?? [];
+        $replaceArray = $this->recordConfig?->Catalog?->CatalogANReplace ?? [];
+
+        if ($dbid === $catId && $this->pubTypeExcludedFromRtac()) {
+            $returnValue = $an;
+            for ($i = 0; $i < count($regexArray); $i++) {
+               $returnValue =  preg_replace($regexArray[$i], $replaceArray[$i], $returnValue);
+            }
+            return $returnValue;
+        }
+        return $dbid . ',' . $an;
+    }
+
+    /**
+     * Identify if config tells us to expect a catalog, if catalog id is set
+     * and if catalog id matches databaseid
+     *
+     * @return boolean
+     */
+    public function hasCatalog()
+    {
+        $dbid = $this->fields['Header']['DbId'];
+        $hasCatalog = $this->recordConfig?->Catalog?->EDSHasCatalog ?? false;
+        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? "";
+
+        // if config empty or false, return false
+        if (!$hasCatalog) {
+            return false;
+        }
+
+        // if config empty or catId doesn't match dbid
+        if ($hasCatalog && ($catId == "" || $catId != $dbid)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * based on publication type determine if RTAC should be available
+     *
+     * @return boolean
+     */
+
+    public function pubTypeExcludedFromRtac()
+    {
+        $pubTypeId = $this->fields['Header']['PubTypeId'];
+        return !($pubTypeId === 'ebook');
+    }
+
+    /**
+     * Get an array of information about record holdings, obtained in real-time
+     * from the ILS. Instead of getUniqueID we use getRtacIdentifier
+     *
+     * @return array
+     */
+    public function getRealTimeHoldings()
+    {
+        return ($this->hasILS() && $this->hasCatalog() && $this->pubTypeExcludedFromRtac()) ? $this->holdLogic->getHoldings(
+            $this->getRtacIdentifier(),
+            $this->tryMethod('getConsortialIDs'),
+            [],
+            'EDS',
+            $this->getUniqueID()
+        ) : [];
     }
 
     /**
