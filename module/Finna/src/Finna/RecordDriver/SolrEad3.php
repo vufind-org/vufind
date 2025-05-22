@@ -1019,11 +1019,11 @@ class SolrEad3 extends SolrEad
                         continue;
                     }
                     $show = (string)($attr->show ?? '');
-                    if ($show === 'none') {
+                    $role = (string)($attr->linkrole ?? '');
+                    if ($show === 'none' || $role === 'text/html') {
                         continue;
                     }
                     $type = (string)($attr->localtype ?? $parentType ?: 'none');
-                    $role = (string)($attr->linkrole ?? '');
                     $sort = (string)($attr->label ?? '');
 
                     // Save image to another array if match is found
