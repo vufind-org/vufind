@@ -288,20 +288,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Support method for fixdatabaseAction() -- clean up invalid user ID
-     * values in the search table.
-     *
-     * @return void
-     */
-    protected function fixInvalidUserIdsInSearchTable(): void
-    {
-        $count = $this->getDbService(SearchServiceInterface::class)->cleanUpInvalidUserIds();
-        if ($count) {
-            $this->session->warnings->append("Converted $count invalid user_id values in search table");
-        }
-    }
-
-    /**
      * Support method for fixdatabaseAction() -- add checksums to search table rows.
      *
      * @return void
@@ -419,9 +405,6 @@ class UpgradeController extends AbstractBase
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
-
-            // Fix invalid user IDs in search table, if necessary.
-            $this->fixInvalidUserIdsInSearchTable();
         } catch (Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(),

@@ -225,26 +225,6 @@ class SearchService extends AbstractDbService implements
     }
 
     /**
-     * Set invalid user_id values in the table to null; return count of affected rows.
-     *
-     * @return int
-     */
-    public function cleanUpInvalidUserIds(): int
-    {
-        $searchTable = $this->getDbTable('search');
-        $allIds = $this->getDbTable('user')->getSql()->select()->columns(['id']);
-        $searchCallback = function ($select) use ($allIds) {
-            $select->where->isNotNull('user_id')->AND->notIn('user_id', $allIds);
-        };
-        $badRows = $searchTable->select($searchCallback);
-        $count = count($badRows);
-        if ($count > 0) {
-            $searchTable->update(['user_id' => null], $searchCallback);
-        }
-        return $count;
-    }
-
-    /**
      * Get saved searches with missing checksums (used for cleaning up legacy data).
      *
      * @return SearchEntityInterface[]
