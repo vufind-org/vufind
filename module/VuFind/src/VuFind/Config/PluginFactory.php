@@ -76,6 +76,6 @@ class PluginFactory implements AbstractFactoryInterface
         ?array $options = null
     ) {
         $configManager = $container->get(ConfigManager::class);
-        return new Config($configManager->get($requestedName));
+        return $configManager->getConfigObject($requestedName);
     }
 }

@@ -35,6 +35,7 @@ use VuFind\Config\ConfigManager;
 use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
+use VuFind\Exception\ConfigException;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
 
@@ -72,7 +73,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wrapper around loadConfig method.
+     * Wrapper around loadConfigFromLocation method.
      *
      * @param string $name       Configuration to load
      * @param array  $subsection Subsection
@@ -95,7 +96,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         $configLocation = $fileMap[$name]
             ?? $realResolver->getConfigLocation($name);
         $configLocation->setSubsection($subsection);
-        return $this->getConfigManager()->loadConfig($configLocation);
+        return $this->getConfigManager()->loadConfigFromLocation($configLocation);
     }
 
     /**
@@ -105,7 +106,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetConfigByName(): void
     {
-        $config = $this->getConfigManager()->get('config');
+        $config = $this->getConfigManager()->getConfig('config');
         $this->assertEquals('Library Catalog', $config['Site']['title']);
     }
 
@@ -116,11 +117,88 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetConfigWithSubsection(): void
     {
-        $config = $this->getConfigManager()->get('config/Site');
+        $config = $this->getConfigManager()->getConfig('config/Site');
         $this->assertEquals('Library Catalog', $config['title']);
 
-        $config = $this->getConfigManager()->get('config/Site/title');
+        $config = $this->getConfigManager()->getConfig('config/Site/title');
         $this->assertEquals('Library Catalog', $config);
+    }
+
+    /**
+     * Test get config array.
+     *
+     * @return void
+     */
+    public function testGetConfigArray(): void
+    {
+        $config = $this->getConfigManager()->getConfigArray('config');
+        $this->assertEquals('Library Catalog', $config['Site']['title']);
+    }
+
+    /**
+     * Test get config array exception.
+     *
+     * @return void
+     */
+    public function testGetConfigArrayException(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Configuration on path config/Site/title is not an array.');
+        $this->getConfigManager()->getConfigArray('config/Site/title');
+    }
+
+    /**
+     * Test get config object.
+     *
+     * @return void
+     */
+    public function testGetConfigObject(): void
+    {
+        $config = $this->getConfigManager()->getConfigObject('config');
+        $this->assertEquals('Library Catalog', $config->get('Site')->get('title'));
+    }
+
+    /**
+     * Test get config object exception.
+     *
+     * @return void
+     */
+    public function testGetConfigObjectException(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Configuration on path config/Site/title is not an array.');
+        $this->getConfigManager()->getConfigObject('config/Site/title');
+    }
+
+    /**
+     * Data provider for testReadOnlyConfig().
+     *
+     * @return array
+     */
+    public static function readOnlyConfigProvider(): array
+    {
+        return [
+            'empty config' => ['unset'],
+            'override config' => ['title'],
+        ];
+    }
+
+    /**
+     * Test configuration is read-only.
+     *
+     * @param string $key Key to change
+     *
+     * @dataProvider readOnlyConfigProvider
+     *
+     * @return void
+     */
+    public function testReadOnlyConfig($key): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage('Config is immutable; cannot set ' . $key . ' to bad');
+        $config = $this->getConfigManager()->getConfigObject('config');
+        $this->assertIsObject($config);
+        $config->Site->$key = 'bad';
     }
 
     /**

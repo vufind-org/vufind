@@ -29,6 +29,8 @@
 
 namespace VuFind\Config\Location;
 
+use VuFind\Exception\ConfigException;
+
 /**
  * Configuration location trait - Provides configuration location helper methods
  *
@@ -93,7 +95,7 @@ trait ConfigLocationTrait
             $itemPath = $path . DIRECTORY_SEPARATOR . $item;
             $configLocation = $this->getConfigLocationOnPath($itemPath);
             if ($configLocation === null) {
-                throw new \Exception('Could not create config location on path: ' . $itemPath);
+                throw new ConfigException('Could not create config location on path: ' . $itemPath);
             }
             $result[] = $configLocation;
         }

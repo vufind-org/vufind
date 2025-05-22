@@ -33,6 +33,7 @@ namespace VuFind\Config;
 use VuFind\Config\Handler\HandlerInterface;
 use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\Exception\ConfigException;
 use VuFind\Feature\MergeRecursiveTrait;
 
 use function in_array;
@@ -74,7 +75,7 @@ class ConfigManager
      *
      * @return mixed
      */
-    public function get(string $configPath): mixed
+    public function getConfig(string $configPath): mixed
     {
         $subsection = explode('/', $configPath);
         $configName = array_shift($subsection);
@@ -83,7 +84,35 @@ class ConfigManager
             return [];
         }
         $configLocation->setSubsection($subsection);
-        return $this->loadConfig($configLocation);
+        return $this->loadConfigFromLocation($configLocation);
+    }
+
+    /**
+     * Get config as array by path.
+     *
+     * @param string $configPath Config path
+     *
+     * @return array
+     */
+    public function getConfigArray(string $configPath): array
+    {
+        $config = $this->getConfig($configPath);
+        if (!is_array($config)) {
+            throw new ConfigException('Configuration on path ' . $configPath . ' is not an array.');
+        }
+        return $config;
+    }
+
+    /**
+     * Get config as object by path.
+     *
+     * @param string $configPath Config path
+     *
+     * @return Config
+     */
+    public function getConfigObject(string $configPath): Config
+    {
+        return new Config($this->getConfigArray($configPath));
     }
 
     /**
@@ -93,7 +122,7 @@ class ConfigManager
      *
      * @return mixed
      */
-    public function loadConfig(ConfigLocationInterface $configLocation): mixed
+    public function loadConfigFromLocation(ConfigLocationInterface $configLocation): mixed
     {
         $loadedConfigPaths = [];
 
@@ -105,10 +134,10 @@ class ConfigManager
             // check if config was already loaded to avoid infinite loop
             $currentConfigLocationPath = realpath($currentConfigLocation->getPath());
             if (!$currentConfigLocationPath) {
-                throw new \Exception('Configuration does not exist: ' . $currentConfigLocationPath);
+                throw new ConfigException('Configuration does not exist: ' . $currentConfigLocationPath);
             }
             if (in_array($currentConfigLocationPath, $loadedConfigPaths)) {
-                throw new \Exception(
+                throw new ConfigException(
                     "Configuration already loaded: $currentConfigLocationPath\n"
                     . "Loaded config stack: \n  " . implode("\n  ", $loadedConfigPaths)
                 );
