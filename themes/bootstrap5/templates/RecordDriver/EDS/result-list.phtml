@@ -20,8 +20,11 @@
   </div>
 <?php $thumbnail = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+
+<?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
+	<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getRtacIdentifier())?>" class="hiddenId">
+	<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+<?php endif; ?>
 <div class="media<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
@@ -113,6 +116,39 @@
       <?php if ($identifierLinksHtml): ?>
         <div><?=$identifierLinksHtml?></div>
       <?php endif; ?>
+            <!-- Format / Label / Clear Availability Display-->
+       <?php
+       $openUrl = $this->openUrl($this->driver, 'results');
+       $openUrlActive = $openUrl->isActive();
+       ?>
+      <div class="result-formats">
+        <?=$this->record($this->driver)->getFormatList() ?>
+        <?=$this->record($this->driver)->getLabelList() ?>
+        <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
+          <span class="status ajax-availability hidden">
+            <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
+          </span>
+        <?php endif; ?>
+      </div>
+      <!-- More Detailed RTAC -->
+      <div class="callnumAndLocation ajax-availability hidden">
+        <?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
+          <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
+          <span class="callnumber ajax-availability hidden">
+            <?=$this->transEsc('loading_ellipsis')?><br>
+          </span>
+          <strong><?=$this->transEsc('Located')?>:</strong>
+          <span class="location ajax-availability hidden">
+            <?=$this->transEsc('loading_ellipsis')?>
+          </span>
+          <div class="locationDetails"></div>
+        <?php else: ?>
+          <?php $summCallNo = $this->driver->getCallNumber(); ?>
+          <?php if (!empty($summCallNo)): ?>
+            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+          <?php endif; ?>
+        <?php endif; ?>
+      </div>
     </div>
     <div class="result-links hidden-print">
       <?=$this->record($this->driver)->renderTemplate('controls/qrcode.phtml', ['driver' => $this->driver, 'context' => 'results'])?>
