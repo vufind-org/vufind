@@ -389,29 +389,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
     ];
 
     /**
-     * Video types, which are related to certain production.
-     * These videotypes are marked in the metadata as online-video=0 so
-     * we have to check the type.
-     *
-     * @var array
-     */
-    protected $relatedVideoTypes = [
-        'animaatio',
-        'dokumentti',
-        'fiktio',
-        'elokuva',
-        'katsaus',
-        'luokittelematon',
-        'mainos',
-        'musiikkiohjelma',
-        'musiikkivideo',
-        'radiotuotanto',
-        'sarja',
-        'tv-tuotanto',
-        'traileri',
-    ];
-
-    /**
      * Record metadata
      *
      * @var array
@@ -1259,7 +1236,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
                 }
                 $attributes = $titleValue->attributes();
                 $videoType = (string)($attributes->{'video-tyyppi'} ?? '');
-                if (!in_array($videoType, $this->relatedVideoTypes)) {
+                if (!$videoType) {
                     continue;
                 }
                 $warnings = [];
