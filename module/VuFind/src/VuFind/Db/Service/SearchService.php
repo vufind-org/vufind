@@ -36,8 +36,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
-use function count;
-
 /**
  * Database service for search.
  *
