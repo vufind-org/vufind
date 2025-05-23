@@ -52,6 +52,13 @@ trait HoldsTrait
     public function holdAction()
     {
         $driver = $this->loadRecord();
+        //Holds on EDS API records require a different ID
+        //this id can be obtained from the getRtacIdentifier method
+        $id = $driver->getUniqueID();
+        $originalId = $id;
+        if(method_exists($driver, 'getRtacIdentifier')) {
+            $id = $driver->getRtacIdentifier();
+        }
 
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
@@ -63,7 +70,7 @@ trait HoldsTrait
         $checkHolds = $catalog->checkFunction(
             'Holds',
             [
-                'id' => $driver->getUniqueID(),
+                'id' => $id,
                 'patron' => $patron,
             ]
         );
@@ -77,10 +84,15 @@ trait HoldsTrait
         if (!$gatheredDetails) {
             return $this->redirectToRecord();
         }
-
+        // the gatheredDetails['id'] is the original ID, but for EDS API Holds
+        // we need to use the RTAC id. So only in that case we will set it to the
+        // RTAC id.
+        if($originalId != $id && $originalId == $gatheredDetails['id']) {
+            $gatheredDetails['id'] = $id;
+        }
         // Block invalid requests:
         $validRequest = $catalog->checkRequestIsValid(
-            $driver->getUniqueID(),
+            $id,
             $gatheredDetails,
             $patron
         );
@@ -97,7 +109,7 @@ trait HoldsTrait
 
         // Send various values to the view so we can build the form:
         $requestGroups = [];
-        $requestGroupsArgs = [$driver->getUniqueID(), $patron, $gatheredDetails];
+        $requestGroupsArgs = [$id, $patron, $gatheredDetails];
         if (
             in_array('requestGroup', $extraHoldFields)
             && $catalog->checkCapability('getRequestGroups', $requestGroupsArgs)
@@ -137,7 +149,7 @@ trait HoldsTrait
             in_array('proxiedUsers', $extraHoldFields)
             && $catalog->checkCapability(
                 'getProxiedUsers',
-                [$driver->getUniqueID(), $patron, $gatheredDetails]
+                [$id, $patron, $gatheredDetails]
             )
         ) {
             $proxiedUsers = $catalog->getProxiedUsers($patron);
