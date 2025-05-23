@@ -89,7 +89,8 @@ class ManagerFactory implements FactoryInterface
             $cookies,
             $csrf,
             $loginTokenManager,
-            $ils
+            $ils,
+            $container
         );
         $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));
         $manager->checkForExpiredCredentials();

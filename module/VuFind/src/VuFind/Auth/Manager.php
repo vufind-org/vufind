@@ -30,6 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\SessionManager;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Config\Config;
@@ -38,6 +39,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
+use VuFind\Service\GetServiceTrait;
 use VuFind\Validator\CsrfInterface;
 
 use function in_array;
@@ -57,6 +59,7 @@ class Manager implements
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use GetServiceTrait;
 
     /**
      * Authentication modules
@@ -101,6 +104,13 @@ class Manager implements
     protected ?ILSAuthenticator $ilsAuthenticator = null;
 
     /**
+     * Default session initiator target
+     *
+     * @var ?string
+     */
+    protected ?string $defaultSessionInitiatorTarget = null;
+
+    /**
      * Constructor
      *
      * @param Config                          $config            VuFind configuration
@@ -112,6 +122,7 @@ class Manager implements
      * @param CsrfInterface                   $csrf              CSRF validator
      * @param LoginTokenManager               $loginTokenManager Login Token manager
      * @param Connection                      $ils               ILS connection
+     * @param ServiceLocatorInterface         $serviceLocator    Service locator
      */
     public function __construct(
         protected Config $config,
@@ -122,8 +133,10 @@ class Manager implements
         protected CookieManager $cookieManager,
         protected CsrfInterface $csrf,
         protected LoginTokenManager $loginTokenManager,
-        protected Connection $ils
+        protected Connection $ils,
+        ServiceLocatorInterface $serviceLocator
     ) {
+        $this->serviceLocator = $serviceLocator;
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
         $method = $config->Authentication->method ?? 'Database';
@@ -313,16 +326,27 @@ class Manager implements
     }
 
     /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->getAuth()->hasSessionInitiator();
+    }
+
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate). Returns false when no session initiator is needed.
      *
-     * @param string $target Full URL where external authentication method should
+     * @param ?string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
      * @return bool|string
      */
-    public function getSessionInitiator(string $target): bool|string
+    public function getSessionInitiator(?string $target = null): bool|string
     {
+        $target ??= $this->getDefaultSessionInitiatorTarget();
         try {
             return $this->getAuth()->getSessionInitiator($target);
         } catch (InvalidArgumentException $e) {
@@ -339,6 +363,22 @@ class Manager implements
             $this->clearLoginState();
             return $this->getAuth()->getSessionInitiator($target);
         }
+    }
+
+    /**
+     * Get default session initiator target.
+     *
+     * @return string
+     */
+    public function getDefaultSessionInitiatorTarget(): string
+    {
+        if ($this->defaultSessionInitiatorTarget === null) {
+            $viewRenderer = $this->getService('ViewRenderer');
+            $serverHelper = $viewRenderer->plugin('serverurl');
+            $urlHelper = $viewRenderer->plugin('url');
+            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
+        }
+        return $this->defaultSessionInitiatorTarget;
     }
 
     /**
@@ -765,7 +805,7 @@ class Manager implements
 
             // Validate CSRF for form-based authentication methods:
             if (
-                !$this->getAuth()->getSessionInitiator('')
+                !$this->getAuth()->hasSessionInitiator()
                 && $this->getAuth()->needsCsrfCheck($request)
             ) {
                 if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {

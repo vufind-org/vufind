@@ -268,6 +268,17 @@ abstract class AbstractBase implements
     }
 
     /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        $reflector = new \ReflectionMethod($this, 'getSessionInitiator');
+        return $reflector->getDeclaringClass()->getName() !== AbstractBase::class;
+    }
+
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate). Returns false when no session initiator is needed.
      *

@@ -180,7 +180,7 @@ class MyResearchController extends AbstractBase
         if (
             $msg == 'authentication_error_admin'
             && $this->getAuthManager()->userHasLoggedOut()
-            && $this->getSessionInitiator()
+            && $this->getAuthManager()->hasSessionInitiator()
         ) {
             $msg = 'authentication_error_loggedout';
         }
@@ -209,7 +209,7 @@ class MyResearchController extends AbstractBase
         // submitted or because we're using an external login provider):
         if (
             $this->params()->fromPost('processLogin')
-            || $this->getSessionInitiator()
+            || $this->getAuthManager()->hasSessionInitiator()
             || $this->params()->fromPost('auth_method')
             || $this->params()->fromQuery('auth_method')
         ) {
@@ -328,7 +328,7 @@ class MyResearchController extends AbstractBase
     {
         // If this authentication method doesn't use a VuFind-generated login
         // form, force it through:
-        if ($this->getSessionInitiator()) {
+        if ($this->getAuthManager()->hasSessionInitiator()) {
             // Don't get stuck in an infinite loop -- if processLogin is already
             // set, it probably means Home action is forwarding back here to
             // report an error!
@@ -372,7 +372,7 @@ class MyResearchController extends AbstractBase
         // can decide whether to use it:
         $this->setFollowupUrlToReferer(true, ['isReferrer' => true]);
 
-        if ($si = $this->getSessionInitiator()) {
+        if ($si = $this->getAuthManager()->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
         return $this->forwardTo('MyResearch', 'Login');
@@ -1686,18 +1686,6 @@ class MyResearchController extends AbstractBase
         }
 
         return $this->createViewModel(compact('fines', 'accountStatus'));
-    }
-
-    /**
-     * Convenience method to get a session initiator URL. Returns false if not
-     * applicable.
-     *
-     * @return string|bool
-     */
-    protected function getSessionInitiator()
-    {
-        $url = $this->getServerUrl('myresearch-home');
-        return $this->getAuthManager()->getSessionInitiator($url);
     }
 
     /**
