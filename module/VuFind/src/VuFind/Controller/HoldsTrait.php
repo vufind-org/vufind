@@ -56,7 +56,7 @@ trait HoldsTrait
         //this id can be obtained from the getRtacIdentifier method
         $id = $driver->getUniqueID();
         $originalId = $id;
-        if(method_exists($driver, 'getRtacIdentifier')) {
+        if (method_exists($driver, 'getRtacIdentifier')) {
             $id = $driver->getRtacIdentifier();
         }
 
@@ -87,7 +87,7 @@ trait HoldsTrait
         // the gatheredDetails['id'] is the original ID, but for EDS API Holds
         // we need to use the RTAC id. So only in that case we will set it to the
         // RTAC id.
-        if($originalId != $id && $originalId == $gatheredDetails['id']) {
+        if ($originalId != $id && $originalId == $gatheredDetails['id']) {
             $gatheredDetails['id'] = $id;
         }
         // Block invalid requests:

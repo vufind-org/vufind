@@ -82,16 +82,16 @@ class Holds
      * @var array
      */
     protected $hideHoldings = [];
-    
+
     /**
-     * search backend
+     * Search backend
      *
      * @var string?
      */
     protected $searchBackend = DEFAULT_SEARCH_BACKEND;
 
 	/**
-     * original Id
+     * Original Id
      *
      * @var string?
      */
@@ -198,6 +198,8 @@ class Holds
      * holding method to call
      *
      * @param string $id      A Bib ID
+     * @param string $backend The search backend to use (optional)
+     * @param string $originalId The original ID of the record (optional)
      * @param array  $ids     A list of Source Records (if catalog is for a
      * consortium)
      * @param array  $options Optional options to pass on to getHolding()
@@ -209,7 +211,7 @@ class Holds
         if (!$this->catalog) {
             return [];
         }
-        
+
         if ($backend) {
             $this->searchBackend = $backend;
         }

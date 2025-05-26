@@ -46,7 +46,7 @@ use function strlen;
  */
 class EDS extends DefaultRecord
 {
-	use Feature\IlsAwareTrait {
+    use Feature\IlsAwareTrait {
         Feature\IlsAwareTrait::getRealTimeHoldings as getRealTimeHoldings;
     }
 
@@ -78,7 +78,7 @@ class EDS extends DefaultRecord
         return $dbid . ',' . $an;
     }
 
-	/**
+    /**
      * Return the rtac identifier of this record from EDS API;
      * RTAC ID is basically the AN without the catalog prefix
      *
@@ -96,7 +96,7 @@ class EDS extends DefaultRecord
         if ($dbid === $catId && $this->pubTypeExcludedFromRtac()) {
             $returnValue = $an;
             for ($i = 0; $i < count($regexArray); $i++) {
-               $returnValue =  preg_replace($regexArray[$i], $replaceArray[$i], $returnValue);
+                $returnValue =  preg_replace($regexArray[$i], $replaceArray[$i], $returnValue);
             }
             return $returnValue;
         }
@@ -148,12 +148,17 @@ class EDS extends DefaultRecord
      */
     public function getRealTimeHoldings()
     {
-        return ($this->hasILS() && $this->hasCatalog() && $this->pubTypeExcludedFromRtac()) ? $this->holdLogic->getHoldings(
-            $this->getRtacIdentifier(),
-            $this->tryMethod('getConsortialIDs'),
-            [],
-            'EDS',
-            $this->getUniqueID()
+        return (
+            $this->hasILS() &&
+            $this->hasCatalog()
+            && $this->pubTypeExcludedFromRtac()
+            )
+            ? $this->holdLogic->getHoldings(
+                $this->getRtacIdentifier(),
+                $this->tryMethod('getConsortialIDs'),
+                [],
+                'EDS',
+                $this->getUniqueID()
         ) : [];
     }
 
