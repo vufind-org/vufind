@@ -576,7 +576,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $ils->expects($this->any())
             ->method('loginIsHidden')
             ->willReturn(false);
-        $container = new \VuFindTest\Container\MockContainer($this);
+        $viewRenderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
         return new Manager(
             $config,
             $this->createMock(UserServiceInterface::class),
@@ -587,7 +587,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $csrf,
             $loginTokenManager,
             $ils,
-            $container
+            $viewRenderer
         );
     }
 

@@ -274,7 +274,7 @@ abstract class AbstractBase implements
      */
     public function hasSessionInitiator(): bool
     {
-        return (bool) $this->getSessionInitiator('');
+        return (bool)$this->getSessionInitiator('');
     }
 
     /**
