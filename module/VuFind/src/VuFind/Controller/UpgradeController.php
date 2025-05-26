@@ -453,14 +453,10 @@ class UpgradeController extends AbstractBase
      */
     public function showsqlAction()
     {
-        $recheck = $this->params()->fromPost('recheck');
-        if ($recheck) {
-            unset($this->session->sql);
-            return $this->redirect()->toRoute('upgrade-fixdatabase');
-        }
         $continue = $this->params()->fromPost('continue', 'nope');
-        if ($continue == 'Next') {
+        if (str_contains($continue, 'Next')) {
             unset($this->session->sql);
+            $this->cookie->databaseOkay = true;
             return $this->redirect()->toRoute('upgrade-home');
         }
 
