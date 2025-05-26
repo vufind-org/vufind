@@ -339,13 +339,13 @@ class Manager implements
      * @param ?string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator(?string $target = null): bool|string
+    public function getSessionInitiator(?string $target = null): ?string
     {
         $target ??= $this->getDefaultSessionInitiatorTarget();
         try {
-            return $this->getAuth()->getSessionInitiator($target);
+            $sessionInitiator = $this->getAuth()->getSessionInitiator($target);
         } catch (InvalidArgumentException $e) {
             // If the authentication is in an illegal state but there is an
             // active user session, we should clear everything out so the user
@@ -357,9 +357,9 @@ class Manager implements
             if (!$this->getIdentity()) {
                 throw $e;
             }
-            $this->clearLoginState();
-            return $this->getAuth()->getSessionInitiator($target);
+            $sessionInitiator = $this->getAuth()->getSessionInitiator($target);
         }
+        return is_bool($sessionInitiator) ? null : $sessionInitiator;
     }
 
     /**
