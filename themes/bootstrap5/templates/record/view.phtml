@@ -79,8 +79,8 @@
               if (!$obj->supportsAjax()) {
                 $liClasses[] = 'noajax';
               }
-              // Skip tabs for EDS sources that are not catalog related
-              if($this->driver->getSourceIdentifier() == "EDS" && !$this->driver->hasCatalog()) {
+              // Skip holdings tabs for EDS sources that are not catalog related
+              if($tabName === 'holdings' && $this->driver->getSourceIdentifier() === "EDS" && !$this->driver->hasCatalog()) {
                 continue; 
               }
             ?>
