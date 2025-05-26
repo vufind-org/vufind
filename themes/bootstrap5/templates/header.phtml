@@ -60,7 +60,7 @@
                   if (!$hasSessionInitiator) {
                     $loginLinkAttributes['data-lightbox'] = true;
                   }
-                  $loginLinkText = $hasSessionInitiator ? $this->transEsc('Institutional Login') : $this->transEsc('Login');
+                  $loginLinkText = $this->transEsc($hasSessionInitiator ? 'Institutional Login' : 'Login');
                 ?>
                 <a <?=$this->htmlAttributes($loginLinkAttributes)?>>
                   <?=$this->icon('sign-in', 'icon-link__icon') ?>
