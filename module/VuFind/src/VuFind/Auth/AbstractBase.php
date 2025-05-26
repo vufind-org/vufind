@@ -274,8 +274,7 @@ abstract class AbstractBase implements
      */
     public function hasSessionInitiator(): bool
     {
-        $reflector = new \ReflectionMethod($this, 'getSessionInitiator');
-        return $reflector->getDeclaringClass()->getName() !== AbstractBase::class;
+        return (bool) $this->getSessionInitiator('');
     }
 
     /**
