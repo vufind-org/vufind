@@ -88,7 +88,7 @@ class EDS extends DefaultRecord
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? "";
+        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
 
         $regexArray = $this->recordConfig?->Catalog?->CatalogANRegex ?? [];
         $replaceArray = $this->recordConfig?->Catalog?->CatalogANReplace ?? [];
@@ -113,7 +113,7 @@ class EDS extends DefaultRecord
     {
         $dbid = $this->fields['Header']['DbId'];
         $hasCatalog = $this->recordConfig?->Catalog?->EDSHasCatalog ?? false;
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? "";
+        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
 
         // if config empty or false, return false
         if (!$hasCatalog) {
@@ -121,7 +121,7 @@ class EDS extends DefaultRecord
         }
 
         // if config empty or catId doesn't match dbid
-        if ($hasCatalog && ($catId == "" || $catId != $dbid)) {
+        if ($hasCatalog && ($catId == '' || $catId != $dbid)) {
             return false;
         }
 
@@ -151,7 +151,7 @@ class EDS extends DefaultRecord
             $this->hasILS() &&
             $this->hasCatalog()
             && $this->pubTypeExcludedFromRtac()
-            )
+        )
             ? $this->holdLogic->getHoldings(
                 $this->getRtacIdentifier(),
                 $this->tryMethod('getConsortialIDs'),
