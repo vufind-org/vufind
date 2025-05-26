@@ -90,7 +90,7 @@ class Holds
      */
     protected $searchBackend = DEFAULT_SEARCH_BACKEND;
 
-	/**
+    /**
      * Original Id
      *
      * @var string?
@@ -197,16 +197,16 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id      A Bib ID
-     * @param string $backend The search backend to use (optional)
-     * @param string $originalId The original ID of the record (optional)
-     * @param array  $ids     A list of Source Records (if catalog is for a
+     * @param string $id         A Bib ID
+     * @param array  $ids        A list of Source Records (if catalog is for a
      * consortium)
-     * @param array  $options Optional options to pass on to getHolding()
+     * @param array  $options    Optional options to pass on to getHolding()
+     * @param string $backend    The search backend to use (optional)
+     * @param string $originalId The original ID of the record (optional)
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null, $options = [], $backend = null, $originalId)
+    public function getHoldings($id, $ids = null, $options = [], $backend = null, $originalId = null)
     {
         if (!$this->catalog) {
             return [];

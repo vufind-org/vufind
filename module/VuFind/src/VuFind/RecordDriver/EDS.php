@@ -129,11 +129,10 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * based on publication type determine if RTAC should be available
+     * Based on publication type determine if RTAC should be available
      *
      * @return boolean
      */
-
     public function pubTypeExcludedFromRtac()
     {
         $pubTypeId = $this->fields['Header']['PubTypeId'];
@@ -159,7 +158,7 @@ class EDS extends DefaultRecord
                 [],
                 'EDS',
                 $this->getUniqueID()
-        ) : [];
+            ) : [];
     }
 
     /**
