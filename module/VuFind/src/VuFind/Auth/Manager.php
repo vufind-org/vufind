@@ -30,8 +30,8 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\SessionManager;
+use Laminas\View\Renderer\RendererInterface;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
@@ -39,7 +39,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
-use VuFind\Service\GetServiceTrait;
 use VuFind\Validator\CsrfInterface;
 
 use function in_array;
@@ -59,7 +58,6 @@ class Manager implements
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
-    use GetServiceTrait;
 
     /**
      * Authentication modules
@@ -122,7 +120,7 @@ class Manager implements
      * @param CsrfInterface                   $csrf              CSRF validator
      * @param LoginTokenManager               $loginTokenManager Login Token manager
      * @param Connection                      $ils               ILS connection
-     * @param ServiceLocatorInterface         $serviceLocator    Service locator
+     * @param RendererInterface               $viewRenderer      View renderer
      */
     public function __construct(
         protected Config $config,
@@ -134,9 +132,8 @@ class Manager implements
         protected CsrfInterface $csrf,
         protected LoginTokenManager $loginTokenManager,
         protected Connection $ils,
-        ServiceLocatorInterface $serviceLocator
+        protected RendererInterface $viewRenderer
     ) {
-        $this->serviceLocator = $serviceLocator;
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
         $method = $config->Authentication->method ?? 'Database';
@@ -373,9 +370,8 @@ class Manager implements
     public function getDefaultSessionInitiatorTarget(): string
     {
         if ($this->defaultSessionInitiatorTarget === null) {
-            $viewRenderer = $this->getService('ViewRenderer');
-            $serverHelper = $viewRenderer->plugin('serverurl');
-            $urlHelper = $viewRenderer->plugin('url');
+            $serverHelper = $this->viewRenderer->plugin('serverurl');
+            $urlHelper = $this->viewRenderer->plugin('url');
             $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
         }
         return $this->defaultSessionInitiatorTarget;
