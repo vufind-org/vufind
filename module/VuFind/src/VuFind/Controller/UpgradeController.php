@@ -455,8 +455,10 @@ class UpgradeController extends AbstractBase
     {
         $continue = $this->params()->fromPost('continue', 'nope');
         if (str_contains($continue, 'Next')) {
-            unset($this->session->sql);
-            $this->cookie->databaseOkay = true;
+            // Clear the SQL out but leave it set; this will prevent the user from
+            // getting caught in a loop -- we won't show them the migrations another
+            // time this session.
+            $this->session->sql = '';
             return $this->redirect()->toRoute('upgrade-home');
         }
 
