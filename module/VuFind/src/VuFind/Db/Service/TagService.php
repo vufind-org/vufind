@@ -395,7 +395,8 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             $sort,
             $ownerOrId,
             $extraClauses,
-            $extraParams
+            $extraParams,
+            $caseSensitive
         );
     }
 
