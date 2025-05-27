@@ -557,7 +557,10 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $this->getService(TagsService::class)->fixDuplicateTags();
+            $fixed = $this->getService(TagsService::class)->fixDuplicateTags();
+            if ($fixed > 0) {
+                $this->session->warnings->append("Merged $fixed duplicate tag(s)");
+            }
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 

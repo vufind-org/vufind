@@ -204,6 +204,16 @@ interface TagServiceInterface extends DbServiceInterface
     ): array;
 
     /**
+     * Merge source tag into target tag.
+     *
+     * @param TagsEntityInterface $target Target tag
+     * @param TagsEntityInterface $source Source tag
+     *
+     * @return void
+     */
+    public function mergeTags(TagsEntityInterface $target, TagsEntityInterface $source): void;
+
+    /**
      * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive
      * tags have introduced problems).
      *
