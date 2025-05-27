@@ -41,6 +41,7 @@ use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
+use function count;
 use function is_array;
 
 /**
