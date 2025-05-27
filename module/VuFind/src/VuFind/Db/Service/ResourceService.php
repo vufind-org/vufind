@@ -36,6 +36,7 @@ use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
@@ -197,6 +198,40 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
+     * Get resources associated with a particular tag.
+     *
+     * @param string $tag               Tag to match
+     * @param int    $user              ID of user owning favorite list
+     * @param ?int   $list              ID of list to retrieve (null for all favorites)
+     * @param bool   $caseSensitiveTags Should tags be treated case sensitively?
+     *
+     * @return array
+     */
+    protected function getResourceIDsForTag(
+        string $tag,
+        int $user,
+        ?int $list = null,
+        bool $caseSensitiveTags = false
+    ): array {
+        $dql = 'SELECT DISTINCT(rt.resource) AS resource_id '
+            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
+            . 'JOIN rt.tag t '
+            . 'WHERE ' . ($caseSensitiveTags ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
+            . 'AND rt.user = :user';
+
+        $user = $this->getDoctrineReference(User::class, $user);
+        $parameters = compact('tag', 'user');
+        if (null !== $list) {
+            $list = $this->getDoctrineReference(UserList::class, $list);
+            $dql .= ' AND rt.list = :list';
+            $parameters['list'] = $list;
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getSingleColumnResult();
+    }
+
+    /**
      * Get a set of resources from the requested favorite list.
      *
      * @param UserEntityInterface|int          $userOrId          ID of user owning favorite list
@@ -238,17 +273,18 @@ class ResourceService extends AbstractDbService implements
 
         // Adjust for tags if necessary:
         if (!empty($tags)) {
-            $linkingTable = $this->getDbService(TagService::class);
-            $matches = [];
+            $matches = null;
             foreach ($tags as $tag) {
-                $matches[] = $linkingTable
-                    ->getResourceIDsForTag($tag, $user->getId(), $list?->getId(), $caseSensitiveTags);
+                $nextTagBatch = $this->getResourceIDsForTag($tag, $user->getId(), $list?->getId(), $caseSensitiveTags);
+                $matches = array_intersect(
+                    $matches ?? $nextTagBatch, // first time, use whole batch
+                    $nextTagBatch
+                );
             }
             $dqlWhere[] = 'r.id IN (:ids)';
             $parameters['ids'] = $matches;
         }
         $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
-        //$dql .= ' GROUP BY r.id';
         if (!empty($orderByDetails['orderByClause'])) {
             $dql .= $orderByDetails['orderByClause'];
         }

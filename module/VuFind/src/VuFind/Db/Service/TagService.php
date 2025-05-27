@@ -59,37 +59,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     use LoggerAwareTrait;
 
     /**
-     * Get resources associated with a particular tag.
-     *
-     * @param string $tag               Tag to match
-     * @param string $user              ID of user owning favorite list
-     * @param string $list              ID of list to retrieve (null for all favorites)
-     * @param bool   $caseSensitiveTags Should tags be treated case sensitively?
-     *
-     * @return array
-     */
-    public function getResourceIDsForTag($tag, $user, $list = null, $caseSensitiveTags = false)
-    {
-        $dql = 'SELECT DISTINCT(rt.resource) AS resource_id '
-            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
-            . 'JOIN rt.tag t '
-            . 'WHERE ' . ($caseSensitiveTags ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
-            . 'AND rt.user = :user ';
-
-        $user = $this->getDoctrineReference(User::class, $user);
-        $parameters = compact('tag', 'user');
-        if (null !== $list) {
-            $list = $this->getDoctrineReference(UserList::class, $list);
-            $dql .= 'AND rt.list = :list';
-            $parameters['list'] = $list;
-        }
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $result =  $query->getSingleColumnResult();
-        return $result;
-    }
-
-    /**
      * Get statistics on use of tags.
      *
      * @param bool $extended          Include extended (unique/anonymous) stats.
