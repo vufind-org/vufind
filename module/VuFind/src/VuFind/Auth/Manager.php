@@ -360,7 +360,7 @@ class Manager implements
             }
             $sessionInitiator = $this->getAuth()->getSessionInitiator($target);
         }
-        return is_bool($sessionInitiator) ? null : $sessionInitiator;
+        return $sessionInitiator;
     }
 
     /**
@@ -368,7 +368,7 @@ class Manager implements
      *
      * @return string
      */
-    public function getDefaultSessionInitiatorTarget(): string
+    protected function getDefaultSessionInitiatorTarget(): string
     {
         if ($this->defaultSessionInitiatorTarget === null) {
             $serverHelper = $this->viewRenderer->plugin('serverurl');

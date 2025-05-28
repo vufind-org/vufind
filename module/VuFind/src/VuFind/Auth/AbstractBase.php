@@ -274,7 +274,7 @@ abstract class AbstractBase implements
      */
     public function hasSessionInitiator(): bool
     {
-        return (bool)$this->getSessionInitiator('');
+        return $this->getSessionInitiator('') !== null;
     }
 
     /**
@@ -284,13 +284,13 @@ abstract class AbstractBase implements
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
-        return false;
+        return null;
     }
 
     /**
