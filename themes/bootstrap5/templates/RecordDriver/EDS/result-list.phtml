@@ -22,8 +22,8 @@
 <?php ob_end_clean(); ?>
 
 <?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
-	<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getRtacIdentifier())?>" class="hiddenId">
-	<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getRtacIdentifier())?>" class="hiddenId">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
 <?php endif; ?>
 <div class="media<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
