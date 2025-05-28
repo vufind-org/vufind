@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * Entity model for login_token table
@@ -45,6 +46,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class LoginToken implements LoginTokenEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -126,7 +129,7 @@ class LoginToken implements LoginTokenEntityInterface
     public function __construct()
     {
         // Set the default value as a DateTime object
-        $this->lastLogin = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00');
+        $this->lastLogin = $this->getUnassignedDefaultDateTime();
     }
 
     /**

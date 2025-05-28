@@ -32,6 +32,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * OaiResumption
@@ -47,6 +48,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class OaiResumption implements OaiResumptionEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -68,10 +71,10 @@ class OaiResumption implements OaiResumptionEntityInterface
     /**
      * Expiry date.
      *
-     * @var \DateTime
+     * @var DateTime
      */
-    #[ORM\Column(name: 'expires', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
-    protected $expires = '2000-01-01 00:00:00';
+    #[ORM\Column(name: 'expires', type: 'datetime', nullable: false)]
+    protected $expires;
 
     /**
      * Token.
@@ -80,6 +83,15 @@ class OaiResumption implements OaiResumptionEntityInterface
      */
     #[ORM\Column(name: 'token', type: 'string', length: 255, nullable: true)]
     protected $token;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        // Set the default value as a DateTime object
+        $this->expires = $this->getUnassignedDefaultDateTime();
+    }
 
     /**
      * Id getter

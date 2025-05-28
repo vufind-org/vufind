@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * User
@@ -47,6 +48,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class User implements UserEntityInterface
 {
+    use DateTimeTrait;
     use ExchangeArrayTrait;
 
     /**
@@ -192,7 +194,7 @@ class User implements UserEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
     protected $created;
 
     /**
@@ -208,7 +210,7 @@ class User implements UserEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'last_login', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
+    #[ORM\Column(name: 'last_login', type: 'datetime', nullable: false)]
     protected $lastLogin;
 
     /**
@@ -232,8 +234,9 @@ class User implements UserEntityInterface
      */
     public function __construct()
     {
-        // Set the default values as \DateTime objects
-        $this->created = $this->lastLogin = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00');
+        // Set the default values as DateTime objects
+        $this->created = $this->getUnassignedDefaultDateTime();
+        $this->lastLogin = $this->getUnassignedDefaultDateTime();
     }
 
     /**

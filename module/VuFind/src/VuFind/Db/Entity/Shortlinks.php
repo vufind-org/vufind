@@ -75,7 +75,7 @@ class Shortlinks implements ShortlinksEntityInterface
     /**
      * Creation timestamp.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected $created;

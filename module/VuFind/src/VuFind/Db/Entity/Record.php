@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * Record
@@ -46,6 +47,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Record implements RecordEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -91,10 +94,19 @@ class Record implements RecordEntityInterface
     /**
      * Updated date.
      *
-     * @var \DateTime
+     * @var DateTime
      */
-    #[ORM\Column(name: 'updated', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
-    protected $updated = '2000-01-01 00:00:00';
+    #[ORM\Column(name: 'updated', type: 'datetime', nullable: false)]
+    protected $updated;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        // Set the default value as a DateTime object
+        $this->updated = $this->getUnassignedDefaultDateTime();
+    }
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).

@@ -93,10 +93,19 @@ class AuthHash implements AuthHashEntityInterface
     /**
      * Creation date.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected $created = 'CURRENT_TIMESTAMP';
+    protected $created;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        // Set the default value as a DateTime object
+        $this->created = new Datetime();
+    }
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).

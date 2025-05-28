@@ -69,7 +69,7 @@ class UserResource implements UserResourceEntityInterface
     /**
      * Date saved.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     #[ORM\Column(name: 'saved', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected $saved;
@@ -107,7 +107,7 @@ class UserResource implements UserResourceEntityInterface
     public function __construct()
     {
         // Set the default value as a \DateTime object
-        $this->saved = new \DateTime();
+        $this->saved = new DateTime();
     }
 
     /**

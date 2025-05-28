@@ -58,7 +58,7 @@ class ResourceTags implements ResourceTagsEntityInterface
     /**
      * Posted time.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     #[ORM\Column(name: 'posted', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected $posted;

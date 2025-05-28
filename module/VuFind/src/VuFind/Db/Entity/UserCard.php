@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * UserCard
@@ -47,6 +48,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class UserCard implements UserCardEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -100,15 +103,15 @@ class UserCard implements UserCardEntityInterface
     /**
      * Creation date.
      *
-     * @var \DateTime
+     * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
     protected $created;
 
     /**
      * Saved timestamp.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     #[ORM\Column(name: 'saved', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected $saved;
@@ -128,8 +131,8 @@ class UserCard implements UserCardEntityInterface
     public function __construct()
     {
         // Set the default value as a \DateTime object
-        $this->created = new \DateTime('2000-01-01 00:00:00');
-        $this->saved = new \DateTime();
+        $this->created = $this->getUnassignedDefaultDateTime();
+        $this->saved = new DateTime();
     }
 
     /**

@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 use function is_object;
 use function is_resource;
@@ -52,6 +53,8 @@ use function is_resource;
 #[ORM\Entity]
 class Search implements SearchEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -82,7 +85,7 @@ class Search implements SearchEntityInterface
     /**
      * Created date.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
     protected $created;
@@ -137,7 +140,7 @@ class Search implements SearchEntityInterface
     /**
      * Date last notification is sent.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     #[ORM\Column(name: 'last_notification_sent', type: 'datetime', nullable: false)]
     protected $lastNotificationSent;
@@ -155,9 +158,9 @@ class Search implements SearchEntityInterface
      */
     public function __construct()
     {
-        // Set the default value as a DateTime object
-        $this->created = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00');
-        $this->lastNotificationSent = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00');
+        // Set the default values as DateTime objects
+        $this->created = $this->getUnassignedDefaultDateTime();
+        $this->lastNotificationSent = $this->getUnassignedDefaultDateTime();
     }
 
     /**
