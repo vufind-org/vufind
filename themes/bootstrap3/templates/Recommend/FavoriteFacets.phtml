@@ -13,8 +13,8 @@
           <li>
             <?php $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
             <a class="list-group-item active" href="<?=$removeLink?>">
+              <span class="text"><?=$this->escapeHtml($filter['displayText'])?></span>
               <span class="pull-right flip"><?=$this->icon('ui-remove') ?></span>
-              <?=$this->escapeHtml($filter['displayText'])?>
             </a>
           </li>
         <?php endforeach; ?>
@@ -23,8 +23,8 @@
         <?php if (!$thisFacet['isApplied']): ?>
           <li>
             <a class="list-group-item" href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
-              <span class="badge"><?=$this->escapeHtml($thisFacet['count'])?></span>
-              <?=$this->escapeHtml($thisFacet['displayText'])?>
+              <span class="text"><?=$this->escapeHtml($thisFacet['displayText'])?></span>
+              <span class="badge pull-right flip"><?=$this->escapeHtml($thisFacet['count'])?></span>
             </a>
           </li>
         <?php endif ?>

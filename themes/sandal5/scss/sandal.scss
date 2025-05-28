@@ -200,7 +200,7 @@ a:hover .login-dropdown-caret {
   font-size: $reduced-font-size;
   background-color: $light-gray;
 
-  h1,h2,h3,h4 { margin-top: 0; }
+  h1,h2,h3:not(#acc-menu-lists-header):not(#acc-menu-favs-header),h4 { margin-top: 0; }
 
   .facet-group {
     background-color: $sidebar-item-bg;
