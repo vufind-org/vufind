@@ -74,3 +74,8 @@ local/config/vufind/*.ini
 local/config/vufind/*.json
 local/config/vufind/*.key
 local/config/vufind/*.yaml
+
+# Docker Compose dev environment
+socat.log
+.env
+local/*.secret

@@ -1,0 +1,97 @@
+services:
+  # Apache HTTPD + PHP + Composer + NPM
+  vufind:
+    image: vufind
+    build:
+      context: local/docker
+      dockerfile: vufind.Dockerfile
+    volumes:
+      - type: bind
+        source: .
+        target: $FINNA_DOCUMENT_ROOT
+        read_only: false
+      - type: volume
+        source: finna-log
+        target: /var/log/finna
+        read_only: false
+    configs:
+      - source: site_config
+        target: /etc/apache2/sites-available/vufind2.conf
+    env_file: .env
+    ports:
+      - 8080:80
+    depends_on:
+      sshproxy:
+        condition: service_started
+      mariadb:
+        condition: service_healthy
+
+  # SOCKS5 proxy over SSH jump hosts
+  sshproxy:
+    image: sshproxy
+    build:
+      context: local/docker
+      dockerfile: sshproxy.Dockerfile
+    volumes:
+      - type: bind
+        source: $SSH_IDENTITY_FILE
+        target: /root/identity
+      - type: bind
+        source: $SSH_KNOWN_HOSTS
+        target: /tmp/ssh_known_hosts
+      - type: bind
+        source: $SSH_CONFIG
+        target: /tmp/ssh.conf
+      - type: bind
+        source: ./ssh-auth.sock
+        target: /ssh-auth.sock
+    env_file: .env
+    environment:
+      - SSH_AUTH_SOCK=/ssh-auth.sock
+
+  mariadb:
+    image: mariadb:10-ubi
+    restart: always
+    # the container startup script automatically sources all files in this dir
+    # in alphabetical order
+    configs:
+      - source: vufind_sql
+        target: /docker-entrypoint-initdb.d/001-vufind.sql
+      - source: finna_sql
+        target: /docker-entrypoint-initdb.d/002-finna.sql
+      - source: grants_sql
+        target: /docker-entrypoint-initdb.d/003-grants.sql
+    env_file: .env
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_passwd
+      MARIADB_DATABASE: vufind
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    secrets:
+      - source: db_root_passwd
+    volumes:
+      - type: volume
+        source: finna-mariadb
+        target: /var/lib/mysql:rw
+
+configs:
+  site_config:
+    file: local/docker/vufind2.conf
+  grants_sql:
+    file: local/docker/grants.sql
+  vufind_sql:
+    file: module/VuFind/sql/mysql.sql
+  finna_sql:
+    file: module/Finna/sql/mysql.sql
+
+secrets:
+  db_root_passwd:
+    file: local/db_root_passwd.secret
+
+volumes:
+  finna-mariadb:
+  finna-log:
