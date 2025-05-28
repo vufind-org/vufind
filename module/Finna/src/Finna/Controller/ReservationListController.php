@@ -342,7 +342,13 @@ class ReservationListController extends AbstractBase
         if (!$listHandler->isEnabled()) {
             throw new \VuFind\Exception\Forbidden('ReservationList: No list properties found.');
         }
-
+        if (!$this->reservationListService->checkUserRightsForList($listHandler)) {
+            $this->flashMessenger()->addErrorMessage('no_ils_support_description');
+            if ($this->inLightbox()) {
+                return $this->getRefreshResponse();
+            }
+            return $this->redirect()->toRoute('reservationlist-displaylist', ['listId' => $listId]);
+        }
         $request = $this->getRequest();
         $orderSpecificValues = $listHandler->getValuesForListOrder(
             $list,
@@ -415,6 +421,13 @@ class ReservationListController extends AbstractBase
             $user,
             $request->isGet() ? $request->getQuery()->toArray() : $request->getPost()->toArray()
         );
+        if (!$this->reservationListService->checkUserRightsForList($listHandler)) {
+            $this->flashMessenger()->addErrorMessage('no_ils_support_description');
+            if ($this->inLightbox()) {
+                return $this->getRefreshResponse();
+            }
+            return $this->redirect()->toRoute('record', ['id' => $queryValues['recordId']]);
+        }
         $form = $listHandler->getSingleOrderForm($queryValues);
         $view = $this->createViewModel(compact('formId', 'user', 'form'));
         $view->setTemplate('feedback/form');

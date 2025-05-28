@@ -30,10 +30,12 @@
 namespace Finna\ReservationList\Handler;
 
 use Exception;
+use Finna\Auth\ILSAuthenticator;
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
 use Finna\ReservationList\Form\Form;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Service\GetServiceTrait;
 
 use function in_array;
@@ -397,16 +399,17 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
         UserEntityInterface $user,
         array $requestValues
     ): array {
+        $cardInfo = $this->getPreferredCardInfo($user);
         $result = [
             'listId' => $list->getId(),
             'institution' => $list->getInstitution(),
             'listIdentifier' => $list->getListConfigIdentifier(),
-            'firstName' => $requestValues['firstName'] ?? $user->getFirstname(),
-            'lastName' => $requestValues['lastName'] ?? $user->getLastname(),
+            'full_name' => $requestValues['full_name'] ?? $cardInfo['full_name'],
             'email' => $requestValues['email'] ?? $user->getEmail(),
             'phone' => $requestValues['phone'] ?? null,
             'pickup_date' => $requestValues['pickup_date'] ?? null,
             'message' => $requestValues['message'] ?? null,
+            'card_info' => $cardInfo['card_name'],
         ];
 
         if (empty($requestValues['recordId'])) {
@@ -422,6 +425,49 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
         $result['record_ids_text'] = $record->getUniqueID() . '||' . $record->getTitle();
         $result['record_source_and_ids'] = [$record->getSourceIdentifier() . '|' . $record->getUniqueID()];
         return $result;
+    }
+
+    /**
+     * Get preferred card info as associative array. Shibboleth login saves the whole name into last name so
+     * try to get users name from patron primarily. Prefer card name from database and use local name (without prefix)
+     * as fallback. Get local patron id (without prefix).
+     *
+     * @param UserEntityInterface $user User to get information for
+     *
+     * @return array [firstname, lastname, patron_id, card_name]
+     */
+    protected function getPreferredCardInfo(UserEntityInterface $user): array
+    {
+        $patron = $this->getService(ILSAuthenticator::class)->storedCatalogLogin();
+        $cardService = $this->getService(\VuFind\Db\Service\PluginManager::class)->get(UserCardServiceInterface::class);
+        $catUsername = $patron['cat_username'] ?? '';
+        $cardName = $patron['__local_cat_username'] ?? $catUsername;
+        if ($cardEntity = $cardService->getLibraryCards($user, null, $user->getCatUsername())) {
+            $cardEntity = reset($cardEntity);
+            if ($dbCardName = $cardEntity->getCardName()) {
+                $cardName = $dbCardName === $catUsername ? $cardName : $dbCardName;
+            }
+        }
+        // Prioritize name from patron
+        $firstName = $patron['firstname'] ?? null;
+        $lastName = $patron['lastname'] ?? null;
+
+        // If either field from patron is empty, then use name from db
+        if (!$firstName || !$lastName) {
+            $firstName = $user->getFirstname();
+            $lastName = $user->getLastname();
+        }
+
+        // Form full name from the obtained data
+        $fullName = trim("$firstName $lastName");
+
+        return [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'full_name' => $fullName,
+            'patron_id' => $patron['__local_id'] ?? $patron['id'] ?? '',
+            'card_name' => $cardName,
+        ];
     }
 
     /**

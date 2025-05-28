@@ -67,11 +67,9 @@ class Email extends AbstractBase
             'Email/form.phtml',
             compact('fields')
         );
+        $cardInfo = $this->getPreferredCardInfo($user);
 
-        $replyToName = !empty($formValues['firstName']) && !empty($formValues['lastName'])
-            ? trim($formValues['firstName'] . ' ' . $formValues['lastName'])
-            : trim($user->getFirstname() . ' ' . $user->getLastname());
-
+        $replyToName = $formValues['full_name'] ?: $cardInfo['full_name'];
         $replyToEmail = $formValues['email'] ?: $user->getEmail();
 
         $result = true;

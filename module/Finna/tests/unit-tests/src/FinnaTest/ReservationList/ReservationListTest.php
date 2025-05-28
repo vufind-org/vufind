@@ -50,7 +50,10 @@ use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Db\Row\User;
+use VuFind\Db\Service\PluginManager;
 use VuFind\Db\Service\ResourceService;
+use VuFind\Db\Service\UserCardService;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Record\Cache;
 use VuFind\Record\ResourcePopulator;
 use VuFindHttp\HttpService;
@@ -483,22 +486,21 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
               'listId' => null,
               'institution' => 'Example Institution',
               'listIdentifier' => 'list_with_email',
-              'firstName' => 'Testaaja',
-              'lastName' => 'von Testaaja',
+              'full_name' => 'Testaaja von Testaaja',
               'email' => 'testaaja@testeri.fi',
               'record_ids_text' => '',
               'record_source_and_ids' => [],
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
               'phone' => null,
+              'card_info' => 'test_cat_username',
             ],
           ],
           'different name given' => [
             'Example Institution',
             'list_with_email',
             [
-              'firstName' => 'Pouta',
-              'lastName' => 'Pakkanen',
+              'full_name' => 'Pouta Pakkanen',
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
             ],
@@ -506,22 +508,21 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
               'listId' => null,
               'institution' => 'Example Institution',
               'listIdentifier' => 'list_with_email',
-              'firstName' => 'Pouta',
-              'lastName' => 'Pakkanen',
+              'full_name' => 'Pouta Pakkanen',
               'email' => 'testaaja@testeri.fi',
               'record_ids_text' => '',
               'record_source_and_ids' => [],
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
               'phone' => null,
+              'card_info' => 'test_cat_username',
             ],
           ],
           'disec get list values' => [
             'Example Institution',
             'list_with_disec',
             [
-              'firstName' => 'Pouta',
-              'lastName' => 'Pakkanen',
+              'full_name' => 'Pouta Pekkanen',
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
             ],
@@ -529,14 +530,14 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
               'listId' => null,
               'institution' => 'Example Institution',
               'listIdentifier' => 'list_with_disec',
-              'firstName' => 'Pouta',
-              'lastName' => 'Pakkanen',
+              'full_name' => 'Pouta Pekkanen',
               'email' => 'testaaja@testeri.fi',
               'record_ids_text' => '',
               'record_source_and_ids' => [],
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
               'phone' => null,
+              'card_info' => 'test_cat_username',
             ],
           ],
         ];
@@ -552,6 +553,8 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param ?MockObject $viewRenderer           View renderer
      * @param ?MockObject $reservationListService Reservation list service
      * @param ?MockObject $httpService            Http service
+     * @param ?MockObject $ilsAuthenticator       ILS Authenticator
+     * @param ?MockObject $userCardService        User card service
      * @param array       $listConfig             Reservation list config
      * @param array       $handlerServices        Handler services mapping for plugin manager
      *
@@ -565,6 +568,8 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
         ?MockObject $viewRenderer = null,
         ?MockObject $reservationListService = null,
         ?MockObject $httpService = null,
+        ?MockObject $ilsAuthenticator = null,
+        ?MockObject $userCardService = null,
         array $listConfig = [],
         array $handlerServices = [],
     ): MockObject {
@@ -582,6 +587,27 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
             $viewRenderer->expects($this->any())->method('render')->willReturn('');
         }
 
+        if (null === $ilsAuthenticator) {
+            $ilsAuthenticator = $this->getMockBuilder(ILSAuthenticator::class)->disableOriginalConstructor()->getMock();
+            $ilsAuthenticator->expects($this->any())->method('storedCatalogLogin')->willReturn([
+              'firstname' => 'Testaaja',
+              'lastname' => 'von Testaaja',
+              'patron_id' => 'test.testid',
+              '__local_id' => 'testid',
+              '__local_cat_username' => 'test_cat_username',
+            ]);
+        }
+
+        if (null === $userCardService) {
+            $userCardService = $this->getMockBuilder(UserCardService::class)->disableOriginalConstructor()->getMock();
+            $userCardService->expects($this->any())->method('getLibraryCards')->willReturn([]);
+        }
+
+        $dbPluginManager = $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock();
+        $dbPluginManager->expects($this->any())->method('get')->willReturnMap([
+          [UserCardServiceInterface::class, null, $userCardService],
+        ]);
+
         $reservationListService ??= $this->getReservationListService();
         $httpService ??= $this->getHttpService([]);
 
@@ -593,15 +619,17 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
 
         if (!$handlerServices) {
             $handlerServices = [
-              [\Finna\Config\YamlReader::class, $yamlReader],
-              [\VuFindHttp\HttpService::class, $httpService],
-              [\VuFind\Record\Loader::class, $this->getFinnaRecordLoader()],
-              [\Finna\ReservationList\Form\Form::class, $mockForm],
-              ['ViewRenderer', $viewRenderer],
-              [
-                \Finna\ReservationList\ReservationListService::class,
-                $this->getReservationListService(reservationListConfig: $listConfig),
-              ],
+            [\Finna\Config\YamlReader::class, $yamlReader],
+            [\VuFindHttp\HttpService::class, $httpService],
+            [\VuFind\Record\Loader::class, $this->getFinnaRecordLoader()],
+            [\Finna\ReservationList\Form\Form::class, $mockForm],
+            [ILSAuthenticator::class, $ilsAuthenticator],
+            [PluginManager::class, $dbPluginManager],
+            ['ViewRenderer', $viewRenderer],
+            [
+              \Finna\ReservationList\ReservationListService::class,
+              $this->getReservationListService(reservationListConfig: $listConfig),
+            ],
             ];
         }
 
@@ -743,8 +771,7 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
           'listId' => null,
           'institution' => 'Example Institution',
           'listIdentifier' => 'list_with_email',
-          'firstName' => 'Pouta',
-          'lastName' => 'Pakkanen',
+          'full_name' => 'Pouta Pakkanen',
           'email' => 'testaaja@testeri.fi',
           'record_ids_text' => '',
           'record_source_and_ids' => [],

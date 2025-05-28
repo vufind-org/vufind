@@ -98,13 +98,9 @@ Forms:
           settings:
             - [rows, 3]
             - [readonly, true]
-        - name: firstName
+        - name: full_name
           type: text
-          label: First Name
-          required: true
-        - name: lastName
-          type: text
-          label: Last Name
+          label: feedback_name
           required: true
         - name: email
           type: email
@@ -123,6 +119,11 @@ Forms:
           label: ReservationList::Message
           settings:
             - [rows, 3]
+        - name: card_info
+          type: text
+          label: Library Card
+          settings:
+            - readonly: true
     single:
       extends: default
       formActionRoute: reservationlist-placesingleorder

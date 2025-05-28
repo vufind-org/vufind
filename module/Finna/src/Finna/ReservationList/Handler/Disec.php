@@ -86,20 +86,24 @@ class Disec extends AbstractBase
             'contentInfo' => $formValues['message'] . PHP_EOL,
         ];
         $data['contentInfo'] .= 'Delivery date: ' . $formValues['pickup_date'] . PHP_EOL;
-        if ($catId = $user->getCatId()) {
-            [, $id] = explode('.', $catId);
-            if ($this->getUsePatronId()) {
-                $data['kohaId'] = (int)$id;
-            }
-            $data['contentInfo'] .= 'cat_id: ' . $id;
+
+        $cardInfo = $this->getPreferredCardInfo($user);
+        $patronId = $cardInfo['patron_id'];
+        // Throw an error if patron id is not found as this should not be possible
+        if (!$patronId) {
+            throw new \Exception('Patron id not set');
         }
-        if (empty($data['kohaId'])) {
+        if ($this->getUsePatronId()) {
+            $data['kohaId'] = $patronId;
+        } else {
             $data['customer'] = [
-                'firstName' => $formValues['firstName'] ?? $user->getFirstname(),
-                'lastName' => $formValues['lastName'] ?? $user->getLastname(),
+                'firstName' => $cardInfo['first_name'],
+                'lastName' => $cardInfo['last_name'],
                 'email' => $formValues['email'] ?? $user->getEmail(),
             ];
         }
+        $data['contentInfo'] .= 'id: ' . $patronId;
+
         $client->setRawBody(json_encode($data));
         $response = $client->send();
 
