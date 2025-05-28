@@ -76,8 +76,6 @@ class PersistenceManager implements DbServiceAwareInterface
         }
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
     }
 
     /**
