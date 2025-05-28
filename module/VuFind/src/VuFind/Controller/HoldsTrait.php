@@ -52,8 +52,8 @@ trait HoldsTrait
     public function holdAction()
     {
         $driver = $this->loadRecord();
-        //Holds on EDS API records require a different ID
-        //this id can be obtained from the getRtacIdentifier method
+        // Holds on EDS API records require a different ID.
+        // This id can be obtained from the getRtacIdentifier method
         $id = $driver->getUniqueID();
         $originalId = $id;
         if (method_exists($driver, 'getRtacIdentifier')) {
