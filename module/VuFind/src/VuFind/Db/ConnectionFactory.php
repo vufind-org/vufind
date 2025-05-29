@@ -214,23 +214,18 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      */
     public function getConnectionFromOptions($options)
     {
-        /* TODO: still needed?
         // Set up custom options by database type:
         $driver = strtolower($options['driver']);
         switch ($driver) {
-        case 'mysqli':
-            $options['charset'] = $this->config->Database->charset ?? 'utf8mb4';
-            if (strtolower($options['charset']) === 'latin1') {
-                throw new \Exception(
-                    'The latin1 encoding is no longer supported for MySQL databases'
-                    . ' in VuFind. Please convert your database to utf8 using VuFind'
-                    . ' 7.x or earlier BEFORE upgrading to this version.'
-                );
-            }
-            $options['options'] = ['buffer_results' => true];
-            break;
+            case 'pdo_mysql':
+                $options['charset'] = $this->config->Database->charset ?? 'utf8mb4';
+                if (strtolower($options['charset']) === 'latin1') {
+                    throw new \Exception(
+                        'The latin1 encoding is no longer supported for MySQL databases in VuFind.'
+                    );
+                }
+                break;
         }
-         */
         $options['wrapperClass'] = $this->wrapperClass;
 
         // Set up database connection:
@@ -240,17 +235,6 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $connection = DriverManager::getConnection(
             $options
         );
-
-        /* TODO: still needed?
-        // Special-case setup:
-        if ($driver == 'pdo_pgsql' && isset($this->config->Database->schema)) {
-            // Set schema
-            $statement = $adapter->createStatement(
-                'SET search_path TO ' . $this->config->Database->schema
-            );
-            $statement->execute();
-        }
-         */
 
         return $connection;
     }
