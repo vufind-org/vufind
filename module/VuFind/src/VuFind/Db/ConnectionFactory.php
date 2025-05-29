@@ -179,9 +179,6 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         switch (strtolower($type)) {
             case 'mysql':
                 return 'pdo_mysql';
-            case 'oci8':
-                // TODO: fix/test
-                return 'Oracle';
             case 'pgsql':
                 return 'pdo_pgsql';
         }
