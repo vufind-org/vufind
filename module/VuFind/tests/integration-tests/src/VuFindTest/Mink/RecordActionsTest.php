@@ -81,24 +81,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make new account
-     *
-     * @param Element $page     Page element
-     * @param string  $username Username to create
-     *
-     * @return void
-     */
-    protected function makeAccount(Element $page, string $username): void
-    {
-        $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->fillInAccountForm(
-            $page,
-            ['username' => $username, 'email' => $username . '@vufind.org']
-        );
-        $this->clickCss($page, '#accountForm .btn.btn-primary');
-    }
-
-    /**
      * Open the login modal before adding a comment.
      *
      * @param string Element $page Page element
