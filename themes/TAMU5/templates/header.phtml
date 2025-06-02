@@ -114,7 +114,15 @@
                 </div>
                 </div>
 </div> 
-<?php if ($this->layout()->searchbox !== false): ?>
+<?php
+# This section removes the search box from the alphabrowse page.
+if (
+
+(strpos(strtolower($_SERVER['REDIRECT_URL']), 'alphabrowse') == 0) &&
+($this->layout()->searchbox !== false)
+
+):
+?>
   <div class="search container navbar">
     <div class="nav searchbox hidden-print" role="search">
       <?=$this->layout()->searchbox ?>
