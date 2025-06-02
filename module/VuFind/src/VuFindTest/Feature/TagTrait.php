@@ -23,7 +23,6 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -47,7 +46,7 @@ trait TagTrait
      * Add tags to a record
      *
      * @param Element $page Page object
-     * @param string  $tags Tag(s) to add
+     * @param string  $tags Tag(s) to add (space delimited string formatted for the tag input box)
      * @param ?string $user Username to log in with (null if already logged in)
      * @param ?string $pass Password to log in with (null if already logged in)
      *
