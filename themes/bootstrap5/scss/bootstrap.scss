@@ -559,6 +559,11 @@ body.rtl .dropdown-menu {
   margin-bottom: 1rem;
 }
 
+// Fix active tag color in sidebar
+.template-dir-myresearch .sidebar .list-group-item.active a {
+  color: inherit;
+}
+
 .dropdown-menu > li .dropdown-header {
   min-width: 200px;
 }

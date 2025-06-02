@@ -1,4 +1,11 @@
-@import "colors", "variables", "../../bootstrap5/scss/bootstrap";
+/* #LESS>
+@import "../../bootstrap3/less/bootstrap";
+@import "colors";
+@import "variables";
+<#LESS */
+/* #SCSS> */
+@import "colors", "variables", "../../bootstrap3/scss/bootstrap";
+/* <#SCSS */
 
 @import "common";
 @import "search";
@@ -25,11 +32,7 @@ body {
 }
 
 /* --- Header --- */
-.navbar {
-  border-radius: 0;
-  --bs-navbar-color: white;
-  --bs-emphasis-color-rgb: white;
-}
+.navbar { border-radius: 0; }
 .banner {
   width: auto;
   color: $white;
@@ -45,7 +48,7 @@ body {
   height: $banner-height-sm;
   display: inline-block;
 }
-@include media-breakpoint-up(sm) {
+@media (min-width: 768px) {
   .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
   .banner .navbar-brand {
     width: calc((170 / 65) * #{$banner-height});
@@ -83,19 +86,24 @@ header {
       outline: dotted 1px #000;
     }
   }
-  .navbar-toggler {
+  .navbar-toggle {
     margin: .5rem;
     padding-left: 1rem;
     padding-right: 1rem;
     font-size: $reduced-font-size;
   }
-  .dropdown-menu a { color: $black; }
-  .dropdown-menu a:not(.active):hover {
-    background-color: $header-light;
-    color: $black;
+  .navbar-nav .open .dropdown-menu {
+    background-color: $white;
+    a { color: $black; }
+    .active a { background-color: $header-bg; }
   }
-  .dropdown-menu a.active,
-  .dropdown-menu a.active:hover { background-color: $header-bg; }
+  @media (min-width: 768px) {
+    .dropdown-menu a:hover {
+      background-color: $header-light;
+      color: $black;
+    }
+    .dropdown-menu .active a:hover { background-color: $header-bg; }
+  }
 
   .navbar-brand {
     width: 200px;
@@ -166,18 +174,14 @@ a:hover .login-dropdown-caret {
 .myresearch-menu a:hover { background-color: $white; }
 .myresearch-menu a.active:hover {
   color: $white;
-  background-color: $primary;
-}
-
-/* --- PubDateVis --- */
-#dateVisColorSettings {
-  outline-color: #afafaf54; // selection color
+  background-color: $brand-primary;
 }
 
 /* --- Record --- */
 .record-nav {
   display: table;
   margin-left: auto;
+  margin-top: 1rem;
   margin-right: auto;
 }
 .info-col h3 {
@@ -199,8 +203,7 @@ a:hover .login-dropdown-caret {
 
   h1,h2,h3:not(#acc-menu-lists-header):not(#acc-menu-favs-header),h4 { margin-top: 0; }
 
-  .facet-group,
-  .datevis-form {
+  .facet-group {
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }
@@ -215,8 +218,11 @@ a:hover .login-dropdown-caret {
     }
   }
 
-  .facet-group .facet.active,
-  .facet-group .facet.active:hover,
+  a.facet:hover,
+  .facet.checkbox:hover { background-color: $sidebar-item-hover-bg; }
+
+  .facet.active,
+  .facet.active:hover,
   .active-filters .facet,
   .active-filters .facet:hover {
     border-color: $sidebar-active-bg;
@@ -231,7 +237,7 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    border-bottom: 1px solid $list-group-border-color;
+    border-bottom: 1px solid $list-group-border;
     border-radius: 0;
   }
 
@@ -247,7 +253,7 @@ a:hover .login-dropdown-caret {
   background-color: $sidebar-item-badge;
 }
 
-@include media-breakpoint-between(sm, md) {
+@media (min-width: 768px) and (max-width: 991px) {
   .sidebar .facet {
     flex-flow: wrap;
 
@@ -260,7 +266,7 @@ a:hover .login-dropdown-caret {
   }
 }
 
-@include media-breakpoint-down(xl) {
+@media (max-width: 1399px) {
   .sidebar {
     padding: 1rem 0.5rem 0.5rem 0.5rem;
   }
