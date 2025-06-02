@@ -42,7 +42,6 @@ use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
 use function in_array;
-use function is_bool;
 use function is_callable;
 
 /**

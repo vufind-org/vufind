@@ -281,7 +281,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getSessionInitiator(string $target): ?string
     {
-        return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
+        return $this->proxyAuthMethod('getSessionInitiator', func_get_args()) ?: null;
     }
 
     /**
