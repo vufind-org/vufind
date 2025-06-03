@@ -32,7 +32,7 @@
                   'confirm-button',
                   [
                     'buttonLink' => $this->url('reservationlist-deletelist', ['listId' => $listEntity->getId()]),
-                    'buttonLabel' => 'delete_list',
+                    'buttonLabel' => 'Delete',
                     'confirmLink' => $this->url('reservationlist-deletelist', ['listId' => $listEntity->getId()], ['query' => ['confirm' => 1]]),
                     'header' => 'confirm_delete_list_text',
                     'align' => 'right',
@@ -50,11 +50,13 @@
               <?= $this->transEscWithPrefix('source_', $listHandler->getInstitution()) . ': ' . $this->escapeHtml($listHandler->getIdentifier()); ?>
             <?php endif; ?>
           </div>
-          <?php if ($listEntity->getOrdered()): ?>
-            <div class="list-ordered list-info">
-              <?= $this->transEsc('ReservationList::list_ordered', ['%%date%%' => $listEntity->getOrdered()->format('d.m.Y')])?>
-            </div>
-          <?php endif; ?>
+          <div class="list-ordered list-info">
+            <?php if (!$listHandler->isEnabled()): ?>
+                <?= $this->transEsc('ReservationList::Disabled'); ?>
+            <?php elseif ($listEntity->getOrdered()): ?>
+                <?= $this->transEsc('ReservationList::list_ordered', ['%%date%%' => $listEntity->getOrdered()->format('d.m.Y')])?>
+            <?php endif; ?>
+          </div>
         </div>
       </li>
       <?php endforeach; ?>

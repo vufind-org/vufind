@@ -169,22 +169,22 @@ class ReservationListController extends AbstractBase
             $lists,
             fn ($list) => !$list->getOrdered()
         );
-
+        $view->listHandler = $listHandler;
         if ($this->formWasSubmitted('list_selected')) {
             if (!$this->validateCsrf()) {
                 $this->flashMessenger()->addErrorMessage('csrf_validation_failed');
                 return $view;
             }
-            $this->reservationListService->saveRecordToReservationList(
+            $listEntity = $this->reservationListService->saveRecordToReservationList(
                 $this->getRequest()
                     ->getPost()
                     ->set('institution', $listHandler->getInstitution()),
                 $user,
                 $driver,
             );
-            return $this->inLightbox()  // different behavior for lightbox context
-                ? $this->getRefreshResponse()
-                : $this->redirect()->toRoute('reservationlist-displaylists');
+            $view->setTemplate('reservationlist/postadditem');
+            $view->listEntity = $listEntity;
+            return $view;
         }
         return $view;
     }
@@ -276,9 +276,14 @@ class ReservationListController extends AbstractBase
         } catch (RecordMissingException $e) {
             return $this->redirect()->toRoute('reservationlist-displaylists');
         }
+        $listHandler = $this->reservationListService->getListHandler(
+            $list->getInstitution(),
+            $list->getListConfigIdentifier()
+        );
         $results = $this->getListAsResults();
         $viewParams = [
             'listEntity' => $list,
+            'listHandler' => $listHandler,
             'results' => $results,
             'params' => $results->getParams(),
             'enabled' => true,
@@ -305,13 +310,16 @@ class ReservationListController extends AbstractBase
             $this->params()->fromQuery('source') ?: DEFAULT_SEARCH_BACKEND,
             false
         );
-        $viewParams = [
-            'institution' => $this->params()->fromQuery('institution'),
-            'listIdentifier' => $this->params()->fromQuery('listIdentifier'),
+        $listHandler = $this->reservationListService->getListHandler(
+            $this->params()->fromQuery('institution'),
+            $this->params()->fromQuery('listIdentifier')
+        );
+        return $this->createViewModel([
+            'driver' => $driver,
             'source' => $this->params()->fromQuery('source'),
             'recordId' => $this->params()->fromQuery('recordId'),
-        ];
-        return $this->createViewModel(['driver' => $driver, 'params' => $viewParams]);
+            'listHandler' => $listHandler,
+        ]);
     }
 
     /**
@@ -467,7 +475,7 @@ class ReservationListController extends AbstractBase
             try {
                 $list = $this->reservationListService->getListById((int)$listID, $user);
                 $this->reservationListService->destroyList($list, $user);
-                $this->flashMessenger()->addSuccessMessage('ReservationList::List Deleted');
+                $this->flashMessenger()->addSuccessMessage('ReservationList::List deleted');
             } catch (LoginRequiredException | ListPermissionException $e) {
                 if ($user == false) {
                     return $this->forceLogin();

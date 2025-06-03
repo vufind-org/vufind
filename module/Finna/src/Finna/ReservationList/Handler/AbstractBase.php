@@ -153,6 +153,13 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
     protected bool $enabled;
 
     /**
+     * Specific type of the list
+     *
+     * @var string
+     */
+    protected string $listType;
+
+    /**
      * List configuration as an array
      *
      * @var array
@@ -546,6 +553,7 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
         $this->connectionType = $config['Connection']['type'] ?? '';
         $this->connectionSettings = $config['Connection'] ?? [];
         $this->enabled = $config['Enabled'] ?? false;
+        $this->listType = $config['Type'] ?? 'default';
         $this->institution = $institution;
         $this->listConfiguration = $config;
 

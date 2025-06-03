@@ -93,7 +93,7 @@ Forms:
   PlaceOrder:
     default:
       allowLocalOverride: false
-      title: ReservationList::form_title
+      title: ReservationList::Send the hold request
       enabled: true
       onlyForLoggedUsers: true
       emailSubject: ReservationList::form_email_subject
@@ -109,7 +109,7 @@ Forms:
       fields:
         - name: record_ids_text
           type: textarea
-          label: ReservationList::Reservation Resources
+          label: ReservationList::Reservation resources
           settings:
             - [rows, 3]
             - [readonly, true]
@@ -129,13 +129,13 @@ Forms:
           label: Phone
         - name: pickup_date
           type: date
-          label: ReservationList::Delivery Time Request
+          label: ReservationList::Delivery time request
           minValue: now + 2 days
           maxValue: now + 1 year
           required: true
         - name: message
           type: textarea
-          label: ReservationList::Message
+          label: Message
           settings:
             - [rows, 3]
     single:

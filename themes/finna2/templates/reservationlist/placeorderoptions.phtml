@@ -1,30 +1,35 @@
 <?php
-  $pageTitle = $this->translate('ReservationList::Add To Reservation List');
+  $pageTitle = $this->translate('ReservationList::reserve_to_research_room');
   // Set up page title:
-  $this->headTitle($this->translate($pageTitle));
+  $this->headTitle($pageTitle);
   $user = $this->auth()->getUserObject();
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($pageTitle, active: true);
-
+  $params = [
+    'source' => $this->source,
+    'recordId' => $this->recordId,
+    'institution' => $this->listHandler->getInstitution(),
+    'listIdentifier' => $this->listHandler->getIdentifier(),
+  ];
 ?>
 <h2><?= $this->escapeHtml($pageTitle); ?></h2>
 <div>
   <div>
     <label for="resource_name"><?=$this->transEsc('ReservationList::Resource')?>:</label>
-    <p id="resource_name"><?=$this->transEsc($this->params['recordId'])?></p>
+    <p id="resource_name"><?=$this->transEsc($this->recordId)?></p>
   </div>
   <div>
-    <label for="resource_institution"><?=$this->transEsc('ReservationList::Resource Institution')?>:</label>
-    <p id="resource_institution"><?=$this->transEscWithPrefix('source_', $this->params['institution']);?></p>
+    <label for="resource_institution"><?=$this->transEsc('ReservationList::Resource institution')?>:</label>
+    <p id="resource_institution"><?=$this->transEscWithPrefix('source_', $this->listHandler->getInstitution());?></p>
   </div>
 </div>
 <?php if ($this->reservationList()->singleOrderEnabled()): ?>
   <div class="btn-group">
-    <a class="btn btn-primary" href="<?=$this->url('reservationlist-placesingleorder', ['id' => \Finna\ReservationList\Form\Form::RESERVATION_LIST_REQUEST], ['query' => $this->params])?>"><?=$this->transEsc('ReservationList::Reserve only this item')?></a>
+    <a class="btn btn-primary" href="<?=$this->url('reservationlist-placesingleorder', ['id' => \Finna\ReservationList\Form\Form::RESERVATION_LIST_REQUEST], ['query' => $params])?>"><?=$this->transEsc('ReservationList::Place hold only on this title')?></a>
   </div>
 <?php endif; ?>
 <div class="btn-group">
-  <a class="btn btn-primary" href="<?=$this->url('reservationlist-additemtolist', [], ['query' => $this->params])?>"><?=$this->transEsc('ReservationList::Add To Reservation List')?></a>
+  <a class="btn btn-primary" href="<?=$this->url('reservationlist-additemtolist', [], ['query' => $params])?>"><?=$this->transEsc('ReservationList::Add to reservation list')?></a>
 </div>

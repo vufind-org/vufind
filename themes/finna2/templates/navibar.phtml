@@ -219,7 +219,7 @@
             <?php if ($this->reservationList()->isFunctionalityEnabled()): ?>
               <li>
                 <a <?=$this->url('reservationlist-displaylists') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('reservationlist-displaylists')?>">
-                  <?=$this->transEsc('ReservationList::Reservation Lists')?>
+                  <?=$this->transEsc('ReservationList::reservation_lists_research_room')?>
                 </a>
               </li>
             <?php endif; ?>

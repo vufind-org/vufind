@@ -8,7 +8,7 @@ return;
 ?>
 <div class="record-holdings-table reservation-request-table">
   <div class="headers">
-    <span class="holdings-title"><?=$this->transEsc('ReservationList::Add To Reservation List')?></span>
+    <span class="holdings-title"><?=$this->transEsc('ReservationList::Place hold on this title')?></span>
   </div>
   <?php foreach ($this->listHandlers as $listHandler): ?>
     <div class="holdings-group">
@@ -22,7 +22,7 @@ return;
           <?php endif; ?>
         </div>
         <div class="location-link text-right">
-          <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorderoptions', [], ['query' => ['recordId' => $this->driver->getUniqueID(), 'source' => $this->driver->getSourceIdentifier(), 'institution' => $listHandler->getInstitution(), 'listIdentifier' => $listHandler->getIdentifier()]]))?>" data-lightbox><?= $this->icon('save') . ' ' . $this->transEsc(['ReservationList', 'Reserve Resource'])?></a>
+          <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorderoptions', [], ['query' => ['recordId' => $this->driver->getUniqueID(), 'source' => $this->driver->getSourceIdentifier(), 'institution' => $listHandler->getInstitution(), 'listIdentifier' => $listHandler->getIdentifier()]]))?>" data-lightbox><?= $this->icon('save') . ' ' . $this->transEsc(['ReservationList', 'Place hold on this title'])?></a>
         </div>
       </div>
     </div>

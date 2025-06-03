@@ -1,17 +1,15 @@
 <?php
-  $pageTitle = $this->translate('ReservationList::Add To Reservation List');
+  $pageTitle = $this->translate('ReservationList::reserve_to_research_room');
   // Set up page title:
   $this->headTitle($pageTitle);
-  $user = $this->auth()->getUserObject();
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($pageTitle, active: true);
-
-  $listHandler = $this->reservationList($user)->getListHandler($this->institution, $this->listIdentifier);
+  $user = $this->auth()->getUserObject();
 ?>
 
-<h2><?= $this->transEsc($pageTitle); ?></h2>
+<h2><?= $this->escapeHtml($pageTitle); ?></h2>
 
 <?php // TODO: create a component which handles the defaulting into prettier form ?>
 <?php if ($title = $listHandler->getTitle($this->layout()->userLang)): ?>
@@ -40,7 +38,7 @@
       <input type="hidden" name="listIdentifier" value="<?=$this->escapeHtmlAttr($this->listIdentifier)?>">
       <input type="hidden" name="institution" value="<?=$this->escapeHtmlAttr($this->institution)?>">
       <input type="hidden" name="csrf" value="<?=$this->auth()->getManager()->getCsrfHash()?>">
-      <label class="form-label" for="save_list"><?=$this->transEsc('ReservationList::Choose a List') ?></label>
+      <label class="form-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
       <div class="form-group">
         <select class="form-select" id="save_list" name="list">
           <?php foreach ($this->listEntities as $listEntity): ?>
@@ -49,13 +47,13 @@
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label" for="add_notes"><?=$this->transEsc('ReservationList::Description') ?></label>
+        <label class="form-label" for="add_notes"><?=$this->transEsc('Description') ?></label>
         <textarea class="form-control" id="add_notes" name="desc" rows="3"></textarea>
       </div>
       <div class="form-group">
-        <input class="btn btn-primary" type="submit" name="list_selected" value="<?=$this->transEscAttr('ReservationList::Add To Reservation List') ?>">
+        <input class="btn btn-primary" type="submit" name="list_selected" value="<?=$this->transEsc('Save')?>">
       </div>
     </form>
   <?php endif; ?>
-  <a class="btn btn-link" id="make-list" href="<?=$this->url('reservationlist-createlist', [], ['query' => ['institution' => $listHandler->getInstitution(), 'listIdentifier' => $listHandler->getIdentifier(), 'newList' => '1', 'recordId' => urlencode($this->recordId), 'source' => urlencode($this->source)]])?>"><?=$this->transEsc('ReservationList::Create New Reservation List')?></a>
+  <a class="btn btn-link" id="make-list" href="<?=$this->url('reservationlist-createlist', [], ['query' => ['institution' => $listHandler->getInstitution(), 'listIdentifier' => $listHandler->getIdentifier(), 'newList' => '1', 'recordId' => urlencode($this->recordId), 'source' => urlencode($this->source)]])?>"><?=$this->transEsc('ReservationList::Create new list for holds')?></a>
 </div>

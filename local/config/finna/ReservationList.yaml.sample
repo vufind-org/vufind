@@ -1,6 +1,7 @@
 # Settings for reservation lists
 # To enable lists in your site, see section ReservationList in config.ini.sample
 # Enabled key in the root defines if the list functionality is enabled
+# Type allows displaying specific translations in ui. Options are research_room,default
 # Root key is the identifier of institutions controlling the lists
 # Under that is general Information about institution and Lists
 # Each list entry has to contain Identifier which should be unique for each list under institution.
@@ -9,6 +10,7 @@
 # List can contain same information as under institution information to be more specific
 # about where the order is being delivered
 # LibraryCardSources is used to check for active connection to ILS to be able to use lists
+#
 # Connection defines how the orders are handled with institutions:
 # Type:
 # email: Uses email to place orders
@@ -20,15 +22,8 @@
 #   base_url: Api base url
 #   secret:   Api specific secret
 #   use_cat_id: [Optional] Use catalog id for user instead of firstName, lastName, email. Default false.
-#
-# Each list declared uses their own translation keys under translation domain ReservationList::
-#
-# "list_title_{$institution}_{$identifier}"
-# Generic title of the list i.e Order resources to Library Tests Research Room etc.
-#
-# "list_description_{$institution}_{$identifier}" 
-# Generic description about the list i.e These reservations will be delivered to nnn etc.
-#
+# Translations holds values for Title and Description. Supported keys are fi, sv, en-gb and se
+# 
 # General settings for how to fetch list configurations
 # Settings:
 # Methods available yaml, api. If yaml is selected, will read list configurations from this file,
@@ -51,6 +46,7 @@ Institutions:
     Lists:
       - Identifier: unique_identifier_for_this_list
         Enabled: false
+        Type: default
         Recipient:
           - name: name_of_the_recipient_1
             email: email_of_the_recipient_1
@@ -67,6 +63,17 @@ Institutions:
           - PlaceOrder: default
         LibraryCardSources:
           - connection_established_to_use_lists
+        Translations:
+          Title:
+            fi: list title in finnish
+            en-gb: list title in english
+            sv: list title in swedish
+            se: list title in sami
+          Description:
+            fi: list description in finnish
+            en-gb: list description in english
+            sv: list description in swedish
+            se: list description in sami
         Connection:
           type: email
           Sender:
@@ -78,7 +85,7 @@ Forms:
     default:
       allowLocalOverride: false
       formActionRoute: reservationlist-placeorder
-      title: ReservationList::form_title
+      title: ReservationList::Send the hold request
       enabled: true
       onlyForLoggedUsers: true
       emailSubject: ReservationList::form_email_subject
@@ -94,7 +101,7 @@ Forms:
       fields:
         - name: record_ids_text
           type: textarea
-          label: ReservationList::Reservation Resources
+          label: ReservationList::Reservation resources
           settings:
             - [rows, 3]
             - [readonly, true]
@@ -110,13 +117,13 @@ Forms:
           label: Phone
         - name: pickup_date
           type: date
-          label: ReservationList::Delivery Time Request
+          label: ReservationList::Delivery time request
           minValue: now + 2 days
           maxValue: now + 1 year
           required: true
         - name: message
           type: textarea
-          label: ReservationList::Message
+          label: Message
           settings:
             - [rows, 3]
         - name: card_info

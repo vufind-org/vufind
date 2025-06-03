@@ -1,0 +1,21 @@
+<?php
+  $pageTitle = $this->translate('ReservationList::Add to reservation list');
+  // Set up page title:
+  $this->headTitle($pageTitle);
+  $user = $this->auth()->getUserObject();
+
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($pageTitle, active: true);
+?>
+
+<h2><?= $this->escapeHtml($pageTitle) ?></h2>
+
+<p><?=$this->transEsc('ReservationList::resource_added_to_list', ['%%resource%%' => $this->driver->getTitle(), '%%list%%' => $this->listEntity->getTitle()]);?></p>
+
+<div class="btn-group">
+  <a class="btn btn-primary" href="<?=$this->url('reservationlist-displaylist', ['listId' => $this->listEntity->getId()])?>" data-lightbox-ignore><?=$this->transEsc('ReservationList::Continue to sending the hold request')?></a>
+</div>
+<div class="btn-group">
+  <button class="btn btn-primary lightbox-only" data-bs-dismiss="modal"><?=$this->transEsc('close') ?></button>
+</div>

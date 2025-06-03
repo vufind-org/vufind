@@ -111,6 +111,17 @@
       'holds',
       'storageretrievalrequests',
       'illrequests',
+      'reservationlist' => [
+        'active' => $this->active === 'reservationlist',
+        'url' => 'reservationlist-displaylists',
+        'translation' => 'ReservationList::reservation_lists_research_room',
+        'show' => $reservationLists,
+        'partial' => [
+          'url' => 'reservationlist/reservationlist-navi.phtml',
+          'wrapperClass' => 'reservationlist-bar',
+          'params' => $listParams ?? [],
+        ],
+      ],
       'historicloans',
       'fines',
       'librarycards',
@@ -124,17 +135,6 @@
         'partial' => [
           'url' => 'myresearch/mylist-navi.phtml',
           'wrapperClass' => 'mylist-bar',
-          'params' => $listParams ?? [],
-        ],
-      ],
-      'reservationlist' => [
-        'active' => $this->active === 'reservationlist',
-        'url' => 'reservationlist-displaylists',
-        'translation' => 'ReservationList::Reservation Lists',
-        'show' => $reservationLists,
-        'partial' => [
-          'url' => 'reservationlist/reservationlist-navi.phtml',
-          'wrapperClass' => 'reservationlist-bar',
           'params' => $listParams ?? [],
         ],
       ],

@@ -253,13 +253,13 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
      * @param UserEntityInterface $user   The user saving the record
      * @param RecordDriver        $driver Record driver for record being saved
      *
-     * @return array list information
+     * @return FinnaResourceListEntityInterface
      */
     public function saveRecordToReservationList(
         Parameters $params,
         UserEntityInterface $user,
         RecordDriver $driver
-    ): array {
+    ): FinnaResourceListEntityInterface {
         // Validate incoming parameters:
         if (!$user) {
             throw new LoginRequiredException('You must be logged in first');
@@ -274,7 +274,7 @@ class ReservationListService implements TranslatorAwareInterface, DbServiceAware
         // Persist record in the database for "offline" use
         $this->persistToCache($driver, $resource);
         $this->resourceListResourceService->createOrUpdateLink($resource, $user, $list, $params->get('desc', ''));
-        return ['listId' => $list->getId()];
+        return $list;
     }
 
     /**
