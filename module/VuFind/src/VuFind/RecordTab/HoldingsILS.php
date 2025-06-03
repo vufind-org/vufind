@@ -104,10 +104,9 @@ class HoldingsILS extends AbstractBase
         // unless it is a catalog record and the publication type
         // is not excluded from RTAC
         if ($this->driver->getSourceIdentifier() === 'EDS') {
-            return (
+            return
                 $this->driver->hasCatalog() &&
-                $this->driver->pubTypeExcludedFromRtac()
-            );
+                $this->driver->pubTypeExcludedFromRtac();
         }
         // Otherwise assume visible by default
         return true;
