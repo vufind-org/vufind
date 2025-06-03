@@ -25,7 +25,7 @@
         <div class="resultItemFormat">
           <?=$this->record($this->driver)->getFormatList() ?>
           <?php if (!empty($binding)): ?>
-            <span class="iconlabel label-binding"><?=$this->transEsc($binding)?></span>
+            <span class="iconlabel label-binding"><span class="label-punctuation">, </span><?=$this->transEsc($binding)?></span>
           <?php endif; ?>
           <?=$this->record($this->driver)->getLabelList() ?>
         </div>

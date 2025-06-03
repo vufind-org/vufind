@@ -3,6 +3,7 @@
   // Set up some convenience variables:
   $id = $this->driver->getUniqueId();
   $source = $this->driver->getSourceIdentifier();
+  $binding = $this->driver->tryMethod('getBinding');
   if (isset($this->list) && is_object($this->list)) {
     $list_id = $this->list->getId();
     $user_id = $this->list->getUser()->getId();
@@ -58,7 +59,11 @@
         <?php endforeach; ?>
 
         <div class="record-core-metadata">
-          <?=$this->record($this->driver)->getFormatList() ?><br>
+          <?=$this->record($this->driver)->getFormatList() ?>
+          <?php if (!empty($binding)): ?>
+            <span class="iconlabel label-binding"><span class="label-punctuation">, </span><?=$this->transEsc($binding)?></span>
+          <?php endif; ?>
+          <br>
           <?php if($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
           <?php else: ?>

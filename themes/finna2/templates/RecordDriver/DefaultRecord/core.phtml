@@ -201,7 +201,7 @@
       <?php $formats = $this->driver->getFormats();
       if (!empty($formats)): ?>
         <div class="recordFormat">
-          <?=$this->record($this->driver)->getFormatList()?><?php if (!empty($binding)): ?><span class="iconlabel label-binding"><?=$this->transEsc($binding)?></span><?php endif; ?><br>
+          <?=$this->record($this->driver)->getFormatList()?><?php if (!empty($binding)): ?><span class="iconlabel label-binding"><span class="label-punctuation">, </span><?=$this->transEsc($binding)?></span><?php endif; ?><br>
         </div>
       <?php endif; ?>
 
