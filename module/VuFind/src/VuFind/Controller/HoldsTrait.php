@@ -64,13 +64,7 @@ trait HoldsTrait
 
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
-        $checkHolds = $catalog->checkFunction(
-            'Holds',
-            [
-                'id' => $id,
-                'patron' => $patron,
-            ]
-        );
+        $checkHolds = $catalog->checkFunction('Holds', compact('id', 'patron'));
         if (!$checkHolds) {
             return $this->redirectToRecord();
         }
