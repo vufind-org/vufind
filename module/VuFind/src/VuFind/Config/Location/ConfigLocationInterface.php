@@ -144,6 +144,22 @@ interface ConfigLocationInterface
     public function setSubsection(array $subsection): void;
 
     /**
+     * Get the parent location.
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getParentLocation(): ?ConfigLocationInterface;
+
+    /**
+     * Set the parent location.
+     *
+     * @param ?ConfigLocationInterface $parentLocation Parent location
+     *
+     * @return void
+     */
+    public function setParentLocation(?ConfigLocationInterface $parentLocation): void;
+
+    /**
      * Get the name of the configuration handler to be used for this location.
      *
      * @return string

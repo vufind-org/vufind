@@ -131,6 +131,7 @@ class PathResolver
         foreach ($this->localConfigDirStack as $localDirSpec) {
             $configLocation = $this->getConfigLocationFromSpec($configName, $localDirSpec, $path);
             if ($configLocation !== null) {
+                $configLocation->setParentLocation($currentLocation);
                 $currentLocation = $configLocation;
             }
         }

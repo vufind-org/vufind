@@ -65,6 +65,32 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test "use_parent_dir" parent setting in ini configs.
+     *
+     * @return void
+     */
+    public function testParentIniConfigs(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_type option[value="ParentTest"]');
+        // set up local searches ini without parent config
+        $this->changeConfigs(
+            ['searches' => ['dummy' => ['dummy' => 'dummy']]]
+        );
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->unFindCss($page, '#searchForm_type option[value="ParentTest"]');
+        $this->changeConfigs(
+            ['searches' => ['Parent_Config' => ['use_parent_dir' => 'true']]]
+        );
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_type option[value="ParentTest"]');
+    }
+
+    /**
      * Test that the yaml configs of the local dir stack are processed.
      *
      * @return void

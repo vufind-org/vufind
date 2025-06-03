@@ -71,6 +71,13 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     protected array $subsection = [];
 
     /**
+     * Optional location of the parent configuration.
+     *
+     * @var ?ConfigLocationInterface
+     */
+    protected ?ConfigLocationInterface $parentLocation = null;
+
+    /**
      * Constructor
      *
      * @param string  $path       Path to configuration
@@ -195,6 +202,28 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     public function setSubsection(array $subsection): void
     {
         $this->subsection = $subsection;
+    }
+
+    /**
+     * Get the parent location.
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getParentLocation(): ?ConfigLocationInterface
+    {
+        return $this->parentLocation;
+    }
+
+    /**
+     * Set the parent location.
+     *
+     * @param ?ConfigLocationInterface $parentLocation Parent location
+     *
+     * @return void
+     */
+    public function setParentLocation(?ConfigLocationInterface $parentLocation): void
+    {
+        $this->parentLocation = $parentLocation;
     }
 
     /**
