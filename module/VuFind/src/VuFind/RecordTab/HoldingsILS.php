@@ -94,6 +94,26 @@ class HoldingsILS extends AbstractBase
     }
 
     /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
+        // if the record source is EDS, assume hidden holdings tab
+        // unless it is a catalog record and the publication type 
+        // is not excluded from RTAC
+        if ($this->driver->getSourceIdentifier() === 'EDS') {
+            return (
+                $this->driver->hasCatalog() &&
+                $this->driver->pubTypeExcludedFromRtac()
+            );
+        }
+        // Otherwise assume visible by default
+        return true;
+    }
+
+    /**
      * Support method used in getUniqueCallNumbers for templates when full
      * details are not supported -- extract all unique call numbers from
      * an array of items.
