@@ -43,6 +43,13 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
+     * Available sort options (BrowZine only supports relevance sorting)
+     *
+     * @var array
+     */
+    protected $sortOptions = ['relevance' => 'Relevance'];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
