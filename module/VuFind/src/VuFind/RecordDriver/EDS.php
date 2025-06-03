@@ -870,6 +870,7 @@ class EDS extends DefaultRecord
         // cases we can abstract it from an OpenURL.
         $startPage = $this->getContainerStartPage();
         if (!empty($startPage)) {
+            $startPage = preg_quote($startPage, '/');
             $regex = "/&pages={$startPage}-(\d+)/";
             foreach ($this->getFTCustomLinks() as $link) {
                 if (preg_match($regex, $link['Url'] ?? '', $matches)) {

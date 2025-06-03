@@ -32,7 +32,7 @@
         <label id="full-facet-sort-label" class="control-label"><?=$this->translate('Sort') ?></label>
         <div id="btn-group-sort" class="btn-group">
           <?php foreach ($this->sortOptions as $key => $sort): ?>
-            <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => 1, 'facetsort' => $key, 'contains' => $contains])) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
+            <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => 1, 'facetsort' => $key, 'contains' => $contains])) ?>" class="btn btn-default js-facet-sort<?php if ($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
           <?php endforeach; ?>
         </div>
       </div>

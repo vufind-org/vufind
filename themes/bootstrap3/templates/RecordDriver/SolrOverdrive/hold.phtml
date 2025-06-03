@@ -1,5 +1,5 @@
 <div class="odaction">
-  <?php if($action == 'getTitle'): ?>
+  <?php if ($action == 'getTitle'): ?>
     <h2><?=$this->transEsc($actionTitleCode)?>
         <span class="odbrand pull-left">
           <img class="media-left" alt="OverDrive" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
@@ -77,18 +77,17 @@
         <?php elseif ($result->code == 'OD_CODE_ALREADY_ON_HOLD'): ?>
             <div class="alert alert-warning">
                 <div class="moreInfo">
-                    <?=$this->transEsc('od_is_on_hold');
-                    if ($hold->holdReadyForCheckout):
-                        echo $this->transEsc('od_hold_now_avail', ['%%expireDate%%' => $result->data->hold->holdExpires]);
-                    else:
-                        echo $this->transEsc(
+                    <?=$this->transEsc('od_is_on_hold')?>
+                    <?=$hold->holdReadyForCheckout
+                        ? $this->transEsc('od_hold_now_avail', ['%%expireDate%%' => $result->data->hold->holdExpires])
+                        : $this->transEsc(
                             'od_hold_queue',
                             [
                                 '%%holdPosition%%' => $result->data->hold->holdListPosition,
                                 '%%numberOfHolds%%' => $result->data->hold->numberOfHolds,
                             ]
                         );
-                    endif; ?>
+                    ?>
                 </div>
             </div>
         <?php else: ?>
@@ -118,18 +117,17 @@
         <?php elseif ($result->code == 'OD_CODE_ALREADY_ON_HOLD'): ?>
         <div class="alert alert-warning">
             <div class="moreInfo">
-                <?=$this->transEsc('od_is_on_hold');
-                if ($hold->holdReadyForCheckout):
-                    echo $this->transEsc('od_hold_now_avail', ['%%expireDate%%' => $result->data->hold->holdExpires]);
-                else:
-                    echo $this->transEsc(
+                <?=$this->transEsc('od_is_on_hold')?>
+                <?=$hold->holdReadyForCheckout
+                    ? $this->transEsc('od_hold_now_avail', ['%%expireDate%%' => $result->data->hold->holdExpires])
+                    : $this->transEsc(
                         'od_hold_queue',
                         [
                             '%%holdPosition%%' => $result->data->hold->holdListPosition,
                             '%%numberOfHolds%%' => $result->data->hold->numberOfHolds,
                         ]
                     );
-                endif; ?>
+                ?>
             </div>
         </div>
         <?php else: ?>

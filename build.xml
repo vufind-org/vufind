@@ -68,7 +68,7 @@
   <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
   <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
-  <property name="version" value="10.1.3" />
+  <property name="version" value="10.1.4" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -1320,6 +1320,7 @@ ${git_status}
         <include pattern="**/*.phtml" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
+        <exclude name="record/ajaxview-accordion.phtml" />
       </fileset>
       <filterchain>
         <replaceregexp>
@@ -1348,6 +1349,7 @@ ${git_status}
           <fileset dir="${templatesdir}">
             <exclude name="header.phtml" />
             <exclude name="RecordTab/similaritemscarousel.phtml" />
+            <exclude name="record/ajaxview-accordion.phtml" />
           </fileset>
         </delete>
       </then>
@@ -1384,6 +1386,7 @@ ${git_status}
         <type type="file" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
+        <exclude name="record/ajaxview-accordion.phtml" />
         <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
       </fileset>
     </foreach>
