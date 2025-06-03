@@ -46,9 +46,7 @@ use function strlen;
  */
 class EDS extends DefaultRecord
 {
-    use Feature\IlsAwareTrait {
-        Feature\IlsAwareTrait::getRealTimeHoldings as getRealTimeHoldings;
-    }
+    use Feature\IlsAwareTrait;
 
     /**
      * Document types that are treated as ePub links.
