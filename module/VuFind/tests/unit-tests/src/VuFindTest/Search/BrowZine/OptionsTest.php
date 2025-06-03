@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Search\Blender;
+namespace VuFindTest\Search\BrowZine;
 
 use VuFind\Search\BrowZine\Options;
 use VuFindTest\Feature\ConfigPluginManagerTrait;
