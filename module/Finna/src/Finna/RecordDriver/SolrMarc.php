@@ -973,12 +973,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
         }
 
         $recordSource = $this->getDataSource();
+        $linkPrefixes = $this->getRecordLinkingPrefixes($recordSource);
 
-        if ($prefixIn003 = $this->datasourceSettings[$recordSource]['prefixIn003'] ?? null) {
-            $field003 = $this->getMarcReader()->getField('003');
-            $prefixIn003 = $field003 ? trim($field003) : null;
-        }
-        // TODO: Remove old way of linking records in: [FINNA-3437]
         $useLegacyLinkingId = $this->datasourceSettings[$recordSource]['legacy_settings']['linking_id'] ?? false;
         foreach ($fields as $field) {
             $id = '';
@@ -991,28 +987,23 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                 $data = $subfield['data'];
                 switch ($subfield['code']) {
                     case 'w':
-                        // TODO: Remove old way of linking records in: [FINNA-3437]
                         // Datasource has been forced to use legacy linking method
                         if ($useLegacyLinkingId) {
                             $id = $this->getIdFromLinkingField($data);
                             break;
                         }
-                        // Datasource has been set to check for prefix from 003 and is most likely using new linking
-                        if ($prefixIn003 && $this->getIdFromLinkingField($data, $prefixIn003)) {
-                            $linkingId = $data;
-                            break;
+                        foreach ($linkPrefixes as $prefix) {
+                            if ($this->getIdFromLinkingField($data, $prefix)) {
+                                $linkingId = $data;
+                                break 2;
+                            }
                         }
                         $found = $this->getIdFromLinkingField($data);
                         if (!$found) {
                             break;
                         }
-                        // Determine if the id starts like (datasource.) and if it does, it is most likely a legacy id
-                        if (str_starts_with($found, "$recordSource.")) {
-                            $id = $found;
-                            break;
-                        }
-                        // If id does not match any of the previous, then assume it is a linking id without a prefix.
-                        $linkingId = $found;
+                        // If id does not match any of the previous, then assume its bib id.
+                        $id = $found;
                         break;
                     case 't':
                         $title = $this->stripTrailingPunctuation($data, '.-');
@@ -1925,12 +1916,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
         $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $this->getSubfields($field, 'w');
         $recordSource = $this->getDataSource();
+        $linkPrefixes = $this->getRecordLinkingPrefixes($recordSource);
 
-        if ($prefixIn003 = $this->datasourceSettings[$recordSource]['prefixIn003'] ?? null) {
-            $field003 = $this->getMarcReader()->getField('003');
-            $prefixIn003 = $field003 ? trim($field003) : null;
-        }
-        // TODO: Remove old way of linking records in: [FINNA-3437]
         $useLegacyLinkingId = $this->datasourceSettings[$recordSource]['legacy_settings']['linking_id'] ?? false;
         // Run through the link types specified in the config.
         // For each type, check field for reference
@@ -1984,13 +1971,12 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                     if ($useLegacyLinkingId) {
                         break;
                     }
-                    // TODO: Remove old way of linking records in: [FINNA-3437]
-                    foreach ($linkFields as $current) {
-                        if (
-                            !str_starts_with($current, "$recordSource.")
-                            && $this->getIdFromLinkingField($current, $prefixIn003)
-                        ) {
-                            $link = ['type' => 'linkingId', 'value' => $current];
+                    foreach ($linkPrefixes as $prefix) {
+                        foreach ($linkFields as $current) {
+                            if ($id = $this->getIdFromLinkingField($current, $prefix)) {
+                                $link = ['type' => 'linkingId', 'value' => $id];
+                                break 2;
+                            }
                         }
                     }
                     break;
@@ -2780,5 +2766,24 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
             }
         }
         return '';
+    }
+
+    /**
+     * Get record linking settings
+     *
+     * @param string $recordSource Record source
+     *
+     * @return array
+     */
+    protected function getRecordLinkingPrefixes(string $recordSource): array
+    {
+        if ($linkPrefixes = $this->datasourceSettings[$recordSource]['link_prefixes'] ?? []) {
+            $linkPrefixes = explode(',', $linkPrefixes);
+        }
+        if ($this->datasourceSettings[$recordSource]['prefixIn003'] ?? null) {
+            $field003 = $this->getMarcReader()->getField('003');
+            $linkPrefixes[] = trim($field003);
+        }
+        return array_filter(array_unique($linkPrefixes));
     }
 }

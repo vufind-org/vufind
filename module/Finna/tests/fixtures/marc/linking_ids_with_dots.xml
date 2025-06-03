@@ -20,12 +20,12 @@
             <subfield code="h">Format 2</subfield>
         </datafield>
         <datafield tag="773" ind1="0" ind2=" ">
-            <subfield code="w">(FI-MELINDA)link.withdot1</subfield>
+            <subfield code="w">link.withdot1</subfield>
             <subfield code="i">United</subfield>
             <subfield code="t">United records parent</subfield>
         </datafield>
         <datafield tag="773" ind1="0" ind2=" ">
-            <subfield code="w">(FI-MELINDA)link.withdot2</subfield>
+            <subfield code="w">link.withdot2</subfield>
             <subfield code="i">United</subfield>
             <subfield code="t">United records parent</subfield>
         </datafield>

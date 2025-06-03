@@ -120,7 +120,13 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     {
         yield 'legacy host record links' => [
             'marc/legacy_linking_ids.xml',
-            [],
+            [
+                'test' => [
+                    'legacy_settings' => [
+                        'linking_id' => true,
+                    ],
+                ],
+            ],
             [
                 [
                     'id' => 'test.123456',
@@ -207,8 +213,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 [
-                    'id' => '',
-                    'linkingId' => '(FI-MELINDA)link.withdot1',
+                    'id' => 'link.withdot1',
+                    'linkingId' => '',
                     'sourceId' => 'Solr',
                     'title' => 'United records parent',
                     'reference' => '',
@@ -216,8 +222,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'mainHeading' => '',
                 ],
                 [
-                    'id' => '',
-                    'linkingId' => '(FI-MELINDA)link.withdot2',
+                    'id' => 'link.withdot2',
+                    'linkingId' => '',
                     'sourceId' => 'Solr',
                     'title' => 'United records parent',
                     'reference' => '',
@@ -235,8 +241,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 [
-                    'id' => '',
-                    'linkingId' => '123456789',
+                    'id' => '123456789',
+                    'linkingId' => '',
                     'sourceId' => 'Solr',
                     'title' => 'United records parent',
                     'reference' => '',
@@ -244,8 +250,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'mainHeading' => '',
                 ],
                 [
-                    'id' => '',
-                    'linkingId' => '555',
+                    'id' => '555',
+                    'linkingId' => '',
                     'sourceId' => 'Solr',
                     'title' => 'United records Top',
                     'reference' => '',
@@ -298,7 +304,13 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     {
         yield 'legacy record links' => [
             'marc/legacy_linking_ids.xml',
-            [],
+            [
+                'test' => [
+                    'legacy_settings' => [
+                        'linking_id' => true,
+                    ],
+                ],
+            ],
             [
                 [
                     'value' => 'United records parent',
@@ -331,7 +343,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'title' => 'United',
                     'link' => [
                         'type' => 'linkingId',
-                        'value' => '(FI-MELINDA)123456789',
+                        'value' => '123456789',
                     ],
                 ],
                 [
@@ -339,7 +351,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'title' => 'Another United',
                     'link' => [
                         'type' => 'linkingId',
-                        'value' => '(FI-MELINDA)555',
+                        'value' => '555',
                     ],
                 ],
             ],
@@ -349,6 +361,32 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
             [
                 'test' => [
                     'prefixIn003' => false,
+                ],
+            ],
+            [
+                [
+                    'value' => 'United records parent',
+                    'title' => 'United',
+                    'link' => [
+                        'type' => 'bib',
+                        'value' => '123456789',
+                    ],
+                ],
+                [
+                    'value' => 'United records Top',
+                    'title' => 'Another United',
+                    'link' => [
+                        'type' => 'bib',
+                        'value' => '555',
+                    ],
+                ],
+            ],
+        ];
+        yield 'record link check linking id with multiple prefixes' => [
+            'marc/linking_ids_prefix_mismatch.xml',
+            [
+                'test' => [
+                    'link_prefixes' => 'FI-MELINDA,FI-NL',
                 ],
             ],
             [
@@ -370,32 +408,6 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        yield 'record link check linking id with wrong prefix' => [
-            'marc/linking_ids_prefix_mismatch.xml',
-            [
-                'test' => [
-                    'prefixIn003' => true,
-                ],
-            ],
-            [
-                [
-                    'value' => 'United records parent',
-                    'title' => 'United',
-                    'link' => [
-                        'type' => 'title',
-                        'value' => 'United records parent',
-                    ],
-                ],
-                [
-                    'value' => 'United records Top',
-                    'title' => 'Another United',
-                    'link' => [
-                        'type' => 'title',
-                        'value' => 'United records Top',
-                    ],
-                ],
-            ],
-        ];
         yield 'record link check linking id with a dot' => [
             'marc/linking_ids_with_dots.xml',
             [
@@ -408,16 +420,16 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'value' => 'United records parent',
                     'title' => 'United',
                     'link' => [
-                        'type' => 'linkingId',
-                        'value' => '(FI-MELINDA)link.withdot1',
+                        'type' => 'bib',
+                        'value' => 'link.withdot1',
                     ],
                 ],
                 [
                     'value' => 'United records parent',
                     'title' => 'United',
                     'link' => [
-                        'type' => 'linkingId',
-                        'value' => '(FI-MELINDA)link.withdot2',
+                        'type' => 'bib',
+                        'value' => 'link.withdot2',
                     ],
                 ],
             ],

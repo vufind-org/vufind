@@ -8,7 +8,7 @@
         type="Bibliographic">
         <leader>00000cam a22000004i 4500</leader>
         <controlfield tag="001">123</controlfield>
-        <controlfield tag="003">FI-NL</controlfield>
+        <controlfield tag="003">FI-TEST</controlfield>
         <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
         <datafield tag="245" ind1="0" ind2="4">
             <subfield code="a">The Foo:</subfield>
@@ -25,7 +25,7 @@
             <subfield code="t">United records parent</subfield>
         </datafield>
         <datafield tag="773" ind1="0" ind2=" ">
-            <subfield code="w">(FI-MELINDA)555</subfield>
+            <subfield code="w">(FI-NL)555</subfield>
             <subfield code="i">Another United</subfield>
             <subfield code="t">United records Top</subfield>
         </datafield>

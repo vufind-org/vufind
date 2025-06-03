@@ -140,6 +140,8 @@ archiveRequestRequireFilingUnit = true
 
 ; Used for linking records with linkingId. Checks if prefix in 003 should match with the linkable records
 ;prefixIn003 = true
+; In addition multiple prefixes can be declared with a comma separated list
+;link_prefixes = 'FI-MELINDA,FI-NL'
 
 ; Use legacy linking id (datasource.id) for records in this datasource
 ;legacy_settings[linking_id] = true
