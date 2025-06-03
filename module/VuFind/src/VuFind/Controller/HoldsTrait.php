@@ -54,11 +54,8 @@ trait HoldsTrait
         $driver = $this->loadRecord();
         // Holds on EDS API records require a different ID.
         // This id can be obtained from the getRtacIdentifier method
-        $id = $driver->getUniqueID();
-        $originalId = $id;
-        if (method_exists($driver, 'getRtacIdentifier')) {
-            $id = $driver->getRtacIdentifier();
-        }
+        $originalId = $driver->getUniqueID();
+        $id = $driver->tryMethod('getRtacIdentifier', default: $originalId);
 
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
