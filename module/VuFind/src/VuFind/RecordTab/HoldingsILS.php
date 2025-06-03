@@ -101,7 +101,7 @@ class HoldingsILS extends AbstractBase
     public function isVisible()
     {
         // if the record source is EDS, assume hidden holdings tab
-        // unless it is a catalog record and the publication type 
+        // unless it is a catalog record and the publication type
         // is not excluded from RTAC
         if ($this->driver->getSourceIdentifier() === 'EDS') {
             return (
