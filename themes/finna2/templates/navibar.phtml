@@ -218,7 +218,7 @@
             <?php endif; ?>
             <?php if ($this->reservationList()->isFunctionalityEnabled()): ?>
               <li>
-                <a <?=$this->url('myresearch-favorites') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('reservationlist-displaylists')?>">
+                <a <?=$this->url('reservationlist-displaylists') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('reservationlist-displaylists')?>">
                   <?=$this->transEsc('ReservationList::Reservation Lists')?>
                 </a>
               </li>
