@@ -127,7 +127,9 @@ class Holds
     /**
      * Set the search backend to use.
      *
-     * @param string $backend
+     * @param string $backend backend name (e.g. 'EDS') - supports
+     * special logic for EDS based holds
+     *
      * @return void
      */
     public function setSearchBackend($backend)
@@ -138,7 +140,10 @@ class Holds
     /**
      * Set the original ID of the record.
      *
-     * @param string $originalId
+     * @param string $originalId for EDS the unique identifiers differs
+     * from the identifier used for holds. As such, we need to keep track
+     * of the original ID so we can accomodate this difference.
+     *
      * @return void
      */
     public function setOriginalId($originalId)
@@ -220,10 +225,10 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id         A Bib ID
-     * @param array  $ids        A list of Source Records (if catalog is for a
+     * @param string $id      A Bib ID
+     * @param array  $ids     A list of Source Records (if catalog is for a
      * consortium)
-     * @param array  $options    Optional options to pass on to getHolding()
+     * @param array  $options Optional options to pass on to getHolding()
      *
      * @return array A sorted results set
      */
