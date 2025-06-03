@@ -1973,8 +1973,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                     }
                     foreach ($linkPrefixes as $prefix) {
                         foreach ($linkFields as $current) {
-                            if ($id = $this->getIdFromLinkingField($current, $prefix)) {
-                                $link = ['type' => 'linkingId', 'value' => $id];
+                            if ($this->getIdFromLinkingField($current, $prefix)) {
+                                $link = ['type' => 'linkingId', 'value' => $current];
                                 break 2;
                             }
                         }

@@ -343,7 +343,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'title' => 'United',
                     'link' => [
                         'type' => 'linkingId',
-                        'value' => '123456789',
+                        'value' => '(FI-MELINDA)123456789',
                     ],
                 ],
                 [
@@ -351,7 +351,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'title' => 'Another United',
                     'link' => [
                         'type' => 'linkingId',
-                        'value' => '555',
+                        'value' => '(FI-MELINDA)555',
                     ],
                 ],
             ],
@@ -395,7 +395,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'title' => 'United',
                     'link' => [
                         'type' => 'linkingId',
-                        'value' => '123456789',
+                        'value' => '(FI-MELINDA)123456789',
                     ],
                 ],
                 [
@@ -403,7 +403,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'title' => 'Another United',
                     'link' => [
                         'type' => 'linkingId',
-                        'value' => '555',
+                        'value' => '(FI-NL)555',
                     ],
                 ],
             ],
