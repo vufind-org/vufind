@@ -1,5 +1,5 @@
 <?php $list = $this->params->getSortList(); ?>
-<?php if (count($list) > 1): ?>
+<?php if (!empty($list)): ?>
   <form class="search-sort" action="<?=$this->currentPath()?>" method="get" name="sort">
     <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/', 'page' => '/.*/']);?>
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
