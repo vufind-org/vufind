@@ -31,6 +31,9 @@
 
 namespace VuFind\Config;
 
+use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\Config\Location\ConfigLocationTrait;
+
 /**
  * Configuration File Path Resolver
  *
@@ -43,6 +46,8 @@ namespace VuFind\Config;
  */
 class PathResolver
 {
+    use ConfigLocationTrait;
+
     /**
      * Default configuration subdirectory.
      *
@@ -93,6 +98,64 @@ class PathResolver
     }
 
     /**
+     * Get the config location based on the config name.
+     *
+     * @param string  $configName Config name
+     * @param ?string $path       path relative to VuFind base (optional; use null for
+     * default)
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getConfigLocation(
+        string $configName,
+        ?string $path = null,
+    ): ?ConfigLocationInterface {
+        return $this->getLocalConfigLocation($configName, $path)
+            ?? $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
+    }
+
+    /**
+     * Get the local config location based on the config name.
+     *
+     * @param string  $configName Config name
+     * @param ?string $path       path relative to VuFind base (optional; use null for
+     * default)
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getLocalConfigLocation(
+        string $configName,
+        ?string $path = null,
+    ): ?ConfigLocationInterface {
+        $currentLocation = null;
+        foreach ($this->localConfigDirStack as $localDirSpec) {
+            $configLocation = $this->getConfigLocationFromSpec($configName, $localDirSpec, $path);
+            if ($configLocation !== null) {
+                $currentLocation = $configLocation;
+            }
+        }
+        return $currentLocation;
+    }
+
+    /**
+     * Get the config location from a dir specification stack.
+     *
+     * @param string  $configName Config name
+     * @param array   $dirSpec    Directory specification stack
+     * @param ?string $path       path relative to VuFind base (optional; use null for
+     * default)
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getConfigLocationFromSpec(
+        string $configName,
+        array $dirSpec,
+        ?string $path
+    ): ?ConfigLocationInterface {
+        return $this->getMatchingConfigLocation($this->buildPath($dirSpec, $path), $configName);
+    }
+
+    /**
      * Get the file path to the local configuration file (null if none found).
      *
      * @param string  $filename config file name
@@ -108,17 +171,15 @@ class PathResolver
         ?string $path = null,
         bool $force = false
     ): ?string {
-        $fallbackResult = null;
-        foreach (array_reverse($this->localConfigDirStack) as $localDirSpec) {
-            $configPath = $this->buildPath($localDirSpec, $path, $filename);
-            if (file_exists($configPath)) {
-                return $configPath;
-            }
-            if ($force && null === $fallbackResult) {
-                $fallbackResult = $configPath;
-            }
+        $configLocation = $this->getLocalConfigLocation($filename, $path);
+        if ($configLocation !== null) {
+            return $configLocation->getPath();
         }
-        return $fallbackResult;
+        if ($force) {
+            $localDir = end($this->localConfigDirStack);
+            return $this->buildPath($localDir, $path, $filename);
+        }
+        return null;
     }
 
     /**

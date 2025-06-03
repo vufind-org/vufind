@@ -56,7 +56,7 @@ use VuFindTest\Container\MockContainer;
  */
 trait LiveDatabaseTrait
 {
-    use PathResolverTrait;
+    use ConfigPluginManagerTrait;
 
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
@@ -187,12 +187,7 @@ trait LiveDatabaseTrait
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
         $container->set('config', $config);
-        $configManager = new \VuFind\Config\PluginManager(
-            $container,
-            $config['vufind']['config_reader']
-        );
-        $container->set(\VuFind\Config\PluginManager::class, $configManager);
-        $this->addPathResolverToContainer($container);
+        $this->addConfigPluginManagerToContainer($container, $config);
         $this->addDoctrineDependenciesToContainer($container);
         return $container;
     }

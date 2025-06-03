@@ -34,8 +34,6 @@ use Exception;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
-use function count;
-
 /**
  * Database service for search.
  *
@@ -253,35 +251,6 @@ class SearchService extends AbstractDbService implements
             ->createQuery($dql)
             ->setParameters($params)
             ->getResult();
-    }
-
-    /**
-     * Set invalid user_id values in the table to null; return count of affected rows.
-     *
-     * @return int
-     */
-    public function cleanUpInvalidUserIds(): int
-    {
-        $dql = 'SELECT u.id FROM ' . $this->getEntityClass(UserEntityInterface::class) . ' u';
-        $query = $this->entityManager->createQuery($dql);
-        $validUserIds = $query->getResult();
-        $validUserIds = array_map(fn ($user) => $user['id'], $validUserIds);
-
-        // If there are no valid users, we can skip the update
-        if (empty($validUserIds)) {
-            return 0;
-        }
-
-        // Update invalid user IDs to NULL in a single query
-        $dql = 'UPDATE ' . $this->getEntityClass(SearchEntityInterface::class) . ' s '
-            . 'SET s.user = NULL '
-            . 'WHERE s.user NOT IN (:validUserIds)';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameter('validUserIds', $validUserIds);
-
-        // Number of updated records
-        $count = $query->execute();
-        return $count;
     }
 
     /**
