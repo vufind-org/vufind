@@ -1,6 +1,7 @@
 <!-- Get-this: biblio-info -->
 <?php
-$callNum = $this->getThis->getCallNumber() ?? $this->transEsc('data_unavailable');
+$callNum = $this->getThis->getCallNumber() ?? $this->translate('data_unavailable');
+$callNum = $this->escapeHtml($callNum);
 ?>
 <div>
   <p>
