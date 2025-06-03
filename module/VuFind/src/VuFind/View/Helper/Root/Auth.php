@@ -139,6 +139,27 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->getManager()->hasSessionInitiator();
+    }
+
+    /**
+     * Get the URL to establish a session (needed when the internal VuFind login
+     * form is inadequate). Returns false when no session initiator is needed.
+     *
+     * @return ?string
+     */
+    public function getSessionInitiator(): ?string
+    {
+        return $this->getManager()->getSessionInitiator();
+    }
+
+    /**
      * Render the create account form fields.
      *
      * @param array $context Context for rendering template

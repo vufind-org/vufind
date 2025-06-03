@@ -1,20 +1,31 @@
 /*global VuFind, multiFacetsSelection, unwrapJQuery */
 
 /**
- * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
+ * Get the globally-configured multi-facets selection setting (or default to 'false').
  *
- * @type {Function} Function to check for multiFacetsSelectionEnabled
+ * @returns string
+ */
+const getMultiFacetsSelectionSetting = () => {
+  return typeof multiFacetsSelection === 'undefined' ? 'false' : multiFacetsSelection;
+};
+
+/**
+ * Returns whether multi-facets selection is enabled.
+ *
+ * @returns boolean
  */
 const isMultiFacetsSelectionEnabled = () => {
-  return multiFacetsSelection !== 'false';
+  return getMultiFacetsSelectionSetting() !== 'false';
 };
 
+/**
+ * Get the default checkbox selection state to apply if overriding user state is not found.
+ *
+ * @returns boolean
+ */
 const getMultiFacetsSelectionPageLoadValue = () => {
-  return multiFacetsSelection === 'always' || multiFacetsSelection === 'checked';
-};
-
-const getMultiFacetsSelectionSetting = () => {
-  return multiFacetsSelection;
+  const setting = getMultiFacetsSelectionSetting();
+  return setting === 'always' || setting === 'checked';
 };
 
 /* --- Facet List --- */

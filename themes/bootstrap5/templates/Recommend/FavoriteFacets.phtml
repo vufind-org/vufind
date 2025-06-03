@@ -10,21 +10,21 @@
       <?php if (!empty($tagFilterList)): ?>
         <?php $field = $sideFacetSet['tags']['label']; ?>
         <?php foreach ($tagFilterList as $filter): ?>
-          <li>
+          <li class="list-group-item active">
             <?php $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
-            <a class="list-group-item active" href="<?=$removeLink?>">
+            <a href="<?=$removeLink?>">
+              <span class="text"><?=$this->escapeHtml($filter['displayText'])?></span>
               <span class="float-end"><?=$this->icon('ui-remove') ?></span>
-              <?=$this->escapeHtml($filter['displayText'])?>
             </a>
           </li>
         <?php endforeach; ?>
       <?php endif; ?>
       <?php foreach ($sideFacetSet['tags']['list'] as $thisFacet): ?>
         <?php if (!$thisFacet['isApplied']): ?>
-          <li>
-            <a class="list-group-item" href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
-              <span class="badge"><?=$this->escapeHtml($thisFacet['count'])?></span>
-              <?=$this->escapeHtml($thisFacet['displayText'])?>
+          <li class="list-group-item">
+            <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
+              <span class="text"><?=$this->escapeHtml($thisFacet['displayText'])?></span>
+              <span class="badge float-end"><?=$this->escapeHtml($thisFacet['count'])?></span>
             </a>
           </li>
         <?php endif ?>

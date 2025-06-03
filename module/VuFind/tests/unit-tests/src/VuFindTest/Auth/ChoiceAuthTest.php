@@ -208,14 +208,14 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that methods return false when no context is set.
+     * Test that methods return null when no context is set.
      *
      * @return void
      */
     public function testContextFreeBehavior(): void
     {
         $ca = $this->getChoiceAuth();
-        $this->assertFalse($ca->getSessionInitiator('http://foo'));
+        $this->assertNull($ca->getSessionInitiator('http://foo'));
         $this->assertFalse($ca->supportsPasswordChange());
     }
 

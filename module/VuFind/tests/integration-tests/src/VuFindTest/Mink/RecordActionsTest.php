@@ -53,6 +53,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\AutocompleteTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\SearchSortTrait;
+    use \VuFindTest\Feature\TagTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -77,24 +78,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch($query);
         $this->clickCss($page, '.result a.title');
         return $page;
-    }
-
-    /**
-     * Make new account
-     *
-     * @param Element $page     Page element
-     * @param string  $username Username to create
-     *
-     * @return void
-     */
-    protected function makeAccount(Element $page, string $username): void
-    {
-        $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->fillInAccountForm(
-            $page,
-            ['username' => $username, 'email' => $username . '@vufind.org']
-        );
-        $this->clickCss($page, '#accountForm .btn.btn-primary');
     }
 
     /**
@@ -209,36 +192,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Add tags to a record
-     *
-     * @param Element $page Page object
-     * @param string  $tags Tag(s) to add
-     * @param ?string $user Username to log in with (null if already logged in)
-     * @param ?string $pass Password to log in with (null if already logged in)
-     *
-     * @return void
-     */
-    protected function addTagsToRecord(
-        Element $page,
-        string $tags,
-        ?string $user = null,
-        ?string $pass = null
-    ): void {
-        $this->clickCss($page, '.tag-record');
-        // Login if necessary
-        if (!empty($user) && !empty($pass)) {
-            $this->fillInLoginForm($page, $user, $pass);
-            $this->submitLoginForm($page);
-        }
-        // Add tags
-        $this->findCssAndSetValue($page, '.modal #addtag_tag', $tags);
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->waitForPageLoad($page);
-        $this->assertEquals('Tags Saved', $this->findCssAndGetText($page, '.modal-body .alert-success'));
-        $this->closeLightbox($page);
-    }
-
-    /**
      * Test adding tags on records.
      *
      * @return void
@@ -262,16 +215,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->addTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
         // Count tags
         $this->waitForPageLoad($page);
-        $tags = $page->findAll('css', '.tagList .tag');
-        $this->assertCount(4, $tags);
-        $tvals = [];
-        foreach ($tags as $t) {
-            $tvals[] = $this->findCssAndGetText($t, 'a');
-        }
-        sort($tvals);
-        $this->assertEquals($tvals, ['2', 'five', 'one', 'three 4']);
+        $this->assertEquals(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
-        $this->clickCss($tags[0], 'button');
+        $this->clickCss($page, '.tagList .tag button');
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         // Count tags with missing
@@ -437,28 +383,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         $this->assertCount(6, $tags);
-    }
-
-    /**
-     * Set up and access the Tag Admin page.
-     *
-     * @param string $subPage The tag admin sub-page (optional)
-     *
-     * @return Element
-     */
-    protected function goToTagAdmin(string $subPage = ''): Element
-    {
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Site' => ['admin_enabled' => 1],
-                    'Social' => ['case_sensitive_tags' => 'true'],
-                ],
-            ],
-        );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/Admin/Tags' . $subPage));
-        return $session->getPage();
     }
 
     /**

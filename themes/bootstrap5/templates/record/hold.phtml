@@ -94,7 +94,7 @@
             <noscript> (<?=$this->transEsc('Please enable JavaScript.')?>)</noscript>
           <?php endif; ?>
         </label>
-        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-control">
+        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-select">
           <?php if ($selected === false): ?>
           <option value="" selected="selected">
             <?=$this->transEsc('select_pickup_location')?>

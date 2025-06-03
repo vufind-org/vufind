@@ -51,17 +51,20 @@
               </li>
             <?php else: ?>
               <li class="nav-item" id="loginOptions">
-                <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-                  <a href="<?=$this->url('myresearch-userlogin')?>" class="nav-link icon-link">
-                    <?=$this->icon('sign-in', 'icon-link__icon') ?>
-                    <span class="icon-link__label"><?=$this->transEsc('Institutional Login')?></span>
-                  </a>
-                <?php else: ?>
-                  <a href="<?=$this->url('myresearch-userlogin')?>" class="nav-link icon-link" data-lightbox>
-                    <?=$this->icon('sign-in', 'icon-link__icon') ?>
-                    <span class="icon-link__label"><?=$this->transEsc('Login')?></span>
-                  </a>
-                <?php endif; ?>
+                <?php
+                  $hasSessionInitiator = $this->auth()->hasSessionInitiator();
+                  $loginLinkAttributes = [
+                    'href' => $this->url('myresearch-userlogin'),
+                    'class' => 'nav-link icon-link',
+                  ];
+                  if (!$hasSessionInitiator) {
+                    $loginLinkAttributes['data-lightbox'] = true;
+                  }
+                ?>
+                <a<?=$this->htmlAttributes($loginLinkAttributes)?>>
+                  <?=$this->icon('sign-in', 'icon-link__icon') ?>
+                  <span class="icon-link__label"><?=$this->transEsc($hasSessionInitiator ? 'Institutional Login' : 'Login')?></span>
+                </a>
               </li>
             <?php endif; ?>
           <?php endif; ?>

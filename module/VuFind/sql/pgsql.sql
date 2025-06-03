@@ -79,35 +79,6 @@ PRIMARY KEY (id)
 CREATE INDEX ratings_user_id_idx ON ratings (user_id);
 CREATE INDEX ratings_resource_id_idx ON ratings (resource_id);
 
-
--- --------------------------------------------------------
-
---
--- Table structure for table search. Than fixed created column default value. Old value is 0000-00-00.
---
-
-DROP TABLE IF EXISTS "search";
-
-CREATE TABLE search (
-id BIGSERIAL,
-user_id int DEFAULT NULL,
-session_id varchar(128),
-created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
-title varchar(20) DEFAULT NULL,
-saved boolean NOT NULL DEFAULT '0',
-search_object bytea,
-checksum int DEFAULT NULL,
-notification_frequency int NOT NULL DEFAULT '0',
-last_notification_sent timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
-notification_base_url varchar(255) NOT NULL DEFAULT '',
-PRIMARY KEY (id)
-);
-CREATE INDEX search_user_id_idx ON search (user_id);
-CREATE INDEX session_id_idx ON search (session_id);
-CREATE INDEX notification_frequency_idx ON search (notification_frequency);
-CREATE INDEX notification_base_url_idx ON search (notification_base_url);
-CREATE INDEX search_created_saved_idx ON search (created, saved);
-
 -- --------------------------------------------------------
 
 --
@@ -177,6 +148,35 @@ UNIQUE (cat_id)
 
 CREATE INDEX user_email_idx ON "user" (email);
 CREATE INDEX user_verify_hash_idx ON "user" (verify_hash);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table search. Than fixed created column default value. Old value is 0000-00-00.
+--
+
+DROP TABLE IF EXISTS "search";
+
+CREATE TABLE "search" (
+id BIGSERIAL,
+user_id int DEFAULT NULL,
+session_id varchar(128),
+created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
+title varchar(20) DEFAULT NULL,
+saved boolean NOT NULL DEFAULT '0',
+search_object bytea,
+checksum int DEFAULT NULL,
+notification_frequency int NOT NULL DEFAULT '0',
+last_notification_sent timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+notification_base_url varchar(255) NOT NULL DEFAULT '',
+PRIMARY KEY (id),
+CONSTRAINT search_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE
+);
+CREATE INDEX search_user_id_idx ON search (user_id);
+CREATE INDEX session_id_idx ON search (session_id);
+CREATE INDEX notification_frequency_idx ON search (notification_frequency);
+CREATE INDEX notification_base_url_idx ON search (notification_base_url);
+CREATE INDEX search_created_saved_idx ON search (created, saved);
 
 -- --------------------------------------------------------
 

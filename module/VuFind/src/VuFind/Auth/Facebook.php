@@ -140,9 +140,9 @@ class Facebook extends AbstractBase implements
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $base = 'https://www.facebook.com/dialog/oauth';
         // Adding the auth_method setting makes it possible to handle logins when

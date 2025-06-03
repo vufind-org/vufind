@@ -588,7 +588,7 @@ class EDS extends DefaultRecord
                 '</text'       => '</div',
                 '<title'       => '<h2',
                 '</title'      => '</h2',
-                '<anid'        => '<p',
+                '<anid'        => '<p class="eds_html_anid"',
                 '</anid'       => '</p',
                 '<aug'         => '<p class="aug"',
                 '</aug'        => '</p',
@@ -660,8 +660,31 @@ class EDS extends DefaultRecord
                 '<a id="$1" href="#$2"',
                 $data
             );
-
             $data = $this->replaceBRWithCommas($data, $group);
+
+            // Avoid tables & mathML markup from showing as "raw html"
+            // - Tables and mathML markup are wrapped in <ephtml> tags
+            // - their content is urlencoded (i.e. double-encoding)
+            // - through this function we decode the content and wrap it in a
+            //   div/span tag and give it a class for styling
+            if (strpos($data, 'ephtml') > -1) {
+                $pattern = "/<\/?ephtml>/";
+                $splitParts = preg_split($pattern, $data);
+                $data = '';
+                foreach ($splitParts as $part) {
+                    if (strpos($part, '&lt;table') > -1) {
+                        $data .= '<div class="eds_html_table">';
+                        $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
+                        $data .= '</div>';
+                    } elseif (strpos($part, '&lt;math') > -1) {
+                        $data .= '<span class="eds_html_math">';
+                        $data .= html_entity_decode($part, ENT_QUOTES, 'utf-8');
+                        $data .= '</span>';
+                    } else {
+                        $data .= $part;
+                    }
+                }
+            }
         }
 
         return $data;

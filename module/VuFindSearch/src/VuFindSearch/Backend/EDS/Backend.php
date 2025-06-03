@@ -151,6 +151,13 @@ class Backend extends AbstractBackend
     protected $backendType = null;
 
     /**
+     * Validation config
+     *
+     * @var array
+     */
+    protected $validationConfig = [];
+
+    /**
      * Constructor.
      *
      * @param Connector                        $client  EdsApi client to use
@@ -181,6 +188,7 @@ class Backend extends AbstractBackend
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
+        $this->validationConfig = $config->Validation?->toArray() ?? [];
 
         // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;
@@ -228,6 +236,11 @@ class Backend extends AbstractBackend
         $baseParams->set('pageNumber', $page);
 
         $searchModel = $this->paramBagToEBSCOSearchModel($baseParams);
+        if (!$searchModel->isValid()) {
+            // This may happen in the context of a blended search,
+            // when the database is valid for another backend.
+            return $this->createRecordCollection([]);
+        }
         $qs = $searchModel->convertToQueryString();
         $this->debug("Search Model query string: $qs");
         try {
@@ -422,7 +435,11 @@ class Backend extends AbstractBackend
             $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
         }
-        return new SearchRequestModel($options);
+        $model = new SearchRequestModel($options, $this->validationConfig);
+        if ($this->logger) {
+            $model->setLogger($this->logger);
+        }
+        return $model;
     }
 
     /**

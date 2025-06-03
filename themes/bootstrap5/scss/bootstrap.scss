@@ -451,13 +451,6 @@ body.rtl .dropdown-menu {
 .cart-controls {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid $border-color;
-
-  .toolbar-btn {
-    @extend .toolbar-btn;
-    @extend .icon-link;
-
-    margin: 0;
-  }
 }
 
 @include media-breakpoint-up(md) {
@@ -565,6 +558,11 @@ body.rtl .dropdown-menu {
 .list-group:not(:last-child) {
   list-style: none;
   margin-bottom: 1rem;
+}
+
+// Fix active tag color in sidebar
+.template-dir-myresearch .sidebar .list-group-item.active a {
+  color: inherit;
 }
 
 .dropdown-menu > li .dropdown-header {

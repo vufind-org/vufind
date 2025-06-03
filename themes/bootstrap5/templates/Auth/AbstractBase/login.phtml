@@ -1,6 +1,5 @@
 <?php $account = $this->auth()->getManager(); ?>
-<?php $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
-<?php if (!$sessionInitiator): // display default login form if no login URL provided ?>
+<?php if (!$account->hasSessionInitiator()): // display default login form if no login URL provided ?>
   <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" class="form-login">
     <?=$this->auth()->getLoginFields()?>
     <?php if ($account->supportsPersistentLogin()) : ?>
@@ -24,5 +23,5 @@
     </div>
   </form>
 <?php else: ?>
-  <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" class="btn btn-link" data-lightbox-ignore><?=$this->transEsc('Institutional Login')?></a>
+  <a href="<?=$this->escapeHtmlAttr($account->getSessionInitiator())?>" class="btn btn-link" data-lightbox-ignore><?=$this->transEsc('Institutional Login')?></a>
 <?php endif; ?>

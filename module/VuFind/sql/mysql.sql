@@ -150,7 +150,8 @@ CREATE TABLE `search` (
   KEY `session_id` (`session_id`),
   KEY `notification_frequency` (`notification_frequency`),
   KEY `notification_base_url` (`notification_base_url`(190)),
-  KEY `created_saved` (`created`, `saved`)
+  KEY `created_saved` (`created`, `saved`),
+  CONSTRAINT `search_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

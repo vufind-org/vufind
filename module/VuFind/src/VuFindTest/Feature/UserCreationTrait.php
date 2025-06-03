@@ -130,6 +130,24 @@ trait UserCreationTrait
     }
 
     /**
+     * Make new account
+     *
+     * @param Element $page     Page element
+     * @param string  $username Username to create
+     *
+     * @return void
+     */
+    protected function makeAccount(Element $page, string $username): void
+    {
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm(
+            $page,
+            ['username' => $username, 'email' => $username . '@vufind.org']
+        );
+        $this->clickCss($page, '#accountForm .btn.btn-primary');
+    }
+
+    /**
      * Submit the login form (assuming it's open).
      *
      * @param Element $page    Page element.

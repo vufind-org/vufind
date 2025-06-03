@@ -31,6 +31,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\SessionManager;
+use Laminas\View\Renderer\RendererInterface;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
@@ -101,6 +102,13 @@ class Manager implements
     protected ?ILSAuthenticator $ilsAuthenticator = null;
 
     /**
+     * Default session initiator target
+     *
+     * @var ?string
+     */
+    protected ?string $defaultSessionInitiatorTarget = null;
+
+    /**
      * Constructor
      *
      * @param Config                          $config            VuFind configuration
@@ -112,6 +120,7 @@ class Manager implements
      * @param CsrfInterface                   $csrf              CSRF validator
      * @param LoginTokenManager               $loginTokenManager Login Token manager
      * @param Connection                      $ils               ILS connection
+     * @param RendererInterface               $viewRenderer      View renderer
      */
     public function __construct(
         protected Config $config,
@@ -122,7 +131,8 @@ class Manager implements
         protected CookieManager $cookieManager,
         protected CsrfInterface $csrf,
         protected LoginTokenManager $loginTokenManager,
-        protected Connection $ils
+        protected Connection $ils,
+        protected RendererInterface $viewRenderer
     ) {
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
@@ -313,18 +323,29 @@ class Manager implements
     }
 
     /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->getAuth()->hasSessionInitiator();
+    }
+
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate). Returns false when no session initiator is needed.
      *
-     * @param string $target Full URL where external authentication method should
+     * @param ?string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator(string $target): bool|string
+    public function getSessionInitiator(?string $target = null): ?string
     {
+        $target ??= $this->getDefaultSessionInitiatorTarget();
         try {
-            return $this->getAuth()->getSessionInitiator($target);
+            $sessionInitiator = $this->getAuth()->getSessionInitiator($target);
         } catch (InvalidArgumentException $e) {
             // If the authentication is in an illegal state but there is an
             // active user session, we should clear everything out so the user
@@ -336,9 +357,24 @@ class Manager implements
             if (!$this->getIdentity()) {
                 throw $e;
             }
-            $this->clearLoginState();
-            return $this->getAuth()->getSessionInitiator($target);
+            $sessionInitiator = $this->getAuth()->getSessionInitiator($target);
         }
+        return $sessionInitiator;
+    }
+
+    /**
+     * Get default session initiator target.
+     *
+     * @return string
+     */
+    protected function getDefaultSessionInitiatorTarget(): string
+    {
+        if ($this->defaultSessionInitiatorTarget === null) {
+            $serverHelper = $this->viewRenderer->plugin('serverurl');
+            $urlHelper = $this->viewRenderer->plugin('url');
+            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
+        }
+        return $this->defaultSessionInitiatorTarget;
     }
 
     /**
@@ -765,7 +801,7 @@ class Manager implements
 
             // Validate CSRF for form-based authentication methods:
             if (
-                !$this->getAuth()->getSessionInitiator('')
+                !$this->getAuth()->hasSessionInitiator()
                 && $this->getAuth()->needsCsrfCheck($request)
             ) {
                 if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {

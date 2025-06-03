@@ -78,7 +78,7 @@ class ManagerFactory implements FactoryInterface
         $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
         $loginTokenManager = $container->get(\VuFind\Auth\LoginTokenManager::class);
         $ils = $container->get(\VuFind\ILS\Connection::class);
-
+        $viewRenderer = $container->get('ViewRenderer');
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(
             $config,
@@ -89,7 +89,8 @@ class ManagerFactory implements FactoryInterface
             $cookies,
             $csrf,
             $loginTokenManager,
-            $ils
+            $ils,
+            $viewRenderer
         );
         $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));
         $manager->checkForExpiredCredentials();
