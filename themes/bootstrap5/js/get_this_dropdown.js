@@ -79,7 +79,7 @@ $(function pageLoad() {
 
   /**
    * Switch the focus to a sibling element in the dropdown
-   * @param elem Element to focus
+   * @param {HTMLElement} elem Element to focus
    * @returns {boolean} Focus was successful
    */
   function focusSiblingElement(elem) {
