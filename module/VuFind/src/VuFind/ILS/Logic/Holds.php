@@ -151,7 +151,6 @@ class Holds
         $this->originalId = $originalId;
     }
 
-
     /**
      * Support method to rearrange the holdings array for displaying convenience.
      *

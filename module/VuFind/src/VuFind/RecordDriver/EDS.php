@@ -164,7 +164,6 @@ class EDS extends DefaultRecord
         return $this->holdLogic->getHoldings($bibId, $consortialIds, []);
     }
 
-
     /**
      * Get the short (pre-subtitle) title of the record.
      *
