@@ -43,8 +43,8 @@
   <div class="footer-column">
     <a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>" title="<?=$this->transEscAttr('About Finna')?>">
       <?php
-        if (!($finnaImage = $this->imageLink('powered-by-finna_' . $this->layout()->userLang . '-black.png'))) {
-          $finnaImage = $this->imageLink('powered-by-finna_en-gb-black.png');
+        if (!($finnaImage = $this->imageLink('powered-by-finna_' . $this->layout()->userLang . '-black.svg'))) {
+          $finnaImage = $this->imageLink('powered-by-finna_en-gb-black.svg');
         }
         if ($finnaImage):
       ?>
@@ -56,7 +56,7 @@
   </div>
   <div class="footer-column">
     <a href="https://vufind.org/" title="<?=$this->transEscAttr('About VuFind')?>">
-      <img src="<?=$this->imageLink('vufind-logo-black.png')?>" alt="">
+      <img src="<?=$this->imageLink('vufind-logo-black.svg')?>" alt="">
       <span class="visually-hidden"><?=$this->transEsc('About VuFind')?></span>
     </a>
   </div>
