@@ -35,6 +35,7 @@ use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Exception\DuplicateKeyException;
 
 /**
  * Class to manage database persistence operations.
@@ -74,8 +75,27 @@ class PersistenceManager implements DbServiceAwareInterface
             $this->getDbService(UserSessionPersistenceInterface::class)->addUserDataToSession($entity);
             return;
         }
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+        } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+            throw $this->exceptionIndicatesDuplicateKey($e)
+                ? new DuplicateKeyException($e->getMessage(), $e->getCode(), $e)
+                : $e;
+        }
+    }
+
+    /**
+     * Does the provided exception indicate that a duplicate key value has been
+     * created?
+     *
+     * @param \Exception $e Exception to check
+     *
+     * @return bool
+     */
+    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
+    {
+        return strstr($e->getMessage(), 'Duplicate entry') !== false;
     }
 
     /**
