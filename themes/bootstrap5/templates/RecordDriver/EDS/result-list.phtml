@@ -116,11 +116,11 @@
       <?php if ($identifierLinksHtml): ?>
         <div><?=$identifierLinksHtml?></div>
       <?php endif; ?>
-            <!-- Format / Label / Clear Availability Display-->
-       <?php
-       $openUrl = $this->openUrl($this->driver, 'results');
-       $openUrlActive = $openUrl->isActive();
-       ?>
+      <?php /* Format / Label / Clear Availability Display */ ?>
+      <?php
+        $openUrl = $this->openUrl($this->driver, 'results');
+        $openUrlActive = $openUrl->isActive();
+      ?>
       <div class="result-formats">
         <?=$this->record($this->driver)->getFormatList() ?>
         <?=$this->record($this->driver)->getLabelList() ?>
@@ -130,7 +130,7 @@
           </span>
         <?php endif; ?>
       </div>
-      <!-- More Detailed RTAC -->
+      <?php /* More Detailed RTAC */ ?>
       <div class="callnumAndLocation ajax-availability hidden">
         <?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
           <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
