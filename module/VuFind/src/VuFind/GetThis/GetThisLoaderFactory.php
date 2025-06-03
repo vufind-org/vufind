@@ -68,9 +68,12 @@ class GetThisLoaderFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $requestedName,
         ?array $options = null
     ) {
+
+        $viewHelperManager = $container->get('ViewHelperManager');
         return new $requestedName(
             $container->get(\VuFind\Config\YamlReader::class),
             $container->get(\VuFind\Regex\Regex::class),
+            $viewHelperManager->get('translate'),
         );
     }
 }

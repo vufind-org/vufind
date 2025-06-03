@@ -7,11 +7,7 @@ function getDisplay($view, $item)
 {
     $item['item_id'] ??= null;
     $location = $view->getThis->getLocation($item['item_id']);
-    if ($callNumber = $view->getThis->getCallNumber($item['item_id'])) {
-        $callNumber = $view->transEsc($callNumber);
-    } else {
-        $callNumber = $view->transEsc('Alternative');
-    }
+    $callNumber = $view->getThis->getCallNumber($item['item_id']) ?? $view->transEsc('Alternative');
     if ($view->getThis->showCopyNumber() && $copyNumber = $view->getThis->getCopyNumber($item['item_id'])) {
         $copyNumber = ' (' . $view->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) . ')';
     } else {

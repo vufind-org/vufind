@@ -15,7 +15,7 @@ $(function pageLoad() {
 
   /**
    * Whether the link for the current holding is the element being clicked
-   * @param e Event triggered by the user
+   * @param {Event} e Event triggered by the user
    * @returns {boolean} Whether the dropdown is targeted by the event
    */
   function isDropdownLinkTargeted(e) {
@@ -44,7 +44,7 @@ $(function pageLoad() {
 
   /**
    * Listener on events to open the dropdown
-   * @param e Event triggered by the user
+   * @param {Event} e Event triggered by the user
    */
   function openDropdownListener(e) {
     if (isDropdownLinkTargeted(e)) {
@@ -68,7 +68,7 @@ $(function pageLoad() {
 
   /**
    * Listener on events to open the dropdown if bottom arrow is pressed
-   * @param e Event triggered by the user
+   * @param {Event} e Event triggered by the user
    */
   function openDropdownOnKeyDown(e) {
     if (isDropdownLinkTargeted(e) && !isDropdownOpen() && e.keyCode === KEY_CODE.DOWN_ARROW) {
@@ -93,7 +93,7 @@ $(function pageLoad() {
 
   /**
    * Listener on keys pressed (up/down) to change the element focused in the dropdown
-   * @param e Event triggered by the user
+   * @param {Event} e Event triggered by the user
    */
   function arrowKeysListener(e) {
     const dropdown = document.querySelector(".get-this-dropdown div");

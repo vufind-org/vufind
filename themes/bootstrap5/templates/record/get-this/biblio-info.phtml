@@ -1,10 +1,6 @@
 <!-- Get-this: biblio-info -->
 <?php
-if ($callNum = $this->getThis->getCallNumber()) {
-    $callNum = $this->transEsc($callNum);
-} else {
-    $callNum = $this->transEsc('Not available');
-}
+$callNum = $this->getThis->getCallNumber() ?? $this->transEsc('data_unavailable');
 ?>
 <div>
   <p>

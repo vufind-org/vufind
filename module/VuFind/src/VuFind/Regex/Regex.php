@@ -55,7 +55,7 @@ class Regex
      *
      * @param string $regexName Regex name within the config file
      * @param string $string    The string to test against
-     * @param ?bool  $default   What to return if the regex doesn't exist, null (default will throw an error)
+     * @param ?bool  $default   Boolean to return if the regex doesn't exist, or null to throw an error (default)
      *
      * @return bool
      * @throws Exception        If the regex given as parameter does not exist and default is not set

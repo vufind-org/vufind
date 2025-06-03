@@ -20,6 +20,7 @@ use VuFind\Config\YamlReader;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Regex\Regex;
 
+use VuFind\View\Helper\Root\Translate;
 use function call_user_func;
 use function count;
 use function is_array;
@@ -99,7 +100,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      * @param YamlReader $yamlReader YamlReader service
      * @param Regex      $regex      Regex service
      */
-    public function __construct(protected YamlReader $yamlReader, protected Regex $regex)
+    public function __construct(protected YamlReader $yamlReader, protected Regex $regex, protected Translate $translator)
     {
         $this->config = $yamlReader->get($this->configFilename);
     }
@@ -455,7 +456,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         }
 
         if ($this->isOnlineResource($itemId)) {
-            $callNum = 'Online';
+            $callNum = $this->translator->translate('Online');
         }
 
         return empty($callNum) ? null : $callNum;
