@@ -254,7 +254,7 @@ button.list-group-item {
   }
 }
 
-.form-control:not([multiple]):not([size]) {
+.form-control:not([multiple]):not([size]):not(textarea) {
   appearance: auto;
   height: $input-height;
 }

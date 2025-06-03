@@ -5,7 +5,18 @@
   <?php foreach ($comments as $comment): ?>
     <div class="comment">
       <div class="comment-name">
-        <strong><?=null === $comment->getUser()->getId() ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($comment->getUser()->getFirstName() . ' ' . $comment->getUser()->getLastName()))?></strong><br>
+        <?php
+          $commentUser = $comment->getUser();
+          if (null === $commentUser->getId()) {
+            $username = $this->translate('comment_anonymous_user');
+          } else {
+            $username = trim($comment->getUser()->getFirstName() . ' ' . $comment->getUser()->getLastName());
+            if ('' === $username) {
+              $username = '-';
+            }
+          }
+        ?>
+        <strong><?=$this->escapeHtml($username)?></strong><br>
         <small>
           <?=$this->escapeHtml($comment->getCreated()->format($this->config()->dateTimeFormat()))?>
           <?php if (($user = $this->auth()->getUserObject()) && $comment->getUser()->getId() == $user->getId()): ?>
