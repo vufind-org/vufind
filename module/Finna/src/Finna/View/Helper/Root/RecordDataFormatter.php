@@ -303,7 +303,6 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
             'Publish date',
             'Published',
             'Published in',
-            'Publisher',
             'Record Links',
             'Related Items',
             'Related Materials',
