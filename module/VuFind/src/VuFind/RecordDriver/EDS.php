@@ -145,19 +145,25 @@ class EDS extends DefaultRecord
      */
     public function getRealTimeHoldings()
     {
-        return (
-            $this->hasILS() &&
-            $this->hasCatalog()
-            && $this->pubTypeExcludedFromRtac()
-        )
-            ? $this->holdLogic->getHoldings(
-                $this->getRtacIdentifier(),
-                $this->tryMethod('getConsortialIDs'),
-                [],
-                'EDS',
-                $this->getUniqueID()
-            ) : [];
+        if (
+            !$this->hasILS() ||
+            !$this->hasCatalog() ||
+            !$this->pubTypeExcludedFromRtac()
+        ) {
+            return [];
+        }
+
+        // Set the search backend and original ID in Holds Class
+        $this->holdLogic->setSearchBackend('EDS');
+        $this->holdLogic->setOriginalId($this->getUniqueID());
+
+        // Retrieve holdings
+        $bibId = $this->getRtacIdentifier();
+        $consortialIds = $this->tryMethod('getConsortialIDs');
+
+        return $this->holdLogic->getHoldings($bibId, $consortialIds, []);
     }
+
 
     /**
      * Get the short (pre-subtitle) title of the record.

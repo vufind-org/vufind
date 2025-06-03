@@ -125,6 +125,29 @@ class Holds
     }
 
     /**
+     * Set the search backend to use.
+     *
+     * @param string $backend
+     * @return void
+     */
+    public function setSearchBackend($backend)
+    {
+        $this->searchBackend = $backend;
+    }
+
+    /**
+     * Set the original ID of the record.
+     *
+     * @param string $originalId
+     * @return void
+     */
+    public function setOriginalId($originalId)
+    {
+        $this->originalId = $originalId;
+    }
+
+
+    /**
      * Support method to rearrange the holdings array for displaying convenience.
      *
      * @param array $holdings An associative array of location => item array
@@ -201,23 +224,13 @@ class Holds
      * @param array  $ids        A list of Source Records (if catalog is for a
      * consortium)
      * @param array  $options    Optional options to pass on to getHolding()
-     * @param string $backend    The search backend to use (optional)
-     * @param string $originalId The original ID of the record (optional)
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null, $options = [], $backend = null, $originalId = null)
+    public function getHoldings($id, $ids = null, $options = [])
     {
         if (!$this->catalog) {
             return [];
-        }
-
-        if ($backend) {
-            $this->searchBackend = $backend;
-        }
-
-        if ($originalId) {
-            $this->originalId = $originalId;
         }
 
         // Retrieve stored patron credentials; it is the responsibility of the
