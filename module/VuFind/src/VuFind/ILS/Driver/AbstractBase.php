@@ -81,14 +81,4 @@ abstract class AbstractBase implements DriverInterface
     ): void {
         throw new ILSException($msg ?? $exception->getMessage(), 0, $exception);
     }
-
-    /**
-     * Whether the driver supports the GetThis feature
-     *
-     * @return bool
-     */
-    public function supportsGetThis(): bool
-    {
-        return false;
-    }
 }

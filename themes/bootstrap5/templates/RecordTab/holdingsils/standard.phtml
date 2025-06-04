@@ -4,7 +4,7 @@
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
-    $getThisEnabled = isset($this->getThis) && $this->tab->supportsGetThis();
+    $getThisEnabled = isset($this->getThis) && $this->getThis->areItemsSupported([$holding]);
     if ($getThisEnabled) {
         $this->getThis->setItems([$holding]);
         $this->getThis->setRecord($this->record($this->driver));

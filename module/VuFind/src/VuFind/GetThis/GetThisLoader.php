@@ -17,6 +17,7 @@ namespace VuFind\GetThis;
 use Exception;
 use Throwable;
 use VuFind\Config\YamlReader;
+use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Regex\Regex;
 use VuFind\View\Helper\Root\Translate;
@@ -761,5 +762,26 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             $this->getItem($this->itemId, true);
         }
         $this->subTemplates = null;
+    }
+
+    /**
+     * Given holdings, return whether the holdings are compatible with the get this feature
+     *
+     * @param array $items Holdings
+     *
+     * @return bool
+     */
+    public function areItemsSupported(array $items): bool
+    {
+        foreach ($items as $item) {
+            if (
+                array_key_exists('location', $item)
+                || array_key_exists('location_code', $item)
+                || (array_key_exists('availability', $item) && $item['availability'] instanceof AvailabilityStatusInterface)
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -2906,14 +2906,4 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         return $links;
     }
-
-    /**
-     * Whether the driver supports the GetThis feature
-     *
-     * @return bool
-     */
-    public function supportsGetThis(): bool
-    {
-        return true;
-    }
 }

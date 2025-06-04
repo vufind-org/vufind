@@ -1,5 +1,5 @@
 <?php
-$getThisEnabled = isset($this->getThis);
+$getThisEnabled = isset($this->getThis) && $this->getThis->areItemsSupported($this->statusItems);
 if ($getThisEnabled) {
     $this->getThis->setItems($this->statusItems);
 }
