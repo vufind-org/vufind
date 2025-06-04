@@ -70,7 +70,6 @@ class YamlReader
      *
      * @param PathResolver           $pathResolver Config file path resolver
      * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
-     * (optional; defaults to \VuFind\Config\Locator)
      */
     public function __construct(
         protected PathResolver $pathResolver,
