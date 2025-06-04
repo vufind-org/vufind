@@ -75,7 +75,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @var ?ConfigLocationInterface
      */
-    protected ?ConfigLocationInterface $parentLocation = null;
+    protected ?ConfigLocationInterface $dirLocationsParent = null;
 
     /**
      * Constructor
@@ -209,21 +209,21 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return ?ConfigLocationInterface
      */
-    public function getParentLocation(): ?ConfigLocationInterface
+    public function getDirLocationsParent(): ?ConfigLocationInterface
     {
-        return $this->parentLocation;
+        return $this->dirLocationsParent;
     }
 
     /**
      * Set the parent location.
      *
-     * @param ?ConfigLocationInterface $parentLocation Parent location
+     * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
      * @return void
      */
-    public function setParentLocation(?ConfigLocationInterface $parentLocation): void
+    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): void
     {
-        $this->parentLocation = $parentLocation;
+        $this->dirLocationsParent = $dirLocationsParent;
     }
 
     /**

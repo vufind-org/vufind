@@ -148,16 +148,16 @@ interface ConfigLocationInterface
      *
      * @return ?ConfigLocationInterface
      */
-    public function getParentLocation(): ?ConfigLocationInterface;
+    public function getDirLocationsParent(): ?ConfigLocationInterface;
 
     /**
      * Set the parent location.
      *
-     * @param ?ConfigLocationInterface $parentLocation Parent location
+     * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
      * @return void
      */
-    public function setParentLocation(?ConfigLocationInterface $parentLocation): void;
+    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): void;
 
     /**
      * Get the name of the configuration handler to be used for this location.

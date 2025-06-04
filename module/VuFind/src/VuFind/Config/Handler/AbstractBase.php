@@ -67,7 +67,9 @@ abstract class AbstractBase implements HandlerInterface
             throw new FileAccessException("Error: $path does not exist.");
         }
         $parentLocation->setConfigName($configLocation->getConfigName());
-        $parentLocation->setParentLocation($configLocation->getParentLocation());
+        // parent locations on a different path should still refer to the same
+        // parent configuration directory
+        $parentLocation->setDirLocationsParent($configLocation->getDirLocationsParent());
         return $parentLocation;
     }
 }
