@@ -33,7 +33,7 @@ namespace VuFind\Db\Entity;
  * Interface for translating an entity to and from array format.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
