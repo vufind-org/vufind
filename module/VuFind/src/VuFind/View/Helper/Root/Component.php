@@ -80,6 +80,10 @@ class Component extends AbstractHelper
         $this->cssClassCache[$name] ??= 'vc-' . preg_replace('/[^-_A-Za-z0-9]/', '-', $name);
         $params['_componentClass'] = $this->cssClassCache[$name];
 
+        // Pass information from view to the component
+        $params['inLightbox'] ??= $this->view->inLightbox ?? false;
+        $params['driver'] ??= $this->view->driver ?? null;
+
         return $this->view->render("_ui/$path/" . $name, $params);
     }
 }

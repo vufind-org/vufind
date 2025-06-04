@@ -9,7 +9,7 @@
   }
   $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'), active: true);
 ?>
-<h2><?=$this->transEsc('Book Bag') ?></h2>
+<?=$this->component('lightbox-aware-title', ['title' => 'Book Bag']);?>
 <?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
   <input type="hidden" id="dropdown_value">

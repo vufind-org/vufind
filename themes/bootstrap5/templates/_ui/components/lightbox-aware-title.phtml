@@ -1,0 +1,14 @@
+<?php
+  $titleTranslated = $this->translate($this->title);
+  $headerAttrs = [
+    'class' => 'lightbox-header ' . $this->_componentClass,
+  ];
+  $headerTag = 'h1';
+
+  if ($this->inLightbox) {
+    $headerAttrs['tabindex'] = '0';
+    $headerTag = 'h2';
+  }
+  $this->headTitle($titleTranslated);
+?>
+<<?=$headerTag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($titleTranslated);?></<?=$headerTag?>>
