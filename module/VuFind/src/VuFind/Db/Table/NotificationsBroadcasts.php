@@ -32,6 +32,7 @@ namespace VuFind\Db\Table;
 
 use Exception;
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Stdlib\ArrayObject;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager as PluginManager;
 
@@ -81,7 +82,7 @@ class NotificationsBroadcasts extends Gateway
     /**
      * Insert a new broadcast into the database or update an existing one..
      *
-     * @param array $data          Data to be written to the database
+     * @param ArrayObject $data          Data to be written to the database
      * @param array $broadcastData Data of an existing broadcast
      * @param array $broadcast_id  Id of the broadcast to be edited
      *

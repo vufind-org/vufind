@@ -60,13 +60,13 @@ class NotificationsBroadcastsService extends AbstractDbService implements Notifi
     /**
      * Insert a new broadcast into the database or update an existing one..
      *
-     * @param array $data Data to be written to the database
+     * @param ArrayObject $data Data to be written to the database
      * @param array|null $broadcastData Data of an existing broadcast
      * @param string|null $broadcast_id Id of the broadcast to be edited
      *
      * @throws Exception
      */
-    public function insertOrUpdateBroadcast(array $data, array $broadcastData = null, string $broadcast_id = null): void
+    public function insertOrUpdateBroadcast(ArrayObject $data, array $broadcastData = null, string $broadcast_id = null): void
     {
         $this->broadcasts->insertOrUpdateBroadcast($data, $broadcastData, $broadcast_id);
     }
