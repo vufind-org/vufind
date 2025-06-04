@@ -106,7 +106,7 @@ class HoldingsILS extends AbstractBase
         if ($this->driver->getSourceIdentifier() === 'EDS') {
             return
                 $this->driver->hasCatalog() &&
-                $this->driver->pubTypeExcludedFromRtac();
+                $this->driver->pubTypeRtacEnabled();
         }
         // Otherwise assume visible by default
         return true;
