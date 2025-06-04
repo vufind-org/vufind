@@ -82,7 +82,6 @@ class Component extends AbstractHelper
 
         // Pass information from view to the component
         $params['inLightbox'] ??= $this->view->inLightbox ?? false;
-        $params['driver'] ??= $this->view->driver ?? null;
 
         return $this->view->render("_ui/$path/" . $name, $params);
     }
