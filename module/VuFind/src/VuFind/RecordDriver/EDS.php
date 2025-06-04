@@ -91,7 +91,7 @@ class EDS extends DefaultRecord
         $regexArray = $this->recordConfig?->Catalog?->CatalogANRegex ?? [];
         $replaceArray = $this->recordConfig?->Catalog?->CatalogANReplace ?? [];
 
-        if ($dbid === $catId && $this->pubTypeExcludedFromRtac()) {
+        if ($dbid === $catId && $this->pubTypeRtacEnabled()) {
             $returnValue = $an;
             for ($i = 0; $i < count($regexArray); $i++) {
                 $returnValue =  preg_replace($regexArray[$i], $replaceArray[$i], $returnValue);
@@ -131,7 +131,7 @@ class EDS extends DefaultRecord
      *
      * @return boolean
      */
-    public function pubTypeExcludedFromRtac()
+    public function pubTypeRtacEnabled()
     {
         $pubTypeId = $this->fields['Header']['PubTypeId'];
         return !($pubTypeId === 'ebook');
@@ -148,7 +148,7 @@ class EDS extends DefaultRecord
         if (
             !$this->hasILS() ||
             !$this->hasCatalog() ||
-            !$this->pubTypeExcludedFromRtac()
+            !$this->pubTypeRtacEnabled()
         ) {
             return [];
         }

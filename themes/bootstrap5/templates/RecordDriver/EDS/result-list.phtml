@@ -21,7 +21,7 @@
 <?php $thumbnail = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
 
-<?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
+<?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled()): ?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getRtacIdentifier())?>" class="hiddenId">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
 <?php endif; ?>
@@ -124,7 +124,7 @@
       <div class="result-formats">
         <?=$this->record($this->driver)->getFormatList() ?>
         <?=$this->record($this->driver)->getLabelList() ?>
-        <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
+        <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled()): ?>
           <span class="status ajax-availability hidden">
             <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
           </span>
@@ -132,7 +132,7 @@
       </div>
       <?php /* More Detailed RTAC */ ?>
       <div class="callnumAndLocation ajax-availability hidden">
-        <?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeExcludedFromRtac()): ?>
+        <?php if ($this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled()): ?>
           <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
           <span class="callnumber ajax-availability hidden">
             <?=$this->transEsc('loading_ellipsis')?><br>
