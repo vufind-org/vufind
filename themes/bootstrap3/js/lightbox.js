@@ -63,6 +63,32 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   /**
+   * Tries to set focus on a node which is not a close trigger
+   * if no other nodes exist then focuses on first close trigger
+   */
+  function setFocusToFirstNode() {
+    var focusableNodes = getFocusableNodes(_modal.get(0));
+
+    // no focusable nodes
+    if (focusableNodes.length === 0) return;
+
+    // remove nodes on whose click, the modal closes
+    var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
+      return !node.hasAttribute("data-lightbox-close") && (
+        !node.hasAttribute("data-dismiss") ||
+        node.getAttribute("data-dismiss") !== "modal"
+      );
+    });
+
+    if (nodesWhichAreNotCloseTargets.length > 0) {
+      nodesWhichAreNotCloseTargets[0].focus();
+    }
+    if (nodesWhichAreNotCloseTargets.length === 0) {
+      focusableNodes[0].focus();
+    }
+  }
+
+  /**
    * Update content
    *
    * Form data options:
@@ -132,6 +158,8 @@ VuFind.register('lightbox', function Lightbox() {
     });
     // Recaptcha
     recaptchaOnLoad();
+    // Set keyboard focus
+    setFocusToFirstNode();
     // Add any scripts to head to run them
     runScripts.each(function addScript(i2, script) {
       $(document).find('head').append(script);
@@ -353,32 +381,6 @@ VuFind.register('lightbox', function Lightbox() {
     return false;
   };
 
-  /**
-   * Tries to set focus on a node which is not a close trigger
-   * if no other nodes exist then focuses on first close trigger
-   */
-  function setFocusToFirstNode() {
-    var focusableNodes = getFocusableNodes(_modal.get(0));
-
-    // no focusable nodes
-    if (focusableNodes.length === 0) return;
-
-    // remove nodes on whose click, the modal closes
-    var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
-      return !node.hasAttribute("data-lightbox-close") && (
-        !node.hasAttribute("data-dismiss") ||
-        node.getAttribute("data-dismiss") !== "modal"
-      );
-    });
-
-    if (nodesWhichAreNotCloseTargets.length > 0) {
-      nodesWhichAreNotCloseTargets[0].focus();
-    }
-    if (nodesWhichAreNotCloseTargets.length === 0) {
-      focusableNodes[0].focus();
-    }
-  }
-
   function retainFocus(event) {
     var focusableNodes = getFocusableNodes(_modal.get(0));
 
@@ -544,10 +546,11 @@ VuFind.register('lightbox', function Lightbox() {
 
     VuFind.modal = function modalShortcut(cmd) {
       if (cmd === 'show') {
-        _beforeOpenElement = document.activeElement;
+        // This can get called multiple times, so only take the active element if we don't already have it:
+        if (!_beforeOpenElement) {
+          _beforeOpenElement = document.activeElement;
+        }
         _modal.modal($.extend({ show: true }, _modalParams)).attr('aria-hidden', false);
-        // Set keyboard focus
-        setFocusToFirstNode();
       } else {
         _modal.modal(cmd);
       }
