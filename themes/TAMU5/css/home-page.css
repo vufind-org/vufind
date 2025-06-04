@@ -614,3 +614,7 @@ footer {
 }
 
 .fa-map-marker:before{content:"\f041"}
+
+.mainbody.right {
+       float: none;
+}
