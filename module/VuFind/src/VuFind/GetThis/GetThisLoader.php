@@ -777,7 +777,8 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             if (
                 array_key_exists('location', $item)
                 || array_key_exists('location_code', $item)
-                || (array_key_exists('availability', $item) && $item['availability'] instanceof AvailabilityStatusInterface)
+                || (array_key_exists('availability', $item)
+                    && $item['availability'] instanceof AvailabilityStatusInterface)
             ) {
                 return true;
             }
