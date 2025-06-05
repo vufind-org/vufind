@@ -30,7 +30,7 @@
 namespace VuFind\Config\Handler;
 
 use VuFind\Config\Location\ConfigLocationInterface;
-use VuFind\Config\Location\ConfigLocationTrait;
+use VuFind\Config\PathResolver;
 use VuFind\Exception\FileAccess as FileAccessException;
 
 /**
@@ -46,7 +46,15 @@ use VuFind\Exception\FileAccess as FileAccessException;
  */
 abstract class AbstractBase implements HandlerInterface
 {
-    use ConfigLocationTrait;
+    /**
+     * Constructor
+     *
+     * @param PathResolver $pathResolver Path Resolver
+     */
+    public function __construct(
+        protected PathResolver $pathResolver,
+    ) {
+    }
 
     /**
      * Create a new config location object on a path based on another config location.
@@ -62,7 +70,7 @@ abstract class AbstractBase implements HandlerInterface
         ConfigLocationInterface $configLocation,
         string $path
     ): ConfigLocationInterface {
-        $parentLocation = $this->getConfigLocationOnPath($path);
+        $parentLocation = $this->pathResolver->getConfigLocationOnPath($path);
         if ($parentLocation === null) {
             throw new FileAccessException("Error: $path does not exist.");
         }

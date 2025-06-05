@@ -134,6 +134,7 @@ class PathResolverFactory implements FactoryInterface
             }
         }
         return new $requestedName(
+            $container->get(\VuFind\Config\Handler\PluginManager::class),
             [
                 'directory' => APPLICATION_PATH,
                 'defaultConfigSubdir' => $this->defaultBaseConfigSubdir,

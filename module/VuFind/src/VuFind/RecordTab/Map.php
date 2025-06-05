@@ -82,25 +82,18 @@ class Map extends AbstractBase
     protected $basemapOptions = [];
 
     /**
-     * Configuration file path resolver
-     *
-     * @var ?PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
-     * @param bool          $mapTabDisplay  Display Map
-     * @param array         $basemapOptions basemap settings
-     * @param array         $mapTabOptions  MapTab settings
-     * @param ?PathResolver $pathResolver   Config file path resolver
+     * @param PathResolver $pathResolver   Config file path resolver
+     * @param bool         $mapTabDisplay  Display Map
+     * @param array        $basemapOptions basemap settings
+     * @param array        $mapTabOptions  MapTab settings
      */
     public function __construct(
+        protected PathResolver $pathResolver,
         $mapTabDisplay = false,
         $basemapOptions = [],
         $mapTabOptions = [],
-        ?PathResolver $pathResolver = null
     ) {
         if ($mapTabDisplay) {
             $this->mapTabDisplay = $mapTabDisplay;
@@ -113,7 +106,6 @@ class Map extends AbstractBase
             $this->basemapOptions[0] = $basemapOptions['basemap_url'];
             $this->basemapOptions[1] = $basemapOptions['basemap_attribution'];
         }
-        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -242,9 +234,7 @@ class Map extends AbstractBase
             $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
             /* read lookup file into array */
             $label_lookup = [];
-            $file = $this->pathResolver
-                ? $this->pathResolver->getConfigPath($mapLabelData[1])
-                : \VuFind\Config\Locator::getConfigPath($mapLabelData[1]);
+            $file = $this->pathResolver->getConfigPath($mapLabelData[1]);
             if (file_exists($file)) {
                 $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t", escape: '\\')) !== false) {

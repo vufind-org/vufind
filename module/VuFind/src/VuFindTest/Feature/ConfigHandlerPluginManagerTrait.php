@@ -1,7 +1,7 @@
 <?php
 
 /**
- * File configuration location
+ * Trait for tests involving ConfigHandlerPluginManager.
  *
  * PHP version 8
  *
@@ -21,44 +21,46 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Config_Location
+ * @package  Tests
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFind\Config\Location;
+namespace VuFindTest\Feature;
 
-use VuFind\Config\Handler\GenericFile;
+use VuFind\Config\Handler\PluginManager;
 
 /**
- * File configuration location
+ * Trait for tests involving ConfigHandlerPluginManager.
  *
  * @category VuFind
- * @package  Config_Location
+ * @package  Tests
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ConfigFile extends AbstractConfigLocation
+trait ConfigHandlerPluginManagerTrait
 {
     /**
-     * Get default config name.
+     * Add ConfigHandlerPluginManager to a mock container
      *
-     * @return string
-     */
-    protected function getDefaultConfigName(): string
-    {
-        return pathinfo($this->getFileName(), PATHINFO_FILENAME);
-    }
-
-    /**
-     * Get the name of the configuration handler to be used for this location.
+     * @param \VuFindTest\Container\MockContainer $container Mock Container
+     * @param ?array                              $config    Module config
      *
-     * @return string
+     * @return void
      */
-    public function getHandler(): string
-    {
-        return $this->getExtension() ?? GenericFile::class;
+    protected function addConfigHandlerPluginManagerToContainer(
+        \VuFindTest\Container\MockContainer $container,
+        ?array $config = null
+    ): void {
+        $config ??= include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
+        $container->set(
+            PluginManager::class,
+            new PluginManager(
+                $container,
+                $config['vufind']['plugin_managers']['config_handler']
+            )
+        );
     }
 }

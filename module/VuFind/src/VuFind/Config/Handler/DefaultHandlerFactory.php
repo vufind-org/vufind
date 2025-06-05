@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for building the Map tab.
+ * Default factory for config handlers.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Hebis Verbundzentrale 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  RecordTabs
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Config_Handlers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\RecordTab;
+namespace VuFind\Config\Handler;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
 
 /**
- * Factory for building the Map tab.
+ * Default factory for config handlers.
  *
  * @category VuFind
- * @package  RecordTabs
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Config_Handlers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MapFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class DefaultHandlerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,8 +60,6 @@ class MapFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -69,20 +69,6 @@ class MapFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        // get Map Tab config options
-        $mapTabConfig = $container->get(\VuFind\GeoFeatures\MapTabConfig::class);
-        $mapTabOptions = $mapTabConfig->getMapTabOptions();
-        $mapTabDisplay = $mapTabOptions['recordMap'];
-
-        // add basemap options
-        $basemapConfig = $container->get(\VuFind\GeoFeatures\BasemapConfig::class);
-        $basemapOptions = $basemapConfig->getBasemap('MapTab');
-
-        return new $requestedName(
-            $container->get(\VuFind\Config\PathResolver::class),
-            $mapTabDisplay,
-            $basemapOptions,
-            $mapTabOptions,
-        );
+        return new $requestedName($container->get(PathResolver::class));
     }
 }

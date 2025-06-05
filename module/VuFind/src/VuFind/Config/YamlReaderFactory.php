@@ -69,8 +69,8 @@ class YamlReaderFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
+            $container->get(PathResolver::class),
             $container->get(\VuFind\Cache\Manager::class),
-            $container->get(PathResolver::class)
         );
     }
 }

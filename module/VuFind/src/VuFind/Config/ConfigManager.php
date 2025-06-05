@@ -30,7 +30,6 @@
 
 namespace VuFind\Config;
 
-use VuFind\Config\Handler\HandlerInterface;
 use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\ConfigException;
@@ -143,8 +142,9 @@ class ConfigManager
                 );
             }
             $loadedConfigPaths[] = $currentConfigLocationPath;
-
-            $currentConfig = $this->getHandlerForLocation($currentConfigLocation)->parseConfig($currentConfigLocation);
+            $currentConfig = $this->configHandlerManager
+                ->getForLocation($currentConfigLocation)
+                ->parseConfig($currentConfigLocation);
             $configs[] = $currentConfig;
             $currentConfigLocation = null;
             if ($parentLocation = $currentConfig['parentLocation'] ?? null) {
@@ -166,18 +166,5 @@ class ConfigManager
             $result = $result[$subsectionPart] ?? null;
         }
         return $result;
-    }
-
-    /**
-     * Get the configuration handler for a specific location.
-     *
-     * @param ConfigLocationInterface $configLocation Config location
-     *
-     * @return ?HandlerInterface
-     */
-    public function getHandlerForLocation(ConfigLocationInterface $configLocation): ?HandlerInterface
-    {
-        $handlerName = $configLocation->getHandler();
-        return $this->configHandlerManager->has($handlerName) ? $this->configHandlerManager->get($handlerName) : null;
     }
 }
