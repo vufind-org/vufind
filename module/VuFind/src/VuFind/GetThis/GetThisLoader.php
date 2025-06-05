@@ -22,6 +22,7 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\Regex\Regex;
 use VuFind\View\Helper\Root\Translate;
 
+use function array_key_exists;
 use function call_user_func;
 use function count;
 use function is_array;
