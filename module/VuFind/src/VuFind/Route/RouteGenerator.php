@@ -59,6 +59,17 @@ class RouteGenerator
     protected static $recordRoutes = [];
 
     /**
+     * Reset Route Generator (used for tests)
+     *
+     * @return void
+     */
+    public function reset(): void
+    {
+        self::$nonTabRecordActions = [];
+        self::$recordRoutes = [];
+    }
+
+    /**
      * Add a dynamic route to the configuration.
      *
      * @param array  $config     Configuration array to update

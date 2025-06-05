@@ -31,6 +31,7 @@
 
 namespace VuFind\Config;
 
+use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\Location\ConfigLocationTrait;
 
@@ -85,11 +86,12 @@ class PathResolver
     /**
      * Constructor
      *
-     * @param array $baseDirectorySpec   Base directory specification
-     * @param array $localConfigDirStack Local configuration directory specification
-     * stack
+     * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
+     * @param array                $baseDirectorySpec    Base directory specification
+     * @param array                $localConfigDirStack  Local configuration directory specification stack
      */
     public function __construct(
+        protected HandlerPluginManager $configHandlerManager,
         array $baseDirectorySpec,
         array $localConfigDirStack
     ) {
@@ -138,6 +140,64 @@ class PathResolver
     }
 
     /**
+     * Get all configuration locations in a specific path.
+     *
+     * @param string $path Path of the directory to scan
+     *
+     * @return ConfigLocationInterface[]
+     */
+    public function getConfigLocationsInPath(string $path): array
+    {
+        $dirContent = is_dir($path) ? scandir($path) : [];
+        $result = [];
+        foreach ($dirContent as $item) {
+            // Exclude "." and "..".
+            $ignorePattern = "/^\.{1,2}$/";
+            if (
+                preg_match($ignorePattern, $item)
+            ) {
+                continue;
+            }
+            $itemPath = $path . DIRECTORY_SEPARATOR . $item;
+            $configLocation = $this->getConfigLocationOnPath($itemPath);
+            // ignore locations without a matching handler
+            if ($configLocation === null || $this->configHandlerManager->getForLocation($configLocation) === null) {
+                continue;
+            }
+            $result[] = $configLocation;
+        }
+        return $result;
+    }
+
+    /**
+     * Get a matching configuration location based on a config name from a directory if present.
+     *
+     * @param string $path       Path of the directory to scan
+     * @param string $configName Configuration name
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getMatchingConfigLocation(string $path, string $configName): ?ConfigLocationInterface
+    {
+        $configLocations = $this->getConfigLocationsInPath($path);
+        $configNameMatch = null;
+        foreach ($configLocations as $configLocation) {
+            // exact matches are preferred
+            if ($configLocation->getFileName() === $configName) {
+                return $configLocation;
+            }
+            // fallback if there is no exact match
+            if ($configLocation->getConfigName() === $configName) {
+                $configNameMatch = $configLocation;
+            }
+        }
+        if ($configNameMatch !== null) {
+            return $configNameMatch;
+        }
+        return null;
+    }
+
+    /**
      * Get the config location from a dir specification stack.
      *
      * @param string  $configName Config name
@@ -171,15 +231,17 @@ class PathResolver
         ?string $path = null,
         bool $force = false
     ): ?string {
-        $configLocation = $this->getLocalConfigLocation($filename, $path);
-        if ($configLocation !== null) {
-            return $configLocation->getPath();
+        $fallbackResult = null;
+        foreach (array_reverse($this->localConfigDirStack) as $localDirSpec) {
+            $configPath = $this->buildPath($localDirSpec, $path, $filename);
+            if (file_exists($configPath) || is_dir($configPath)) {
+                return $configPath;
+            }
+            if ($force && null === $fallbackResult) {
+                $fallbackResult = $configPath;
+            }
         }
-        if ($force) {
-            $localDir = end($this->localConfigDirStack);
-            return $this->buildPath($localDir, $path, $filename);
-        }
-        return null;
+        return $fallbackResult;
     }
 
     /**

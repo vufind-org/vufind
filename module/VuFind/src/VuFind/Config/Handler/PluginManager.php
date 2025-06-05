@@ -30,6 +30,7 @@
 namespace VuFind\Config\Handler;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\Config\Location\ConfigLocationInterface;
 
 /**
  * Config handler plugin manager
@@ -71,5 +72,18 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected function getExpectedInterface()
     {
         return HandlerInterface::class;
+    }
+
+    /**
+     * Get the configuration handler for a specific location.
+     *
+     * @param ConfigLocationInterface $configLocation Config location
+     *
+     * @return ?HandlerInterface
+     */
+    public function getForLocation(ConfigLocationInterface $configLocation): ?HandlerInterface
+    {
+        $handlerName = $configLocation->getHandler();
+        return $this->has($handlerName) ? $this->get($handlerName) : null;
     }
 }

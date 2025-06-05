@@ -79,11 +79,17 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     public function __construct(string $path, ?string $configName = null)
     {
         $this->setPath($path);
-        if (null !== $configName) {
-            $this->configName = $configName;
-        } else {
-            $this->configName = pathinfo($this->getFileName(), PATHINFO_FILENAME);
-        }
+        $this->configName = $configName ?? $this->getDefaultConfigName();
+    }
+
+    /**
+     * Get default config name.
+     *
+     * @return string
+     */
+    protected function getDefaultConfigName(): string
+    {
+        return $this->getFileName();
     }
 
     /**

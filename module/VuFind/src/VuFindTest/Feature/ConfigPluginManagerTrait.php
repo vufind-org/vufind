@@ -128,13 +128,10 @@ trait ConfigPluginManagerTrait
         \VuFindTest\Container\MockContainer $container,
         array $config
     ): void {
+        $this->addConfigHandlerPluginManagerToContainer($container, $config);
         $this->addPathResolverToContainer($container);
-        $configHandlerPluginManager = new \VuFind\Config\Handler\PluginManager(
-            $container,
-            $config['vufind']['plugin_managers']['config_handler']
-        );
         $configManager = new \VuFind\Config\ConfigManager(
-            $configHandlerPluginManager,
+            $container->get(\VuFind\Config\Handler\PluginManager::class),
             $container->get(PathResolver::class)
         );
         $container->set(\VuFind\Config\ConfigManager::class, $configManager);

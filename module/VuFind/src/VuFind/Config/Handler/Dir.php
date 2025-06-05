@@ -31,6 +31,7 @@ namespace VuFind\Config\Handler;
 
 use VuFind\Config\ConfigManager;
 use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\Config\PathResolver;
 
 /**
  * Dir config handler.
@@ -46,9 +47,11 @@ class Dir extends AbstractBase
     /**
      * Constructor
      *
+     * @param PathResolver  $pathResolver  Path Resolver
      * @param ConfigManager $configManager Config Manager
      */
     public function __construct(
+        protected PathResolver $pathResolver,
         protected ConfigManager $configManager,
     ) {
     }
@@ -75,13 +78,13 @@ class Dir extends AbstractBase
         $config = [];
         if (!empty($subsection)) {
             $configName = array_shift($subsection);
-            $location = $this->getMatchingConfigLocation($path, $configName);
+            $location = $this->pathResolver->getMatchingConfigLocation($path, $configName);
             if ($subsection !== null) {
                 $location->setSubsection($subsection);
             }
             $config[$configName] = $this->configManager->loadConfigFromLocation($location);
         } else {
-            foreach ($this->getConfigLocationsInPath($path) as $location) {
+            foreach ($this->pathResolver->getConfigLocationsInPath($path) as $location) {
                 $config[$location->getConfigName()] = $this->configManager->loadConfigFromLocation($location);
             }
         }

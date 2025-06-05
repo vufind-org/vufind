@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManager;
+use VuFind\Config\PathResolver;
 
 /**
  * Factory for Dir config helper.
@@ -69,6 +70,9 @@ class DirFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get(ConfigManager::class));
+        return new $requestedName(
+            $container->get(PathResolver::class),
+            $container->get(ConfigManager::class),
+        );
     }
 }
