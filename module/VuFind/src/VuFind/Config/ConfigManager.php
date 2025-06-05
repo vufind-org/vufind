@@ -142,12 +142,9 @@ class ConfigManager
                 );
             }
             $loadedConfigPaths[] = $currentConfigLocationPath;
-
-            $handler = $this->configHandlerManager->getForLocation($currentConfigLocation);
-            if ($handler === null) {
-                throw new ConfigException('No handler found for ' . $currentConfigLocationPath);
-            }
-            $currentConfig = $handler->parseConfig($currentConfigLocation);
+            $currentConfig = $this->configHandlerManager
+                ->getForLocation($currentConfigLocation)
+                ->parseConfig($currentConfigLocation);
             $configs[] = $currentConfig;
             $currentConfigLocation = null;
             if ($parentLocation = $currentConfig['parentLocation'] ?? null) {

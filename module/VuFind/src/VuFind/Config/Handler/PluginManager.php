@@ -74,15 +74,26 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
+     * Check if there is a configuration handler for a specific location.
+     *
+     * @param ConfigLocationInterface $configLocation Config location
+     *
+     * @return bool
+     */
+    public function hasForLocation(ConfigLocationInterface $configLocation): bool
+    {
+        return $this->has($configLocation->getHandler());
+    }
+
+    /**
      * Get the configuration handler for a specific location.
      *
      * @param ConfigLocationInterface $configLocation Config location
      *
-     * @return ?HandlerInterface
+     * @return HandlerInterface
      */
-    public function getForLocation(ConfigLocationInterface $configLocation): ?HandlerInterface
+    public function getForLocation(ConfigLocationInterface $configLocation): HandlerInterface
     {
-        $handlerName = $configLocation->getHandler();
-        return $this->has($handlerName) ? $this->get($handlerName) : null;
+        return $this->get($configLocation->getHandler());
     }
 }

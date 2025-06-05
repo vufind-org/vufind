@@ -177,7 +177,7 @@ class PathResolver
             $itemPath = $path . DIRECTORY_SEPARATOR . $item;
             $configLocation = $this->getConfigLocationOnPath($itemPath);
             // ignore locations without a matching handler
-            if ($configLocation === null || $this->configHandlerManager->getForLocation($configLocation) === null) {
+            if ($configLocation === null || !$this->configHandlerManager->hasForLocation($configLocation)) {
                 continue;
             }
             $result[] = $configLocation;
