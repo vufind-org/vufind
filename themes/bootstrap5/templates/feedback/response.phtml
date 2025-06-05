@@ -4,7 +4,7 @@
 ?>
 <?php if (!$this->inLightbox): ?><div class="feedback-content"><?php endif; ?>
 <?php if ($title = $form->getTitle()): ?>
-  <?=$this->component('lightbox-aware-title', ['title' => $title]);?>
+  <?=$this->component('page-title', ['title' => $title]);?>
 <?php endif; ?>
 <?=$this->flashmessages()?>
 <div role="status" class="alert alert-success">

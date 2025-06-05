@@ -3,12 +3,12 @@
   $headerAttrs = [
     'class' => 'lightbox-header ' . $this->_componentClass,
   ];
-  $headerTag = 'h1';
-
   if ($this->inLightbox) {
     $headerAttrs['tabindex'] = '0';
-    $headerTag = 'h2';
   }
+  $defaultLevel = $this->inLightbox ? 2 : 1;
+  $level = $this->level ?: $defaultLevel;
+  $tag = "h$level";
   $this->headTitle($titleTranslated);
 ?>
-<<?=$headerTag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($titleTranslated);?></<?=$headerTag?>>
+<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($titleTranslated);?></<?=$tag?>>
