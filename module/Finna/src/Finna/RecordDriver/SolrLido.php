@@ -2662,29 +2662,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
     }
 
     /**
-     * Compare the title of current object with items from given array as titles
-     *
-     * @param array $compare An array of items to compare
-     *
-     * @return array
-     */
-    protected function compareWithTitle(array $compare): array
-    {
-        $compareDone = [];
-        $title = str_replace([',', ';'], '', $this->getTitle());
-        $compareFull = str_replace([',', ';'], '', implode(' ', $compare));
-        if ($compareFull != $title) {
-            foreach ($compare as $item) {
-                $checkTitle = str_replace([',', ';'], ' ', (string)$item) != $title;
-                if ($checkTitle) {
-                    $compareDone[] = (string)$item;
-                }
-            }
-        }
-        return array_unique($compareDone);
-    }
-
-    /**
      * Get the displaysubject and description info to summary
      *
      * @return array $results with summary from displaySubject or description field

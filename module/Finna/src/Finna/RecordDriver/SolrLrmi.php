@@ -299,6 +299,16 @@ class SolrLrmi extends SolrQdc
     }
 
     /**
+     * Get an array of alternative titles for the record.
+     *
+     * @return array
+     */
+    public function getAlternativeTitles()
+    {
+        return $this->compareWithTitle($this->fields['title_alt'] ?? []);
+    }
+
+    /**
      * Is the provided filetype allowed for download?
      *
      * @param string $format file format

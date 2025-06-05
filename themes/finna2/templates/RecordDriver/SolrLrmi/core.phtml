@@ -31,6 +31,11 @@
   <?php endif; ?>
   <div class="media-body record-information">
     <h1 class="record-title hidden-xs"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
+    <?php if ($results = $this->driver->getAlternativeTitles()): ?>
+      <div class="recordAltTitles record-alt-titles">
+        <?=implode('<br>', array_map([$this, 'escapeHtml'], $results))?>
+      </div>
+    <?php endif; ?>
 
     <?=$this->record($this->driver)->renderTemplate('cached-record-warning.phtml', ['driver' => $this->driver])?>
     <?=$this->record($this->driver)->getLabelList() ?>

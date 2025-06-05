@@ -223,6 +223,55 @@ class SolrLrmiTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Function to get expected alternative titles data
+     *
+     * @return array
+     */
+    public static function getAlternativeTitlesData(): array
+    {
+        return [
+            [
+                'Pääotsikko',
+                ['Pääotsikko', 'Vaihtoehtoinen otsikko 1', 'Vaihtoehtoinen otsikko 2'],
+                ['Vaihtoehtoinen otsikko 1', 'Vaihtoehtoinen otsikko 2'],
+            ],
+        ];
+    }
+
+    /**
+     * Test getAlternativeTitles
+     *
+     * @param string $title     Title index value to test
+     * @param array  $altTitles Alternative title index values to test
+     * @param ?array $expected  Result to be expected
+     *
+     * @dataProvider getAlternativeTitlesData
+     *
+     * @return void
+     */
+    public function testGetAlternativeTitles(
+        string $title,
+        array $altTitles,
+        ?array $expected
+    ): void {
+        $record = new SolrLrmi(
+            [],
+            [],
+            new \VuFind\Config\Config([])
+        );
+        $record->setRawData(
+            [
+                'title' => $title,
+                'title_alt' => $altTitles,
+            ]
+        );
+        $this->assertEquals(
+            $expected,
+            $record->getAlternativeTitles()
+        );
+    }
+
+    /**
      * Get a record driver with fake data.
      *
      * @param string $recordXml    Xml record to use for the test
