@@ -615,4 +615,6 @@ footer {
 
 .fa-map-marker:before{content:"\f041"}
 
-
+.mainbody.solo {
+  width: 100%;
+}
