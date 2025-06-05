@@ -36,6 +36,8 @@ use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
 
+use function array_key_exists;
+
 /**
  * Configuration File Path Resolver
  *
@@ -66,7 +68,7 @@ class PathResolver
      *
      * @var array
      */
-    protected $baseDirectorySpec;
+    protected array $baseDirectorySpec;
 
     /**
      * Local configuration directory stack. Local configuration files are searched
@@ -80,7 +82,14 @@ class PathResolver
      *
      * @var array
      */
-    protected $localConfigDirStack;
+    protected array $localConfigDirStack;
+
+    /**
+     * Cache for locations found in getConfigLocationsInPath.
+     *
+     * @var array
+     */
+    protected array $configLocationCache = [];
 
     /**
      * Constructor
@@ -164,6 +173,10 @@ class PathResolver
      */
     public function getConfigLocationsInPath(string $path): array
     {
+        $path = realpath($path);
+        if (array_key_exists($path, $this->configLocationCache)) {
+            return $this->configLocationCache[$path];
+        }
         $dirContent = is_dir($path) ? scandir($path) : [];
         $result = [];
         foreach ($dirContent as $item) {
@@ -178,6 +191,7 @@ class PathResolver
             }
             $result[] = $configLocation;
         }
+        $this->configLocationCache[$path] = $result;
         return $result;
     }
 
