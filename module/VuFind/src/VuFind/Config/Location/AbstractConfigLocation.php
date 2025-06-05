@@ -221,7 +221,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     }
 
     /**
-     * Set the parent location.
+     * Set the location of the configuration in the parent directory that might be specified in DirLocations.ini.
      *
      * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
