@@ -211,7 +211,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     }
 
     /**
-     * Get the parent location.
+     * Get the location of the configuration in the parent directory that might be specified in DirLocations.ini.
      *
      * @return ?ConfigLocationInterface
      */
