@@ -144,7 +144,7 @@ interface ConfigLocationInterface
     public function setSubsection(array $subsection): void;
 
     /**
-     * Get the parent location.
+     * Get the location of the configuration in the parent directory that might be specified in DirLocations.ini.
      *
      * @return ?ConfigLocationInterface
      */
