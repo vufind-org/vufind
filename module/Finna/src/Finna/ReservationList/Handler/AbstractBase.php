@@ -427,6 +427,7 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
         $recordID = $requestValues['recordId'];
         $source = $requestValues['source'] ?? DEFAULT_SEARCH_BACKEND;
         $record = $recordLoader->load($recordID, $source);
+        $result['list_title'] = $requestValues['list_title'];
         $result['recordId'] = $record->getUniqueID();
         $result['source'] = $record->getSourceIdentifier();
         $result['record_ids_text'] = $record->getUniqueID() . '||' . $record->getTitle();
@@ -576,10 +577,13 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
 
         // Extend form as required
         if ($extend = $this->singleOrderFormConfig['extends'] ?? false) {
+            $extendFrom = $definedForms['PlaceOrder'][$extend];
+            $mergedFields = [...$extendFrom['fields'], ...$this->singleOrderFormConfig['fields'] ?? []];
             $this->singleOrderFormConfig = array_merge(
-                $definedForms['PlaceOrder'][$extend],
+                $extendFrom,
                 $this->singleOrderFormConfig
             );
+            $this->singleOrderFormConfig['fields'] = $mergedFields;
         }
         return $this;
     }

@@ -1,5 +1,7 @@
 <?php
-  $pageTitle = $this->translate('ReservationList::Add to reservation list');
+  $pageTitleKey = $this->listEntity->getOrdered() ? 'ReservationList::form_email_subject' : 'ReservationList::Add to reservation list';
+  $toListKey = $this->listEntity->getOrdered() ? 'go_to_list' : 'ReservationList::Continue to sending the hold request';
+  $pageTitle = $this->translate($pageTitleKey);
   // Set up page title:
   $this->headTitle($pageTitle);
   $user = $this->auth()->getUserObject();
@@ -14,7 +16,7 @@
 <p><?=$this->transEsc('ReservationList::resource_added_to_list', ['%%resource%%' => $this->driver->getTitle(), '%%list%%' => $this->listEntity->getTitle()]);?></p>
 
 <div class="btn-group">
-  <a class="btn btn-primary" href="<?=$this->url('reservationlist-displaylist', ['listId' => $this->listEntity->getId()])?>" data-lightbox-ignore><?=$this->transEsc('ReservationList::Continue to sending the hold request')?></a>
+  <a class="btn btn-primary" href="<?=$this->url('reservationlist-displaylist', ['listId' => $this->listEntity->getId()])?>" data-lightbox-ignore><?=$this->transEsc($toListKey)?></a>
 </div>
 <div class="btn-group">
   <button class="btn btn-primary lightbox-only" data-bs-dismiss="modal"><?=$this->transEsc('close') ?></button>

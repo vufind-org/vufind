@@ -40,6 +40,7 @@ use Finna\ReservationList\Handler\PluginManager;
 use Finna\ReservationList\ReservationListService;
 use Finna\View\Helper\Root\ReservationList;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Stdlib\Parameters;
 use VuFind\Controller\AbstractBase;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Exception\Forbidden as ForbiddenException;
@@ -383,7 +384,7 @@ class ReservationListController extends AbstractBase
             $this->flashMessenger()->addSuccessMessage($form->getSubmitResponse());
             return $this->getRefreshResponse();
         }
-        $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+        $this->flashMessenger()->addErrorMessage('hold_error_fail');
         return $view;
     }
 
@@ -413,21 +414,29 @@ class ReservationListController extends AbstractBase
         if (!$listHandler->isEnabled()) {
             throw new \VuFind\Exception\Forbidden('ReservationList: No list properties found.');
         }
-        $singularListValues = [
-            'title' => 'temporary_title',
+        $request = $this->getRequest();
+        $requestValues = $request->isGet() ? $request->getQuery()->toArray() : $request->getPost()->toArray();
+
+        // Form a default title as a suggestion to be used as a list name
+        $dateConverter = $this->serviceLocator->get(\VuFind\Date\Converter::class);
+        $requestValues['list_title'] ??= $this->getTranslator()->translate('List')
+            . ' ' . $dateConverter->convertToDisplayDate('U', time());
+
+        $listValues = [
+            'title' => $requestValues['list_title'],
             'desc' => '',
             'institution' => $listHandler->getInstitution(),
             'listIdentifier' => $listHandler->getIdentifier(),
             'connection' => $listHandler->getConnectionType(),
         ];
-        $request = $this->getRequest();
+
         // Create an empty list for the user, but do not save it.
-        $list = $this->reservationListService->createListForUser($user, $singularListValues);
+        $listEntity = $this->reservationListService->createListForUser($user, $listValues);
         $formId = ConnectionAbstractBase::FORM_ID;
         $queryValues = $listHandler->getValuesForSingleOrder(
-            $list,
+            $listEntity,
             $user,
-            $request->isGet() ? $request->getQuery()->toArray() : $request->getPost()->toArray()
+            $requestValues
         );
         if (!$this->reservationListService->checkUserRightsForList($listHandler)) {
             $this->flashMessenger()->addErrorMessage('no_ils_support_description');
@@ -447,12 +456,26 @@ class ReservationListController extends AbstractBase
         if (!$form->isValid()) {
             return $view;
         }
+
         $result = $listHandler->placeOrder($queryValues, $user);
         if ($result['success']) {
-            $this->flashMessenger()->addSuccessMessage($form->getSubmitResponse());
-            return $this->getRefreshResponse();
+            $driver = $this->getRecordLoader()->load(
+                $queryValues['recordId'],
+                $queryValues['source'],
+                false
+            );
+            // Save single order into a list
+            $this->reservationListService->populateListValues($listEntity, $user, $listValues);
+            $this->reservationListService->setListOrdered($user, $listEntity, $result);
+
+            $params = new Parameters(['list' => $listEntity->getId()]);
+            $this->reservationListService->saveRecordToReservationList($params, $user, $driver);
+            $view->setTemplate('reservationlist/postadditem');
+            $view->listEntity = $listEntity;
+            $view->driver = $driver;
+            return $view;
         }
-        $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+        $this->flashMessenger()->addErrorMessage('hold_error_fail');
         return $view;
     }
 
