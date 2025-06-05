@@ -13,7 +13,7 @@
   }
 ?>
 <ul class="dropdown-menu subtabs collapse show" role="presentation">
-  <li><h1 class="visible-xs visible-sm"><?=$this->icon('sidebar-collapse') ?> <?=$this->transEsc('Your Lists')?></h1></li>
+  <li><h1 class="js-mobile-list-navigation visible-xs visible-sm"><?=$this->icon('sidebar-collapse') ?> <?=$this->transEsc('Your Lists')?></h1></li>
   <?php $active = empty($activeId); ?>
   <li>
     <a class="dropdown-item<?=$active ? ' active' : ''?>" role="menuitem" href="<?= $active ? '#' : $this->url('reservationlist-displaylists') ?>" aria-current="<?=$active ? 'page' : 'false'?>"><?= $this->transEsc('ReservationList::All Lists') ?></a>

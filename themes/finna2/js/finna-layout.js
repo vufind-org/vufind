@@ -241,7 +241,7 @@ finna.layout = (function finnaLayout() {
    * Initialize mobile narrow search
    */
   function initMobileNarrowSearch() {
-    document.querySelectorAll('.mobile-navigation .sidebar-navigation, .sidebar .mylist-bar h1').forEach(el => {
+    document.querySelectorAll('.mobile-navigation .sidebar-navigation, .js-mobile-list-navigation').forEach(el => {
       el.addEventListener('click', toggleMobileSidebar);
     });
     const container = document.querySelector(".side-facets-container-ajax");
