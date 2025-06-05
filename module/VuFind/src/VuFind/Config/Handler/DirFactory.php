@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for Dir config helper.
+ * Factory for Dir config handler.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Config\ConfigManager;
 use VuFind\Config\PathResolver;
 
 /**
- * Factory for Dir config helper.
+ * Factory for Dir config handler.
  *
  * @category VuFind
  * @package  Config_Handlers

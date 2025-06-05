@@ -32,8 +32,9 @@
 namespace VuFind\Config;
 
 use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
+use VuFind\Config\Location\ConfigDirectory;
+use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
-use VuFind\Config\Location\ConfigLocationTrait;
 
 /**
  * Configuration File Path Resolver
@@ -47,8 +48,6 @@ use VuFind\Config\Location\ConfigLocationTrait;
  */
 class PathResolver
 {
-    use ConfigLocationTrait;
-
     /**
      * Default configuration subdirectory.
      *
@@ -137,6 +136,23 @@ class PathResolver
             }
         }
         return $currentLocation;
+    }
+
+    /**
+     * Get configuration location on a specific path if present.
+     *
+     * @param string $path Path
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getConfigLocationOnPath(string $path): ?ConfigLocationInterface
+    {
+        if (is_dir($path)) {
+            return new ConfigDirectory($path);
+        } elseif (file_exists($path)) {
+            return new ConfigFile($path);
+        }
+        return null;
     }
 
     /**

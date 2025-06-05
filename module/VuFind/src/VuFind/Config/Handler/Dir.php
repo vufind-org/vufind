@@ -51,9 +51,10 @@ class Dir extends AbstractBase
      * @param ConfigManager $configManager Config Manager
      */
     public function __construct(
-        protected PathResolver $pathResolver,
+        PathResolver $pathResolver,
         protected ConfigManager $configManager,
     ) {
+        parent::__construct($pathResolver);
     }
 
     /**

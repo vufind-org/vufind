@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config handler plugin manager
+ * Default factory for config handlers.
  *
  * PHP version 8
  *
@@ -29,10 +29,15 @@
 
 namespace VuFind\Config\Handler;
 
-use VuFind\Config\Location\ConfigLocationInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
 
 /**
- * Config handler plugin manager
+ * Default factory for config handlers.
  *
  * @category VuFind
  * @package  Config_Handlers
@@ -40,49 +45,30 @@ use VuFind\Config\Location\ConfigLocationInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class DefaultHandlerFactory implements FactoryInterface
 {
     /**
-     * Default plugin aliases.
+     * Create an object
      *
-     * @var array
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
+     *
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    protected $aliases = [
-        'ini' => Ini::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Dir::class => DirFactory::class,
-        GenericFile::class => DefaultHandlerFactory::class,
-        Ini::class => DefaultHandlerFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
-    {
-        return HandlerInterface::class;
-    }
-
-    /**
-     * Get the configuration handler for a specific location.
-     *
-     * @param ConfigLocationInterface $configLocation Config location
-     *
-     * @return ?HandlerInterface
-     */
-    public function getForLocation(ConfigLocationInterface $configLocation): ?HandlerInterface
-    {
-        $handlerName = $configLocation->getHandler();
-        return $this->has($handlerName) ? $this->get($handlerName) : null;
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        return new $requestedName($container->get(PathResolver::class));
     }
 }
