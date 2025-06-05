@@ -71,7 +71,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     protected array $subsection = [];
 
     /**
-     * Optional location of the parent configuration.
+     * Location of the configuration in the parent directory that might be specified in DirLocations.ini.
      *
      * @var ?ConfigLocationInterface
      */
