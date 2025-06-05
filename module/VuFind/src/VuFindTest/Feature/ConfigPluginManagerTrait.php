@@ -120,14 +120,15 @@ trait ConfigPluginManagerTrait
      * Add config plugin manager and required services to a mock container.
      *
      * @param \VuFindTest\Container\MockContainer $container Mock Container
-     * @param array                               $config    Module config
+     * @param ?array                              $config    Module config
      *
      * @return void
      */
     protected function addConfigPluginManagerToContainer(
         \VuFindTest\Container\MockContainer $container,
-        array $config
+        ?array $config = null
     ): void {
+        $config ??= include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
         $this->addConfigHandlerPluginManagerToContainer($container, $config);
         $this->addPathResolverToContainer($container);
         $configManager = new \VuFind\Config\ConfigManager(
@@ -150,8 +151,7 @@ trait ConfigPluginManagerTrait
     protected function getContainerWithConfigPluginManager(): \VuFindTest\Container\MockContainer
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
-        $this->addConfigPluginManagerToContainer($container, $config);
+        $this->addConfigPluginManagerToContainer($container);
         return $container;
     }
 }

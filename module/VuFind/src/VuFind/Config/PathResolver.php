@@ -167,11 +167,7 @@ class PathResolver
         $dirContent = is_dir($path) ? scandir($path) : [];
         $result = [];
         foreach ($dirContent as $item) {
-            // Exclude "." and "..".
-            $ignorePattern = "/^\.{1,2}$/";
-            if (
-                preg_match($ignorePattern, $item)
-            ) {
+            if ($item == '.' || $item == '..') {
                 continue;
             }
             $itemPath = $path . DIRECTORY_SEPARATOR . $item;
@@ -207,10 +203,7 @@ class PathResolver
                 $configNameMatch = $configLocation;
             }
         }
-        if ($configNameMatch !== null) {
-            return $configNameMatch;
-        }
-        return null;
+        return $configNameMatch;
     }
 
     /**

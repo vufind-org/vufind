@@ -63,9 +63,8 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfigManager(): ConfigManager
     {
-        $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
         $container = new \VuFindTest\Container\MockContainer($this);
-        $this->addConfigPluginManagerToContainer($container, $config);
+        $this->addConfigPluginManagerToContainer($container);
         return $container->get(ConfigManager::class);
     }
 
