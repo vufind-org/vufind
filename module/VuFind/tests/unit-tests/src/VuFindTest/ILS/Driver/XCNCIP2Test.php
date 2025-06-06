@@ -34,7 +34,7 @@ use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\XCNCIP2;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * ILS driver test
@@ -48,7 +48,7 @@ use VuFindTest\Feature\PathResolverTrait;
 class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Standard setup method.

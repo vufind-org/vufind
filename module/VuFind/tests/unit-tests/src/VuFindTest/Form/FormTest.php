@@ -33,7 +33,7 @@ namespace VuFindTest\Form;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 use function get_class;
 
@@ -50,7 +50,7 @@ use function get_class;
 class FormTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     protected $mockTestFormYamlReader = null;
 

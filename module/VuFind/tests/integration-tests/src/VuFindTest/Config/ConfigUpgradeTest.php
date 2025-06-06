@@ -29,13 +29,12 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFind\Exception\FileAccess;
 use VuFind\Feature\DirUtilityTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\LiveDetectionTrait;
-use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config Upgrade Integration Test Class
@@ -51,7 +50,7 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
     use LiveDetectionTrait;
     use FixtureTrait;
     use DirUtilityTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Target upgrade version
@@ -59,13 +58,6 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
      * @var string
      */
     protected static string $targetVersion = '11.0';
-
-    /**
-     * Configuration file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
 
     /**
      * Path to base configurations
@@ -94,9 +86,9 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
             return;
         }
 
-        $this->pathResolver = $this->getPathResolver();
-        $this->baseDirPath = $this->pathResolver->getBaseConfigDirPath();
-        $this->localDirPath = $this->pathResolver->getLocalConfigDirPath();
+        $pathResolver = $this->getPathResolver();
+        $this->baseDirPath = $pathResolver->getBaseConfigDirPath();
+        $this->localDirPath = $pathResolver->getLocalConfigDirPath();
         if ($this->localDirPath === null) {
             $this->markTestSkipped('No local config dir configured.');
         }

@@ -53,10 +53,9 @@ use function func_get_args;
  */
 class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Get a mock record router.
@@ -263,7 +262,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             \VuFind\RecordDataFormatter\Specs\PluginManager::class,
             $specManager
         );
-        $this->addPathResolverToContainer($container);
+        $this->addConfigRelatedServicesToContainer($container);
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers($container, $schemaOrgHelper);

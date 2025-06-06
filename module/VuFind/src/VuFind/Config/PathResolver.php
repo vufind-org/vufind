@@ -37,6 +37,7 @@ use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
 
 use function array_key_exists;
+use function in_array;
 
 /**
  * Configuration File Path Resolver
@@ -95,16 +96,81 @@ class PathResolver
      * Constructor
      *
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
-     * @param array                $baseDirectorySpec    Base directory specification
-     * @param array                $localConfigDirStack  Local configuration directory specification stack
+     * @param string               $baseDir              Base directory
+     * @param ?string              $localConfigDir       Local config directory
+     * @param ?string              $localConfigSubDir    Default local config subdirectory (used in tests)
      */
     public function __construct(
         protected HandlerPluginManager $configHandlerManager,
-        array $baseDirectorySpec,
-        array $localConfigDirStack
+        string $baseDir,
+        ?string $localConfigDir,
+        ?string $localConfigSubDir = null
     ) {
-        $this->baseDirectorySpec = $baseDirectorySpec;
-        $this->localConfigDirStack = $localConfigDirStack;
+        $this->init($baseDir, $localConfigDir, $localConfigSubDir);
+    }
+
+    /**
+     * Init
+     *
+     * @param string  $baseDir           Base directory
+     * @param ?string $localConfigDir    Local config directory
+     * @param ?string $localConfigSubDir Default local config subdirectory (used in tests)
+     *
+     * @return void
+     */
+    public function init(string $baseDir, ?string $localConfigDir, ?string $localConfigSubDir = null): void
+    {
+        $localDirs = [];
+        $currentDir = $localConfigDir;
+        while (!empty($currentDir)) {
+            // check if the directory exists
+            if (!($canonicalizedCurrentDir = realpath($currentDir))) {
+                trigger_error('Configured local directory does not exist: ' . $currentDir, E_USER_WARNING);
+                break;
+            }
+            $currentDir = $canonicalizedCurrentDir;
+
+            // check if the current directory was already included in the stack to avoid infinite loops
+            if (in_array($currentDir, array_column($localDirs, 'directory'))) {
+                trigger_error('Current directory was already included in the stack: ' . $currentDir, E_USER_WARNING);
+                break;
+            }
+
+            // loading DirLocations.ini of currentDir
+            $systemConfigFile = $currentDir . '/DirLocations.ini';
+            $systemConfig = new Config(
+                file_exists($systemConfigFile)
+                    ? parse_ini_file($systemConfigFile, true)
+                    : []
+            );
+
+            // adding directory to the stack
+            array_unshift(
+                $localDirs,
+                [
+                    'directory' => $currentDir,
+                    'defaultConfigSubdir' =>
+                        $systemConfig['Local_Dir']['config_subdir']
+                        ?? $localConfigSubDir
+                        ?? self::DEFAULT_CONFIG_SUBDIR,
+                    'dirLocationConfig' => $systemConfig,
+                ]
+            );
+
+            // If there's a parent, set it as the current directory for the next loop iteration:
+            if (!empty($systemConfig['Parent_Dir']['path'])) {
+                $isRelative = $systemConfig['Parent_Dir']['is_relative_path'] ?? false;
+                $parentDir = $systemConfig['Parent_Dir']['path'];
+                $currentDir = $isRelative ? $currentDir . '/' . $parentDir : $parentDir;
+            } else {
+                $currentDir = '';
+            }
+        }
+        $this->localConfigDirStack = $localDirs;
+        $this->baseDirectorySpec =  [
+            'directory' => $baseDir,
+            'defaultConfigSubdir' => self::DEFAULT_CONFIG_SUBDIR,
+        ];
     }
 
     /**

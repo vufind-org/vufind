@@ -30,7 +30,7 @@
 namespace VuFindTest\Search\EPF;
 
 use VuFind\Search\EPF\Options;
-use VuFindTest\Feature\ConfigPluginManagerTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * EPF Options Test
@@ -43,7 +43,7 @@ use VuFindTest\Feature\ConfigPluginManagerTrait;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Data provider for testOptions

@@ -44,7 +44,7 @@ use VuFind\Service\MarkdownFactory;
  */
 class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test to ensure the markdown factory is using right config for markdown
