@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Authentication Manager factory.
+ * Factory for Util/ExpireAuditEventsCommand.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Auth;
+namespace VuFindConsole\Command\Util;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Authentication Manager factory.
+ * Factory for Util/ExpireAuditEventsCommand.
  *
  * @category VuFind
- * @package  Authentication
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ManagerFactory implements FactoryInterface
+class ExpireAuditEventsCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,38 +65,10 @@ class ManagerFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        // Load dependencies:
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        $userService = $dbServiceManager->get(\VuFind\Db\Service\UserServiceInterface::class);
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
-        $pm = $container->get(\VuFind\Auth\PluginManager::class);
-        $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
-        $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
-        $loginTokenManager = $container->get(\VuFind\Auth\LoginTokenManager::class);
-        $ils = $container->get(\VuFind\ILS\Connection::class);
-        $viewRenderer = $container->get('ViewRenderer');
-        $auditEventService = $dbServiceManager->get(\VuFind\Db\Service\AuditEventServiceInterface::class);
-
-        // Build the object and make sure account credentials haven't expired:
-        $manager = new $requestedName(
-            $config,
-            $userService,   // for UserServiceInterface
-            $userService,   // for UserSessionPersistenceInterface
-            $sessionManager,
-            $pm,
-            $cookies,
-            $csrf,
-            $loginTokenManager,
-            $ils,
-            $viewRenderer,
-            $auditEventService
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        return new $requestedName(
+            $serviceManager->get(\VuFind\Db\Service\AuditEventServiceInterface::class),
+            ...($options ?? [])
         );
-        $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));
-        $manager->checkForExpiredCredentials();
-        return $manager;
     }
 }

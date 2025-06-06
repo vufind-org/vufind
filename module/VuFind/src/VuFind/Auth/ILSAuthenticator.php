@@ -363,9 +363,9 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @param array  $routeParams Route parameters
      * @param array  $urlParams   URL parameters
      *
-     * @return void
+     * @return ?array Patron information, or null if not found
      */
-    public function sendEmailLoginLink($email, $route, $routeParams = [], $urlParams = [])
+    public function sendEmailLoginLink($email, $route, $routeParams = [], $urlParams = []): ?array
     {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
@@ -381,6 +381,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
                 $routeParams
             );
         }
+        return $userData;
     }
 
     /**

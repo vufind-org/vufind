@@ -39,6 +39,10 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -99,6 +103,13 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @var string
      */
     protected $accessDeniedBehavior = null;
+
+    /**
+     * Audit event service
+     *
+     * @var ?AuditEventServiceInterface
+     */
+    protected ?AuditEventServiceInterface $auditEventService = null;
 
     /**
      * Constructor
@@ -375,7 +386,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
-        if (!$account->getIdentity()) {
+        if (!($user = $account->getUserObject())) {
             return $this->forceLogin();
         }
 
@@ -383,8 +394,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $ilsAuth = $this->getILSAuthenticator();
         $patron = null;
         if (
-            ($username = $this->params()->fromPost('cat_username', false))
-            && ($password = $this->params()->fromPost('cat_password', false))
+            ($username = $this->params()->fromPost('cat_username'))
+            && ($password = $this->params()->fromPost('cat_password'))
         ) {
             // If somebody is POSTing credentials but that logic is disabled, we
             // should throw an exception!
@@ -402,17 +413,35 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                     $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
                         : 'myresearch-profile';
                     $routeParams = $routeMatch ? $routeMatch->getParams() : [];
-                    $ilsAuth->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
-                    $this->flashMessenger()
-                        ->addSuccessMessage('email_login_link_sent');
+                    $userData = $ilsAuth
+                        ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
+                    $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::SendEmailLoginLink,
+                        $user,
+                        data: [
+                            'username' => $username,
+                            'email' => $userData['email'],
+                        ]
+                    );
                 } else {
                     $patron = $ilsAuth->newCatalogLogin($username, $password);
 
                     // If login failed, store a warning message:
                     if (!$patron) {
-                        $this->flashMessenger()
-                            ->addErrorMessage('Invalid Patron Login');
+                        $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
                     }
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        $patron ? AuditEventSubtype::ILSLogin : AuditEventSubtype::ILSLoginFailure,
+                        $user,
+                        data: [
+                            'username' => $username,
+                        ]
+                    );
                 }
             } catch (ILSException $e) {
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
@@ -895,5 +924,19 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
         return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
+    }
+
+    /**
+     * Get audit event service.
+     *
+     * @return AuditEventServiceInterface
+     */
+    protected function getAuditEventService(): AuditEventServiceInterface
+    {
+        if (null === $this->auditEventService) {
+            $dbServiceManager = $this->serviceLocator->get(DatabaseServiceManager::class);
+            $this->auditEventService = $dbServiceManager->get(AuditEventServiceInterface::class);
+        }
+        return $this->auditEventService;
     }
 }
