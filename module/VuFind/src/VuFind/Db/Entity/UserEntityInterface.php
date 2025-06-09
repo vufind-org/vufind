@@ -344,18 +344,18 @@ interface UserEntityInterface extends
     /**
      * Last login setter.
      *
-     * @param DateTime $dateTime Last login date
+     * @param ?DateTime $dateTime Last login date
      *
      * @return static
      */
-    public function setLastLogin(DateTime $dateTime): static;
+    public function setLastLogin(?DateTime $dateTime): static;
 
     /**
      * Last login getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
-    public function getLastLogin(): DateTime;
+    public function getLastLogin(): ?DateTime;
 
     /**
      * Created setter

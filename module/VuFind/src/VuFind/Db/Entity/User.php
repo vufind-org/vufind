@@ -666,24 +666,24 @@ class User implements UserEntityInterface
     /**
      * Last login setter.
      *
-     * @param DateTime $dateTime Last login date
+     * @param ?DateTime $dateTime Last login date
      *
      * @return static
      */
-    public function setLastLogin(DateTime $dateTime): static
+    public function setLastLogin(?DateTime $dateTime): static
     {
-        $this->lastLogin = $dateTime;
+        $this->lastLogin = $this->getNonNullableDateTimeFromNullable($dateTime);
         return $this;
     }
 
     /**
      * Last login getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
-    public function getLastLogin(): DateTime
+    public function getLastLogin(): ?DateTime
     {
-        return $this->lastLogin;
+        return $this->getNullableDateTimeFromNonNullable($this->lastLogin);
     }
 
     /**
