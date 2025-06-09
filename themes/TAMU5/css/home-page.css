@@ -619,6 +619,11 @@ footer {
 
 .fa-map-marker:before{content:"\f041"}
 
+.nav-tabs {
+    border-bottom: none;
+}
+
+
 .mainbody.solo {
   width: 100%;
 }
