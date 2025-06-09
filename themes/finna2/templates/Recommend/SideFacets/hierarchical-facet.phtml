@@ -29,6 +29,10 @@
     'wrapper-tagname' => 'li',
   ];
 ?>
+
+<?php if ('usage_rights_ext_str_mv' === $this->title): ?>
+  <?=$this->render('Recommend/SideFacets/usage-rights-ext-facet-header.phtml')?>
+<?php endif; ?>
 <?php if ('building' === $this->title && count($this->cluster['list']) > 15): ?>
   <div class="building-filter">
     <label for="building_filter" class="visually-hidden"><?=$this->transEsc('Organisation')?></label>
@@ -40,6 +44,7 @@
   ?>
   <?=$this->assetManager()->outputInlineScriptString($script); ?>
 <?php endif; ?>
+
 <ul class="facet-tree<?php if ($truncateSettings): ?> truncate-hierarchical-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?><?php endif; ?>">
   <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
     'allowExclude' => $this->allowExclude,
@@ -49,3 +54,7 @@
     'urlBase' => '',
   ]) ?>
 </ul>
+
+<?php if ('usage_rights_ext_str_mv' === $title): ?>
+  <?=$this->render('Recommend/SideFacets/usage-rights-ext-facet-footer.phtml')?>
+<?php endif; ?>
