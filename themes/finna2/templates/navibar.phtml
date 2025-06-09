@@ -183,6 +183,13 @@
                   </a>
                 </li>
               <?php endif; ?>
+              <?php if ($this->reservationList()->isFunctionalityEnabled()): ?>
+                <li>
+                  <a <?=$this->url('reservationlist-displaylists') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('reservationlist-displaylists')?>">
+                    <?=$this->transEsc('ReservationList::reservation_lists_research_room')?>
+                  </a>
+                </li>
+              <?php endif; ?>
               <?php if ($this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)): ?>
                 <li role="none">
                   <a <?=$this->url('checkouts-history') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('myresearch-historicloans')?>">
@@ -213,13 +220,6 @@
               <li>
                 <a <?=$this->url('myresearch-favorites') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('myresearch-favorites')?>">
                   <?=$this->transEsc('saved_items')?>
-                </a>
-              </li>
-            <?php endif; ?>
-            <?php if ($this->reservationList()->isFunctionalityEnabled()): ?>
-              <li>
-                <a <?=$this->url('reservationlist-displaylists') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('reservationlist-displaylists')?>">
-                  <?=$this->transEsc('ReservationList::reservation_lists_research_room')?>
                 </a>
               </li>
             <?php endif; ?>

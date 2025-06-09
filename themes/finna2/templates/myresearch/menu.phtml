@@ -20,7 +20,7 @@
       ];
     }
     $reservationLists = $this->reservationList($user)->getReservationListsForUser();
-    if ($reservationLists && $this->active === 'reservationlist') {
+    if ($this->active === 'reservationlist') {
       $list = $this->results?->getListObject() ?? [];
       $listParams = [
         'activeId' => $list['id'] ?? false,
@@ -91,11 +91,6 @@
         'translation' => 'saved_items',
         'show' => $this->userlist()->getMode() !== 'disabled',
       ],
-      'reservationlist' => [
-        'url' => 'reservationlist-displaylists',
-        'translation' => 'Reservation List',
-        'show' => $reservationLists,
-      ],
       'logout' => [
         'url' => 'myresearch-logout',
         'translation' => 'Log Out',
@@ -115,7 +110,7 @@
         'active' => $this->active === 'reservationlist',
         'url' => 'reservationlist-displaylists',
         'translation' => 'ReservationList::reservation_lists_research_room',
-        'show' => $reservationLists,
+        'show' => $this->reservationList()->isFunctionalityEnabled(),
         'partial' => [
           'url' => 'reservationlist/reservationlist-navi.phtml',
           'wrapperClass' => 'reservationlist-bar',

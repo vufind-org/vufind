@@ -18,7 +18,7 @@
 <div>
   <div>
     <label for="resource_name"><?=$this->transEsc('ReservationList::Resource')?>:</label>
-    <p id="resource_name"><?=$this->transEsc($this->recordId)?></p>
+    <p id="resource_name"><?=$this->transEsc($this->driver->getTitle())?></p>
   </div>
   <div>
     <label for="resource_institution"><?=$this->transEsc('ReservationList::Resource institution')?>:</label>

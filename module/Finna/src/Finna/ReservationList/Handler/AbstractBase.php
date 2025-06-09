@@ -386,7 +386,7 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
         $result['record_ids_text'] = '';
         $result['record_source_and_ids'] = [];
         foreach ($reservationListService->getResourcesForList($list, $user) as $resource) {
-            $result['record_ids_text'] .= $resource->getRecordId() . '||' . $resource->getTitle() . PHP_EOL;
+            $result['record_ids_text'] .= $resource->getTitle() . ' (' . $resource->getRecordId() . ')' . PHP_EOL;
             $result['record_source_and_ids'][] = $resource->getSource() . '|' . $resource->getRecordId();
         }
         return $result;
