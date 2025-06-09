@@ -459,7 +459,11 @@ max-width: 1299px;
 .tab-content {
   padding: 30px;
   background: #eeeeee;
+  border: var(--bs-border-color) 1px solid;
 }
+
+
+
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus {
