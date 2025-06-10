@@ -408,4 +408,14 @@ trait SolrAuthFinnaTrait
     {
         return [];
     }
+
+    /**
+     * Is rating allowed.
+     *
+     * @return bool
+     */
+    public function isRatingAllowed(): bool
+    {
+        return false;
+    }
 }
