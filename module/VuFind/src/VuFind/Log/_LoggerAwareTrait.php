@@ -1,33 +1,49 @@
 <?php
 
+/**
+ * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Error_Logging
+ * @author   Chris Hallberg <challber@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+
 namespace VuFind\Log;
 
-use Psr\Log\LoggerInterface;
 use function get_class;
 
 /**
- * Extension of PSR-3 LoggerAwareTrait with some convenience methods.
- * This trait provides methods to log messages, now utilizing a PSR-3 compatible logger.
+ * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
+ *
+ * @category VuFind
+ * @package  Error_Logging
+ * @author   Chris Hallberg <challber@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
  */
 trait LoggerAwareTrait
 {
-    /**
-     * @var LoggerInterface
-     * This property will hold the logger instance injected by the ServiceManager.
-     */
-    protected LoggerInterface $logger;
-
-    /**
-     * Sets the logger instance on the object.
-     * This method fulfills the contract of VuFind\Log\LoggerAwareInterface.
-     *
-     * @param LoggerInterface $logger The logger instance, adhering to PSR-3 standard.
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
-    }
+    use \Laminas\Log\LoggerAwareTrait;
+    use VarDumperTrait;
 
     /**
      * Log an error message.
@@ -40,7 +56,7 @@ trait LoggerAwareTrait
      */
     protected function logError($msg, array $context = [], $prependClass = true)
     {
-        $this->log('error', $msg, $context, $prependClass);
+        $this->log('err', $msg, $context, $prependClass);
     }
 
     /**
@@ -54,7 +70,7 @@ trait LoggerAwareTrait
      */
     protected function logWarning($msg, array $context = [], $prependClass = true)
     {
-        $this->log('warning', $msg, $context, $prependClass);
+        $this->log('warn', $msg, $context, $prependClass);
     }
 
     /**
@@ -74,7 +90,7 @@ trait LoggerAwareTrait
     /**
      * Send a message to the logger.
      *
-     * @param string $level        Log level (e.g., 'error', 'warning', 'debug')
+     * @param string $level        Log level
      * @param string $message      Log message
      * @param array  $context      Log context
      * @param bool   $prependClass Prepend class name to message?
@@ -91,7 +107,7 @@ trait LoggerAwareTrait
             if ($prependClass) {
                 $message = get_class($this) . ': ' . $message;
             }
-            $this->logger->log($level, $message, $context);
+            $this->logger->$level($message, $context);
         }
     }
 }
