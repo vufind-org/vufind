@@ -135,7 +135,9 @@
     margin-top: 0.5rem;
     // Use padding to ensure focus rectangles display properly:
     padding-top: 0.3rem;
+    max-height: 75vh;
     overflow-x: hidden;
+    overflow-y: auto;
     border-right: 1px solid $gray-lighter;
   }
 

@@ -80,7 +80,7 @@
           . '</button>';
 
         echo " $itemHtml ";
-        echo '<ul id="' . $childUlIdEsc . '" class="hierarchy-tree__children">';
+        echo '<ul id="' . $childUlIdEsc . '" class="hierarchy-tree__children" role="group" >';
         ($this->renderTreeLevel[0])($node->children, $context, $hierarchyID, $driver, $selectedID, "{$parentNodeId}_$nodeId");
         echo '</ul></li>';
       } else {
