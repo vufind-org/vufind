@@ -13,4 +13,7 @@
         $this->slot('search-heading')->append(' (' . implode(', ', $headingParts) . ')');
     }
     $this->slot('empty-message')->set($this->transEsc('course_reserves_empty_list'));
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('search-reserves') . '">' . $this->transEsc('Search For Items on Reserve') . '</a>';
+    // Disable loading of results with JS for now since it doesn't handle the special parameters:
+    $this->results->getOptions()->setLoadResultsWithJs(false);
     echo $this->render('search/results.phtml');

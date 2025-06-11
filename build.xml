@@ -50,7 +50,7 @@
   <property name="default_test_timeout" value="5000" /><!-- default timeout (in ms) for Mink tests; increase when tests fail on slow systems -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="9.5.0" />
+  <property name="solr_version" value="9.8.1" />
   <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
@@ -1320,6 +1320,7 @@ ${git_status}
         <include pattern="**/*.phtml" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
+        <exclude name="record/ajaxview-accordion.phtml" />
       </fileset>
       <filterchain>
         <replaceregexp>
@@ -1348,6 +1349,7 @@ ${git_status}
           <fileset dir="${templatesdir}">
             <exclude name="header.phtml" />
             <exclude name="RecordTab/similaritemscarousel.phtml" />
+            <exclude name="record/ajaxview-accordion.phtml" />
           </fileset>
         </delete>
       </then>
@@ -1384,6 +1386,7 @@ ${git_status}
         <type type="file" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
+        <exclude name="record/ajaxview-accordion.phtml" />
         <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
       </fileset>
     </foreach>

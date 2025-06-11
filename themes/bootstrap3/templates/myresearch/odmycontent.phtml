@@ -36,15 +36,14 @@
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
 
-          if ($resource['checkout']->isMagazine):
+          if ($resource['checkout']->isMagazine) {
               $od_id = $resource['checkout']->reserveId;
               $edition = $resource['checkout']->metadata->edition;
               $coverAlt = $this->transEscAttr('Cover Image');
               $cover = "<a href='{$this->recordLinker()->getUrl($resource['record'])}'><img alt='$coverAlt' data-linkpreview='true' class='recordcover' src='{$resource['checkout']->metadata->images->thumbnail->href}'></a>";
-
-          else:
+          } else {
             $edition = '';
-          endif;
+          }
   ?>
           <div id="record<?=urlencode($rec_id)?>" class="well result">
    <?php
@@ -166,7 +165,7 @@
                   <?php endif; ?>
                 <?php endif; ?>
 
-                <?php if(!empty($resource['hold']->emailAddress)): ?>
+                <?php if (!empty($resource['hold']->emailAddress)): ?>
                   <?=$this->transEsc('od_hold_email', ['%%holdEmailAddress%%' => $resource['hold']->emailAddress]);?>
                 <?php endif; ?>
 
@@ -194,7 +193,7 @@
                       </li>
 
                       <?php //user already has a hold suspension.  allow them to edit the suspension
-                      if(isset($resource['hold']->holdSuspension)): ?>
+                      if (isset($resource['hold']->holdSuspension)): ?>
                       <li><a class="edithold"
                             data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
                               href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldConfirm'?>">

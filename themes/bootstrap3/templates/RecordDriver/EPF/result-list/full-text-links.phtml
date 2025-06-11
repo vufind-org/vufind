@@ -3,7 +3,7 @@ if (isset($holdings) && !empty($holdings)): ?>
   <?=$this->transEsc('Linked Full Text')?>
   <ul>
     <?php
-      foreach($holdings as $holding):
+      foreach ($holdings as $holding):
         if (!empty($holding)): ?>
           <li>
             <a href="<?=$this->escapeHtmlAttr($holding['URL'])?>"><?=$this->escapeHtml($holding['Name'])?></a>
