@@ -81,14 +81,27 @@ hierarchical[] = sector_str_mv
 hierarchical[] = category_str_mv
 hierarchical[] = format_ext_str_mv
 hierarchical[] = usage_rights_ext_str_mv
-; Sort options for hierarchical facets:
-; How hierarchical facets are sorted. Default is result count, but alternative ways
-; can be specified:
-; top = Sort the top level list alphabetically, others by result count (useful e.g.
-;       for a large number of building facets where top level is organization and
-;       second level the library branch)
-; all = Sort all levels alphabetically
+
+; You can set a general default setting with * and set field-specific overrides
+; using field names (see example below).
+;
+; Available options:
+; top       = Sort the top level list alphabetically, others by result count (useful e.g.
+;             for a large number of building facets where top level is organization and
+;             second level the library branch)
+; all       = Sort all levels alphabetically
+; count     = Sort all levels by count
+; top-value = Like top, but sorts by field value (case-sensitive ascii sort) instead of display text
+; all-value = Like all, but sorts by field value (case-sensitive ascii sort) instead of display text
+;
+; Note: this section may be overridden for HomePage and Advanced search facets (see
+; hierarchicalFacetSortOptions in HomePage_Settings and Advanced_Settings below).
+;
+; By default, if no settings are configured in this file, the default sort will be
+; 'count' for SideFacets values, 'all' for HomePage values, and 'top' for Advanced
+; values.
 hierarchicalFacetSortOptions[building] = top
+hierarchicalFacetSortOptions[usage_rights_ext_str_mv] = all-value
 ; How hierarchical facet values are displayed in the records:
 ; single = Display only the deepest level (default)
 ; full   = Display full hierarchy for each entry
