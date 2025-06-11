@@ -68,6 +68,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         'Ill_ready' => 'illRequestReadyForPickUp',
         'Ill_unavailable' => 'illRequestUnavailable',
         'Ill_update' => 'illRequestUpdate',
+        'Patron_Expiry' => 'cardExpiry',
     ];
 
     /**
