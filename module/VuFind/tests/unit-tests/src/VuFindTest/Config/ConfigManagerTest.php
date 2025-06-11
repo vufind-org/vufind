@@ -32,12 +32,11 @@
 namespace VuFindTest\Config;
 
 use VuFind\Config\ConfigManager;
-use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Exception\ConfigException;
+use VuFindTest\Feature\ConfigPluginManagerTrait;
 use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\PathResolverTrait;
 
 use function count;
 
@@ -55,7 +54,7 @@ use function count;
 class ConfigManagerTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use PathResolverTrait;
+    use ConfigPluginManagerTrait;
 
     /**
      * Get config manager.
@@ -64,12 +63,9 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfigManager(): ConfigManager
     {
-        $realResolver = $this->getPathResolver();
         $container = new \VuFindTest\Container\MockContainer($this);
-        $mockConfigHandler = new HandlerPluginManager($container);
-        $configManager = new ConfigManager($mockConfigHandler, $realResolver);
-        $container->set(ConfigManager::class, $configManager);
-        return $configManager;
+        $this->addConfigPluginManagerToContainer($container);
+        return $container->get(ConfigManager::class);
     }
 
     /**

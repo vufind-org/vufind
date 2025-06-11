@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2014-2020.
+ * Copyright (C) The National Library of Finland 2014-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -248,6 +248,42 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('1/Book/Section/', $facetList[4]['value']);
         $this->assertEquals('1/Audio/Music/', $facetList[5]['value']);
         $this->assertEquals('1/Audio/Spoken/', $facetList[6]['value']);
+    }
+
+    /**
+     * Tests for sortFacetList (top level only by field value)
+     *
+     * @return void
+     */
+    public function testSortFacetListTopLevelByFieldValue(): void
+    {
+        $facetList = $this->facetList;
+        $this->helper->sortFacetList($facetList, 'top-value');
+        $this->assertEquals('0/AV/', $facetList[0]['value']);
+        $this->assertEquals('0/Audio/', $facetList[1]['value']);
+        $this->assertEquals('0/Book/', $facetList[2]['value']);
+        $this->assertEquals('1/Book/BookPart/', $facetList[3]['value']);
+        $this->assertEquals('1/Book/Section/', $facetList[4]['value']);
+        $this->assertEquals('1/Audio/Spoken/', $facetList[5]['value']);
+        $this->assertEquals('1/Audio/Music/', $facetList[6]['value']);
+    }
+
+    /**
+     * Tests for sortFacetList (all levels by field value)
+     *
+     * @return void
+     */
+    public function testSortFacetListAllLevelsByFieldValue(): void
+    {
+        $facetList = $this->facetList;
+        $this->helper->sortFacetList($facetList, 'all-value');
+        $this->assertEquals('0/AV/', $facetList[0]['value']);
+        $this->assertEquals('0/Audio/', $facetList[1]['value']);
+        $this->assertEquals('0/Book/', $facetList[2]['value']);
+        $this->assertEquals('1/Audio/Music/', $facetList[3]['value']);
+        $this->assertEquals('1/Audio/Spoken/', $facetList[4]['value']);
+        $this->assertEquals('1/Book/BookPart/', $facetList[5]['value']);
+        $this->assertEquals('1/Book/Section/', $facetList[6]['value']);
     }
 
     /**

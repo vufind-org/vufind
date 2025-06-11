@@ -62,7 +62,10 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $fixtureDir = $this->getStackedFixtureDir();
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $this->addConfigHandlerPluginManagerToContainer($container);
         $this->stackedResolver = new PathResolver(
+            $container->get(\VuFind\Config\Handler\PluginManager::class),
             [
                 'directory' => APPLICATION_PATH,
                 'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,

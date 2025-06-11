@@ -34,6 +34,7 @@ use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\XCNCIP2;
+use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * ILS driver test
@@ -47,6 +48,7 @@ use VuFind\ILS\Driver\XCNCIP2;
 class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use PathResolverTrait;
 
     /**
      * Standard setup method.
@@ -55,7 +57,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function setUp(): void
     {
-        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
     }
 
     /**
@@ -1569,7 +1571,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testInitDriver()
     {
-        $driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
         $driver->setConfig(
             [
                 'Catalog' => [
@@ -1671,7 +1673,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function configureDriver($config = null)
     {
-        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
         $this->driver->setConfig(
             $config ?? [
                 'Catalog' => [

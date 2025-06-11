@@ -56,7 +56,7 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
     {
         // The searchspecs.yaml file should define author dismax fields (among many
         // other things).
-        $reader = new SearchSpecsReader();
+        $reader = $this->getSearchSpecsReader();
         $specs = $reader->get('searchspecs.yaml');
         $this->assertTrue(!empty($specs['Author']['DismaxFields']));
     }
@@ -68,7 +68,7 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testMissingFileRead()
     {
-        $reader = new SearchSpecsReader();
+        $reader = $this->getSearchSpecsReader();
         $specs = $reader->get('notreallyasearchspecs.yaml');
         $this->assertEquals([], $specs);
     }
@@ -80,7 +80,7 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testYamlLoad()
     {
-        $reader = new SearchSpecsReader();
+        $reader = $this->getSearchSpecsReader();
         $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
         $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
@@ -106,7 +106,7 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testYamlMerge()
     {
-        $reader = new SearchSpecsReader();
+        $reader = $this->getSearchSpecsReader();
         $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
         $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
@@ -126,10 +126,7 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testParentYaml()
     {
-        $reader = new SearchSpecsReader(
-            null,
-            $this->getPathResolver($this->getFixtureDir() . 'configs/inheritance')
-        );
+        $reader = $this->getSearchSpecsReader($this->getFixtureDir() . 'configs/inheritance');
 
         $this->assertEquals(
             [
@@ -167,5 +164,17 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
                 ]
             )
         );
+    }
+
+    /**
+     * Get SearchSpecsReader.
+     *
+     * @param ?string $baseDirectory Optional directory to override APPLICATION_PATH
+     *
+     * @return SearchSpecsReader
+     */
+    protected function getSearchSpecsReader(?string $baseDirectory = null): SearchSpecsReader
+    {
+        return new SearchSpecsReader($this->getPathResolver($baseDirectory));
     }
 }
