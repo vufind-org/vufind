@@ -29,6 +29,7 @@
 
 namespace VuFind\Db;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -67,9 +68,21 @@ class PersistenceManagerFactory implements FactoryInterface
     ) {
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         return new $requestedName(
-            $container->get('doctrine.entitymanager.orm_vufind'),
+            $this->getEntityManager($container),
             (bool)($config->Authentication->privacy ?? false),
             ...($options ?? [])
         );
+    }
+
+    /**
+     * Get entity manager to be passed to the constructor.
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return EntityManagerInterface
+     */
+    protected function getEntityManager(ContainerInterface $container): EntityManagerInterface
+    {
+        return $container->get('doctrine.entitymanager.orm_vufind');
     }
 }

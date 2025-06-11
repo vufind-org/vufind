@@ -29,7 +29,7 @@
 
 namespace VuFind\Db;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -53,11 +53,11 @@ class PersistenceManager implements DbServiceAwareInterface
     /**
      * Constructor
      *
-     * @param EntityManager $entityManager Doctrine ORM entity manager
-     * @param bool          $privacy       Is user privacy mode enabled?
+     * @param EntityManagerInterface $entityManager Doctrine ORM entity manager
+     * @param bool                   $privacy       Is user privacy mode enabled?
      */
     public function __construct(
-        protected EntityManager $entityManager,
+        protected EntityManagerInterface $entityManager,
         protected bool $privacy = false
     ) {
     }
