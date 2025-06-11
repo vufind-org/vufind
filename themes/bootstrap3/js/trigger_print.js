@@ -6,13 +6,17 @@ function waitForAjaxContentToLoad(fn) {
   var initiallyActiveTab = document.querySelector(".record-tab.initiallyActive");
   var tabDone = false;
   if (!initiallyActiveTab) {
+    // No initially active tab? Then not on record page, so treat tab loading as done:
     tabDone = true;
   } else {
+    // Check for a tab hash, which could impact which element we check for activity:
     var newTab = typeof window.location.hash !== 'undefined'
       ? window.location.hash.toLowerCase() : '';
     if (newTab.length <= 1 || newTab === '#tabnav') {
+      // No tab hash, check for loading of the initial tab:
       tabDone = initiallyActiveTab.classList.contains("active");
     } else {
+      // Tab hash, check that the specified tab is active (if valid):
       var hashTab = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
       tabDone = !hashTab || hashTab.classList.contains("active");
     }
