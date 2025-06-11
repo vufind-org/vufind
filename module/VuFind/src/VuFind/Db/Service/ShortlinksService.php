@@ -32,7 +32,6 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use Exception;
-use VuFind\Db\Entity\Shortlinks;
 use VuFind\Db\Entity\ShortlinksEntityInterface;
 
 /**
@@ -105,8 +104,7 @@ class ShortlinksService extends AbstractDbService implements
         $shortlink = $this->createEntity()
             ->setPath($path)
             ->setCreated(new DateTime());
-        $this->entityManager->persist($shortlink);
-        $this->entityManager->flush();
+        $this->persistEntity($shortlink);
         return $shortlink;
     }
 
