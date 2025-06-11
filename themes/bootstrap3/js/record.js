@@ -255,6 +255,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
         removeHashFromLocation();
       }
       setupJumpMenus($newTab);
+      VuFind.emit('record-tab-loaded', {container: $newTab.get(0)});
     });
   return false;
 };
@@ -334,7 +335,7 @@ function applyRecordTabHash(scrollToTabs) {
   if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.trigger("click");
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    var $tabLink = $('.record-tabs .' + newTab.substr(1) + ' a');
+    var $tabLink = $('.record-tabs .' + newTab.substring(1) + ' a');
     if ($tabLink.length > 0) {
       $tabLink.trigger("click");
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
