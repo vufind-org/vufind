@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2017-2023.
+ * Copyright (C) The National Library of Finland 2017-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -168,6 +168,10 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         $this->minimumPayableAmount = $paymentConfig['minimumFee'] ?? 0;
         $this->nonPayableTypes = (array)($paymentConfig['nonPayableTypes'] ?? []);
         $this->nonPayableStatuses = (array)($paymentConfig['nonPayableStatuses'] ?? []);
+
+        if ($typeMappings = (array)($this->config['MessagingPrefTypeMappings'] ?? [])) {
+            $this->messagingPrefTypeMap = array_merge($this->messagingPrefTypeMap, $typeMappings);
+        }
     }
 
     /**

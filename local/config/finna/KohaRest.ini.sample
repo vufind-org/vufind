@@ -198,6 +198,13 @@ enabled = true
 ; Whether to display messaging settings. Default is true.
 ;messagingSettings = false
 
+; Mappings from Koha's messaging preferences to Finna's messaging setting types.
+; These can be used to override the defaults in KohaRest.php.
+; Set to empty to disable the preference.
+[MessagingPrefTypeMappings]
+Recall_Requested = ""
+Recall_Waiting = ""
+
 ; Changing of SMS alert number is enabled if method parameter is set. Only valid
 ; value for Koha is 'driver'. Set to empty string to disable.
 [updateSmsNumber]
