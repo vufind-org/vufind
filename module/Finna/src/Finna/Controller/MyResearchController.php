@@ -1160,7 +1160,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $view = parent::storageRetrievalRequestsAction();
-        $view->recordList = $this->orderAvailability($view->recordList);
+        $view->recordList = $this->sortRequestsByAvailability($view->recordList);
         $view->blocks = $this->getAccountBlocks($patron);
         return $view;
     }
@@ -1182,7 +1182,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $view = parent::illRequestsAction();
-        $view->recordList = $this->orderAvailability($view->recordList);
+        $view->recordList = $this->sortRequestsByAvailability($view->recordList);
         $view->blocks = $this->getAccountBlocks($patron);
         return $view;
     }

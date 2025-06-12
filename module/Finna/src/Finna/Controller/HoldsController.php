@@ -75,9 +75,9 @@ class HoldsController extends \VuFind\Controller\HoldsController
                 'title_desc',
             ];
             if (in_array($sort, $supported)) {
-                $view->recordList = $this->sortHolds($view->recordList, $sort);
+                $view->recordList = $this->sortRequests($view->recordList, $sort);
             } else {
-                $view->recordList = $this->orderAvailability($view->recordList);
+                $view->recordList = $this->sortRequestsByAvailability($view->recordList);
             }
             $sortList = [
                 'available' => [
@@ -115,47 +115,5 @@ class HoldsController extends \VuFind\Controller\HoldsController
         }
         $view->blocks = $this->getAccountBlocks($patron);
         return $view;
-    }
-
-    /**
-     * Sort holds list
-     *
-     * @param array  $recordList array of holds
-     * @param string $sort       sort order
-     *
-     * @return array
-     */
-    protected function sortHolds($recordList, $sort)
-    {
-        [$field, $order] = explode('_', $sort);
-        $date = $this->serviceLocator->get(\VuFind\Date\Converter::class);
-        $sorter = $this->serviceLocator->get(\VuFind\I18n\Sorter::class);
-        $sortFunc = function ($a, $b) use ($field, $order, $date, $sorter) {
-            $aDetail = $a->getExtraDetail('ils_details')[$field] ?? '';
-            $bDetail = $b->getExtraDetail('ils_details')[$field] ?? '';
-            if ($field === 'title') {
-                return $sorter->compare(
-                    $aDetail,
-                    $bDetail
-                );
-            }
-            $aDate = $aDetail ? $date->convertFromDisplayDate('U', $aDetail) : 0;
-            $bDate = $bDetail ? $date->convertFromDisplayDate('U', $bDetail) : 0;
-            if ($aDetail !== $bDetail) {
-                return $order === 'asc' ? $aDate - $bDate : $bDate - $aDate;
-            }
-            $aAvail = $a->getExtraDetail('ils_details')['available'] ?? '';
-            $bAvail = $b->getExtraDetail('ils_details')['available'] ?? '';
-            if ($aAvail !== $bAvail) {
-                return (int)$bAvail - (int)$aAvail;
-            }
-            return $sorter->compare(
-                $a->getExtraDetail('ils_details')['title'] ?? '',
-                $b->getExtraDetail('ils_details')['title'] ?? ''
-            );
-        };
-
-        usort($recordList, $sortFunc);
-        return $recordList;
     }
 }

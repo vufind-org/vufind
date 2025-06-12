@@ -440,6 +440,11 @@ class Demo extends \VuFind\ILS\Driver\Demo
                 if (!isset($item['available'])) {
                     $list[$key]['available'] = false;
                 }
+                if (!empty($list[$key]['last_pickup_date'])) {
+                    $days = rand(1, 7);
+                    $list[$key]['last_pickup_date'] = $this->dateConverter
+                            ->convertToDisplayDate('U', strtotime("now + $days days"));
+                }
             }
         }
         return $list;
