@@ -269,10 +269,15 @@
     } elseif ($firstDueStr) {
       $holdingSummary = '<span class="status-unavailable">' . $this->icon('status-unavailable') . ' ' . $this->transEsc('closest_due_date', ['%%date%%' => $firstDueStr]) . '</span>';
     } elseif ($statuses) {
-      if ($uncertain) {
-        $holdingSummary = '<span class="status-uncertain">' . $this->icon('status-unknown') . ' ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
+      if (count($statuses) === 1) {
+        if ($uncertain) {
+          $holdingSummary = '<span class="status-uncertain">' . $this->icon('status-unknown') . ' ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
+        } else {
+          $holdingSummary = '<span class="status-unavailable"> ' . implode('<br>', array_map([$this, 'escapeHtml'], array_keys($statuses))) . '</span>';
+        }
       } else {
-        $holdingSummary = '<span class="status-unavailable"> ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
+        // Don't try to show multiple statuses, it causes confusion!
+        $holdingSummary = '';
       }
     } else {
       $holdingSummary = '<span class="status-available">' . $this->icon('status-available') . ' ' . $this->transEsc('Available') . '</span>';
