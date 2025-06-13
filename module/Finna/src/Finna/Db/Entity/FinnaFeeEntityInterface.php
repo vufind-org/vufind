@@ -55,9 +55,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param FinnaTransactionEntityInterface $transaction Transaction.
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setTransaction(FinnaTransactionEntityInterface $transaction): FinnaFeeEntityInterface;
+    public function setTransaction(FinnaTransactionEntityInterface $transaction): static;
 
     /**
      * Transaction getter
@@ -71,9 +71,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param UserEntityInterface $user User owning the list.
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): FinnaFeeEntityInterface;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * Get user.
@@ -87,9 +87,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param string $title Title
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setTitle(string $title): FinnaFeeEntityInterface;
+    public function setTitle(string $title): static;
 
     /**
      * Title getter
@@ -103,9 +103,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param string $type Type
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setType(string $type): FinnaFeeEntityInterface;
+    public function setType(string $type): static;
 
     /**
      * Type getter
@@ -119,9 +119,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param string $description Description
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setDescription(string $description): FinnaFeeEntityInterface;
+    public function setDescription(string $description): static;
 
     /**
      * Description getter
@@ -135,9 +135,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param int $amount Amount
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setAmount(int $amount): FinnaFeeEntityInterface;
+    public function setAmount(int $amount): static;
 
     /**
      * Amount getter
@@ -151,9 +151,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param string $currency Currency
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setCurrency(string $currency): FinnaFeeEntityInterface;
+    public function setCurrency(string $currency): static;
 
     /**
      * Currency getter
@@ -167,9 +167,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param string $fineId Fine ID (ILS)
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setFineId(string $fineId): FinnaFeeEntityInterface;
+    public function setFineId(string $fineId): static;
 
     /**
      * Fine Id getter
@@ -183,9 +183,9 @@ interface FinnaFeeEntityInterface extends EntityInterface
      *
      * @param string $organization Organization
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setOrganization(string $organization): FinnaFeeEntityInterface;
+    public function setOrganization(string $organization): static;
 
     /**
      * Organization getter

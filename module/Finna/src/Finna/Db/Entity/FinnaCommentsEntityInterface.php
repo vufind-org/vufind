@@ -54,7 +54,7 @@ interface FinnaCommentsEntityInterface extends \VuFind\Db\Entity\CommentsEntityI
     /**
      * Last update date getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
     public function getFinnaUpdated(): ?Datetime;
 }

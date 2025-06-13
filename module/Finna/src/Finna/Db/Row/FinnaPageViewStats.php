@@ -76,9 +76,9 @@ class FinnaPageViewStats extends \VuFind\Db\Row\RowGateway implements FinnaPageV
      *
      * @param string $controller Controller
      *
-     * @return FinnaPageViewStatsEntityInterface
+     * @return static
      */
-    public function setController(string $controller): FinnaPageViewStatsEntityInterface
+    public function setController(string $controller): static
     {
         $this->controller = mb_substr($controller, 0, 128, 'UTF-8');
         return $this;
@@ -99,9 +99,9 @@ class FinnaPageViewStats extends \VuFind\Db\Row\RowGateway implements FinnaPageV
      *
      * @param string $action Action
      *
-     * @return FinnaPageViewStatsEntityInterface
+     * @return static
      */
-    public function setAction(string $action): FinnaPageViewStatsEntityInterface
+    public function setAction(string $action): static
     {
         $this->action = mb_substr($action, 0, 128, 'UTF-8');
         return $this;

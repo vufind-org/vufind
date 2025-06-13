@@ -71,9 +71,9 @@ class FinnaRecordViewRecordRights extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $rights Rights
      *
-     * @return FinnaRecordViewRecordRightsEntityInterface
+     * @return static
      */
-    public function setRights(string $rights): FinnaRecordViewRecordRightsEntityInterface
+    public function setRights(string $rights): static
     {
         $this->usage_rights = mb_substr($rights, 0, 255, 'UTF-8');
         return $this;

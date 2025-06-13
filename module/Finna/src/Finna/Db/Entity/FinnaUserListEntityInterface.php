@@ -70,7 +70,7 @@ interface FinnaUserListEntityInterface extends \VuFind\Db\Entity\UserListEntityI
     /**
      * Last update date getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
     public function getFinnaUpdated(): ?Datetime;
 }

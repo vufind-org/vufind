@@ -54,9 +54,9 @@ interface FinnaRecordViewRecordRightsEntityInterface extends EntityInterface
      *
      * @param string $rights Rights
      *
-     * @return FinnaRecordViewRecordRightsEntityInterface
+     * @return static
      */
-    public function setRights(string $rights): FinnaRecordViewRecordRightsEntityInterface;
+    public function setRights(string $rights): static;
 
     /**
      * Rights getter

@@ -71,9 +71,9 @@ class FinnaRecordViewRecordFormat extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $formats Formats
      *
-     * @return FinnaRecordViewRecordFormatEntityInterface
+     * @return static
      */
-    public function setFormats(string $formats): FinnaRecordViewRecordFormatEntityInterface
+    public function setFormats(string $formats): static
     {
         $this->formats = mb_substr($formats, 0, 255, 'UTF-8');
         return $this;

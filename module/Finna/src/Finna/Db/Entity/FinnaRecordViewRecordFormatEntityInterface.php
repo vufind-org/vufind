@@ -54,9 +54,9 @@ interface FinnaRecordViewRecordFormatEntityInterface extends EntityInterface
      *
      * @param string $formats Formats
      *
-     * @return FinnaRecordViewRecordFormatEntityInterface
+     * @return static
      */
-    public function setFormats(string $formats): FinnaRecordViewRecordFormatEntityInterface;
+    public function setFormats(string $formats): static;
 
     /**
      * Formats getter

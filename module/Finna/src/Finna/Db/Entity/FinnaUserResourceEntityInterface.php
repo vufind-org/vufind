@@ -52,7 +52,7 @@ interface FinnaUserResourceEntityInterface extends \VuFind\Db\Entity\UserResourc
     /**
      * Custom order index getter
      *
-     * @return int
+     * @return ?int
      */
     public function getFinnaCustomOrderIndex(): ?int;
 }

@@ -74,9 +74,9 @@ class TransactionEventLog extends \VuFind\Db\Row\RowGateway implements
      *
      * @param FinnaTransactionEntityInterface $transaction Transaction
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setTransaction(FinnaTransactionEntityInterface $transaction): FinnaTransactionEventEntityInterface
+    public function setTransaction(FinnaTransactionEntityInterface $transaction): static
     {
         $this->transaction_id = $transaction->getId();
         return $this;
@@ -121,9 +121,9 @@ class TransactionEventLog extends \VuFind\Db\Row\RowGateway implements
      *
      * @param DateTime $dateTime Created date
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setDate(DateTime $dateTime): FinnaTransactionEventEntityInterface
+    public function setDate(DateTime $dateTime): static
     {
         $this->date = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -144,9 +144,9 @@ class TransactionEventLog extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?string $serverIp Server IP address
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setServerIp(?string $serverIp): FinnaTransactionEventEntityInterface
+    public function setServerIp(?string $serverIp): static
     {
         $this->server_ip = $serverIp;
         return $this;
@@ -167,9 +167,9 @@ class TransactionEventLog extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?string $serverName Server name
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setServerName(?string $serverName): FinnaTransactionEventEntityInterface
+    public function setServerName(?string $serverName): static
     {
         $this->server_name = $serverName;
         return $this;
@@ -190,9 +190,9 @@ class TransactionEventLog extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?string $requestUri Request URI
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setRequestUri(?string $requestUri): FinnaTransactionEventEntityInterface
+    public function setRequestUri(?string $requestUri): static
     {
         $this->request_uri = $requestUri;
         return $this;
@@ -213,9 +213,9 @@ class TransactionEventLog extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?string $message Message
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setMessage(?string $message): FinnaTransactionEventEntityInterface
+    public function setMessage(?string $message): static
     {
         $this->message = $message;
         return $this;
@@ -236,9 +236,9 @@ class TransactionEventLog extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?string $data Data
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setData(?string $data): FinnaTransactionEventEntityInterface
+    public function setData(?string $data): static
     {
         // Avoid messing with $this->data that RowGateway uses for storing the values:
         $this->offsetSet('data', $data);

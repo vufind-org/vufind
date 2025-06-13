@@ -45,9 +45,9 @@ interface FinnaUserCardEntityInterface extends \VuFind\Db\Entity\UserCardEntityI
      *
      * @param int $remind New due date reminder setting.
      *
-     * @return FinnaUserCardEntityInterface
+     * @return static
      */
-    public function setFinnaDueDateReminder(int $remind): FinnaUserCardEntityInterface;
+    public function setFinnaDueDateReminder(int $remind): static;
 
     /**
      * Due date reminder setting getter

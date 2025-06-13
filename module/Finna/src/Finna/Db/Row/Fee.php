@@ -83,9 +83,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param FinnaTransactionEntityInterface $transaction Transaction.
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setTransaction(FinnaTransactionEntityInterface $transaction): FinnaFeeEntityInterface
+    public function setTransaction(FinnaTransactionEntityInterface $transaction): static
     {
         $this->transaction_id = $transaction->getId();
         return $this;
@@ -107,9 +107,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param UserEntityInterface $user User owning the list.
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): FinnaFeeEntityInterface
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user_id = $user->getId();
         return $this;
@@ -130,9 +130,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $title Title
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setTitle(string $title): FinnaFeeEntityInterface
+    public function setTitle(string $title): static
     {
         $this->title = mb_substr($title, 0, 255, 'UTF-8');
         return $this;
@@ -153,9 +153,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $type Type
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setType(string $type): FinnaFeeEntityInterface
+    public function setType(string $type): static
     {
         $this->type = mb_substr($type, 0, 255, 'UTF-8');
         return $this;
@@ -176,9 +176,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $description Description
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setDescription(string $description): FinnaFeeEntityInterface
+    public function setDescription(string $description): static
     {
         $this->description = mb_substr($description, 0, 255, 'UTF-8');
         return $this;
@@ -199,9 +199,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param int $amount Amount
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setAmount(int $amount): FinnaFeeEntityInterface
+    public function setAmount(int $amount): static
     {
         $this->amount = (float)$amount;
         return $this;
@@ -222,9 +222,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $currency Currency
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setCurrency(string $currency): FinnaFeeEntityInterface
+    public function setCurrency(string $currency): static
     {
         $this->currency = $currency;
         return $this;
@@ -245,9 +245,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $fineId Fine ID (ILS)
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setFineId(string $fineId): FinnaFeeEntityInterface
+    public function setFineId(string $fineId): static
     {
         $this->fine_id = $fineId;
         return $this;
@@ -268,9 +268,9 @@ class Fee extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $organization Organization
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setOrganization(string $organization): FinnaFeeEntityInterface
+    public function setOrganization(string $organization): static
     {
         $this->organization = mb_substr($organization, 0, 255, 'UTF-8');
         return $this;

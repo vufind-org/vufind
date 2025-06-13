@@ -82,9 +82,9 @@ class FinnaRecordViewRecord extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $backend Backend
      *
-     * @return FinnaRecordViewRecordEntityInterface
+     * @return static
      */
-    public function setBackend(string $backend): FinnaRecordViewRecordEntityInterface
+    public function setBackend(string $backend): static
     {
         $this->backend = mb_substr($backend, 0, 128, 'UTF-8');
         return $this;
@@ -105,9 +105,9 @@ class FinnaRecordViewRecord extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $source Source
      *
-     * @return FinnaRecordViewRecordEntityInterface
+     * @return static
      */
-    public function setSource(string $source): FinnaRecordViewRecordEntityInterface
+    public function setSource(string $source): static
     {
         $this->source = mb_substr($source, 0, 255, 'UTF-8');
         return $this;
@@ -128,9 +128,9 @@ class FinnaRecordViewRecord extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $recordId Record Id
      *
-     * @return FinnaRecordViewRecordEntityInterface
+     * @return static
      */
-    public function setRecordId(string $recordId): FinnaRecordViewRecordEntityInterface
+    public function setRecordId(string $recordId): static
     {
         $this->record_id = mb_substr($recordId, 0, 255, 'UTF-8');
         return $this;
@@ -151,9 +151,9 @@ class FinnaRecordViewRecord extends \VuFind\Db\Row\RowGateway implements
      *
      * @param FinnaRecordViewRecordFormatEntityInterface $format Format
      *
-     * @return FinnaRecordViewRecordEntityInterface
+     * @return static
      */
-    public function setFormat(FinnaRecordViewRecordFormatEntityInterface $format): FinnaRecordViewRecordEntityInterface
+    public function setFormat(FinnaRecordViewRecordFormatEntityInterface $format): static
     {
         $this->format_id = $format->getId();
         return $this;
@@ -175,11 +175,11 @@ class FinnaRecordViewRecord extends \VuFind\Db\Row\RowGateway implements
      *
      * @param FinnaRecordViewRecordRightsEntityInterface $usageRights Usage rights
      *
-     * @return FinnaRecordViewRecordEntityInterface
+     * @return static
      */
     public function setUsageRights(
         FinnaRecordViewRecordRightsEntityInterface $usageRights
-    ): FinnaRecordViewRecordEntityInterface {
+    ): static {
         $this->usage_rights_id = $usageRights->getId();
         return $this;
     }
@@ -200,9 +200,9 @@ class FinnaRecordViewRecord extends \VuFind\Db\Row\RowGateway implements
      *
      * @param bool $online Online
      *
-     * @return FinnaRecordViewRecordEntityInterface
+     * @return static
      */
-    public function setOnline(bool $online): FinnaRecordViewRecordEntityInterface
+    public function setOnline(bool $online): static
     {
         $this->online = $online ? 1 : 0;
         return $this;
@@ -223,9 +223,9 @@ class FinnaRecordViewRecord extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?string $extraMetadata Extra metadata
      *
-     * @return FinnaRecordViewRecordEntityInterface
+     * @return static
      */
-    public function setExtraMetadata(?string $extraMetadata): FinnaRecordViewRecordEntityInterface
+    public function setExtraMetadata(?string $extraMetadata): static
     {
         $this->extra_metadata = $extraMetadata;
         return $this;

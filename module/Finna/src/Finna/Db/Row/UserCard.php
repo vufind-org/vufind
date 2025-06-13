@@ -49,9 +49,9 @@ class UserCard extends \VuFind\Db\Row\UserCard implements FinnaUserCardEntityInt
      *
      * @param int $remind New due date reminder setting.
      *
-     * @return FinnaUserCardEntityInterface
+     * @return static
      */
-    public function setFinnaDueDateReminder(int $remind): FinnaUserCardEntityInterface
+    public function setFinnaDueDateReminder(int $remind): static
     {
         $this->finna_due_date_reminder = $remind;
         return $this;

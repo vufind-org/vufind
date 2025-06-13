@@ -45,9 +45,9 @@ interface FinnaPageViewStatsEntityInterface extends FinnaBaseStatsLogEntityInter
      *
      * @param string $controller Controller
      *
-     * @return FinnaPageViewStatsLogEntityInterface
+     * @return static
      */
-    public function setController(string $controller): FinnaPageViewStatsEntityInterface;
+    public function setController(string $controller): static;
 
     /**
      * Controller getter
@@ -61,9 +61,9 @@ interface FinnaPageViewStatsEntityInterface extends FinnaBaseStatsLogEntityInter
      *
      * @param string $action Action
      *
-     * @return FinnaPageViewStatsLogEntityInterface
+     * @return static
      */
-    public function setAction(string $action): FinnaPageViewStatsEntityInterface;
+    public function setAction(string $action): static;
 
     /**
      * Action getter

@@ -48,9 +48,9 @@ interface FinnaTransactionEventEntityInterface extends EntityInterface
      *
      * @param FinnaTransactionEntityInterface $transaction Transaction
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setTransaction(FinnaTransactionEntityInterface $transaction): FinnaTransactionEventEntityInterface;
+    public function setTransaction(FinnaTransactionEntityInterface $transaction): static;
 
     /**
      * Transaction getter
@@ -64,9 +64,9 @@ interface FinnaTransactionEventEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setDate(DateTime $dateTime): FinnaTransactionEventEntityInterface;
+    public function setDate(DateTime $dateTime): static;
 
     /**
      * Date getter
@@ -80,9 +80,9 @@ interface FinnaTransactionEventEntityInterface extends EntityInterface
      *
      * @param ?string $serverIp Server IP address
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setServerIp(?string $serverIp): FinnaTransactionEventEntityInterface;
+    public function setServerIp(?string $serverIp): static;
 
     /**
      * Server IP address getter
@@ -96,9 +96,9 @@ interface FinnaTransactionEventEntityInterface extends EntityInterface
      *
      * @param ?string $serverName Server name
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setServerName(?string $serverName): FinnaTransactionEventEntityInterface;
+    public function setServerName(?string $serverName): static;
 
     /**
      * Server name getter
@@ -112,9 +112,9 @@ interface FinnaTransactionEventEntityInterface extends EntityInterface
      *
      * @param ?string $requestUri Request URI
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setRequestUri(?string $requestUri): FinnaTransactionEventEntityInterface;
+    public function setRequestUri(?string $requestUri): static;
 
     /**
      * Request URI getter
@@ -128,9 +128,9 @@ interface FinnaTransactionEventEntityInterface extends EntityInterface
      *
      * @param ?string $message Message
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setMessage(?string $message): FinnaTransactionEventEntityInterface;
+    public function setMessage(?string $message): static;
 
     /**
      * Message getter
@@ -144,9 +144,9 @@ interface FinnaTransactionEventEntityInterface extends EntityInterface
      *
      * @param ?string $data Data
      *
-     * @return FinnaTransactionEventEntityInterface
+     * @return static
      */
-    public function setData(?string $data): FinnaTransactionEventEntityInterface;
+    public function setData(?string $data): static;
 
     /**
      * Additional data getter

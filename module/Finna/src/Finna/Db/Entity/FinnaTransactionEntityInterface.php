@@ -57,9 +57,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param ?string $transactionId Transaction Identifier.
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setTransactionIdentifier(?string $transactionId): FinnaTransactionEntityInterface;
+    public function setTransactionIdentifier(?string $transactionId): static;
 
     /**
      * Transaction Identifier getter
@@ -73,9 +73,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param UserEntityInterface $user User
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): FinnaTransactionEntityInterface;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * Get user.
@@ -96,9 +96,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param string $sourceId Source Id
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setSourceId(string $sourceId): FinnaTransactionEntityInterface;
+    public function setSourceId(string $sourceId): static;
 
     /**
      * Source Id (driver) getter
@@ -112,9 +112,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param int $amount Amount
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setAmount(int $amount): FinnaTransactionEntityInterface;
+    public function setAmount(int $amount): static;
 
     /**
      * Amount getter
@@ -128,9 +128,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param string $currency Currency.
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setCurrency(string $currency): FinnaTransactionEntityInterface;
+    public function setCurrency(string $currency): static;
 
     /**
      * Currency getter
@@ -144,9 +144,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param int $amount Amount
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setTransactionFee(int $amount): FinnaTransactionEntityInterface;
+    public function setTransactionFee(int $amount): static;
 
     /**
      * Transaction fee getter
@@ -160,9 +160,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): FinnaTransactionEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Created getter
@@ -176,14 +176,14 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Paid date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setPaidDate(?DateTime $dateTime): FinnaTransactionEntityInterface;
+    public function setPaidDate(?DateTime $dateTime): static;
 
     /**
      * Paid date getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
     public function getPaidDate(): ?Datetime;
 
@@ -192,9 +192,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Registration start date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationStartDate(?DateTime $dateTime): FinnaTransactionEntityInterface;
+    public function setRegistrationStartDate(?DateTime $dateTime): static;
 
     /**
      * Registration started getter
@@ -208,9 +208,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Registration date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationDate(?DateTime $dateTime): FinnaTransactionEntityInterface;
+    public function setRegistrationDate(?DateTime $dateTime): static;
 
     /**
      * Registration date getter
@@ -224,9 +224,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param FinnaTransactionStatus $status Status
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setStatus(FinnaTransactionStatus $status): FinnaTransactionEntityInterface;
+    public function setStatus(FinnaTransactionStatus $status): static;
 
     /**
      * Status getter
@@ -240,9 +240,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param string $message Status message
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setStatusMessage(string $message): FinnaTransactionEntityInterface;
+    public function setStatusMessage(string $message): static;
 
     /**
      * Status message getter
@@ -256,9 +256,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
      *
      * @param string $catUsername Catalog username
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setCatUsername(string $catUsername): FinnaTransactionEntityInterface;
+    public function setCatUsername(string $catUsername): static;
 
     /**
      * Get catalog username.
@@ -284,9 +284,9 @@ interface FinnaTransactionEntityInterface extends EntityInterface
     /**
      * Set transaction canceled
      *
-     * @return void
+     * @return static
      */
-    public function setCanceled(): FinnaTransactionEntityInterface;
+    public function setCanceled(): static;
 
     /**
      * Check if the transaction is paid and needs registration with the ILS
@@ -305,44 +305,44 @@ interface FinnaTransactionEntityInterface extends EntityInterface
     /**
      * Set transaction paid
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setPaid(): FinnaTransactionEntityInterface;
+    public function setPaid(): static;
 
     /**
      * Set transaction registered
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistered(): FinnaTransactionEntityInterface;
+    public function setRegistered(): static;
 
     /**
      * Set transaction status to "registration failed"
      *
      * @param string $msg Message
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationFailed(string $msg): FinnaTransactionEntityInterface;
+    public function setRegistrationFailed(string $msg): static;
 
     /**
      * Set registration start timestamp
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationStarted(): FinnaTransactionEntityInterface;
+    public function setRegistrationStarted(): static;
 
     /**
      * Set transaction reported date and status to "registration expired"
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setReportedAndExpired(): FinnaTransactionEntityInterface;
+    public function setReportedAndExpired(): static;
 
     /**
      * Set transaction status to "fines updated"
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setFinesUpdated(): FinnaTransactionEntityInterface;
+    public function setFinesUpdated(): static;
 }

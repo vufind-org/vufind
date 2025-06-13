@@ -55,9 +55,9 @@ interface FinnaCacheEntityInterface extends EntityInterface
      *
      * @param string $id Resource ID
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setResourceId(string $id): FinnaCacheEntityInterface;
+    public function setResourceId(string $id): static;
 
     /**
      * Resource ID getter
@@ -71,9 +71,9 @@ interface FinnaCacheEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): FinnaCacheEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Created getter
@@ -87,14 +87,14 @@ interface FinnaCacheEntityInterface extends EntityInterface
      *
      * @param int $mtime Unix timestamp of modification
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setModificationTimestamp(int $mtime): FinnaCacheEntityInterface;
+    public function setModificationTimestamp(int $mtime): static;
 
     /**
      * Modification timestamp getter
      *
-     * @return bool
+     * @return int
      */
     public function getModificationTimestamp(): int;
 
@@ -103,9 +103,9 @@ interface FinnaCacheEntityInterface extends EntityInterface
      *
      * @param string $data Data
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setData(string $data): FinnaCacheEntityInterface;
+    public function setData(string $data): static;
 
     /**
      * Data getter

@@ -54,9 +54,9 @@ interface FinnaRecordViewInstitutionViewEntityInterface extends EntityInterface
      *
      * @param string $institution Institution
      *
-     * @return FinnaRecordViewInstitutionViewEntityInterface
+     * @return static
      */
-    public function setInstitution(string $institution): FinnaRecordViewInstitutionViewEntityInterface;
+    public function setInstitution(string $institution): static;
 
     /**
      * Institution getter
@@ -70,9 +70,9 @@ interface FinnaRecordViewInstitutionViewEntityInterface extends EntityInterface
      *
      * @param string $view View
      *
-     * @return FinnaRecordViewInstitutionViewEntityInterface
+     * @return static
      */
-    public function setView(string $view): FinnaRecordViewInstitutionViewEntityInterface;
+    public function setView(string $view): static;
 
     /**
      * View getter

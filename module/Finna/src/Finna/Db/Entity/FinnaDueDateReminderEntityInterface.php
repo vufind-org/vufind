@@ -56,9 +56,9 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
      *
      * @param UserEntityInterface $user User owning the list.
      *
-     * @return FinnaFeeEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): FinnaDueDateReminderEntityInterface;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * Get user.
@@ -72,9 +72,9 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
      *
      * @param string $loanId Loan Id
      *
-     * @return FinnaDueDateReminderEntityInterface
+     * @return static
      */
-    public function setLoanId(string $loanId): FinnaDueDateReminderEntityInterface;
+    public function setLoanId(string $loanId): static;
 
     /**
      * Loan Id getter
@@ -88,9 +88,9 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Due date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setDueDate(DateTime $dateTime): FinnaDueDateReminderEntityInterface;
+    public function setDueDate(DateTime $dateTime): static;
 
     /**
      * Due date getter
@@ -104,9 +104,9 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Notification date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setNotificationDate(?DateTime $dateTime): FinnaDueDateReminderEntityInterface;
+    public function setNotificationDate(?DateTime $dateTime): static;
 
     /**
      * Notification date getter

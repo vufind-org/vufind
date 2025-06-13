@@ -74,9 +74,9 @@ class FinnaCache extends \VuFind\Db\Row\RowGateway implements FinnaCacheEntityIn
      *
      * @param string $id Resource ID
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setResourceId(string $id): FinnaCacheEntityInterface
+    public function setResourceId(string $id): static
     {
         $this->resource_id = $id;
         return $this;
@@ -97,9 +97,9 @@ class FinnaCache extends \VuFind\Db\Row\RowGateway implements FinnaCacheEntityIn
      *
      * @param DateTime $dateTime Created date
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setCreated(Datetime $dateTime): FinnaCacheEntityInterface
+    public function setCreated(Datetime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -120,9 +120,9 @@ class FinnaCache extends \VuFind\Db\Row\RowGateway implements FinnaCacheEntityIn
      *
      * @param int $mtime Unix timestamp of modification
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setModificationTimestamp(int $mtime): FinnaCacheEntityInterface
+    public function setModificationTimestamp(int $mtime): static
     {
         $this->mtime = $mtime;
         return $this;
@@ -143,9 +143,9 @@ class FinnaCache extends \VuFind\Db\Row\RowGateway implements FinnaCacheEntityIn
      *
      * @param string $data Data
      *
-     * @return FinnaCacheEntityInterface
+     * @return static
      */
-    public function setData(string $data): FinnaCacheEntityInterface
+    public function setData(string $data): static
     {
         // Avoid messing with $this->data that RowGateway uses for storing the values:
         $this->offsetSet('data', $data);

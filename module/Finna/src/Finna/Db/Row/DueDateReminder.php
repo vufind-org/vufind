@@ -78,9 +78,9 @@ class DueDateReminder extends \VuFind\Db\Row\RowGateway implements
      *
      * @param UserEntityInterface $user User owning the list.
      *
-     * @return FinnaDueDateReminderEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): FinnaDueDateReminderEntityInterface
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user_id = $user->getId();
         return $this;
@@ -101,9 +101,9 @@ class DueDateReminder extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $loanId Loan Id
      *
-     * @return FinnaDueDateReminderEntityInterface
+     * @return static
      */
-    public function setLoanId(string $loanId): FinnaDueDateReminderEntityInterface
+    public function setLoanId(string $loanId): static
     {
         $this->loan_id = $loanId;
         return $this;
@@ -124,9 +124,9 @@ class DueDateReminder extends \VuFind\Db\Row\RowGateway implements
      *
      * @param DateTime $dateTime Due date
      *
-     * @return FinnaDueDateReminderEntityInterface
+     * @return static
      */
-    public function setDueDate(DateTime $dateTime): FinnaDueDateReminderEntityInterface
+    public function setDueDate(DateTime $dateTime): static
     {
         $this->due_date = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -147,9 +147,9 @@ class DueDateReminder extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?DateTime $dateTime Notification date
      *
-     * @return FinnaDueDateReminderEntityInterface
+     * @return static
      */
-    public function setNotificationDate(?DateTime $dateTime): FinnaDueDateReminderEntityInterface
+    public function setNotificationDate(?DateTime $dateTime): static
     {
         $this->notification_date = $dateTime->format('Y-m-d H:i:s');
         return $this;

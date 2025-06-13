@@ -71,9 +71,9 @@ class FinnaRecordViewInstView extends \VuFind\Db\Row\RowGateway implements Finna
      *
      * @param string $institution Institution
      *
-     * @return FinnaRecordViewInstitutionViewEntityInterface
+     * @return static
      */
-    public function setInstitution(string $institution): FinnaRecordViewInstitutionViewEntityInterface
+    public function setInstitution(string $institution): static
     {
         $this->institution = $institution;
         return $this;
@@ -94,9 +94,9 @@ class FinnaRecordViewInstView extends \VuFind\Db\Row\RowGateway implements Finna
      *
      * @param string $view View
      *
-     * @return FinnaRecordViewInstitutionViewEntityInterface
+     * @return static
      */
-    public function setView(string $view): FinnaRecordViewInstitutionViewEntityInterface
+    public function setView(string $view): static
     {
         $this->view = $view;
         return $this;

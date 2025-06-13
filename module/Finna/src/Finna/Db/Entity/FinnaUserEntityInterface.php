@@ -102,7 +102,7 @@ interface FinnaUserEntityInterface extends \VuFind\Db\Entity\UserEntityInterface
     /**
      * Last expiration reminder date getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
     public function getFinnaLastExpirationReminderDate(): ?Datetime;
 }

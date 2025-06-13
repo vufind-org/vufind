@@ -84,9 +84,9 @@ class FinnaRecordStatsLog extends \VuFind\Db\Row\RowGateway implements FinnaReco
      *
      * @param string $backend Backend
      *
-     * @return FinnaRecordStatsLogEntityInterface
+     * @return static
      */
-    public function setBackend(string $backend): FinnaRecordStatsLogEntityInterface
+    public function setBackend(string $backend): static
     {
         $this->backend = mb_substr($backend, 0, 128, 'UTF-8');
         return $this;
@@ -107,9 +107,9 @@ class FinnaRecordStatsLog extends \VuFind\Db\Row\RowGateway implements FinnaReco
      *
      * @param string $source Source
      *
-     * @return FinnaRecordStatsLogEntityInterface
+     * @return static
      */
-    public function setSource(string $source): FinnaRecordStatsLogEntityInterface
+    public function setSource(string $source): static
     {
         $this->source = mb_substr($source, 0, 255, 'UTF-8');
         return $this;
@@ -130,9 +130,9 @@ class FinnaRecordStatsLog extends \VuFind\Db\Row\RowGateway implements FinnaReco
      *
      * @param string $recordId Record Id
      *
-     * @return FinnaRecordStatsLogEntityInterface
+     * @return static
      */
-    public function setRecordId(string $recordId): FinnaRecordStatsLogEntityInterface
+    public function setRecordId(string $recordId): static
     {
         $this->record_id = mb_substr($recordId, 0, 255, 'UTF-8');
         return $this;
@@ -153,9 +153,9 @@ class FinnaRecordStatsLog extends \VuFind\Db\Row\RowGateway implements FinnaReco
      *
      * @param string $formats Formats
      *
-     * @return FinnaRecordStatsLogEntityInterface
+     * @return static
      */
-    public function setFormats(string $formats): FinnaRecordStatsLogEntityInterface
+    public function setFormats(string $formats): static
     {
         $this->formats = mb_substr($formats, 0, 255, 'UTF-8');
         return $this;
@@ -176,9 +176,9 @@ class FinnaRecordStatsLog extends \VuFind\Db\Row\RowGateway implements FinnaReco
      *
      * @param string $usageRights Usage rights
      *
-     * @return FinnaRecordStatsLogEntityInterface
+     * @return static
      */
-    public function setUsageRights(string $usageRights): FinnaRecordStatsLogEntityInterface
+    public function setUsageRights(string $usageRights): static
     {
         $this->usage_rights = mb_substr($usageRights, 0, 255, 'UTF-8');
         return $this;
@@ -199,9 +199,9 @@ class FinnaRecordStatsLog extends \VuFind\Db\Row\RowGateway implements FinnaReco
      *
      * @param bool $online Online
      *
-     * @return FinnaRecordStatsLogEntityInterface
+     * @return static
      */
-    public function setOnline(bool $online): FinnaRecordStatsLogEntityInterface
+    public function setOnline(bool $online): static
     {
         $this->online = $online ? 1 : 0;
         return $this;
@@ -222,9 +222,9 @@ class FinnaRecordStatsLog extends \VuFind\Db\Row\RowGateway implements FinnaReco
      *
      * @param ?string $extraMetadata Extra metadata
      *
-     * @return FinnaRecordStatsLogEntityInterface
+     * @return static
      */
-    public function setExtraMetadata(?string $extraMetadata): FinnaRecordStatsLogEntityInterface
+    public function setExtraMetadata(?string $extraMetadata): static
     {
         $this->extra_metadata = $extraMetadata;
         return $this;

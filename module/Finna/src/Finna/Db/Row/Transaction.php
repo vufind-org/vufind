@@ -96,9 +96,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?string $transactionIdentifier Transaction Identifier.
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setTransactionIdentifier(?string $transactionIdentifier): FinnaTransactionEntityInterface
+    public function setTransactionIdentifier(?string $transactionIdentifier): static
     {
         $this->transaction_id = $transactionIdentifier;
         return $this;
@@ -119,9 +119,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param UserEntityInterface $user User owning the list.
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): FinnaTransactionEntityInterface
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user_id = $user->getId();
         return $this;
@@ -152,9 +152,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $sourceId Source Id
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setSourceId(string $sourceId): FinnaTransactionEntityInterface
+    public function setSourceId(string $sourceId): static
     {
         $this->driver = $sourceId;
         return $this;
@@ -175,9 +175,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param int $amount Amount
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setAmount(int $amount): FinnaTransactionEntityInterface
+    public function setAmount(int $amount): static
     {
         $this->amount = $amount;
         return $this;
@@ -198,9 +198,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $currency Currency.
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setCurrency(string $currency): FinnaTransactionEntityInterface
+    public function setCurrency(string $currency): static
     {
         $this->currency = $currency;
         return $this;
@@ -221,9 +221,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param int $amount Amount
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setTransactionFee(int $amount): FinnaTransactionEntityInterface
+    public function setTransactionFee(int $amount): static
     {
         $this->transaction_fee = $amount;
         return $this;
@@ -244,9 +244,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param DateTime $dateTime Created date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): FinnaTransactionEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -267,9 +267,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?DateTime $dateTime Paid date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setPaidDate(?DateTime $dateTime): FinnaTransactionEntityInterface
+    public function setPaidDate(?DateTime $dateTime): static
     {
         $this->paid = $dateTime ? $dateTime->format('Y-m-d H:i:s') : static::NO_DATE;
         return $this;
@@ -290,9 +290,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?DateTime $dateTime Registration start date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationStartDate(?DateTime $dateTime): FinnaTransactionEntityInterface
+    public function setRegistrationStartDate(?DateTime $dateTime): static
     {
         $this->registration_started = $dateTime ? $dateTime->format('Y-m-d H:i:s') : static::NO_DATE;
         return $this;
@@ -314,9 +314,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param ?DateTime $dateTime Registration date
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationDate(?DateTime $dateTime): FinnaTransactionEntityInterface
+    public function setRegistrationDate(?DateTime $dateTime): static
     {
         $this->registered = $dateTime ? $dateTime->format('Y-m-d H:i:s') : static::NO_DATE;
         return $this;
@@ -338,9 +338,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param FinnaTransactionStatus $status Status
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setStatus(FinnaTransactionStatus $status): FinnaTransactionEntityInterface
+    public function setStatus(FinnaTransactionStatus $status): static
     {
         $this->complete = $status->value;
         return $this;
@@ -361,9 +361,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $description Status message
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setStatusMessage(string $description): FinnaTransactionEntityInterface
+    public function setStatusMessage(string $description): static
     {
         $this->status = mb_substr($description, 0, 255, 'UTF-8');
         return $this;
@@ -384,9 +384,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $catUsername Catalog username
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setCatUsername(string $catUsername): FinnaTransactionEntityInterface
+    public function setCatUsername(string $catUsername): static
     {
         $this->cat_username = $catUsername;
         return $this;
@@ -425,9 +425,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
     /**
      * Set transaction canceled
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setCanceled(): FinnaTransactionEntityInterface
+    public function setCanceled(): static
     {
         $this->complete = FinnaTransactionStatus::Canceled->value;
         $this->status = 'cancel';
@@ -453,9 +453,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
     /**
      * Set transaction paid
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setPaid(): FinnaTransactionEntityInterface
+    public function setPaid(): static
     {
         $this->paid = date('Y-m-d H:i:s', time());
         $this->complete = FinnaTransactionStatus::Paid->value;
@@ -466,9 +466,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
     /**
      * Set transaction registered
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistered(): FinnaTransactionEntityInterface
+    public function setRegistered(): static
     {
         $this->registered = date('Y-m-d H:i:s');
         $this->complete = FinnaTransactionStatus::Complete->value;
@@ -481,9 +481,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
      *
      * @param string $msg Message
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationFailed(string $msg): FinnaTransactionEntityInterface
+    public function setRegistrationFailed(string $msg): static
     {
         $this->complete = FinnaTransactionStatus::RegistrationFailed->value;
         $this->status = mb_substr($msg, 0, 255, 'UTF-8');
@@ -494,9 +494,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
     /**
      * Set registration start timestamp
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setRegistrationStarted(): FinnaTransactionEntityInterface
+    public function setRegistrationStarted(): static
     {
         $this->registration_started = date('Y-m-d H:i:s');
         return $this;
@@ -518,9 +518,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
     /**
      * Set transaction reported date and status to "registration expired"
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setReportedAndExpired(): FinnaTransactionEntityInterface
+    public function setReportedAndExpired(): static
     {
         $this->complete = FinnaTransactionStatus::RegistrationExpired->value;
         $this->reported = date('Y-m-d H:i:s');
@@ -530,9 +530,9 @@ class Transaction extends \VuFind\Db\Row\RowGateway implements
     /**
      * Set transaction status to "fines updated"
      *
-     * @return FinnaTransactionEntityInterface
+     * @return static
      */
-    public function setFinesUpdated(): FinnaTransactionEntityInterface
+    public function setFinesUpdated(): static
     {
         $this->complete = FinnaTransactionStatus::FinesUpdated->value;
         $this->status = 'fines_updated';
