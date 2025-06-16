@@ -1387,9 +1387,6 @@ allowed_url_schemes[] = 'maps'
 ; disable - List processing is disabled
 ;disallowed_external_hosts_mode = enforce
 
-; Allow image links from BTJ (default is false)
-;btj_links = true
-
 ; Allow image links from Kirjavälitys (default is false)
 ;kirjavalitys_links = true
 

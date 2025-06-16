@@ -92,6 +92,12 @@ trait FinnaUrlCheckTrait
 
         $config = $this->getConfig();
 
+        // Check for kirjavalitys links seperately as it is an option set in config
+        $useKirjavalitysLinks = $config->Record->kirjavalitys_links ?? false;
+        if (str_contains($url, 'http://data.kirjavalitys.fi/') && !$useKirjavalitysLinks) {
+            return self::$urlCheckResultCache[$url] = false;
+        }
+
         $allowedMode = $config->Record->allowed_external_hosts_mode ?? 'enforce';
         if ('disable' === $allowedMode) {
             $allowedList = [];

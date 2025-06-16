@@ -73,9 +73,6 @@ fi = "Finnish"
 ;sv = "Swedish"
 
 [Record]
-; Allow image links from BTJ (default is false)
-;btj_links = true
-
 ; Allow image links from Kirjavälitys (default is false)
 ;kirjavalitys_links = true
 

@@ -299,11 +299,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                 }
             }
 
-            if (
-                ($image || $pdf)
-                && $this->urlAllowed($address)
-                && ($pdf || $this->isUrlLoadable($address, $this->getUniqueID()))
-            ) {
+            if ($pdf || ($image && $this->isUrlLoadable($address, $this->getUniqueID()))) {
                 $urls[$image ? 'images' : 'pdfs'][] = [
                     'urls' => [
                         'small' => $address,
@@ -2101,38 +2097,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
         }
 
         return array_values(array_unique($matches, SORT_REGULAR));
-    }
-
-    /**
-     * Check whether it is allowed to use an image or description URL.
-     *
-     * @param string $url URL to check
-     *
-     * @return boolean True if the url can be used
-     */
-    protected function urlAllowed($url)
-    {
-        // BTJ
-        if (preg_match('/^(http|https):.*\.btj\.com\//', $url)) {
-            if (
-                !isset($this->mainConfig->Record->btj_links)
-                || !$this->mainConfig->Record->btj_links
-            ) {
-                return false;
-            }
-        }
-
-        // Kirjavälitys
-        if (strstr($url, 'http://data.kirjavalitys.fi/')) {
-            if (
-                !isset($this->mainConfig->Record->kirjavalitys_links)
-                || !$this->mainConfig->Record->kirjavalitys_links
-            ) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
