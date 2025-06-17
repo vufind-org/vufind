@@ -27,21 +27,11 @@
  * @link     https://vufind.org Main Site
  */
 
-
 namespace VuFind\Log;
 
 use Monolog\Logger as MonologLogger;
 use Psr\Log\LoggerInterface as PsrLoggerInterface;
-use Psr\Log\LogLevel;
-use Traversable;
 use VuFind\Net\UserIpReader;
-
-use function in_array;
-use function is_array;
-use function is_bool;
-use function is_float;
-use function is_int;
-use function is_object;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -53,12 +43,11 @@ use function is_object;
  * @link     https://vufind.org Main Site
  */
 
-
 class Logger implements PsrLoggerInterface
 {
     private MonologLogger $monolog;
 
     protected UserIpReader $userIpReader;
-    protected bool $debugNeeded = false;
 
+    protected bool $debugNeeded = false;
 }

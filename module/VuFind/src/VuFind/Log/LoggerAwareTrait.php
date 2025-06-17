@@ -3,6 +3,7 @@
 namespace VuFind\Log;
 
 use Psr\Log\LoggerInterface;
+
 use function get_class;
 
 /**
@@ -21,7 +22,7 @@ trait LoggerAwareTrait
      * Sets the logger instance on the object.
      * This method fulfills the contract of VuFind\Log\LoggerAwareInterface.
      *
-     * @param LoggerInterface $logger The logger instance, adhering to PSR-3 standard.
+     * @param  LoggerInterface $logger The logger instance, adhering to PSR-3 standard.
      * @return void
      */
     public function setLogger(LoggerInterface $logger): void

@@ -72,7 +72,6 @@
         "laminas/laminas-form": "3.21.0",
         "laminas/laminas-http": "2.21.0",
         "laminas/laminas-i18n": "2.30.0",
-        "laminas/laminas-log": "2.17.1",
         "laminas/laminas-modulemanager": "2.17.0",
         "laminas/laminas-mvc": "3.8.0",
         "laminas/laminas-mvc-i18n": "1.9.0",
@@ -116,7 +115,8 @@
         "webfontkit/open-sans": "^1.0",
         "webmozart/glob": "^4.7",
         "wikimedia/composer-merge-plugin": "2.1.0",
-        "yajra/laravel-pdo-via-oci8": "3.7.1"
+        "yajra/laravel-pdo-via-oci8": "3.7.1",
+        "monolog/monolog": "^3.9"
     },
     "require-dev": {
         "behat/mink": "1.12.0",

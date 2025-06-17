@@ -29,7 +29,11 @@
 
 namespace VuFind\Log;
 
-use Laminas\Log\Writer\WriterInterface;
+use Monolog\Logger as MonologLogger;
+use Psr\Log\LogLevel;
+use VuFind\Log\Logger;
+use Monolog\Handler\StreamHandler;
+
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -37,6 +41,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
+use Psr\Log\LogLevel;
 
 use function count;
 use function is_array;
@@ -56,6 +61,24 @@ use function is_int;
 class LoggerFactory implements FactoryInterface
 {
     use EmailSettingsTrait;
+
+    private const PRIORITY_MAP = [
+        'emerg'  => LogLevel::EMERGENCY,
+        'alert'  => LogLevel::ALERT,
+        'crit'   => LogLevel::CRITICAL,
+        'err'    => LogLevel::ERROR,
+        'error'  => LogLevel::ERROR,
+        'warn'   => LogLevel::WARNING,
+        'warning'=> LogLevel::WARNING,
+        'notice' => LogLevel::NOTICE,
+        'info'   => LogLevel::INFO,
+        'debug'  => LogLevel::DEBUG,
+    ];
+
+    private function getMonologLevel(string $level): int
+    {
+        return self::PRIORITY_MAP[strtolower($level)] ?? LogLevel::DEBUG;
+    }
 
     /**
      * Configure database writers.
@@ -146,7 +169,8 @@ class LoggerFactory implements FactoryInterface
 
         // Make Writers
         $filters = explode(',', $error_types);
-        $writer = new Writer\Stream($file);
+        $logger  = new Handler\Stream($file, LogLevel::DEBUG, false);
+
         $this->addWriters($logger, $writer, $filters);
     }
 
@@ -264,8 +288,8 @@ class LoggerFactory implements FactoryInterface
 
         // Add a no-op writer so fatal errors are not triggered if log messages are
         // sent during the initialization process.
-        $noOpWriter = new \Laminas\Log\Writer\Noop();
-        $logger->addWriter($noOpWriter);
+        $noopHandler = new \Monolog\Handler\NoopHandler();
+        $logger->pushHandler($noopHandler);
 
         // DEBUGGER
         if (!$config->System->debug == false || $this->hasDynamicDebug($container)) {
@@ -383,20 +407,20 @@ class LoggerFactory implements FactoryInterface
                     // Set static flag indicating that debug is turned on:
                     $logger->debugNeeded(true);
 
-                    $max = Logger::INFO;  // Informational: informational messages
-                    $min = Logger::DEBUG; // Debug: debug messages
+                    $max = LogLevel::INFO;  // Informational: informational messages
+                    $min = LogLevel::DEBUG; // Debug: debug messages
                     break;
                 case 'notice':
-                    $max = Logger::WARN;  // Warning: warning conditions
-                    $min = Logger::NOTICE;// Notice: normal but significant condition
+                    $max = LogLevel::WARNING;  // Warning: warning conditions
+                    $min = LogLevel::NOTICE;// Notice: normal but significant condition
                     break;
                 case 'error':
-                    $max = Logger::CRIT;  // Critical: critical conditions
-                    $min = Logger::ERR;   // Error: error conditions
+                    $max = LogLevel::CRITICAL;  // Critical: critical conditions
+                    $min = LogLevel::ERROR;   // Error: error conditions
                     break;
                 case 'alert':
-                    $max = Logger::EMERG; // Emergency: system is unusable
-                    $min = Logger::ALERT; // Alert: action must be taken immediately
+                    $max = LogLevel::EMERGENCY; // Emergency: system is unusable
+                    $min = LogLevel::ALERT; // Alert: action must be taken immediately
                     break;
                 default:
                     // INVALID FILTER, so skip it. We must continue 2 levels, so we

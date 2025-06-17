@@ -29,6 +29,8 @@
 
 namespace VuFind\Log;
 
+use Psr\Log\LoggerInterface;
+
 use function call_user_func_array;
 use function func_get_args;
 
@@ -41,7 +43,7 @@ use function func_get_args;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class LoggerProxy implements \Laminas\Log\LoggerInterface, ExtendedLoggerInterface
+class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
 {
     /**
      * Callback for creating the actual class
@@ -75,7 +77,7 @@ class LoggerProxy implements \Laminas\Log\LoggerInterface, ExtendedLoggerInterfa
      *
      * @return LoggerInterface
      */
-    public function emerg($message, $extra = [])
+    public function emergency($message, $extra = [])
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }
@@ -101,7 +103,7 @@ class LoggerProxy implements \Laminas\Log\LoggerInterface, ExtendedLoggerInterfa
      *
      * @return LoggerInterface
      */
-    public function crit($message, $extra = [])
+    public function critical($message, $extra = [])
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }
@@ -114,7 +116,7 @@ class LoggerProxy implements \Laminas\Log\LoggerInterface, ExtendedLoggerInterfa
      *
      * @return LoggerInterface
      */
-    public function err($message, $extra = [])
+    public function error($message, $extra = [])
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }
@@ -127,7 +129,7 @@ class LoggerProxy implements \Laminas\Log\LoggerInterface, ExtendedLoggerInterfa
      *
      * @return LoggerInterface
      */
-    public function warn($message, $extra = [])
+    public function warning($message, $extra = [])
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }
