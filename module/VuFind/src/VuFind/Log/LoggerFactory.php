@@ -30,22 +30,38 @@
 namespace VuFind\Log;
 
 use Monolog\Logger as MonologLogger;
+use Monolog\Handler\FilterHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Processor\PsrLogMessageProcessor;
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Handler\HandlerInterface;
 use Psr\Log\LogLevel;
-use VuFind\Log\Logger;
-use Monolog\Handler\StreamHandler;
+
+
+use VuFind\Log\Handler\StreamHandler as VuFindStreamHandler;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
 use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
-use Psr\Log\LogLevel;
+use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Auth\Manager as AuthManager;
+use LmcRbacMvc\Service\AuthorizationService;
+use VuFind\Net\UserIpReader;
 
 use function count;
 use function is_array;
 use function is_int;
+use function explode;
+use function strrpos;
+use function substr;
+use function trim;
+use function method_exists;
+use function error_log;
 
 /**
  * Factory for instantiating Logger
@@ -62,193 +78,48 @@ class LoggerFactory implements FactoryInterface
 {
     use EmailSettingsTrait;
 
-    private const PRIORITY_MAP = [
-        'emerg'  => LogLevel::EMERGENCY,
-        'alert'  => LogLevel::ALERT,
-        'crit'   => LogLevel::CRITICAL,
-        'err'    => LogLevel::ERROR,
-        'error'  => LogLevel::ERROR,
-        'warn'   => LogLevel::WARNING,
-        'warning'=> LogLevel::WARNING,
-        'notice' => LogLevel::NOTICE,
-        'info'   => LogLevel::INFO,
-        'debug'  => LogLevel::DEBUG,
-    ];
-
-    private function getMonologLevel(string $level): int
+    /**
+     * Get a standard LineFormatter for file logging.
+     *
+     * @return LineFormatter
+     */
+    protected function getStandardFileFormatter(): LineFormatter
     {
-        return self::PRIORITY_MAP[strtolower($level)] ?? LogLevel::DEBUG;
-    }
-
-    /**
-     * Configure database writers.
-     *
-     * @param Logger             $logger    Logger object
-     * @param ContainerInterface $container Service manager
-     * @param string             $config    Configuration
-     *
-     * @return void
-     */
-    protected function addDbWriters(
-        Logger $logger,
-        ContainerInterface $container,
-        $config
-    ) {
-        $parts = explode(':', $config);
-        $table_name = $parts[0];
-        $error_types = $parts[1] ?? '';
-
-        $columnMapping = [
-            'priority' => 'priority',
-            'message' => 'message',
-            'logtime' => 'timestamp',
-            'ident' => 'ident',
-        ];
-
-        // Make Writers
-        $filters = explode(',', $error_types);
-        $writer = new Writer\Db(
-            $container->get(\Laminas\Db\Adapter\Adapter::class),
-            $table_name,
-            $columnMapping
+        return new LineFormatter(
+            "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+            "Y-m-d H:i:s",
+            true,
+            true
         );
-        $this->addWriters($logger, $writer, $filters);
     }
 
     /**
-     * Configure email writers.
+     * Configure File handler.
      *
-     * @param Logger             $logger    Logger object
-     * @param ContainerInterface $container Service manager
-     * @param Config             $config    Configuration
-     *
-     * @return void
-     */
-    protected function addEmailWriters(
-        Logger $logger,
-        ContainerInterface $container,
-        Config $config
-    ) {
-        // Set up the logger's mailer to behave consistently with VuFind's
-        // general mailer:
-        $parts = explode(':', $config->Logging->email);
-        $email = $parts[0];
-        $error_types = $parts[1] ?? '';
-
-        // Make Writers
-        $filters = explode(',', $error_types);
-        $writer = new Writer\Mail(
-            $container->get(\VuFind\Mailer\Mailer::class),
-            $this->getEmailSenderAddress($config),
-            $email,
-            'VuFind Log Message'
-        );
-        $this->addWriters($logger, $writer, $filters);
-    }
-
-    /**
-     * Configure File writers.
-     *
-     * @param Logger $logger Logger object
-     * @param string $config Configuration
+     * @param MonologLogger $monologLogger The Monolog logger instance to add handlers to.
+     * @param string        $configString  The file configuration string (e.g., "path/to/file.log:error-1,debug-5").
      *
      * @return void
      */
-    protected function addFileWriters(Logger $logger, $config)
+    protected function addFileHandler(MonologLogger $monologLogger, string $configString): void
     {
         // Make sure to use only the last ':' after second character to avoid trouble
         // with Windows drive letters (e.g. "c:\something\logfile:error-5")
-        $pos = strrpos($config, ':', 2);
+        $pos = strrpos($configString, ':', 2);
         if ($pos > 0) {
-            $file = substr($config, 0, $pos);
-            $error_types = substr($config, $pos + 1);
+            $file = substr($configString, 0, $pos);
+            $error_types = substr($configString, $pos + 1);
         } else {
-            $file = $config;
+            $file = $configString;
             $error_types = '';
         }
+        
 
-        // Make Writers
-        $filters = explode(',', $error_types);
-        $logger  = new Handler\Stream($file, LogLevel::DEBUG, false);
+        $baseFileHandler = new VuFindStreamHandler($file, LogLevel::DEBUG, false);
+        $baseFileHandler->setFormatter($this->getStandardFileFormatter());
 
-        $this->addWriters($logger, $writer, $filters);
-    }
-
-    /**
-     * Configure Slack writers.
-     *
-     * @param Logger             $logger    Logger object
-     * @param ContainerInterface $container Service manager
-     * @param Config             $config    Configuration
-     *
-     * @return void
-     */
-    protected function addSlackWriters(
-        Logger $logger,
-        ContainerInterface $container,
-        Config $config
-    ) {
-        $options = [];
-        // Get config
-        [$channel, $error_types] = explode(':', $config->Logging->slack);
-        if ($error_types == null) {
-            $error_types = $channel;
-            $channel = null;
-        }
-        if ($channel) {
-            $options['channel'] = $channel;
-        }
-        if (isset($config->Logging->slackname)) {
-            $options['name'] = $config->Logging->slackname;
-        }
-        $filters = explode(',', $error_types);
-        // Make Writers
-        $writer = new Writer\Slack(
-            $config->Logging->slackurl,
-            $container->get(\VuFindHttp\HttpService::class)->createClient(),
-            $options
-        );
-        $writer->setContentType('application/json');
-        $formatter = new \Laminas\Log\Formatter\Simple(
-            '*%priorityName%*: %message%'
-        );
-        $writer->setFormatter($formatter);
-        $this->addWriters($logger, $writer, $filters);
-    }
-
-    /**
-     * Configure Office365 writers.
-     *
-     * @param Logger             $logger    Logger object
-     * @param ContainerInterface $container Service manager
-     * @param Config             $config    Configuration
-     *
-     * @return void
-     */
-    protected function addOffice365Writers(
-        Logger $logger,
-        ContainerInterface $container,
-        Config $config
-    ) {
-        $options = [];
-        // Get config
-        $error_types = $config->Logging->office365;
-        if (isset($config->Logging->office365_title)) {
-            $options['title'] = $config->Logging->office365_title;
-        }
-        $filters = explode(',', $error_types);
-        // Make Writers
-        $writer = new Writer\Office365(
-            $config->Logging->office365_url,
-            $container->get(\VuFindHttp\HttpService::class)->createClient(),
-            $options
-        );
-        $writer->setContentType('application/json');
-        $formatter = new \Laminas\Log\Formatter\Simple(
-            '*%priorityName%*: %message%'
-        );
-        $writer->setFormatter($formatter);
-        $this->addWriters($logger, $writer, $filters);
+        // Use the generic addHandlers method to configure and add the filtered handlers
+        $this->addHandlers($monologLogger, $baseFileHandler, $error_types);
     }
 
     /**
@@ -267,92 +138,55 @@ class LoggerFactory implements FactoryInterface
             PHP_SAPI !== 'cli'
             && $container->get('Request')->getQuery()->get('debug')
         ) {
-            return $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
-                ->isGranted('access.DebugMode');
+            try {
+                return $container->get(AuthorizationService::class)->isGranted('access.DebugMode');
+            } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
+                error_log("VuFind Log: Could not get AuthorizationService for dynamic debug: " . $e->getMessage());
+                return false;
+            }
         }
         return false;
     }
 
     /**
-     * Set configuration
+     * Set configuration for the Monolog logger.
+     * This method orchestrates the setup of all logging components.
      *
      * @param ContainerInterface $container Service manager
-     * @param Logger             $logger    Logger to configure
+     * @param Logger             $vufindLogger The VuFind\Log\Logger (adapter) instance to configure.
      *
      * @return void
      */
-    protected function configureLogger(ContainerInterface $container, Logger $logger)
+    protected function configureMonologLogger(ContainerInterface $container, Logger $vufindLogger): void
     {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $configManager = $container->get(ConfigPluginManager::class);
+        $config = $configManager->get('config');
+        $monologLogger = $vufindLogger->getMonologInstance(); // Get the actual Monolog instance
 
-        // Add a no-op writer so fatal errors are not triggered if log messages are
-        // sent during the initialization process.
-        $noopHandler = new \Monolog\Handler\NoopHandler();
-        $logger->pushHandler($noopHandler);
-
-        // DEBUGGER
-        if (!$config->System->debug == false || $this->hasDynamicDebug($container)) {
-            $this->addDebugWriter($logger, $config->System->debug);
-        }
-
-        // Activate database logging, if applicable:
-        if (isset($config->Logging->database)) {
-            $this->addDbWriters($logger, $container, $config->Logging->database);
-        }
-
-        // Activate file logging, if applicable:
+        // Add specific handlers based on config:
+        $this->addDebugHandler($monologLogger, $config, $container);
         if (isset($config->Logging->file)) {
-            $this->addFileWriters($logger, $config->Logging->file);
+            $this->addFileHandler($monologLogger, $config->Logging->file);
         }
 
-        // Activate email logging, if applicable:
-        if (isset($config->Logging->email)) {
-            $this->addEmailWriters($logger, $container, $config);
-        }
-
-        // Activate Office365 logging, if applicable:
-        if (
-            isset($config->Logging->office365)
-            && isset($config->Logging->office365_url)
-        ) {
-            $this->addOffice365Writers($logger, $container, $config);
-        }
-
-        // Activate slack logging, if applicable:
-        if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
-            $this->addSlackWriters($logger, $container, $config);
-        }
-
-        // We're done now -- clean out the no-op writer if any other writers
-        // are found.
-        if (count($logger->getWriters()) > 1) {
-            $logger->removeWriter($noOpWriter);
-        }
-
-        // Add ReferenceId processor, if applicable:
-        if ($referenceId = $config->Logging->reference_id ?? false) {
-            if ('username' === $referenceId) {
-                $authManager = $container->get(\VuFind\Auth\Manager::class);
-                if ($user = $authManager->getUserObject()) {
-                    $processor = new \Laminas\Log\Processor\ReferenceId();
-                    $processor->setReferenceId($user->username);
-                    $logger->addProcessor($processor);
-                }
-            }
-        }
+        // Add common processors:
+        $this->addCommonProcessors($monologLogger, $config, $container);
     }
 
     /**
-     * Add the standard debug stream writer.
+     * Add the standard debug stream handler (output to browser/CLI).
      *
-     * @param Logger   $logger Logger object
-     * @param bool|int $debug  Debug mode/level
+     * @param MonologLogger      $monologLogger The Monolog logger instance
+     * @param Config             $config        VuFind configuration
+     * @param ContainerInterface $container     Service manager
      *
      * @return void
      */
-    protected function addDebugWriter(Logger $logger, $debug)
-    {
+    protected function addDebugHandler(
+        MonologLogger $monologLogger,
+        Config $config,
+        ContainerInterface $container
+    ): void {
         // Only add debug writer ONCE!
         static $hasDebugWriter = false;
         if ($hasDebugWriter) {
@@ -360,19 +194,54 @@ class LoggerFactory implements FactoryInterface
         }
 
         $hasDebugWriter = true;
-        $writer = new Writer\Stream('php://output');
-        $formatter = new \Laminas\Log\Formatter\Simple(
+        $debugFormatter = new LineFormatter(
             PHP_SAPI === 'cli'
-                ? '%timestamp% %priorityName%: %message%'
-                : '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
+                ? "[%datetime%] %level_name%: %message% %context% %extra%\n"
+                : '<pre>[%datetime%] %level_name%: %message% %context% %extra%</pre>' . PHP_EOL,
+            "Y-m-d H:i:s",
+            true,
+            true
         );
-        $writer->setFormatter($formatter);
+        $debugHandler = new VuFindStreamHandler('php://output');
+        $debugHandler->setFormatter($debugFormatter);
         $level = (is_int($debug) ? $debug : '5');
-        $this->addWriters(
-            $logger,
-            $writer,
-            "debug-$level,notice-$level,error-$level,alert-$level"
-        );
+        $this->addHandlers($monologLogger, $debugHandler, "debug-$level,notice-$level,error-$level,alert-$level");
+    }
+
+    /**
+     * Add common Monolog processors to the logger.
+     *
+     * @param MonologLogger      $monologLogger The Monolog logger instance
+     * @param Config             $config        VuFind configuration
+     * @param ContainerInterface $container     Service manager
+     *
+     * @return void
+     */
+    protected function addCommonProcessors(
+        MonologLogger $monologLogger,
+        Config $config,
+        ContainerInterface $container
+    ): void {
+        // Always add a processor to handle PSR-3 message placeholders ({foo})
+        $monologLogger->pushProcessor(new PsrLogMessageProcessor());
+
+        // Add ReferenceId processor, if applicable:
+        $logConfig = $config->Logging;
+        if ($referenceId = $logConfig->reference_id ?? false) {
+            if ('username' === $referenceId) {
+                try {
+                    $authManager = $container->get(AuthManager::class);
+                    if ($user = $authManager->getUserObject()) {
+                        $monologLogger->pushProcessor(function (array $record) use ($user) {
+                            $record['extra']['username'] = $user->username;
+                            return $record;
+                        });
+                    }
+                } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
+                    error_log("VuFind Log: Could not get AuthManager for ReferenceId processor: " . $e->getMessage());
+                }
+            }
+        }
     }
 
     /**
@@ -380,17 +249,20 @@ class LoggerFactory implements FactoryInterface
      *
      * Filter keys: alert, error, notice, debug
      *
-     * @param Logger          $logger  Logger object
-     * @param WriterInterface $writer  The writer to apply the
-     * filters to
-     * @param string|array    $filters An array or comma-separated
-     * string of
+     * @param MonologLogger             $monologLogger The Monolog logger instance to add handlers to.
+     * @param AbstractProcessingHandler $baseHandler   The base Monolog handler to clone and filter
+     * (e.g., VuFindStreamHandler).
+     * @param string|array              $filters     An array or comma-separated string of
      * logging levels
      *
+     * @throws \Exception If the base handler does not support verbosity when specified.
      * @return void
      */
-    protected function addWriters(Logger $logger, WriterInterface $writer, $filters)
-    {
+    protected function addHandlers(
+        MonologLogger $monologLogger,
+        AbstractProcessingHandler $baseHandler,
+        $filters
+    ): void {
         if (!is_array($filters)) {
             $filters = explode(',', $filters);
         }
@@ -398,59 +270,55 @@ class LoggerFactory implements FactoryInterface
         foreach ($filters as $filter) {
             $parts = explode('-', $filter);
             $priority = $parts[0];
-            $verbosity = $parts[1] ?? false;
+            // Ensure verbosity is an int, default to 1 if not specified or invalid
+            $verbosity = isset($parts[1]) && is_numeric($parts[1]) ? (int)$parts[1] : 1;
+
+            $min = LogLevel::DEBUG; // Default min, will be overwritten by switch
+            $max = LogLevel::EMERGENCY; // Default max, will be overwritten by switch
 
             // VuFind's configuration provides four priority options, each
-            // combining two of the standard Laminas levels.
+            // combining two of the standard Monolog levels.
             switch (trim($priority)) {
                 case 'debug':
-                    // Set static flag indicating that debug is turned on:
-                    $logger->debugNeeded(true);
-
-                    $max = LogLevel::INFO;  // Informational: informational messages
-                    $min = LogLevel::DEBUG; // Debug: debug messages
+                    $min = LogLevel::DEBUG;
+                    $max = LogLevel::INFO;
                     break;
                 case 'notice':
-                    $max = LogLevel::WARNING;  // Warning: warning conditions
-                    $min = LogLevel::NOTICE;// Notice: normal but significant condition
+                    $min = LogLevel::NOTICE;
+                    $max = LogLevel::WARNING;
                     break;
                 case 'error':
-                    $max = LogLevel::CRITICAL;  // Critical: critical conditions
-                    $min = LogLevel::ERROR;   // Error: error conditions
+                    $min = LogLevel::ERROR;
+                    $max = LogLevel::CRITICAL;
                     break;
                 case 'alert':
-                    $max = LogLevel::EMERGENCY; // Emergency: system is unusable
-                    $min = LogLevel::ALERT; // Alert: action must be taken immediately
+                    $min = LogLevel::ALERT;
+                    $max = LogLevel::EMERGENCY;
                     break;
                 default:
-                    // INVALID FILTER, so skip it. We must continue 2 levels, so we
-                    // continue the foreach loop instead of just breaking the switch.
+                    // INVALID FILTER, so skip it.
                     continue 2;
             }
 
-            // Clone the submitted writer since we'll need a separate instance of the
-            // writer for each selected priority level.
-            $newWriter = clone $writer;
+            // Clone the submitted baseHandler since we'll need a separate instance
+            // for each selected priority level, allowing distinct verbosity settings.
+            $newHandler = clone $baseHandler;
 
-            // verbosity
-            if ($verbosity) {
-                if (method_exists($newWriter, 'setVerbosity')) {
-                    $newWriter->setVerbosity($verbosity);
+            // Apply verbosity if specified and supported by the handler.
+            // Check verbosity > 0, as 0 might mean no extra verbosity and 1 is default
+            if ($verbosity > 0) {
+                if (method_exists($newHandler, 'setVerbosity')) {
+                    $newHandler->setVerbosity($verbosity);
                 } else {
                     throw new \Exception(
-                        $newWriter::class . ' does not support verbosity.'
+                        $newHandler::class . ' does not support verbosity when a verbosity level is configured.'
                     );
                 }
             }
-
-            // filtering -- only log messages between the min and max priority levels
-            $filter1 = new \Laminas\Log\Filter\Priority($min, '<=');
-            $filter2 = new \Laminas\Log\Filter\Priority($max, '>=');
-            $newWriter->addFilter($filter1);
-            $newWriter->addFilter($filter2);
-
-            // add the writer
-            $logger->addWriter($newWriter);
+            
+            $filterHandler = new FilterHandler($newHandler, $min, $max);
+            // Add the fully configured handler (wrapped in its filter) to the Monolog logger.
+            $monologLogger->pushHandler($filterHandler);
         }
     }
 
@@ -500,9 +368,9 @@ class LoggerFactory implements FactoryInterface
         $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Now build the actual service:
             $wrapped = new $requestedName(
-                $container->get(\VuFind\Net\UserIpReader::class)
+                $container->get(UserIpReader::class) // Use imported alias
             );
-            $this->configureLogger($container, $wrapped);
+            $this->configureMonologLogger($container, $wrapped); // Call the Monolog configuration method
         };
 
         $proxyClass = $this->getProxyClassName($requestedName);

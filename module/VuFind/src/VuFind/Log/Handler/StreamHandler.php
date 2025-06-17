@@ -2,11 +2,11 @@
 
 namespace VuFind\Log\Handler;
 
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\StreamHandler as MonologStreamHandler;
 use Monolog\LogRecord;
 use VuFind\Log\Handler\VerbosityTrait;
 
-class Stream extends StreamHandler{
+class StreamHandler extends MonologStreamHandler{
 
     use VerbosityTrait;
 
