@@ -169,27 +169,23 @@ class DefaultRecord extends AbstractBase
             'Authors',
             'getDeduplicatedAuthors',
             $this->getAuthorFunction()
-        );
-        $spec->setLine('Summary', 'getSummary');
-        $spec->setLine('Abstract', 'getAbstractNotes');
-        $spec->setLine(
+        )->setLine('Summary', 'getSummary')
+        ->setLine('Abstract', 'getAbstractNotes')
+        ->setLine(
             'Format',
             'getFormats',
             'RecordHelper',
             ['helperMethod' => 'getFormatList']
-        );
-        $spec->setLine(
+        )->setLine(
             'Language',
             'getLanguages',
             null,
             $this->getLanguageLineSettings()
-        );
-        $spec->setTemplateLine(
+        )->setTemplateLine(
             'Published',
             'getPublicationDetails',
             'data-publicationDetails.phtml'
-        );
-        $spec->setLine(
+        )->setLine(
             'Edition',
             'getEdition',
             null,
@@ -197,28 +193,24 @@ class DefaultRecord extends AbstractBase
                 'itemPrefix' => '<span property="bookEdition">',
                 'itemSuffix' => '</span>',
             ]
-        );
-        $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
-        $spec->setTemplateLine(
+        )->setTemplateLine('Series', 'getSeries', 'data-series.phtml')
+        ->setTemplateLine(
             'Subjects',
             'getAllSubjectHeadings',
             'data-allSubjectHeadings.phtml'
-        );
-        $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
-        $spec->setTemplateLine(
+        )->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml')
+        ->setTemplateLine(
             'Related Items',
             'getAllRecordLinks',
             'data-allRecordLinks.phtml'
-        );
-        $spec->setLine('Notes', 'getGeneralNotes');
-        $spec->setLine('Production Credits', 'getProductionCredits');
-        $spec->setLine(
+        )->setLine('Notes', 'getGeneralNotes')
+        ->setLine('Production Credits', 'getProductionCredits')
+        ->setLine(
             'ISBN',
             'getISBNs',
             null,
             ['itemPrefix' => '<span property="isbn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
+        )->setLine(
             'ISSN',
             'getISSNs',
             null,
@@ -235,27 +227,24 @@ class DefaultRecord extends AbstractBase
     protected function getDefaultCollectionRecordSpecs(): array
     {
         $spec = new SpecBuilder();
-        $spec->setLine('Summary', 'getSummary');
-        $spec->setLine('Abstract', 'getAbstractNotes');
-        $spec->setMultiLine(
+        $spec->setLine('Summary', 'getSummary')
+        ->setLine('Abstract', 'getAbstractNotes')
+        ->setMultiLine(
             'Authors',
             'getDeduplicatedAuthors',
             $this->getAuthorFunction()
-        );
-        $spec->setLine(
+        )->setLine(
             'Language',
             'getLanguages',
             null,
             $this->getLanguageLineSettings()
-        );
-        $spec->setLine(
+        )->setLine(
             'Format',
             'getFormats',
             'RecordHelper',
             ['helperMethod' => 'getFormatList']
-        );
-        $spec->setLine('Access', 'getAccessRestrictions');
-        $spec->setLine('Related Items', 'getRelationshipNotes');
+        )->setLine('Access', 'getAccessRestrictions')
+        ->setLine('Related Items', 'getRelationshipNotes');
         return $spec->getArray();
     }
 
@@ -271,42 +260,35 @@ class DefaultRecord extends AbstractBase
             'Published in',
             'getContainerTitle',
             'data-containerTitle.phtml'
-        );
-        $spec->setLine(
+        )->setLine(
             'New Title',
             'getNewerTitles',
             null,
             ['recordLink' => 'title']
-        );
-        $spec->setLine(
+        )->setLine(
             'Previous Title',
             'getPreviousTitles',
             null,
             ['recordLink' => 'title']
-        );
-        $spec->setMultiLine(
+        )->setMultiLine(
             'Authors',
             'getDeduplicatedAuthors',
             $this->getAuthorFunction()
-        );
-        $spec->setLine(
+        )->setLine(
             'Format',
             'getFormats',
             'RecordHelper',
             ['helperMethod' => 'getFormatList']
-        );
-        $spec->setLine(
+        )->setLine(
             'Language',
             'getLanguages',
             null,
             $this->getLanguageLineSettings()
-        );
-        $spec->setTemplateLine(
+        )->setTemplateLine(
             'Published',
             'getPublicationDetails',
             'data-publicationDetails.phtml'
-        );
-        $spec->setLine(
+        )->setLine(
             'Edition',
             'getEdition',
             null,
@@ -314,31 +296,26 @@ class DefaultRecord extends AbstractBase
                 'itemPrefix' => '<span property="bookEdition">',
                 'itemSuffix' => '</span>',
             ]
-        );
-        $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
-        $spec->setTemplateLine(
+        )->setTemplateLine('Series', 'getSeries', 'data-series.phtml')
+        ->setTemplateLine(
             'Subjects',
             'getAllSubjectHeadings',
             'data-allSubjectHeadings.phtml'
-        );
-        $spec->setTemplateLine(
+        )->setTemplateLine(
             'Citations',
             'getCitations',
             'data-citations.phtml',
-        );
-        $spec->setTemplateLine(
+        )->setTemplateLine(
             'child_records',
             'getChildRecordCount',
             'data-childRecords.phtml',
             ['allowZero' => false]
-        );
-        $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
-        $spec->setTemplateLine(
+        )->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml')
+        ->setTemplateLine(
             'Related Items',
             'getAllRecordLinks',
             'data-allRecordLinks.phtml'
-        );
-        $spec->setTemplateLine('Tags', true, 'data-tags.phtml');
+        )->setTemplateLine('Tags', true, 'data-tags.phtml');
         return $spec->getArray();
     }
 
@@ -350,33 +327,31 @@ class DefaultRecord extends AbstractBase
     protected function getDefaultDescriptionSpecs(): array
     {
         $spec = new SpecBuilder();
-        $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
-        $spec->setLine('Abstract', 'getAbstractNotes');
-        $spec->setLine('Review', 'getReviewNotes');
-        $spec->setLine('Content Advice', 'getContentAdviceNotes');
-        $spec->setLine('Published', 'getDateSpan');
-        $spec->setLine('Item Description', 'getGeneralNotes');
-        $spec->setLine('Physical Description', 'getPhysicalDescriptions');
-        $spec->setLine('Publication Frequency', 'getPublicationFrequency');
-        $spec->setLine('Playing Time', 'getPlayingTimes');
-        $spec->setLine('Format', 'getSystemDetails');
-        $spec->setLine('Audience', 'getTargetAudienceNotes');
-        $spec->setLine('Awards', 'getAwards');
-        $spec->setLine('Production Credits', 'getProductionCredits');
-        $spec->setLine('Bibliography', 'getBibliographyNotes');
-        $spec->setLine(
+        $spec->setTemplateLine('Summary', true, 'data-summary.phtml')
+        ->setLine('Abstract', 'getAbstractNotes')
+        ->setLine('Review', 'getReviewNotes')
+        ->setLine('Content Advice', 'getContentAdviceNotes')
+        ->setLine('Published', 'getDateSpan')
+        ->setLine('Item Description', 'getGeneralNotes')
+        ->setLine('Physical Description', 'getPhysicalDescriptions')
+        ->setLine('Publication Frequency', 'getPublicationFrequency')
+        ->setLine('Playing Time', 'getPlayingTimes')
+        ->setLine('Format', 'getSystemDetails')
+        ->setLine('Audience', 'getTargetAudienceNotes')
+        ->setLine('Awards', 'getAwards')
+        ->setLine('Production Credits', 'getProductionCredits')
+        ->setLine('Bibliography', 'getBibliographyNotes')
+        ->setLine(
             'ISBN',
             'getISBNs',
             null,
             ['itemPrefix' => '<span property="isbn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
+        )->setLine(
             'ISSN',
             'getISSNs',
             null,
             ['itemPrefix' => '<span property="issn">', 'itemSuffix' => '</span>']
-        );
-        $spec->setLine(
+        )->setLine(
             'DOI',
             'getCleanDOI',
             null,
@@ -384,13 +359,12 @@ class DefaultRecord extends AbstractBase
                 'itemPrefix' => '<span property="identifier">',
                 'itemSuffix' => '</span>',
             ]
-        );
-        $spec->setLine('Related Items', 'getRelationshipNotes');
-        $spec->setLine('Access', 'getAccessRestrictions');
-        $spec->setLine('Finding Aid', 'getFindingAids');
-        $spec->setLine('Publication_Place', 'getHierarchicalPlaceNames');
-        $spec->setLine('Source', 'getSource');
-        $spec->setTemplateLine('Author Notes', true, 'data-authorNotes.phtml');
+        )->setLine('Related Items', 'getRelationshipNotes')
+        ->setLine('Access', 'getAccessRestrictions')
+        ->setLine('Finding Aid', 'getFindingAids')
+        ->setLine('Publication_Place', 'getHierarchicalPlaceNames')
+        ->setLine('Source', 'getSource')
+        ->setTemplateLine('Author Notes', true, 'data-authorNotes.phtml');
         return $spec->getArray();
     }
 }

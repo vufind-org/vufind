@@ -77,7 +77,7 @@ interface ConfigLocationInterface
      *
      * @return void
      */
-    public function setPath(string $path): void;
+    public function setPath(string $path): static;
 
     /**
      * Get the base path.
@@ -93,7 +93,7 @@ interface ConfigLocationInterface
      *
      * @return void
      */
-    public function setBasePath(string $basePath): void;
+    public function setBasePath(string $basePath): static;
 
     /**
      * Get the file name.
@@ -109,7 +109,7 @@ interface ConfigLocationInterface
      *
      * @return void
      */
-    public function setFileName(string $fileName): void;
+    public function setFileName(string $fileName): static;
 
     /**
      * Get the config name.
@@ -125,7 +125,7 @@ interface ConfigLocationInterface
      *
      * @return void
      */
-    public function setConfigName(string $configName): void;
+    public function setConfigName(string $configName): static;
 
     /**
      * Get subsection of the configuration.
@@ -141,7 +141,7 @@ interface ConfigLocationInterface
      *
      * @return void
      */
-    public function setSubsection(array $subsection): void;
+    public function setSubsection(array $subsection): static;
 
     /**
      * Get the location of the configuration in the parent directory that might be specified in DirLocations.ini.
@@ -157,7 +157,7 @@ interface ConfigLocationInterface
      *
      * @return void
      */
-    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): void;
+    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static;
 
     /**
      * Get the name of the configuration handler to be used for this location.
