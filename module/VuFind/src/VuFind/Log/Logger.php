@@ -92,28 +92,26 @@ class Logger implements PsrLoggerInterface
     {
         return $this->monologLogger;
     }
-    
+
     /**
      * System is unusable.
      *
-     * @param string  $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function emergency($message, array $context = array()){
+    public function emergency(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::EMERGENCY, $message, $context);
     }
 
     /**
      * Action must be taken immediately.
      *
-     * @param string  $message
      * @param mixed[] $context
      *
      * @return void
      */
-    public function alert($message, array $context = array()){
+    public function alert(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::ALERT, $message, $context);
     }
 
@@ -125,7 +123,8 @@ class Logger implements PsrLoggerInterface
      *
      * @return void
      */
-    public function critical($message, array $context = array()){
+    public function critical(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::CRITICAL, $message, $context);
     }
 
@@ -138,7 +137,7 @@ class Logger implements PsrLoggerInterface
      *
      * @return void
      */
-    public function error($message, array $context = array()){
+    public function error(string|\Stringable $message, array $context = []): void{
         $this->log(LogLevel::ERROR, $message, $context);
     }
 
@@ -150,7 +149,8 @@ class Logger implements PsrLoggerInterface
      *
      * @return void
      */
-    public function warning($message, array $context = array()){
+    public function warning(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::WARNING, $message, $context);
     }
 
@@ -162,7 +162,8 @@ class Logger implements PsrLoggerInterface
      *
      * @return void
      */
-    public function notice($message, array $context = array()){
+    public function notice(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::NOTICE, $message, $context);
     }
 
@@ -174,7 +175,8 @@ class Logger implements PsrLoggerInterface
      *
      * @return void
      */
-    public function info($message, array $context = array()){
+    public function info(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::INFO, $message, $context);
     }
 
@@ -186,7 +188,8 @@ class Logger implements PsrLoggerInterface
      *
      * @return void
      */
-    public function debug($message, array $context = array()){
+    public function debug(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::DEBUG, $message, $context);
     }
 
@@ -201,7 +204,7 @@ class Logger implements PsrLoggerInterface
      *
      * @throws \Psr\Log\InvalidArgumentException
      */
-    public function log($level, $message, array $context = []): void
+    public function log($level, string|\Stringable $message, array $context = []): void
     {
         // Map incoming level (e.g., 'err', 'warn') to Monolog/PSR-3 constant.
         $monologLevel = is_string($level) && isset(self::LEVEL_MAP[$level])

@@ -116,7 +116,8 @@
         "webmozart/glob": "^4.7",
         "wikimedia/composer-merge-plugin": "2.1.0",
         "yajra/laravel-pdo-via-oci8": "3.7.1",
-        "monolog/monolog": "^3.9"
+        "monolog/monolog": "^3.9",
+        "psr/log": "^3.0"
     },
     "require-dev": {
         "behat/mink": "1.12.0",

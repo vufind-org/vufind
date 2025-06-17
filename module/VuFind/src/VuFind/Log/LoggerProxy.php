@@ -72,12 +72,12 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log an emergency
      *
-     * @param string            $message Message
+     * @param string|\Stringable            $message Message
      * @param array|Traversable $extra   Extra params
      *
      * @return LoggerInterface
      */
-    public function emergency($message, $extra = [])
+    public function emergency(string|\Stringable $message, array $context = [])
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }
