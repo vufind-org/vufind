@@ -518,7 +518,7 @@
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1/?openapi&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
