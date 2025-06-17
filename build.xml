@@ -68,7 +68,7 @@
   <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
   <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
-  <property name="version" value="10.1.4" />
+  <property name="version" value="10.2.0" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -523,7 +523,7 @@
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1/?openapi&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
