@@ -30,10 +30,13 @@
 
 namespace VuFindTest\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Exception;
 use Generator;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\OaiResumption;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
+use VuFind\Db\Entity\PluginManager;
 use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\OaiResumptionService;
 
@@ -57,21 +60,19 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * OaiResumption service object to test.
      *
-     * @param MockObject  $entityManager Mock entity manager object
-     * @param MockObject  $pluginManager Mock plugin manager object
-     * @param ?MockObject $oaiResumption Mock OaiResumption entity object
+     * @param MockObject&EntityManager      $entityManager Mock entity manager object
+     * @param MockObject&PluginManager      $pluginManager Mock plugin manager object
+     * @param ?OaiResumptionEntityInterface $oaiResumption Mock OaiResumption entity object
      *
      * @return MockObject
      */
     protected function getService(
-        $entityManager,
-        $pluginManager,
-        $oaiResumption = null,
-    ) {
+        MockObject&EntityManager $entityManager,
+        MockObject&PluginManager $pluginManager,
+        ?OaiResumptionEntityInterface $oaiResumption = null,
+    ): MockObject&OaiResumptionService {
         $persistenceManager = $this->createMock(PersistenceManager::class);
-        $serviceMock = $this->getMockBuilder(
-            \VuFind\Db\Service\OaiResumptionService::class
-        )
+        $serviceMock = $this->getMockBuilder(OaiResumptionService::class)
             ->onlyMethods(['createEntity'])
             ->setConstructorArgs([$entityManager, $pluginManager, $persistenceManager])
             ->getMock();
@@ -87,11 +88,11 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @param bool $setExpectation Flag to set the method expectations.
      *
-     * @return MockObject
+     * @return MockObject&PluginManager
      */
-    protected function getPluginManager($setExpectation = false)
+    protected function getPluginManager(bool $setExpectation = false): MockObject&PluginManager
     {
-        $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
+        $pluginManager = $this->createMock(PluginManager::class);
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
                 ->with($this->equalTo(OaiResumptionEntityInterface::class))
@@ -105,11 +106,11 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @param int $count Expectation count
      *
-     * @return MockObject
+     * @return MockObject&EntityManager
      */
-    protected function getEntityManager($count = 0)
+    protected function getEntityManager(int $count = 0): MockObject&EntityManager
     {
-        $entityManager = $this->createMock(\Doctrine\ORM\EntityManager::class);
+        $entityManager = $this->createMock(EntityManager::class);
         $entityManager->expects($this->exactly($count))->method('persist');
         $entityManager->expects($this->exactly($count))->method('flush');
         return $entityManager;
