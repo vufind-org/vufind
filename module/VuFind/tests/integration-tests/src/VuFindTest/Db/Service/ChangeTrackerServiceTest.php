@@ -71,6 +71,9 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $core = 'testCore';
         $tracker = $this->getDbService(ChangeTrackerService::class);
 
+        // Ensure that we have a clean slate:
+        $tracker->deleteRows($core);
+
         // Create a new row:
         $tracker->index($core, 'test1', 1326833170);
         $row = $tracker->getChangeTrackerEntity($core, 'test1');
@@ -79,7 +82,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($row->getFirstIndexed(), $row->getLastIndexed());
         $this->assertEquals(
             $row->getLastRecordChange(),
-            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:10')
+            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:10', new \DateTimeZone('UTC'))
         );
 
         // Try to index an earlier record version -- changes should be ignored:
@@ -90,7 +93,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($row->getFirstIndexed(), $row->getLastIndexed());
         $this->assertEquals(
             $row->getLastRecordChange(),
-            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:10')
+            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:10', new \DateTimeZone('UTC'))
         );
         $previousFirstIndexed = $row->getFirstIndexed();
 
@@ -105,7 +108,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThan($row->getLastIndexed(), $row->getFirstIndexed());
         $this->assertEquals(
             $row->getLastRecordChange(),
-            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:16')
+            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:16', new \DateTimeZone('UTC'))
         );
 
         // Make sure the "first indexed" date hasn't changed!
@@ -130,7 +133,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertEmpty($row->getDeleted());
         $this->assertEquals(
             $row->getLastRecordChange(),
-            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:10')
+            \DateTime::createFromFormat('Y-m-d H:i:s', '2012-01-17 20:46:10', new \DateTimeZone('UTC'))
         );
 
         // Clean up after ourselves:
