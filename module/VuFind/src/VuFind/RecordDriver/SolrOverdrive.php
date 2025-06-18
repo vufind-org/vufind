@@ -32,7 +32,7 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareInterface;
 use VuFind\Config\Config;
 use VuFind\DigitalContent\OverdriveConnector;
 

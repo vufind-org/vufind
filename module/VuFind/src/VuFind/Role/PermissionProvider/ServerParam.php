@@ -49,7 +49,7 @@ use function in_array;
  */
 class ServerParam implements
     PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \VuFind\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

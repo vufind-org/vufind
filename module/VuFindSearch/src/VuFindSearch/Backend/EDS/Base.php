@@ -30,7 +30,7 @@
 
 namespace VuFindSearch\Backend\EDS;
 
-use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareInterface;
 
 use function is_array;
 

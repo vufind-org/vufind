@@ -69,7 +69,7 @@ class Logger implements PsrLoggerInterface
      * @var UserIpReader
      */
     protected UserIpReader $userIpReader;
-    private MonologLogger $monolog;
+    private MonologLogger $monologLogger;
 
     private const LEVEL_MAP = [
         'err'       => LogLevel::ERROR,
@@ -217,7 +217,7 @@ class Logger implements PsrLoggerInterface
         } else {
             $mainMonologMessage = $message;
         }
-        $this->monolog->log($monologLevel, $mainMonologMessage, $context);
+        $this->monologLogger->log($monologLevel, $mainMonologMessage, $context);
     }
 
     /**

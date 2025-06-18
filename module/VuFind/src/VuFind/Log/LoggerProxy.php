@@ -30,7 +30,7 @@
 namespace VuFind\Log;
 
 use Psr\Log\LoggerInterface;
-use Stringable; // Import Stringable for clarity, even though it's global in PHP 8+
+use Stringable;
 
 use function call_user_func_array;
 use function func_get_args;

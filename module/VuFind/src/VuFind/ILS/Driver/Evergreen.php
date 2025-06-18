@@ -49,7 +49,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class Evergreen extends AbstractBase implements \VuFind\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

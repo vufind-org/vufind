@@ -42,7 +42,7 @@ trait LoggerAwareTrait
      * @var LoggerInterface
      * This property will hold the logger instance injected by the ServiceManager.
      */
-    protected LoggerInterface $logger;
+    protected ?LoggerInterface $logger = null;
     use VarDumperTrait;
 
     /**

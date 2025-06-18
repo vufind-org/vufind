@@ -30,7 +30,7 @@
 namespace VuFind\Connection;
 
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareInterface;
 
 /**
  * External VuFind API connection class.

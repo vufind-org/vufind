@@ -58,7 +58,7 @@ use function strlen;
  *
  * @deprecated Use RestConnector instead
  */
-class Connector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
+class Connector implements ConnectorInterface, \VuFind\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;

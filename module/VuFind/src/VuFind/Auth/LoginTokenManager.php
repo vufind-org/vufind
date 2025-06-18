@@ -33,7 +33,7 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use BrowscapPHP\BrowscapInterface;
-use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Config\Config;

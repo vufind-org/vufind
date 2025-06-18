@@ -32,7 +32,7 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
 use VuFind\Log\LoggerAwareTrait;

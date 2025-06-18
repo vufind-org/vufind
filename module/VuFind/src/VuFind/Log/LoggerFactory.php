@@ -164,7 +164,11 @@ class LoggerFactory implements FactoryInterface
         $monologLogger = $vufindLogger->getMonologInstance(); // Get the actual Monolog instance
 
         // Add specific handlers based on config:
-        $this->addDebugHandler($monologLogger, $config, $container);
+        // DEBUGGER
+        if (!$config->System->debug == false || $this->hasDynamicDebug($container)) {
+            $this->addDebugWriter($monologLogger, $config->System->debug);
+        }
+
         if (isset($config->Logging->file)) {
             $this->addFileHandler($monologLogger, $config->Logging->file);
         }
@@ -177,16 +181,11 @@ class LoggerFactory implements FactoryInterface
      * Add the standard debug stream handler (output to browser/CLI).
      *
      * @param MonologLogger      $monologLogger The Monolog logger instance
-     * @param Config             $config        VuFind configuration
-     * @param ContainerInterface $container     Service manager
+     * @param bool|int $debug  Debug mode/level
      *
      * @return void
      */
-    protected function addDebugHandler(
-        MonologLogger $monologLogger,
-        Config $config,
-        ContainerInterface $container
-    ): void {
+    protected function addDebugHandler(MonologLogger $monologLogger, $debug): void {
         // Only add debug writer ONCE!
         static $hasDebugWriter = false;
         if ($hasDebugWriter) {

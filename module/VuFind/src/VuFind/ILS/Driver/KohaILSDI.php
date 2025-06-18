@@ -31,7 +31,7 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareInterface;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;

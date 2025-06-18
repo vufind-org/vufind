@@ -32,7 +32,7 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
+use VuFind\Log\LoggerAwareInterface as LoggerAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function sprintf;

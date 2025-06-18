@@ -54,7 +54,7 @@ use function call_user_func;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
-    \Laminas\Log\LoggerAwareInterface,
+    \VuFind\Log\LoggerAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
