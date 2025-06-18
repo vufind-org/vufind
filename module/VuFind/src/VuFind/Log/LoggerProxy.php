@@ -30,6 +30,7 @@
 namespace VuFind\Log;
 
 use Psr\Log\LoggerInterface;
+use Stringable; // Import Stringable for clarity, even though it's global in PHP 8+
 
 use function call_user_func_array;
 use function func_get_args;
@@ -72,118 +73,134 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log an emergency
      *
-     * @param string|\Stringable            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function emergency(string|\Stringable $message, array $context = [])
+    public function emergency(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
      * Log an alert
      *
-     * @param string            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function alert($message, $extra = [])
+    public function alert(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
      * Log a critical error
      *
-     * @param string            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function critical($message, $extra = [])
+    public function critical(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
      * Log an error
      *
-     * @param string            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function error($message, $extra = [])
+    public function error(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
      * Log a warning
      *
-     * @param string            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function warning($message, $extra = [])
+    public function warning(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
      * Log a notice
      *
-     * @param string            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function notice($message, $extra = [])
+    public function notice(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
      * Log an info message
      *
-     * @param string            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function info($message, $extra = [])
+    public function info(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
      * Log a debug message
      *
-     * @param string            $message Message
-     * @param array|Traversable $extra   Extra params
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
      *
-     * @return LoggerInterface
+     * @return void
      */
-    public function debug($message, $extra = [])
+    public function debug(Stringable|string $message, array $context = []): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed             $level   PSR-3 log level (LogLevel constant or string)
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
+     *
+     * @return void
+     */
+    public function log($level, Stringable|string $message, array $context = []): void
+    {
+        $this->__call(__FUNCTION__, func_get_args());
+    }
+
+
+    /**
      * Log an exception triggered by the framework for administrative purposes.
+     * (Part of ExtendedLoggerInterface)
      *
      * @param \Exception                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return void
      */
-    public function logException($error, $server)
+    public function logException($error, $server): void
     {
-        return $this->__call(__FUNCTION__, func_get_args());
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -207,6 +224,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     protected function getLogger(): Logger
     {
         if (null === $this->logger) {
+            // The callback is responsible for setting $this->logger to an instance of VuFind\Log\Logger
             ($this->callback)($this->logger, $this);
         }
         return $this->logger;
