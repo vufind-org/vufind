@@ -112,11 +112,9 @@ class FavoritesService implements TranslatorAwareInterface
         if (!$user) {
             throw new LoginRequiredException('Log in to create lists.');
         }
-
         return $this->userListService->createEntity()
             ->setCreated(new DateTime())
-            // Stopgap until we've fully converted to Doctrine:
-            ->setUser($this->userListService->getDoctrineReference(User::class, $user));
+            ->setUser($user);
     }
 
     /**
