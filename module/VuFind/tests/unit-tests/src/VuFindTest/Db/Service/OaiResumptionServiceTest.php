@@ -143,7 +143,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testfindToken(): void
+    public function testFindToken(): void
     {
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager(true);
