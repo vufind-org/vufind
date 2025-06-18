@@ -115,8 +115,6 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
         $newList->expects($this->once())->method('setUser')->with($user)->willReturn($newList);
         $listService = $this->createMock(UserListService::class);
         $listService->expects($this->once())->method('createEntity')->willReturn($newList);
-        $listService->expects($this->once())->method('getDoctrineReference')->with(User::class, $user)
-            ->willReturn($user);
         $service = $this->getFavoritesService($listService);
         $service->createListForUser($user);
     }
