@@ -433,6 +433,9 @@ delete_ratings_with_user = false
 ; Persistent login token lifetime in days
 ;persistent_login_lifetime = 60
 
+; Whether to send email warnings about suspicious logins. Default is true.
+send_login_warnings = false
+
 ; Subject for the email sent after a suspicious login has been detected.
 ; Default email subject will be the translation for
 ; "login_warning_email_subject" and any custom value used here
