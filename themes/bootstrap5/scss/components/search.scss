@@ -391,6 +391,10 @@ header .container.navbar { margin-bottom: 0; }
 
 .result-links a {
   line-height: 1.5;
+
+  &.icon-link {
+    display: flex;
+  }
 }
 
 .result-links .alert { margin: 0; }
