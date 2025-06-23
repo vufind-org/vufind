@@ -100,6 +100,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         return [
             'unfiltered' => [
                 [],
+                [],
                 [
                     0 => [
                         [
@@ -117,6 +118,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             ],
             'exclude filter' => [
                 ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
+                [],
                 [
                     0 => [
                         [
@@ -129,12 +131,26 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             ],
             'include filter' => [
                 ['filterType' => 'include', 'filter' => ['browzineWebLink']],
+                [],
                 [
                     0 => [
                         [
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link' => [
+                [],
+                ['bestIntegratorLink' => '|browzine-best'],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Download Best PDF Ever',
+                            'localIcon' => 'browzine-best',
                         ],
                     ],
                 ],
@@ -151,7 +167,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      *
      * @return BrowZine
      */
-    protected function getBrowZineHandler(array $ids, array $rawData, array $config = []): BrowZine
+    protected function getBrowZineHandler(array $ids, array $rawData, array $identifierLinksConfig = [], ?array $doiServicesConfig = null): BrowZine
     {
         $connector = $this->getMockConnector($ids[0], $rawData);
         $ss = $this->getSearchService($this->getBackendManager($connector));
@@ -160,7 +176,13 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         // injected. We'll use a mock container to set up all the dependencies.
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFindSearch\Service::class, $ss);
-        $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $config]);
+        $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $identifierLinksConfig]);
+        if ($doiServicesConfig) {
+            $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $identifierLinksConfig, 'DOIServices' => $doiServicesConfig]);
+        }
+        else {
+            $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $identifierLinksConfig]);
+        }
         $mockConfigManager = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockConfigManager->expects($this->once())->method('get')->with('BrowZine')->willReturn($configObj);
         $container->set(\VuFind\Config\PluginManager::class, $mockConfigManager);
@@ -178,11 +200,11 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      *
      * @dataProvider doiProvider
      */
-    public function testDOIApiSuccess(array $config, array $expectedResponse): void
+    public function testDOIApiSuccess(array $identifierLinksConfig, array $doiServicesConfig, array $expectedResponse): void
     {
         $rawData = $this->getJsonFixture('browzine/doi.json');
         $ids = [['doi' => '10.1155/2020/8690540']];
-        $browzine = $this->getBrowZineHandler($ids, $rawData, $config);
+        $browzine = $this->getBrowZineHandler($ids, $rawData, $identifierLinksConfig, $doiServicesConfig);
         foreach ($expectedResponse[0] as & $current) {
             $current['data'] = $rawData['data'];
         }

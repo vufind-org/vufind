@@ -100,11 +100,24 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
      */
     protected function processServiceLink(array $data, string $serviceKey, array $config): array
     {
-        $result = [
-            'link' => $data[$serviceKey],
-            'label' => $this->translate($config['linkText']),
-            'data' => $data,
-        ];
+        $serviceData = $data[$serviceKey];
+        if ('bestIntegratorLink' == $serviceKey) {
+            $result = [
+                'link' => $serviceData['bestLink'],
+                'label' => $config['linkText'] 
+                    ? $this->translate($config['linkText']) 
+                    : $serviceData['recommendedLinkText'],
+                'data' => $data,
+            ];
+        }
+        else {
+            $result = [
+                'link' => $serviceData,
+                'label' => $this->translate($config['linkText']),
+                'data' => $data,
+            ];
+        }
+
         $localIcons = !empty($this->config['local_icons']);
         if (!$localIcons && !empty($config['icon'])) {
             $result['icon'] = $config['icon'];
