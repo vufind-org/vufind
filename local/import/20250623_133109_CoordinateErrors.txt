@@ -1,0 +1,64 @@
+20250623_133109_CoordinateErrors.txt	201700	Coordinate values contain null values.	Coordinates:  {W1362047} {W0962047} {S250039} {null}
+20250623_133109_CoordinateErrors.txt	201700	Coordinate values contain null values.	Coordinates:  {W1362047} {W0962047} {S250039} {null}
+20250623_133109_CoordinateErrors.txt	201702	Coordinate values contain null values.	Coordinates:  {W103.57340238} {null} {S22.78804289} {S22.78804289}
+20250623_133109_CoordinateErrors.txt	201702	Coordinate values contain null values.	Coordinates:  {W103.57340238} {null} {S22.78804289} {S22.78804289}
+20250623_133109_CoordinateErrors.txt	201703	Coordinate values contain null values.	Coordinates:  {E120.96526676} {E120.96526676} {null} {N22.40092028}
+20250623_133109_CoordinateErrors.txt	201703	Coordinate values contain null values.	Coordinates:  {E120.96526676} {E120.96526676} {null} {N22.40092028}
+20250623_133109_CoordinateErrors.txt	201704	Coordinate values contain null values.	Coordinates:  {E151.51785078} {E151.51785078} {N13.91875447} {null}
+20250623_133109_CoordinateErrors.txt	201704	Coordinate values contain null values.	Coordinates:  {E151.51785078} {E151.51785078} {N13.91875447} {null}
+20250623_133109_CoordinateErrors.txt	201706	Coordinate values contain null values.	Coordinates:  {+104.20929332} {null} {+23.15670674} {+13.15670674}
+20250623_133109_CoordinateErrors.txt	201706	Coordinate values contain null values.	Coordinates:  {+104.20929332} {null} {+23.15670674} {+13.15670674}
+20250623_133109_CoordinateErrors.txt	201707	Coordinate values contain null values.	Coordinates:  {-172.9265117} {-162.9265117} {null} {-6.47082029}
+20250623_133109_CoordinateErrors.txt	201707	Coordinate values contain null values.	Coordinates:  {-172.9265117} {-162.9265117} {null} {-6.47082029}
+20250623_133109_CoordinateErrors.txt	201708	Coordinate values contain null values.	Coordinates:  {-149.3464366} {-129.3464366} {+27.28202333} {null}
+20250623_133109_CoordinateErrors.txt	201708	Coordinate values contain null values.	Coordinates:  {-149.3464366} {-129.3464366} {+27.28202333} {null}
+20250623_133109_CoordinateErrors.txt	201709	Coordinates exceed map extent.	Coordinates:  {186.89166666666665} {176.89166666666665} {22.205555555555556} {12.336666666666668}
+20250623_133109_CoordinateErrors.txt	201709	East < West.	Coordinates:  {186.89166666666665} {176.89166666666665} {NaN} {NaN}
+20250623_133109_CoordinateErrors.txt	201710	Decimal Degree coordinates contain invalid values	Coordinates:  {-190.54166666666669} {NaN} {66.52583333333334} {56.52583333333333}
+20250623_133109_CoordinateErrors.txt	201711	Coordinates exceed map extent.	Coordinates:  {179.36194444444445} {189.36194444444445} {-70.3825} {-75.3825}
+20250623_133109_CoordinateErrors.txt	201712	Coordinates exceed map extent.	Coordinates:  {-179.36194444444445} {-189.36194444444445} {-70.3825} {-75.3825}
+20250623_133109_CoordinateErrors.txt	201712	East < West.	Coordinates:  {180.63805555555555} {170.63805555555555} {NaN} {NaN}
+20250623_133109_CoordinateErrors.txt	201713	Coordinates exceed map extent.	Coordinates:  {120.38333333333334} {130.25333333333333} {98.35} {77.35222222222221}
+20250623_133109_CoordinateErrors.txt	201714	Coordinates exceed map extent.	Coordinates:  {120.38333333333334} {130.25333333333333} {-98.35} {-77.35222222222221}
+20250623_133109_CoordinateErrors.txt	201714	North < South.	Coordinates:  {NaN} {NaN} {-98.35} {-77.35222222222221}
+20250623_133109_CoordinateErrors.txt	201715	Coordinates exceed map extent.	Coordinates:  {-179.15277777777777} {-119.15416666666667} {39.53666666666666} {91.53694444444444}
+20250623_133109_CoordinateErrors.txt	201715	North < South.	Coordinates:  {NaN} {NaN} {39.53666666666666} {91.53694444444444}
+20250623_133109_CoordinateErrors.txt	201716	Coordinates exceed map extent.	Coordinates:  {-179.15277777777777} {-119.15416666666667} {-39.53666666666666} {-91.53694444444444}
+20250623_133109_CoordinateErrors.txt	201717	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {176.53377147} {22.77971971} {12.77971971}
+20250623_133109_CoordinateErrors.txt	201718	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {-99.81880793} {66.31339558} {56.31339558}
+20250623_133109_CoordinateErrors.txt	201719	Decimal Degree coordinates contain invalid values	Coordinates:  {176.53377147} {NaN} {22.77971971} {12.77971971}
+20250623_133109_CoordinateErrors.txt	201720	Decimal Degree coordinates contain invalid values	Coordinates:  {-175.68166135} {NaN} {-60.41361345} {-69.41361345}
+20250623_133109_CoordinateErrors.txt	201721	Decimal Degree coordinates contain invalid values	Coordinates:  {120.94552421} {130.94552421} {NaN} {77.21089126}
+20250623_133109_CoordinateErrors.txt	201722	Decimal Degree coordinates contain invalid values	Coordinates:  {120.94552421} {130.94552421} {NaN} {-77.21089126}
+20250623_133109_CoordinateErrors.txt	201723	Decimal Degree coordinates contain invalid values	Coordinates:  {-179.09659396} {-119.09659396} {39.32213026} {NaN}
+20250623_133109_CoordinateErrors.txt	201724	Decimal Degree coordinates contain invalid values	Coordinates:  {-179.09659396} {-119.09659396} {-39.32213026} {NaN}
+20250623_133109_CoordinateErrors.txt	201725	Coordinates exceed map extent.	Coordinates:  {186.53377147} {176.53377147} {22.77971971} {12.77971971}
+20250623_133109_CoordinateErrors.txt	201725	East < West.	Coordinates:  {186.53377147} {176.53377147} {NaN} {NaN}
+20250623_133109_CoordinateErrors.txt	201726	Coordinates exceed map extent.	Coordinates:  {-189.81880793} {-99.81880793} {66.31339558} {56.31339558}
+20250623_133109_CoordinateErrors.txt	201727	Coordinates exceed map extent.	Coordinates:  {175.1864435} {182.18644345} {-10.03581345} {-20.03581345}
+20250623_133109_CoordinateErrors.txt	201728	Coordinates exceed map extent.	Coordinates:  {-175.1864435} {-182.1864435} {-10.03581345} {-20.03581345}
+20250623_133109_CoordinateErrors.txt	201728	East < West.	Coordinates:  {184.8135565} {177.8135565} {NaN} {NaN}
+20250623_133109_CoordinateErrors.txt	201729	Decimal Degree coordinates contain invalid values	Coordinates:  {120.94552421} {NaN} {98.21089126} {77.21089126}
+20250623_133109_CoordinateErrors.txt	201730	Decimal Degree coordinates contain invalid values	Coordinates:  {120.94552421} {NaN} {-98.21089126} {-77.21089126}
+20250623_133109_CoordinateErrors.txt	201731	Coordinates exceed map extent.	Coordinates:  {-179.09659396} {-119.09659396} {39.32213026} {91.32213026}
+20250623_133109_CoordinateErrors.txt	201731	North < South.	Coordinates:  {NaN} {NaN} {39.32213026} {91.32213026}
+20250623_133109_CoordinateErrors.txt	201732	Coordinates exceed map extent.	Coordinates:  {-179.09659396} {-119.09659396} {-39.32213026} {-91.32213026}
+20250623_133109_CoordinateErrors.txt	201733	Decimal Degree coordinates contain invalid values	Coordinates:  {75.10477259} {NaN} {43.86871739} {53.86871739}
+20250623_133109_CoordinateErrors.txt	201734	North < South.	Coordinates:  {NaN} {NaN} {-79.5125} {-77.5125}
+20250623_133109_CoordinateErrors.txt	201735	North < South.	Coordinates:  {NaN} {NaN} {46.24201475} {56.24201475}
+20250623_133109_CoordinateErrors.txt	201736	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-89.98333333333333} {-90.0}
+20250623_133109_CoordinateErrors.txt	201737	Coordinates < 0.167 degrees from South Pole. Coordinate Distance: 0.01666666666666572	Coordinates:  {-180.0} {179.98333333333332} {-89.98333333333333} {-90.0}
+20250623_133109_CoordinateErrors.txt	201738	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-89.98333333333333} {-90.0}
+20250623_133109_CoordinateErrors.txt	201739	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-85.0} {-89.98333333333333}
+20250623_133109_CoordinateErrors.txt	201741	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-85.0} {-89.98333333333333}
+20250623_133109_CoordinateErrors.txt	201742	Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: -1.0	Coordinates:  {1.0} {-0.0} {90.0} {70.0}
+20250623_133109_CoordinateErrors.txt	201743	Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: -1.0	Coordinates:  {1.0} {-0.0} {90.0} {70.0}
+20250623_133109_CoordinateErrors.txt	201744	Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: -1.0	Coordinates:  {1.0} {-0.0} {90.0} {70.0}
+20250623_133109_CoordinateErrors.txt	201745	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-89.98333333333333} {-90.0}
+20250623_133109_CoordinateErrors.txt	201746	Coordinates < 0.167 degrees from South Pole. Coordinate Distance: 0.01666666666666572	Coordinates:  {-180.0} {179.98333333333332} {-89.98333333333333} {-90.0}
+20250623_133109_CoordinateErrors.txt	201747	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-89.98333333333333} {-90.0}
+20250623_133109_CoordinateErrors.txt	201748	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-85.0} {-89.98333333333333}
+20250623_133109_CoordinateErrors.txt	201750	Decimal Degree coordinates contain invalid values	Coordinates:  {NaN} {179.98333333333332} {-85.0} {-89.98333333333333}
+20250623_133109_CoordinateErrors.txt	201751	Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: -1.0	Coordinates:  {1.0} {-0.0} {90.0} {70.0}
+20250623_133109_CoordinateErrors.txt	201752	Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: -1.0	Coordinates:  {1.0} {-0.0} {90.0} {70.0}
+20250623_133109_CoordinateErrors.txt	201753	Coordinates within 2 degrees of Prime Meridian. Coordinate Distance: -1.0	Coordinates:  {1.0} {-0.0} {90.0} {70.0}

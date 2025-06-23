@@ -30,6 +30,7 @@
 namespace VuFind\Log;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Stringable;
 
 use function call_user_func_array;

@@ -30,6 +30,7 @@
 namespace VuFind\Log;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use function get_class;
 
 /**
@@ -68,7 +69,7 @@ trait LoggerAwareTrait
      */
     protected function logError($msg, array $context = [], $prependClass = true)
     {
-        $this->log('error', $msg, $context, $prependClass);
+        $this->log(LogLevel::ERROR, $msg, $context, $prependClass);
     }
 
     /**
@@ -82,7 +83,7 @@ trait LoggerAwareTrait
      */
     protected function logWarning($msg, array $context = [], $prependClass = true)
     {
-        $this->log('warning', $msg, $context, $prependClass);
+        $this->log(LogLevel::WARNING, $msg, $context, $prependClass);
     }
 
     /**
@@ -96,7 +97,7 @@ trait LoggerAwareTrait
      */
     protected function debug($msg, array $context = [], $prependClass = true)
     {
-        $this->log('debug', $msg, $context, $prependClass);
+        $this->log(LogLevel::DEBUG, $msg, $context, $prependClass);
     }
 
     /**

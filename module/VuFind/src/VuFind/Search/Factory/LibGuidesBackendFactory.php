@@ -59,7 +59,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \VuFind\Log\LoggerAwareInterface
      */
     protected $logger;
 

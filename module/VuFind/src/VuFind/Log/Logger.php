@@ -69,9 +69,9 @@ class Logger implements PsrLoggerInterface
      * @var UserIpReader
      */
     protected UserIpReader $userIpReader;
-    private MonologLogger $monologLogger;
+    protected MonologLogger $monologLogger;
 
-    private const LEVEL_MAP = [
+    protected const LEVEL_MAP = [
         'err'       => LogLevel::ERROR,
         'warn'      => LogLevel::WARNING,
     ];
@@ -303,7 +303,7 @@ class Logger implements PsrLoggerInterface
             5 => $baseError . $detailedServer . $detailedBacktrace,
         ];
 
-        $this->log($this->getSeverityFromException($error), $errorDetails, ['exception' => $error, 'server_data' => $server]);
+        $this->log($this->getSeverityFromException($error), $baseError, ['exception' => $error, 'server_data' => $server, 'details' => $errorDetails]);
     }
 
     /**
