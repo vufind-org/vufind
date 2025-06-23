@@ -104,13 +104,12 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         if ('bestIntegratorLink' == $serviceKey) {
             $result = [
                 'link' => $serviceData['bestLink'],
-                'label' => $config['linkText'] 
-                    ? $this->translate($config['linkText']) 
+                'label' => $config['linkText']
+                    ? $this->translate($config['linkText'])
                     : $serviceData['recommendedLinkText'],
                 'data' => $data,
             ];
-        }
-        else {
+        } else {
             $result = [
                 'link' => $serviceData,
                 'label' => $this->translate($config['linkText']),

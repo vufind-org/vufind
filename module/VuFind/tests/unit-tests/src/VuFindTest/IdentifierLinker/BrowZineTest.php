@@ -161,14 +161,19 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Build the BrowZine handler to test.
      *
-     * @param array $ids     ID test data
-     * @param array $rawData Raw data for connector to return
-     * @param array $config  BrowZine configuration
+     * @param array  $ids                   ID test data
+     * @param array  $rawData               Raw data for connector to return
+     * @param array  $identifierLinksConfig BrowZine configuration for identifier links
+     * @param ?array $doiServicesConfig     BrowZine configuration for DOI services
      *
      * @return BrowZine
      */
-    protected function getBrowZineHandler(array $ids, array $rawData, array $identifierLinksConfig = [], ?array $doiServicesConfig = null): BrowZine
-    {
+    protected function getBrowZineHandler(
+        array $ids,
+        array $rawData,
+        array $identifierLinksConfig = [],
+        ?array $doiServicesConfig = null
+    ): BrowZine {
         $connector = $this->getMockConnector($ids[0], $rawData);
         $ss = $this->getSearchService($this->getBackendManager($connector));
 
@@ -178,9 +183,10 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         $container->set(\VuFindSearch\Service::class, $ss);
         $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $identifierLinksConfig]);
         if ($doiServicesConfig) {
-            $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $identifierLinksConfig, 'DOIServices' => $doiServicesConfig]);
-        }
-        else {
+            $configObj = new \VuFind\Config\Config(
+                ['IdentifierLinks' => $identifierLinksConfig, 'DOIServices' => $doiServicesConfig]
+            );
+        } else {
             $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $identifierLinksConfig]);
         }
         $mockConfigManager = $this->createMock(\VuFind\Config\PluginManager::class);
@@ -193,15 +199,19 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Test a DOI API response.
      *
-     * @param array $config           Configuration
-     * @param array $expectedResponse Expected response
+     * @param array $identifierLinksConfig BrowZine configuration for identifier links
+     * @param array $doiServicesConfig     BrowZine configuration for DOI services
+     * @param array $expectedResponse      Expected response
      *
      * @return void
      *
      * @dataProvider doiProvider
      */
-    public function testDOIApiSuccess(array $identifierLinksConfig, array $doiServicesConfig, array $expectedResponse): void
-    {
+    public function testDOIApiSuccess(
+        array $identifierLinksConfig,
+        array $doiServicesConfig,
+        array $expectedResponse
+    ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
         $ids = [['doi' => '10.1155/2020/8690540']];
         $browzine = $this->getBrowZineHandler($ids, $rawData, $identifierLinksConfig, $doiServicesConfig);
