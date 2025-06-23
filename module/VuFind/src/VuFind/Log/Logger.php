@@ -84,7 +84,7 @@ class Logger implements PsrLoggerInterface
 
     /**
      * Get the underlying MonologLogger instance.
-     * This is needed by the LoggerFactory to configure handlers and processors.
+    * This is needed by the LoggerFactory to configure handlers and processors.
      *
      * @return MonologLogger
      */
