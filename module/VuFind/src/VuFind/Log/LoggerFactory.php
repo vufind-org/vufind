@@ -132,7 +132,7 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addMailHander(MonologLogger $monologLogger, Config $congfig): void
+    protected function addMailHandler(MonologLogger $monologLogger, Config $config): void
     {
         // Set up the logger's mailer to behave consistently with VuFind's
         // general mailer:
@@ -140,7 +140,9 @@ class LoggerFactory implements FactoryInterface
         $email = $parts[0];
         $error_types = $parts[1] ?? '';
 
-        $emailHandler = new DeduplicationHandler(new MailHandler($this->getEmailSenderAddress($config), $email, 'VuFind Log Message'));
+        echo "Email: ".$email;
+
+        $emailHandler = new MailHandler($email, 'VuFind Log Message', $this->getEmailSenderAddress($config))                                                                                    ;
         $this->addHandlers($monologLogger, $emailHandler, $error_types);
     }
 
@@ -191,8 +193,15 @@ class LoggerFactory implements FactoryInterface
             $this->addDebugHandler($monologLogger, $config->System->debug);
         }
 
+        // Activate file logging, if applicable:
         if (isset($config->Logging->file)) {
             $this->addFileHandler($monologLogger, $config->Logging->file);
+        }
+
+        // Activate email logging, if applicable:
+            print_r($config->Logging);
+        if (isset($config->Logging->email)) {
+            $this->addMailHandler($monologLogger, $config);
         }
 
         // Add common processors:
