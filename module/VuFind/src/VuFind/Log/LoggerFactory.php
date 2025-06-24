@@ -30,6 +30,7 @@
 namespace VuFind\Log;
 
 use Monolog\Logger as MonologLogger;
+use Monolog\Handler\DeduplicationHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -38,7 +39,8 @@ use Monolog\Handler\HandlerInterface;
 use Psr\Log\LogLevel;
 
 
-use VuFind\Log\Handler\StreamHandler as VuFindStreamHandler;
+use VuFind\Log\Handler\StreamHandler;
+use VuFind\Log\Handler\MailHandler;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -115,11 +117,31 @@ class LoggerFactory implements FactoryInterface
         }
         
 
-        $baseFileHandler = new VuFindStreamHandler($file, LogLevel::DEBUG, false);
+        $baseFileHandler = new StreamHandler($file, LogLevel::DEBUG, false);
         $baseFileHandler->setFormatter($this->getStandardFileFormatter());
 
         // Use the generic addHandlers method to configure and add the filtered handlers
         $this->addHandlers($monologLogger, $baseFileHandler, $error_types);
+    }
+
+    /**
+     * Configure File handler.
+     *
+     * @param MonologLogger $monologLogger The Monolog logger instance to add handlers to.
+     * @param string        $configString  The file configuration string (e.g., "path/to/file.log:error-1,debug-5").
+     *
+     * @return void
+     */
+    protected function addMailHander(MonologLogger $monologLogger, Config $congfig): void
+    {
+        // Set up the logger's mailer to behave consistently with VuFind's
+        // general mailer:
+        $parts = explode(':', $config->Logging->email);
+        $email = $parts[0];
+        $error_types = $parts[1] ?? '';
+
+        $emailHandler = new DeduplicationHandler(new MailHandler($this->getEmailSenderAddress($config), $email, 'VuFind Log Message'));
+        $this->addHandlers($monologLogger, $emailHandler, $error_types);
     }
 
     /**
@@ -201,7 +223,7 @@ class LoggerFactory implements FactoryInterface
             true,
             true
         );
-        $debugHandler = new VuFindStreamHandler('php://output');
+        $debugHandler = new StreamHandler('php://output');
         $debugHandler->setFormatter($debugFormatter);
         $level = (is_int($debug) ? $debug : '5');
         $this->addHandlers($monologLogger, $debugHandler, "debug-$level,notice-$level,error-$level,alert-$level");
@@ -221,10 +243,7 @@ class LoggerFactory implements FactoryInterface
         Config $config,
         ContainerInterface $container
     ): void {
-        // Always add a processor to handle PSR-3 message placeholders ({foo})
         $monologLogger->pushProcessor(new PsrLogMessageProcessor());
-
-        // Add ReferenceId processor, if applicable:
         $logConfig = $config->Logging;
         if ($referenceId = $logConfig->reference_id ?? false) {
             if ('username' === $referenceId) {
@@ -250,7 +269,7 @@ class LoggerFactory implements FactoryInterface
      *
      * @param MonologLogger             $monologLogger The Monolog logger instance to add handlers to.
      * @param AbstractProcessingHandler $baseHandler   The base Monolog handler to clone and filter
-     * (e.g., VuFindStreamHandler).
+     * (e.g., StreamHandler).
      * @param string|array              $filters     An array or comma-separated string of
      * logging levels
      *
