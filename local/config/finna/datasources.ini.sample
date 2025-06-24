@@ -138,6 +138,11 @@ archiveRequestRequireFilingUnit = true
 ;hidden_record_fields[] = 'Archive'
 ;hidden_record_fields[] = 'Subject'
 
+; Use collection specific field order for records with child records.
+; Available record field specs are CollectionRecord, DefaultRecord.
+; Default is DefaultRecord.
+;record[record_field_specs] = CollectionRecord
+
 ; Used for linking records with linkingId. Checks if prefix in 003 should match with the linkable records
 ;prefixIn003 = true
 ; In addition multiple prefixes can be declared with a comma separated list

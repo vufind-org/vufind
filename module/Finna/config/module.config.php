@@ -819,6 +819,8 @@ $config = [
                 'factories' => [
                     \Finna\RecordDataFormatter\Specs\DefaultRecord::class
                         => \VuFind\RecordDataFormatter\Specs\DefaultRecordFactory::class,
+                    \Finna\RecordDataFormatter\Specs\CollectionRecord::class
+                        => \VuFind\RecordDataFormatter\Specs\DefaultRecordFactory::class,
                 ],
                 'aliases' => [
                     \VuFind\RecordDataFormatter\Specs\DefaultRecord::class
