@@ -107,7 +107,8 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             $search,
             $config,
             $fullConfig['DOIServices'] ?? $this->defaultDoiServices,
-            $fullConfig['ISSNServices'] ?? $this->defaultIssnServices
+            $fullConfig['ISSNServices'] ?? $this->defaultIssnServices,
+            $fullConfig['BestIntegratorLinks'] ?? []
         );
     }
 }
