@@ -1,9 +1,12 @@
-<?php $list = $this->params->getSortList(); ?>
-<?php if (!empty($list)): ?>
+<?php
+  $list = $this->params->getSortList();
+  $listCount = count($list);
+?>
+<?php if ($listCount > 0): ?>
   <form class="search-sort" action="<?=$this->currentPath()?>" method="get" name="sort">
     <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/', 'page' => '/.*/']);?>
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
-    <select id="sort_options_1" name="sort" class="jumpMenu form-select">
+    <select id="sort_options_1" name="sort" class="jumpMenu form-select"<?=$listCount === 1 ? ' disabled' : ''?>>
       <?php foreach ($list as $sortType => $sortData): ?>
         <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected'] ? ' selected="selected"' : ''?><?=$sortData['default'] ? ' data-default' : ''?>><?=$this->transEsc($sortData['desc'])?></option>
       <?php endforeach; ?>

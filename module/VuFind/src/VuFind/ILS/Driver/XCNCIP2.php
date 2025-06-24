@@ -307,11 +307,11 @@ class XCNCIP2 extends AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
-     * @param ?PathResolver          $pathResolver  Config file path resolver
+     * @param PathResolver           $pathResolver  Config file path resolver
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        ?PathResolver $pathResolver = null
+        PathResolver $pathResolver
     ) {
         $this->dateConverter = $dateConverter;
         $this->pathResolver = $pathResolver;
@@ -426,9 +426,7 @@ class XCNCIP2 extends AbstractBase implements
     protected function loadPickUpLocationsFromFile($filename)
     {
         // Load pickup locations file:
-        $pickupLocationsFile = $this->pathResolver
-            ? $this->pathResolver->getConfigPath($filename)
-            : \VuFind\Config\Locator::getConfigPath($filename);
+        $pickupLocationsFile = $this->pathResolver->getConfigPath($filename);
         if (!file_exists($pickupLocationsFile)) {
             throw new ILSException(
                 "Cannot load pickup locations file: {$pickupLocationsFile}."

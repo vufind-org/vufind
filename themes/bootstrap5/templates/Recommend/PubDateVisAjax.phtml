@@ -32,7 +32,7 @@
       }
     ?>
     <div class="authorbox">
-      <form <?=$this->htmlAttributes($formAttributes)?>>
+      <form<?=$this->htmlAttributes($formAttributes)?>>
         <?=$this->results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => '/^' . preg_quote($facetField) . ':.*/'])?>
         <input type="hidden" name="daterange[]" value="<?=$facetFieldEsc?>">
         <h3 class="datevis-label facet-title"><?=$this->transEsc($facetRange['label']) ?></h3>

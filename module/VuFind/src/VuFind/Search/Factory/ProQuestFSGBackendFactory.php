@@ -113,7 +113,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
-        $connector = new Connector($this->createHttpClient());
+        $connector = new Connector($this->createHttpClient(), $this->proQuestFSGConfig->toArray());
         $connector->setLogger($this->logger);
         if ($cache = $this->createConnectorCache($this->proQuestFSGConfig)) {
             $connector->setCache($cache);

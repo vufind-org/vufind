@@ -30,7 +30,7 @@
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
     $this->breadcrumbs()->add($this->translate('Search'), $url);
   }
-  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver));
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
   $this->layout()->title = $this->driver->getShortTitle();
 ?>
 

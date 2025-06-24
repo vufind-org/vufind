@@ -181,6 +181,8 @@ class Upgrade
      * @param array $custom_ini Overrides to apply on top of the base array.
      *
      * @return array             The merged results.
+     *
+     * @deprecated
      */
     public static function iniMerge($config_ini, $custom_ini)
     {
@@ -197,38 +199,6 @@ class Upgrade
     }
 
     /**
-     * Load the old config.ini settings.
-     *
-     * @return void
-     */
-    protected function loadOldBaseConfig()
-    {
-        // Load the base settings:
-        $oldIni = $this->oldDir . '/config.ini';
-        $mainArray = file_exists($oldIni) ? parse_ini_file($oldIni, true) : [];
-
-        // Merge in local overrides as needed. VuFind 2 structures configurations
-        // differently, so people who used this mechanism will need to refactor
-        // their configurations to take advantage of the new "local directory"
-        // feature. For now, we'll just merge everything to avoid losing settings.
-        if (
-            isset($mainArray['Extra_Config'])
-            && isset($mainArray['Extra_Config']['local_overrides'])
-        ) {
-            $file = trim(
-                $this->oldDir . '/' . $mainArray['Extra_Config']['local_overrides']
-            );
-            $localOverride = @parse_ini_file($file, true);
-            if ($localOverride) {
-                $mainArray = self::iniMerge($mainArray, $localOverride);
-            }
-        }
-
-        // Save the configuration to the appropriate place:
-        $this->oldConfigs['config.ini'] = $mainArray;
-    }
-
-    /**
      * Find the path to the old configuration file.
      *
      * @param string $filename Filename of configuration file.
@@ -237,16 +207,6 @@ class Upgrade
      */
     protected function getOldConfigPath($filename)
     {
-        // Check if the user has overridden the filename in the [Extra_Config]
-        // section:
-        $index = str_replace('.ini', '', $filename);
-        if (isset($this->oldConfigs['config.ini']['Extra_Config'][$index])) {
-            $path = $this->oldDir . '/'
-                . $this->oldConfigs['config.ini']['Extra_Config'][$index];
-            if (file_exists($path) && is_file($path)) {
-                return $path;
-            }
-        }
         return $this->oldDir . '/' . $filename;
     }
 
@@ -257,26 +217,12 @@ class Upgrade
      */
     protected function loadConfigs()
     {
-        // Configuration files to load. Note that config.ini must always be loaded
-        // first so that getOldConfigPath can work properly!
-        $configs = ['config.ini'];
         foreach (glob($this->rawDir . '/*.ini') as $ini) {
             $parts = explode('/', str_replace('\\', '/', $ini));
-            $filename = array_pop($parts);
-            if ($filename !== 'config.ini') {
-                $configs[] = $filename;
-            }
-        }
-        foreach ($configs as $config) {
-            // Special case for config.ini, since we may need to overlay extra
-            // settings:
-            if ($config == 'config.ini') {
-                $this->loadOldBaseConfig();
-            } else {
-                $path = $this->getOldConfigPath($config);
-                $this->oldConfigs[$config] = file_exists($path)
-                    ? parse_ini_file($path, true) : [];
-            }
+            $config = array_pop($parts);
+            $path = $this->getOldConfigPath($config);
+            $this->oldConfigs[$config]
+                = file_exists($path) ? parse_ini_file($path, true) : [];
             $this->newConfigs[$config]
                 = parse_ini_file($this->rawDir . '/' . $config, true);
             $this->comments[$config]
@@ -604,9 +550,6 @@ class Upgrade
         ) {
             unset($newConfig['Database']['database']);
         }
-
-        // Eliminate obsolete config override settings:
-        unset($newConfig['Extra_Config']);
 
         // Update generator if it contains a version number:
         if (

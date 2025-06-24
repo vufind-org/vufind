@@ -108,9 +108,10 @@ class AbstractSearch extends AbstractBase
 
         // Handle request to edit existing saved search:
         $view->saved = false;
-        // 'edit' query parameter is added for legacy template support
-        $searchId = $this->params()->fromQuery('sid') ?? $this->params()->fromQuery('edit');
-        if ($searchId !== null) {
+        // 'edit' query parameter is added for legacy template support; we use intval to ensure that
+        // the correct type is passed to restoreAdvancedSearch.
+        $searchId = intval($this->params()->fromQuery('sid') ?? $this->params()->fromQuery('edit') ?? 0);
+        if ($searchId > 0) {
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
 

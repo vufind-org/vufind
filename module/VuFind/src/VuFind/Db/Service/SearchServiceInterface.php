@@ -131,16 +131,18 @@ interface SearchServiceInterface extends DbServiceInterface
     ): array;
 
     /**
-     * Set invalid user_id values in the table to null; return count of affected rows.
-     *
-     * @return int
-     */
-    public function cleanUpInvalidUserIds(): int;
-
-    /**
      * Get saved searches with missing checksums (used for cleaning up legacy data).
      *
      * @return SearchEntityInterface[]
      */
     public function getSavedSearchesWithMissingChecksums(): array;
+
+    /**
+     * Delete a search entity.
+     *
+     * @param SearchEntityInterface|int $searchOrId Search entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteSearch(SearchEntityInterface|int $searchOrId): void;
 }

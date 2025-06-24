@@ -1280,7 +1280,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'pickup_library_id' => $pickUpLocation,
             'notes' => $comment,
             'expiration_date' => !empty($holdDetails['requiredByTS'])
-                        ? date('Y-m-d', $holdDetails['requiredByTS'])
+                        ? gmdate('Y-m-d', $holdDetails['requiredByTS'])
                         : null,
         ];
         if ($level == 'copy') {

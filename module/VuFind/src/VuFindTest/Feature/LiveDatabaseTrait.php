@@ -58,7 +58,7 @@ use function count;
  */
 trait LiveDatabaseTrait
 {
-    use PathResolverTrait;
+    use ConfigPluginManagerTrait;
 
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
@@ -86,14 +86,9 @@ trait LiveDatabaseTrait
             // Set up the bare minimum services to actually load real configs:
             $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
             $container = new MockContainer($this);
-            $configManager = new \VuFind\Config\PluginManager(
-                $container,
-                $config['vufind']['config_reader']
-            );
-            $container->set(\VuFind\Config\PluginManager::class, $configManager);
-            $this->addPathResolverToContainer($container);
+            $this->addConfigPluginManagerToContainer($container, $config);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
-                $configManager->get('config')
+                $container->get(\VuFind\Config\PluginManager::class)->get('config')
             );
             $container->set(
                 \Laminas\Db\Adapter\Adapter::class,

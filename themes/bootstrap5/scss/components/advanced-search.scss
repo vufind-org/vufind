@@ -56,8 +56,13 @@
     vertical-align: middle;
   }
 }
-.adv-submit { @include clearfix(); }
-.adv-submit .clear-btn { float: right; }
+
+.adv-submit {
+  @include clearfix();
+  margin-block: 1rem;
+
+  .clear-btn { float: right; }
+}
 
 @include media-breakpoint-up(sm) {
   .adv-group-terms {
@@ -90,8 +95,16 @@
 }
 
 #groupPlaceHolder {
+  @extend .btn;
+  @extend .btn-default;
+
   display: block;
-  padding: 1rem;
+  width: fit-content;
+  margin-block: 1rem;
+
+  * {
+    text-decoration: none;
+  }
 }
 
 /* --- Fieldsets --- */

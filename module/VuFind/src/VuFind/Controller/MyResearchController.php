@@ -183,7 +183,7 @@ class MyResearchController extends AbstractBase
         if (
             $msg == 'authentication_error_admin'
             && $this->getAuthManager()->userHasLoggedOut()
-            && $this->getSessionInitiator()
+            && $this->getAuthManager()->hasSessionInitiator()
         ) {
             $msg = 'authentication_error_loggedout';
         }
@@ -212,7 +212,7 @@ class MyResearchController extends AbstractBase
         // submitted or because we're using an external login provider):
         if (
             $this->params()->fromPost('processLogin')
-            || $this->getSessionInitiator()
+            || $this->getAuthManager()->hasSessionInitiator()
             || $this->params()->fromPost('auth_method')
             || $this->params()->fromQuery('auth_method')
         ) {
@@ -331,7 +331,7 @@ class MyResearchController extends AbstractBase
     {
         // If this authentication method doesn't use a VuFind-generated login
         // form, force it through:
-        if ($this->getSessionInitiator()) {
+        if ($this->getAuthManager()->hasSessionInitiator()) {
             // Don't get stuck in an infinite loop -- if processLogin is already
             // set, it probably means Home action is forwarding back here to
             // report an error!
@@ -375,7 +375,7 @@ class MyResearchController extends AbstractBase
         // can decide whether to use it:
         $this->setFollowupUrlToReferer(true, ['isReferrer' => true]);
 
-        if ($si = $this->getSessionInitiator()) {
+        if ($si = $this->getAuthManager()->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
         return $this->forwardTo('MyResearch', 'Login');
@@ -466,22 +466,22 @@ class MyResearchController extends AbstractBase
      * Support method for savesearchAction(): set the saved flag in a secure
      * fashion, throwing an exception if somebody attempts something invalid.
      *
-     * @param int  $searchId The search ID to save/unsave
-     * @param bool $saved    The new desired state of the saved flag
-     * @param int  $userId   The user ID requesting the change
+     * @param int                 $searchId The search ID to save/unsave
+     * @param bool                $saved    The new desired state of the saved flag
+     * @param UserEntityInterface $user     The user requesting the change
      *
      * @throws \Exception
      * @return void
      */
-    protected function setSavedFlagSecurely($searchId, $saved, $userId)
+    protected function setSavedFlagSecurely($searchId, $saved, $user)
     {
-        $row = $this->getSearchRowSecurely($searchId, $userId);
-        $row->saved = $saved ? 1 : 0;
+        $row = $this->getSearchRowSecurely($searchId, $user->getId());
+        $row->setSaved($saved ? 1 : 0);
         if (!$saved) {
-            $row->notification_frequency = 0;
+            $row->setNotificationFrequency(0);
         }
-        $row->user_id = $userId;
-        $row->save();
+        $row->setUser($user);
+        $this->getDbService(SearchServiceInterface::class)->persistEntity($row);
     }
 
     /**
@@ -526,14 +526,14 @@ class MyResearchController extends AbstractBase
             $userId
         );
         if ($duplicateId) {
-            $savedRow->delete();
+            $this->getDbService(SearchServiceInterface::class)->deleteSearch($savedRow);
             $sid = $duplicateId;
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
 
         // If we didn't find an already-saved row, let's save and retry:
         if (!($savedRow->saved ?? false)) {
-            $this->setSavedFlagSecurely($sid, true, $userId);
+            $this->setSavedFlagSecurely($sid, true, $user);
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
         if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
@@ -586,7 +586,7 @@ class MyResearchController extends AbstractBase
             $user->getId()
         );
         if ($duplicateId) {
-            $search->delete();
+            $this->getDbService(SearchServiceInterface::class)->deleteSearch($search);
             $this->redirect()->toRoute(
                 'myresearch-schedulesearch',
                 [],
@@ -682,14 +682,14 @@ class MyResearchController extends AbstractBase
                 $user->getId()
             );
             if ($duplicateId) {
-                $rowToCheck->delete();
+                $searchService->deleteSearch($rowToCheck);
                 $id = $duplicateId;
             } else {
-                $this->setSavedFlagSecurely($id, true, $user->getId());
+                $this->setSavedFlagSecurely($id, true, $user);
             }
             $this->flashMessenger()->addMessage('search_save_success', 'success');
         } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
-            $this->setSavedFlagSecurely($id, false, $user->getId());
+            $this->setSavedFlagSecurely($id, false, $user);
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {
             throw new \Exception('Missing save and delete parameters.');
@@ -1689,18 +1689,6 @@ class MyResearchController extends AbstractBase
         }
 
         return $this->createViewModel(compact('fines', 'accountStatus'));
-    }
-
-    /**
-     * Convenience method to get a session initiator URL. Returns false if not
-     * applicable.
-     *
-     * @return string|bool
-     */
-    protected function getSessionInitiator()
-    {
-        $url = $this->getServerUrl('myresearch-home');
-        return $this->getAuthManager()->getSessionInitiator($url);
     }
 
     /**
