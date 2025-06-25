@@ -1,5 +1,5 @@
 <?php
-  $titleFinal = $this->translate ?? true ? $this->translate($this->title) : $this->title;
+  $title = $this->title ?? 'title_missing';
   $headerAttrs = [
     'class' => $this->_componentClass,
   ];
@@ -9,5 +9,7 @@
   }
   $level = $this->level ?: 2;
   $tag = "h$level";
+
+  $this->headTitle($this->headTitle ?? $title);
 ?>
-<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($titleFinal);?></<?=$tag?>>
+<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($title);?></<?=$tag?>>

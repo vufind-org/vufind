@@ -1,11 +1,8 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('auto_configure_title'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('auto_configure_title'), active: true);
 ?>
-<?=$this->component('page-title', ['title' => 'auto_configure_title']);?>
+<?=$this->component('page-title', ['title' => $this->translate('auto_configure_title')]);?>
 <?=$this->flashmessages()?>
 <?php $errors = 0; ?>
 <?php foreach ($this->checks as $check): ?>

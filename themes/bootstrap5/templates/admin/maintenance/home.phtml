@@ -1,9 +1,5 @@
-<?php
-    // Set page title.
-    $this->headTitle($this->translate('VuFind Administration - System Maintenance'));
-?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('page-title', ['title' => 'System Maintenance']);?>
+  <?=$this->component('page-title', ['title' => $this->translate('System Maintenance'), 'headTitle' => $this->translate('VuFind Administration - System Maintenance')]);?>
 
   <h3>Utilities</h3>
   <?=$this->flashmessages()?>
