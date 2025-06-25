@@ -5,7 +5,7 @@
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('auto_configure_title'), $this->url('install_home'));
 ?>
-<h2><?=$this->transEsc('auto_configure_title')?></h2>
+<?=$this->component('page-title', ['title' => 'auto_configure_title']);?>
 
 <p>Auto configuration has been successfully disabled.</p>
 

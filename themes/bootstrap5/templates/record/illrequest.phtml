@@ -10,7 +10,7 @@
     $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
       ->add($this->translate('ill_request_place_text'), active: true);
 ?>
-<h2><?=$this->transEsc('ill_request_place_text')?></h2>
+<?=$this->component('page-title', ['title' => 'ill_request_place_text']);?>
 <?php if ($this->helpTextHtml): ?>
   <p class="help-block"><?=$this->helpTextHtml?></p>
 <?php endif; ?>

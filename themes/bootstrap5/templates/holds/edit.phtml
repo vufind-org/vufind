@@ -7,7 +7,7 @@
     ->add($this->translate('My Holds'), $this->url('holds-list'))
     ->add($this->translate('hold_edit_title'), active: true);
 ?>
-<h2><?=$this->transEsc('hold_edit_title')?></h2>
+<?=$this->component('page-title', ['title' => 'hold_edit_title']);?>
 <?php if ($this->helpTextHtml): ?>
   <p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>

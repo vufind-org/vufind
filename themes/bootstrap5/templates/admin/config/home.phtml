@@ -3,7 +3,7 @@
   $this->headTitle($this->translate('VuFind Administration - Configuration'));
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Configuration')?></h2>
+  <?=$this->component('page-title', ['title' => 'Configuration']);?>
   <?=$this->flashmessages()?>
   <p>Most VuFind configuration is handled by editing the configuration files in <strong><?=$this->escapeHtml($this->baseConfigPath)?></strong>.</p>
   <p>Some basic settings can also be adjusted through the auto-configuration tool.</p>

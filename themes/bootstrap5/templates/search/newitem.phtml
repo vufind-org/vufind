@@ -11,7 +11,7 @@
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
 ?>
-<h2><?=$this->transEsc('Find New Items')?></h2>
+<?=$this->component('page-title', ['title' => 'Find New Items']);?>
 <?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message'])?>
 <?php endif; ?>

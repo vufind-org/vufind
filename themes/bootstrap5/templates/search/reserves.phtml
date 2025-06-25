@@ -11,7 +11,7 @@
 <?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message'])?>
 <?php else: ?>
-  <h2><?=$this->transEsc('Search For Items on Reserve')?></h2>
+  <?=$this->component('page-title', ['title' => 'Search For Items on Reserve']);?>
   <form method="get" name="searchForm" class="form-search-reserves">
     <?php if (is_array($this->courseList)): ?>
       <div class="form-group">

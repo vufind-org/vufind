@@ -3,9 +3,9 @@
   $this->headTitle($this->translate('VuFind Administration - Tag Maintenance'));
 ?>
 
-<h2><?=$this->transEsc('Tag Management')?></h2>
+<?=$this->component('page-title', ['title' => 'Tag Management']);?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h3><?=$this->transEsc('Manage Tags')?></h3>
+  <?=$this->component('page-title', ['title' => 'Manage Tags', 'level' => 3]);?>
 
   <?=$this->render('admin/tags/menu.phtml', ['active' => 'manage'])?>
 

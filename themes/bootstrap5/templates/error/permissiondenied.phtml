@@ -8,7 +8,7 @@
   $this->breadcrumbs()->set($this->translate('An error has occurred'), active: true);
 ?>
 <div>
-  <h2><?=$this->transEsc('permission_denied_title')?></h2>
+  <?=$this->component('page-title', ['title' => 'permission_denied_title']);?>
   <p><?=$this->flashmessages()?></p>
   <p>
     <?=$this->transEsc('permission_denied')?>

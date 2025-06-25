@@ -15,7 +15,7 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
+  <?=$this->component('page-title', ['title' => 'Your Checked Out Items']);?>
   <?=$this->flashmessages()?>
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>

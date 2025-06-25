@@ -13,7 +13,7 @@
         . "}\n"
     );
 ?>
-<h2><?=$this->transEsc('Upgrade VuFind')?></h2>
+<?=$this->component('page-title', ['title' => 'Upgrade VuFind']);?>
 <?=$this->flashmessages()?>
 <p>These SQL statements can be used to manually upgrade your database:</p>
 

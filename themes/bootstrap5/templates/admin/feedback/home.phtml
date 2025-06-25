@@ -3,7 +3,7 @@
 $this->headTitle($this->translate('VuFind Administration - Feedback Management'));
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->translate('Feedback Management')?></h2>
+  <?=$this->component('page-title', ['title' => 'Feedback Management']);?>
 
   <?=$this->flashmessages()?>
 

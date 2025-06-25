@@ -5,7 +5,7 @@
 
 <h2><?=$this->translate('Tag Management')?></h2>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h3><?=$this->translate('List Tags')?></h3>
+  <?=$this->component('page-title', ['title' => 'List Tags', 'level' => 3]);?>
 
   <?=$this->render('admin/tags/menu.phtml', ['active' => 'list'])?>
 

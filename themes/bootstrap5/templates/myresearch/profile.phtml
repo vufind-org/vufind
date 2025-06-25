@@ -13,7 +13,7 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Your Profile')?></h2>
+  <?=$this->component('page-title', ['title' => 'Your Profile']);?>
   <?=$this->flashmessages();?>
 
   <table class="table table-striped">

@@ -1,14 +1,13 @@
 <?php
-  $titleTranslated = $this->translate($this->title);
+  $titleFinal = $this->translate ?? true ? $this->translate($this->title) : $this->title;
   $headerAttrs = [
-    'class' => 'lightbox-header ' . $this->_componentClass,
+    'class' => $this->_componentClass,
   ];
   if ($this->inLightbox) {
     $headerAttrs['tabindex'] = '0';
+    $headerAttrs['class'] .= ' lightbox-title';
   }
-  $defaultLevel = $this->inLightbox ? 2 : 1;
-  $level = $this->level ?: $defaultLevel;
+  $level = $this->level ?: 2;
   $tag = "h$level";
-  $this->headTitle($titleTranslated);
 ?>
-<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($titleTranslated);?></<?=$tag?>>
+<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($titleFinal);?></<?=$tag?>>

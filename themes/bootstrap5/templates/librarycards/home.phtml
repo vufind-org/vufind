@@ -9,7 +9,7 @@
 
   <?=$this->flashmessages()?>
 
-  <h2><?=$this->transEsc('Library Cards')?></h2>
+  <?=$this->component('page-title', ['title' => 'Library Cards']);?>
   <?php if (count($this->libraryCards) == 0): ?>
     <div><?=$this->transEsc('You do not have any library cards')?></div>
   <?php else: ?>

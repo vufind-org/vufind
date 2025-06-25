@@ -9,7 +9,7 @@
     }
     $this->breadcrumbs()->add($this->translate('bulk_save_cart'), active: true);
 ?>
-<h2><?=$this->transEsc('bulk_save_cart')?></h2>
+<?=$this->component('page-title', ['title' => 'bulk_save_cart']);?>
 
 <?=$this->flashmessages()?>
 

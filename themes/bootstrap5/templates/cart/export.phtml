@@ -10,7 +10,7 @@
     $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
       ->add($this->translate('Export Favorites'), active: true);
 ?>
-<h2><?=$this->transEsc('Export Favorites')?></h2>
+<?=$this->component('page-title', ['title' => 'Export Favorites']);?>
 
 <?=$this->flashmessages()?>
 

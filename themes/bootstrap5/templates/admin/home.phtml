@@ -9,7 +9,7 @@
   ];
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('VuFind Administration')?></h2>
+  <?=$this->component('page-title', ['title' => 'VuFind Administration']);?>
   <?php $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
   <?php foreach ($cores as $core): ?>
     <?php $coreName = (string)$core['name']; ?>

@@ -12,7 +12,7 @@
         . "}\n"
     );
 ?>
-<h2><?=$this->transEsc('Install VuFind')?></h2>
+<?=$this->component('page-title', ['title' => 'Install VuFind']);?>
 <?=$this->flashmessages()?>
 <p>Save this SQL somewhere safe:</p>
 

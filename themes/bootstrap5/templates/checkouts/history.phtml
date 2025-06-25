@@ -11,7 +11,7 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Loan History')?></h2>
+  <?=$this->component('page-title', ['title' => 'Loan History']);?>
   <?=$this->flashmessages()?>
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>

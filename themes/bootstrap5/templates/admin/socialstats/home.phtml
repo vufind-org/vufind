@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('VuFind Administration - Social Statistics'));
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Social Statistics')?></h2>
+  <?=$this->component('page-title', ['title' => 'Social Statistics']);?>
 
   <h3>Comments</h3>
   <table class="table table-striped">
