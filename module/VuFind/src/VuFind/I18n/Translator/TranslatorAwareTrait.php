@@ -318,8 +318,8 @@ trait TranslatorAwareTrait
         // can still be provided if the input cannot be changed (e.g. if it comes
         // from a third-party system).
         return str_replace(
-            ['(', ')', '!', '?', '|'],
-            ['_28', '_29', '_21', '_3F', '_7C'],
+            ['&', '(', ')', '!', '?', '|'],
+            ['_26', '_28', '_29', '_21', '_3F', '_7C'],
             $key
         );
     }

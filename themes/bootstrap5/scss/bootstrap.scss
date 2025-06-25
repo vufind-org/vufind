@@ -658,11 +658,13 @@ body.rtl .dropdown-menu {
     word-wrap: break-word;
   }
 }
-// No wrapping for fines table in wide windows
+// No wrapping for fines or staff view table in wide windows
 @include media-breakpoint-up(md) {
-  .table.fines-table {
-    td, th {
-      word-wrap: normal;
+  .table {
+    &.fines-table, &.staff-view {
+      td, th {
+        word-wrap: normal;
+      }
     }
   }
 }

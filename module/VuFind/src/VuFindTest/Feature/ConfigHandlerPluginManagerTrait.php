@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Config Locator Test Class
+ * Trait for tests involving ConfigHandlerPluginManager.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) Hebis Verbundzentrale 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,54 +22,45 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Config;
+namespace VuFindTest\Feature;
 
-use VuFind\Config\Locator;
-use VuFind\Config\PathResolver;
+use VuFind\Config\Handler\PluginManager;
 
 /**
- * Config Locator Test Class
+ * Trait for tests involving ConfigHandlerPluginManager.
  *
  * @category VuFind
  * @package  Tests
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LocatorTest extends \PHPUnit\Framework\TestCase
+trait ConfigHandlerPluginManagerTrait
 {
     /**
-     * Test Locator
+     * Add ConfigHandlerPluginManager to a mock container
+     *
+     * @param \VuFindTest\Container\MockContainer $container Mock Container
+     * @param ?array                              $config    Module config
      *
      * @return void
      */
-    public function testLocator()
-    {
-        $baseConfig = APPLICATION_PATH . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
-            . '/config.ini';
-        $localConfig = LOCAL_OVERRIDE_DIR . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
-            . '/config.ini';
-
-        $this->assertEquals(
-            $baseConfig,
-            Locator::getBaseConfigPath('config.ini')
-        );
-        $this->assertEquals(
-            $localConfig,
-            Locator::getLocalConfigPath('config.ini', null, true)
-        );
-        $this->assertEquals(
-            null,
-            Locator::getLocalConfigPath('non-existent-config.ini')
-        );
-        $this->assertEquals(
-            file_exists($localConfig) ? $localConfig : $baseConfig,
-            Locator::getConfigPath('config.ini')
+    protected function addConfigHandlerPluginManagerToContainer(
+        \VuFindTest\Container\MockContainer $container,
+        ?array $config = null
+    ): void {
+        $config ??= include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
+        $container->set(
+            PluginManager::class,
+            new PluginManager(
+                $container,
+                $config['vufind']['plugin_managers']['config_handler']
+            )
         );
     }
 }

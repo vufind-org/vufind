@@ -79,6 +79,8 @@ class Ini extends AbstractBase
 
         if ($parentPath !== null) {
             $config['parentLocation'] = $this->getParentLocationOnPath($configLocation, $parentPath);
+        } elseif ($parentConfig['use_parent_dir'] ?? false) {
+            $config['parentLocation'] = $configLocation->getDirLocationsParent();
         }
 
         $overrideSections = $this->explodeListSetting($parentConfig['override_full_sections'] ?? '');

@@ -33,6 +33,7 @@ namespace VuFindTest\Form;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
+use VuFindTest\Feature\PathResolverTrait;
 
 use function get_class;
 
@@ -49,6 +50,7 @@ use function get_class;
 class FormTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use PathResolverTrait;
 
     protected $mockTestFormYamlReader = null;
 
@@ -60,7 +62,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testDefaultsWithoutConfiguration()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -102,7 +104,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'email_subject' => 'subject',
         ];
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class),
             ['Feedback' => $defaults]
@@ -125,7 +127,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Form \'foo\' not found');
 
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -140,7 +142,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testDefaultsWithFormSet()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -269,7 +271,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testSenderFieldMerging()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
