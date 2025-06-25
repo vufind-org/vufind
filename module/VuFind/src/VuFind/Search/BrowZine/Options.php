@@ -52,6 +52,9 @@ class Options extends \VuFind\Search\Base\Options
         $this->facetsIni = $this->searchIni = 'BrowZine';
         parent::__construct($configLoader);
 
+        // BrowZine only supports relevance sorting:
+        $this->sortOptions = ['relevance' => 'Relevance'];
+
         // Set up views
         $this->initViewOptions($this->searchSettings);
     }

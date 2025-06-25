@@ -119,7 +119,7 @@
    <!-- Core Fields  -->
    <field name="id" type="string" indexed="true" stored="true"/>
    <field name="fullrecord" type="string" indexed="false" stored="true"/>
-   <field name="marc_error" type="string" indexed="false" stored="true" multiValued="true"/>
+   <field name="marc_error" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="allfields" type="text" indexed="true" stored="false" multiValued="true"/>
    <field name="allfields_unstemmed" type="textProper" indexed="true" stored="false" multiValued="true"/>
    <field name="fulltext" type="text" indexed="true" stored="false"/>

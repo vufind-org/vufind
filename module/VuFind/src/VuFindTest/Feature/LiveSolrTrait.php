@@ -30,6 +30,7 @@
 namespace VuFindTest\Feature;
 
 use Laminas\EventManager\SharedEventManager;
+use VuFind\Config\PathResolver;
 use VuFind\Config\SearchSpecsReader;
 use VuFind\Search\BackendManager;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
@@ -46,7 +47,7 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  */
 trait LiveSolrTrait
 {
-    use PathResolverTrait;
+    use ConfigPluginManagerTrait;
 
     /**
      * Container for services related to live Solr connectivity.
@@ -63,21 +64,18 @@ trait LiveSolrTrait
     protected function createLiveSolrContainer()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $config = include APPLICATION_PATH
-            . '/module/VuFind/config/module.config.php';
-        $configManager = new \VuFind\Config\PluginManager(
-            $container,
-            $config['vufind']['config_reader']
-        );
+        $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
         $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
-        $container->set(\VuFind\Config\PluginManager::class, $configManager);
-        $this->addPathResolverToContainer($container);
+        $this->addConfigPluginManagerToContainer($container, $config);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();
         $container->set(
             \VuFindHttp\HttpService::class,
             $httpFactory($container, \VuFindHttp\HttpService::class)
         );
-        $container->set(SearchSpecsReader::class, new SearchSpecsReader());
+        $container->set(
+            SearchSpecsReader::class,
+            new SearchSpecsReader($container->get(PathResolver::class))
+        );
         $container->set('SharedEventManager', new SharedEventManager());
         $container->set(
             \VuFind\RecordDriver\PluginManager::class,

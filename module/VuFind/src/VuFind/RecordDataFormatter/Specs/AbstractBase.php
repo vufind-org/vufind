@@ -116,14 +116,15 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
      * @param array|callable $values Defaults to store (either an array, or a
      * callable returning an array).
      *
-     * @return void
+     * @return static
      */
-    public function setDefaults(string $key, array|callable $values): void
+    public function setDefaults(string $key, array|callable $values): static
     {
         if (!is_array($values) && !is_callable($values)) {
             throw new \Exception('$values must be array or callable');
         }
         $this->defaults[$key] = $values;
+        return $this;
     }
 
     /**

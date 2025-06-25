@@ -36,8 +36,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
-use function count;
-
 /**
  * Database service for search.
  *
@@ -222,26 +220,6 @@ class SearchService extends AbstractDbService implements
             }
         };
         return iterator_to_array($this->getDbTable('search')->select($callback));
-    }
-
-    /**
-     * Set invalid user_id values in the table to null; return count of affected rows.
-     *
-     * @return int
-     */
-    public function cleanUpInvalidUserIds(): int
-    {
-        $searchTable = $this->getDbTable('search');
-        $allIds = $this->getDbTable('user')->getSql()->select()->columns(['id']);
-        $searchCallback = function ($select) use ($allIds) {
-            $select->where->isNotNull('user_id')->AND->notIn('user_id', $allIds);
-        };
-        $badRows = $searchTable->select($searchCallback);
-        $count = count($badRows);
-        if ($count > 0) {
-            $searchTable->update(['user_id' => null], $searchCallback);
-        }
-        return $count;
     }
 
     /**

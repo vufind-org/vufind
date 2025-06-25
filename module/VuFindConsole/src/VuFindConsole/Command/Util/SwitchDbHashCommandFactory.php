@@ -80,8 +80,8 @@ class SwitchDbHashCommandFactory implements FactoryInterface
                     return $container->get(BlockCipher::class)->setAlgorithm($algo)->setKey($key);
                 }
             ),
-            null,
             $container->get(\VuFind\Config\PathResolver::class),
+            null,
             ...($options ?? [])
         );
     }

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Config Locator Test Class
+ * BrowZine Options Test
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,54 +22,46 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Config;
+namespace VuFindTest\Search\BrowZine;
 
-use VuFind\Config\Locator;
-use VuFind\Config\PathResolver;
+use VuFind\Search\BrowZine\Options;
+use VuFindTest\Feature\ConfigPluginManagerTrait;
 
 /**
- * Config Locator Test Class
+ * BrowZine Options Test
  *
  * @category VuFind
  * @package  Tests
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LocatorTest extends \PHPUnit\Framework\TestCase
+class OptionsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigPluginManagerTrait;
+
     /**
-     * Test Locator
+     * Test that the Options object returns correct data .
      *
      * @return void
      */
-    public function testLocator()
+    public function testOptions(): void
     {
-        $baseConfig = APPLICATION_PATH . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
-            . '/config.ini';
-        $localConfig = LOCAL_OVERRIDE_DIR . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
-            . '/config.ini';
-
-        $this->assertEquals(
-            $baseConfig,
-            Locator::getBaseConfigPath('config.ini')
+        $configMgr = $this->getMockConfigPluginManager(
+            [
+                'BrowZine' => [],
+            ]
         );
-        $this->assertEquals(
-            $localConfig,
-            Locator::getLocalConfigPath('config.ini', null, true)
-        );
-        $this->assertEquals(
-            null,
-            Locator::getLocalConfigPath('non-existent-config.ini')
-        );
-        $this->assertEquals(
-            file_exists($localConfig) ? $localConfig : $baseConfig,
-            Locator::getConfigPath('config.ini')
-        );
+        $options = new Options($configMgr);
+        $this->assertEquals('browzine-search', $options->getSearchAction());
+        $this->assertEquals(['relevance' => 'Relevance'], $options->getSortOptions());
+        $this->assertFalse($options->getFacetListAction());
+        $this->assertFalse($options->getAdvancedSearchAction());
+        $this->assertFalse($options->getAdvancedSearchAction());
     }
 }
