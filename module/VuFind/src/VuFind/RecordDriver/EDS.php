@@ -153,15 +153,12 @@ class EDS extends DefaultRecord
             return [];
         }
 
-        // Set the search backend and original ID in Holds Class
-        $this->holdLogic->setSearchBackend('EDS');
-        $this->holdLogic->setOriginalId($this->getUniqueID());
-
-        // Retrieve holdings
+        // Retrieve holdings -- note that we need to use overrides because the ID used
+        // for retrieving values from the ILS differs from the ID used for linking to
+        // the EDS record.
         $bibId = $this->getRtacIdentifier();
-        $consortialIds = $this->tryMethod('getConsortialIDs');
-
-        return $this->holdLogic->getHoldings($bibId, $consortialIds, []);
+        $overrides = ['source' => 'EDS', 'id' => $this->getUniqueID()];
+        return $this->holdLogic->getHoldings($bibId, linkOverrides: $overrides);
     }
 
     /**
