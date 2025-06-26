@@ -145,26 +145,10 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            'best integrator link' => [
+            'best integrator link with no section in config' => [
                 [],
-                ['bestIntegratorLink' => 'View Online|browzine-best'],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'View Online',
-                            'localIcon' => 'browzine-best',
-                        ],
-                    ],
-                ],
-            ],
-            'best integrator link with configured label' => [
-                [],
-                ['bestIntegratorLink' => 'View Online|browzine-best'],
-                ['fullTextFile' =>
-                    'PDF Full Text|browzine-pdf|' .
-                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                null,
                 [
                     0 => [
                         [
@@ -175,9 +159,39 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'best integrator link with empty config section' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                [],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Get full text',
+                            'localIcon' => 'browzine-best',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with configured label' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                ['fullTextFile' =>
+                    'Fancy Full Text|browzine-pdf|' .
+                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Fancy Full Text',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        ],
+                    ],
+                ],
+            ],
             'best integrator link with browzine label override' => [
                 ['useBrowzineLabel' => true],
-                ['bestIntegratorLink' => 'View Online|browzine-best'],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
                 ['fullTextFile' =>
                     'PDF Full Text|browzine-pdf|' .
                     'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
@@ -223,7 +237,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         if ($doiServicesConfig) {
             $configArray['DOIServices'] = $doiServicesConfig;
         }
-        if ($bestIntegratorLinksConfig) {
+        if ($bestIntegratorLinksConfig !== null) {
             $configArray['BestIntegratorLinks'] = $bestIntegratorLinksConfig;
         }
         $configObj = new \VuFind\Config\Config($configArray);
@@ -249,7 +263,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     public function testDOIApiSuccess(
         array $identifierLinksConfig,
         array $doiServicesConfig,
-        array $bestIntegratorLinksConfig,
+        ?array $bestIntegratorLinksConfig,
         array $expectedResponse
     ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
