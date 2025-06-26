@@ -70,11 +70,15 @@ class ResourceTagsService extends AbstractDbService implements
     protected function formatTagOrder(array $order)
     {
         // This array defines legal sort fields:
-        $legalSorts = ['tag', 'title', 'username'];
+        $legalSorts = ['tag', 'title', 'username', 'posted asc', 'posted desc'];
         $newOrder = [];
         foreach ($order as $next) {
             if (in_array($next, $legalSorts)) {
-                $newOrder[] = $next . 'Sort ASC';
+                if ('posted asc' === $next || 'posted desc' === $next) {
+                    $newOrder[] = $next;
+                } else {
+                    $newOrder[] = $next . 'Sort ASC';
+                }
             }
         }
         return $newOrder;
@@ -136,8 +140,8 @@ class ResourceTagsService extends AbstractDbService implements
         bool $caseSensitiveTags = false
     ): Paginator {
         $tag = $caseSensitiveTags ? 't.tag' : 'lower(t.tag)';
-        $dql = 'SELECT rt.id, ' . $tag . ' AS tag, u.username AS username, r.title AS title,'
-            . ' t.id AS tag_id, r.id AS resource_id, u.id AS user_id,'
+        $dql = 'SELECT rt.id, ' . $tag . ' AS tag, rt.posted AS posted, u.username AS username, r.title AS title,'
+            . ' t.id AS tag_id, r.id AS resource_id, r.source AS source, r.recordId AS record_id, u.id AS user_id,'
             . ' lower(t.tag) AS HIDDEN tagSort, lower(u.username) AS HIDDEN usernameSort,'
             . ' lower(r.title) AS HIDDEN titleSort '
             . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '

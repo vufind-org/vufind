@@ -29,7 +29,10 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Paginator\Paginator;
 use VuFind\Db\Entity\RatingsEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -88,7 +91,7 @@ class RatingsService extends AbstractDbService implements
         $result = $query->getResult();
         return [
             'count' => $result[0]['count'],
-            'rating' => floor($result[0]['rating']) ?? 0,
+            'rating' => floor($result[0]['rating'] ?? 0) ?? 0,
         ];
     }
 
@@ -270,11 +273,15 @@ class RatingsService extends AbstractDbService implements
      */
     public function deleteByIdsAndUserId(array $ids, int $userId): void
     {
-        $callback = function ($select) use ($ids, $userId) {
-            $select->where->in('id', $ids);
-            $select->where->equalTo('user_id', $userId);
-        };
-        $this->getDbTable('Ratings')->delete($callback);
+        $dql = 'DELETE FROM ' . RatingsEntityInterface::class . ' ra '
+         . 'WHERE ra.user = :user AND ra.id IN (:ids)';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters([
+            'user' => $userId,
+            'ids'  => $ids,
+        ]);
+        $query->execute();
     }
 
     /**
@@ -285,19 +292,39 @@ class RatingsService extends AbstractDbService implements
      * @param int    $page   Page
      * @param string $sort   Sort
      *
-     * @return \Laminas\Paginator\Paginator
+     * @return Paginator
      */
     public function getRatingsPaginator(
         int $userId,
         int $limit,
         int $page,
-        string $sort,
-    ): \Laminas\Paginator\Paginator {
-        return $this->getDbTable('Ratings')->getRatingsPaginator(
-            $userId,
-            $limit,
-            $page,
-            $sort,
-        );
+        string $sort
+    ): Paginator {
+        $dql = 'SELECT r.id, r.rating, r.created AS created, '
+            . 'u.id AS user_id, u.username AS username, '
+            . 'res.id AS resource_id, res.recordId AS record_id, res.source AS source, res.title AS title '
+            . 'FROM ' . RatingsEntityInterface::class . ' r '
+            . 'LEFT JOIN r.user u '
+            . 'LEFT JOIN r.resource res '
+            . 'WHERE r.user = :userId';
+
+        $parameters = ['userId' => $userId];
+
+        $sortOrder = $sort ? $sort : 'created DESC';
+
+        $dql .= ' ORDER BY ' . $sortOrder;
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $doctrinePaginator = new DoctrinePaginator($query);
+        $doctrinePaginator->setUseOutputWalkers(false);
+
+        $paginator = new Paginator(new DoctrinePaginatorAdapter($doctrinePaginator));
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($page);
+        return $paginator;
     }
 }

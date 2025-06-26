@@ -29,7 +29,10 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Paginator\Paginator;
 use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -213,9 +216,9 @@ class CommentsService extends AbstractDbService implements
     }
 
     /**
-     * Get a paginated result of all comments by user id.
+     * Get a paginated result of all comments made by the user.
      *
-     * @param int    $userId User Id
+     * @param int    $userId User ID
      * @param int    $limit  Limit
      * @param int    $page   Page
      * @param string $sort   Sort
@@ -226,14 +229,35 @@ class CommentsService extends AbstractDbService implements
         int $userId,
         int $limit,
         int $page,
-        string $sort,
-    ): \Laminas\Paginator\Paginator {
-        return $this->getDbTable('Comments')->getCommentsPaginator(
-            $userId,
-            $limit,
-            $page,
-            $sort,
-        );
+        string $sort
+    ): Paginator {
+        $dql = 'SELECT c.id, c.comment, c.created AS created, '
+            . 'u.id AS user_id, u.username AS username, '
+            . 'r.id AS resource_id, r.recordId AS record_id, r.source AS source, r.title AS title '
+            . 'FROM ' . CommentsEntityInterface::class . ' c '
+            . 'LEFT JOIN c.user u '
+            . 'LEFT JOIN c.resource r '
+            . 'WHERE c.user = :userId';
+
+        $parameters = ['userId' => $userId];
+
+        $sortOrder = $sort ? $sort : 'created DESC';
+
+        $dql .= ' ORDER BY ' . $sortOrder;
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $doctrinePaginator = new DoctrinePaginator($query);
+        $doctrinePaginator->setUseOutputWalkers(false);
+
+        $paginator = new Paginator(new DoctrinePaginatorAdapter($doctrinePaginator));
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($page);
+
+        return $paginator;
     }
 
     /**
@@ -246,10 +270,14 @@ class CommentsService extends AbstractDbService implements
      */
     public function deleteByIdsAndUserId(array $ids, int $userId): void
     {
-        $callback = function ($select) use ($ids, $userId) {
-            $select->where->in('id', $ids);
-            $select->where->equalTo('user_id', $userId);
-        };
-        $this->getDbTable('Comments')->delete($callback);
+        $dql = 'DELETE FROM ' . CommentsEntityInterface::class . ' c '
+         . 'WHERE c.user = :user AND c.id IN (:ids)';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters([
+            'user' => $userId,
+            'ids'  => $ids,
+        ]);
+        $query->execute();
     }
 }
