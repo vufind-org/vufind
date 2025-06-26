@@ -60,6 +60,13 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
     protected array $defaultIssnServices;
 
     /**
+     * Default labels and icons for 'bestIntegratorLink' service to return if no configuration is provided.
+     *
+     * @var array
+     */
+    protected array $defaultBestIntegratorLinks;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -68,10 +75,12 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         $this->defaultDoiServices = [
             'browzineWebLink' => "View Complete Issue|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
             'fullTextFile' => "PDF Full Text|browzine-pdf|{$baseIconUrl}browzine-pdf-download-icon.svg",
+            'retractionNoticeUrl' => 'View Retraction Notice|browzine-retraction',
         ];
         $this->defaultIssnServices = [
             'browzineWebLink' => "Browse Available Issues|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
         ];
+        $this->defaultBestIntegratorLinks = $this->defaultDoiServices;
     }
 
     /**
@@ -108,7 +117,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             $config,
             $fullConfig['DOIServices'] ?? $this->defaultDoiServices,
             $fullConfig['ISSNServices'] ?? $this->defaultIssnServices,
-            $fullConfig['BestIntegratorLinks'] ?? []
+            $fullConfig['BestIntegratorLinks'] ?? $this->defaultBestIntegratorLinks
         );
     }
 }
