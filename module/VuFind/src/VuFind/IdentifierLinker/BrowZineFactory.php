@@ -75,7 +75,6 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         $this->defaultDoiServices = [
             'browzineWebLink' => "View Complete Issue|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
             'fullTextFile' => "PDF Full Text|browzine-pdf|{$baseIconUrl}browzine-pdf-download-icon.svg",
-            'retractionNoticeUrl' => 'View Retraction Notice|browzine-retraction',
         ];
         $this->defaultIssnServices = [
             'browzineWebLink' => "Browse Available Issues|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
