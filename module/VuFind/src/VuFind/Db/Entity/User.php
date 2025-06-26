@@ -59,7 +59,7 @@ class User implements UserEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Username
@@ -67,7 +67,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'username', type: 'string', length: 255, nullable: false)]
-    protected $username = '';
+    protected string $username = '';
 
     /**
      * Password
@@ -75,7 +75,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'password', type: 'string', length: 32, nullable: false)]
-    protected $password = '';
+    protected string $password = '';
 
     /**
      * Hash of the password.
@@ -83,7 +83,7 @@ class User implements UserEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'pass_hash', type: 'string', length: 60, nullable: true)]
-    protected $passHash;
+    protected ?string $passHash = null;
 
     /**
      * First Name.
@@ -91,7 +91,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'firstname', type: 'string', length: 50, nullable: false)]
-    protected $firstname = '';
+    protected string $firstname = '';
 
     /**
      * Last Name.
@@ -99,7 +99,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'lastname', type: 'string', length: 50, nullable: false)]
-    protected $lastname = '';
+    protected string $lastname = '';
 
     /**
      * Email.
@@ -107,7 +107,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'email', type: 'string', length: 255, nullable: false)]
-    protected $email = '';
+    protected string $email = '';
 
     /**
      * Date of email verification.
@@ -115,7 +115,7 @@ class User implements UserEntityInterface
      * @var ?DateTime
      */
     #[ORM\Column(name: 'email_verified', type: 'datetime', nullable: true)]
-    protected $emailVerified;
+    protected ?DateTime $emailVerified = null;
 
     /**
      * Pending email.
@@ -123,7 +123,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'pending_email', type: 'string', length: 255, nullable: false)]
-    protected $pendingEmail = '';
+    protected string $pendingEmail = '';
 
     /**
      * User provided email.
@@ -131,7 +131,7 @@ class User implements UserEntityInterface
      * @var bool
      */
     #[ORM\Column(name: 'user_provided_email', type: 'boolean', nullable: false)]
-    protected $userProvidedEmail = '0';
+    protected bool $userProvidedEmail = false;
 
     /**
      * Cat ID.
@@ -139,7 +139,7 @@ class User implements UserEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'cat_id', type: 'string', length: 255, nullable: true)]
-    protected $catId;
+    protected ?string $catId = null;
 
     /**
      * Cat username.
@@ -147,7 +147,7 @@ class User implements UserEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'cat_username', type: 'string', length: 50, nullable: true)]
-    protected $catUsername;
+    protected ?string $catUsername = null;
 
     /**
      * Cat password.
@@ -155,7 +155,7 @@ class User implements UserEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'cat_password', type: 'string', length: 70, nullable: true)]
-    protected $catPassword;
+    protected ?string $catPassword = null;
 
     /**
      * Cat encrypted password.
@@ -163,7 +163,7 @@ class User implements UserEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'cat_pass_enc', type: 'string', length: 255, nullable: true)]
-    protected $catPassEnc;
+    protected ?string $catPassEnc = null;
 
     /**
      * College.
@@ -171,7 +171,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'college', type: 'string', length: 100, nullable: false)]
-    protected $college = '';
+    protected string $college = '';
 
     /**
      * Major.
@@ -179,15 +179,15 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'major', type: 'string', length: 100, nullable: false)]
-    protected $major = '';
+    protected string $major = '';
 
     /**
      * Home library.
      *
-     * @var string
+     * @var ?string
      */
     #[ORM\Column(name: 'home_library', type: 'string', length: 100, nullable: true)]
-    protected $homeLibrary = '';
+    protected ?string $homeLibrary = '';
 
     /**
      * Creation date.
@@ -195,7 +195,7 @@ class User implements UserEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
-    protected $created;
+    protected DateTime $created;
 
     /**
      * Verify hash.
@@ -203,7 +203,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'verify_hash', type: 'string', length: 42, nullable: false)]
-    protected $verifyHash = '';
+    protected string $verifyHash = '';
 
     /**
      * Time last loggedin.
@@ -211,7 +211,7 @@ class User implements UserEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'last_login', type: 'datetime', nullable: false)]
-    protected $lastLogin;
+    protected DateTime $lastLogin;
 
     /**
      * Method of authentication.
@@ -219,7 +219,7 @@ class User implements UserEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'auth_method', type: 'string', length: 50, nullable: true)]
-    protected $authMethod;
+    protected ?string $authMethod = null;
 
     /**
      * Last known language.
@@ -227,7 +227,7 @@ class User implements UserEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'last_language', type: 'string', length: 30, nullable: false)]
-    protected $lastLanguage = '';
+    protected string $lastLanguage = '';
 
     /**
      * Constructor
@@ -242,11 +242,11 @@ class User implements UserEntityInterface
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
@@ -647,7 +647,7 @@ class User implements UserEntityInterface
      */
     public function hasUserProvidedEmail(): bool
     {
-        return (bool)$this->userProvidedEmail;
+        return $this->userProvidedEmail;
     }
 
     /**
@@ -659,7 +659,7 @@ class User implements UserEntityInterface
      */
     public function setHasUserProvidedEmail(bool $userProvided): static
     {
-        $this->userProvidedEmail = $userProvided ? '1' : '0';
+        $this->userProvidedEmail = $userProvided;
         return $this;
     }
 

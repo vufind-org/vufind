@@ -53,7 +53,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     #[ORM\Column(name: 'core', type: 'string', length: 30, nullable: false)]
     #[ORM\Id]
-    protected $core;
+    protected string $core;
 
     /**
      * Id of record within core.
@@ -62,7 +62,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     #[ORM\Column(name: 'id', type: 'string', length: 120, nullable: false)]
     #[ORM\Id]
-    protected $id;
+    protected string $id;
 
     /**
      * First time added to index
@@ -70,7 +70,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      * @var ?DateTime
      */
     #[ORM\Column(name: 'first_indexed', type: 'datetime', nullable: true)]
-    protected $firstIndexed;
+    protected ?DateTime $firstIndexed = null;
 
     /**
      * Last time changed in index.
@@ -78,7 +78,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      * @var ?DateTime
      */
     #[ORM\Column(name: 'last_indexed', type: 'datetime', nullable: true)]
-    protected $lastIndexed;
+    protected ?DateTime $lastIndexed = null;
 
     /**
      * Last time original record was edited.
@@ -86,7 +86,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      * @var ?DateTime
      */
     #[ORM\Column(name: 'last_record_change', type: 'datetime', nullable: true)]
-    protected $lastRecordChange;
+    protected ?DateTime $lastRecordChange = null;
 
     /**
      * Time record was removed from index.
@@ -94,7 +94,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      * @var ?DateTime
      */
     #[ORM\Column(name: 'deleted', type: 'datetime', nullable: true)]
-    protected $deleted;
+    protected ?DateTime $deleted = null;
 
     /**
      * Setter for identifier.
@@ -110,13 +110,13 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Getter for identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return string
+     * @return ?string
      */
-    public function getId(): string
+    public function getId(): ?string
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**

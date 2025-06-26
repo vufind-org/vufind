@@ -56,7 +56,7 @@ class AuthHash implements AuthHashEntityInterface
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: 'bigint', nullable: false, options: ['unsigned' => true])]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Session ID.
@@ -64,7 +64,7 @@ class AuthHash implements AuthHashEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'session_id', type: 'string', length: 128, nullable: true)]
-    protected $sessionId;
+    protected ?string $sessionId = null;
 
     /**
      * Hash value.
@@ -72,7 +72,7 @@ class AuthHash implements AuthHashEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'hash', type: 'string', length: 255, nullable: false)]
-    protected $hash = '';
+    protected string $hash = '';
 
     /**
      * Type of the hash.
@@ -80,7 +80,7 @@ class AuthHash implements AuthHashEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'type', type: 'string', length: 50, nullable: true)]
-    protected $type;
+    protected ?string $type = null;
 
     /**
      * Data.
@@ -88,7 +88,7 @@ class AuthHash implements AuthHashEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'data', type: 'text', length: 16777215, nullable: true)]
-    protected $data;
+    protected ?string $data = null;
 
     /**
      * Creation date.
@@ -96,7 +96,7 @@ class AuthHash implements AuthHashEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected $created;
+    protected DateTime $created;
 
     /**
      * Constructor.

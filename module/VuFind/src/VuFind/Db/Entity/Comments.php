@@ -56,7 +56,7 @@ class Comments implements CommentsEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Comment.
@@ -64,7 +64,7 @@ class Comments implements CommentsEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'comment', type: 'text', length: 65535, nullable: false)]
-    protected $comment;
+    protected string $comment;
 
     /**
      * Creation date.
@@ -72,25 +72,25 @@ class Comments implements CommentsEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
-    protected $created;
+    protected DateTime $created;
 
     /**
      * User ID.
      *
-     * @var ?User
+     * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
-    protected $user;
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
+    protected ?UserEntityInterface $user = null;
 
     /**
      * Resource ID.
      *
-     * @var Resource
+     * @var ResourceEntityInterface
      */
-    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Resource::class)]
-    protected $resource;
+    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: ResourceEntityInterface::class)]
+    protected ResourceEntityInterface $resource;
 
     /**
      * Constructor.
@@ -102,13 +102,13 @@ class Comments implements CommentsEntityInterface
     }
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
@@ -183,7 +183,7 @@ class Comments implements CommentsEntityInterface
     /**
      * Resource setter.
      *
-     * @param ResourceEntityInterface $resource Resource id.
+     * @param ResourceEntityInterface $resource Resource
      *
      * @return static
      */

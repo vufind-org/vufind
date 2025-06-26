@@ -30,7 +30,6 @@
 namespace VuFindTest\Favorites;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;

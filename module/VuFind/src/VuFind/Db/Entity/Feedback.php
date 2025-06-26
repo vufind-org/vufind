@@ -56,7 +56,7 @@ class Feedback implements FeedbackEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false, options: ['unsigned' => true])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Message
@@ -64,15 +64,15 @@ class Feedback implements FeedbackEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'message', type: 'text', length: 0, nullable: false)]
-    protected $message;
+    protected string $message;
 
     /**
      * Form data
      *
-     * @var mixed
+     * @var ?array
      */
     #[ORM\Column(name: 'form_data', type: 'json', length: 0, nullable: true)]
-    protected $formData;
+    protected ?array $formData = null;
 
     /**
      * Form name
@@ -80,7 +80,7 @@ class Feedback implements FeedbackEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'form_name', type: 'string', length: 255, nullable: false)]
-    protected $formName;
+    protected string $formName;
 
     /**
      * Creation date
@@ -88,7 +88,7 @@ class Feedback implements FeedbackEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected $created = 'CURRENT_TIMESTAMP';
+    protected DateTime $created;
 
     /**
      * Last update date
@@ -96,7 +96,7 @@ class Feedback implements FeedbackEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'updated', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected $updated = 'CURRENT_TIMESTAMP';
+    protected DateTime $updated;
 
     /**
      * Status
@@ -104,7 +104,7 @@ class Feedback implements FeedbackEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'status', type: 'string', length: 255, nullable: false, options: ['default' => 'open'])]
-    protected $status = 'open';
+    protected string $status = 'open';
 
     /**
      * Site URL
@@ -112,34 +112,44 @@ class Feedback implements FeedbackEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'site_url', type: 'string', length: 255, nullable: false)]
-    protected $siteUrl;
+    protected string $siteUrl;
 
     /**
      * User that created request
      *
-     * @var User
+     * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
-    protected $user;
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
+    protected ?UserEntityInterface $user = null;
 
     /**
      * User that updated request
      *
-     * @var User
+     * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'updated_by', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
-    protected $updatedBy;
+    #[ORM\JoinColumn(name: 'updated_by', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
+    protected ?UserEntityInterface $updatedBy = null;
 
     /**
-     * Id getter
-     *
-     * @return int
+     * Constructor.
      */
-    public function getId(): int
+    public function __construct()
     {
-        return $this->id;
+        // Set the default value as a DateTime object
+        $this->created = new Datetime();
+        $this->updated = new Datetime();
+    }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
     }
 
     /**
@@ -168,11 +178,11 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Form data setter.
      *
-     * @param mixed $data Form data
+     * @param ?array $data Form data
      *
      * @return static
      */
-    public function setFormData(array $data): static
+    public function setFormData(?array $data): static
     {
         $this->formData = $data;
         return $this;
@@ -181,9 +191,9 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Form data getter
      *
-     * @return array
+     * @return ?array
      */
-    public function getFormData(): array
+    public function getFormData(): ?array
     {
         return $this->formData;
     }

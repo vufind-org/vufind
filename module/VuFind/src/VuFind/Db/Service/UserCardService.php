@@ -36,8 +36,6 @@ use Laminas\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
-use VuFind\Db\Entity\User;
-use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Entity\UserCardEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\PersistenceManager;
@@ -90,7 +88,7 @@ class UserCardService extends AbstractDbService implements
      */
     public function getInsecureRows(): array
     {
-        $dql = 'SELECT UC FROM ' . $this->getEntityClass(UserCardEntityInterface::class)
+        $dql = 'SELECT UC FROM ' . UserCardEntityInterface::class
             . ' UC WHERE UC.catPassword IS NOT NULL';
         $query = $this->entityManager->createQuery($dql);
         return $query->getResult();
@@ -103,7 +101,7 @@ class UserCardService extends AbstractDbService implements
      */
     public function getAllRowsWithUsernames(): array
     {
-        $dql = 'SELECT UC FROM ' . $this->getEntityClass(UserCardEntityInterface::class)
+        $dql = 'SELECT UC FROM ' . UserCardEntityInterface::class
             . ' UC WHERE UC.catUsername IS NOT NULL';
         $query = $this->entityManager->createQuery($dql);
         return $query->getResult();
@@ -126,9 +124,9 @@ class UserCardService extends AbstractDbService implements
         if (!$this->capabilities->libraryCardsEnabled()) {
             return [];
         }
-        $dql = 'SELECT UC FROM ' . $this->getEntityClass(UserCardEntityInterface::class) . ' UC ';
+        $dql = 'SELECT UC FROM ' . UserCardEntityInterface::class . ' UC ';
         $dqlWhere = ['UC.user = :user'];
-        $parameters['user'] = $this->getDoctrineReference(User::class, $userOrId);
+        $parameters['user'] = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         if (null !== $id) {
             $dqlWhere[] = 'UC.id = :id';
             $parameters['id'] = $id;
@@ -162,7 +160,7 @@ class UserCardService extends AbstractDbService implements
         if ($id === null) {
             $row = $this->createEntity()
                 ->setCardName('')
-                ->setUser($this->getDoctrineReference(User::class, $userOrId))
+                ->setUser($this->getDoctrineReference(UserEntityInterface::class, $userOrId))
                 ->setCatUsername('')
                 ->setRawCatPassword('');
         } else {
@@ -262,7 +260,7 @@ class UserCardService extends AbstractDbService implements
         $row = ($id !== null) ? current($this->getLibraryCards($user, $id)) : null;
         if (empty($row)) {
             $row = $this->createEntity()
-                ->setUser($this->getDoctrineReference(User::class, $user))
+                ->setUser($this->getDoctrineReference(UserEntityInterface::class, $user))
                 ->setCreated(new DateTime());
         }
         $row->setCardName($cardName);
@@ -315,7 +313,7 @@ class UserCardService extends AbstractDbService implements
         $cards = $this->getLibraryCards($user, catUsername: $user->getCatUsername());
         if (!($card = reset($cards))) {
             $card = $this->createEntity()
-                ->setUser($this->getDoctrineReference(User::class, $user))
+                ->setUser($this->getDoctrineReference(UserEntityInterface::class, $user))
                 ->setCatUsername($user->getCatUsername())
                 ->setCardName($user->getCatUsername())
                 ->setCreated(new DateTime());
@@ -374,7 +372,6 @@ class UserCardService extends AbstractDbService implements
      */
     public function createEntity(): UserCardEntityInterface
     {
-        $class = $this->getEntityClass(UserCardEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(UserCardEntityInterface::class);
     }
 }

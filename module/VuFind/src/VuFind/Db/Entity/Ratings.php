@@ -56,25 +56,25 @@ class Ratings implements RatingsEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * User ID.
      *
-     * @var User
+     * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
-    protected $user;
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
+    protected ?UserEntityInterface $user = null;
 
     /**
      * Resource ID.
      *
-     * @var Resource
+     * @var ResourceEntityInterface
      */
-    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Resource::class)]
-    protected $resource;
+    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: ResourceEntityInterface::class)]
+    protected ResourceEntityInterface $resource;
 
     /**
      * Rating.
@@ -82,7 +82,7 @@ class Ratings implements RatingsEntityInterface
      * @var int
      */
     #[ORM\Column(name: 'rating', type: 'integer', nullable: false)]
-    protected $rating;
+    protected int $rating;
 
     /**
      * Creation date.
@@ -90,7 +90,7 @@ class Ratings implements RatingsEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
-    protected $created;
+    protected DateTime $created;
 
     /**
      * Constructor.
@@ -137,9 +137,9 @@ class Ratings implements RatingsEntityInterface
     /**
      * Get resource.
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function getResource(): Resource
+    public function getResource(): ResourceEntityInterface
     {
         return $this->resource;
     }

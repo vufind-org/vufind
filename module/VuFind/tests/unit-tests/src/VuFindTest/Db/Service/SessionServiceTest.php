@@ -96,7 +96,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
             ->with('s')
             ->willReturn($queryBuilder);
         $queryBuilder->expects($this->once())->method('from')
-            ->with(Session::class, 's')
+            ->with(SessionEntityInterface::class, 's')
             ->willReturn($queryBuilder);
         $queryBuilder->expects($this->once())->method('where')
             ->with('s.sessionId = :sid')
@@ -151,7 +151,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->createMock(Session::class);
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
         $queryBuilder = $this->getQueryBuilder('1', [$session]);
         $entityManager->expects($this->once())->method('createQueryBuilder')
@@ -169,7 +169,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     public function testSessionNotFound(): void
     {
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
         $queryBuilder = $this->getQueryBuilder('1', []);
         $entityManager->expects($this->once())->method('createQueryBuilder')
@@ -187,7 +187,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->createMock(Session::class);
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager(1);
         $queryBuilder = $this->getQueryBuilder('1', []);
         $entityManager->expects($this->once())->method('createQueryBuilder')
@@ -211,7 +211,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->createMock(Session::class);
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager(1);
         $queryBuilder = $this->getQueryBuilder('1', [$session]);
         $entityManager->expects($this->once())->method('createQueryBuilder')
@@ -237,7 +237,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Session expired!');
         $session = $this->createMock(Session::class);
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
         $queryBuilder = $this->getQueryBuilder('1', [$session]);
         $entityManager->expects($this->once())->method('createQueryBuilder')
@@ -257,7 +257,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->createMock(Session::class);
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager(1);
         $queryBuilder = $this->getQueryBuilder('1', [$session]);
         $entityManager->expects($this->once())->method('createQueryBuilder')
@@ -280,11 +280,11 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     public function testDestroySession(): void
     {
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
         $queryBuilder = $this->createMock(\Doctrine\ORM\QueryBuilder::class);
         $queryBuilder->expects($this->once())->method('delete')
-            ->with(Session::class, 's')
+            ->with(SessionEntityInterface::class, 's')
             ->willReturn($queryBuilder);
         $queryBuilder->expects($this->once())->method('where')
             ->with('s.sessionId = :sid')
@@ -314,17 +314,17 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     public function testGarbageCollect(): void
     {
         $entityManager = $this->createMock(EntityManager::class);
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
         $countQuery = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $countQuery->method('getSingleScalarResult')->willReturn(5);
         $countQuery->expects($this->once())->method('setParameter')
             ->with('used', $this->equalToWithDelta(time() - 10000, 1));
-        $countDql = "SELECT COUNT(s) FROM VuFind\Db\Entity\Session s WHERE s.lastUsed < :used";
+        $countDql = "SELECT COUNT(s) FROM VuFind\Db\Entity\SessionEntityInterface s WHERE s.lastUsed < :used";
         $entityManager->expects($this->once())->method('createQuery')->with($countDql)->willReturn($countQuery);
         $queryBuilder = $this->createMock(\Doctrine\ORM\QueryBuilder::class);
         $queryBuilder->expects($this->once())->method('delete')
-            ->with(Session::class, 's')
+            ->with(SessionEntityInterface::class, 's')
             ->willReturn($queryBuilder);
         $queryBuilder->expects($this->once())->method('where')
             ->with('s.lastUsed < :used')

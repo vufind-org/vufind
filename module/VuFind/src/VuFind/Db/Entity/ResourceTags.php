@@ -53,7 +53,7 @@ class ResourceTags implements ResourceTagsEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Posted time.
@@ -61,43 +61,43 @@ class ResourceTags implements ResourceTagsEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'posted', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected $posted;
+    protected DateTime $posted;
 
     /**
      * Resource ID.
      *
-     * @var Resource
+     * @var ?ResourceEntityInterface
      */
-    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Resource::class)]
-    protected $resource;
+    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: ResourceEntityInterface::class)]
+    protected ?ResourceEntityInterface $resource = null;
 
     /**
      * Tag ID.
      *
-     * @var Tags
+     * @var TagsEntityInterface
      */
-    #[ORM\JoinColumn(name: 'tag_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Tags::class)]
-    protected $tag;
+    #[ORM\JoinColumn(name: 'tag_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: TagsEntityInterface::class)]
+    protected TagsEntityInterface $tag;
 
     /**
      * List ID.
      *
-     * @var UserList
+     * @var ?UserListEntityInterface
      */
-    #[ORM\JoinColumn(name: 'list_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\UserList::class)]
-    protected $list;
+    #[ORM\JoinColumn(name: 'list_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: UserListEntityInterface::class)]
+    protected ?UserListEntityInterface $list = null;
 
     /**
      * User ID.
      *
-     * @var User
+     * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
-    protected $user;
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
+    protected ?UserEntityInterface $user = null;
 
     /**
      * Constructor
@@ -121,9 +121,9 @@ class ResourceTags implements ResourceTagsEntityInterface
     /**
      * Get resource.
      *
-     * @return ResourceEntityInterface
+     * @return ?ResourceEntityInterface
      */
-    public function getResource(): ResourceEntityInterface
+    public function getResource(): ?ResourceEntityInterface
     {
         return $this->resource;
     }

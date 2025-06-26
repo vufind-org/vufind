@@ -52,8 +52,7 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function createEntity(): ExternalSessionEntityInterface
     {
-        $class = $this->getEntityClass(ExternalSessionEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(ExternalSessionEntityInterface::class);
     }
 
     /**
@@ -87,7 +86,7 @@ class ExternalSessionService extends AbstractDbService implements
     public function getAllByExternalSessionId(string $sid): array
     {
         $dql = 'SELECT es '
-            . 'FROM ' . $this->getEntityClass(ExternalSessionEntityInterface::class) . ' es '
+            . 'FROM ' . ExternalSessionEntityInterface::class . ' es '
             . 'WHERE es.externalSessionId = :esid ';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('esid', $sid);
@@ -104,7 +103,7 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function destroySession(string $sid): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(ExternalSessionEntityInterface::class) . ' es'
+        $dql = 'DELETE FROM ' . ExternalSessionEntityInterface::class . ' es'
             . ' WHERE es.sessionId = :sid';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('sid', $sid);
@@ -123,14 +122,14 @@ class ExternalSessionService extends AbstractDbService implements
     {
         $subQueryBuilder = $this->entityManager->createQueryBuilder();
         $subQueryBuilder->select('es.id')
-            ->from($this->getEntityClass(ExternalSessionEntityInterface::class), 'es')
+            ->from(ExternalSessionEntityInterface::class, 'es')
             ->where('es.created < :dateLimit')
             ->setParameter('dateLimit', $dateLimit);
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(ExternalSessionEntityInterface::class), 'es')
+        $queryBuilder->delete(ExternalSessionEntityInterface::class, 'es')
             ->where('es.id IN (:ids)')
             ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
         return $queryBuilder->getQuery()->execute();

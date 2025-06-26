@@ -30,11 +30,8 @@
 namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\Ratings;
 use VuFind\Db\Entity\RatingsEntityInterface;
-use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
-use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -77,7 +74,7 @@ class RatingsService extends AbstractDbService implements
             ];
         }
         $dql = 'SELECT COUNT(r.id) AS count, AVG(r.rating) AS rating '
-            . 'FROM ' . $this->getEntityClass(RatingsEntityInterface::class) . ' r ';
+            . 'FROM ' . RatingsEntityInterface::class . ' r ';
 
         $dqlWhere[] = 'r.resource = :resource';
         $parameters['resource'] = $resource;
@@ -125,7 +122,7 @@ class RatingsService extends AbstractDbService implements
             return $result;
         }
         $dql = 'SELECT COUNT(r.id) AS count, r.rating AS rating '
-            . 'FROM ' . $this->getEntityClass(RatingsEntityInterface::class) . ' r '
+            . 'FROM ' . RatingsEntityInterface::class . ' r '
             . 'WHERE r.resource = :resource '
             . 'GROUP BY rating';
 
@@ -167,7 +164,7 @@ class RatingsService extends AbstractDbService implements
      */
     public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(RatingsEntityInterface::class) . ' r '
+        $dql = 'DELETE FROM ' . RatingsEntityInterface::class . ' r '
             . 'WHERE r.user = :user';
         $parameters['user'] = is_int($userOrId) ? $userOrId : $userOrId->getId();
         $query = $this->entityManager->createQuery($dql);
@@ -185,7 +182,7 @@ class RatingsService extends AbstractDbService implements
         $dql = 'SELECT COUNT(DISTINCT(r.user)) AS users, '
             . 'COUNT(DISTINCT(r.resource)) AS resources, '
             . 'COUNT(r.id) AS total '
-            . 'FROM ' . $this->getEntityClass(RatingsEntityInterface::class) . ' r';
+            . 'FROM ' . RatingsEntityInterface::class . ' r';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;
@@ -211,10 +208,10 @@ class RatingsService extends AbstractDbService implements
         }
 
         $dql = 'SELECT r '
-            . 'FROM ' . $this->getEntityClass(RatingsEntityInterface::class) . ' r '
+            . 'FROM ' . RatingsEntityInterface::class . ' r '
             . 'WHERE r.user = :user AND r.resource = :resource';
-        $resource = $this->getDoctrineReference(Resource::class, $resourceOrId);
-        $user = $this->getDoctrineReference(User::class, $userOrId);
+        $resource = $this->getDoctrineReference(ResourceEntityInterface::class, $resourceOrId);
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         $parameters = compact('resource', 'user');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -260,7 +257,6 @@ class RatingsService extends AbstractDbService implements
      */
     public function createEntity(): RatingsEntityInterface
     {
-        $class = $this->getEntityClass(RatingsEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(RatingsEntityInterface::class);
     }
 }

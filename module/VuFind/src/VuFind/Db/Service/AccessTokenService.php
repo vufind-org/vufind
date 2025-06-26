@@ -53,8 +53,7 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function createEntity(): AccessTokenEntityInterface
     {
-        $class = $this->getEntityClass(AccessTokenEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(AccessTokenEntityInterface::class);
     }
 
     /**
@@ -73,7 +72,7 @@ class AccessTokenService extends AbstractDbService implements
         bool $create = true
     ): ?AccessTokenEntityInterface {
         $dql = 'SELECT at '
-            . 'FROM ' . $this->getEntityClass(AccessTokenEntityInterface::class) . ' at '
+            . 'FROM ' . AccessTokenEntityInterface::class . ' at '
             . 'WHERE at.id = :id '
             . 'AND at.type = :type';
         $query = $this->entityManager->createQuery($dql);
@@ -133,14 +132,14 @@ class AccessTokenService extends AbstractDbService implements
     {
         $subQueryBuilder = $this->entityManager->createQueryBuilder();
         $subQueryBuilder->select('CONCAT(a.id, a.type)')
-            ->from($this->getEntityClass(AccessTokenEntityInterface::class), 'a')
+            ->from(AccessTokenEntityInterface::class, 'a')
             ->where('a.created < :latestCreated')
             ->setParameter('latestCreated', $dateLimit->format('Y-m-d H:i:s'));
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(AccessTokenEntityInterface::class), 'a')
+        $queryBuilder->delete(AccessTokenEntityInterface::class, 'a')
             ->where('concat(a.id, a.type) IN (:ids)')
             ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
         return $queryBuilder->getQuery()->execute();

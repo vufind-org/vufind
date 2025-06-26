@@ -53,9 +53,15 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreateEntity(): void
     {
-        $feedbackService = $this->getConfiguredFeedbackService()['feedbackService'];
+        $configuredService = $this->getConfiguredFeedbackService();
+        $configuredService['entityPluginManager']->expects($this->once())->method('get')
+            ->with($this->equalTo(FeedbackEntityInterface::class))
+            ->willReturn(new Feedback());
 
-        $this->assertInstanceOf(Feedback::class, $feedbackService->createEntity());
+        $this->assertInstanceOf(
+            Feedback::class,
+            $configuredService['feedbackService']->createEntity()
+        );
     }
 
     /**
@@ -68,7 +74,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $mocks = $this->getConfiguredFeedbackService();
         $entityManager = $mocks['entityManager'];
         $feedbackService = $mocks['feedbackService'];
-        $queryStmt = "SELECT f.id, f.status FROM VuFind\Db\Entity\Feedback f "
+        $queryStmt = "SELECT f.id, f.status FROM VuFind\Db\Entity\FeedbackEntityInterface f "
             . 'ORDER BY f.status';
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
@@ -92,7 +98,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $mocks = $this->getConfiguredFeedbackService();
         $entityManager = $mocks['entityManager'];
         $feedbackService = $mocks['feedbackService'];
-        $queryStmt = "DELETE FROM VuFind\Db\Entity\Feedback fb WHERE fb.id IN (:ids)";
+        $queryStmt = "DELETE FROM VuFind\Db\Entity\FeedbackEntityInterface fb WHERE fb.id IN (:ids)";
 
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
@@ -118,7 +124,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $mocks = $this->getConfiguredFeedbackService();
         $entityManager = $mocks['entityManager'];
         $feedbackService = $mocks['feedbackService'];
-        $queryStmt = "SELECT f AS feedback_entity FROM VuFind\Db\Entity\Feedback f "
+        $queryStmt = "SELECT f AS feedback_entity FROM VuFind\Db\Entity\FeedbackEntityInterface f "
             . 'WHERE f.formName = :formName AND f.siteUrl = :siteUrl AND '
             . 'f.status = :status ORDER BY f.created DESC';
 
@@ -151,9 +157,6 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
     {
         $entityManager = $this->createMock(\Doctrine\ORM\EntityManager::class);
         $entityPluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
-        $entityPluginManager->expects($this->once())->method('get')
-            ->with($this->equalTo(FeedbackEntityInterface::class))
-            ->willReturn(new Feedback());
         $persistenceManager = $this->createMock(PersistenceManager::class);
         $feedbackService = new FeedbackService($entityManager, $entityPluginManager, $persistenceManager);
         return compact('entityManager', 'entityPluginManager', 'feedbackService');

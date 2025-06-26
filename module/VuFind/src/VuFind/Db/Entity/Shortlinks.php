@@ -54,7 +54,7 @@ class Shortlinks implements ShortlinksEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Path (minus hostname) from shortened URL.
@@ -62,7 +62,7 @@ class Shortlinks implements ShortlinksEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'path', type: 'text', length: 16777215, nullable: false)]
-    protected $path;
+    protected string $path;
 
     /**
      * Shortlinks hash.
@@ -70,7 +70,7 @@ class Shortlinks implements ShortlinksEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'hash', type: 'string', length: 32, nullable: true)]
-    protected $hash;
+    protected ?string $hash = null;
 
     /**
      * Creation timestamp.
@@ -78,7 +78,7 @@ class Shortlinks implements ShortlinksEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected $created;
+    protected DateTime $created;
 
     /**
      * Constructor
@@ -96,7 +96,7 @@ class Shortlinks implements ShortlinksEntityInterface
      */
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**

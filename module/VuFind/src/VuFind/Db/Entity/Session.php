@@ -58,7 +58,7 @@ class Session implements SessionEntityInterface
     #[ORM\Column(name: 'id', type: 'bigint', nullable: false, options: ['unsigned' => true])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Session ID.
@@ -66,7 +66,7 @@ class Session implements SessionEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'session_id', type: 'string', length: 128, nullable: true)]
-    protected $sessionId;
+    protected ?string $sessionId = null;
 
     /**
      * Session data.
@@ -74,7 +74,7 @@ class Session implements SessionEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'data', type: 'text', length: 16777215, nullable: true)]
-    protected $data;
+    protected ?string $data = null;
 
     /**
      * Time session last used.
@@ -82,7 +82,7 @@ class Session implements SessionEntityInterface
      * @var int
      */
     #[ORM\Column(name: 'last_used', type: 'integer', nullable: false)]
-    protected $lastUsed = '0';
+    protected int $lastUsed = 0;
 
     /**
      * Time session is created.
@@ -90,7 +90,7 @@ class Session implements SessionEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
-    protected $created;
+    protected DateTime $created;
 
     /**
      * Constructor.
@@ -102,13 +102,13 @@ class Session implements SessionEntityInterface
     }
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
@@ -140,13 +140,13 @@ class Session implements SessionEntityInterface
     /**
      * Set time the session is last used.
      *
-     * @param int $lastused Time last used
+     * @param int $lastUsed Time last used
      *
      * @return static
      */
-    public function setLastUsed(int $lastused): static
+    public function setLastUsed(int $lastUsed): static
     {
-        $this->lastUsed = $lastused;
+        $this->lastUsed = $lastUsed;
         return $this;
     }
 

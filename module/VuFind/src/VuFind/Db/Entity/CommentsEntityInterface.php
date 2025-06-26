@@ -43,11 +43,11 @@ use DateTime;
 interface CommentsEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
      * Comment setter
@@ -100,7 +100,7 @@ interface CommentsEntityInterface extends EntityInterface
     /**
      * Resource setter.
      *
-     * @param ResourceEntityInterface $resource Resource id.
+     * @param ResourceEntityInterface $resource Resource
      *
      * @return static
      */

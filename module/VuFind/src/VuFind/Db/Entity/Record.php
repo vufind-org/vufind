@@ -57,7 +57,7 @@ class Record implements RecordEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Record ID.
@@ -65,7 +65,7 @@ class Record implements RecordEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'record_id', type: 'string', length: 255, nullable: true)]
-    protected $recordId;
+    protected ?string $recordId = null;
 
     /**
      * Record source.
@@ -73,7 +73,7 @@ class Record implements RecordEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'source', type: 'string', length: 50, nullable: true)]
-    protected $source;
+    protected ?string $source = null;
 
     /**
      * Record version.
@@ -81,7 +81,7 @@ class Record implements RecordEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'version', type: 'string', length: 20, nullable: false)]
-    protected $version;
+    protected string $version;
 
     /**
      * Record Data.
@@ -89,7 +89,7 @@ class Record implements RecordEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'data', type: 'text', length: 0, nullable: true)]
-    protected $data;
+    protected ?string $data = null;
 
     /**
      * Updated date.
@@ -97,7 +97,7 @@ class Record implements RecordEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'updated', type: 'datetime', nullable: false)]
-    protected $updated;
+    protected DateTime $updated;
 
     /**
      * Constructor.

@@ -34,12 +34,9 @@ use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
-use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
-use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\PersistenceManager;
@@ -131,10 +128,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function getResourceById(int $id): ?ResourceEntityInterface
     {
-        $resource = $this->entityManager->find(
-            $this->getEntityClass(ResourceEntityInterface::class),
-            $id
-        );
+        $resource = $this->entityManager->find(ResourceEntityInterface::class, $id);
         return $resource;
     }
 
@@ -145,8 +139,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function createEntity(): ResourceEntityInterface
     {
-        $class = $this->getEntityClass(ResourceEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(ResourceEntityInterface::class);
     }
 
     /**
@@ -158,7 +151,7 @@ class ResourceService extends AbstractDbService implements
     public function findMissingMetadata(): array
     {
         $dql = 'SELECT r '
-            . 'FROM ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
+            . 'FROM ' . ResourceEntityInterface::class . ' r '
             . "WHERE r.title = '' OR r.author IS NULL OR r.year IS NULL";
 
         $query = $this->entityManager->createQuery($dql);
@@ -189,7 +182,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array
     {
-        $repo = $this->entityManager->getRepository($this->getEntityClass(ResourceEntityInterface::class));
+        $repo = $this->entityManager->getRepository(ResourceEntityInterface::class);
         $criteria = [
             'recordId' => $ids,
             'source' => $source,
@@ -214,15 +207,15 @@ class ResourceService extends AbstractDbService implements
         bool $caseSensitiveTags = false
     ): array {
         $dql = 'SELECT DISTINCT(rt.resource) AS resource_id '
-            . 'FROM ' . $this->getEntityClass(ResourceTagsEntityInterface::class) . ' rt '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
             . 'JOIN rt.tag t '
             . 'WHERE ' . ($caseSensitiveTags ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
             . 'AND rt.user = :user';
 
-        $user = $this->getDoctrineReference(User::class, $user);
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $user);
         $parameters = compact('tag', 'user');
         if (null !== $list) {
-            $list = $this->getDoctrineReference(UserList::class, $list);
+            $list = $this->getDoctrineReference(UserListEntityInterface::class, $list);
             $dql .= ' AND rt.list = :list';
             $parameters['list'] = $list;
         }
@@ -254,15 +247,15 @@ class ResourceService extends AbstractDbService implements
         ?int $limit = null,
         bool $caseSensitiveTags = false
     ): array {
-        $user = $this->getDoctrineReference(User::class, $userOrId);
-        $list = $listOrId ? $this->getDoctrineReference(UserList::class, $listOrId) : null;
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $list = $listOrId ? $this->getDoctrineReference(UserListEntityInterface::class, $listOrId) : null;
         $orderByDetails = empty($sort) ? [] : $this->getResourceOrderByClause($sort);
         $dql = 'SELECT DISTINCT r';
         if (!empty($orderByDetails['extraSelect'])) {
             $dql .= ', ' . $orderByDetails['extraSelect'];
         }
-        $dql .= ' FROM ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
-            . 'JOIN ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur WITH r.id = ur.resource ';
+        $dql .= ' FROM ' . ResourceEntityInterface::class . ' r '
+            . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH r.id = ur.resource ';
         $dqlWhere = [];
         $dqlWhere[] = 'ur.user = :user';
         $parameters = compact('user');
@@ -315,7 +308,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function deleteResourceByRecordId(string $id, string $source): bool
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
+        $dql = 'DELETE FROM ' . ResourceEntityInterface::class . ' r '
             . 'WHERE r.recordId = :id AND r.source = :source';
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
@@ -333,7 +326,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function renameSource(string $old, string $new): int
     {
-        $dql = 'UPDATE ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r '
+        $dql = 'UPDATE ' . ResourceEntityInterface::class . ' r '
             . 'SET r.source=:new WHERE r.source=:old';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(compact('new', 'old'));
@@ -349,6 +342,6 @@ class ResourceService extends AbstractDbService implements
      */
     public function deleteResource(ResourceEntityInterface|int $resourceOrId): void
     {
-        $this->deleteEntity($this->getDoctrineReference(Resource::class, $resourceOrId));
+        $this->deleteEntity($this->getDoctrineReference(ResourceEntityInterface::class, $resourceOrId));
     }
 }

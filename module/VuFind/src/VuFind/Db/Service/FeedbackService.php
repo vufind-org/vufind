@@ -69,8 +69,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
      */
     public function createEntity(): FeedbackEntityInterface
     {
-        $class = $this->getEntityClass(FeedbackEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(FeedbackEntityInterface::class);
     }
 
     /**
@@ -82,7 +81,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
      */
     public function getFeedbackById(int $id): ?FeedbackEntityInterface
     {
-        return $this->entityManager->find($this->getEntityClass(FeedbackEntityInterface::class), $id);
+        return $this->entityManager->find(FeedbackEntityInterface::class, $id);
     }
 
     /**
@@ -103,7 +102,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
         ?int $page = null,
         int $limit = 20
     ): Paginator {
-        $dql = 'SELECT f AS feedback_entity FROM ' . $this->getEntityClass(FeedbackEntityInterface::class) . ' f';
+        $dql = 'SELECT f AS feedback_entity FROM ' . FeedbackEntityInterface::class . ' f';
         $parameters = $dqlWhere = [];
 
         if (null !== $formName) {
@@ -151,7 +150,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
         if (empty($ids)) {
             return 0;
         }
-        $dql = 'DELETE FROM ' . $this->getEntityClass(FeedbackEntityInterface::class) . ' fb '
+        $dql = 'DELETE FROM ' . FeedbackEntityInterface::class . ' fb '
             . 'WHERE fb.id IN (:ids)';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(compact('ids'));
@@ -169,7 +168,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     public function getColumn(string $column): array
     {
         $dql = 'SELECT f.id, f.' . $this->mapField($column)
-            . ' FROM ' . $this->getEntityClass(FeedbackEntityInterface::class) . ' f '
+            . ' FROM ' . FeedbackEntityInterface::class . ' f '
             . 'ORDER BY f.' . $this->mapField($column);
         $query = $this->entityManager->createQuery($dql);
         return $query->getResult();

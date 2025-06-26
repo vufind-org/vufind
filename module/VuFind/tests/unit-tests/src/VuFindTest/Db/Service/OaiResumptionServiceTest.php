@@ -124,9 +124,9 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     public function testRemoveExpired(): void
     {
         $entityManager = $this->getEntityManager();
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $resumptionService = $this->getService($entityManager, $pluginManager);
-        $queryStmt = "DELETE FROM VuFind\Db\Entity\OaiResumption O WHERE O.expires <= :now";
+        $queryStmt = "DELETE FROM VuFind\Db\Entity\OaiResumptionEntityInterface O WHERE O.expires <= :now";
 
         $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')
@@ -147,9 +147,9 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     public function testFindToken(): void
     {
         $entityManager = $this->getEntityManager();
-        $pluginManager = $this->getPluginManager(true);
+        $pluginManager = $this->getPluginManager();
         $resumptionService = $this->getService($entityManager, $pluginManager);
-        $queryStmt = "SELECT O FROM VuFind\Db\Entity\OaiResumption O WHERE O.id = :id";
+        $queryStmt = "SELECT O FROM VuFind\Db\Entity\OaiResumptionEntityInterface O WHERE O.id = :id";
 
         $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')

@@ -672,6 +672,9 @@ $config = [
             ],
         ],
     ],
+    'doctrine_factories' => [
+        'entitymanager' => \VuFind\Db\EntityManagerFactory::class,
+    ],
     'translator' => [],
     'translator_plugins' => [
         'factories' => [

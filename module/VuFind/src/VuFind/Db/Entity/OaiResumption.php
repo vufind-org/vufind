@@ -58,7 +58,7 @@ class OaiResumption implements OaiResumptionEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Resumption parameters.
@@ -66,7 +66,7 @@ class OaiResumption implements OaiResumptionEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'params', type: 'text', length: 65535, nullable: true)]
-    protected $params;
+    protected ?string $params = null;
 
     /**
      * Expiry date.
@@ -74,7 +74,7 @@ class OaiResumption implements OaiResumptionEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'expires', type: 'datetime', nullable: false)]
-    protected $expires;
+    protected DateTime $expires;
 
     /**
      * Token.
@@ -82,7 +82,7 @@ class OaiResumption implements OaiResumptionEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'token', type: 'string', length: 255, nullable: true)]
-    protected $token;
+    protected ?string $token = null;
 
     /**
      * Constructor.
@@ -94,13 +94,13 @@ class OaiResumption implements OaiResumptionEntityInterface
     }
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**

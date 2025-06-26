@@ -58,7 +58,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function removeExpired(): void
     {
-        $dql = 'DELETE FROM ' . $this->getEntityClass(OaiResumptionEntityInterface::class) . ' O '
+        $dql = 'DELETE FROM ' . OaiResumptionEntityInterface::class . ' O '
             . 'WHERE O.expires <= :now';
         $parameters['now'] = new \DateTime();
         $query = $this->entityManager->createQuery($dql);
@@ -90,7 +90,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function findWithId(string $id): ?OaiResumptionEntityInterface
     {
-        $dql = 'SELECT O FROM ' . $this->getEntityClass(OaiResumptionEntityInterface::class) . ' O '
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
             . 'WHERE O.id = :id';
         $parameters = compact('id');
         $query = $this->entityManager->createQuery($dql);
@@ -108,7 +108,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function findWithToken(string $token): ?OaiResumptionEntityInterface
     {
-        $dql = 'SELECT O FROM ' . $this->getEntityClass(OaiResumptionEntityInterface::class) . ' O '
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
             . 'WHERE O.token = :token';
         $parameters = compact('token');
         $query = $this->entityManager->createQuery($dql);
@@ -126,7 +126,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     protected function findWithLegacyIdToken(int $id): ?OaiResumptionEntityInterface
     {
-        $dql = 'SELECT O FROM ' . $this->getEntityClass(OaiResumptionEntityInterface::class) . ' O '
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
             . 'WHERE O.token IS NULL AND O.id = :id';
         $parameters = compact('id');
         $query = $this->entityManager->createQuery($dql);
@@ -204,8 +204,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function createEntity(): OaiResumptionEntityInterface
     {
-        $class = $this->getEntityClass(OaiResumptionEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(OaiResumptionEntityInterface::class);
     }
 
     /**

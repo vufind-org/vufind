@@ -58,7 +58,7 @@ class ExternalSession implements ExternalSessionEntityInterface
     #[ORM\Column(name: 'id', type: 'bigint', nullable: false, options: ['unsigned' => true])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Session ID.
@@ -66,7 +66,7 @@ class ExternalSession implements ExternalSessionEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'session_id', type: 'string', length: 128, nullable: false)]
-    protected $sessionId;
+    protected string $sessionId;
 
     /**
      * External session ID.
@@ -74,7 +74,7 @@ class ExternalSession implements ExternalSessionEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'external_session_id', type: 'string', length: 255, nullable: false)]
-    protected $externalSessionId;
+    protected string $externalSessionId;
 
     /**
      * Creation date.
@@ -82,7 +82,7 @@ class ExternalSession implements ExternalSessionEntityInterface
      * @var DateTime
      */
     #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
-    protected $created;
+    protected DateTime $created;
 
     /**
      * Constructor.

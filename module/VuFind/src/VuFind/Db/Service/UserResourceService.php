@@ -30,11 +30,8 @@
 namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
-use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Db\Entity\UserResourceEntityInterface;
@@ -67,7 +64,7 @@ class UserResourceService extends AbstractDbService implements
     {
         $dql = 'SELECT MIN(ur.resource) as resource_id, MIN(ur.list) as list_id, '
             . 'MIN(ur.user) as user_id, COUNT(ur.resource) as cnt, MIN(ur.id) as id '
-            . 'FROM ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur '
+            . 'FROM ' . UserResourceEntityInterface::class . ' ur '
             . 'GROUP BY ur.resource, ur.list, ur.user '
             . 'HAVING COUNT(ur.resource) > 1';
         $query = $this->entityManager->createQuery($dql);
@@ -93,18 +90,18 @@ class UserResourceService extends AbstractDbService implements
         UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null
     ): array {
-        $dql = 'SELECT DISTINCT ur FROM ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur '
-            . 'JOIN ' . $this->getEntityClass(ResourceEntityInterface::class) . ' r WITH r.id = ur.resource '
+        $dql = 'SELECT DISTINCT ur FROM ' . UserResourceEntityInterface::class . ' ur '
+            . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = ur.resource '
             . 'WHERE r.source = :source AND r.recordId = :recordId ';
 
         $parameters = compact('source', 'recordId');
         if (null !== $userOrId) {
             $dql .= 'AND ur.user = :user ';
-            $parameters['user'] = $this->getDoctrineReference(User::class, $userOrId);
+            $parameters['user'] = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         }
         if (null !== $listOrId) {
             $dql .= 'AND ur.list = :list';
-            $parameters['list'] = $this->getDoctrineReference(UserList::class, $listOrId);
+            $parameters['list'] = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
         }
 
         $query = $this->entityManager->createQuery($dql);
@@ -123,7 +120,7 @@ class UserResourceService extends AbstractDbService implements
             . 'COUNT(DISTINCT(u.list)) AS lists, '
             . 'COUNT(DISTINCT(u.resource)) AS resources, '
             . 'COUNT(u.id) AS total '
-            . 'FROM ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' u';
+            . 'FROM ' . UserResourceEntityInterface::class . ' u';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;
@@ -145,11 +142,11 @@ class UserResourceService extends AbstractDbService implements
         UserListEntityInterface|int $listOrId,
         string $notes = ''
     ): UserResourceEntityInterface {
-        $resource = $this->getDoctrineReference(Resource::class, $resourceOrId);
-        $user = $this->getDoctrineReference(User::class, $userOrId);
-        $list = $this->getDoctrineReference(UserList::class, $listOrId);
+        $resource = $this->getDoctrineReference(ResourceEntityInterface::class, $resourceOrId);
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $list = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
         $params = compact('resource', 'list', 'user');
-        $result = current($this->entityManager->getRepository($this->getEntityClass(UserResourceEntityInterface::class))
+        $result = current($this->entityManager->getRepository(UserResourceEntityInterface::class)
             ->findBy($params));
 
         if (empty($result)) {
@@ -185,8 +182,8 @@ class UserResourceService extends AbstractDbService implements
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null
     ): void {
-        $user = $this->getDoctrineReference(User::class, $userOrId);
-        $dql = 'DELETE FROM ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur ';
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $dql = 'DELETE FROM ' . UserResourceEntityInterface::class . ' ur ';
         $dqlWhere = ['ur.user = :user '];
         $parameters = compact('user');
         if (null !== $resourceId) {
@@ -195,7 +192,7 @@ class UserResourceService extends AbstractDbService implements
         }
         if (null !== $listOrId) {
             $dqlWhere[] = ' ur.list = :list ';
-            $parameters['list'] = $this->getDoctrineReference(UserList::class, $listOrId);
+            $parameters['list'] = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
         }
         $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         $query = $this->entityManager->createQuery($dql);
@@ -210,8 +207,7 @@ class UserResourceService extends AbstractDbService implements
      */
     public function createEntity(): UserResourceEntityInterface
     {
-        $class = $this->getEntityClass(UserResourceEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(UserResourceEntityInterface::class);
     }
 
     /**
@@ -224,7 +220,7 @@ class UserResourceService extends AbstractDbService implements
      */
     public function changeResourceId(int $old, int $new): void
     {
-        $dql = 'UPDATE ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' e '
+        $dql = 'UPDATE ' . UserResourceEntityInterface::class . ' e '
             . 'SET e.resource = :new WHERE e.resource = :old';
         $parameters = compact('new', 'old');
         $query = $this->entityManager->createQuery($dql);
@@ -239,7 +235,7 @@ class UserResourceService extends AbstractDbService implements
      */
     public function deduplicate(): void
     {
-        $repo = $this->entityManager->getRepository($this->getEntityClass(UserResourceEntityInterface::class));
+        $repo = $this->entityManager->getRepository(UserResourceEntityInterface::class);
         foreach ($this->getDuplicates() as $dupe) {
             // Do this as a transaction to prevent odd behavior:
             $this->entityManager->getConnection()->beginTransaction();
@@ -266,7 +262,7 @@ class UserResourceService extends AbstractDbService implements
                 // match on all relevant IDs in duplicate group
                 // getDuplicates returns the minimum id in the set, so we want to
                 // delete all of the duplicates with a higher id value.
-                $dql = 'DELETE FROM ' . $this->getEntityClass(UserResourceEntityInterface::class) . ' ur '
+                $dql = 'DELETE FROM ' . UserResourceEntityInterface::class . ' ur '
                     . 'WHERE ur.resource = :resource AND ur.list = :list '
                     . 'AND ur.user = :user AND ur.id > :id';
                 $mainCriteria['id'] = $dupe['id'];

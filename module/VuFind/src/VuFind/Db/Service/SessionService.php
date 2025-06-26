@@ -68,7 +68,7 @@ class SessionService extends AbstractDbService implements
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('s')
-            ->from($this->getEntityClass(SessionEntityInterface::class), 's')
+            ->from(SessionEntityInterface::class, 's')
             ->where('s.sessionId = :sid')
             ->setParameter('sid', $sid);
         $query = $queryBuilder->getQuery();
@@ -157,7 +157,7 @@ class SessionService extends AbstractDbService implements
     public function destroySession(string $sid): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
+        $queryBuilder->delete(SessionEntityInterface::class, 's')
             ->where('s.sessionId = :sid')
             ->setParameter('sid', $sid);
         $query = $queryBuilder->getQuery();
@@ -175,7 +175,7 @@ class SessionService extends AbstractDbService implements
     {
         $expiration = time() - intval($maxLifetime);
 
-        $entityClass = $this->getEntityClass(SessionEntityInterface::class);
+        $entityClass = SessionEntityInterface::class;
 
         $dql = 'SELECT COUNT(s) FROM ' . $entityClass . ' s WHERE s.lastUsed < :used';
         $query = $this->entityManager->createQuery($dql);
@@ -201,8 +201,7 @@ class SessionService extends AbstractDbService implements
      */
     public function createEntity(): SessionEntityInterface
     {
-        $class = $this->getEntityClass(SessionEntityInterface::class);
-        return new $class();
+        return $this->entityPluginManager->get(SessionEntityInterface::class);
     }
 
     /**
@@ -217,14 +216,14 @@ class SessionService extends AbstractDbService implements
     {
         $subQueryBuilder = $this->entityManager->createQueryBuilder();
         $subQueryBuilder->select('s.id')
-            ->from($this->getEntityClass(SessionEntityInterface::class), 's')
+            ->from(SessionEntityInterface::class, 's')
             ->where('s.lastUsed < :used')
             ->setParameter('used', $dateLimit->getTimestamp());
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
+        $queryBuilder->delete(SessionEntityInterface::class, 's')
             ->where('s.id IN (:ids)')
             ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
         return $queryBuilder->getQuery()->execute();

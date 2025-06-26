@@ -53,7 +53,7 @@ class Resource implements ResourceEntityInterface
     #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected int $id;
 
     /**
      * Record ID.
@@ -61,7 +61,7 @@ class Resource implements ResourceEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'record_id', type: 'string', length: 255, nullable: false)]
-    protected $recordId = '';
+    protected string $recordId = '';
 
     /**
      * Record title.
@@ -69,7 +69,7 @@ class Resource implements ResourceEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'title', type: 'string', length: 255, nullable: false)]
-    protected $title = '';
+    protected string $title = '';
 
     /**
      * Primary author.
@@ -77,7 +77,7 @@ class Resource implements ResourceEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'author', type: 'string', length: 255, nullable: true)]
-    protected $author;
+    protected ?string $author = null;
 
     /**
      * Published year.
@@ -85,7 +85,7 @@ class Resource implements ResourceEntityInterface
      * @var ?int
      */
     #[ORM\Column(name: 'year', type: 'integer', nullable: true)]
-    protected $year;
+    protected ?int $year = null;
 
     /**
      * Record source.
@@ -93,7 +93,7 @@ class Resource implements ResourceEntityInterface
      * @var string
      */
     #[ORM\Column(name: 'source', type: 'string', length: 50, nullable: false, options: ['default' => 'Solr'])]
-    protected $source = 'Solr';
+    protected string $source = 'Solr';
 
     /**
      * Record Metadata
@@ -101,16 +101,16 @@ class Resource implements ResourceEntityInterface
      * @var ?string
      */
     #[ORM\Column(name: 'extra_metadata', type: 'text', length: 16777215, nullable: true)]
-    protected $extraMetadata;
+    protected ?string $extraMetadata = null;
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**

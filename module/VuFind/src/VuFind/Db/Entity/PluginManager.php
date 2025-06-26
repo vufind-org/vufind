@@ -116,4 +116,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     {
         return EntityInterface::class;
     }
+
+    /**
+     * Get aliases.
+     *
+     * @return array
+     */
+    public function getAliases(): array
+    {
+        return $this->aliases;
+    }
 }
