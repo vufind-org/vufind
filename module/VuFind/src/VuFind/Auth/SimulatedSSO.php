@@ -139,9 +139,9 @@ class SimulatedSSO extends AbstractBase
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $target .= (str_contains($target, '?') ? '&' : '?') . 'auth_method=SimulatedSSO';
         return ($this->getSessionInitiatorCallback)($target);

@@ -69,7 +69,6 @@
         $childUlIdEsc = $escapeAttr('hierarchy_' . $context . '_' . $parentNodeId . '_' . $nodeId);
         echo '<button class="hierarchy-tree__toggle-expanded js-toggle-expanded"'
           . ' aria-expanded="' . ($node->hasSelectedChild || $openTopLevel ? 'true' : 'false') . '"'
-          . ' aria-controls="' . $childUlIdEsc . '"'
           // Use node title as button label so that a screen reader can read it as
           // "Expanded <text>" or "Collapsed <text>":
           . ' aria-label="' . $escapeAttr($node->title) . '"'
@@ -81,12 +80,12 @@
           . '</button>';
 
         echo " $itemHtml ";
-        echo '<ul id="' . $childUlIdEsc . '" class="hierarchy-tree__children">';
+        echo '<ul id="' . $childUlIdEsc . '" class="hierarchy-tree__children" role="group">';
         ($this->renderTreeLevel[0])($node->children, $context, $hierarchyID, $driver, $selectedID, "{$parentNodeId}_$nodeId");
         echo '</ul></li>';
       } else {
         echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>'
-          . '<button class="hierarchy-tree__toggle-expanded" disabled aria-label="' . $escape($node->title) . '"></button> '
+          . '<button class="hierarchy-tree__toggle-expanded" disabled aria-hidden="true"></button> '
           . $itemHtml;
         echo '</li>';
       }

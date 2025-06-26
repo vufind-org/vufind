@@ -45,6 +45,8 @@ use function strlen;
  */
 trait PathResolverTrait
 {
+    use ConfigHandlerPluginManagerTrait;
+
     /**
      * Get a config file path resolver
      *
@@ -54,6 +56,9 @@ trait PathResolverTrait
      */
     protected function getPathResolver(?string $baseDirectory = null): PathResolver
     {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $this->addConfigHandlerPluginManagerToContainer($container);
+
         $localDirs = defined('LOCAL_OVERRIDE_DIR')
             && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
             ? [
@@ -63,6 +68,7 @@ trait PathResolverTrait
                 ],
             ] : [];
         return new \VuFind\Config\PathResolver(
+            $container->get(\VuFind\Config\Handler\PluginManager::class),
             [
                 'directory' => $baseDirectory ?? APPLICATION_PATH,
                 'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
@@ -81,6 +87,9 @@ trait PathResolverTrait
     protected function addPathResolverToContainer(
         \VuFindTest\Container\MockContainer $container
     ): void {
+        if (!$container->has(\VuFind\Config\Handler\PluginManager::class)) {
+            $this->addConfigHandlerPluginManagerToContainer($container);
+        }
         $prFactory = new \VuFind\Config\PathResolverFactory();
         $container->set(
             PathResolver::class,

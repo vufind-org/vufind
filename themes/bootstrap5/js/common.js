@@ -906,8 +906,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupJumpMenus();
 
   // Print
-  var url = window.location.href;
-  if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
+  if (VuFind.isPrinting()) {
     var printStylesheets = document.querySelectorAll('link[media="print"]');
     printStylesheets.forEach((stylesheet) => {
       stylesheet.media = 'all';
