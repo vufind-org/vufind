@@ -1,4 +1,4 @@
-<?=$this->component('page-title', ['title' => $this->translate('delete_selected_favorites')])?>
+<?=$this->component('page-title', ['title' => $this->translate('delete_selected_favorites'), 'headTitle' => false])?>
 <form action="<?=$this->url('myresearch-delete')?>" method="post" name="bulkDelete" data-lightbox-ignore>
   <div id="popupMessages"><?=$this->flashmessages()?></div>
   <div id="popupDetails">
