@@ -3,13 +3,16 @@
   $headerAttrs = [
     'class' => $this->_componentClass,
   ];
+  $level = intval($this->level ?? 2);
   if ($this->inLightbox) {
+    // If level 1 title is set in lightbox, change it to 2.
+    if ($level === 1) {
+      $level = 2;
+    }
     $headerAttrs['tabindex'] = '0';
     $headerAttrs['class'] .= ' lightbox-title';
   }
-  $level = $this->level ?: 2;
   $tag = "h$level";
-
   $this->headTitle($this->headTitle ?? $title);
 ?>
 <<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($title);?></<?=$tag?>>

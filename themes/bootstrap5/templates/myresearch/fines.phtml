@@ -7,7 +7,7 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('page-title', ['title' => $this->translate('Your Fines')]);?>
+  <?=$this->component('page-title', ['title' => $this->translate('Your Fines'), 'headTitle' => $this->translate('My Fines')]);?>
   <?=$this->flashmessages()?>
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
