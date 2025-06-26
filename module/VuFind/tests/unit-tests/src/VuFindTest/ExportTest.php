@@ -29,6 +29,7 @@
 
 namespace VuFindTest;
 
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Config\Config;
 use VuFind\Export;
 
@@ -230,7 +231,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     {
         $config = ['foo' => ['headers' => ['bar']]];
         $export = $this->getExport([], $config);
-        $this->assertEquals(['bar'], $export->getHeaders('foo')->toArray());
+        $this->assertEquals(['bar'], $export->getHeaders('foo'));
     }
 
     /**
@@ -310,13 +311,13 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $serverUrl->expects($this->once())->method('__invoke')
             ->with($this->equalTo('/cart/doExport'))
             ->will($this->returnValue('http://localhost/cart/doExport'));
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
+        $renderer = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->expectConsecutiveCalls($view, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
+        $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
         $this->assertEquals(
             'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',
-            $this->getExport()->getBulkUrl($view, 'foo', [1, 2, 3])
+            $this->getExport(renderer: $renderer)->getBulkUrl('foo', [1, 2, 3])
         );
     }
 
@@ -366,13 +367,14 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a configured Export object.
      *
-     * @param array $main   Main config
-     * @param array $export Export config
+     * @param array        $main     Main config
+     * @param array        $export   Export config
+     * @param ?PhpRenderer $renderer Preconfigured view renderer
      *
      * @return Export
      */
-    protected function getExport($main = [], $export = [])
+    protected function getExport($main = [], $export = [], $renderer = null)
     {
-        return new Export(new Config($main), new Config($export));
+        return new Export($main, $export, $renderer ?? $this->createMock(PhpRenderer::class));
     }
 }

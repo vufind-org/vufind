@@ -46,7 +46,7 @@
               $firstOption = $exportOption;
             }
           ?>
-          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect="<?=$this->escapeHtmlAttr($this->export()->getTargetWindow($exportOption))?>"<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
         <?php endforeach; ?>
       </select>
     </div>
@@ -70,7 +70,7 @@
             $('form[name=exportForm]').removeAttr('target');
           } else {
             $('.export.btn').attr('data-lightbox-ignore', '1');
-            $('form[name=exportForm]').attr('target', this.selectedOptions[0].value + 'Main');
+            $('form[name=exportForm]').attr('target', this.selectedOptions[0].getAttribute('data-redirect'));
           }
         }).trigger('change');
       JS;
