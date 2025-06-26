@@ -304,16 +304,14 @@ class ExportTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo('cart-doexport'))
-            ->will($this->returnValue('/cart/doExport'));
+            ->willReturn('/cart/doExport');
         $serverUrl = $this->getMockBuilder(\Laminas\View\Helper\ServerUrl::class)
             ->disableOriginalConstructor()
             ->getMock();
         $serverUrl->expects($this->once())->method('__invoke')
             ->with($this->equalTo('/cart/doExport'))
-            ->will($this->returnValue('http://localhost/cart/doExport'));
-        $renderer = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+            ->willReturn('http://localhost/cart/doExport');
+        $renderer = $this->createMock(PhpRenderer::class);
         $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
         $this->assertEquals(
             'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',

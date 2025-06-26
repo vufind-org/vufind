@@ -30,8 +30,7 @@
 namespace VuFind;
 
 use Laminas\View\Renderer\PhpRenderer;
-use VuFind\Config\Config;
-use VuFind\RecordDriver\AbstractBase;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 use function in_array;
 use function is_callable;
@@ -196,12 +195,12 @@ class Export
     /**
      * Does the specified record support the specified export format?
      *
-     * @param AbstractBase $driver Record driver
+     * @param RecordDriver $driver Record driver
      * @param string       $format Format to check
      *
      * @return bool
      */
-    public function recordSupportsFormat(AbstractBase $driver, string $format): bool
+    public function recordSupportsFormat(RecordDriver $driver, string $format): bool
     {
         // Check if the driver explicitly disallows the format:
         if ($driver->tryMethod('exportDisabled', [$format])) {
@@ -231,11 +230,11 @@ class Export
      * data may be exported (empty if none). Legal values: "BibTeX", "EndNote",
      * "MARC", "MARCXML", "RDF", "RefWorks".
      *
-     * @param AbstractBase $driver Record driver
+     * @param RecordDriver $driver Record driver
      *
      * @return array Strings representing export formats.
      */
-    public function getFormatsForRecord(AbstractBase $driver): array
+    public function getFormatsForRecord(RecordDriver $driver): array
     {
         // Get an array of enabled export formats (from config, or use defaults
         // if nothing in config array).
