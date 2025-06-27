@@ -655,6 +655,17 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
+     * Are ratings enabled?
+     *
+     * @return bool
+     */
+    protected function ratingsEnabled(): bool
+    {
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
+        return $check->getRatingSetting() !== 'disabled';
+    }
+
+    /**
      * Are lists enabled?
      *
      * @return bool

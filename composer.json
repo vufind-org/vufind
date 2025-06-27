@@ -92,7 +92,7 @@
         "league/oauth2-client": "^2.7",
         "league/oauth2-server": "8.5.5",
         "lm-commons/lmc-rbac-mvc": "3.5.0",
-        "matthiasmullie/minify": "1.3.73",
+        "matthiasmullie/minify": "1.3.75",
         "pear/archive_tar": "^1.4",
         "pear/http_request2": "2.7.0",
         "phing/phing": "3.0.1",
