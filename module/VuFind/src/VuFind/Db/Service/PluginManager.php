@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         AccessTokenServiceInterface::class => AccessTokenService::class,
+        ApiKeyServiceInterface::class => ApiKeyService::class,
         AuthHashServiceInterface::class => AuthHashService::class,
         ChangeTrackerServiceInterface::class => ChangeTrackerService::class,
         CommentsServiceInterface::class => CommentsService::class,
@@ -77,7 +78,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AccessTokenService::class => AccessTokenServiceFactory::class,
+        AccessTokenService::class => AbstractDbServiceFactory::class,
+        ApiKeyService::class => AbstractDbServiceFactory::class,
         AuthHashService::class => AbstractDbServiceFactory::class,
         ChangeTrackerService::class => AbstractDbServiceFactory::class,
         CommentsService::class => AbstractDbServiceFactory::class,

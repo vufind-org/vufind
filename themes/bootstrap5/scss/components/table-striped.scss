@@ -1,0 +1,21 @@
+table.vc-table-striped {
+    tr {
+        th, td {
+            vertical-align: middle;
+        }
+    }
+    %centered-template {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .centered-start {
+        @extend %centered-template;
+        justify-content: start;
+    }
+    .centered-end {
+        @extend %centered-template;
+        justify-content: end;
+    }
+}

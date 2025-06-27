@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\PluginManager;
 
+use function in_array;
+
 /**
  * Config view helper
  *
@@ -204,5 +206,15 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return (bool)($this->get('config')->Catalog
             ->display_loan_type_in_holdings ?? false);
+    }
+
+    /**
+     * Check if API keys are enabled
+     *
+     * @return bool
+     */
+    public function apiKeysEnabled(): bool
+    {
+        return in_array($this->get('config')->API_Keys->mode ?? 'disabled', ['enabled', 'enforced']);
     }
 }

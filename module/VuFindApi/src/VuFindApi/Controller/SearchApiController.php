@@ -56,6 +56,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 {
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
+    use \VuFind\ApiKey\ApiKeyTrait;
 
     /**
      * Default record fields to return if a request does not define the fields
@@ -170,6 +171,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $this->$key = $settings[$key];
             }
         }
+        $mainConfig = $this->getConfig('config');
+        $this->setApiKeyMode($mainConfig?->API_Key?->mode ?? 'disabled');
+        if ($this->isApiKeyEnabled()) {
+            $this->setApiKeyService($this->getDbService(\VuFind\Db\Service\ApiKeyServiceInterface::class));
+        }
     }
 
     /**
@@ -259,6 +265,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
+        $apiKeyResult = $this->checkRequestForApiKey();
+        if (!$apiKeyResult) {
+            return $this->getBadApiKeyResponse();
+        }
         if (!isset($request['id'])) {
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }

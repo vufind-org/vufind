@@ -1,0 +1,29 @@
+<?php
+    $apiKey = $this->apiKey ?? [];
+    $revoked = $apiKey['revoked'] ?? false;
+?>
+<h2><?=$this->transEsc('Developer::settings')?></h2>
+<?php ob_start(); ?>
+    <div class="centered-end">
+        <?php if ($revoked): ?>
+            <span><?=$this->transEsc('Developer::api_key_locked')?></span>
+        <?php else: ?>
+            <?=$this->component('link-button', ['class' => 'btn btn-primary', 'url' => $this->url('myresearch-generateapikey'), 'text' => 'Developer::api_key_generate']);?>
+            <?php if ($apiKey): ?>
+                <?=$this->component('link-button', ['class' => 'btn btn-default', 'url' => $this->url('myresearch-deleteapikey'), 'text' => 'Developer::api_key_delete']);?>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+<?php $apiKeyRow = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+
+<?=
+    $this->component(
+        'table-striped',
+        [
+            'contents' => [
+                $this->transEsc('Developer::api_key') => [$apiKeyRow],
+            ],
+        ],
+    );
+?>

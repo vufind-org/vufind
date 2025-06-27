@@ -170,7 +170,12 @@
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
+
+  <?php if ($this->config()->apiKeysEnabled()): ?>
+    <?=$this->context($this)->renderInContext('myresearch/developer.phtml', ['user' => $this->user]); ?>
+  <?php endif; ?>
 </div>
+
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->accountMenu()->render('profile')?>

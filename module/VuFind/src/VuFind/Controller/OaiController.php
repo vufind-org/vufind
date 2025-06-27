@@ -44,6 +44,8 @@ use VuFindApi\Formatter\RecordFormatter;
  */
 class OaiController extends AbstractBase
 {
+    use \VuFind\ApiKey\ApiKeyTrait;
+
     /**
      * Display OAI server form.
      *
@@ -96,6 +98,16 @@ class OaiController extends AbstractBase
         // Collect relevant parameters for OAI server:
         $url = explode('?', $this->getServerUrl());
         $baseURL = $url[0];
+
+        // Initialize api key settings
+        $this->setApiKeyMode($config->API_Key->mode ?? 'disabled');
+        if ($this->isApiKeyEnabled()) {
+            $this->setApiKeyService($this->getDbService(\VuFind\Db\Service\ApiKeyServiceInterface::class));
+            $result = $this->checkRequestForApiKey();
+            if (!$result) {
+                return $this->getBadApiKeyResponse();
+            }
+        }
 
         // Build OAI response or die trying:
         try {
