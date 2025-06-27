@@ -224,7 +224,11 @@
         if (!empty($lastLimit)) {
           echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '">';
         }
-        if (!empty($lastSort) && $lastSort !== $params?->getDefaultSort()) {
+        if (
+          !empty($lastSort)
+          && $lastSort !== $params?->getDefaultSort()
+          && $params?->isValidSort($lastSort, allowHiddenSort: false)
+        ) {
           echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '">';
         }
       ?>
