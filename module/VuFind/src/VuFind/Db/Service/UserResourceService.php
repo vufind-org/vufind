@@ -157,12 +157,7 @@ class UserResourceService extends AbstractDbService implements
         }
         // Update the notes:
         $result->setNotes($notes);
-        try {
-            $this->persistEntity($result);
-        } catch (\Exception $e) {
-            $this->logError('Could not save user resource: ' . $e->getMessage());
-            return false;
-        }
+        $this->persistEntity($result);
         return $result;
     }
 
