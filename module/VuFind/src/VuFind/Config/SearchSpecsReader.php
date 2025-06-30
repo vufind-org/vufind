@@ -41,17 +41,9 @@ namespace VuFind\Config;
 class SearchSpecsReader extends YamlReader
 {
     /**
-     * Constructor
+     * Cache directory name
      *
-     * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
-     * @param ?PathResolver          $pathResolver Config file path resolver
-     * (optional; defaults to \VuFind\Config\Locator)
+     * @var string
      */
-    public function __construct(
-        ?\VuFind\Cache\Manager $cacheManager = null,
-        ?PathResolver $pathResolver = null
-    ) {
-        parent::__construct($cacheManager, $pathResolver);
-        $this->cacheName = 'searchspecs';
-    }
+    protected $cacheName = 'searchspecs';
 }

@@ -43,6 +43,16 @@ use VuFind\Config\Handler\GenericFile;
 class ConfigFile extends AbstractConfigLocation
 {
     /**
+     * Get default config name.
+     *
+     * @return string
+     */
+    protected function getDefaultConfigName(): string
+    {
+        return pathinfo($this->getFileName(), PATHINFO_FILENAME);
+    }
+
+    /**
      * Get the name of the configuration handler to be used for this location.
      *
      * @return string

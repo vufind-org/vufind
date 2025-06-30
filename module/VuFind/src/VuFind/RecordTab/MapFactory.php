@@ -79,10 +79,10 @@ class MapFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $basemapOptions = $basemapConfig->getBasemap('MapTab');
 
         return new $requestedName(
+            $container->get(\VuFind\Config\PathResolver::class),
             $mapTabDisplay,
             $basemapOptions,
             $mapTabOptions,
-            $container->get(\VuFind\Config\PathResolver::class)
         );
     }
 }
