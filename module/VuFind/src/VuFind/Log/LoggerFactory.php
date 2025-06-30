@@ -34,7 +34,6 @@ use Monolog\Handler\DeduplicationHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Processor\PsrLogMessageProcessor;
-use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Handler\HandlerInterface;
 use Psr\Log\LogLevel;
 
@@ -54,6 +53,7 @@ use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFind\Auth\Manager as AuthManager;
 use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Net\UserIpReader;
+use VuFind\Mailer\Mailer;
 
 use function count;
 use function is_array;
@@ -132,18 +132,20 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addMailHandler(MonologLogger $monologLogger, Config $config): void
+    protected function addMailHandler(MonologLogger $monologLogger, Config $config, ContainerInterface $container): void
     {
-        // Set up the logger's mailer to behave consistently with VuFind's
-        // general mailer:
         $parts = explode(':', $config->Logging->email);
         $email = $parts[0];
         $error_types = $parts[1] ?? '';
 
-        echo "Email: ".$email;
-
-        $emailHandler = new MailHandler($email, 'VuFind Log Message', $this->getEmailSenderAddress($config))                                                                                    ;
-        $this->addHandlers($monologLogger, $emailHandler, $error_types);
+        $mailHandler = new MailHandler(
+            $email, 
+            'VuFind Log Message', 
+            $this->getEmailSenderAddress($config),
+            $container->get(Mailer::class)
+        );
+            
+        $this->addHandlers($monologLogger, $mailHandler, $error_types);
     }
 
     /**
@@ -199,9 +201,8 @@ class LoggerFactory implements FactoryInterface
         }
 
         // Activate email logging, if applicable:
-            print_r($config->Logging);
         if (isset($config->Logging->email)) {
-            $this->addMailHandler($monologLogger, $config);
+            $this->addMailHandler($monologLogger, $config, $container);
         }
 
         // Add common processors:
@@ -277,7 +278,7 @@ class LoggerFactory implements FactoryInterface
      * Filter keys: alert, error, notice, debug
      *
      * @param MonologLogger             $monologLogger The Monolog logger instance to add handlers to.
-     * @param AbstractProcessingHandler $baseHandler   The base Monolog handler to clone and filter
+     * @param HandlerInterface $baseHandler   The base Monolog handler to clone and filter
      * (e.g., StreamHandler).
      * @param string|array              $filters     An array or comma-separated string of
      * logging levels
@@ -287,7 +288,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function addHandlers(
         MonologLogger $monologLogger,
-        AbstractProcessingHandler $baseHandler,
+        HandlerInterface $baseHandler,
         $filters
     ): void {
         if (!is_array($filters)) {
@@ -342,7 +343,6 @@ class LoggerFactory implements FactoryInterface
                     );
                 }
             }
-            
             $filterHandler = new FilterHandler($newHandler, $min, $max);
             // Add the fully configured handler (wrapped in its filter) to the Monolog logger.
             $monologLogger->pushHandler($filterHandler);
