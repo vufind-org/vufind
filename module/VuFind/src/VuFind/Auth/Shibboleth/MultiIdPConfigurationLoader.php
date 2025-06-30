@@ -27,7 +27,7 @@ use VuFind\Exception\Auth as AuthException;
  */
 class MultiIdPConfigurationLoader implements
     ConfigurationLoaderInterface,
-    \VuFind\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

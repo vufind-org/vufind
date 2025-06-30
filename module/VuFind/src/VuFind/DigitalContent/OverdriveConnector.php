@@ -33,7 +33,7 @@ namespace VuFind\DigitalContent;
 use Exception;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client;
-use VuFind\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;

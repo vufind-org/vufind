@@ -16,7 +16,7 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Laminas\View\Model\ViewModel;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Form;

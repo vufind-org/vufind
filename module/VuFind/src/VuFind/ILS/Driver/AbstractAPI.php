@@ -30,7 +30,7 @@
 namespace VuFind\ILS\Driver;
 
 use Laminas\Http\Response;
-use VuFind\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;

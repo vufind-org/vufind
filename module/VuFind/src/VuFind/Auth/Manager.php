@@ -55,7 +55,7 @@ use function is_callable;
  */
 class Manager implements
     \LmcRbacMvc\Identity\IdentityProviderInterface,
-    \VuFind\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

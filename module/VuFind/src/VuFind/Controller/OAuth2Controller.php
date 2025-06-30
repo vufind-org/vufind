@@ -31,7 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response;
-use VuFind\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;

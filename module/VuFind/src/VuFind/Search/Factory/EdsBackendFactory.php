@@ -51,7 +51,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \VuFind\Log\LoggerAwareInterface
+     * @var \Psr\Log\LoggerAwareInterface
      */
     protected $logger = null;
 

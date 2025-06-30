@@ -29,7 +29,7 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Log\LoggerAwareTrait;
