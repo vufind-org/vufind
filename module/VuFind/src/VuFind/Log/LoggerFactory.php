@@ -183,11 +183,10 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function configureMonologLogger(ContainerInterface $container, Logger $vufindLogger): void
+    protected function configureMonologLogger(ContainerInterface $container, MonologLogger $monologLogger): void
     {
         $configManager = $container->get(ConfigPluginManager::class);
         $config = $configManager->get('config');
-        $monologLogger = $vufindLogger->getMonologInstance(); // Get the actual Monolog instance
 
         // Add specific handlers based on config:
         // DEBUGGER
@@ -394,10 +393,12 @@ class LoggerFactory implements FactoryInterface
         // dependencies with other services.
         $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Now build the actual service:
+            $monologLogger = new MonologLogger('vufind');
             $wrapped = new $requestedName(
-                $container->get(UserIpReader::class) // Use imported alias
+                $container->get(UserIpReader::class), // Use imported alias
+                $monologLogger
             );
-            $this->configureMonologLogger($container, $wrapped); // Call the Monolog configuration method
+            $this->configureMonologLogger($container, $monologLogger); // Call the Monolog configuration method
         };
 
         $proxyClass = $this->getProxyClassName($requestedName);

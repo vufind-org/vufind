@@ -76,21 +76,10 @@ class Logger implements PsrLoggerInterface
         'warn'      => LogLevel::WARNING,
     ];
 
-    public function __construct(UserIpReader $userIpReader, string $channelName = 'vufind')
+    public function __construct(UserIpReader $userIpReader, ?MonologLogger $monologLogger)
     {
         $this->userIpReader = $userIpReader;
-        $this->monologLogger = new MonologLogger($channelName);
-    }
-
-    /**
-     * Get the underlying MonologLogger instance.
-    * This is needed by the LoggerFactory to configure handlers and processors.
-     *
-     * @return MonologLogger
-     */
-    public function getMonologInstance(): MonologLogger
-    {
-        return $this->monologLogger;
+        $this->monologLogger = $monologLogger ?? new MonologLogger('default');
     }
 
     /**
