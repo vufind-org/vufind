@@ -114,12 +114,13 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $path Path
      *
-     * @return void
+     * @return static
      */
-    public function setPath(string $path): void
+    public function setPath(string $path): static
     {
-        $this->setBasePath(dirname($path));
-        $this->setFileName(basename($path));
+        $this->setBasePath(dirname($path))
+            ->setFileName(basename($path));
+        return $this;
     }
 
     /**
@@ -139,9 +140,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setBasePath(string $basePath): void
+    public function setBasePath(string $basePath): static
     {
         $this->basePath = $basePath;
+        return $this;
     }
 
     /**
@@ -161,9 +163,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setFileName(string $fileName): void
+    public function setFileName(string $fileName): static
     {
         $this->fileName = $fileName;
+        return $this;
     }
 
     /**
@@ -183,9 +186,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setConfigName(string $configName): void
+    public function setConfigName(string $configName): static
     {
         $this->configName = $configName;
+        return $this;
     }
 
     /**
@@ -205,9 +209,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setSubsection(array $subsection): void
+    public function setSubsection(array $subsection): static
     {
         $this->subsection = $subsection;
+        return $this;
     }
 
     /**
@@ -227,9 +232,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): void
+    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static
     {
         $this->dirLocationsParent = $dirLocationsParent;
+        return $this;
     }
 
     /**

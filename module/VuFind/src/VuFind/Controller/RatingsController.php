@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Tag Controller
+ * Ratings Controller
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -13,7 +13,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -22,27 +22,26 @@
  *
  * @category VuFind
  * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
 
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Validator\CsrfInterface;
 
 /**
- * Tag Controller
+ * Ratings controller.
  *
  * @category VuFind
  * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
-class TagController extends AbstractSearch
+class RatingsController extends AbstractBase
 {
     use Feature\UserContentTrait;
 
@@ -52,37 +51,13 @@ class TagController extends AbstractSearch
      * @var array
      */
     protected array $sortList = [
-        'posted desc' => 'sort_created_desc',
-        'posted asc' => 'sort_created_asc',
+        'created desc' => 'sort_created_desc',
+        'created asc' => 'sort_created_asc',
         'title' => 'sort_title',
     ];
 
     /**
-     * Constructor
-     *
-     * @param ServiceLocatorInterface $sm Service locator
-     */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'Tags';
-        parent::__construct($sm);
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        if (!$this->tagsEnabled()) {
-            throw new ForbiddenException('Tags disabled');
-        }
-        return parent::resultsAction();
-    }
-
-    /**
-     * Get all tags for the logged in user
+     * Get all ratings for the logged in user
      *
      * @return View
      */
@@ -92,24 +67,22 @@ class TagController extends AbstractSearch
         if (!$user) {
             return $this->forceLogin();
         }
-        if (!$this->tagsEnabled()) {
-            throw new ForbiddenException('Tags disabled.');
+        if (!$this->ratingsEnabled()) {
+            throw new ForbiddenException('Ratings disabled.');
         }
         $paging = $this->getPagingParams($this->params());
-        $service = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
-        $tags = $this->getUserContentRecordTitles(
-            $service->getResourceTagsPaginator(
+        $service = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
+        $ratings = $this->getUserContentRecordTitles(
+            $service->getRatingsPaginator(
                 $user->getId(),
-                null,
-                null,
-                $paging['sort'],
-                $paging['page'],
                 $paging['limit'],
+                $paging['page'],
+                $paging['sort'],
             )
         );
         return $this->createViewModel(
             [
-                'tags' => $tags,
+                'ratings' => $ratings,
                 'sortList' => $this->getSortList($this->sortList, $paging['sort']),
                 'params' => $this->params()->fromQuery(),
             ]
@@ -117,17 +90,17 @@ class TagController extends AbstractSearch
     }
 
     /**
-     * Delete given tags by the logged in user
+     * Delete given ratings by the logged in user
      *
      * @return View
      */
-    public function deleteTagsAction()
+    public function deleteRatingsAction()
     {
         $user = $this->getUser();
         if (!$user) {
             return $this->forceLogin();
         }
-        if ($this->formWasSubmitted(['deleteSelectedtag'])) {
+        if ($this->formWasSubmitted(['deleteSelectedrating'])) {
             $csrf = $this->getService(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
@@ -135,11 +108,14 @@ class TagController extends AbstractSearch
                 );
             }
         }
-        if (!empty($tags = $this->params()->fromPost('deleteSelectedtag', []))) {
-            $tagService = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
-            $tagService->deleteLinksByResourceTagsIdArray($tags);
+        if (
+            !empty($ratings = $this->params()->fromPost('deleteSelectedrating', []))
+            && $this->getService(\VuFind\Config\AccountCapabilities::class)->isRatingRemovalAllowed()
+        ) {
+            $ratingsService = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
+            $ratingsService->deleteByIdsAndUserId($ratings, $user->getId());
         }
 
-        return $this->redirect()->toRoute('tag-userlist');
+        return $this->redirect()->toRoute('ratings-userlist');
     }
 }

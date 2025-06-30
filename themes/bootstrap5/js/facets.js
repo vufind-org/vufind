@@ -379,7 +379,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function initOriginalCountText(context) {
     if (typeof defaultCountText === 'undefined') {
-      defaultCountText = context.getElementsByClassName('multi-filters-text')[0].textContent;
+      const multiFiltersTextEl = context.querySelector('.multi-filters-text');
+      defaultCountText = multiFiltersTextEl ? multiFiltersTextEl.textContent : '-';
     }
   }
 
