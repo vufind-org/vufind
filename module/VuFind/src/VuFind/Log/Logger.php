@@ -31,7 +31,7 @@
 namespace VuFind\Log;
 
 use Monolog\Logger as MonologLogger;
-use Psr\Log\LoggerInterface as PsrLoggerInterface;
+use VuFind\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Traversable;
 use VuFind\Net\UserIpReader;
@@ -54,7 +54,7 @@ use function is_object;
  */
 
 
-class Logger implements PsrLoggerInterface
+class Logger implements LoggerInterface
 {
     /**
      * Is debug logging enabled?
@@ -93,6 +93,16 @@ class Logger implements PsrLoggerInterface
     }
 
     /**
+     * System is unusable.
+     *
+     * @param mixed[] $context
+     */
+    public function emerg(string|\Stringable $message, array $context = []): void
+    {
+        $this->emergency($message, $context);
+    }
+
+    /**
      * Action must be taken immediately.
      *
      * @param mixed[] $context
@@ -118,6 +128,19 @@ class Logger implements PsrLoggerInterface
     }
 
     /**
+     * Critical conditions.
+     *
+     * @param string  $message
+     * @param mixed[] $context
+     *
+     * @return void
+     */
+    public function crit(string|\Stringable $message, array $context = []): void
+    {
+        $this->critical($message, $context);
+    }
+
+    /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
@@ -131,6 +154,19 @@ class Logger implements PsrLoggerInterface
     }
 
     /**
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
+     *
+     * @param string  $message
+     * @param mixed[] $context
+     *
+     * @return void
+     */
+    public function err(string|\Stringable $message, array $context = []): void{
+        $this->error($message, $context);
+    }
+
+    /**
      * Exceptional occurrences that are not errors.
      *
      * @param string  $message
@@ -141,6 +177,19 @@ class Logger implements PsrLoggerInterface
     public function warning(string|\Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::WARNING, $message, $context);
+    }
+
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * @param string  $message
+     * @param mixed[] $context
+     *
+     * @return void
+     */
+    public function warn(string|\Stringable $message, array $context = []): void
+    {
+        $this->warning($message, $context);
     }
 
     /**

@@ -77,6 +77,7 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
      */
     public function homeAction()
     {
+        throw new \Exception("Hello world");
         // Load different configurations depending on whether we're logged in or not:
         if ($this->authManager->getIdentity()) {
             $controller = $this->config->Site->defaultLoggedInModule ?? 'MyResearch';

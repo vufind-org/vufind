@@ -1,0 +1,123 @@
+[2025-06-30 12:45:19] vufind.CRITICAL: Exception : Hello world {"exception":"[object] (Exception(code: 0): Hello world at /usr/local/vufind/module/VuFind/src/VuFind/Controller/IndexController.php:80)","server_data":{"Laminas\\Stdlib\\Parameters":{"VUFIND_LOCAL_DIR":"/usr/local/vufind/local","HTTP_HOST":"localhost","HTTP_CONNECTION":"keep-alive","HTTP_UPGRADE_INSECURE_REQUESTS":"1","HTTP_USER_AGENT":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0","HTTP_ACCEPT":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","HTTP_SEC_FETCH_SITE":"none","HTTP_SEC_FETCH_MODE":"navigate","HTTP_SEC_FETCH_USER":"?1","HTTP_SEC_FETCH_DEST":"document","HTTP_SEC_CH_UA":"\"Microsoft Edge\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"","HTTP_SEC_CH_UA_MOBILE":"?0","HTTP_SEC_CH_UA_PLATFORM":"\"Windows\"","HTTP_ACCEPT_ENCODING":"gzip, deflate, br, zstd","HTTP_ACCEPT_LANGUAGE":"en-US,en;q=0.9","PATH":"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin","SERVER_SIGNATURE":"<address>Apache/2.4.58 (Ubuntu) Server at localhost Port 80</address>
+","SERVER_SOFTWARE":"Apache/2.4.58 (Ubuntu)","SERVER_NAME":"localhost","SERVER_ADDR":"10.0.2.15","SERVER_PORT":"80","REMOTE_ADDR":"10.0.2.2","DOCUMENT_ROOT":"/var/www/html","REQUEST_SCHEME":"http","CONTEXT_PREFIX":"/vufind_test","CONTEXT_DOCUMENT_ROOT":"/usr/local/vufind/public","SERVER_ADMIN":"webmaster@localhost","SCRIPT_FILENAME":"/usr/local/vufind/public/index.php","REMOTE_PORT":"50777","GATEWAY_INTERFACE":"CGI/1.1","SERVER_PROTOCOL":"HTTP/1.1","REQUEST_METHOD":"GET","QUERY_STRING":"","REQUEST_URI":"/vufind_test/","SCRIPT_NAME":"/vufind_test/index.php","PHP_SELF":"/vufind_test/index.php","REQUEST_TIME_FLOAT":1751301919.15785,"REQUEST_TIME":1751301919}},"details":{"1":"Exception : Hello world","2":"Exception : Hello world(Server: IP = 10.0.2.2, Referer = none, User Agent = Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0, Host = localhost, Request URI = /vufind_test/)","3":"Exception : Hello world(Server: IP = 10.0.2.2, Referer = none, User Agent = Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0, Host = localhost, Request URI = /vufind_test/)
+Backtrace:
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php line 72 - class = VuFind\\Controller\\IndexController, function = homeAction
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 318 - class = Laminas\\Mvc\\Controller\\AbstractActionController, function = onDispatch
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 176 - class = Laminas\\EventManager\\EventManager, function = triggerListeners
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php line 105 - class = Laminas\\EventManager\\EventManager, function = triggerEventUntil
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/DispatchListener.php line 117 - class = Laminas\\Mvc\\Controller\\AbstractController, function = dispatch
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 318 - class = Laminas\\Mvc\\DispatchListener, function = onDispatch
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 176 - class = Laminas\\EventManager\\EventManager, function = triggerListeners
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Application.php line 319 - class = Laminas\\EventManager\\EventManager, function = triggerEventUntil
+/usr/local/vufind/public/index.php line 23 - class = Laminas\\Mvc\\Application, function = run
+","4":"Exception : Hello world
+Server Context:
+Array
+(
+    [VUFIND_LOCAL_DIR] => /usr/local/vufind/local
+    [HTTP_HOST] => localhost
+    [HTTP_CONNECTION] => keep-alive
+    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+    [HTTP_SEC_FETCH_SITE] => none
+    [HTTP_SEC_FETCH_MODE] => navigate
+    [HTTP_SEC_FETCH_USER] => ?1
+    [HTTP_SEC_FETCH_DEST] => document
+    [HTTP_SEC_CH_UA] => \"Microsoft Edge\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"
+    [HTTP_SEC_CH_UA_MOBILE] => ?0
+    [HTTP_SEC_CH_UA_PLATFORM] => \"Windows\"
+    [HTTP_ACCEPT_ENCODING] => gzip, deflate, br, zstd
+    [HTTP_ACCEPT_LANGUAGE] => en-US,en;q=0.9
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.58 (Ubuntu) Server at localhost Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.58 (Ubuntu)
+    [SERVER_NAME] => localhost
+    [SERVER_ADDR] => 10.0.2.15
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 10.0.2.2
+    [DOCUMENT_ROOT] => /var/www/html
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => /vufind_test
+    [CONTEXT_DOCUMENT_ROOT] => /usr/local/vufind/public
+    [SERVER_ADMIN] => webmaster@localhost
+    [SCRIPT_FILENAME] => /usr/local/vufind/public/index.php
+    [REMOTE_PORT] => 50777
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /vufind_test/
+    [SCRIPT_NAME] => /vufind_test/index.php
+    [PHP_SELF] => /vufind_test/index.php
+    [REQUEST_TIME_FLOAT] => 1751301919.1579
+    [REQUEST_TIME] => 1751301919
+)
+
+Backtrace:
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php line 72 - class = VuFind\\Controller\\IndexController, function = homeAction
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 318 - class = Laminas\\Mvc\\Controller\\AbstractActionController, function = onDispatch
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 176 - class = Laminas\\EventManager\\EventManager, function = triggerListeners
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php line 105 - class = Laminas\\EventManager\\EventManager, function = triggerEventUntil
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/DispatchListener.php line 117 - class = Laminas\\Mvc\\Controller\\AbstractController, function = dispatch
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 318 - class = Laminas\\Mvc\\DispatchListener, function = onDispatch
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 176 - class = Laminas\\EventManager\\EventManager, function = triggerListeners
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Application.php line 319 - class = Laminas\\EventManager\\EventManager, function = triggerEventUntil
+/usr/local/vufind/public/index.php line 23 - class = Laminas\\Mvc\\Application, function = run
+","5":"Exception : Hello world
+Server Context:
+Array
+(
+    [VUFIND_LOCAL_DIR] => /usr/local/vufind/local
+    [HTTP_HOST] => localhost
+    [HTTP_CONNECTION] => keep-alive
+    [HTTP_UPGRADE_INSECURE_REQUESTS] => 1
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+    [HTTP_SEC_FETCH_SITE] => none
+    [HTTP_SEC_FETCH_MODE] => navigate
+    [HTTP_SEC_FETCH_USER] => ?1
+    [HTTP_SEC_FETCH_DEST] => document
+    [HTTP_SEC_CH_UA] => \"Microsoft Edge\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"
+    [HTTP_SEC_CH_UA_MOBILE] => ?0
+    [HTTP_SEC_CH_UA_PLATFORM] => \"Windows\"
+    [HTTP_ACCEPT_ENCODING] => gzip, deflate, br, zstd
+    [HTTP_ACCEPT_LANGUAGE] => en-US,en;q=0.9
+    [PATH] => /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.4.58 (Ubuntu) Server at localhost Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.4.58 (Ubuntu)
+    [SERVER_NAME] => localhost
+    [SERVER_ADDR] => 10.0.2.15
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 10.0.2.2
+    [DOCUMENT_ROOT] => /var/www/html
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => /vufind_test
+    [CONTEXT_DOCUMENT_ROOT] => /usr/local/vufind/public
+    [SERVER_ADMIN] => webmaster@localhost
+    [SCRIPT_FILENAME] => /usr/local/vufind/public/index.php
+    [REMOTE_PORT] => 50777
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /vufind_test/
+    [SCRIPT_NAME] => /vufind_test/index.php
+    [PHP_SELF] => /vufind_test/index.php
+    [REQUEST_TIME_FLOAT] => 1751301919.1579
+    [REQUEST_TIME] => 1751301919
+)
+
+Backtrace:
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php line 72 - class = VuFind\\Controller\\IndexController, function = homeAction, args: none.
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 318 - class = Laminas\\Mvc\\Controller\\AbstractActionController, function = onDispatch, args: none.
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 176 - class = Laminas\\EventManager\\EventManager, function = triggerListeners, args: none.
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php line 105 - class = Laminas\\EventManager\\EventManager, function = triggerEventUntil, args: none.
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/DispatchListener.php line 117 - class = Laminas\\Mvc\\Controller\\AbstractController, function = dispatch, args: none.
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 318 - class = Laminas\\Mvc\\DispatchListener, function = onDispatch, args: none.
+/usr/local/vufind/vendor/laminas/laminas-eventmanager/src/EventManager.php line 176 - class = Laminas\\EventManager\\EventManager, function = triggerListeners, args: none.
+/usr/local/vufind/vendor/laminas/laminas-mvc/src/Application.php line 319 - class = Laminas\\EventManager\\EventManager, function = triggerEventUntil, args: none.
+/usr/local/vufind/public/index.php line 23 - class = Laminas\\Mvc\\Application, function = run, args: none.
+"}} 

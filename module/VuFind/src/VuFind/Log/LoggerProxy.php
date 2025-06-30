@@ -29,7 +29,7 @@
 
 namespace VuFind\Log;
 
-use Psr\Log\LoggerInterface;
+use VuFind\Log\LoggerInterface;
 use Stringable;
 
 use function call_user_func_array;
@@ -83,6 +83,11 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
         $this->__call(__FUNCTION__, func_get_args());
     }
 
+    public function emerg(Stringable|string $message, array $context = []): void
+    {
+        $this->__call(__FUNCTION__, func_get_args());
+    }
+
     /**
      * Log an alert
      *
@@ -109,6 +114,11 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
         $this->__call(__FUNCTION__, func_get_args());
     }
 
+    public function crit(Stringable|string $message, array $context = []): void
+    {
+        $this->__call(__FUNCTION__, func_get_args());
+    }
+
     /**
      * Log an error
      *
@@ -122,6 +132,11 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
         $this->__call(__FUNCTION__, func_get_args());
     }
 
+    public function err(Stringable|string $message, array $context = []): void
+    {
+        $this->__call(__FUNCTION__, func_get_args());
+    }
+
     /**
      * Log a warning
      *
@@ -131,6 +146,11 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      * @return void
      */
     public function warning(Stringable|string $message, array $context = []): void
+    {
+        $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    public function warn(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
     }
