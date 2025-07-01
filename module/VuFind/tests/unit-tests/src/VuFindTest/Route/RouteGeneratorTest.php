@@ -138,6 +138,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
     public function testAddRecordRoutes(): void
     {
         $generator = new RouteGenerator();
+        $generator->reset();
         $config = [];
         $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
         $generator->addRecordRoutes($config, $routeConfig);
@@ -218,6 +219,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
     public function testAddRecordRoutesWithSubclass(): void
     {
         $generator = new RouteGenerator();
+        $generator->reset();
         $config = [];
         $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
         $generator->addRecordRoutes($config, $routeConfig);

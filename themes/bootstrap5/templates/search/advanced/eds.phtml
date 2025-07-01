@@ -12,7 +12,7 @@
     <?php endforeach; ?>
 
     <label for="searchModes"><?=$this->transEsc('Search Mode')?></label>
-    <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-control">
+    <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-select">
       <?php foreach ($this->searchModes as $field => $searchMode):
         $value = $searchMode['Value'] ?>
         <option <?=(isset($searchMode['selected']) && $searchMode['selected']) ? 'selected="selected"' : ''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
@@ -30,7 +30,7 @@
       <?php switch ($facet['Type']) {
           case 'multiselectvalue': ?>
             <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br>
-            <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
+            <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-select">
               <?php
               // Sort the current facet list alphabetically; we'll use this data
               // along with the foreach below to display facet options in the

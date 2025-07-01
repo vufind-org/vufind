@@ -48,13 +48,6 @@ use VuFind\Search\EDS\AbstractEDSOptions;
 class Options extends AbstractEDSOptions
 {
     /**
-     * Search configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $searchSettings;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
@@ -63,7 +56,6 @@ class Options extends AbstractEDSOptions
         \VuFind\Config\PluginManager $configLoader
     ) {
         $this->searchIni = $this->facetsIni = 'EPF';
-        $this->searchSettings = $configLoader->get($this->searchIni);
 
         parent::__construct($configLoader);
 

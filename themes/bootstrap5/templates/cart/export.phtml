@@ -22,7 +22,7 @@
     <div class="form-group">
       <label class="form-label"><?=$this->transEsc('Title')?>:</label>
       <?php if (count($this->records) > 1): ?>
-        <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
+        <button type="button" class="btn btn-default hidden js-item-button" data-bs-toggle="collapse" data-bs-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
         </button>
         <div id="itemhide" class="collapse show">
@@ -46,7 +46,7 @@
               $firstOption = $exportOption;
             }
           ?>
-          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect="<?=$this->escapeHtmlAttr($this->export()->getTargetWindow($exportOption))?>"<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
         <?php endforeach; ?>
       </select>
     </div>
@@ -57,22 +57,39 @@
 <?php endif; ?>
 <?php
   $script = <<<JS
-        $('button.btn.hidden').removeClass('hidden');
-        $('#itemhide').removeClass('show');
-        $('.export.btn').click(function exportButtonClick() {
-          if (typeof $('#format option:selected').attr('data-redirect') !== 'undefined') {
-            VuFind.modal('hide');
+        (function initExport() {
+          const collapseBtn = document.querySelector('.js-item-button');
+          const itemCollapseEl = document.getElementById('itemhide');
+          if (collapseBtn && itemCollapseEl) {
+            collapseBtn.classList.remove('hidden');
+            itemCollapseEl.classList.remove('show');
           }
-        });
-        $('#format').change(function exportFormatChange(e) {
-          if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
-            $('.export.btn').removeAttr('data-lightbox-ignore');
-            $('form[name=exportForm]').removeAttr('target');
-          } else {
-            $('.export.btn').attr('data-lightbox-ignore', '1');
-            $('form[name=exportForm]').attr('target', this.selectedOptions[0].value + 'Main');
+          const formatEl = document.getElementById('format');
+          const exportBtn = document.querySelector('.export.btn');
+          const formEl = document.querySelector('form[name=exportForm]');
+          if (!formatEl || !exportBtn || !formEl) {
+            console.warn('Export element(s) missing!');
+            return;
           }
-        }).trigger('change');
+          exportBtn.addEventListener('click', () => {
+            if (formatEl.selectedOptions[0].dataset.redirect !== undefined) {
+              VuFind.modal('hide');
+            }
+          });
+
+          const formatChangeHandler = () => {
+            const redirect = formatEl.selectedOptions[0].dataset.redirect;
+            if (redirect === undefined) {
+              delete exportBtn.dataset.lightboxIgnore;
+              formEl.removeAttribute('target');
+            } else {
+              exportBtn.dataset.lightboxIgnore = '1';
+              formEl.setAttribute('target', redirect);
+            }
+          };
+          formatEl.addEventListener('change', formatChangeHandler);
+          formatChangeHandler();
+        })();
       JS;
 ?>
 <?=$this->assetManager()->outputInlineScriptString($script) ?>

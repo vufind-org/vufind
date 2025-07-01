@@ -272,6 +272,7 @@ ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
         removeHashFromLocation();
       }
       setupJumpMenus(newTab);
+      VuFind.emit('record-tab-loaded', {container: newTab});
     });
 };
 

@@ -50,7 +50,7 @@
   <property name="default_test_timeout" value="5000" /><!-- default timeout (in ms) for Mink tests; increase when tests fail on slow systems -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="9.5.0" />
+  <property name="solr_version" value="9.8.1" />
   <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
@@ -66,7 +66,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="10.1.4" />
+  <property name="version" value="10.2.0" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -518,7 +518,7 @@
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1/?openapi&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>

@@ -7,7 +7,7 @@
       $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();
     }
   ?>
-  <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" class="form-control">
+  <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" class="form-select">
     <?php foreach ($loginTargets as $target):?>
       <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
     <?php endforeach ?>

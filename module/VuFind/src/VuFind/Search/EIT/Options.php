@@ -30,8 +30,6 @@
 
 namespace VuFind\Search\EIT;
 
-use function count;
-
 /**
  * EBSCO EIT Search Options
  * Largely copied from WorldCat Search Options
@@ -52,39 +50,8 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'EIT';
-
-        // Load the configuration file:
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->Advanced_Searches)) {
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                $this->advancedHandlers[$key] = $value;
-            }
-        }
-
-        // Load sort preferences:
-        if (isset($searchSettings->Sorting)) {
-            foreach ($searchSettings->Sorting as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->General->default_sort)) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
-        if (
-            isset($searchSettings->DefaultSortingByType)
-            && count($searchSettings->DefaultSortingByType) > 0
-        ) {
-            foreach ($searchSettings->DefaultSortingByType as $key => $val) {
-                $this->defaultSortByHandler[$key] = $val;
-            }
-        }
+        parent::__construct($configLoader);
     }
 
     /**

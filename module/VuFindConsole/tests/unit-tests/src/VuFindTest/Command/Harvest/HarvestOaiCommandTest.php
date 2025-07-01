@@ -53,10 +53,11 @@ class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testIniOverride()
     {
-        $command = new HarvestOaiCommand();
+        $pathResolver = $this->getPathResolver();
+        $command = new HarvestOaiCommand($pathResolver);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $expectedIni = $this->getPathResolver()->getConfigPath('oai.ini', 'harvest');
+        $expectedIni = $pathResolver->getConfigPath('oai.ini', 'harvest');
         $this->assertEquals(
             "Please add OAI-PMH settings to $expectedIni.\n",
             $commandTester->getDisplay()

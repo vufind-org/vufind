@@ -114,6 +114,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                             return (new BlockCipher())->setAlgorithm($algo)->setKey($key);
                         }
                     ),
+                    $this->getPathResolver(),
                 ]
             )->onlyMethods(['getConfigWriter'])
             ->getMock();

@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Tag Controller
@@ -43,6 +44,19 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  */
 class TagController extends AbstractSearch
 {
+    use Feature\UserContentTrait;
+
+    /**
+     * Array of sort options for userListAction
+     *
+     * @var array
+     */
+    protected array $sortList = [
+        'posted desc' => 'sort_created_desc',
+        'posted asc' => 'sort_created_asc',
+        'title' => 'sort_title',
+    ];
+
     /**
      * Constructor
      *
@@ -65,5 +79,67 @@ class TagController extends AbstractSearch
             throw new ForbiddenException('Tags disabled');
         }
         return parent::resultsAction();
+    }
+
+    /**
+     * Get all tags for the logged in user
+     *
+     * @return View
+     */
+    public function userListAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+        if (!$this->tagsEnabled()) {
+            throw new ForbiddenException('Tags disabled.');
+        }
+        $paging = $this->getPagingParams($this->params());
+        $service = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
+        $tags = $this->getUserContentRecordTitles(
+            $service->getResourceTagsPaginator(
+                $user->getId(),
+                null,
+                null,
+                $paging['sort'],
+                $paging['page'],
+                $paging['limit'],
+            )
+        );
+        return $this->createViewModel(
+            [
+                'tags' => $tags,
+                'sortList' => $this->getSortList($this->sortList, $paging['sort']),
+                'params' => $this->params()->fromQuery(),
+            ]
+        );
+    }
+
+    /**
+     * Delete given tags by the logged in user
+     *
+     * @return View
+     */
+    public function deleteTagsAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+        if ($this->formWasSubmitted(['deleteSelectedtag'])) {
+            $csrf = $this->getService(CsrfInterface::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+        }
+        if (!empty($tags = $this->params()->fromPost('deleteSelectedtag', []))) {
+            $tagService = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
+            $tagService->deleteLinksByResourceTagsIdArray($tags);
+        }
+
+        return $this->redirect()->toRoute('tag-userlist');
     }
 }
