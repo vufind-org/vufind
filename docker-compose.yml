@@ -29,6 +29,7 @@ services:
   # SOCKS5 proxy over SSH jump hosts
   sshproxy:
     image: sshproxy
+    restart: always
     build:
       context: local/docker
       dockerfile: sshproxy.Dockerfile
