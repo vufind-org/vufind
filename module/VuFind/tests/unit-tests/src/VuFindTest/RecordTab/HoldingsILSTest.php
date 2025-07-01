@@ -29,8 +29,8 @@
 
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordTab\HoldingsILS;
 use VuFind\RecordDriver\EDS;
+use VuFind\RecordTab\HoldingsILS;
 
 /**
  * HoldingsILS Test Class
@@ -60,11 +60,11 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
             'CatalogDatabaseId' => 'cat012345a',
             'CatalogANRegex' => [
                 '/^demo\.oai\.edge\.demo\.folio\.provider\.com\.fs00000000\./',
-                '/\./'
+                '/\./',
             ],
             'CatalogANReplace' => [
                 '',
-                '-'
+                '-',
             ],
         ],
     ];
@@ -150,6 +150,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $obj->setRecordDriver($driver);
         $this->assertTrue($obj->isVisible());
     }
+
     /**
      * Test isVisible false, for EDS record with catalog & wrong pubType
      *

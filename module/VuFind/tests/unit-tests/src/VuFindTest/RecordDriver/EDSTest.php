@@ -78,11 +78,11 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             'CatalogDatabaseId' => 'cat012345a',
             'CatalogANRegex' => [
                 '/^demo\.oai\.edge\.demo\.folio\.provider\.com\.fs00000000\./',
-                '/\./'
+                '/\./',
             ],
             'CatalogANReplace' => [
                 '',
-                '-'
+                '-',
             ],
         ],
     ];
