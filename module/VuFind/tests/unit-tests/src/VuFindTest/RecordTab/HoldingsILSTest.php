@@ -46,10 +46,10 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-    * Default test configuration Patron Empowerment Framework (PEF)
-    *
-    * @var array
-    */
+     * Default test configuration Patron Empowerment Framework (PEF)
+     *
+     * @var array
+     */
     protected $defaultDriverConfigPEF = [
         'General' => [
             'default_sort' => 'relevance',
@@ -70,16 +70,16 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-    * Generate a new Eds driver to return responses set in a json fixture
-    *
-    * Overwrites $this->driver
-    * Uses session cache
-    *
-    * @param ?string $test   Name of test fixture to load
-    * @param ?array  $config Driver configuration (null to use default)
-    *
-    * @return EDS
-    */
+     * Generate a new Eds driver to return responses set in a json fixture
+     *
+     * Overwrites $this->driver
+     * Uses session cache
+     *
+     * @param ?string $test   Name of test fixture to load
+     * @param ?array  $config Driver configuration (null to use default)
+     *
+     * @return EDS
+     */
     protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
         $record = new EDS(null, new \VuFind\Config\Config($this->defaultDriverConfigPEF));
