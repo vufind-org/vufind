@@ -125,23 +125,16 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
 
-        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
-            // Add timestamp hash to avoid browser cache
-            $thumb['hash'] = md5(time());
+        if (!is_array($thumb)) {
+            return $this->addBrowserCacheHash(['url' => $thumb]);
         }
 
-        // Array? It's parameters to send to the cover generator:
-        if (is_array($thumb)) {
-            if (!$resolveDynamic) {
-                return null;
-            }
-            $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
-        } else {
-            return ['url' => $thumb];
+        $thumb = $this->addBrowserCacheHash($thumb);
+        if (!$resolveDynamic) {
+            return null;
         }
-
-        $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
-            : ['size' => $size];
+        $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
+        $settings = array_merge($thumb, ['size' => $size]);
         $handlers = $this->coverLoader->getHandlers();
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
         foreach ($handlers as $handler) {
@@ -186,5 +179,22 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
         }
         return ['url' => $dynamicUrl];
+    }
+
+    /**
+     * Add a hash to the url if browser cache is disabled.
+     *
+     * @param array $thumb Thumbnail
+     *
+     * @return array
+     */
+    public function addBrowserCacheHash(
+        array $thumb
+    ): array {
+        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
+            // Add timestamp hash to avoid browser cache
+            $thumb['browser_cache_hash'] = md5(time());
+        }
+        return $thumb;
     }
 }
