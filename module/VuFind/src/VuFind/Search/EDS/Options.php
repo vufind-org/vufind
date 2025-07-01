@@ -762,6 +762,7 @@ class Options extends AbstractEDSOptions
      */
     protected function getConfiguredDefaultView(): string
     {
+        // Note that getApiProperty() will retrieve any defaultView value set by setConfiguredDefaultView().
         return $this->getApiProperty('defaultView');
     }
 }
