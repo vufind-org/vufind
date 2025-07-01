@@ -830,7 +830,7 @@ class Upgrade
     }
 
     /**
-     * Upgrade EDS.ini
+     * Upgrade EDS.ini.
      *
      * @throws FileAccessException
      * @return void
@@ -841,7 +841,7 @@ class Upgrade
     }
 
     /**
-     * Upgrade EPF.ini
+     * Upgrade EPF.ini.
      *
      * @throws FileAccessException
      * @return void
@@ -852,7 +852,7 @@ class Upgrade
     }
 
     /**
-     * Upgrade EDS.ini or EPF.ini
+     * Upgrade EDS.ini or EPF.ini.
      *
      * @param string $filename Config filename
      *
