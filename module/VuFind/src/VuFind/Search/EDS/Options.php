@@ -659,7 +659,9 @@ class Options extends AbstractEDSOptions
         $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
 
         // default view
-        $this->setConfiguredDefaultView('list_' . ($settings['ResultListView'] ?? 'brief'));
+        if (null === $this->defaultView) {
+            $this->setConfiguredDefaultView('list_' . ($settings['ResultListView'] ?? 'brief'));
+        }
     }
 
     /**
