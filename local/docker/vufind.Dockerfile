@@ -20,6 +20,8 @@ RUN set -e; \
         docker-php-ext-install intl; \
     docker-php-ext-configure gd --with-freetype --with-jpeg; \
         docker-php-ext-install -j$(nproc) gd; \
+    docker-php-ext-configure exif; \
+        docker-php-ext-install -j$(nproc) exif; \
     docker-php-ext-configure pdo_mysql; \
         docker-php-ext-install -j$(nproc) pdo_mysql; \
     docker-php-ext-configure mysqli; \
