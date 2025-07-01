@@ -16,26 +16,6 @@ class MailHandler extends MonologMailHandler
     use VerbosityTrait;
 
     /**
-     * @var string The recipient email address
-     */
-    protected $to;
-
-    /**
-     * @var string The sender email address  
-     */
-    protected $from;
-
-    /**
-     * @var string The email subject
-     */
-    protected $subject;
-
-    /**
-     * @var Mailer VuFind's mailer instance
-     */
-    protected $mailer;
-
-    /**
      * Constructor
      *
      * @param string $to      Recipient email address
@@ -43,13 +23,7 @@ class MailHandler extends MonologMailHandler
      * @param string $from    Sender email address
      * @param Mailer $mailer  VuFind mailer instance
      */
-    public function __construct(string $to, string $subject, string $from, Mailer $mailer)
-    {
-        $this->to = $to;
-        $this->subject = $subject;
-        $this->from = $from;
-        $this->mailer = $mailer;
-    }
+    public function __construct(protected string $to, protected string $subject, protected string $from, protected Mailer $mailer){}
 
     /**
      * Send the mail using VuFind's mailer

@@ -29,14 +29,18 @@
 
 namespace VuFind\Log;
 
-use VuFind\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use Stringable;
 
 use function call_user_func_array;
 use function func_get_args;
 
 /**
- * This class provides a lazy-initializing proxy for the actual logger class
+ * Lazy-loading proxy for the VuFind logger.
+ *
+ * This class delays the instantiation of the actual VuFind\Log\Logger
+ * until a logging method is first called, improving performance
+ * by only initializing the full logging stack when truly necessary.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -104,6 +108,8 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log a critical error
      *
+     * @deprecated
+     *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
      *
@@ -113,6 +119,17 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     {
         $this->__call(__FUNCTION__, func_get_args());
     }
+
+    /**
+     * Log a critical error
+     *
+     * @deprecated
+     *
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params
+     *
+     * @return void
+     */
 
     public function crit(Stringable|string $message, array $context = []): void
     {
@@ -132,6 +149,19 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
         $this->__call(__FUNCTION__, func_get_args());
     }
 
+
+
+    /**
+     * Log an error
+     *
+     * @deprecated
+     * 
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params
+     *
+     * @return void
+     */
+
     public function err(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
@@ -149,6 +179,17 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     {
         $this->__call(__FUNCTION__, func_get_args());
     }
+
+    /**
+     * Log a warning
+     *
+     * @deprecated
+     *
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params
+     *
+     * @return void
+     */
 
     public function warn(Stringable|string $message, array $context = []): void
     {

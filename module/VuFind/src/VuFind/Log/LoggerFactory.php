@@ -95,6 +95,23 @@ class LoggerFactory implements FactoryInterface
         );
     }
 
+
+    protected function addDbHandler(MonologLogger $logger, Config $config, ContainerInterface $container) {
+        $parts = explode(':', $config->Logging->database);
+        $table_name = $parts[0];
+        $error_types = $parts[1] ?? '';
+
+        $columnMapping = [
+            'priority' => 'priority',
+            'message' => 'message',
+            'logtime' => 'timestamp',
+            'ident' => 'ident',
+        ];
+        
+        $filters = explode(',', $error_types);
+        
+    }
+
     /**
      * Configure File handler.
      *
@@ -125,10 +142,11 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
-     * Configure File handler.
+     * Configure Mail handler.
      *
      * @param MonologLogger $monologLogger The Monolog logger instance to add handlers to.
-     * @param string        $configString  The file configuration string (e.g., "path/to/file.log:error-1,debug-5").
+     * @param ContainerInterface $container Service manager
+     * @param Config             $config    Configuration
      *
      * @return void
      */
@@ -323,7 +341,6 @@ class LoggerFactory implements FactoryInterface
                     $max = LogLevel::EMERGENCY;
                     break;
                 default:
-                    // INVALID FILTER, so skip it.
                     continue 2;
             }
 
@@ -395,10 +412,10 @@ class LoggerFactory implements FactoryInterface
             // Now build the actual service:
             $monologLogger = new MonologLogger('vufind');
             $wrapped = new $requestedName(
-                $container->get(UserIpReader::class), // Use imported alias
+                $container->get(UserIpReader::class),
                 $monologLogger
             );
-            $this->configureMonologLogger($container, $monologLogger); // Call the Monolog configuration method
+            $this->configureMonologLogger($container, $monologLogger);
         };
 
         $proxyClass = $this->getProxyClassName($requestedName);

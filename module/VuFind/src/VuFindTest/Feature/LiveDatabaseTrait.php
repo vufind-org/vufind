@@ -95,7 +95,7 @@ trait LiveDatabaseTrait
                 $adapterFactory->getAdapter()
             );
             $container->set('config', $config);
-            $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+            $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
             $container->set(
                 \VuFind\Db\Row\PluginManager::class,
                 new \VuFind\Db\Row\PluginManager($container, [])

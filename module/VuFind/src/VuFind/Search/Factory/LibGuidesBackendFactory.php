@@ -59,7 +59,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerAwareInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 

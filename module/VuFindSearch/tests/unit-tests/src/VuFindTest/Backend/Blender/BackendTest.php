@@ -32,7 +32,7 @@ namespace VuFindTest\Backend\Blender;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
-use Laminas\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use VuFind\Config\Config;
 use VuFind\RecordDriver\EDS as EDSRecord;

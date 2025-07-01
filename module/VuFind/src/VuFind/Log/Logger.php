@@ -31,7 +31,7 @@
 namespace VuFind\Log;
 
 use Monolog\Logger as MonologLogger;
-use VuFind\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Traversable;
 use VuFind\Net\UserIpReader;
@@ -59,7 +59,7 @@ class Logger implements LoggerInterface
     /**
      * Is debug logging enabled?
      *
-     * @var bool`
+     * @var bool
      */
     protected bool $debugNeeded = false;
 
@@ -68,7 +68,6 @@ class Logger implements LoggerInterface
      *
      * @var UserIpReader
      */
-    protected UserIpReader $userIpReader;
     protected MonologLogger $monologLogger;
 
     protected const LEVEL_MAP = [
@@ -76,9 +75,8 @@ class Logger implements LoggerInterface
         'warn'      => LogLevel::WARNING,
     ];
 
-    public function __construct(UserIpReader $userIpReader, ?MonologLogger $monologLogger)
+    public function __construct(protected UserIpReader $userIpReader, ?MonologLogger $monologLogger)
     {
-        $this->userIpReader = $userIpReader;
         $this->monologLogger = $monologLogger ?? new MonologLogger('default');
     }
 
@@ -94,6 +92,8 @@ class Logger implements LoggerInterface
 
     /**
      * System is unusable.
+     * 
+     * @deprecated
      *
      * @param mixed[] $context
      */
@@ -129,6 +129,8 @@ class Logger implements LoggerInterface
 
     /**
      * Critical conditions.
+     * 
+     * @deprecated
      *
      * @param string  $message
      * @param mixed[] $context
@@ -156,6 +158,8 @@ class Logger implements LoggerInterface
     /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
+     * 
+     * @deprecated
      *
      * @param string  $message
      * @param mixed[] $context
@@ -181,6 +185,8 @@ class Logger implements LoggerInterface
 
     /**
      * Exceptional occurrences that are not errors.
+     * 
+     * @deprecated
      *
      * @param string  $message
      * @param mixed[] $context
