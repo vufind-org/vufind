@@ -279,9 +279,9 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc
     {
         $result = [];
         foreach ($this->getMarcReader()->getFields('370') as $field) {
-            $place = $this->getSubfield($field, 'e')
-                ?: $this->getSubfield($field, 'f');
-            if ($place) {
+            $places = $this->getSubfields($field, 'e')
+                ?: $this->getSubfields($field, 'f');
+            foreach ($places as $place) {
                 $startYear = $this->getSubfield($field, 's') ?: null;
                 $endYear = $this->getSubfield($field, 't') ?: null;
                 $date = null;
