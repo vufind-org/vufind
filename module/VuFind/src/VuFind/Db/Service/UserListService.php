@@ -114,7 +114,7 @@ class UserListService extends AbstractDbService implements
         $parameters = [];
         $where = ["ul.public = '1'"];
         if (!empty($includeFilter)) {
-            $where[] = 'ul.id IN (:includeFilter)';
+            $where[] = 'ul IN (:includeFilter)';
             $parameters['includeFilter'] = $includeFilter;
         }
         if (!empty($excludeFilter)) {
