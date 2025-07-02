@@ -20,7 +20,7 @@
     $dom->preserveWhiteSpace = false;
     $dom->formatOutput = true;
     if ($dom->loadXML($rawFieldData['fullrecord'])) {
-      echo '<pre id="record-data">' . $this->escapeHtml($dom->saveXML()) . '</pre>';
+      echo '<pre id="record-data" data-double-click-select-all>' . $this->escapeHtml($dom->saveXML()) . '</pre>';
       $script = <<<JS
             $(document).ready(function() {
               const recordData = document.getElementById('record-data');
@@ -36,7 +36,7 @@
           JS;
       echo $this->assetManager()->outputInlineScriptString($script);
     } else {
-      echo '<pre id="record-data">' . $this->escapeHtml($rawFieldData['fullrecord']) . '</pre>';
+      echo '<pre id="record-data" data-double-click-select-all>' . $this->escapeHtml($rawFieldData['fullrecord']) . '</pre>';
     }
   ?>
 <h2><?=$this->transEsc('staff_view_finna_index')?></h2>
