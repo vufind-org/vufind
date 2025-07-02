@@ -90,11 +90,11 @@ class MyResearchController extends AbstractBase
     use ListItemSelectionTrait;
 
     /**
-     * Default life time for recovery hashes (two weeks)
+     * Default life time for recovery hashes (one hour)
      *
      * @var int
      */
-    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 1209600;
+    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
 
     /**
      * Configuration loader
