@@ -125,6 +125,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
 
+        // If $thumb is not an array, it is a full URL to a thumbnail image.
         if (!is_array($thumb)) {
             return ['url' => $thumb];
         }
