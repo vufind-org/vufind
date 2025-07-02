@@ -135,6 +135,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             $thumb['browser_cache_hash'] = md5(time());
         }
 
+        // If we got this far, $thumb is an array, meaning it contains parameters to send to the cover generator.
         if (!$resolveDynamic) {
             return null;
         }
