@@ -90,6 +90,13 @@ class MyResearchController extends AbstractBase
     use ListItemSelectionTrait;
 
     /**
+     * Default life time for recovery hashes (two weeks)
+     *
+     * @var int
+     */
+    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 1209600;
+
+    /**
      * Configuration loader
      *
      * @var \VuFind\Config\PluginManager
@@ -1902,8 +1909,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime
-                ?? 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -1960,7 +1966,7 @@ class MyResearchController extends AbstractBase
         }
         // Check if hash is expired (we do this here to ensure that repeated calls work but not for too long):
         $config = $this->getConfig();
-        $hashLifetime = $config->Authentication->recover_hash_lifetime ?? 1209600; // Two weeks
+        $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
         if (time() - $recoveryData['timestamp'] > $hashLifetime) {
             $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
             return $this->forwardTo('MyResearch', 'Login');
@@ -2002,8 +2008,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime
-                ?? 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
