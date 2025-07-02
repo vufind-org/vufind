@@ -131,6 +131,7 @@ class Upgrade
         $this->upgradeSitemap();
         $this->upgradeSms();
         $this->upgradeEDS();
+        $this->upgradeEPF();
         $this->upgradeSummon();
         $this->upgradePrimo();
         $this->upgradeRecordDataFormatter();
@@ -836,22 +837,46 @@ class Upgrade
      */
     protected function upgradeEDS()
     {
+        $this->upgradeEbsco('EDS.ini');
+    }
+
+    /**
+     * Upgrade EPF.ini.
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradeEPF()
+    {
+        $this->upgradeEbsco('EPF.ini');
+    }
+
+    /**
+     * Upgrade EDS.ini or EPF.ini.
+     *
+     * @param string $filename Config filename
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradeEbsco(string $filename)
+    {
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $groups = [
             'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
         ];
-        $this->applyOldSettings('EDS.ini', $groups);
+        $this->applyOldSettings($filename, $groups);
 
         // Fix default view settings in case they use the old style:
-        $newConfig = & $this->newConfigs['EDS.ini']['General'];
+        $newConfig = & $this->newConfigs[$filename]['General'];
 
         if (!str_contains($newConfig['default_view'], '_')) {
             $newConfig['default_view'] = 'list_' . $newConfig['default_view'];
         }
 
         // save the file
-        $this->saveModifiedConfig('EDS.ini');
+        $this->saveModifiedConfig($filename);
     }
 
     /**

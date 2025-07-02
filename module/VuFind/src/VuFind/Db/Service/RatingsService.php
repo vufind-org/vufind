@@ -126,4 +126,45 @@ class RatingsService extends AbstractDbService implements
             ? $this->getDbTable('resource')->select(['id' => $resourceOrId])->current() : $resourceOrId;
         return $resource->addOrUpdateRating(is_int($userOrId) ? $userOrId : $userOrId->getId(), $rating);
     }
+
+    /**
+     * Delete ratings by given user and rating ids.
+     *
+     * @param array $ids    Array of rating ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void
+    {
+        $callback = function ($select) use ($ids, $userId) {
+            $select->where->in('id', $ids);
+            $select->where->equalTo('user_id', $userId);
+        };
+        $this->getDbTable('Ratings')->delete($callback);
+    }
+
+    /**
+     * Get a paginated result of all ratings by user id.
+     *
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return \Laminas\Paginator\Paginator
+     */
+    public function getRatingsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort,
+    ): \Laminas\Paginator\Paginator {
+        return $this->getDbTable('Ratings')->getRatingsPaginator(
+            $userId,
+            $limit,
+            $page,
+            $sort,
+        );
+    }
 }

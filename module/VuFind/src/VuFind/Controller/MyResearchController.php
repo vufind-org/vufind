@@ -2367,6 +2367,24 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Get User Content (comments, ratings, tags)
+     *
+     * @return mixed
+     */
+    public function userContentAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+        $tabs = array_keys($this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentTabs());
+        if (empty($tabs)) {
+            throw new ForbiddenException('User content disabled.');
+        }
+        return $this->redirect()->toRoute($tabs[0] . '-userlist');
+    }
+
+    /**
      * Get the ILS pagination helper
      *
      * @return PaginationHelper
