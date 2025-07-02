@@ -126,10 +126,14 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         }
 
         if (!is_array($thumb)) {
-            return $this->addBrowserCacheHash(['url' => $thumb]);
+            return ['url' => $thumb];
         }
 
-        $thumb = $this->addBrowserCacheHash($thumb);
+        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
+            // Add timestamp hash to avoid browser cache
+            $thumb['browser_cache_hash'] = md5(time());
+        }
+
         if (!$resolveDynamic) {
             return null;
         }
@@ -179,22 +183,5 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
         }
         return ['url' => $dynamicUrl];
-    }
-
-    /**
-     * Add a hash to the url if browser cache is disabled.
-     *
-     * @param array $thumb Thumbnail
-     *
-     * @return array
-     */
-    public function addBrowserCacheHash(
-        array $thumb
-    ): array {
-        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
-            // Add timestamp hash to avoid browser cache
-            $thumb['browser_cache_hash'] = md5(time());
-        }
-        return $thumb;
     }
 }
