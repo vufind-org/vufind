@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\Element;
+
 /**
  * Test new item search functionality.
  *
@@ -40,6 +42,66 @@ namespace VuFindTest\Mink;
  */
 class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    /**
+     * Submit a new item search and return the resulting page object.
+     *
+     * @param int    $buttonIndex    Index of range button to press
+     * @param string $expectedRanges Expected text of the range select buttons
+     *
+     * @return Element
+     */
+    protected function submitNewItemSearch(
+        int $buttonIndex = 1,
+        string $expectedRanges = 'Yesterday Past 5 Days Past 30 Days'
+    ): Element {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/NewItem');
+        $page = $session->getPage();
+        // Confirm custom ranges display correctly:
+        $this->assertEquals(
+            $expectedRanges,
+            $this->findCssAndGetText($page, '.form-search-newitem .btn-group')
+        );
+        // Now perform a search:
+        $this->clickCss($page, '.form-search-newitem .btn-group .btn-primary', index: $buttonIndex);
+        $this->clickCss($page, '.form-search-newitem input[type="submit"]');
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
+     * Test that pagination works as expected in new items.
+     *
+     * @return void
+     */
+    public function testSolrDrivenNewItemsPagination(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_limit' => 10,
+                    ],
+                    'NewItem' => [
+                        'method' => 'solr',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->submitNewItemSearch();
+        // Confirm that we've reached the custom results page:
+        $this->assertStringStartsWith(
+            'Showing 1 - 10 results of 20 New Items',
+            $this->findCssAndGetText($page, '.search-stats')
+        );
+        $this->clickCss($page, '.page-link');
+        $this->waitForPageLoad($page);
+        $this->assertStringEndsWith(
+            'Showing 11 - 20 results of 20 New Items',
+            $this->findCssAndGetText($page, '.search-stats')
+        );
+    }
+
     /**
      * Test that Solr-powered new items work as expected (using non-default range settings).
      *
@@ -57,18 +119,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/NewItem');
-        $page = $session->getPage();
-        // Confirm custom ranges display correctly:
-        $this->assertEquals(
-            'Yesterday Past 15 Days Past 60 Days',
-            $this->findCssAndGetText($page, '.form-search-newitem .btn-group')
-        );
-        // Now perform a search:
-        $this->clickCss($page, '.form-search-newitem .btn-group .btn-primary', index: 1);
-        $this->clickCss($page, '.form-search-newitem input[type="submit"]');
-        $this->waitForPageLoad($page);
+        $page = $this->submitNewItemSearch(expectedRanges: 'Yesterday Past 15 Days Past 60 Days');
 
         // Confirm that we've reached the custom results page:
         $this->assertEquals(
@@ -103,6 +154,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Perform a fresh search and make sure unwanted hidden filters do not bleed through:
+        $session = $this->getMinkSession();
         $session->back(); // return to new item list
         $this->clickCss($page, '.search.container .btn-primary');
         $this->waitForPageLoad($page);

@@ -32,7 +32,7 @@
 
 namespace VuFind\Search\EPF;
 
-use function count;
+use VuFind\Search\EDS\AbstractEDSOptions;
 
 /**
  * EPF API Options
@@ -45,15 +45,8 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends AbstractEDSOptions
 {
-    /**
-     * Default view option
-     *
-     * @var ?string
-     */
-    protected $defaultView = null;
-
     /**
      * Constructor
      *
@@ -80,17 +73,6 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getEpfView()
-    {
-        $viewArr = explode('_', $this->defaultView);
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
-    }
-
-    /**
      * Return the route name of the action used for performing advanced searches.
      * Returns false if the feature is not supported.
      *
@@ -109,8 +91,6 @@ class Options extends \VuFind\Search\Base\Options
     protected function setOptionsFromConfig()
     {
         // View preferences
-        if (null !== ($view = $this->searchSettings['General']['default_view'] ?? null)) {
-            $this->defaultView = 'list_' . $view;
-        }
+        $this->initViewOptions($this->searchSettings);
     }
 }
