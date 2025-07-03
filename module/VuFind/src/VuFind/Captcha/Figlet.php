@@ -37,6 +37,8 @@ namespace VuFind\Captcha;
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Will not be supported in future Laminas releases
  */
 class Figlet extends LaminasBase
 {

@@ -86,17 +86,7 @@ class Feedback extends Gateway
         int $limit = 20
     ): Paginator {
         $sql = $this->getSql();
-        $select = $sql->select()->columns(
-            [
-                '*',
-                'user_name' => new \Laminas\Db\Sql\Expression(
-                    "CONCAT_WS(' ', u.firstname, u.lastname)"
-                ),
-                'manager_name' => new \Laminas\Db\Sql\Expression(
-                    "CONCAT_WS(' ', m.firstname, m.lastname)"
-                ),
-            ]
-        );
+        $select = $sql->select();
         if (null !== $formName) {
             $select->where->equalTo('form_name', $formName);
         }
@@ -106,17 +96,7 @@ class Feedback extends Gateway
         if (null !== $status) {
             $select->where->equalTo('status', $status);
         }
-        $select->join(
-            ['u' => 'user'],
-            'u.id = feedback.user_id',
-            [],
-            $select::JOIN_LEFT
-        )->join(
-            ['m' => 'user'],
-            'm.id = feedback.updated_by',
-            [],
-            $select::JOIN_LEFT
-        )->order('created DESC');
+        $select->order('created DESC');
 
         $page = null === $page ? null : intval($page);
         if (null !== $page) {

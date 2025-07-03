@@ -29,7 +29,7 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Translator\TranslatorInterface;
 
 use function count;
 use function is_array;
@@ -50,7 +50,7 @@ trait TranslatorAwareTrait
     /**
      * Translator
      *
-     * @var \Laminas\I18n\Translator\TranslatorInterface
+     * @var TranslatorInterface
      */
     protected $translator = null;
 
@@ -70,7 +70,7 @@ trait TranslatorAwareTrait
     /**
      * Get translator object.
      *
-     * @return \Laminas\I18n\Translator\TranslatorInterface
+     * @return TranslatorInterface
      */
     public function getTranslator()
     {
@@ -318,8 +318,8 @@ trait TranslatorAwareTrait
         // can still be provided if the input cannot be changed (e.g. if it comes
         // from a third-party system).
         return str_replace(
-            ['(', ')', '!', '?', '|'],
-            ['_28', '_29', '_21', '_3F', '_7C'],
+            ['&', '(', ')', '!', '?', '|'],
+            ['_26', '_28', '_29', '_21', '_3F', '_7C'],
             $key
         );
     }

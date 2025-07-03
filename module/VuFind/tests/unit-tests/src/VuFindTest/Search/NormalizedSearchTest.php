@@ -81,7 +81,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
      *
      * @return NormalizedSearch
      */
-    protected function getNormalizedSearch(Results $results = null): NormalizedSearch
+    protected function getNormalizedSearch(?Results $results = null): NormalizedSearch
     {
         $finalResults = $results ?? $this->getResults();
         $manager = $this->getResultsManager();

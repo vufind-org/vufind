@@ -6,7 +6,7 @@ $primary: #0045a1;
 $navbar-dark-color: white;
 $grid-gutter-width: 20px;
 
-@import "bootstrap"; /* Include bootstrap theme's less base */
+@import "bootstrap"; /* Include bootstrap theme's scss base */
 
 /* Change specific styles below */
 body {
@@ -31,3 +31,11 @@ footer .container { border-bottom: 2px solid #137752; }
 
 /* You can also organize these styles in separate files and @import them */
 @import "home-page";
+
+.searchForm .searchForm-query #searchForm-reset {
+  aspect-ratio: 1;
+  width: 1.7rem;
+  margin-inline-end: 0.125rem;
+  line-height: 1;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2);
+}

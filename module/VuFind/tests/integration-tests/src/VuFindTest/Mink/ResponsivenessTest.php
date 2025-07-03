@@ -87,7 +87,14 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test visibility of search result bulk items and checkbox:
         $shouldBeVisible = $controlVisibility['bulk'];
-        $this->assertEquals($shouldBeVisible, $this->findCss($page, '.bulkActionButtons')->isVisible());
+        $this->assertEquals(
+            $shouldBeVisible,
+            $this->findCss($page, '#search-cart-form .bulkActionButtons')->isVisible()
+        );
+        $this->assertEquals(
+            $shouldBeVisible,
+            $this->findCss($page, '.mainbody > .bulkActionButtons')->isVisible()
+        );
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.checkbox-select-item')->isVisible());
 
         // Add a favorite:

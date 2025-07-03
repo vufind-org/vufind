@@ -424,7 +424,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBiblio($id, $patron, $options);
     }
@@ -1280,7 +1280,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'pickup_library_id' => $pickUpLocation,
             'notes' => $comment,
             'expiration_date' => !empty($holdDetails['requiredByTS'])
-                        ? date('Y-m-d', $holdDetails['requiredByTS'])
+                        ? gmdate('Y-m-d', $holdDetails['requiredByTS'])
                         : null,
         ];
         if ($level == 'copy') {
@@ -2104,14 +2104,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $result = $this->makeRequest($requestParams);
         if (404 == $result['code']) {
-            return [];
+            return $results;
         }
         if (200 != $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
 
         if (empty($result['data']['item_availabilities'])) {
-            return [];
+            return $results;
         }
 
         // Return total number of results for pagination (with fallback for older

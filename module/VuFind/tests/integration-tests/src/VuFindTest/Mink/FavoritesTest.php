@@ -496,21 +496,21 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $allText = [];
         foreach ($facetLinks as $link) {
             $allText[] = $link->getText();
-            if ($link->getText() === '1 test 3') {
+            if ($link->getText() === 'test 3 1') {
                 $linkToClick = $link;
             }
         }
         // Facet order may vary by database engine, but let's make sure all the values are there:
         $this->assertCount(3, $allText);
         $expectedLinks = [
-            '1 test 3',
-            '1 test1',
-            '1 test2',
+            'test 3 1',
+            'test1 1',
+            'test2 1',
         ];
         $this->assertEmpty(array_diff($expectedLinks, $allText));
 
         // Now click on one and confirm that it filters the list down to just one item:
-        $this->assertEquals('1 test 3', $linkToClick?->getText());
+        $this->assertEquals('test 3 1', $linkToClick?->getText());
         $linkToClick->click();
         $this->waitForPageLoad($page);
         $this->assertFavoriteTitleOrder($page, ['Fake Record 1 with multiple relators/']);
@@ -969,11 +969,11 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button->click();
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
+        $this->waitForLightboxHidden();
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCssAndGetText($page, '.modal .alert-success')
+            $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->closeLightbox($page);
         $this->unFindCss($page, '.result');
     }
 

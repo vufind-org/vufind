@@ -128,12 +128,12 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config               $config  VuFind configuration
+     * @param \VuFind\Config\Config                $config  VuFind configuration
      * @param \Laminas\Router\Http\TreeRouteStack  $router  Router
      * @param \Laminas\Http\PhpEnvironment\Request $request Request
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \Laminas\Router\Http\TreeRouteStack $router,
         \Laminas\Http\PhpEnvironment\Request $request
     ) {
@@ -177,9 +177,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         } else {
             $code = $this->trackPageView();
         }
-
-        $inlineScript = $this->getView()->plugin('inlinescript');
-        return $inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $code, 'SET');
+        return $this->getView()->plugin('assetManager')->outputInlineScriptString($code);
     }
 
     /**

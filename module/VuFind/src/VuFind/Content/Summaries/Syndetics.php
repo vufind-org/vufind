@@ -29,6 +29,8 @@
 
 namespace VuFind\Content\Summaries;
 
+use VuFind\String\PropertyString;
+
 /**
  * Syndetics Summaries content loader.
  *
@@ -110,7 +112,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                 // If we have syndetics plus, we don't actually want the content
                 // we'll just stick in the relevant div
                 if ($this->usePlus) {
-                    $summaries[] = $sourceInfo['div'];
+                    $summaries[] = PropertyString::fromHtml($sourceInfo['div'])->setHtmlTrusted(true);
                 } else {
                     // Get the marc field for summaries. (520)
                     $nodes = $xmldoc2->GetElementsbyTagName('Fld520');

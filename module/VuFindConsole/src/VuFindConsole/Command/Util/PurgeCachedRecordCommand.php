@@ -64,7 +64,7 @@ class PurgeCachedRecordCommand extends Command
     public function __construct(
         protected RecordServiceInterface $recordService,
         protected ResourceServiceInterface $resourceService,
-        string $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
     }

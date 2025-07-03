@@ -44,6 +44,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
+use VuFind\Exception\RecordMissing;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\Loader as RecordLoader;
@@ -544,15 +545,19 @@ class FavoritesService implements TranslatorAwareInterface
             [$source, $id] = explode('|', $current, 2);
 
             // Get or create a resource object as needed:
-            $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
+            try {
+                $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
 
-            // Add the information to the user's account:
-            $tags = isset($params['mytags']) ? $this->tagsService->parse($params['mytags']) : [];
-            $this->saveResourceToFavorites($user, $resource, $list, $tags, '', false);
+                // Add the information to the user's account:
+                $tags = isset($params['mytags']) ? $this->tagsService->parse($params['mytags']) : [];
+                $this->saveResourceToFavorites($user, $resource, $list, $tags, '', false);
 
-            // Collect record IDs for caching
-            if ($this->recordCache?->isCachable($resource->getSource())) {
-                $cacheRecordIds[] = $current;
+                // Collect record IDs for caching
+                if ($this->recordCache?->isCachable($resource->getSource())) {
+                    $cacheRecordIds[] = $current;
+                }
+            } catch (RecordMissing $e) {
+                // Record missing, silently skip it.
             }
         }
 

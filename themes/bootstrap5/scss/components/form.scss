@@ -1,10 +1,7 @@
 form {
-    .form-control {
-        border-color: #888;
-        &:focus {
-            border-color: #3F9AE4;
-        }
-      }
+    input.form-control, .form-select:not([multiple]) {
+        height: $input-height;
+    }
     textarea:invalid,
     input:invalid {
         box-shadow: 0 0 2px 1px rgba(255, 0, 0, 0.9);
@@ -16,10 +13,14 @@ form {
     .info {
         margin: 10px 0;
     }
-    .form-group ul {
-        padding: 0;
-        margin-left: 15px;
-        margin-top: 5px;
+    .form-group {
+        margin-bottom: 1rem;
+
+        ul {
+            padding: 0;
+            margin-left: 15px;
+            margin-top: 5px;
+        }
     }
     .form-group label.required::before,
     .form-group .radio-label.required::before,
@@ -36,7 +37,7 @@ form {
     .form-group.checkbox,
     .form-group.radio {
         margin-bottom: 15px;
-        label.control-label {
+        label.form-label {
             padding-left: 0;
             font-weight: 700;
             margin-bottom: 5px;
@@ -55,9 +56,46 @@ form {
         }
     }
 
+    .input-group {
+        width: initial;
+    }
+
     &.dynamic-form {
         input[type=date] {
             padding-top: 0;
         }
     }
+}
+
+.form-inline {
+    .form-control, .form-group, .form-select {
+        vertical-align: middle;
+    }
+}
+
+@include media-breakpoint-up(sm) {
+  .form-inline {
+    .form-label {
+      margin-bottom: 0;
+    }
+    .form-control, .form-group, .form-select {
+      display: inline-block;
+      width: auto;
+    }
+  }
+}
+
+.checkbox {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.radio, .checkbox {
+  label {
+    min-height: 20px;
+    margin-bottom: 0;
+    cursor: pointer;
+  }
 }

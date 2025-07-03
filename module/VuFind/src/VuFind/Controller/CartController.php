@@ -401,7 +401,7 @@ class CartController extends AbstractBase
                 return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
-            $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
+            $url = $export->getBulkUrl($format, $ids);
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
             }

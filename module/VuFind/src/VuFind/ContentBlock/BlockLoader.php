@@ -29,7 +29,7 @@
 
 namespace VuFind\ContentBlock;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\ContentBlock\PluginManager as BlockManager;
 use VuFind\Search\Base\Options;

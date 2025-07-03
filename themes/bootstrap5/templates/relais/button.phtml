@@ -21,11 +21,11 @@
           'relais_success_message' => 'relais_success_message',
         ]
     );
-    $this->headScript()->appendFile('relais.js');
+    $this->assetManager()->appendScriptLink('relais.js');
     $addLink = $this->escapeJs($this->url('relais-request'));
     $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
     $failLink = $this->escapeJs($this->relais()->getSearchLink($driver));
     $activateRelais = "$(document).ready(function() { VuFind.relais.checkAvailability('$addLink', '$oclc', '$failLink') });";
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET');
+    echo $this->assetManager()->outputInlineScriptString($activateRelais);
   }
 ?>

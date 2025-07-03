@@ -17,13 +17,12 @@ return [
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - media: e.g. 'print'
-         * - conditional: e.g. '!IE'
          * - extras: array of additional attributes
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for legacy backwards compatibility reasons. examples:
          * - 'example.css' => same as ['file' => 'example.css']
-         * - 'example.css:print:!IE' => same as
-         *   ['file' => 'example.css', 'media' => 'print', 'conditional' => '!IE']
+         * - 'example.css:print' => same as
+         *   ['file' => 'example.css', 'media' => 'print']
          */
         ['file' => 'compiled.css'],
         ['file' => 'print.css', 'media' => 'print'],
@@ -43,34 +42,34 @@ return [
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - position: 'header' (default) or 'footer'
-         * - conditional: e.g. 'lt IE 10'
          * - disabled: if set to true in a child theme, the matching file will be
          *   removed if it was included by a parent theme.
          *
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for legacy backwards compatibility reasons. example:
          * - 'example.js' => same as ['file' => 'example.js']
-         * - 'example.js:lt IE 10' => same as
-         *   ['file' => 'example.js', 'conditional' => 'lt IE 10']
          */
+        ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/popper.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
-        ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'config.js', 'priority' => 320],
         ['file' => 'lightbox.js', 'priority' => 330],
-        ['file' => 'searchbox_controls.js', 'priority' => 340],
-        ['file' => 'truncate.js', 'priority' => 350],
-        ['file' => 'trigger_print.js', 'priority' => 360],
-        ['file' => 'observer_manager.js', 'priority' => 370],
-        ['file' => 'openurl.js', 'priority' => 380],
-        ['file' => 'list_item_selection.js', 'priority' => 390],
-        ['file' => 'bs3-compat.js', 'priority' => 1000],
+        ['file' => 'cookie.js', 'priority' => 340],
+        ['file' => 'searchbox_controls.js', 'priority' => 350],
+        ['file' => 'truncate.js', 'priority' => 360],
+        ['file' => 'trigger_print.js', 'priority' => 370],
+        ['file' => 'observer_manager.js', 'priority' => 380],
+        ['file' => 'openurl.js', 'priority' => 390],
+        ['file' => 'list_item_selection.js', 'priority' => 400],
+        ['file' => 'covers.js', 'priority' => 410],
+        ['file' => 'validation.js', 'priority' => 420],
+        ['file' => 'copy_to_clipboard.js', 'priority' => 430],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -157,8 +156,8 @@ return [
              * All of the items below have been specified with FontAwesome to allow
              * for a strong inheritance safety net but this is not required.
              */
-            'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
+            'browzine-concern' => 'FontAwesome:exclamation',
             'browzine-issue' => 'Alias:format-serial',
             'browzine-pdf' => 'FontAwesome:file-pdf-o',
             'browzine-retraction' => 'FontAwesome:exclamation',
@@ -172,6 +171,7 @@ return [
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'user-content' => 'FontAwesome:comment',
             'cover-replacement' => 'FontAwesome:question',
             'currency-eur' => 'FontAwesome:eur',
             'currency-gbp' => 'FontAwesome:gbp',
@@ -317,6 +317,7 @@ return [
             'status-pending' => 'FontAwesome:clock-o',
             'status-ready' => 'FontAwesome:bell',
             'status-unavailable' => 'FontAwesome:times',
+            'status-uncertain' => 'FontAwesome:circle',
             'status-unknown' => 'FontAwesome:circle',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',

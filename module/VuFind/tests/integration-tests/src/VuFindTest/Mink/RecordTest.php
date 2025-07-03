@@ -48,7 +48,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function tryRecordTabsOnId($id, $encodeId = true)
+    protected function tryRecordTabsOnId(string $id, bool $encodeId = true): void
     {
         $url = $this->getVuFindUrl(
             '/Record/' . ($encodeId ? rawurlencode($id) : $id)
@@ -77,7 +77,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function tryLoadingTabHashAndReturningToDefault($id, $encodeId = true)
+    protected function tryLoadingTabHashAndReturningToDefault(string $id, bool $encodeId = true): void
     {
         // special test for going back to default tab from non-default URL
         $url = $this->getVuFindUrl(
@@ -107,7 +107,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRecordTabsOnNormalId()
+    public function testRecordTabsOnNormalId(): void
     {
         $this->tryRecordTabsOnId('testsample1');
         $this->tryLoadingTabHashAndReturningToDefault('testsample2');
@@ -118,7 +118,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRecordTabsOnSpacedId()
+    public function testRecordTabsOnSpacedId(): void
     {
         $this->tryRecordTabsOnId('dot.dash-underscore__3.space suffix');
         $this->tryLoadingTabHashAndReturningToDefault(
@@ -131,7 +131,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRecordTabsOnPlusId()
+    public function testRecordTabsOnPlusId(): void
     {
         // Skip encoding on this one, because Laminas doesn't URL encode
         // plus signs in route segments!
@@ -147,12 +147,58 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLoadInitialTabWithAjax()
+    public function testLoadInitialTabWithAjax(): void
     {
         $this->changeConfigs(
             ['config' => ['Site' => ['loadInitialTabWithAjax' => 1]]]
         );
         $this->tryRecordTabsOnId('testsample1');
         $this->tryLoadingTabHashAndReturningToDefault('testsample2');
+    }
+
+    /**
+     * Data provider for testPermalink().
+     *
+     * @return array[]
+     */
+    public static function permalinkProvider(): array
+    {
+        return [
+            'default' => [null],
+            'enabled' => [true],
+            'disabled' => [false],
+        ];
+    }
+
+    /**
+     * Test permalink display.
+     *
+     * @param ?bool  $enabled Are permalinks enabled? (Null = use default config)
+     * @param string $id      Record ID to test with
+     *
+     * @return void
+     *
+     * @dataProvider permalinkProvider
+     */
+    public function testPermalink(?bool $enabled, $id = 'testbug1'): void
+    {
+        // Change configuration, unless we're using the default value:
+        if (null !== $enabled) {
+            $this->changeConfigs(
+                ['config' => ['Record' => ['permanent_link' => $enabled]]]
+            );
+        }
+        $url = $this->getVuFindUrl('/Record/' . rawurlencode($id));
+        $session = $this->getMinkSession();
+        $session->visit($url);
+        $page = $session->getPage();
+        // We expect to find a permanent link in default and true modes; not in false mode.
+        $selector = '.permalink-record';
+        if ($enabled === false) {
+            $this->unFindCss($page, $selector);
+        } else {
+            $link = $this->findCss($page, $selector);
+            $this->assertStringContainsString($link->getAttribute('href'), $url . '/Permalink');
+        }
     }
 }

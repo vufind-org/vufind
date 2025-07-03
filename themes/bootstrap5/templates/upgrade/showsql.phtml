@@ -3,10 +3,11 @@
     $this->headTitle($this->translate('Upgrade VuFind'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('upgrade-home') . '">' . $this->transEsc('Upgrade') . '</a></li> <li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Upgrade'), $this->url('upgrade-home'))
+      ->add($this->translate('Upgrade VuFind'), active: true);
 
     // Set up styles:
-    $this->headstyle()->appendStyle(
+    $this->assetManager()->appendStyleString(
         ".pre {\n"
         . "  white-space:pre-wrap; width:90%; overflow-y:visible; padding:8px; margin:1em 2em; background:#EEE; border:1px dashed #CCC;\n"
         . "}\n"
@@ -18,6 +19,7 @@
 
 <textarea class="pre" rows="20"><?=trim($this->sql) ?></textarea>
 
+<p>Please apply these changes to your database before continuing to the next step.</p>
 <form method="post" action="<?=$this->url('upgrade-showsql')?>">
-  <input class="btn btn-primary" type="submit" name="continue" value="Next">
+  <input class="btn btn-default" type="submit" name="continue" value="Continue to Next Step">
 </form>

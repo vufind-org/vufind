@@ -33,6 +33,7 @@ namespace VuFindTest\Mink;
 
 use Laminas\Http\Request;
 use VuFindHttp\HttpService;
+use VuFindTest\Feature\CacheManagementTrait;
 
 /**
  * Rate Limiter test class.
@@ -45,6 +46,8 @@ use VuFindHttp\HttpService;
  */
 class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use CacheManagementTrait;
+
     /**
      * Standard setup method.
      *
@@ -54,25 +57,8 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     {
         parent::setUp();
 
-        $this->changeConfigs(
-            [
-                'permissions' => [
-                    'enable-admin-cache-api' => [
-                        'permission' => 'access.api.admin.cache',
-                        'require' => 'ANY',
-                        'role' => 'guest',
-                    ],
-                ],
-            ]
-        );
-
-        // Clear object cache to ensure clean state:
-        $http = new HttpService();
-        $client = $http->createClient($this->getVuFindUrl('/api/v1/admin/cache?id=object'), Request::METHOD_DELETE);
-        $response = $client->send();
-        if (200 !== $response->getStatusCode()) {
-            throw new \Exception('Could not clear object cache: ' . $response->getBody());
-        }
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearObjectCache();
     }
 
     /**

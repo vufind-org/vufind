@@ -44,6 +44,14 @@ use VuFind\Db\Entity\EntityInterface;
 abstract class AbstractDbService implements DbServiceInterface
 {
     /**
+     * Variable to allow multiple functions to use the same retry count if necessary.
+     * How many times can a function try, before continuing?
+     *
+     * @var int
+     */
+    protected int $retryCount = 5;
+
+    /**
      * Persist an entity.
      *
      * @param EntityInterface $entity Entity to persist.

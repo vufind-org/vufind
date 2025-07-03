@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
 
@@ -55,7 +55,7 @@ class CollectionsController extends AbstractBase implements
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var Config
      */
     protected $config;
 

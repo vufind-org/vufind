@@ -29,9 +29,10 @@
 
 namespace VuFindTest\Feature;
 
-use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
+use VuFind\Config\Config;
+use VuFind\Config\PathResolver;
 use VuFind\Config\PluginManager;
 
 /**
@@ -45,6 +46,8 @@ use VuFind\Config\PluginManager;
  */
 trait ConfigPluginManagerTrait
 {
+    use PathResolverTrait;
+
     /**
      * Get a mock configuration plugin manager with the given configuration "files"
      * available.
@@ -64,8 +67,8 @@ trait ConfigPluginManagerTrait
     protected function getMockConfigPluginManager(
         array $configs,
         array $default = [],
-        InvocationOrder $getExpect = null,
-        InvocationOrder $hasExpect = null
+        ?InvocationOrder $getExpect = null,
+        ?InvocationOrder $hasExpect = null
     ): PluginManager {
         $manager = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
@@ -111,5 +114,44 @@ trait ConfigPluginManagerTrait
             ->with($this->isType('string'))
             ->will($this->throwException($exception));
         return $manager;
+    }
+
+    /**
+     * Add config plugin manager and required services to a mock container.
+     *
+     * @param \VuFindTest\Container\MockContainer $container Mock Container
+     * @param ?array                              $config    Module config
+     *
+     * @return void
+     */
+    protected function addConfigPluginManagerToContainer(
+        \VuFindTest\Container\MockContainer $container,
+        ?array $config = null
+    ): void {
+        $config ??= include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
+        $this->addConfigHandlerPluginManagerToContainer($container, $config);
+        $this->addPathResolverToContainer($container);
+        $configManager = new \VuFind\Config\ConfigManager(
+            $container->get(\VuFind\Config\Handler\PluginManager::class),
+            $container->get(PathResolver::class)
+        );
+        $container->set(\VuFind\Config\ConfigManager::class, $configManager);
+        $configPluginManager = new \VuFind\Config\PluginManager(
+            $container,
+            $config['vufind']['config_reader']
+        );
+        $container->set(\VuFind\Config\PluginManager::class, $configPluginManager);
+    }
+
+    /**
+     * Get a mock container that has a config plugin manager and required services.
+     *
+     * @return \VuFindTest\Container\MockContainer
+     */
+    protected function getContainerWithConfigPluginManager(): \VuFindTest\Container\MockContainer
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $this->addConfigPluginManagerToContainer($container);
+        return $container;
     }
 }

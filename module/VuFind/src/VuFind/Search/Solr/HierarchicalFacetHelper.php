@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -42,7 +42,6 @@ use VuFind\Search\UrlQueryHelper;
 
 use function array_slice;
 use function count;
-use function is_string;
 use function strlen;
 
 /**
@@ -62,6 +61,41 @@ class HierarchicalFacetHelper implements
 {
     use TranslatorAwareTrait;
     use HasSorterTrait;
+
+    /**
+     * Internal constant for sorting by count
+     *
+     * @var int
+     */
+    protected const SORT_COUNT = 0;
+
+    /**
+     * Internal constant for sorting top level alphabetically and the rest by count
+     *
+     * @var int
+     */
+    protected const SORT_TOP = 1;
+
+    /**
+     * Internal constant for sorting all levels alphabetically
+     *
+     * @var int
+     */
+    protected const SORT_ALL = 2;
+
+    /**
+     * Internal constant for sorting top level alphabetically by field value and the rest by count
+     *
+     * @var int
+     */
+    protected const SORT_TOP_VALUE = 3;
+
+    /**
+     * Internal constant for sorting all levels alphabetically by field value
+     *
+     * @var int
+     */
+    protected const SORT_ALL_VALUE = 4;
 
     /**
      * View renderer
@@ -84,7 +118,9 @@ class HierarchicalFacetHelper implements
 
     /**
      * Helper method for building hierarchical facets:
-     * Sort a facet list according to the given sort order
+     * Sort a facet list according to the given sort order.
+     *
+     * Supports both flattened and hierarchical facet lists.
      *
      * @param array          $facetList Facet list returned from Solr
      * @param boolean|string $order     Sort order:
@@ -96,28 +132,15 @@ class HierarchicalFacetHelper implements
      */
     public function sortFacetList(&$facetList, $order = null)
     {
-        // We need a boolean flag indicating whether or not to sort only the top
-        // level of the hierarchy. If we received a string configuration option,
-        // we should set the flag accordingly (boolean values of $order are
-        // supported for backward compatibility).
-        $topLevel = $order ?? 'count';
-        if (is_string($topLevel)) {
-            switch (strtolower(trim($topLevel))) {
-                case 'top':
-                    $topLevel = true;
-                    break;
-                case 'all':
-                    $topLevel = false;
-                    break;
-                case '':
-                case 'count':
-                    // At present, we assume the incoming list is already sorted by
-                    // count, so no further action is needed. If in future we need
-                    // to support re-sorting an arbitrary list, rather than simply
-                    // operating on raw Solr values, we may need to implement logic.
-                    return;
-            }
-        }
+        // Map $order to a sort setting that's simple and fast to compare (boolean values of $order are
+        // supported for backward compatibility with legacy code):
+        $sort = match ($order) {
+            true, 'top' => static::SORT_TOP,
+            false, 'all' => static::SORT_ALL,
+            'top-value' => static::SORT_TOP_VALUE,
+            'all-value' => static::SORT_ALL_VALUE,
+            default => static::SORT_COUNT,
+        };
 
         // Parse level from each facet value so that the sort function
         // can run faster
@@ -129,8 +152,13 @@ class HierarchicalFacetHelper implements
         }
         // Avoid problems having the reference set further below
         unset($facetItem);
-        $sortFunc = function ($a, $b) use ($topLevel) {
-            if ($a['level'] == $b['level'] && (!$topLevel || $a['level'] == 0)) {
+        $sortFunc = function ($a, $b) use ($sort) {
+            // Different level?
+            if ($a['level'] != $b['level']) {
+                return $a['level'] <=> $b['level'];
+            }
+            // Sort by display text:
+            if (($sort === static::SORT_ALL || ($a['level'] == 0 && $sort === static::SORT_TOP))) {
                 $aText = $a['displayText'] == $a['value']
                     ? $this->formatDisplayText($a['displayText'])
                     : $a['displayText'];
@@ -139,11 +167,22 @@ class HierarchicalFacetHelper implements
                     : $b['displayText'];
                 return $this->getSorter()->compare($aText, $bText);
             }
-            return $a['level'] == $b['level']
-                ? $b['count'] - $a['count']
-                : $a['level'] - $b['level'];
+            // Sort by display index value:
+            if (($sort === static::SORT_ALL_VALUE || ($a['level'] == 0 && $sort === static::SORT_TOP_VALUE))) {
+                return $a['value'] <=> $b['value'];
+            }
+            return $b['count'] <=> $a['count'];
         };
         usort($facetList, $sortFunc);
+
+        // Sort children too if available:
+        foreach ($facetList as &$facetItem) {
+            if (!empty($facetItem['children'])) {
+                $this->sortFacetList($facetItem['children'], static::SORT_ALL === $sort ? 'all' : 'count');
+            }
+        }
+        // Unset reference:
+        unset($facetItem);
     }
 
     /**

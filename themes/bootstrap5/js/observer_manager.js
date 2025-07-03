@@ -8,8 +8,7 @@ VuFind.register('observerManager', () => {
 
   /**
    * Observe given elements. Observer used is identified with identifier.
-   *
-   * @param {String}         identifier Observers identifier
+   * @param {string}         identifier Observers identifier
    * @param {Array|NodeList} elements   Elements to observe
    */
   function observe(identifier, elements) {
@@ -31,13 +30,11 @@ VuFind.register('observerManager', () => {
    * Create an IntersectionObserver.
    * If the IntersectionObserver is not supported, onIntersect will be used as a
    * standalone function.
-   *
-   * @link https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API 
-   *
-   * @param {String}         identifier  Id of the observer to create
+   * Documentation {@link https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API} 
+   * @param {string}         identifier  Id of the observer to create
    * @param {Function}       onIntersect Callback to use on elements
    * @param {Array|NodeList} elements    Initial elements to be observed
-   * @param {Object}         options     Options for the Intersection Observer
+   * @param {object}         options     Options for the Intersection Observer
    */
   function createIntersectionObserver(identifier, onIntersect, elements, options) {
     if (typeof observers[identifier] === 'undefined') {
@@ -73,8 +70,7 @@ VuFind.register('observerManager', () => {
 
   /**
    * Remove an observer.
-   *
-   * @param {String} identifier Identifier of observer to remove
+   * @param {string} identifier Identifier of observer to remove
    */
   function disconnect(identifier) {
     if (typeof observers[identifier] !== 'undefined'

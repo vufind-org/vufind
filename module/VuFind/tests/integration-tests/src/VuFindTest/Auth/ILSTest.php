@@ -108,7 +108,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $mockConfigReader = $this->getMockConfigPluginManager([]);
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
-                new \Laminas\Config\Config(['driver' => 'Sample']),
+                new \VuFind\Config\Config(['driver' => 'Sample']),
                 $driverManager,
                 $mockConfigReader
             ),
@@ -234,7 +234,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Laminas\Config\Config($config));
+        $auth->setConfig(new \VuFind\Config\Config($config));
         $auth->authenticate($this->getLoginRequest());
     }
 
@@ -343,7 +343,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $patron = ['cat_username' => 'testuser', 'cat_id' => '1234'];
         $auth = $this->getAuth($driver, $patron);
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Laminas\Config\Config($config));
+        $auth->setConfig(new \VuFind\Config\Config($config));
         $user = $auth->updatePassword($request);
         $this->assertEquals('1234', $user->getUsername());
         $this->assertEquals('newpass', $user->getRawCatPassword());

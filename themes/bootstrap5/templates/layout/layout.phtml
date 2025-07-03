@@ -15,7 +15,6 @@
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <?=$this->headMeta()?>
     <?=$this->googleTagManager()->getHeadCode()?>
@@ -47,41 +46,32 @@
           ]
       );
       // We need to generate the icons early, because they may add some stylesheets;
-      // if we render them after the headLink / headStyle calls, some dependencies
-      // may not load correctly. Thus, we render early, but use this later.
+      // if we render them after calling AssetManager's outputHeaderAssets method,
+      // some dependencies may not load correctly. Thus, we render early, but use
+      // this later.
       $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
     ?>
     <?php if ($this->layout()->rtl) {
       // RTL styling
-      $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
+      $this->assetManager()->appendStyleLink('vendor/bootstrap-rtl.min.css');
     } ?>
-    <?=$this->headLink()?>
-    <?=$this->headStyle()?>
     <?php
       // Collect small scripts together and append as one block:
       $appendScripts = [];
 
-      if (!empty($this->themeConfig()['stickyElements'])) {
-        $this->headScript()->appendFile('sticky_elements.js');
+      $themeConfig = $this->themeConfig();
+      if (!empty($themeConfig['stickyElements'])) {
+        $this->assetManager()->appendScriptLink('sticky_elements.js');
       }
 
       if (!isset($this->renderingError)) {
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile('vendor/js.cookie.js');
-          $this->headScript()->appendFile('cart.js');
-          if ($domain = $cart->getCookieDomain()) {
-            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
-          }
-          if ($cookiePath = $cart->getCookiePath()) {
-            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
-          }
-          if ($cookieSameSite = $cart->getCookieSameSite()) {
-            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
-          }
+          $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
+          $this->assetManager()->appendScriptLink('cart.js');
         }
-        $this->headScript()->prependScript(
+        $this->assetManager()->prependScriptString(
             'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
         );
       }
@@ -89,16 +79,19 @@
       // Session keep-alive
       if ($this->keepAlive()) {
           $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
-          $this->headScript()->appendFile('keep_alive.js');
+          $this->assetManager()->appendScriptLink('keep_alive.js');
       }
 
       // If account ajax is active, load script and add language strings
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
-        $this->headScript()->appendFile('account_ajax.js');
+        $this->assetManager()->appendScriptLink('account_ajax.js');
         if ($this->session()->put('reset_account_status', null)) {
-          $this->headScript()->setAllowArbitraryAttributes(true);
-          $this->headScript()->appendScript('VuFind.account.clearAllCaches();', 'text/javascript', ['data-lightbox-run' => 'always']);
+          $this->assetManager()->appendScriptString(
+              script: 'VuFind.account.clearAllCaches();',
+              attrs: ['data-lightbox-run' => 'always'],
+              options: ['allow_arbitrary_attributes' => true]
+          );
         }
       }
 
@@ -108,6 +101,8 @@
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($this->layout()->searchId);
+      $theme = json_encode($themeConfig['themeName']);
+
       $appendScripts[] = <<<JS
           VuFind.path = '{$root}';
           VuFind.defaultSearchBackend = '{$dsb}';
@@ -116,42 +111,43 @@
           VuFind.addIcons({$icons});
           VuFind.setCspNonce('{$cspNonce}');
           VuFind.setCurrentSearchId($searchId);
+          VuFind.setTheme($theme);
           JS;
+
+      if ($domain = $this->cookieManager()->getDomain()) {
+        $appendScripts[] = 'VuFind.cookie.setDomain(' . json_encode($domain) . ');';
+      }
+      if ($cookiePath = $this->cookieManager()->getPath()) {
+        $appendScripts[] = 'VuFind.cookie.setCookiePath(' . json_encode($cookiePath) . ');';
+      }
+      if ($cookieSameSite = $this->cookieManager()->getSameSite()) {
+        $appendScripts[] = 'VuFind.cookie.setCookieSameSite(' . json_encode($cookieSameSite) . ');';
+      }
 
       if (!empty($lightboxParent)) {
         $lightboxParent = json_encode((string)$lightboxParent);
-        $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent;
+        $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent . ';';
       }
 
       if (!empty($lightboxChild)) {
         $lightboxChild = json_encode((string)$lightboxChild);
-        $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild;
+        $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild . ';';
       }
 
-      $this->headScript()->appendScript(implode("\n", $appendScripts));
-
-      if ($this->config()->ajaxCoversEnabled()) {
-          $this->headScript()->appendFile('covers.js');
-      }
+      $this->assetManager()->appendScriptString(implode("\n", $appendScripts));
     ?>
     <?=$this->cookieConsent()->render()?>
-    <?=$this->headScript() ?>
+    <?=$this->assetManager()->outputHeaderAssets()?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <header class="hidden-print">
       <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-        <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+        <span class="visually-hidden" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
       <?php endif; ?>
-      <a class="sr-only sr-only-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+      <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
-      <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
-        <div class="container">
-          <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
-        </div>
-      </nav>
-    <?php endif; ?>
+    <?=$this->breadcrumbs()->render()?>
     <div role="main" class="main">
       <div id="content" class="container">
         <?=$this->layout()->content ?>
@@ -172,9 +168,9 @@
     <div class="vufind-offcanvas-overlay" data-toggle="vufind-offcanvas"></div>
     <?=$this->render('Helpers/analytics.phtml')?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
-      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
+      <?=$this->assetManager()->outputInlineScriptLink($jsInclude)?>
     <?php endforeach; ?>
 
-    <?=$this->footScript() ?>
+    <?=$this->assetManager()->outputFooterAssets() ?>
   </body>
 </html>

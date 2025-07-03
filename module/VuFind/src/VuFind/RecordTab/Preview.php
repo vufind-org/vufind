@@ -43,7 +43,7 @@ class Preview extends AbstractBase
     /**
      * Configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 

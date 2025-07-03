@@ -90,7 +90,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * ILS configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -175,17 +175,17 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config           $config        Configuration
+     * @param \VuFind\Config\Config            $config        Configuration
      * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
-     * @param \Laminas\Http\Request            $request       Request object
+     * @param ?\Laminas\Http\Request           $request       Request object
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \VuFind\ILS\Driver\PluginManager $driverManager,
         \VuFind\Config\PluginManager $configReader,
-        \Laminas\Http\Request $request = null
+        ?\Laminas\Http\Request $request = null
     ) {
         if (!isset($config->driver)) {
             throw new \Exception('ILS driver setting missing.');
@@ -284,11 +284,11 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * If configured, fail over to the NoILS driver and return true; otherwise,
      * return false.
      *
-     * @param \Exception $e The exception that triggered the failover.
+     * @param ?\Exception $e The exception that triggered the failover.
      *
      * @return bool
      */
-    protected function failOverToNoILS(\Exception $e = null)
+    protected function failOverToNoILS(?\Exception $e = null)
     {
         // If the exception is caused by a configuration error, the administrator
         // needs to fix it, but failing over to NoILS will mask the error and cause
@@ -1163,7 +1163,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $config = $this->checkCapability('getConfig', ['Holdings', $params])
             ? $this->getDriver()->getConfig('Holdings', $params) : [];
         if (empty($config['itemLimit'])) {
-            // Use itemLimit in Holds as fallback for backward compatibility:
+            // Use itemLimit in Holds as fallback for backward compatibility with legacy configs:
             $config
                 = $this->checkCapability('getConfig', ['Holds', $params])
                 ? $this->getDriver()->getConfig('Holds', $params) : [];

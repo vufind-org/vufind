@@ -149,7 +149,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Make an API call
      *
      * @param string $method GET or POST
-     * @param array  $params Parameters to send
+     * @param ?array $params Parameters to send
      *
      * @return \SimpleXMLElement
      */
@@ -194,13 +194,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Retrieve a specific record.
      *
-     * @param string   $id     Record ID to retrieve
-     * @param ParamBag $params Parameters
+     * @param string    $id     Record ID to retrieve
+     * @param ?ParamBag $params Parameters
      *
      * @throws \Exception
      * @return array
      */
-    public function getRecord($id, ParamBag $params = null)
+    public function getRecord($id, ?ParamBag $params = null)
     {
         $query = 'AN ' . $id;
         $params = $params ?: new ParamBag();

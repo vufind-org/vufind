@@ -32,6 +32,7 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFind\Search\SearchRunner;
 
 use function count;
@@ -124,6 +125,9 @@ class CombinedController extends AbstractSearch
                 'currentSearch' => $settings,
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
+            if (!empty($settings['view']->extraErrors)) {
+                $viewParams['extraErrors'] = $settings['view']->extraErrors;
+            }
             // Initialize theme resources:
             ($this->getViewRenderer()->plugin('setupThemeResources'))(true);
             // Render content:
@@ -249,7 +253,8 @@ class CombinedController extends AbstractSearch
         [$type, $target] = explode(':', $this->params()->fromQuery('type'), 2);
         switch ($type) {
             case 'VuFind':
-                [$searchClassId, $type] = explode('|', $target);
+                [$fullSearchClassId, $type] = explode('|', $target);
+                [$searchClassId] = explode(':', $fullSearchClassId);
                 $params = $this->getRequest()->getQuery()->toArray();
                 $params['type'] = $type;
 
@@ -261,6 +266,19 @@ class CombinedController extends AbstractSearch
                 // We don't need to pass activeSearchClassId forward:
                 unset($params['activeSearchClassId']);
 
+                // If we are using a filtered section, apply appropriate filters:
+                if ($fullSearchClassId !== $searchClassId) {
+                    // Try to find matching filter settings first in [SearchTabsFilters] in config.ini, and then
+                    // in the combined.ini filters setting.
+                    $hiddenFilters = $this->getConfig()->SearchTabsFilters->$fullSearchClassId
+                        ?? $this->getConfig('combined')->$fullSearchClassId->filter
+                        ?? [];
+                    // Account for all possible configuration formats -- a Config object, an array, or a string:
+                    $params['hiddenFilters']
+                        = (array)($hiddenFilters instanceof Config ? $hiddenFilters->toArray() : $hiddenFilters);
+                } else {
+                    unset($params['hiddenFilters']);
+                }
                 $route = $this->getService(\VuFind\Search\Options\PluginManager::class)
                     ->get($searchClassId)->getSearchAction();
                 $base = $this->url()->fromRoute($route);
@@ -299,6 +317,11 @@ class CombinedController extends AbstractSearch
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
         $query->limit = $settings['limit'] ?? null;
+
+        // Disable default filters, if requested:
+        if ($settings['disable_default_filters'] ?? false) {
+            $query->dfApplied = 1;
+        }
 
         // Apply filters, if any:
         $query->filter = isset($settings['filter'])

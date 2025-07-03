@@ -172,11 +172,11 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test alias behavior.
+     * Test alias behavior in default domain.
      *
      * @return void
      */
-    public function testAliasing(): void
+    public function testAliasingInDefaultDomain(): void
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/aliases'),
@@ -189,6 +189,27 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
                 'baz' => 'Domain Translation',
                 'foo' => 'Translation',
                 'xyzzy' => 'Domain Translation',
+                'foofoo' => 'Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test alias behavior in non-default domain.
+     *
+     * @return void
+     */
+    public function testAliasingInNonDefaultDomain(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en', 'Domain');
+        $this->assertEquals(
+            [
+                'bar' => 'Domain Translation',
                 'foofoo' => 'Translation',
             ],
             (array)$result

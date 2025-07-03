@@ -82,8 +82,7 @@ use function count;
 class User extends RowGateway implements
     UserEntityInterface,
     \VuFind\Db\Service\DbServiceAwareInterface,
-    \VuFind\Db\Table\DbTableAwareInterface,
-    \LmcRbacMvc\Identity\IdentityInterface
+    \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;
@@ -91,7 +90,7 @@ class User extends RowGateway implements
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
@@ -115,13 +114,13 @@ class User extends RowGateway implements
     /**
      * Configuration setter
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      *
      * @return void
      *
      * @deprecated
      */
-    public function setConfig(\Laminas\Config\Config $config)
+    public function setConfig(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }
@@ -716,9 +715,9 @@ class User extends RowGateway implements
      *
      * @param string $username Username
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setUsername(string $username): UserEntityInterface
+    public function setUsername(string $username): static
     {
         $this->username = $username;
         return $this;
@@ -739,9 +738,9 @@ class User extends RowGateway implements
      *
      * @param string $password Password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setRawPassword(string $password): UserEntityInterface
+    public function setRawPassword(string $password): static
     {
         $this->password = $password;
         return $this;
@@ -762,9 +761,9 @@ class User extends RowGateway implements
      *
      * @param ?string $hash Password hash
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setPasswordHash(?string $hash): UserEntityInterface
+    public function setPasswordHash(?string $hash): static
     {
         $this->pass_hash = $hash;
         return $this;
@@ -785,9 +784,9 @@ class User extends RowGateway implements
      *
      * @param string $firstName New first name
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setFirstname(string $firstName): UserEntityInterface
+    public function setFirstname(string $firstName): static
     {
         $this->firstname = $firstName;
         return $this;
@@ -808,9 +807,9 @@ class User extends RowGateway implements
      *
      * @param string $lastName New last name
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastname(string $lastName): UserEntityInterface
+    public function setLastname(string $lastName): static
     {
         $this->lastname = $lastName;
         return $this;
@@ -831,9 +830,9 @@ class User extends RowGateway implements
      *
      * @param string $email Email address
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setEmail(string $email): UserEntityInterface
+    public function setEmail(string $email): static
     {
         $this->email = $email;
         return $this;
@@ -854,9 +853,9 @@ class User extends RowGateway implements
      *
      * @param string $email New pending email
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setPendingEmail(string $email): UserEntityInterface
+    public function setPendingEmail(string $email): static
     {
         $this->pending_email = $email;
         return $this;
@@ -877,9 +876,9 @@ class User extends RowGateway implements
      *
      * @param ?string $catId Catalog id
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatId(?string $catId): UserEntityInterface
+    public function setCatId(?string $catId): static
     {
         $this->cat_id = $catId;
         return $this;
@@ -900,9 +899,9 @@ class User extends RowGateway implements
      *
      * @param ?string $catUsername Catalog username
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatUsername(?string $catUsername): UserEntityInterface
+    public function setCatUsername(?string $catUsername): static
     {
         $this->cat_username = $catUsername;
         return $this;
@@ -923,9 +922,9 @@ class User extends RowGateway implements
      *
      * @param ?string $homeLibrary Home library
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface
+    public function setHomeLibrary(?string $homeLibrary): static
     {
         $this->home_library = $homeLibrary;
         return $this;
@@ -946,9 +945,9 @@ class User extends RowGateway implements
      *
      * @param ?string $catPassword Cat password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setRawCatPassword(?string $catPassword): UserEntityInterface
+    public function setRawCatPassword(?string $catPassword): static
     {
         $this->cat_password = $catPassword;
         return $this;
@@ -969,9 +968,9 @@ class User extends RowGateway implements
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCatPassEnc(?string $passEnc): UserEntityInterface
+    public function setCatPassEnc(?string $passEnc): static
     {
         $this->cat_pass_enc = $passEnc;
         return $this;
@@ -984,7 +983,7 @@ class User extends RowGateway implements
      */
     public function getCatPassEnc(): ?string
     {
-        return $this->cat_pass_enc;
+        return $this->cat_pass_enc ?? null;
     }
 
     /**
@@ -992,9 +991,9 @@ class User extends RowGateway implements
      *
      * @param string $college College
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCollege(string $college): UserEntityInterface
+    public function setCollege(string $college): static
     {
         $this->college = $college;
         return $this;
@@ -1015,9 +1014,9 @@ class User extends RowGateway implements
      *
      * @param string $major Major
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setMajor(string $major): UserEntityInterface
+    public function setMajor(string $major): static
     {
         $this->major = $major;
         return $this;
@@ -1038,9 +1037,9 @@ class User extends RowGateway implements
      *
      * @param string $hash Hash value to save
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setVerifyHash(string $hash): UserEntityInterface
+    public function setVerifyHash(string $hash): static
     {
         $this->verify_hash = $hash;
         return $this;
@@ -1061,9 +1060,9 @@ class User extends RowGateway implements
      *
      * @param ?string $authMethod New value (null for none)
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    public function setAuthMethod(?string $authMethod): static
     {
         $this->auth_method = $authMethod;
         return $this;
@@ -1084,9 +1083,9 @@ class User extends RowGateway implements
      *
      * @param string $lang Last language
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastLanguage(string $lang): UserEntityInterface
+    public function setLastLanguage(string $lang): static
     {
         $this->last_language = $lang;
         return $this;
@@ -1117,9 +1116,9 @@ class User extends RowGateway implements
      *
      * @param bool $userProvided New value
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    public function setHasUserProvidedEmail(bool $userProvided): static
     {
         $this->user_provided_email = $userProvided ? 1 : 0;
         return $this;
@@ -1130,9 +1129,9 @@ class User extends RowGateway implements
      *
      * @param DateTime $dateTime Last login date
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    public function setLastLogin(DateTime $dateTime): static
     {
         $this->last_login = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -1153,9 +1152,9 @@ class User extends RowGateway implements
      *
      * @param DateTime $dateTime Creation date
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): UserEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -1176,9 +1175,9 @@ class User extends RowGateway implements
      *
      * @param ?DateTime $dateTime Verification date (or null)
      *
-     * @return UserEntityInterface
+     * @return static
      */
-    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface
+    public function setEmailVerified(?DateTime $dateTime): static
     {
         $this->email_verified = $dateTime?->format('Y-m-d H:i:s');
         return $this;

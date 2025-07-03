@@ -3,7 +3,11 @@
   $this->headTitle($this->translate('Book Bag'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'), active: true);
 ?>
 <h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
@@ -11,7 +15,7 @@
   <input type="hidden" id="dropdown_value">
   <input type="hidden" name="redirectInLightbox" value="true">
   <?php if (!$this->cart()->isEmpty()): ?>
-    <div class="cart-controls">
+    <div class="cart-controls action-toolbar">
       <div class="checkbox">
         <label>
           <input type="checkbox" name="selectAll" class="checkbox-select-all">
@@ -121,4 +125,4 @@
         });
       JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

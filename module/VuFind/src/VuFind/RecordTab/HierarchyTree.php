@@ -56,16 +56,16 @@ class HierarchyTree extends AbstractBase
     /**
      * Configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration
+     * @param \VuFind\Config\Config $config Configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }
@@ -73,7 +73,7 @@ class HierarchyTree extends AbstractBase
     /**
      * Get the VuFind configuration.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getConfig()
     {
@@ -169,13 +169,13 @@ class HierarchyTree extends AbstractBase
     /**
      * Render a hierarchy tree
      *
-     * @param string  $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $id      Hierarchy ID (omit to use active tree)
      * @param ?string $context Context for use by renderer or null for default
      * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree(string $id = null, ?string $context = null, array $options = [])
+    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
     {
         $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
@@ -206,6 +206,16 @@ class HierarchyTree extends AbstractBase
     {
         $config = $this->getConfig();
         return $config->Hierarchy->treeSearchLimit ?? -1;
+    }
+
+    /**
+     * Disable record preview when screen width is narrow
+     *
+     * @return bool
+     */
+    public function hidePreviewInNarrowDisplays(): bool
+    {
+        return (bool)$this->config->Hierarchy?->hide_preview_in_narrow_displays;
     }
 
     /**

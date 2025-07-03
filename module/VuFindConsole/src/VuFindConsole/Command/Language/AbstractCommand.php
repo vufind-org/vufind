@@ -80,15 +80,15 @@ abstract class AbstractCommand extends Command
     /**
      * Constructor
      *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param string|null           $name        The name of the command; passing
+     * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
+     * @param ?ExtendedIniReader     $reader      Reader for .ini files
+     * @param string                 $languageDir Base language file directory
+     * @param string|null            $name        The name of the command; passing
      * null means it must be set in configure()
      */
     public function __construct(
-        ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null,
+        ?ExtendedIniNormalizer $normalizer = null,
+        ?ExtendedIniReader $reader = null,
         $languageDir = null,
         $name = null
     ) {

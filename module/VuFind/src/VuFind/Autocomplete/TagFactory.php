@@ -65,7 +65,7 @@ class TagFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName($container->get(TagsService::class));
     }

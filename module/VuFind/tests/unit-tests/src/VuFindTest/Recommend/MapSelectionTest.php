@@ -57,11 +57,11 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
     /**
      * Get the class to test.
      *
-     * @param Service $ss Search service
+     * @param ?Service $ss Search service
      *
      * @return MapSelection
      */
-    protected function getMapSelection(Service $ss = null): MapSelection
+    protected function getMapSelection(?Service $ss = null): MapSelection
     {
         $defaultBasemapOptions = [
             'basemap_url' => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',

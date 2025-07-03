@@ -50,7 +50,7 @@
   <property name="default_test_timeout" value="5000" /><!-- default timeout (in ms) for Mink tests; increase when tests fail on slow systems -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="9.5.0" />
+  <property name="solr_version" value="9.8.1" />
   <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
@@ -65,10 +65,8 @@
   <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
-  <property name="bootstrap3_theme" value="bootstrap3" /><!-- base Bootstrap 3 theme (used for theme update tasks) -->
-  <property name="bootstrap5_theme" value="bootstrap5" /><!-- base Bootstrap 5 theme (used for theme update tasks) -->
 
-  <property name="version" value="10.1" />
+  <property name="version" value="10.2.0" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -141,22 +139,20 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
-    <phingcall target="check-bootstrap5"/>
   </target>
 
   <!-- Quality Assurance Tasks -->
   <target name="qa-console" description="quality assurance tasks">
     <!-- Call standard tasks -->
-    <phingcall target="qa-js-and-less"/>
+    <phingcall target="qa-js-and-scss"/>
     <phingcall target="qa-php"/>
-    <phingcall target="check-bootstrap5"/>
   </target>
 
   <!-- Quality Assurance Javascript Tasks -->
-  <target name="qa-js-and-less" description="quality assurance js and less tasks">
+  <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
+    <phingcall target="eslint-jsdoc"/>
     <phingcall target="jshint"/>
-    <phingcall target="checkLessToSass"/>
     <phingcall target="checkSassBuild"/>
   </target>
 
@@ -273,6 +269,20 @@
   <target name="eslint-report">
     <exec executable="npx" escape="false">
       <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
+    </exec>
+  </target>
+
+  <!-- ESLint jsDoc (test only) -->
+  <target name="eslint-jsdoc">
+    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js" />
+    </exec>
+  </target>
+
+  <!-- ESLint jsDoc (auto-fix eligible issues) -->
+  <target name="eslint-jsdoc-fix">
+    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js --fix" />
     </exec>
   </target>
 
@@ -508,7 +518,7 @@
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1/?openapi&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
@@ -516,6 +526,7 @@
 
   <target name="composer" description="Install dependencies with Composer">
     <property name="composer_filename" value="composer-${composer_version}.phar" />
+    <property name="workdir" value="." />
     <mkdir dir="${downloadsdir}" />
     <if>
       <equals arg1="${composer_version}" arg2="latest-2.x" />
@@ -533,8 +544,8 @@
       </else>
     </if>
     <echo message="Installing dependencies..." />
-    <exec executable="php" passthru="true" checkreturn="true">
-      <arg line="${downloadsdir}/${composer_filename} install ${composer_extra_params}" />
+    <exec executable="sh" passthru="true" checkreturn="true">
+      <arg line="-c 'cd ${workdir}; php ${downloadsdir}/${composer_filename} install ${composer_extra_params}'" />
     </exec>
   </target>
 
@@ -644,6 +655,7 @@
 
     <phingcall target="import_biblios" />
     <phingcall target="import_authorities" />
+    <phingcall target="import_website" />
     <phingcall target="delete_fake_records" />
     <phingcall target="build_alphabrowse" />
   </target>
@@ -815,6 +827,9 @@ return [
             <exec executable="psql" checkreturn="true">
               <arg line="-c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
             </exec>
+            <exec executable="psql" checkreturn="true">
+              <arg line="-c &quot;ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            </exec>
           </then>
           <else>
             <exec executable="sudo">
@@ -833,6 +848,9 @@ return [
             </exec>
             <exec executable="sudo" checkreturn="true">
               <arg line="su -c &quot;psql -c 'GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo" checkreturn="true">
+              <arg line="su -c &quot;psql -c 'ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>
@@ -923,6 +941,20 @@ return [
         </foreach>
       </then>
     </if>
+  </target>
+
+  <!-- Import website data -->
+  <target name="import_website" description="import web index data">
+    <exec executable="php" checkreturn="true" passthru="true">
+      <arg line="${srcdir}/import/import-xsl.php ${srcdir}/tests/data/website/solr.xml raw.properties --index SolrWeb" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
+    <exec executable="php" checkreturn="true" passthru="true">
+      <arg line="${srcdir}/util/commit.php SolrWeb" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
   </target>
 
   <!-- Delete some fake record IDs so we have deleted records to test with -->
@@ -1160,21 +1192,22 @@ ${git_status}
     <mkdir dir="${builddir}/export/vufind/usr/local/vufind" />
 
     <!-- load the relevant files into the work area -->
-    <phingcall target="composer">
-      <property name="composer_extra_params" value="--no-dev" />
-    </phingcall>
     <exec executable="git">
       <arg line="archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
     </exec>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/vendor">
-      <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
-    </copy>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/solr/vendor">
-      <fileset dir="${srcdir}/solr/vendor" defaultexcludes="false" />
-    </copy>
-    <copy todir="${builddir}/export/vufind/usr/local/vufind/public/swagger-ui">
-      <fileset dir="${srcdir}/public/swagger-ui" defaultexcludes="false" />
-    </copy>
+    <!-- copy over any cached Solr package -->
+    <if>
+      <available file="${downloadsdir}/solr-${solr_version}.tgz" />
+      <then>
+        <mkdir dir="${builddir}/export/vufind/usr/local/vufind/downloads" />
+        <copy todir="${builddir}/export/vufind/usr/local/vufind/downloads" file="${downloadsdir}/solr-${solr_version}.tgz" />
+      </then>
+    </if>
+    <phingcall target="composer">
+      <property name="workdir" value="${builddir}/export/vufind/usr/local/vufind" />
+      <property name="composer_extra_params" value="--no-dev" />
+    </phingcall>
+    <delete dir="${builddir}/export/vufind/usr/local/vufind/downloads" includeemptydirs="true" failonerror="true" />
 
     <!-- create a version-specific symlink so that tar/zip packages will have
          appropriate directory structures. -->
@@ -1184,24 +1217,26 @@ ${git_status}
 
     <!-- build the standard tar.gz archive -->
     <echo message="Building .tar.gz...." />
-    <exec dir="${builddir}/export" executable="tar" checkreturn="true">
-      <arg line="czfh ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" />
+    <!-- macOS needs the no-xattrs and COPYFILE_DISABLE settings -->
+    <exec dir="${builddir}/export" executable="tar" checkreturn="true" passthru="true">
+      <arg line="--no-xattrs -czhf ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" />
+      <env key="COPYFILE_DISABLE" value="true" />
     </exec>
 
     <!-- build the a zip archive -->
     <echo message="Building .zip...." />
     <exec dir="${builddir}/export" executable="zip" checkreturn="true">
-      <arg line="-r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
+      <arg line="-q -r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
     </exec>
 
     <!-- build the DEB package -->
     <echo message="Building .deb...." />
     <move file="${builddir}/export/vufind/usr/local/vufind/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
-    <exec executable="chmod">
-      <arg line="0775 ${builddir}/export/vufind/DEBIAN/postinst" />
+    <exec executable="chmod" passthru="true">
+      <arg line="0775 ${builddir}/export/vufind/DEBIAN/config ${builddir}/export/vufind/DEBIAN/postinst ${builddir}/export/vufind/DEBIAN/postrm" />
     </exec>
-    <exec executable="dpkg-deb" checkreturn="true">
-      <arg line="-b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
+    <exec executable="dpkg-deb" checkreturn="true" passthru="true">
+      <arg line="--root-owner-group -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
     </exec>
 
     <!-- clean up -->
@@ -1262,174 +1297,6 @@ ${git_status}
     <!-- clean up temp files -->
     <delete file="${localdir}/import/marc-${BASENAME}.properties" />
     <delete file="${localdir}/import/import-${BASENAME}.properties" />
-  </target>
-
-  <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- Fix for PHP 8 incompatibility in chrome-mink-driver 2.8.0: -->
-    <reflexive>
-      <fileset dir="vendor/dmore/chrome-mink-driver/src">
-        <include pattern="ChromeDriver.php" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <regexp pattern="\$base_url," replace="\$base_url = &apos;&apos;," />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
-  </target>
-
-  <!-- Update bootstrap3 templates from bootstrap5 -->
-  <!-- N.B. This destroys any existing bootstrap3 templates (except explicitly excluded ones) -->
-  <target name="update-bootstrap3">
-    <property name="templatesdir" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
-    <if>
-      <available file="${templatesdir}"></available>
-      <then>
-        <echo message="Checking for uncommitted changes in ${templatesdir}" />
-        <exec executable="git" checkreturn="true" passthru="true">
-          <arg line="diff --exit-code ${templatesdir}" />
-        </exec>
-        <delete failonerror="true">
-          <fileset dir="${templatesdir}">
-            <exclude name="header.phtml" />
-            <exclude name="RecordTab/similaritemscarousel.phtml" />
-          </fileset>
-        </delete>
-      </then>
-    </if>
-    <mkdir dir="${templatesdir}"></mkdir>
-    <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/${bootstrap5_theme}/templates">
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-      </fileset>
-    </copy>
-    <reflexive>
-      <fileset dir="${templatesdir}">
-        <include pattern="**/*.phtml" />
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <!-- HTML attributes -->
-          <regexp pattern=" data-bs-(dismiss|ride|slide|slide-to|target|toggle)=" replace=" data-\1=" />
-
-          <!-- HTMLAttributes helper -->
-          <regexp pattern="'data-bs-(dismiss|target|toggle)'" replace="'data-\1'" />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
-  </target>
-
-  <!-- Update bootstrap5 templates from bootstrap3 -->
-  <!-- N.B. This destroys any existing bootstrap5 templates (except explicitly excluded ones) -->
-  <target name="update-bootstrap5">
-    <property name="templatesdir" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
-    <if>
-      <available file="${templatesdir}"></available>
-      <then>
-        <echo message="Checking for uncommitted changes in ${templatesdir}" />
-        <exec executable="git" checkreturn="true" passthru="true">
-          <arg line="diff --exit-code ${templatesdir}" />
-        </exec>
-        <delete failonerror="true">
-          <fileset dir="${templatesdir}">
-            <exclude name="header.phtml" />
-            <exclude name="RecordTab/similaritemscarousel.phtml" />
-          </fileset>
-        </delete>
-      </then>
-    </if>
-    <mkdir dir="${templatesdir}"></mkdir>
-    <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/${bootstrap3_theme}/templates">
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-      </fileset>
-    </copy>
-    <reflexive>
-      <fileset dir="${templatesdir}">
-        <include pattern="**/*.phtml" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <!-- HTML attributes -->
-          <regexp pattern=" data-(dismiss|ride|slide|slide-to|target|toggle)=(?!&quot;vufind)" replace=" data-bs-\1=" />
-
-          <!-- HTMLAttributes helper -->
-          <regexp pattern="'data-(dismiss|target|toggle)'" replace="'data-bs-\1'" />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
-  </target>
-
-  <!-- Check that bootstrap5 is up to date with bootstrap3 -->
-  <target name="check-bootstrap5">
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/templates" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/templates" />
-    <foreach target="check-dir-single-file" param="filename" inheritall="true">
-      <fileset dir="${check_dir_base}">
-        <type type="file" />
-        <exclude name="header.phtml" />
-        <exclude name="RecordTab/similaritemscarousel.phtml" />
-        <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
-      </fileset>
-    </foreach>
-
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/scss" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/scss" />
-    <foreach target="check-dir-single-file" param="filename" inheritall="true">
-      <fileset dir="${check_dir_base}">
-        <type type="file" />
-        <exclude name="bootstrap.scss" />
-        <exclude name="components/similar-carousel.scss" />
-        <exclude name="vendor/**" />
-        <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
-      </fileset>
-    </foreach>
-
-    <property override="true" name="check_dir_base" value="${srcdir}/themes/${bootstrap3_theme}/js" />
-    <property override="true" name="check_dir_compare" value="${srcdir}/themes/${bootstrap5_theme}/js" />
-    <foreach target="check-dir-single-file" param="filename" inheritall="true">
-      <fileset dir="${check_dir_base}">
-        <type type="file" />
-        <exclude name="account_ajax.js" />
-        <exclude name="cart.js" />
-        <exclude name="channels.js" />
-        <exclude name="lightbox.js" />
-        <exclude name="vendor" />
-        <exclude name="vendor/bootstrap-accessibility.min.js" />
-        <exclude name="vendor/bootstrap.min.js" />
-        <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
-      </fileset>
-    </foreach>
-  </target>
-  <!-- subtask for check-bootstrap5 -->
-  <target name="check-dir-single-file">
-    <loadFile property="base_file" file="${check_dir_base}/${filename}">
-      <filterchain>
-        <replaceregexp>
-          <!-- HTML attributes -->
-          <regexp pattern=" data-(dismiss|ride|slide|slide-to|target|toggle)=(?!&quot;vufind)" replace=" data-bs-\1=" />
-
-          <!-- HTMLAttributes helper -->
-          <regexp pattern="'data-(dismiss|target|toggle)'" replace="'data-bs-\1'" />
-
-          <!-- button-size mixin -->
-          <regexp pattern="@include button-size\((.+),(.+),(.+),(.+),(.+)\)" replace="@include button-size(\1,\2,\3,\5)" />
-        </replaceregexp>
-      </filterchain>
-    </loadFile>
-    <loadFile property="compare_file" file="${check_dir_compare}/${filename}" />
-    <if>
-      <not>
-        <equals arg1="${base_file}" arg2="${compare_file}" />
-      </not>
-      <then>
-        <fail message="${check_dir_base}/${filename} and ${check_dir_compare}/${filename} are out of sync" />
-      </then>
-    </if>
   </target>
 
 </project>

@@ -1,6 +1,6 @@
 <?php
-  $this->headScript()->appendFile('vendor/d3.min.js');
-  $this->headScript()->appendFile('visual_facets.js');
+  $this->assetManager()->appendScriptLink('vendor/d3.min.js');
+  $this->assetManager()->appendScriptLink('visual_facets.js');
 
   $visualFacetSet = $this->recommend->getPivotFacetSet();
 
@@ -52,5 +52,5 @@
         });
         JS;
   ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
+  <?=$this->assetManager()->outputInlineScriptString($script);?>
 <?php endif; ?>

@@ -47,24 +47,24 @@ class OptimizeDocument implements DocumentInterface
     /**
      * Value for waitFlush attribute
      *
-     * @var bool
+     * @var ?bool
      */
     protected $waitFlush;
 
     /**
      * Value for waitSearch attribute
      *
-     * @var bool
+     * @var ?bool
      */
     protected $waitSearcher;
 
     /**
      * Constructor.
      *
-     * @param bool $waitFlush    waitFlush attribute value
-     * @param bool $waitSearcher waitSearcher attribute value
+     * @param ?bool $waitFlush    waitFlush attribute value
+     * @param ?bool $waitSearcher waitSearcher attribute value
      */
-    public function __construct(bool $waitFlush = null, bool $waitSearcher = null)
+    public function __construct(?bool $waitFlush = null, ?bool $waitSearcher = null)
     {
         $this->waitFlush    = $waitFlush;
         $this->waitSearcher = $waitSearcher;

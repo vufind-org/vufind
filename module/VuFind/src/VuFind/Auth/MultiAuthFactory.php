@@ -62,7 +62,7 @@ class MultiAuthFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');

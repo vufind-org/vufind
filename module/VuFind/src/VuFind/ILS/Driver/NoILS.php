@@ -192,7 +192,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws ILSException
@@ -202,7 +202,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $useHoldings = $this->config['settings']['useHoldings'] ?? 'none';
         if ($useHoldings == 'custom') {

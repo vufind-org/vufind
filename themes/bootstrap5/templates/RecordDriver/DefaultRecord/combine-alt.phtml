@@ -1,10 +1,15 @@
-<div>
-  <bdi>
-    <?= $prioritizeAlt ? $altValue : $stdValue ?>
-  </bdi>
-</div>
-<div>
-  <bdi>
-    <?= $prioritizeAlt ? $stdValue : $altValue ?>
-  </bdi>
-</div>
+<?php
+$values = array_filter(
+    [$this->stdValue ?? '', $this->altValue ?? ''],
+    fn ($value) => $value !== ''
+);
+if ($this->prioritizeAlt) {
+  $values = array_reverse($values);
+}
+// We don't have to escape the values here, because the original data has already been rendered and escaped.
+?>
+<?php foreach ($values as $value): ?>
+  <div>
+    <?=$value?>
+  </div>
+<?php endforeach; ?>

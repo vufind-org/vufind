@@ -55,17 +55,6 @@ class EITController extends AbstractSearch
     }
 
     /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('EIT');
-        return $config->Record->next_prev_navigation ?? false;
-    }
-
-    /**
      * Search action -- call standard results action
      *
      * @return mixed

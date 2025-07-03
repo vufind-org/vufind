@@ -41,6 +41,7 @@ use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
+use function is_string;
 use function strlen;
 
 /**
@@ -305,6 +306,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $config = $replace ? [] : Yaml::parseFile($local);
         $config = array_replace_recursive($config, $settings);
         file_put_contents($local, Yaml::dump($config));
+    }
+
+    /**
+     * Get configuration from an ini file
+     *
+     * Note: This is just a simple ini file reader and does not handle inheritance
+     *
+     * @param string $configName Configuration name (without file suffix)
+     *
+     * @return array
+     */
+    protected function getConfig($configName = 'config'): array
+    {
+        $file = $configName . '.ini';
+        $configPath = $this->pathResolver->getLocalConfigPath($file, null, true);
+        if (!file_exists($configPath)) {
+            $configPath = $this->pathResolver->getBaseConfigPath($file);
+            if (!file_exists($configPath)) {
+                throw new \Exception("Configuration file $file does not exist");
+            }
+        }
+        return parse_ini_file($configPath, true);
+    }
+
+    /**
+     * Get current theme name
+     *
+     * @return string
+     */
+    protected function getCurrentTheme(): string
+    {
+        $config = $this->getConfig();
+        return $config['Site']['theme'] ?? '';
     }
 
     /**
@@ -758,12 +792,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param string  $method   Method to call
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element         $page     Page element
+     * @param string          $selector CSS selector
+     * @param string|callable $method   Node's method to call (string) or callable that gets the node as parameter
+     * @param int             $timeout  Wait timeout for CSS selection (in ms)
+     * @param int             $index    Index of the element (0-based)
+     * @param int             $retries  Retry count for set loop
      *
      * @return string
      */
@@ -780,7 +814,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         for ($i = 1; $i <= $retries; $i++) {
             try {
                 $element = $this->findCss($page, $selector, $timeout, $index);
-                return call_user_func([$element, $method]);
+                return is_string($method) ? call_user_func([$element, $method]) : $method($element);
             } catch (\Exception $e) {
                 $this->logWarning(
                     'RETRY findCssAndGetText after exception in ' . $this->getTestName()
@@ -829,13 +863,47 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check that a field content is valid (does not have the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return void
+     */
+    protected function checkFieldIsValid(Element $page, string $selector): void
+    {
+        $session = $this->getMinkSession();
+        $session->wait(
+            $this->getDefaultTimeout(),
+            "document.querySelector('$selector:invalid') === null"
+        );
+    }
+
+    /**
+     * Check that a field content is invalid (has the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return void
+     */
+    protected function checkFieldIsInvalid(Element $page, string $selector): void
+    {
+        $session = $this->getMinkSession();
+        $session->wait(
+            $this->getDefaultTimeout(),
+            "document.querySelector('$selector:invalid') !== null"
+        );
+    }
+
+    /**
      * Wait for a callback to return the expected value
      *
      * @param mixed    $expected    Expected value
      * @param callable $callback    Callback used to get the results
      * @param callable $compareFunc Callback used to compare the results
      * @param callable $assertion   Assertion to make
-     * @param int      $timeout     Wait timeout (in ms)
+     * @param ?int     $timeout     Wait timeout (in ms)
      *
      * @return void
      */
@@ -844,7 +912,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         callable $compareFunc,
         callable $assertion,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
         $result = null;
@@ -875,14 +943,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */
     protected function assertEqualsWithTimeout(
         $expected,
         callable $callback,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $this->assertWithTimeout(
             $expected,
@@ -900,14 +968,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param string   $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */
     protected function assertStringContainsStringWithTimeout(
         string $expected,
         callable $callback,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $this->assertWithTimeout(
             $expected,
@@ -966,13 +1034,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Wait for page load (full page or any element) to complete
      *
      * @param Element $page    Page element
-     * @param int     $timeout Wait timeout (in ms)
+     * @param ?int    $timeout Wait timeout (in ms)
      *
      * @return void
      */
     protected function waitForPageLoad(
         Element $page,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();

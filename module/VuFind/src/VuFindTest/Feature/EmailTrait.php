@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Feature;
 
+use Symfony\Component\Mime\Email;
+
 /**
  * Trait adding the ability to inspect sent emails.
  *
@@ -51,6 +53,16 @@ trait EmailTrait
     }
 
     /**
+     * Get the format to use for email message log.
+     *
+     * @return string
+     */
+    protected function getEmailLogFormat(): string
+    {
+        return 'serialized';
+    }
+
+    /**
      * Clear out the email log to eliminate any past contents.
      *
      * @return void
@@ -58,5 +70,25 @@ trait EmailTrait
     protected function resetEmailLog(): void
     {
         file_put_contents($this->getEmailLogPath(), '');
+    }
+
+    /**
+     * Get a logged email from the log file.
+     *
+     * @param int $index Index of the message to get (0-based)
+     *
+     * @return Email
+     */
+    protected function getLoggedEmail(int $index = 0): Email
+    {
+        $data = file_get_contents($this->getEmailLogPath());
+        if (!$data) {
+            throw new \Exception('No serialized email message data found');
+        }
+        $records = explode("\x1E", $data);
+        if (null === ($record = $records[$index] ?? null)) {
+            throw new \Exception("Message with index $index not found");
+        }
+        return unserialize($record);
     }
 }

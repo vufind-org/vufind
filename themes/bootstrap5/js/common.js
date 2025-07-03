@@ -1,4 +1,4 @@
-/*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -8,12 +8,31 @@ var VuFind = (function VuFind() {
   var _submodules = [];
   var _cspNonce = '';
   var _searchId = null;
+  var _theme = null;
 
   var _icons = {};
   var _translations = {};
 
   var _elementBase;
   var _iconsCache = {};
+
+  /**
+   * Element creator function
+   * @param {string} tagName Element tag name
+   * @param {string} className Element class
+   * @param {object} attrs Additional attrs as key => value
+   * @param {Array|NodeList} children Child nodes to be added
+   * @returns {Element} Created Element
+   */
+  function el(tagName, className = '', attrs = {}, children = []) {
+    const newElement = document.createElement(tagName);
+    newElement.className = className;
+    for (const [key, value] of Object.entries(attrs)) {
+      newElement.setAttribute(key, value);
+    }
+    newElement.append(...children);
+    return newElement;
+  }
 
   // Event controls
 
@@ -252,6 +271,32 @@ var VuFind = (function VuFind() {
   };
 
   /**
+   * Return a spinner html element
+   * @param {string} extraClass Extra class string to add for spinner wrapper
+   * @returns {HTMLSpanElement}
+   */
+  var spinnerElement = function spinnerElement(extraClass = '') {
+    const spinnerIcon = icon('spinner', {}, true);
+    const spinnerSpan = el('span', `loading-spinner ${extraClass}`.trim());
+    spinnerSpan.append(spinnerIcon);
+    return spinnerSpan;
+  };
+
+  /**
+   * Return a spinner html element with loading text
+   * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
+   * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
+   * @returns {HTMLSpanElement}
+   */
+  var loadingElement = function loadingElement(text = null, extraClass = '') {
+    const spinnerSpan = spinnerElement(extraClass);
+    const translated = translate(text === null ? 'loading_ellipsis' : text);
+    const spinnerText = document.createTextNode(` ${translated}`);
+    spinnerSpan.appendChild(spinnerText);
+    return spinnerSpan;
+  };
+
+  /**
    * Reload the page without causing trouble with POST parameters while keeping hash
    */
   var refreshPage = function refreshPage(forceGet) {
@@ -289,50 +334,47 @@ var VuFind = (function VuFind() {
    *
    * @param {Element} elm      Target element
    * @param {string}  html     HTML
-   * @param {Object}  attrs    Any additional attributes
+   * @param {Object}  attrs    Any additional attributes (does not work with outerHtml as property)
    * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
-    // Extract any scripts from the HTML and add them separately so that they are executed properly:
-    const scripts = [];
     const tmpDiv = document.createElement('div');
     tmpDiv.innerHTML = html;
-    tmpDiv.querySelectorAll('script').forEach((el) => {
-      const type = el.getAttribute('type');
+    const scripts = [];
+    // Cloning scripts wont work as they pass internal executed state so save them for later
+    tmpDiv.querySelectorAll('script').forEach(script => {
+      const type = script.getAttribute('type');
       if (!type || 'text/javascript' === type) {
-        scripts.push(el.cloneNode(true));
-        el.remove();
+        scripts.push(script.cloneNode(true));
+        script.remove();
       }
     });
 
-    let newElm = elm;
+    let scriptElement = elm;
+
     if (property === 'innerHTML') {
-      elm.innerHTML = tmpDiv.innerHTML;
+      elm.replaceChildren(...tmpDiv.childNodes);
     } else if (property === 'outerHTML') {
-      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
-      const nextElm = elm.nextElementSibling;
-      const parentElm = elm.parentElement ? elm.parentElement : null;
-      elm.outerHTML = tmpDiv.innerHTML;
-      // Try to find a new reference, leave as is if not possible:
-      if (nextElm) {
-        newElm = nextElm.previousElementSibling;
-      } else if (parentElm) {
-        newElm = parentElm.lastElementChild;
-      }
+      scriptElement = elm.parentNode;
+      elm.replaceWith(...tmpDiv.childNodes);
     }
 
-    // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
-    Object.entries(attrs).forEach(([attr, value]) => newElm.setAttribute(attr, value));
+    if (property !== 'outerHTML') {
+      // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
+      Object.entries(attrs).forEach(([attr, value]) => elm.setAttribute(attr, value));
+    } else if (Object.keys(attrs).length > 0) {
+      console.error("Incompatible parameter 'attrs' " + JSON.stringify(attrs) + " passed to setElementContents() while 'property' is 'outerHTML'.");
+    }
 
     // Append any scripts:
-    scripts.forEach((script) => {
-      const scriptEl = document.createElement('script');
-      scriptEl.innerHTML = script.innerHTML;
-      scriptEl.setAttribute('nonce', getCspNonce());
+    scripts.forEach(script => {
+      const newScript = document.createElement('script');
+      newScript.append(...script.childNodes);
       if (script.src) {
-        scriptEl.src = script.src;
+        newScript.src = script.src;
       }
-      newElm.appendChild(scriptEl);
+      newScript.setAttribute('nonce', getCspNonce());
+      scriptElement.appendChild(newScript);
     });
   }
 
@@ -352,10 +394,9 @@ var VuFind = (function VuFind() {
    *
    * @param {Element} elm   Target element
    * @param {string}  html  HTML
-   * @param {Object}  attrs Any additional attributes
    */
-  function setOuterHtml(elm, html, attrs = {}) {
-    setElementContents(elm, html, attrs, 'outerHTML');
+  function setOuterHtml(elm, html) {
+    setElementContents(elm, html, {}, 'outerHTML');
   }
 
   var loadHtml = function loadHtml(_element, url, data, success) {
@@ -405,6 +446,14 @@ var VuFind = (function VuFind() {
     _searchId = searchId;
   };
 
+  var getTheme = function getTheme() {
+    return _theme;
+  };
+
+  var setTheme = function setTheme(theme) {
+    _theme = theme;
+  };
+
   function setupQRCodeLinks(_container) {
     var container = _container || document.body;
     var qrcodeLinks = container.querySelectorAll('a.qrcodeLink');
@@ -415,7 +464,7 @@ var VuFind = (function VuFind() {
           // Replace the QRCode template with the image:
           const templateEl = holder.querySelector('.qrCodeImgTag');
           if (templateEl) {
-            templateEl.parentNode.innerHTML = templateEl.innerHTML;
+            setInnerHtml(templateEl.parentElement, templateEl.innerHTML);
           }
         }
       });
@@ -450,23 +499,12 @@ var VuFind = (function VuFind() {
     setupQRCodeLinks();
   };
 
-  function getBootstrapMajorVersion() {
-    // Bootstrap 5 defines bootstrap global, while 3 doesn't, so we can use that as
-    // an easy way to determine the version:
-    return typeof bootstrap === 'undefined' ? 3 : 5;
-  }
-
   /**
    * Disable transition effects and return the previous state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    */
   function disableTransitions(elem) {
-    if (getBootstrapMajorVersion() === 3) {
-      const oldState = $.support.transition;
-      $.support.transition = false;
-      return oldState;
-    }
     const oldState = elem.style.transitionDuration;
     elem.style.transitionDuration = '0s';
     return oldState;
@@ -475,16 +513,75 @@ var VuFind = (function VuFind() {
   /**
    * Restore transition effects to the given state
    *
-   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {Element} elem Element to handle
    * @param {(string|boolean)} state State from previous call to disableTransitions
    */
   function restoreTransitions(elem, state) {
-    if (getBootstrapMajorVersion() === 3) {
-      $.support.transition = state;
-      return;
-    }
-
     elem.style.transitionDuration = state;
+  }
+
+  /**
+   * Check if URLSearchParams contains the given key+value
+   *
+   * URLSearchParams.has(key, value) support is not yet widespread enough to be used
+   * (see https://caniuse.com/mdn-api_urlsearchparams_has_value_parameter)
+   *
+   * @param {URLSearchParams} params URLSearchParams to check
+   * @param {string} key Key
+   * @param {string} value Value
+   *
+   * @returns boolean
+   */
+  function inURLSearchParams(params, key, value) {
+    for (const [paramsKey, paramsValue] of params) {
+      if (paramsKey === key && paramsValue === value) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Delete a key+value from URLSearchParams
+   *
+   * URLSearchParams.delete(key, value) support is not yet widespread enough to be used
+   * (see https://caniuse.com/mdn-api_urlsearchparams_delete_value_parameter)
+   *
+   * @param {URLSearchParams} params URLSearchParams to delete from
+   * @param {string} deleteKey Key to delete
+   * @param {string} deleteValue Value to delete
+   *
+   * @returns URLSearchParams
+   */
+  function deleteKeyValueFromURLSearchParams(params, deleteKey, deleteValue) {
+    const newParams = new URLSearchParams();
+    for (const [key, value] of params) {
+      if (key !== deleteKey || value !== deleteValue) {
+        newParams.append(key, value);
+      }
+    }
+    return newParams;
+  }
+
+  /**
+   * Delete a set of parameters from URLSearchParams
+   *
+   * URLSearchParams.delete(key, value) support is not yet widespread enough to be used
+   * (see https://caniuse.com/mdn-api_urlsearchparams_delete_value_parameter)
+   *
+   * @param {URLSearchParams} params URLSearchParams to delete from
+   * @param {URLSearchParams} deleteParams URLSearchParams containing all params to delete
+   *
+   * @returns URLSearchParams
+   */
+  function deleteParamsFromURLSearchParams(params, deleteParams) {
+    const newParams = new URLSearchParams();
+    for (const [key, value] of params) {
+      if (!inURLSearchParams(deleteParams, key, value)) {
+        newParams.append(key, value);
+      }
+    }
+    return newParams;
   }
 
   //Reveal
@@ -495,6 +592,7 @@ var VuFind = (function VuFind() {
     addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
+    el: el,
     emit: emit,
     listen: listen,
     unlisten: unlisten,
@@ -506,8 +604,10 @@ var VuFind = (function VuFind() {
     register: register,
     setCspNonce: setCspNonce,
     spinner: spinner,
+    spinnerElement: spinnerElement,
     loadHtml: loadHtml,
     loading: loading,
+    loadingElement: loadingElement,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
@@ -517,9 +617,13 @@ var VuFind = (function VuFind() {
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,
     setElementContents: setElementContents,
-    getBootstrapMajorVersion: getBootstrapMajorVersion,
     disableTransitions: disableTransitions,
-    restoreTransitions: restoreTransitions
+    restoreTransitions: restoreTransitions,
+    inURLSearchParams: inURLSearchParams,
+    deleteKeyValueFromURLSearchParams: deleteKeyValueFromURLSearchParams,
+    deleteParamsFromURLSearchParams: deleteParamsFromURLSearchParams,
+    getTheme,
+    setTheme
   };
 })();
 
@@ -659,7 +763,12 @@ function getUrlRoot(url) {
   return urlroot;
 }
 
-// Phone number validation
+/**
+ * Phone number validation
+ * @param {String} numID Phone number field ID
+ * @param {String} regionCode Region code
+ * @deprecated See validation.js for replacement
+ */
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
@@ -670,33 +779,28 @@ function phoneNumberFormHandler(numID, regionCode) {
     } else {
       valid = VuFind.translate('libphonenumber_invalid');
     }
-    $(phoneInput).siblings('.help-block.with-errors').html(valid);
-    $(phoneInput).closest('.form-group').addClass('sms-error');
+    phoneInput.setCustomValidity(valid);
     return false;
   } else {
-    $(phoneInput).closest('.form-group').removeClass('sms-error');
-    $(phoneInput).siblings('.help-block.with-errors').html('');
+    phoneInput.setCustomValidity('');
   }
 }
 
 // Setup captchas after Google script loads
-function recaptchaOnLoad() {
+function recaptchaOnLoad(_context) {
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = document.querySelectorAll('.g-recaptcha:empty');
-    for (var i = 0; i < captchas.length; i++) {
-      var captchaElement = captchas[i];
-      var captchaData = captchaElement.dataset;
-      var captchaId = grecaptcha.render(captchaElement, captchaData);
-      captchaElement.dataset.captchaId = captchaId;
-    }
+    const context = typeof _context === "undefined" ? document : _context;
+    context.querySelectorAll('.g-recaptcha:empty').forEach((captchaElement) => {
+      captchaElement.dataset.captchaId = grecaptcha.render(captchaElement, captchaElement.dataset);
+    });
   }
 }
 
-function resetCaptcha($form) {
+function resetCaptcha(target) {
   if (typeof grecaptcha !== 'undefined') {
-    var captcha = $form.find('.g-recaptcha');
-    if (captcha.length > 0) {
-      grecaptcha.reset(captcha.data('captchaId'));
+    const captcha = target.querySelector('.g-recaptcha');
+    if (captcha) {
+      grecaptcha.reset(captcha.dataset.captchaId);
     }
   }
 }
@@ -752,7 +856,7 @@ function unwrapJQuery(node) {
 }
 
 function setupJumpMenus(_container) {
-  var container = unwrapJQuery(_container || document.body);
+  var container = _container || document.body;
   var selects = container.querySelectorAll('select.jumpMenu');
   selects.forEach((select) => {
     select.addEventListener('change', function jumpMenu() {
@@ -802,8 +906,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupJumpMenus();
 
   // Print
-  var url = window.location.href;
-  if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
+  if (VuFind.isPrinting()) {
     var printStylesheets = document.querySelectorAll('link[media="print"]');
     printStylesheets.forEach((stylesheet) => {
       stylesheet.media = 'all';

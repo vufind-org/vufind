@@ -42,7 +42,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     if (count < 1) {
       button.classList.add('hidden');
     } else {
-      button.innerHTML = VuFind.translate('clear_selection', { '%%count%%': count});
+      button.textContent = VuFind.translate('clear_selection', { '%%count%%': count});
       button.classList.remove('hidden');
     }
   }

@@ -109,7 +109,7 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $class = $this->getClassName($requestedName);
         return new $class();

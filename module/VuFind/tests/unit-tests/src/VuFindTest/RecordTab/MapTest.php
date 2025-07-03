@@ -30,6 +30,7 @@
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\Map;
+use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Map Test Class
@@ -43,6 +44,7 @@ use VuFind\RecordTab\Map;
 class MapTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\WithConsecutiveTrait;
+    use PathResolverTrait;
 
     /**
      * Get a Map object
@@ -61,7 +63,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             'mapLabels'     => null,
             'graticule'     => true,
         ];
-        $obj = new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
+        $obj = new Map($this->getPathResolver(), $mapTabDisplay, $basemapOptions, $mapTabOptions);
         return $obj;
     }
 
@@ -96,7 +98,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetMapGraticule(): void
     {
         $configuredMap = $this->getMap();
-        $defaultMap = new Map();
+        $defaultMap = new Map($this->getPathResolver());
         $this->assertTrue($configuredMap->getMapGraticule());
         $this->assertFalse($defaultMap->getMapGraticule());
     }

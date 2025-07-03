@@ -46,18 +46,14 @@ use function in_array;
 class Mailer extends AbstractBase
 {
     /**
-     * Default carriers, usually overridden by contents of web/conf/sms.ini.
+     * Default carriers, usually overridden by contents of sms.ini.
      *
      * @var array
      */
     protected $carriers = [
         'virgin' => ['name' => 'Virgin Mobile', 'domain' => 'vmobl.com'],
-        'att' => ['name' => 'AT&T', 'domain' => 'mms.att.net'],
         'verizon' => ['name' => 'Verizon', 'domain' => 'vtext.com'],
-        'nextel' => ['name' => 'Nextel', 'domain' => 'messaging.nextel.com'],
-        'sprint' => ['name' => 'Sprint', 'domain' => 'messaging.sprintpcs.com'],
         'tmobile' => ['name' => 'T Mobile', 'domain' => 'tmomail.net'],
-        'alltel' => ['name' => 'Alltel', 'domain' => 'message.alltel.com'],
         'Cricket' => ['name' => 'Cricket', 'domain' => 'mms.mycricket.com'],
     ];
 
@@ -78,11 +74,11 @@ class Mailer extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array                  $options Additional options: defaultFrom
+     * @param \VuFind\Config\Config $config  SMS configuration
+     * @param array                 $options Additional options: defaultFrom
      * (optional) and mailer (must be a \VuFind\Mailer\Mailer object)
      */
-    public function __construct(\Laminas\Config\Config $config, $options = [])
+    public function __construct(\VuFind\Config\Config $config, $options = [])
     {
         // Set up parent object first:
         parent::__construct($config);

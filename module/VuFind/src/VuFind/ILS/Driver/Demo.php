@@ -202,13 +202,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param callable               $sessionFactory Factory function returning
      * SessionContainer object for fake data to simulate consistency and reduce Solr
      * hits
-     * @param HttpRequest            $request        HTTP request object (optional)
+     * @param ?HttpRequest           $request        HTTP request object (optional)
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
         SearchService $ss,
         $sessionFactory,
-        HttpRequest $request = null
+        ?HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
@@ -467,11 +467,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     set id
      * @param string $number set number for multiple items
-     * @param array  $patron Patron data
+     * @param ?array $patron Patron data
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number, array $patron = null)
+    protected function getRandomHolding($id, $number, ?array $patron = null)
     {
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
@@ -570,6 +570,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     protected function createRequestList($requestType)
     {
+        $key = strtolower($requestType);
+        if ($records = $this->config['Records'][$key] ?? null) {
+            return json_decode($records, true);
+        }
+
         // How many items are there?  %10 - 1 = 10% chance of none,
         // 90% of 1-9 (give or take some odd maths)
         $items = rand() % 10 - 1;
@@ -723,14 +728,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * record.
      *
      * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param ?array $patron Patron data
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getSimulatedStatus($id, array $patron = null)
+    protected function getSimulatedStatus($id, ?array $patron = null)
     {
         $id = (string)$id;
 
@@ -859,6 +864,20 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
+     * Get loan type data for inclusion in a holding entry.
+     *
+     * @return array
+     */
+    protected function getLoanTypeForHolding(): array
+    {
+        $id = rand(1, 5);
+        return [
+            'loan_type_id' => $id,
+            'loan_type_name' => "Loan Type $id",
+        ];
+    }
+
+    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
@@ -872,7 +891,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $this->checkIntermittentFailure();
 
@@ -887,10 +906,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $status = $this->getSimulatedStatus($id, $patron);
 
         $issue = 1;
-        // Add notes and summary:
+        // Add notes, summary and other details:
         foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
             $status[$i] += $this->getNotesAndSummary($itemNum);
+            $status[$i] += $this->getLoanTypeForHolding();
             $volume = intdiv($issue, 4) + 1;
             $seriesIssue = $issue % 4;
             $issue = $issue + 1;
@@ -1054,6 +1074,64 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
+     * Generate random fines
+     *
+     * @return array
+     */
+    protected function getRandomFines(): array
+    {
+        // How many items are there? %20 - 2 = 10% chance of none,
+        // 90% of 1-18 (give or take some odd maths)
+        $fines = rand() % 20 - 2;
+
+        $fineList = [];
+        for ($i = 0; $i < $fines; $i++) {
+            // How many days overdue is the item?
+            $day_overdue = rand() % 30 + 5;
+            // Calculate checkout date:
+            $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
+            // 1 in 10 chance of this being a "Manual Fee":
+            if (rand(1, 10) === 1) {
+                $fine = 2.50;
+                $type = 'Manual Fee';
+            } else {
+                // 50c a day fine
+                $fine = $day_overdue * 0.50;
+                // After 20 days it becomes 'Long Overdue'
+                $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
+            }
+
+            $fineList[] = [
+                'amount'   => $fine * 100,
+                'checkout' => $this->dateConverter
+                    ->convertToDisplayDate('U', $checkout),
+                'createdate' => $this->dateConverter
+                    ->convertToDisplayDate('U', time()),
+                'fine'     => $type,
+                // Additional description for long overdue fines:
+                'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
+                // 50% chance they've paid half of it
+                'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
+                'duedate'  => $this->dateConverter->convertToDisplayDate(
+                    'U',
+                    strtotime("now - $day_overdue days")
+                ),
+            ];
+            // Some fines will have no id or title:
+            if (rand() % 3 != 1) {
+                if ($this->idsInMyResearch) {
+                    [$fineList[$i]['id'], $fineList[$i]['title']]
+                        = $this->getRandomBibIdAndTitle();
+                    $fineList[$i]['source'] = $this->getRecordSource();
+                } else {
+                    $fineList[$i]['title'] = 'Demo Title ' . $i;
+                }
+            }
+        }
+        return $fineList;
+    }
+
+    /**
      * Get Patron Fines
      *
      * This is responsible for retrieving all fines by a specific patron.
@@ -1069,55 +1147,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $this->checkIntermittentFailure();
         $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->fines)) {
-            // How many items are there? %20 - 2 = 10% chance of none,
-            // 90% of 1-18 (give or take some odd maths)
-            $fines = rand() % 20 - 2;
-
-            $fineList = [];
-            for ($i = 0; $i < $fines; $i++) {
-                // How many days overdue is the item?
-                $day_overdue = rand() % 30 + 5;
-                // Calculate checkout date:
-                $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
-                // 1 in 10 chance of this being a "Manual Fee":
-                if (rand(1, 10) === 1) {
-                    $fine = 2.50;
-                    $type = 'Manual Fee';
-                } else {
-                    // 50c a day fine
-                    $fine = $day_overdue * 0.50;
-                    // After 20 days it becomes 'Long Overdue'
-                    $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
-                }
-
-                $fineList[] = [
-                    'amount'   => $fine * 100,
-                    'checkout' => $this->dateConverter
-                        ->convertToDisplayDate('U', $checkout),
-                    'createdate' => $this->dateConverter
-                        ->convertToDisplayDate('U', time()),
-                    'fine'     => $type,
-                    // Additional description for long overdue fines:
-                    'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
-                    // 50% chance they've paid half of it
-                    'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
-                    'duedate'  => $this->dateConverter->convertToDisplayDate(
-                        'U',
-                        strtotime("now - $day_overdue days")
-                    ),
-                ];
-                // Some fines will have no id or title:
-                if (rand() % 3 != 1) {
-                    if ($this->idsInMyResearch) {
-                        [$fineList[$i]['id'], $fineList[$i]['title']]
-                            = $this->getRandomBibIdAndTitle();
-                        $fineList[$i]['source'] = $this->getRecordSource();
-                    } else {
-                        $fineList[$i]['title'] = 'Demo Title ' . $i;
-                    }
-                }
-            }
-            $session->fines = $fineList;
+            $session->fines = ($records = $this->config['Records']['fines'] ?? null)
+                ? json_decode($records, true)
+                : $this->getRandomFines();
         }
         return $session->fines;
     }

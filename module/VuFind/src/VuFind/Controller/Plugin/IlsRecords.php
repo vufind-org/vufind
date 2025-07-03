@@ -29,7 +29,7 @@
 
 namespace VuFind\Controller\Plugin;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Record\Loader;
 
 /**

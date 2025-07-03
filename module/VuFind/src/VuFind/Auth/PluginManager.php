@@ -29,8 +29,6 @@
 
 namespace VuFind\Auth;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Auth handler plugin manager
  *
@@ -58,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ldap' => LDAP::class,
         'multiauth' => MultiAuth::class,
         'multiils' => MultiILS::class,
+        'openidconnect' => OpenIDConnect::class,
         'shibboleth' => Shibboleth::class,
         'simulatedsso' => SimulatedSSO::class,
         'sip2' => SIP2::class,
@@ -75,13 +74,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AlmaDatabase::class => ILSFactory::class,
         CAS::class => CASFactory::class,
         ChoiceAuth::class => ChoiceAuthFactory::class,
-        Database::class => InvokableFactory::class,
+        Database::class => DatabaseFactory::class,
         Email::class => EmailFactory::class,
         Facebook::class => FacebookFactory::class,
         ILS::class => ILSFactory::class,
         LDAP::class => LDAPFactory::class,
         MultiAuth::class => MultiAuthFactory::class,
         MultiILS::class => ILSFactory::class,
+        OpenIDConnect::class => OpenIDConnectFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
         SimulatedSSO::class => SimulatedSSOFactory::class,
         SIP2::class => SIP2Factory::class,
@@ -112,6 +112,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return AbstractBase::class;
+        return AuthInterface::class;
     }
 }

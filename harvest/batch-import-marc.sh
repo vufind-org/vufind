@@ -14,7 +14,7 @@ fi
 
 # Find harvest directory for future use
 HARVEST_DIR="$VUFIND_LOCAL_DIR/harvest"
-if [ ! -d $HARVEST_DIR ]
+if [ ! -d "$HARVEST_DIR" ]
 then
   HARVEST_DIR="$VUFIND_HOME/harvest"
 fi
@@ -32,13 +32,13 @@ function usage {
 cat <<EOF
 This script processes a batch of harvested MARC records.
 
-Usage: $(basename $0) [-dhmz] [-p properties_file] _harvest_subdirectory_
+Usage: $(basename "$0") [-dhmz] [-p properties_file] _harvest_subdirectory_
 
 _harvest_subdirectory_ is a directory name created by the OAI-PMH harvester.
 This script will search the harvest subdirectories of the directories defined
 by the VUFIND_LOCAL_DIR or VUFIND_HOME environment variables.
 
-Example: $(basename $0) oai_source
+Example: $(basename "$0") oai_source
 
 Options:
 -d:  Use the directory path as-is, do not append it to $HARVEST_DIR.
@@ -91,7 +91,7 @@ then
 else
   BASEPATH="$HARVEST_DIR/$1"
 fi
-if [ ! -d $BASEPATH ]
+if [ ! -d "$BASEPATH" ]
 then
   echo "Directory $BASEPATH does not exist!"
   exit 1
@@ -100,16 +100,16 @@ fi
 # Create log/processed directories as needed:
 if [ $LOGGING == true ]
 then
-  if [ ! -d $BASEPATH/log ]
+  if [ ! -d "$BASEPATH"/log ]
   then
-    mkdir $BASEPATH/log
+    mkdir "$BASEPATH"/log
   fi
 fi
 if [ $MOVE_DATA == true ]
 then
-  if [ ! -d $BASEPATH/processed ]
+  if [ ! -d "$BASEPATH"/processed ]
   then
-    mkdir $BASEPATH/processed
+    mkdir "$BASEPATH"/processed
   fi
 fi
 
@@ -127,28 +127,32 @@ else
     local LOGFILE
     if [ $# -eq 1 ]
     then
-      LOGFILE=$BASEPATH/log/`basename $1`.log
-      > $LOGFILE
+      LOGFILE="$BASEPATH/log/$(basename "$1").log" > "$LOGFILE"
     else
-      LOGFILE=$BASEPATH/log/`basename $1`_and_more.log
-      echo -e "This log is for the following files: \n$FILES\n" > $LOGFILE
+      LOGFILE="$BASEPATH/log/$(basename "$1")_and_more.log"
+      echo -e "This log is for the following files: \n$FILES\n" > "$LOGFILE"
     fi
-    cat -u - >> $LOGFILE
+    cat -u - >> "$LOGFILE"
   }
 fi
 
-# Process all the files in the target directory:
-find -L $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | sort -z | xargs -0 -r -n $MAX_BATCH_COUNT | \
-  while read -d $'\n' files
-do
-  # Logging output handled by log() function
-  # PROPERTIES_FILE passed via environment
-  $VUFIND_HOME/import-marc.sh $files 2> >(log $files)
-  if [ "$?" -eq "0" ] && [ $MOVE_DATA == true ]
-  then
-    for file in $files
-    do
-      mv $file $BASEPATH/processed/`basename $file`
-    done
-  fi
+# Collect all matching files into an array using a null-separated list
+mapfile -d '' files < <(find -L "$BASEPATH" -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | sort -z)
+total_files=${#files[@]}
+
+# Iterate over the files in batches
+for ((i = 0; i < total_files; i += MAX_BATCH_COUNT)); do
+    # Slice off a batch of files
+    batch=("${files[@]:i:MAX_BATCH_COUNT}")
+
+    # Execute the import command with the batch of files
+    if "$VUFIND_HOME"/import-marc.sh "${batch[@]}" 2> >(log "${batch[@]}"); then
+        if [ "$MOVE_DATA" == true ]; then
+            for file in "${batch[@]}"; do
+                mv "$file" "$BASEPATH/processed/$(basename "$file")"
+            done
+        fi
+    else
+        echo "Failed to process batch starting with ${batch[0]}" >&2
+    fi
 done

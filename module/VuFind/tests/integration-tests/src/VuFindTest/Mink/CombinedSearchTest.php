@@ -240,6 +240,61 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testJumpMenu()
+     *
+     * @return array[]
+     */
+    public static function jumpMenuProvider(): array
+    {
+        return [
+            'anchor mode' => ['anchor'],
+            'link mode' => ['link'],
+        ];
+    }
+
+    /**
+     * Test that the jump menu can be enabled.
+     *
+     * @param string $linkMode Linking mode to activate
+     *
+     * @return void
+     *
+     * @dataProvider jumpMenuProvider
+     */
+    public function testJumpMenu(string $linkMode): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:one']['ajax'] = true; // use mixed AJAX mode for more thorough test
+        $config['Layout']['jump_links'] = true;
+        $config['Layout']['jump_links_mode'] = $linkMode;
+        $this->changeConfigs(
+            ['combined' => $config],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $expectedContent = 'Jump to Results: Solr One (1) Solr Two (1)';
+        // The AJAX count may not load right away, so wait to be sure we assert on the final value:
+        $getText = "document.getElementsByClassName('combined-jump-links')[0].textContent.replace(/\s+/g, ' ').trim()";
+        $this->waitStatement("$getText === '$expectedContent'");
+        $this->assertEquals(
+            $expectedContent,
+            $this->findCssAndGetText($page, '.combined-jump-links')
+        );
+        $firstLink = $this->findCss($page, '.combined-jump-links a')->getAttribute('href');
+        $secondLink = $this->findCss($page, '.combined-jump-links a', index: 1)->getAttribute('href');
+        $expectedFirstLink = $linkMode === 'anchor'
+            ? '#combined_Solr____one'
+            : '/Search/Results?hiddenFilters%5B%5D=building%3A%22journals.mrc%22&lookfor=id%3A%22testsample1%22'
+                . '+OR+id%3A%22theplus%2Bandtheminus-%22&type=AllFields';
+        $expectedSecondLink = $linkMode === 'anchor'
+            ? '#combined_Solr____two'
+            : '/Search/Results?hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22&lookfor=id%3A%22testsample1%22'
+                . '+OR+id%3A%22theplus%2Bandtheminus-%22&type=AllFields';
+        $this->assertStringEndsWith($expectedFirstLink, $firstLink);
+        $this->assertStringEndsWith($expectedSecondLink, $secondLink);
+    }
+
+    /**
      * Test that DOI results work in various AJAX/non-AJAX modes.
      *
      * @param bool $leftAjax  Should left column load via AJAX?
@@ -260,8 +315,9 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'combined' => $config,
                 'config' => [
-                    'DOI' => [
+                    'IdentifierLinks' => [
                         'resolver' => 'Demo',
+                        'supportedIdentifiers' => ['doi'],
                     ],
                 ],
             ],
@@ -272,11 +328,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // now include a DOI link:
         $this->assertStringStartsWith(
             'Demonstrating DOI link for 10.1234/FAKETYFAKE1',
-            $this->findCssAndGetText($page, '#combined_Solr____one .doiLink a')
+            $this->findCssAndGetText($page, '#combined_Solr____one .identifierLink a')
         );
         $this->assertStringStartsWith(
             'Demonstrating DOI link for 10.1234/FAKETYFAKE2',
-            $this->findCssAndGetText($page, '#combined_Solr____two .doiLink a')
+            $this->findCssAndGetText($page, '#combined_Solr____two .identifierLink a')
         );
     }
 }

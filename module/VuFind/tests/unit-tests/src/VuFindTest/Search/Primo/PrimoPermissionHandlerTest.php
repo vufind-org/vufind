@@ -169,7 +169,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     public function testWithoutAuthorizationServiceWithLaminasConfigObject()
     {
         $handler = new PrimoPermissionHandler(
-            new \Laminas\Config\Config($this->primoConfig)
+            new \VuFind\Config\Config($this->primoConfig)
         );
         $this->assertEquals(false, $handler->hasPermission());
     }

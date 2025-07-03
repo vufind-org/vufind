@@ -64,7 +64,7 @@ class SuggesterFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName(
             $container->get(\VuFind\Autocomplete\PluginManager::class),

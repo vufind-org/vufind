@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Blender\Results;

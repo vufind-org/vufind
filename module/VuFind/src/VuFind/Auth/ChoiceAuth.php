@@ -120,7 +120,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @throws AuthException
      * @return void
@@ -155,8 +155,12 @@ class ChoiceAuth extends AbstractBase
      *
      * @return void
      */
-    public function resetState()
+    public function clearLoginState()
     {
+        // clear user's login choice, if necessary:
+        if (isset($this->session->auth_method)) {
+            unset($this->session->auth_method);
+        }
         $this->strategy = false;
     }
 
@@ -243,32 +247,27 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @throws InvalidArgumentException
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
-        // clear user's login choice, if necessary:
-        if (isset($this->session->auth_method)) {
-            unset($this->session->auth_method);
-        }
-
         // If we have a selected strategy, proxy the appropriate class; otherwise,
         // perform default behavior of returning unmodified URL:
-        try {
-            return $this->strategy
-                ? $this->proxyAuthMethod('logout', func_get_args()) : $url;
-        } catch (InvalidArgumentException $e) {
-            // If we're in an invalid state (due to an illegal login method),
-            // we should just clear everything out so the user can try again.
-            $this->strategy = false;
-            return false;
-        }
+        return $this->strategy ? $this->proxyAuthMethod('getLogoutRedirectUrl', func_get_args()) : $url;
+    }
+
+    /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->proxyAuthMethod('hasSessionInitiator', func_get_args());
     }
 
     /**
@@ -278,11 +277,11 @@ class ChoiceAuth extends AbstractBase
      * @param string $target Full URL where external authentication strategy should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
-        return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
+        return $this->proxyAuthMethod('getSessionInitiator', func_get_args()) ?: null;
     }
 
     /**
@@ -312,7 +311,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getUsernamePolicy()
     {
-        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args());
+        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args()) ?: [];
     }
 
     /**
@@ -322,7 +321,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getPasswordPolicy()
     {
-        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
+        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args()) ?: [];
     }
 
     /**

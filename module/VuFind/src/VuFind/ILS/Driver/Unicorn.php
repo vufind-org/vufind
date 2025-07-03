@@ -126,7 +126,7 @@ class Unicorn extends AbstractBase implements
         // allow user to specify the full url to the Sirsi side perl script
         $this->url = $this->config['Catalog']['url'];
 
-        // host/port/search_prog kept for backward compatibility
+        // host/port/search_prog kept for backward compatibility with legacy configs
         if (
             isset($this->config['Catalog']['host'])
             && isset($this->config['Catalog']['port'])
@@ -411,7 +411,7 @@ class Unicorn extends AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -422,7 +422,7 @@ class Unicorn extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }

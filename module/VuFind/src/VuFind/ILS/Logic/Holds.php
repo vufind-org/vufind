@@ -72,7 +72,7 @@ class Holds
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -89,13 +89,13 @@ class Holds
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $ils     A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \Laminas\Config\Config        $config  VuFind configuration
+     * @param \VuFind\Config\Config         $config  VuFind configuration
      */
     public function __construct(
         \VuFind\Auth\ILSAuthenticator $ilsAuth,
         ILSConnection $ils,
         \VuFind\Crypt\HMAC $hmac,
-        \Laminas\Config\Config $config
+        \VuFind\Config\Config $config
     ) {
         $this->ilsAuth = $ilsAuth;
         $this->hmac = $hmac;
@@ -582,7 +582,7 @@ class Holds
 
         // Multiple keys may be used here (delimited by comma)
         foreach (array_map('trim', explode(',', $grouping)) as $key) {
-            // backwards-compatibility:
+            // Legacy backwards-compatibility:
             // The config.ini file originally expected only
             //   two possible settings: holdings_id and location_name.
             // However, when location_name was set, the code actually

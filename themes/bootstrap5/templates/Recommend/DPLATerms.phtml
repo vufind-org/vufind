@@ -4,7 +4,7 @@
     <li class="list-group-item title<?php if ($this->recommend->isCollapsed()): ?> collapsed<?php endif ?>" data-bs-toggle="collapse" data-bs-target="#side-collapse-dpla">
       DPLA
     </li>
-    <div id="side-collapse-dpla" class="collapse<?php if (!$this->recommend->isCollapsed()): ?> in<?php endif ?>">
+    <div id="side-collapse-dpla" class="collapse<?php if (!$this->recommend->isCollapsed()): ?> show<?php endif ?>">
     <?php foreach ($results as $item): ?>
       <li class="list-group-item">
         <a href="<?=$this->escapeHtmlAttr($item['link']) ?>" target="_blank"><?=$this->escapeHtml($item['title']) ?></a><br>

@@ -53,6 +53,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\AutocompleteTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\SearchSortTrait;
+    use \VuFindTest\Feature\TagTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -80,21 +81,22 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make new account
+     * Open the login modal before adding a comment.
      *
-     * @param Element $page     Page element
-     * @param string  $username Username to create
+     * @param string Element $page Page element
      *
      * @return void
      */
-    protected function makeAccount(Element $page, string $username): void
+    protected function openCommentsLoginModal(Element $page): void
     {
-        $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->fillInAccountForm(
-            $page,
-            ['username' => $username, 'email' => $username . '@vufind.org']
+        $this->waitForPageLoad($page);
+        $this->assertEquals(// Can Comment?
+            'You must be logged in first',
+            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
         );
-        $this->clickCss($page, '#accountForm .btn.btn-primary');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->findCss($page, $this->openModalSelector); // Lightbox open
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
     }
 
     /**
@@ -107,17 +109,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        // TODO Rewrite for comment and login coming
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
-        $this->assertEquals(// Can Comment?
-            'You must be logged in first',
-            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
-        );
-        $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, $this->openModalSelector); // Lightbox open
-        $this->findCss($page, '.modal [name="username"]');
         // Create new account
+        $this->openCommentsLoginModal($page);
         $this->makeAccount($page, 'username1');
         $this->waitForLightboxHidden();
         // Make sure page updated for login
@@ -161,17 +156,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        // TODO Rewrite for comment and login coming
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
-        $this->assertEquals(// Can Comment?
-            'You must be logged in first',
-            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
-        );
-        $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, $this->openModalSelector); // Lightbox open
-        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Log in to existing account
+        $this->openCommentsLoginModal($page);
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Make sure page updated for login
@@ -204,36 +192,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Add tags to a record
-     *
-     * @param Element $page Page object
-     * @param string  $tags Tag(s) to add
-     * @param ?string $user Username to log in with (null if already logged in)
-     * @param ?string $pass Password to log in with (null if already logged in)
-     *
-     * @return void
-     */
-    protected function addTagsToRecord(
-        Element $page,
-        string $tags,
-        ?string $user = null,
-        ?string $pass = null
-    ): void {
-        $this->clickCss($page, '.tag-record');
-        // Login if necessary
-        if (!empty($user) && !empty($pass)) {
-            $this->fillInLoginForm($page, $user, $pass);
-            $this->submitLoginForm($page);
-        }
-        // Add tags
-        $this->findCssAndSetValue($page, '.modal #addtag_tag', $tags);
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->waitForPageLoad($page);
-        $this->assertEquals('Tags Saved', $this->findCssAndGetText($page, '.modal-body .alert-success'));
-        $this->closeLightbox($page);
-    }
-
-    /**
      * Test adding tags on records.
      *
      * @return void
@@ -257,16 +215,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->addTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
         // Count tags
         $this->waitForPageLoad($page);
-        $tags = $page->findAll('css', '.tagList .tag');
-        $this->assertCount(4, $tags);
-        $tvals = [];
-        foreach ($tags as $t) {
-            $tvals[] = $this->findCssAndGetText($t, 'a');
-        }
-        sort($tvals);
-        $this->assertEquals($tvals, ['2', 'five', 'one', 'three 4']);
+        $this->assertEquals(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
-        $this->clickCss($tags[0], 'button');
+        $this->clickCss($page, '.tagList .tag button');
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         // Count tags with missing
@@ -432,28 +383,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         $this->assertCount(6, $tags);
-    }
-
-    /**
-     * Set up and access the Tag Admin page.
-     *
-     * @param string $subPage The tag admin sub-page (optional)
-     *
-     * @return Element
-     */
-    protected function goToTagAdmin(string $subPage = ''): Element
-    {
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Site' => ['admin_enabled' => 1],
-                    'Social' => ['case_sensitive_tags' => 'true'],
-                ],
-            ],
-        );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/Admin/Tags' . $subPage));
-        return $session->getPage();
     }
 
     /**
@@ -702,32 +631,30 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // - too empty
         $this->findCssAndSetValue($page, '.modal #sms_to', '');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too short
         $this->findCssAndSetValue($page, '.modal #sms_to', '123');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too long
         $this->findCssAndSetValue($page, '.modal #sms_to', '12345678912345678912345679');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - too lettery
         $this->findCssAndSetValue($page, '.modal #sms_to', '123abc');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->findCss($page, '.modal .sms-error');
+        $this->checkFieldIsInvalid($page, '.modal #sms_to');
         // - just right
         $this->findCssAndSetValue($page, '.modal #sms_to', '8005555555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
-        $this->assertNull($page->find('css', '.modal .sms-error'));
+        $this->checkFieldIsValid($page, '.modal #sms_to');
 
-        $this->unFindCss($page, '.modal .sms-error');
         // - pretty just right
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
-        $this->assertNull($page->find('css', '.modal .sms-error'));
-        $this->unFindCss($page, '.modal .sms-error');
+        $this->checkFieldIsValid($page, '.modal #sms_to');
         // Send text to false number
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $this->findCss($page, '.modal #sms_provider option');
@@ -944,6 +871,84 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test adding comments, rating and tag to a record and then
+     * delete them from user account menu
+     *
+     * @return void
+     */
+    public function testUserContentDeletion()
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Social' => [
+                        'rating' => true,
+                        'remove_rating' => true,
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->gotoRecord();
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
+        $this->makeAccount($page, 'username5');
+
+        // Add a rating
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'div.rating-average a');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
+
+        // Add two comments
+        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'two');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Add a tag
+        $this->addTagsToRecord($page, 'testtag');
+
+        // Remove comments, tags and ratings from user account menu
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/UserContent');
+        $page = $session->getPage();
+        $this->findCss($page, '.usercontent-table');
+        $this->assertCount(2, $page->findAll('css', 'div.user-comment-truncate'));
+        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, '.usercontent-table');
+
+        $this->clickCss($page, 'li#user-content-tag a.nav-link');
+        $this->waitForPageLoad($page);
+        $this->findCss($page, '.usercontent-table');
+        $this->assertEquals('testtag', $this->findCssAndGetText($page, '.usercontent-table .user-tag div'));
+        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, '.usercontent-table');
+
+        $this->clickCss($page, 'li#user-content-ratings a.nav-link');
+        $this->waitForPageLoad($page);
+        $this->findCss($page, '.usercontent-table');
+        $inputs = $page->findAll('css', 'div.star-rating input:checked');
+        $this->assertCount(1, $inputs);
+        $this->assertEquals('50', $inputs[0]->getValue());
+        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, '.usercontent-table');
+    }
+
+    /**
      * Test export button found in toolbar
      *
      * @return void
@@ -979,6 +984,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2', 'username3', 'username4', 'emailmaniac']);
+        static::removeUsers(['username1', 'username2', 'username3', 'username4', 'username5', 'emailmaniac']);
     }
 }

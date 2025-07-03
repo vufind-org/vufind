@@ -1,7 +1,8 @@
 <?php
 
 /**
- * WorldCat Search Results
+ * WorldCat Search Results (legacy -- retained only for compatibility
+ * with stored searches, which will be redirected to WorldCat v2)
  *
  * PHP version 8
  *
@@ -29,10 +30,9 @@
 
 namespace VuFind\Search\WorldCat;
 
-use VuFindSearch\Command\SearchCommand;
-
 /**
- * WorldCat Search Parameters
+ * WorldCat Search Results (legacy -- retained only for compatibility
+ * with stored searches, which will be redirected to WorldCat v2)
  *
  * @category VuFind
  * @package  Search_WorldCat
@@ -57,22 +57,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function performSearch()
     {
-        $query  = $this->getParams()->getQuery();
-        $limit  = $this->getParams()->getLimit();
-        $offset = $this->getStartRecord();
-        $params = $this->getParams()->getBackendParameters();
-        $command = new SearchCommand(
-            $this->backendId,
-            $query,
-            $offset,
-            $limit,
-            $params
-        );
-        $collection = $this->getSearchService()
-            ->invoke($command)->getResult();
-
-        $this->resultTotal = $collection->getTotal();
-        $this->results = $collection->getRecords();
+        throw new \Exception('WorldCat v1 API no longer supported.');
     }
 
     /**
@@ -85,7 +70,6 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        // No facets in WorldCat:
-        return [];
+        throw new \Exception('WorldCat v1 API no longer supported.');
     }
 }

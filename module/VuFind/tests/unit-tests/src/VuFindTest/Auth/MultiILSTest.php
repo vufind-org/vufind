@@ -194,7 +194,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Laminas\Config\Config($config));
+        $auth->setConfig(new \VuFind\Config\Config($config));
         $auth->authenticate($this->getLoginRequest());
     }
 
@@ -275,7 +275,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ->willReturn(true);
         $driver->expects($this->any())
             ->method('getConfig')
-            ->willReturn(new \Laminas\Config\Config([]));
+            ->willReturn(new \VuFind\Config\Config([]));
 
         return $driver;
     }
@@ -341,7 +341,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ],
         );
         $connection = new \VuFind\ILS\Connection(
-            new \Laminas\Config\Config(['driver' => 'MultiBackend']),
+            new \VuFind\Config\Config(['driver' => 'MultiBackend']),
             $driverManager,
             $mockConfigReader
         );

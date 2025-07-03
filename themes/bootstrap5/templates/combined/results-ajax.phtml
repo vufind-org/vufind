@@ -30,5 +30,5 @@
 <?php endif; ?>
 
 <p><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></p>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+<?=$this->assetManager()->outputInlineScriptString($loadJs)?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>

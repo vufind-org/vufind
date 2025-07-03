@@ -29,7 +29,19 @@
 
 namespace VuFindTest\Feature;
 
+use Laminas\Cache\Storage\Adapter\AdapterOptions;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\View\Renderer\PhpRenderer;
+use Psr\Container\ContainerInterface;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\Config;
+use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\View\Helper\Root\CleanHtml;
+use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
+use VuFindTest\Container\MockContainer;
+use VuFindTheme\View\Helper\AssetManager;
+use VuFindTheme\View\Helper\AssetManagerFactory;
 
 /**
  * Trait for tests involving Laminas Views.
@@ -43,14 +55,30 @@ use VuFind\View\Helper\Root\SearchMemory;
 trait ViewTrait
 {
     /**
+     * Get a working AssetManager helper.
+     *
+     * @param PhpRenderer $renderer View for helper
+     *
+     * @return AssetManager
+     */
+    protected function getAssetManager(PhpRenderer $renderer): AssetManager
+    {
+        $container = new MockContainer($this);
+        $factory = new AssetManagerFactory();
+        $helper = $factory($container, AssetManager::class);
+        $helper->setView($renderer);
+        return $helper;
+    }
+
+    /**
      * Get a working renderer.
      *
      * @param array  $plugins Custom VuFind plug-ins to register
      * @param string $theme   Theme directory to load from
      *
-     * @return \Laminas\View\Renderer\PhpRenderer
+     * @return PhpRenderer
      */
-    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap3')
+    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap5')
     {
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
@@ -63,13 +91,14 @@ trait ViewTrait
                 $this->getPathForTheme($theme),
             ]
         );
-        $renderer = new \Laminas\View\Renderer\PhpRenderer();
+        $renderer = new PhpRenderer();
         $renderer->setResolver($resolver);
-        if (!empty($plugins)) {
-            $pluginManager = $renderer->getHelperPluginManager();
-            foreach ($plugins as $key => $value) {
-                $pluginManager->setService($key, $value);
-            }
+        $pluginManager = $renderer->getHelperPluginManager();
+        if (!isset($plugins['assetManager'])) {
+            $plugins['assetManager'] = $this->getAssetManager($renderer);
+        }
+        foreach ($plugins as $key => $value) {
+            $pluginManager->setService($key, $value);
         }
         return $renderer;
     }
@@ -103,5 +132,51 @@ trait ViewTrait
                 ->willReturn(-123);
         }
         return new \VuFind\View\Helper\Root\SearchMemory($memory);
+    }
+
+    /**
+     * Create the cleanHtml helper
+     *
+     * @return CleanHtml
+     */
+    protected function createCleanHtmlHelper(): CleanHtml
+    {
+        // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
+        $cacheOptions = new class () extends AdapterOptions {
+            /**
+             * Get cache dir
+             *
+             * @return string
+             */
+            public function getCacheDir(): string
+            {
+                return '';
+            }
+        };
+        $cache = $this->createMock(StorageInterface::class);
+        $cache->expects($this->any())
+            ->method('getOptions')
+            ->willReturn($cacheOptions);
+        $cacheManager = $this->createMock(CacheManager::class);
+        $cacheManager->expects($this->any())
+            ->method('getCache')
+            ->willReturn($cache);
+        $config = $this->createMock(Config::class);
+        $configPluginManager = $this->createMock(ConfigPluginManager::class);
+        $configPluginManager->expects($this->any())
+            ->method('get')
+            ->willReturn($config);
+        $container = $this->createMock(ContainerInterface::class);
+        $container->expects($this->any())
+            ->method('get')
+            ->willReturnCallback(
+                function ($class) use ($cacheManager, $configPluginManager) {
+                    return match ($class) {
+                        CacheManager::class => $cacheManager,
+                        ConfigPluginManager::class => $configPluginManager,
+                    };
+                }
+            );
+        return (new CleanHtmlFactory())($container, CleanHtml::class);
     }
 }

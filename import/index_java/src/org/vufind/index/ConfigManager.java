@@ -100,10 +100,6 @@ public class ConfigManager
             }
         }
         file = new File(vufindHome + "/" + relativeConfigPath + "/" + filename);
-        if (file.exists()) {
-            return file;
-        }
-        file = new File(vufindHome + "/web/conf/" + filename); // legacy from VuFind 1.x
         return file;
     }
 

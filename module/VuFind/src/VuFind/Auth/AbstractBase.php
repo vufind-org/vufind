@@ -52,6 +52,7 @@ use function is_callable;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
+    AuthInterface,
     \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
@@ -70,7 +71,7 @@ abstract class AbstractBase implements
     /**
      * Configuration settings
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
@@ -94,7 +95,7 @@ abstract class AbstractBase implements
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function getConfig()
     {
@@ -130,7 +131,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function resetState()
+    public function clearLoginState()
     {
         // By default, do no checking.
     }
@@ -138,7 +139,7 @@ abstract class AbstractBase implements
     /**
      * Set configuration.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @return void
      */
@@ -267,32 +268,41 @@ abstract class AbstractBase implements
     }
 
     /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->getSessionInitiator('') !== null;
+    }
+
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
-        return false;
+        return null;
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
-        // No special cleanup or URL modification needed by default.
+        // No modification needed by default.
         return $url;
     }
 

@@ -1,6 +1,6 @@
 <h2><?=$this->transEsc('Similar Items')?></h2>
 <?php $similarRecords = $this->tab->getResults(); ?>
-<?php if (!empty($similarRecords)): ?>
+<?php if (count($similarRecords)): ?>
   <?php $perPage = 4 ?>
   <div id="similar-items-carousel" class="carousel slide" data-bs-ride="carousel">
     <!-- Indicators -->
@@ -75,4 +75,4 @@
       $('#similar-items-carousel img').on('load', normalizeHeights);
       JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

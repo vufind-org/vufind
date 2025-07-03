@@ -8,7 +8,7 @@
     display: flex;
     max-width: 100px;
 
-    @media (min-width: $screen-xs-min) and (max-width: $screen-sm-max) {
+    @include media-breakpoint-down(sm) {
       max-width: 90px;
     }
 

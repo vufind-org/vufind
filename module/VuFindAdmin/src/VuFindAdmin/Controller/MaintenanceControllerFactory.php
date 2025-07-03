@@ -62,7 +62,7 @@ class MaintenanceControllerFactory extends \VuFind\Controller\AbstractBaseFactor
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return parent::__invoke(
             $container,

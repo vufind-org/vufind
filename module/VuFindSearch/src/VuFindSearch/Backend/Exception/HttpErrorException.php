@@ -82,10 +82,10 @@ abstract class HttpErrorException extends BackendException
     /**
      * Constructor.
      *
-     * @param string    $message  Exception message
-     * @param int       $code     Exception code
-     * @param Response  $response Server response
-     * @param Exception $prev     Previous exception
+     * @param string     $message  Exception message
+     * @param int        $code     Exception code
+     * @param Response   $response Server response
+     * @param ?Exception $prev     Previous exception
      *
      * @return void
      */
@@ -93,7 +93,7 @@ abstract class HttpErrorException extends BackendException
         $message,
         $code,
         Response $response,
-        Exception $prev = null
+        ?Exception $prev = null
     ) {
         parent::__construct($message, $code, $prev);
         $this->response = $response;

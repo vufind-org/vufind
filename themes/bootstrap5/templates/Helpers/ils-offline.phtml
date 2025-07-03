@@ -3,5 +3,9 @@
   <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
   <p><?=$this->transEsc($this->offlineModeMsg)?></p>
   <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-  <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  <?php if ($supportEmail = $this->systemEmail()): ?>
+    <p>
+      <a href="mailto:<?=$this->escapeHtmlAttr($supportEmail)?>"><?=$this->escapeHtml($supportEmail)?></a>
+    </p>
+  <?php endif; ?>
 </div>

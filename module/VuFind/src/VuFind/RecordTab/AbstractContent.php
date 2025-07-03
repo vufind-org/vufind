@@ -66,11 +66,11 @@ abstract class AbstractContent extends AbstractBase
     /**
      * Constructor
      *
-     * @param Loader $loader      Content loader (null to disable)
-     * @param bool   $hideIfEmpty Should we hide the tab if no content is found?
+     * @param ?Loader $loader      Content loader (null to disable)
+     * @param bool    $hideIfEmpty Should we hide the tab if no content is found?
      * (Note that turning this on has performance implications).
      */
-    public function __construct(Loader $loader = null, $hideIfEmpty = false)
+    public function __construct(?Loader $loader = null, $hideIfEmpty = false)
     {
         $this->loader = $loader;
         $this->hideIfEmpty = $hideIfEmpty;

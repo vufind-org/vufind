@@ -114,7 +114,10 @@ class OaiController extends AbstractBase
             $xml = $server->getResponse();
         } catch (\Exception $e) {
             $response->setStatusCode(500);
-            $response->setContent($e->getMessage());
+            $error = APPLICATION_ENV === 'development'
+                ? $e->getMessage()
+                : $this->translate('An error has occurred');
+            $response->setContent($error);
             return $response;
         }
 

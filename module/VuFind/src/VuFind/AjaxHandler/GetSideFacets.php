@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2018-2023.
+ * Copyright (C) The National Library of Finland 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,6 +39,7 @@ use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 use VuFind\Session\Settings as SessionSettings;
 
+use function in_array;
 use function is_callable;
 
 /**
@@ -227,10 +228,10 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     ) {
         $response = [];
         $facetSet = $recommend->getFacetSet();
+        $checkboxFacets = array_column($recommend->getCheckboxFacetSet(), 'filter');
         foreach ($facets as $facet) {
-            if (strpos($facet, ':')) {
-                $response[$facet]['checkboxCount']
-                    = $this->getCheckboxFacetCount($facet, $results);
+            if (in_array($facet, $checkboxFacets)) {
+                $response[$facet]['checkboxCount'] = $recommend->getCheckboxFacetCount($facet);
             } else {
                 $context['facet'] = $facet;
                 $context['cluster'] = $facetSet[$facet] ?? [
@@ -245,19 +246,5 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             }
         }
         return $response;
-    }
-
-    /**
-     * Get the result count for a checkbox facet
-     *
-     * @param string  $facet   Facet
-     * @param Results $results Search results
-     *
-     * @return int|null
-     */
-    protected function getCheckboxFacetCount($facet, Results $results)
-    {
-        // There's currently no good way to return counts for checkbox filters.
-        return null;
     }
 }

@@ -7,7 +7,6 @@
 
   position: relative;
   padding: 16rem 8rem;
-  font-size: 2rem;
   color: #fff;
   background-image: url('#{$image-path}/yosemite.jpg');
   background-position: center;
@@ -28,5 +27,6 @@
     a { color: #fff; }
   }
 }
+
 /* Hide search bar */
 .template-dir-search.template-name-home .search.container { display: none; }

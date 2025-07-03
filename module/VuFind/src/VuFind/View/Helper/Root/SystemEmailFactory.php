@@ -63,13 +63,12 @@ class SystemEmailFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         return new $requestedName($config->Site->email ?? '');
     }
 }
