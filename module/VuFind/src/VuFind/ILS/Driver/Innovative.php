@@ -408,18 +408,17 @@ class Innovative extends AbstractBase implements
                 // III patron ids also.
                 return null;
             }
-
-            // return patron info
-            $ret = [];
-            $ret['id'] = $api_data['PBARCODE']; // or should I return patron id num?
             $names = explode(',', $api_data['PATRNNAME']);
-            $ret['firstname'] = $names[1];
-            $ret['lastname'] = $names[0];
-            $ret['cat_username'] = urlencode($username);
-            $ret['cat_password'] = urlencode($password);
-            $ret['email'] = $api_data['EMAILADDR'];
-            $ret['major'] = null;
-            $ret['college'] = $api_data['HOMELIBR'];
+            // return patron info
+            $ret = $this->createPatronArray(
+                id: $api_data['PBARCODE'],
+                cat_username: urlencode($username),
+                cat_password: urlencode($password),
+                firstname:  $names[1],
+                lastname:  $names[0],
+                email: $api_data['EMAILADDR'],
+                college: $api_data['HOMELIBR']
+            );
             $ret['homelib'] = $api_data['HOMELIBR'];
             // replace $ separator in III addresses with newline
             $ret['address1'] = str_replace('$', ', ', $api_data['ADDRESS']);

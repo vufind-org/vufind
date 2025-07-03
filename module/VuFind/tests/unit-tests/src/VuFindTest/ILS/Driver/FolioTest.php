@@ -335,6 +335,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'lastname' => 'last',
             'email' => 'fake@fake.com',
             'addressTypeIds' => [],
+            'barcode' => 'foo',
+            'major' => null,
+            'college' => null,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -365,6 +368,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'lastname' => 'last',
             'email' => 'fake@fake.com',
             'addressTypeIds' => [],
+            'barcode' => 'foo',
+            'major' => null,
+            'college' => null,
         ];
         $this->assertEquals($expected, $result);
     }

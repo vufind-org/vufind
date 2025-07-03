@@ -1321,15 +1321,14 @@ class Aleph extends AbstractBase implements
                 $patron['college'] = $this->sublibadm["$home_lib"];
             }
         }
-        $patron['id'] = (string)$id;
-        $patron['barcode'] = (string)$user;
-        $patron['firstname'] = (string)$firstName;
-        $patron['lastname'] = (string)$lastName;
-        $patron['cat_username'] = (string)$user;
-        $patron['cat_password'] = $password;
-        $patron['email'] = (string)$email_addr;
-        $patron['major'] = null;
-        return $patron;
+        return $this->createPatronArray(
+            id: (string)$id,
+            cat_username: (string)$user,
+            cat_password: $password,
+            firstname: (string)$firstName,
+            lastname: (string)$lastName,
+            email: (string)$email_addr,
+        );
     }
 
     /**

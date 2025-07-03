@@ -31,6 +31,8 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 
+use function is_string;
+
 /**
  * Default ILS driver base class.
  *
@@ -64,6 +66,56 @@ abstract class AbstractBase implements DriverInterface
     public function setConfig($config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * Create a patron array. Ensures that all the keys are present in the resulting array.
+     *
+     * @param string  $id           Patron id in catalog
+     * @param string  $cat_username Catalog username, usually the same as barcode
+     * @param string  $cat_password Catalog password
+     * @param ?string $email        Patron email in catalog
+     * @param string  $firstname    Patron first name
+     * @param string  $lastname     Patron last name
+     * @param string  $barcode      Obtained barcode, if empty default to cat_username
+     * @param ?string $major        Major or null
+     * @param ?string $college      College or null
+     *
+     * @return array Associative array containing:
+     * - 'id',
+     * - 'cat_username',
+     * - 'cat_password',
+     * - 'email',
+     * - 'firstname',
+     * - 'lastname',
+     * - 'barcode',
+     * - 'major',
+     * - 'college',
+     */
+    public function createPatronArray(
+        string $id,
+        string $cat_username = '',
+        string $cat_password = '',
+        ?string $email = null,
+        string $firstname = '',
+        string $lastname = '',
+        string $barcode = '',
+        ?string $major = null,
+        ?string $college = null
+    ): array {
+        $barcode = $barcode ?: $cat_username;
+        $patron = compact(
+            'id',
+            'cat_username',
+            'cat_password',
+            'email',
+            'firstname',
+            'lastname',
+            'barcode',
+            'major',
+            'college'
+        );
+        return array_map(fn ($val) => is_string($val) ? trim($val) : $val, $patron);
     }
 
     /**

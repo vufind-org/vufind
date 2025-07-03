@@ -472,16 +472,14 @@ class NewGenLib extends AbstractBase
         if (!$row) {
             return null;
         }
-        return [
-            'id' => $row['patron_id'],
-            'firstname' => $row['fname'],
-            'lastname' => $row['lname'],
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => $row['email'],
-            'major' => null,
-            'college' => null,
-        ];
+        return $this->createPatronArray(
+            id: $row['patron_id'],
+            firstname: $row['fname'],
+            lastname: $row['lname'],
+            cat_username: $username,
+            cat_password: $password,
+            email: $row['email'],
+        );
     }
 
     /**

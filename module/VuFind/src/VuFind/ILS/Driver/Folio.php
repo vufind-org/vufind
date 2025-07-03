@@ -1439,20 +1439,21 @@ class Folio extends AbstractAPI implements
                 }
             }
         }
-
-        return [
-            'id' => $profile->id,
-            'username' => $username,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'firstname' => $profile->personal->firstName ?? null,
-            'lastname' => $profile->personal->lastName ?? null,
-            'email' => $profile->personal->email ?? null,
-            'addressTypeIds' => array_map(
-                fn ($address) => $address->addressTypeId,
-                $profile->personal->addresses ?? []
-            ),
-        ];
+        $patron = $this->createPatronArray(
+            id: $profile->id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: $profile->personal->firstName,
+            lastname: $profile->personal->lastName,
+            email: $profile->personal->email ?? null
+        );
+        // Add username just in case for legacy
+        $patron['username'] = $username;
+        $patron['addressTypeIds'] = array_map(
+            fn ($address) => $address->addressTypeId,
+            $profile->personal->addresses ?? []
+        );
+        return $patron;
     }
 
     /**

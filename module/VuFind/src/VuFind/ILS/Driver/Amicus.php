@@ -575,18 +575,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if (isset($row['LOGIN']) && ($row['LOGIN'] != '')) {
-                return [
-                    'id' => $row['LOGIN'],
-                    'firstname' => $row['FIRST_NAME'],
-                    'lastname' => $lname,
-                    'cat_username' => $barcode,
-                    'cat_password' => $lname,
-                    // There's supposed to be a getPatronEmailAddress stored
-                    // procedure in Oracle, but I couldn't get it to work here;
-                    // might be worth investigating further if needed later.
-                    'email' => null,
-                    'major' => null,
-                    'college' => null];
+                return $this->createPatronArray(
+                    id: $row['LOGIN'],
+                    firstname: $row['FIRST_NAME'],
+                    lastname: $lname,
+                    cat_username: $barcode,
+                    cat_password: $lname,
+                    email: null
+                );
             } else {
                 return null;
             }

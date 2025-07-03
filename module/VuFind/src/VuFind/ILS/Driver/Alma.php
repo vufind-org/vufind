@@ -819,13 +819,14 @@ class Alma extends AbstractBase implements
 
         if ($status != 400 && $response !== null) {
             // We may already have some information, so just fill the gaps
-            $patron['id'] = (string)$response->primary_id;
-            $patron['cat_username'] = trim($username);
-            $patron['cat_password'] = trim($password);
-            $patron['firstname'] = (string)$response->first_name ?? '';
-            $patron['lastname'] = (string)$response->last_name ?? '';
-            $patron['email'] = $this->getPreferredEmail($response);
-            return $patron;
+            return $this->createPatronArray(
+                id: (string)$response->primary_id,
+                cat_username: $username,
+                cat_password: $password,
+                firstname: (string)$response->first_name ?? '',
+                lastname: (string)$response->last_name ?? '',
+                email: $this->getPreferredEmail($response)
+            );
         }
 
         return null;

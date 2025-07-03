@@ -1011,21 +1011,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         $this->checkIntermittentFailure();
 
-        $user = [
-            'id'           => trim($username),
-            'firstname'    => 'Lib',
-            'lastname'     => 'Rarian',
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => 'Lib.Rarian@library.not',
-            'major'        => null,
-            'college'      => null,
-        ];
-
         $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'password';
-        if ('email' === $loginMethod) {
-            $user['email'] = $username;
-            $user['cat_password'] = '';
+        $isEmailLogin = $loginMethod === 'email';
+
+        $user = $this->createPatronArray(
+            id: $username,
+            firstname: 'Lib',
+            lastname: 'Rarian',
+            cat_username: $username,
+            cat_password: $isEmailLogin ? '' : $password,
+            email: $isEmailLogin ? $username : 'Lib.Rarian@library.not'
+        );
+        if ($isEmailLogin) {
             return $user;
         }
 

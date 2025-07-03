@@ -646,18 +646,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (200 !== $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
-
-        return [
-            'id' => $data['patron_id'],
-            'firstname' => $data['firstname'],
-            'lastname' => $data['surname'],
-            'cat_username' => $username,
-            'cat_password' => (string)$password,
-            'email' => $data['email'],
-            'major' => null,
-            'college' => null,
-            'home_library' => $data['library_id'],
-        ];
+        $patron = $this->createPatronArray(
+            id: $data['patron_id'],
+            cat_username: $username,
+            cat_password: (string)$password,
+            firstname:  $data['firstname'],
+            lastname: $data['surname'],
+            email: $data['email'],
+        );
+        $patron['home_library'] = $data['library_id'];
+        return $patron;
     }
 
     /**

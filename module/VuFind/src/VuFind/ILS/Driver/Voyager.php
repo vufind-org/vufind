@@ -1313,18 +1313,14 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                     || ($fallbackLoginField && null === $primary
                     && $fallback == $compareLogin)
                 ) {
-                    return [
-                        'id' => $this->utf8Encode($row['PATRON_ID']),
-                        'firstname' => $this->utf8Encode($row['FIRST_NAME']),
-                        'lastname' => $this->utf8Encode($row['LAST_NAME']),
-                        'cat_username' => $username,
-                        'cat_password' => $login,
-                        // There's supposed to be a getPatronEmailAddress stored
-                        // procedure in Oracle, but I couldn't get it to work here;
-                        // might be worth investigating further if needed later.
-                        'email' => null,
-                        'major' => null,
-                        'college' => null];
+                    return $this->createPatronArray(
+                        id: $this->utf8Encode($row['PATRON_ID']),
+                        firstname: $this->utf8Encode($row['FIRST_NAME']),
+                        lastname: $this->utf8Encode($row['LAST_NAME']),
+                        cat_username: $username,
+                        cat_password: $login,
+                        email: null
+                    );
                 }
             }
             return null;

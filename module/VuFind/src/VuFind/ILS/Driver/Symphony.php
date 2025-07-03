@@ -1096,11 +1096,6 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     {
         $usernameField = $this->config['Behaviors']['usernameField'];
 
-        $patron = [
-            'cat_username' => $username,
-            'cat_password' => $password,
-        ];
-
         try {
             $resp = $this->makeRequest(
                 'patron',
@@ -1124,13 +1119,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
         }
 
-        $patron['id']      = $resp->patronInfo->$usernameField;
-        $patron['library'] = $resp->patronInfo->patronLibraryID;
-
         $regEx = '/([^,]*),\s([^\s]*)/';
+        $firstName = '';
+        $lastName = '';
         if (preg_match($regEx, $resp->patronInfo->displayName, $matches)) {
-            $patron['firstname'] = $matches[2];
-            $patron['lastname']  = $matches[1];
+            $firstName = $matches[2];
+            $lastName  = $matches[1];
         }
 
         // There may be an email address in any of three numbered addresses,
@@ -1141,6 +1135,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
             array_unshift($addrinfo_check_order, $primary_addr_n);
         }
+        $email = '';
         foreach ($addrinfo_check_order as $n) {
             $AddressNInfo = "Address{$n}Info";
             if (isset($resp->patronAddressInfo->$AddressNInfo)) {
@@ -1152,7 +1147,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         $addrinfo->addressPolicyID == 'EMAIL'
                         && !empty($addrinfo->addressValue)
                     ) {
-                        $patron['email'] = $addrinfo->addressValue;
+                        $email = $addrinfo->addressValue;
                         break;
                     }
                 }
@@ -1160,7 +1155,15 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         }
 
         // @TODO: major, college
-
+        $patron = $this->createPatronArray(
+            id: $resp->patronInfo->$usernameField,
+            firstname: $firstName,
+            lastname: $lastName,
+            email: $email,
+            cat_username: $username,
+            cat_password: $password
+        );
+        $patron['library'] = $resp->patronInfo->patronLibraryID;
         return $patron;
     }
 

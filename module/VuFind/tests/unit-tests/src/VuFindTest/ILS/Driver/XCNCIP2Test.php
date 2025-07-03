@@ -194,7 +194,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'id' => '700', 'patronAgencyId' => 'MZK',
                 'cat_username' => 'my_login', 'cat_password' => 'my_password',
                 'email' => 'test@mzk.cz', 'major' => null, 'college' => null,
-                'firstname' => 'John', 'lastname' => 'Smith',
+                'firstname' => 'John', 'lastname' => 'Smith', 'barcode' => 'my_login',
             ],
         ], [
             'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
@@ -202,7 +202,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'id' => '700', 'patronAgencyId' => 'MZK',
                 'cat_username' => 'my_login', 'cat_password' => 'my_password',
                 'email' => 'test@mzk.cz', 'major' => null, 'college' => null,
-                'firstname' => 'John', 'lastname' => 'Smith',
+                'firstname' => 'John', 'lastname' => 'Smith', 'barcode' => 'my_login',
             ],
         ],
     ];

@@ -728,18 +728,14 @@ class Koha extends AbstractBase
                 // saved in a clear text as user provided. If 'cat_password' =>
                 // $db_pwd was used, then password will be saved encrypted as in
                 // 'borrowers' table of 'koha' database
-                $patron = [
-                    'id' => $row['ID'],
-                    'firstname' => $row['FNAME'],
-                    'lastname' => $row['LNAME'],
-                    'cat_username' => $username,
-                    'cat_password' => $password,
-                    'email' => $row['EMAIL'],
-                    'major' => null,
-                    'college' => null,
-                ];
-
-                return $patron;
+                return $this->createPatronArray(
+                    id: $row['ID'],
+                    cat_username: $username,
+                    cat_password: $password,
+                    firstname:  $row['FNAME'],
+                    lastname: $row['LNAME'],
+                    email: $row['EMAIL']
+                );
             }
             return null;
         } catch (PDOException $e) {

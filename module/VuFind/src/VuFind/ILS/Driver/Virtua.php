@@ -1170,32 +1170,23 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $fields = ['barcode:string' => $barcode];
         $result = $this->db->simpleSelect($sql, $fields);
 
-        if (count($result) > 0) {
-            // Valid Password
-            if ($result[0]['PASSWORD'] == $password) {
-                $user = [];
-                $split      = strpos($result[0]['NAME'], ',');
-                $last_name  = trim(substr($result[0]['NAME'], 0, $split));
-                $first_name = trim(substr($result[0]['NAME'], $split + 1));
-                $split      = strpos($first_name, ' ');
-                if ($split !== false) {
-                    $first_name = trim(substr($first_name, 0, $split));
-                }
-
-                $user['id']           = trim($result[0]['ID']);
-                $user['firstname']    = trim($first_name);
-                $user['lastname']     = trim($last_name);
-                $user['cat_username'] = strtoupper(trim($result[0]['BARCODE']));
-                $user['cat_password'] = trim($result[0]['PASSWORD']);
-                $user['email']        = trim($result[0]['E_MAIL_ADDRESS_PRIMARY']);
-                $user['major']        = trim($result[0]['DEPARTMENT']);
-                $user['college']      = null;
-
-                return $user;
-            } else {
-                // Invalid Password
-                return null;
+        if (count($result) > 0 && $result[0]['PASSWORD'] === $password) {
+            $split      = strpos($result[0]['NAME'], ',');
+            $last_name  = trim(substr($result[0]['NAME'], 0, $split));
+            $first_name = trim(substr($result[0]['NAME'], $split + 1));
+            $split      = strpos($first_name, ' ');
+            if ($split !== false) {
+                $first_name = trim(substr($first_name, 0, $split));
             }
+            return $this->createPatronArray(
+                id: $result[0]['ID'],
+                firstname: $first_name,
+                lastname: $last_name,
+                cat_username: strtoupper($result[0]['BARCODE']),
+                cat_password: $result[0]['PASSWORD'],
+                email: $result[0]['E_MAIL_ADDRESS_PRIMARY'],
+                major: $result[0]['DEPARTMENT']
+            );
         } else {
             // User not found
             return null;

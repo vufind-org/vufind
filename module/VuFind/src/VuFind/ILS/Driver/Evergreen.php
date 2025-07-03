@@ -367,20 +367,14 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $sqlStmt->bindParam(2, $barcode, PDO::PARAM_STR);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            if (isset($row['id']) && ($row['id'] != '')) {
-                $return = [];
-                $return['id'] = $row['id'];
-                $return['firstname'] = $row['firstname'];
-                $return['lastname'] = $row['lastname'];
-                $return['cat_username'] = $row['usrname'];
-                $return['cat_password'] = $passwd;
-                $return['email'] = $row['email'];
-                $return['major'] = null;    // Don't know which table this comes from
-                $return['college'] = null;  // Don't know which table this comes from
-                return $return;
-            } else {
-                return null;
-            }
+            return !empty($row['id']) ? $this->createPatronArray(
+                id: $row['id'],
+                firstname: $row['firstname'],
+                lastname: $row['lastname'],
+                cat_username: $row['usrname'],
+                cat_password: $passwd,
+                email: $row['email']
+            ) : null;
         } catch (PDOException $e) {
             $this->logError((string)$e);
             $this->throwAsIlsException($e);

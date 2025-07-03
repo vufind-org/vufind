@@ -524,17 +524,17 @@ class Unicorn extends AbstractBase implements
             $expiry = $this->parseDateTime(trim($expiry));
         }
         $expired = ($expiry == '0') ? false : $expiry < time();
-        return [
-            'id' => $username,
-            'firstname' => $first,
-            'lastname' =>  $last,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => null,
-            'major' => null,
-            'college' => null,
+        $patron = $this->createPatronArray(
+            id: $username,
+            firstname: $first,
+            lastname: $last,
+            cat_username: $username,
+            cat_password: $password,
+            email: null,
+            barcode: $barcode
+        );
+        $extra = [
             'library' => $library,
-            'barcode' => $barcode,
             'alt_id' => $alt_id,
             'cat1' => $cat1,
             'cat2' => $cat2,
@@ -548,6 +548,7 @@ class Unicorn extends AbstractBase implements
             'status' => $status,
             'user_key' => $user_key,
         ];
+        return array_merge($patron, $extra);
     }
 
     /**

@@ -501,16 +501,14 @@ class GeniePlus extends AbstractAPI
             )
         );
         [$last, $first] = explode(',', $name, 2);
-        return [
-            'id'           => $id,
-            'firstname'    => trim($first),
-            'lastname'     => trim($last),
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => $email,
-            'major'        => null,
-            'college'      => null,
-        ];
+        return $this->createPatronArray(
+            id: $id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: $first,
+            lastname: $last,
+            email: $email
+        );
     }
 
     /**

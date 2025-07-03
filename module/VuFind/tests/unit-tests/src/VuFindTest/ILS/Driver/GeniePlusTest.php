@@ -68,6 +68,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         'email' => 'fake.user@fake.com',
         'major' => null,
         'college' => null,
+        'barcode' => 'foo@foo.com',
     ];
 
     /**
