@@ -122,13 +122,13 @@ trait ConfigRelatedServicesTrait
             ? LOCAL_OVERRIDE_DIR
             : null;
 
-        $configHandlerPluginManager =  new ConfigHandlerPluginManager(
+        $configHandlerPluginManager = new ConfigHandlerPluginManager(
             $container,
             $moduleConfig['vufind']['plugin_managers']['config_handler']
         );
         $container->set(ConfigHandlerPluginManager::class, $configHandlerPluginManager);
 
-        $pathResolver = new PathResolver(
+        $pathResolver = PathResolver::getPathResolverForDirectories(
             $configHandlerPluginManager,
             $baseDir,
             $localDir,

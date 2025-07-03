@@ -76,8 +76,8 @@ class PathResolverFactory implements FactoryInterface
             ? LOCAL_OVERRIDE_DIR : null;
         return new $requestedName(
             $container->get(\VuFind\Config\Handler\PluginManager::class),
-            APPLICATION_PATH,
-            $localDir
+            PathResolver::getBaseDirSpec(APPLICATION_PATH),
+            PathResolver::getLocalDirStack($localDir)
         );
     }
 }

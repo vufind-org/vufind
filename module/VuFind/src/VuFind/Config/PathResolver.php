@@ -96,29 +96,65 @@ class PathResolver
      * Constructor
      *
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
-     * @param string               $baseDir              Base directory
-     * @param ?string              $localConfigDir       Local config directory
-     * @param ?string              $localConfigSubDir    Default local config subdirectory (used in tests)
+     * @param array                $baseDirectorySpec    Base directory specification
+     * @param array                $localConfigDirStack  Local configuration directory specification stack
      */
     public function __construct(
         protected HandlerPluginManager $configHandlerManager,
-        string $baseDir,
-        ?string $localConfigDir,
-        ?string $localConfigSubDir = null
+        array $baseDirectorySpec,
+        array $localConfigDirStack
     ) {
-        $this->init($baseDir, $localConfigDir, $localConfigSubDir);
+        $this->baseDirectorySpec = $baseDirectorySpec;
+        $this->localConfigDirStack = $localConfigDirStack;
     }
 
     /**
-     * Init
+     * Get PathResolver for directories.
      *
-     * @param string  $baseDir           Base directory
-     * @param ?string $localConfigDir    Local config directory
-     * @param ?string $localConfigSubDir Default local config subdirectory (used in tests)
+     * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
+     * @param string               $baseDir              Base directory
+     * @param ?string              $localConfigDir       Local config directory
+     * @param ?string              $localConfigSubDir    Default local config subdirectory
      *
-     * @return void
+     * @return PathResolver
      */
-    public function init(string $baseDir, ?string $localConfigDir, ?string $localConfigSubDir = null): void
+    public static function getPathResolverForDirectories(
+        HandlerPluginManager $configHandlerManager,
+        string $baseDir,
+        ?string $localConfigDir,
+        ?string $localConfigSubDir = null
+    ): PathResolver {
+        return new PathResolver(
+            $configHandlerManager,
+            self::getBaseDirSpec($baseDir),
+            self::getLocalDirStack($localConfigDir, $localConfigSubDir)
+        );
+    }
+
+    /**
+     * Get base directory spec for directory.
+     *
+     * @param string $baseDir Base directory
+     *
+     * @return array
+     */
+    public static function getBaseDirSpec(string $baseDir): array
+    {
+        return [
+            'directory' => $baseDir,
+            'defaultConfigSubdir' => self::DEFAULT_CONFIG_SUBDIR,
+        ];
+    }
+
+    /**
+     * Get local directory spec stack for directory.
+     *
+     * @param ?string $localConfigDir    Local config directory
+     * @param ?string $localConfigSubDir Default local config subdirectory
+     *
+     * @return array
+     */
+    public static function getLocalDirStack(?string $localConfigDir, ?string $localConfigSubDir = null): array
     {
         $localDirs = [];
         $currentDir = $localConfigDir;
@@ -166,11 +202,7 @@ class PathResolver
                 $currentDir = '';
             }
         }
-        $this->localConfigDirStack = $localDirs;
-        $this->baseDirectorySpec =  [
-            'directory' => $baseDir,
-            'defaultConfigSubdir' => self::DEFAULT_CONFIG_SUBDIR,
-        ];
+        return $localDirs;
     }
 
     /**
