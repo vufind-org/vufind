@@ -464,7 +464,7 @@ abstract class AbstractBase implements
      *
      * @return array
      */
-    public function getPasswordPolicy(?string $target = null)
+    public function getPasswordPolicy(?string $target = null): array
     {
         return $this->getPolicyConfig('password');
     }

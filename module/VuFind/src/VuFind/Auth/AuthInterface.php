@@ -212,9 +212,11 @@ interface AuthInterface
     /**
      * Get password policy for a new password (e.g. minLength, maxLength)
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return array
      */
-    public function getPasswordPolicy();
+    public function getPasswordPolicy(?string $target = null): array;
 
     /**
      * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
