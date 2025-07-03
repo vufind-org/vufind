@@ -1397,8 +1397,6 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $this->clearSessionCacheIfRequired($methodName);
 
         $data = $this->callIlsWithFailover($methodName, $params);
-        if ('patronLogin' === $methodName) {
-        }
         if ($cacheSettings) {
             $this->putCachedData($cacheSettings, compact('data'));
         }
