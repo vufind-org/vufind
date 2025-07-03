@@ -1467,17 +1467,14 @@ class XCNCIP2 extends AbstractBase implements
         );
         $expirationDate = !empty($expirationDate) ?
             $this->displayDate((string)$expirationDate[0]) : null;
-
-        return [
-            'firstname' => (string)($firstname[0] ?? null),
-            'lastname' => (string)($lastname[0] ?? null),
-            'address1' => $address1,
-            'address2' => $address2,
-            'zip' => $zip,
-            'phone' => null,  // TODO: phone number support
-            'group' => null,
-            'expiration_date' => $expirationDate,
-        ];
+        return $this->createProfileArray(
+            firstname: (string)($firstname[0] ?? null),
+            lastname: (string)($lastname[0] ?? null),
+            address1: $address1,
+            address2: $address2,
+            zip: $zip,
+            expiration_date: $expirationDate
+        );
     }
 
     /**

@@ -848,55 +848,26 @@ class Alma extends AbstractBase implements
         if (empty($xml)) {
             return [];
         }
-        $profile = [
-            'firstname' => (isset($xml->first_name))
-                ? (string)$xml->first_name
-                : null,
-            'lastname' => (isset($xml->last_name))
-                ? (string)$xml->last_name
-                : null,
-            'group' => isset($xml->user_group)
-                ? $this->getTranslatableString($xml->user_group)
-                : null,
-            'group_code' => (isset($xml->user_group))
-                ? (string)$xml->user_group
-                : null,
-        ];
-        $contact = $xml->contact_info;
-        if ($contact) {
-            if ($contact->addresses) {
-                $address = $contact->addresses[0]->address;
-                $profile['address1'] = (isset($address->line1))
-                    ? (string)$address->line1
-                    : null;
-                $profile['address2'] = (isset($address->line2))
-                    ? (string)$address->line2
-                    : null;
-                $profile['address3'] = (isset($address->line3))
-                    ? (string)$address->line3
-                    : null;
-                $profile['zip'] = (isset($address->postal_code))
-                    ? (string)$address->postal_code
-                    : null;
-                $profile['city'] = (isset($address->city))
-                    ? (string)$address->city
-                    : null;
-                $profile['country'] = (isset($address->country))
-                    ? (string)$address->country
-                    : null;
-            }
-            if ($contact->phones) {
-                $profile['phone'] = (isset($contact->phones[0]->phone->phone_number))
-                    ? (string)$contact->phones[0]->phone->phone_number
-                    : null;
-            }
-            $profile['email'] = $this->getPreferredEmail($xml);
-        }
-        if ($xml->birth_date) {
-            // Drop any time zone designator from the date:
-            $profile['birthdate'] = substr((string)$xml->birth_date, 0, 10);
-        }
 
+        $group = $xml?->user_group;
+        $contact = $xml->contact_info ?? null;
+        $address = $contact->addressess[0]->address ?? null;
+
+        $profile = $this->createProfileArray(
+            firstname: $xml?->first_name,
+            lastname: $xml?->last_name,
+            address1: $address?->line1,
+            address2: $address?->line2,
+            address3: $address?->line3,
+            city: $address?->city,
+            zip: $address?->postal_code,
+            country: $address?->country,
+            group: $group,
+            group_code: $group ? $this->getTranslatableString($group) : null,
+            phone: $contact->phones[0]->phone->phone_number ?? null,
+            email: $this->getPreferredEmail($xml),
+            birthdate: $xml->birth_date ? substr((string)$xml->birth_date, 0, 10) : null
+        );
         // Cache the user group code
         $cacheId = 'alma|user|' . $patronId . '|group_code';
         $this->putCachedData($cacheId, $profile['group_code'] ?? null);

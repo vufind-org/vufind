@@ -240,18 +240,16 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $onlyMethods Existing methods to mock (in addition to
      * supportsMethod)
-     * @param array $addMethods  New methods to mock (in addition to
-     * getLoginDrivers)
      *
      * @return MockObject&MultiBackend
      */
     protected function getMockMultiBackend(
-        $onlyMethods = [],
-        $addMethods = ['patronLogin']
+        $onlyMethods = []
     ): MockObject&MultiBackend {
         $onlyMethods[] = 'supportsMethod';
         $onlyMethods[] = 'getLoginDrivers';
         $onlyMethods[] = 'getConfig';
+        $onlyMethods[] = 'patronLogin';
         $configLoader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->setConstructorArgs([$this->container])
             ->getMock();
@@ -265,7 +263,6 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockBuilder(\VuFind\ILS\Driver\MultiBackend::class)
             ->setConstructorArgs([$configLoader, $ilsAuth, $driverManager])
             ->onlyMethods($onlyMethods)
-            ->addMethods($addMethods)
             ->getMock();
         $driver->expects($this->any())
             ->method('getLoginDrivers')

@@ -736,15 +736,16 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                $patron = ['firstname' => $row['FIRST_NAME'],
-                                'lastname' => $row['LAST_NAME'],
-                                'address1' => $row['ADDRESS_LINE1'],
-                                'address2' => $row['ADDRESS_LINE2'],
-                                'zip' => $row['ZIP_POSTAL'],
-                                'phone' => $row['TFNO'],
-                                'email' => $row['EMAIL'],
-                                'group' => $row['PATRON_GROUP_NAME']];
-                return $patron;
+                return $this->createProfileArray(
+                    firstname: $row['FIRST_NAME'],
+                    lastname: $row['LAST_NAME'],
+                    address1: $row['ADDRESS_LINE1'],
+                    address2: $row['ADDRESS_LINE2'],
+                    zip: $row['ZIP_POSTAL'],
+                    phone: $row['TFNO'],
+                    email: $row['EMAIL'],
+                    group: $row['PATRON_GROUP_NAME']
+                );
             }
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);

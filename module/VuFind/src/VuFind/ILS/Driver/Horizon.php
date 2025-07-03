@@ -857,18 +857,15 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
                 [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
-                $profile = [
-                    'lastname' => $lastname,
-                    'firstname' => $firstname,
-                    'address1' => $row['ADDRESS1'],
-                    'address2' => $row['ADDRESS2'],
-                    'zip' => $row['ZIP'],
-                    'phone' => $row['PHONE'],
-                    'group' => null,
-                ];
-
+                $profile = $this->createProfileArray(
+                    firstname: $firstname,
+                    lastname: $lastname,
+                    address1: $row['ADDRESS1'],
+                    address2: $row['ADDRESS2'],
+                    zip: $row['ZIP'],
+                    phone: $row['PHONE'],
+                );
                 $this->debug(json_encode($profile));
-
                 return $profile;
             }
 

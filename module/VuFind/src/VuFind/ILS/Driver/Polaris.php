@@ -666,12 +666,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['cat_password']
         );
         $profile_response = $response->PatronBasicData;
-        $profile = [
-          'firstname' => $profile_response->NameFirst,
-          'lastname'  => $profile_response->NameLast,
-          'phone'     => $profile_response->PhoneNumber,
-        ];
-        return $profile;
+        return $this->createProfileArray(
+            firstname:  $profile_response->NameFirst,
+            lastname:  $profile_response->NameLast,
+            phone:  $profile_response->PhoneNumber
+        );
     }
 
     /**

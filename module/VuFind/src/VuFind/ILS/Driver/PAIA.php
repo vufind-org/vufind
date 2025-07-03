@@ -771,35 +771,28 @@ class PAIA extends DAIA
      */
     public function getMyProfile($patron)
     {
-        if (is_array($patron)) {
-            $type = isset($patron['type'])
-                ? implode(
-                    ', ',
-                    array_map(
-                        [$this, 'getReadableGroupType'],
-                        (array)$patron['type']
-                    )
-                )
-                : null;
-            return [
-                'firstname'  => $patron['firstname'],
-                'lastname'   => $patron['lastname'],
-                'address1'   => $patron['address'],
-                'address2'   => null,
-                'city'       => null,
-                'country'    => null,
-                'zip'        => null,
-                'phone'      => null,
-                'mobile_phone' => null,
-                'group'      => $type,
-                // PAIA specific custom values
-                'expires'    => isset($patron['expires'])
-                    ? $this->convertDate($patron['expires']) : null,
-                'statuscode' => $patron['status'] ?? null,
-                'canWrite'   => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
-            ];
+        if (!is_array($patron)) {
+            return [];
         }
-        return [];
+        $type = isset($patron['type'])
+            ? implode(
+                ', ',
+                array_map(
+                    [$this, 'getReadableGroupType'],
+                    (array)$patron['type']
+                )
+            )
+            : null;
+        $profile = $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $patron['address'],
+            group: $type
+        );
+        $profile['expires'] = isset($patron['expires']) ? $this->convertDate($patron['expires']) : null;
+        $profile['statuscode'] = $patron['status'] ?? null;
+        $profile['canWrite'] = in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
+        return $profile;
     }
 
     /**

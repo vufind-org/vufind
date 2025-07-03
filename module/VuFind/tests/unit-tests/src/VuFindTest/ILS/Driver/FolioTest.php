@@ -859,13 +859,20 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
             'firstname' => 'Test',
             'lastname' => 'User',
+            'birthdate' => null,
+            'email' => null,
             'address1' => 'street',
+            'address2' => null,
+            'address3' => null,
             'city' => 'city',
             'country' => 'country',
             'zip' => '12345',
             'phone' => '0123456789',
             'mobile_phone' => '1234567890',
             'expiration_date' => '05-29-2030',
+            'group' => null,
+            'library' => null,
+            'group_code' => null,
         ];
         $this->assertEquals($expected, $result);
     }

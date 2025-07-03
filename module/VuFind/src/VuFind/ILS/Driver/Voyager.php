@@ -2035,47 +2035,59 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         $mobilePhoneType = $this->config['Profile']['mobile_phone'] ?? 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
-            $patron = [];
+            $profile = [];
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 if (!empty($row['FIRST_NAME'])) {
-                    $patron['firstname'] = $this->utf8Encode($row['FIRST_NAME']);
+                    $profile['firstname'] = $this->utf8Encode($row['FIRST_NAME']);
                 }
                 if (!empty($row['LAST_NAME'])) {
-                    $patron['lastname'] = $this->utf8Encode($row['LAST_NAME']);
+                    $profile['lastname'] = $this->utf8Encode($row['LAST_NAME']);
                 }
                 if (!empty($row['PHONE_NUMBER'])) {
                     if ($primaryPhoneType === $row['PHONE_DESC']) {
-                        $patron['phone'] = $this->utf8Encode($row['PHONE_NUMBER']);
+                        $profile['phone'] = $this->utf8Encode($row['PHONE_NUMBER']);
                     } elseif ($mobilePhoneType === $row['PHONE_DESC']) {
-                        $patron['mobile_phone'] = $this->utf8Encode($row['PHONE_NUMBER']);
+                        $profile['mobile_phone'] = $this->utf8Encode($row['PHONE_NUMBER']);
                     }
                 }
                 if (!empty($row['PATRON_GROUP_NAME'])) {
-                    $patron['group'] = $this->utf8Encode($row['PATRON_GROUP_NAME']);
+                    $profile['group'] = $this->utf8Encode($row['PATRON_GROUP_NAME']);
                 }
                 $validator = new EmailAddressValidator();
                 $addr1 = $this->utf8Encode($row['ADDRESS_LINE1']);
                 if ($validator->isValid($addr1)) {
-                    $patron['email'] = $addr1;
-                } elseif (!isset($patron['address1'])) {
+                    $profile['email'] = $addr1;
+                } elseif (!isset($profile['address1'])) {
                     if (!empty($addr1)) {
-                        $patron['address1'] = $addr1;
+                        $profile['address1'] = $addr1;
                     }
                     if (!empty($row['ADDRESS_LINE2'])) {
-                        $patron['address2'] = $this->utf8Encode($row['ADDRESS_LINE2']);
+                        $profile['address2'] = $this->utf8Encode($row['ADDRESS_LINE2']);
                     }
                     if (!empty($row['ZIP_POSTAL'])) {
-                        $patron['zip'] = $this->utf8Encode($row['ZIP_POSTAL']);
+                        $profile['zip'] = $this->utf8Encode($row['ZIP_POSTAL']);
                     }
                     if (!empty($row['CITY'])) {
-                        $patron['city'] = $this->utf8Encode($row['CITY']);
+                        $profile['city'] = $this->utf8Encode($row['CITY']);
                     }
                     if (!empty($row['COUNTRY'])) {
-                        $patron['country'] = $this->utf8Encode($row['COUNTRY']);
+                        $profile['country'] = $this->utf8Encode($row['COUNTRY']);
                     }
                 }
             }
-            return empty($patron) ? null : $patron;
+            return $profile ? $this->createProfileArray(
+                firstname: $profile['firstname'] ?? null,
+                lastname: $profile['lastname'] ?? null,
+                phone: $profile['phone'] ?? null,
+                mobile_phone: $profile['mobile_phone'] ?? null,
+                group: $profile['group'] ?? null,
+                email: $profile['email'] ?? null,
+                address1: $profile['address1'] ?? null,
+                address2: $profile['address2'] ?? null,
+                zip: $profile['zip'] ?? null,
+                city: $profile['city'] ?? null,
+                country: $profile['country'] ?? null,
+            ) : null;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }

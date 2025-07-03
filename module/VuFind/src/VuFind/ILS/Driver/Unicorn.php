@@ -574,18 +574,17 @@ class Unicorn extends AbstractBase implements
 
         [, , , , $library, $profile, , , , , , , , $email, $address1, $zip, $phone,
             $address2] = explode('|', $response);
-
-        return [
-            'firstname' => $patron['firstname'],
-            'lastname' => $patron['lastname'],
-            'address1' => $address1,
-            'address2' => $address2,
-            'zip' => $zip,
-            'phone' => $phone,
-            'email' => $email,
-            'group' => $profile,
-            'library' => $library,
-        ];
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $address1,
+            address2: $address2,
+            zip: $zip,
+            phone: $phone,
+            email: $email,
+            group: $profile,
+            library: $library
+        );
     }
 
     /**

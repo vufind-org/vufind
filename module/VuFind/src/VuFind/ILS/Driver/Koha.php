@@ -404,7 +404,6 @@ class Koha extends AbstractBase
     {
         $id = 0;
         $sql = $sqlStmt = $row = '';
-        $profile = [];
         try {
             $id = $patron['id'];
             $sql = 'select address as ADDR1, address2 as ADDR2, zipcode as ZIP, ' .
@@ -414,16 +413,15 @@ class Koha extends AbstractBase
             $sqlStmt->execute([':id' => $id]);
             $row = $sqlStmt->fetch();
             if ($row) {
-                $profile = [
-                    'firstname' => $patron['firstname'],
-                    'lastname' => $patron['lastname'],
-                    'address1' => $row['ADDR1'],
-                    'address2' => $row['ADDR2'],
-                    'zip' => $row['ZIP'],
-                    'phone' => $row['PHONE'],
-                    'group' => $row['GRP'],
-                ];
-                return $profile;
+                return $this->createProfileArray(
+                    firstname: $patron['firstname'],
+                    lastname: $patron['lastname'],
+                    address1: $row['ADDR1'],
+                    address2: $row['ADDR2'],
+                    zip: $row['ZIP'],
+                    phone: $row['PHONE'],
+                    group: $row['GRP']
+                );
             }
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);

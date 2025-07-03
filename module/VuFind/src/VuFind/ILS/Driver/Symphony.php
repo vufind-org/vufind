@@ -1232,20 +1232,19 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             [$lastname, $firstname]
                 = explode(', ', $result->patronInfo->displayName);
-
-            $profile = [
-                'lastname' => $lastname,
-                'firstname' => $firstname,
-                'address1' => $address1,
-                'address2' => $address2,
-                'zip' => $zip,
-                'phone' => $phone,
-                'group' => $group,
-            ];
+            return $this->createProfileArray(
+                firstname: $firstname,
+                lastname: $lastname,
+                address1: $address1,
+                address2: $address2,
+                zip: $zip,
+                phone: $phone,
+                group: $group
+            );
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
-        return $profile;
+        return [];
     }
 
     /**

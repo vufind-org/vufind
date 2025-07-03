@@ -589,17 +589,17 @@ class GeniePlus extends AbstractAPI
             )
         );
         $cityAndState = trim($city . (!empty($city) ? ', ' : '') . $state);
-        return [
-            'firstname'       => $patron['firstname'],
-            'lastname'        => $patron['lastname'],
-            'address1'        => empty($addr1) ? null : $addr1,
-            'address2'        => empty($addr2) ? null : $addr2,
-            'zip'             => empty($zip) ? null : $zip,
-            'city'            => empty($city) ? null : $cityAndState,
-            'country'         => empty($country) ? null : $country,
-            'phone'           => empty($phone) ? null : $phone,
-            'expiration_date' => empty($expirationDate) ? null : $expirationDate,
-        ];
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $addr1 ?: null,
+            address2: $addr2 ?: null,
+            zip: $zip ?: null,
+            city: $city ? $cityAndState : null,
+            country: $country ?: null,
+            phone: $phone ?: null,
+            expiration_date: $expirationDate ?: null
+        );
     }
 
     /**

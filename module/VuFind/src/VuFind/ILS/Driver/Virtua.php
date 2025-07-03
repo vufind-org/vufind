@@ -36,7 +36,6 @@ use function count;
 use function in_array;
 use function is_array;
 use function sprintf;
-use function strlen;
 
 /**
  * VTLS Virtua Driver
@@ -1214,39 +1213,41 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND   p.patron_id      = :patron_id';
 
         $fields = ['patron_id:string' => $patron['id']];
-        $result = $this->db->simpleSelect($sql, $fields);
-
-        if (count($result) > 0) {
-            $split      = strpos($result[0]['NAME'], ',');
-            $last_name  = substr($result[0]['NAME'], 0, $split);
-            $first_name = substr($result[0]['NAME'], $split + 1);
-            $split      = strpos($result[0]['NAME'], ' ');
-            if ($split !== false) {
-                $first_name = substr($first_name, 0, $split);
-            }
-
-            $patron = [
-                'firstname' => trim($first_name),
-                'lastname'  => trim($last_name),
-                'address1'  => trim($result[0]['STREET_ADDRESS_1']),
-                'address2'  => trim($result[0]['STREET_ADDRESS_2']),
-                'zip'       => trim($result[0]['POSTAL_CODE']),
-                'phone'     => trim($result[0]['TELEPHONE_PRIMARY']),
-                'group'     => trim($result[0]['PATRON_TYPE']),
-                ];
-
-            if ($result[0]['CITY'] != null) {
-                if (strlen($patron['address2']) > 0) {
-                    $patron['address2'] .= ', ' . trim($result[0]['CITY']);
-                } else {
-                    $patron['address2'] = trim($result[0]['CITY']);
-                }
-            }
-
-            return $patron;
-        } else {
+        $result = $this->db->simpleSelect($sql, $fields)[0] ?? null;
+        if (!$result) {
             return null;
         }
+        $split      = strpos($result['NAME'], ',');
+        $last_name  = substr($result['NAME'], 0, $split);
+        $first_name = substr($result['NAME'], $split + 1);
+        $split      = strpos($result['NAME'], ' ');
+        if ($split !== false) {
+            $first_name = substr($first_name, 0, $split);
+        }
+
+        $patron = [
+            'firstname' => trim($first_name),
+            'lastname'  => trim($last_name),
+            'address1'  => trim($result['STREET_ADDRESS_1']),
+            'address2'  => trim($result['STREET_ADDRESS_2']),
+            'zip'       => trim($result['POSTAL_CODE']),
+            'phone'     => trim($result['TELEPHONE_PRIMARY']),
+            'group'     => trim($result['PATRON_TYPE']),
+        ];
+        $address2 = trim($result['STREET_ADDRESS_2']);
+        if ($addressCity = $result[0]['CITY'] ?: '') {
+            $address2 = trim("$address2, $addressCity", ' ,\n\r\t\v\0');
+        }
+
+        return $this->createProfileArray(
+            firstname: $first_name,
+            lastname: $last_name,
+            address1: $result['STREET_ADDRESS_1'],
+            address2: $address2,
+            zip: $result['POSTAL_CODE'],
+            phone: $result['TELEPHONE_PRIMARY'],
+            group: $result['PATRON_TYPE']
+        );
     }
 
     /**

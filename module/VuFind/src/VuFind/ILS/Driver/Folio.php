@@ -1481,24 +1481,24 @@ class Folio extends AbstractAPI implements
     public function getMyProfile($patron)
     {
         $profile = $this->getUserById($patron['id']);
-        $expiration = isset($profile->expirationDate)
-            ? $this->dateConverter->convertToDisplayDate(
-                'Y-m-d H:i',
-                $profile->expirationDate
-            )
-            : null;
-        return [
-            'id' => $profile->id,
-            'firstname' => $profile->personal->firstName ?? null,
-            'lastname' => $profile->personal->lastName ?? null,
-            'address1' => $profile->personal->addresses[0]->addressLine1 ?? null,
-            'city' => $profile->personal->addresses[0]->city ?? null,
-            'country' => $profile->personal->addresses[0]->countryId ?? null,
-            'zip' => $profile->personal->addresses[0]->postalCode ?? null,
-            'phone' => $profile->personal->phone ?? null,
-            'mobile_phone' => $profile->personal->mobilePhone ?? null,
-            'expiration_date' => $expiration,
-        ];
+        $address = $profile->personal->addresses[0] ?? null;
+        return $this->createProfileArray(
+            id: $profile->id,
+            firstname: $profile->personal->firstName ?? null,
+            lastname: $profile->personal->lastName ?? null,
+            address1: $address->addressLine1 ?? null,
+            city: $address->city ?? null,
+            country: $address->countryId ?? null,
+            zip: $address->postalCode ?? null,
+            phone: $profile->personal->phone ?? null,
+            mobile_phone: $profile->personal->mobilePhone ?? null,
+            expiration_date: isset($profile->expirationDate)
+                ? $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d H:i',
+                    $profile->expirationDate
+                )
+                : null
+        );
     }
 
     /**

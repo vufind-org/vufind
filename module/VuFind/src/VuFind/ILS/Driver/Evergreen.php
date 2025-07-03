@@ -625,19 +625,18 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             }
 
             if ($row) {
-                $patron = [
-                    'firstname' => $row['first_given_name'],
-                    'lastname' => $row['family_name'],
-                    'address1' => $row['street1'],
-                    'address2' => $row['street2'],
-                    'city' => $row['city'],
-                    'zip' => $row['post_code'],
-                    'country' => $row['country'],
-                    'phone' => $phone,
-                    'group' => $row['usrgroup'],
-                    'expiration_date' => $this->formatDate($row['expire_date']),
-                ];
-                return $patron;
+                return $this->createProfileArray(
+                    firstname: $row['first_given_name'],
+                    lastname: $row['family_name'],
+                    address1: $row['street1'],
+                    address2: $row['street2'],
+                    city: $row['city'],
+                    zip: $row['post_code'],
+                    country: $row['country'],
+                    phone: $phone,
+                    group: $row['usrgroup'],
+                    expiration_date: $this->formatDate($row['expire_date'])
+                );
             }
         } catch (PDOException $e) {
             $this->logError((string)$e);

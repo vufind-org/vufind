@@ -764,23 +764,21 @@ class SierraRest extends AbstractBase implements
                 $city = $postalParts[0];
             }
         }
-        $expirationDate = !empty($result['expirationDate'])
+        return $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            phone: $result['phones'][0]['number'] ?? null,
+            email: $result['emails'][0] ?? null,
+            address1: $address,
+            zip: $zip,
+            city: $city,
+            birthdate: $result['birthDate'] ?? null,
+            expiration_date: !empty($result['expirationDate'])
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : null;
-        return [
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'phone' => !empty($result['phones'][0]['number'])
-                ? $result['phones'][0]['number'] : '',
-            'email' => !empty($result['emails']) ? $result['emails'][0] : '',
-            'address1' => $address,
-            'zip' => $zip,
-            'city' => $city,
-            'birthdate' => $result['birthDate'] ?? '',
-            'expiration_date' => $expirationDate,
-        ];
+                ) : null
+        );
     }
 
     /**

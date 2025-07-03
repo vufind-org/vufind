@@ -703,20 +703,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $result = $result['data'];
-        return [
-            'firstname' => $result['firstname'],
-            'lastname' => $result['surname'],
-            'phone' => $result['phone'],
-            'mobile_phone' => $result['mobile'],
-            'email' => $result['email'],
-            'address1' => $result['address'],
-            'address2' => $result['address2'],
-            'zip' => $result['postal_code'],
-            'city' => $result['city'],
-            'country' => $result['country'],
-            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null),
-            'birthdate' => $result['date_of_birth'] ?? '',
-        ];
+        return $this->createProfileArray(
+            firstname: $result['firstname'],
+            lastname: $result['surname'],
+            phone: $result['phone'],
+            mobile_phone: $result['mobile'],
+            email: $result['email'],
+            address1: $result['address'],
+            address2: $result['address2'],
+            zip: $result['postal_code'],
+            city: $result['city'],
+            country: $result['country'],
+            expiration_date: $this->convertDate($result['expiry_date'] ?? null),
+            birthdate: $result['date_of_birth'] ?? null,
+        );
     }
 
     /**
