@@ -465,7 +465,7 @@ class Database extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getPasswordPolicy(?string $target = null)
+    public function getPasswordPolicy(?string $target = null): array
     {
         $policy = parent::getPasswordPolicy();
         // Limit maxLength to the database limit

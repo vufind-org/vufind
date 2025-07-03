@@ -323,7 +323,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return array
      */
-    public function getPasswordPolicy(?string $target = null)
+    public function getPasswordPolicy(?string $target = null): array
     {
         return $this->proxyAuthMethod('getPasswordPolicy', func_get_args()) ?: [];
     }

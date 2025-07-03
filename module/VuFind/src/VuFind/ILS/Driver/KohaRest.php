@@ -1748,12 +1748,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getPasswordRecoveryData($params)
     {
-        if (empty($params['cat_username']) || empty($params['email'])) {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
             return [
                 'success' => false,
-                'error' => 'error_inconsistent_parameters',
+                'error' => 'Username cannot be blank',
             ];
         }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
         $result = $this->makeRequest(
             [
                 'path' => 'v1/patrons',
