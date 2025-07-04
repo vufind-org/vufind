@@ -138,6 +138,8 @@ abstract class AbstractBase implements DriverInterface
      * @param array   $nonDefaultFields Non default fields not documented in the documentation.
      *                                  Merges into the resulting profile array.
      *
+     * @see https://vufind.org/wiki/development:plugins:ils_drivers#getmyprofile
+     *
      * @return array
      */
     public function createProfileArray(
