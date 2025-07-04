@@ -321,22 +321,17 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     protected $profileTestResult = [
-        'id' => null,
         'firstname' => 'Susan Q.',
         'lastname' => 'Nothing',
         'birthdate' => null,
-        'email' => null,
         'expiration_date' => null,
-        'library' => null,
         'address1' => 'No street at all 8, D-21073 Hamburg',
         'address2' => null,
-        'address3' => null,
         'city' => null,
         'country' => null,
         'zip' => null,
         'phone' => null,
         'group' => 'de-830:user-type:2',
-        'group_code' => null,
         'mobile_phone' => null,
         'expires' => '12-31-9999',
         'statuscode' => 0,

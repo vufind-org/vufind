@@ -675,22 +675,15 @@ class SierraRest extends AbstractBase implements
                 return null;
             }
         }
-
-        $firstname = '';
-        $lastname = '';
-        if (!empty($patron['names'])) {
-            $name = $patron['names'][0];
-            $parts = explode(', ', $name, 2);
-            $lastname = $parts[0];
-            $firstname = $parts[1] ?? '';
-        }
+        $name = $patron['names'][0] ?? '';
+        $nameParts = explode(', ', $name, 2);
         return $this->createPatronArray(
             id: $patron['id'],
-            firstname: $firstname,
-            lastname: $lastname,
+            firstname: $nameParts[0] ?? '',
+            lastname: $nameParts[1] ?? '',
             cat_username: $username,
             cat_password: $password,
-            email: $patron['emails'][0] ?? ''
+            email: $patron['emails'][0] ?? null
         );
     }
 
@@ -768,7 +761,6 @@ class SierraRest extends AbstractBase implements
             firstname: $firstname,
             lastname: $lastname,
             phone: $result['phones'][0]['number'] ?? null,
-            email: $result['emails'][0] ?? null,
             address1: $address,
             zip: $zip,
             city: $city,
@@ -777,7 +769,10 @@ class SierraRest extends AbstractBase implements
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : null
+                ) : null,
+            nonDefaultFields: [
+                'email' => $result['emails'][0] ?? null,
+            ]
         );
     }
 

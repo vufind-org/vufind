@@ -1935,25 +1935,20 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         $this->debug('Code: ' . $idObj->{'code'});
         $this->debug('ID: ' . $idObj->{'id'});
 
-        $id = $this->getField($idObj->{'id'}, 0);
-        if ($id) {
+        if ($id = $this->getField($idObj->{'id'}, 0)) {
             $rsp = $this->makeRequest(
                 "GetPatronInfo&patron_id=$id&show_contact=1"
             );
-            $profile = [
-                'id'           => $this->getField($idObj->{'id'}),
-                'firstname'    => $this->getField($rsp->{'firstname'}),
-                'lastname'     => $this->getField($rsp->{'surname'}),
-                'cat_username' => $username,
-                'cat_password' => $password,
-                'email'        => $this->getField($rsp->{'email'}),
-                'major'        => null,
-                'college'      => null,
-            ];
-            return $profile;
-        } else {
-            return null;
+            return $this->createPatronArray(
+                id: $this->getField($idObj->{'id'}),
+                firstname: $this->getField($rsp->{'firstname'}),
+                lastname: $this->getField($rsp->{'surname'}),
+                cat_username: $username,
+                cat_password: $password,
+                email: $this->getField($rsp->{'email'}),
+            );
         }
+        return null;
     }
 
     /**

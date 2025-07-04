@@ -335,7 +335,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'lastname' => 'last',
             'email' => 'fake@fake.com',
             'addressTypeIds' => [],
-            'barcode' => 'foo',
             'major' => null,
             'college' => null,
         ];
@@ -368,7 +367,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'lastname' => 'last',
             'email' => 'fake@fake.com',
             'addressTypeIds' => [],
-            'barcode' => 'foo',
             'major' => null,
             'college' => null,
         ];
@@ -860,10 +858,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'firstname' => 'Test',
             'lastname' => 'User',
             'birthdate' => null,
-            'email' => null,
             'address1' => 'street',
             'address2' => null,
-            'address3' => null,
             'city' => 'city',
             'country' => 'country',
             'zip' => '12345',
@@ -871,8 +867,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'mobile_phone' => '1234567890',
             'expiration_date' => '05-29-2030',
             'group' => null,
-            'library' => null,
-            'group_code' => null,
         ];
         $this->assertEquals($expected, $result);
     }

@@ -574,18 +574,13 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            if (isset($row['LOGIN']) && ($row['LOGIN'] != '')) {
-                return $this->createPatronArray(
-                    id: $row['LOGIN'],
-                    firstname: $row['FIRST_NAME'],
-                    lastname: $lname,
-                    cat_username: $barcode,
-                    cat_password: $lname,
-                    email: null
-                );
-            } else {
-                return null;
-            }
+            return !empty($row['LOGIN']) ? $this->createPatronArray(
+                id: $row['LOGIN'],
+                firstname: $row['FIRST_NAME'],
+                lastname: $lname,
+                cat_username: $barcode,
+                cat_password: $lname
+            ) : null;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
@@ -743,8 +738,10 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                     address2: $row['ADDRESS_LINE2'],
                     zip: $row['ZIP_POSTAL'],
                     phone: $row['TFNO'],
-                    email: $row['EMAIL'],
-                    group: $row['PATRON_GROUP_NAME']
+                    group: $row['PATRON_GROUP_NAME'],
+                    nonDefaultFields: [
+                        'email' => $row['EMAIL'],
+                    ]
                 );
             }
         } catch (PDOException $e) {

@@ -1106,17 +1106,18 @@ class XCNCIP2 extends AbstractBase implements
             'ns1:UserAddressInformation/ns1:ElectronicAddress/' .
                 'ns1:ElectronicAddressData'
         );
-        $patron = $this->createPatronArray(
+        // Fill in basic patron details:
+        return $this->createPatronArray(
             id: (string)$id[0],
             cat_username: $username,
             cat_password: $password,
             email: !empty($email[0]) ? (string)$email[0] : null,
             firstname: (string)($first[0] ?? ''),
             lastname: (string)($last[0] ?? ''),
+            nonDefaultFields: [
+                'patronAgencyId' => !empty($patronAgencyId) ? (string)$patronAgencyId[0] : null,
+            ]
         );
-        $patron['patronAgencyId'] = !empty($patronAgencyId) ? (string)$patronAgencyId[0] : null;
-        // Fill in basic patron details:
-        return $patron;
     }
 
     /**

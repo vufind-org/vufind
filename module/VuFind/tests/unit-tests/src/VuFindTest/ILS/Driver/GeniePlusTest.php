@@ -68,7 +68,6 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         'email' => 'fake.user@fake.com',
         'major' => null,
         'college' => null,
-        'barcode' => 'foo@foo.com',
     ];
 
     /**
@@ -493,14 +492,11 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver->init();
         $this->assertEquals(
             [
-                'id' => null,
                 'firstname' => 'Fake',
                 'lastname' => 'User',
-                'email' => null,
                 'birthdate' => null,
                 'address1' => 'Address 1',
                 'address2' => 'Address 2',
-                'address3' => null,
                 'zip' => '12345',
                 'city' => 'FakeCity, FakeState',
                 'country' => 'USA',
@@ -508,8 +504,6 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 'mobile_phone' => null,
                 'expiration_date' => '12/31/2022 3:55:00 PM',
                 'group' => null,
-                'library' => null,
-                'group_code' => null,
             ],
             $this->driver->getMyProfile($this->defaultPatron)
         );

@@ -1313,13 +1313,14 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                     || ($fallbackLoginField && null === $primary
                     && $fallback == $compareLogin)
                 ) {
+                    // TODO: There's supposed to be a getPatronEmailAddress stored
+                    // procedure in Oracle, but I couldn't get it to work here
                     return $this->createPatronArray(
                         id: $this->utf8Encode($row['PATRON_ID']),
                         firstname: $this->utf8Encode($row['FIRST_NAME']),
                         lastname: $this->utf8Encode($row['LAST_NAME']),
                         cat_username: $username,
-                        cat_password: $login,
-                        email: null
+                        cat_password: $login
                     );
                 }
             }
@@ -2081,12 +2082,14 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                 phone: $profile['phone'] ?? null,
                 mobile_phone: $profile['mobile_phone'] ?? null,
                 group: $profile['group'] ?? null,
-                email: $profile['email'] ?? null,
                 address1: $profile['address1'] ?? null,
                 address2: $profile['address2'] ?? null,
                 zip: $profile['zip'] ?? null,
                 city: $profile['city'] ?? null,
                 country: $profile['country'] ?? null,
+                nonDefaultFields: [
+                    'email' => $profile['email'] ?? null,
+                ]
             ) : null;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);

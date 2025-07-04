@@ -1155,16 +1155,18 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         }
 
         // @TODO: major, college
-        $patron = $this->createPatronArray(
+        return $this->createPatronArray(
             id: $resp->patronInfo->$usernameField,
             firstname: $firstName,
             lastname: $lastName,
             email: $email,
             cat_username: $username,
-            cat_password: $password
+            cat_password: $password,
+            nonDefaultFields: [
+                // TODO: if we expose this as home_library through getMyProfile, it may be possible to improve
+                'library' => $resp->patronInfo->patronLibraryID,
+            ]
         );
-        $patron['library'] = $resp->patronInfo->patronLibraryID;
-        return $patron;
     }
 
     /**

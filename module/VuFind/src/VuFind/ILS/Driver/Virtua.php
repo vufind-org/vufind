@@ -1167,29 +1167,27 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             ')';
 
         $fields = ['barcode:string' => $barcode];
-        $result = $this->db->simpleSelect($sql, $fields);
-
-        if (count($result) > 0 && $result[0]['PASSWORD'] === $password) {
-            $split      = strpos($result[0]['NAME'], ',');
-            $last_name  = trim(substr($result[0]['NAME'], 0, $split));
-            $first_name = trim(substr($result[0]['NAME'], $split + 1));
-            $split      = strpos($first_name, ' ');
-            if ($split !== false) {
-                $first_name = trim(substr($first_name, 0, $split));
-            }
-            return $this->createPatronArray(
-                id: $result[0]['ID'],
-                firstname: $first_name,
-                lastname: $last_name,
-                cat_username: strtoupper($result[0]['BARCODE']),
-                cat_password: $result[0]['PASSWORD'],
-                email: $result[0]['E_MAIL_ADDRESS_PRIMARY'],
-                major: $result[0]['DEPARTMENT']
-            );
-        } else {
-            // User not found
+        $result = $this->db->simpleSelect($sql, $fields)[0] ?? false;
+        if (!$result || $result['PASSWORD'] !== $password) {
             return null;
         }
+
+        $split      = strpos($result['NAME'], ',');
+        $last_name  = trim(substr($result['NAME'], 0, $split));
+        $first_name = trim(substr($result['NAME'], $split + 1));
+        $split      = strpos($first_name, ' ');
+        if ($split !== false) {
+            $first_name = trim(substr($first_name, 0, $split));
+        }
+        return $this->createPatronArray(
+            id: $result['ID'],
+            firstname: $first_name,
+            lastname: $last_name,
+            cat_username: strtoupper($result['BARCODE']),
+            cat_password: $result['PASSWORD'],
+            email: $result['E_MAIL_ADDRESS_PRIMARY'],
+            major: $result['DEPARTMENT']
+        );
     }
 
     /**

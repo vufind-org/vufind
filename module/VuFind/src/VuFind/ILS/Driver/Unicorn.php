@@ -524,31 +524,29 @@ class Unicorn extends AbstractBase implements
             $expiry = $this->parseDateTime(trim($expiry));
         }
         $expired = ($expiry == '0') ? false : $expiry < time();
-        $patron = $this->createPatronArray(
+        return $this->createPatronArray(
             id: $username,
             firstname: $first,
             lastname: $last,
             cat_username: $username,
             cat_password: $password,
-            email: null,
-            barcode: $barcode
+            nonDefaultFields: [
+                'barcode' => $barcode,
+                'library' => $library,
+                'alt_id' => $alt_id,
+                'cat1' => $cat1,
+                'cat2' => $cat2,
+                'cat3' => $cat3,
+                'cat4' => $cat4,
+                'cat5' => $cat5,
+                'profile' => $profile,
+                'expiry_date' => $this->formatDateTime($expiry),
+                'expired' => $expired,
+                'number_of_holds' => $holds,
+                'status' => $status,
+                'user_key' => $user_key,
+            ]
         );
-        $extra = [
-            'library' => $library,
-            'alt_id' => $alt_id,
-            'cat1' => $cat1,
-            'cat2' => $cat2,
-            'cat3' => $cat3,
-            'cat4' => $cat4,
-            'cat5' => $cat5,
-            'profile' => $profile,
-            'expiry_date' => $this->formatDateTime($expiry),
-            'expired' => $expired,
-            'number_of_holds' => $holds,
-            'status' => $status,
-            'user_key' => $user_key,
-        ];
-        return array_merge($patron, $extra);
     }
 
     /**
@@ -581,9 +579,11 @@ class Unicorn extends AbstractBase implements
             address2: $address2,
             zip: $zip,
             phone: $phone,
-            email: $email,
             group: $profile,
-            library: $library
+            nonDefaultFields: [
+                'email' => $email,
+                'library' => $library,
+            ]
         );
     }
 

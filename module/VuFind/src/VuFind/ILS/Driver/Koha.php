@@ -411,8 +411,7 @@ class Koha extends AbstractBase
                 'where borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
-            $row = $sqlStmt->fetch();
-            if ($row) {
+            if ($row = $sqlStmt->fetch()) {
                 return $this->createProfileArray(
                     firstname: $patron['firstname'],
                     lastname: $patron['lastname'],

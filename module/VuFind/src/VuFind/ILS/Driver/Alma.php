@@ -817,19 +817,15 @@ class Alma extends AbstractBase implements
             true
         );
 
-        if ($status != 400 && $response !== null) {
-            // We may already have some information, so just fill the gaps
-            return $this->createPatronArray(
-                id: (string)$response->primary_id,
-                cat_username: $username,
-                cat_password: $password,
-                firstname: (string)$response->first_name ?? '',
-                lastname: (string)$response->last_name ?? '',
-                email: $this->getPreferredEmail($response)
-            );
-        }
-
-        return null;
+        // We may already have some information, so just fill the gaps
+        return ($status !== 400 && $response !== null) ? $this->createPatronArray(
+            id: (string)$response->primary_id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: (string)($response->first_name ?? ''),
+            lastname: (string)($response->last_name ?? ''),
+            email: $this->getPreferredEmail($response)
+        ) : null;
     }
 
     /**
@@ -854,19 +850,21 @@ class Alma extends AbstractBase implements
         $address = $contact->addressess[0]->address ?? null;
 
         $profile = $this->createProfileArray(
-            firstname: $xml?->first_name,
-            lastname: $xml?->last_name,
-            address1: $address?->line1,
-            address2: $address?->line2,
-            address3: $address?->line3,
-            city: $address?->city,
-            zip: $address?->postal_code,
-            country: $address?->country,
+            firstname: $xml->first_name ?? null,
+            lastname: $xml->last_name ?? null,
+            address1: $address->line1 ?? null,
+            address2: $address->line2 ?? null,
+            city: $address->city ?? null,
+            zip: $address->postal_code ?? null,
+            country: $address->country ?? null,
             group: $group,
-            group_code: $group ? $this->getTranslatableString($group) : null,
             phone: $contact->phones[0]->phone->phone_number ?? null,
-            email: $this->getPreferredEmail($xml),
-            birthdate: $xml->birth_date ? substr((string)$xml->birth_date, 0, 10) : null
+            birthdate: $xml->birth_date ? substr((string)$xml->birth_date, 0, 10) : null,
+            nonDefaultFields: [
+                'address3' => $address->line3 ?? null,
+                'group_code' => $group ? $this->getTranslatableString($group) : null,
+                'email' => $this->getPreferredEmail($xml),
+            ]
         );
         // Cache the user group code
         $cacheId = 'alma|user|' . $patronId . '|group_code';

@@ -1439,21 +1439,22 @@ class Folio extends AbstractAPI implements
                 }
             }
         }
-        $patron = $this->createPatronArray(
+        return $this->createPatronArray(
             id: $profile->id,
             cat_username: $username,
             cat_password: $password,
-            firstname: $profile->personal->firstName,
-            lastname: $profile->personal->lastName,
-            email: $profile->personal->email ?? null
+            firstname: $profile->personal->firstName ?? null,
+            lastname: $profile->personal->lastName ?? null,
+            email: $profile->personal->email ?? null,
+            nonDefaultFields: [
+                // Add username just in case for legacy
+                'username' => $username,
+                'addressTypeIds' => array_map(
+                    fn ($address) => $address->addressTypeId,
+                    $profile->personal->addresses ?? []
+                ),
+            ],
         );
-        // Add username just in case for legacy
-        $patron['username'] = $username;
-        $patron['addressTypeIds'] = array_map(
-            fn ($address) => $address->addressTypeId,
-            $profile->personal->addresses ?? []
-        );
-        return $patron;
     }
 
     /**
@@ -1483,7 +1484,6 @@ class Folio extends AbstractAPI implements
         $profile = $this->getUserById($patron['id']);
         $address = $profile->personal->addresses[0] ?? null;
         return $this->createProfileArray(
-            id: $profile->id,
             firstname: $profile->personal->firstName ?? null,
             lastname: $profile->personal->lastName ?? null,
             address1: $address->addressLine1 ?? null,
@@ -1497,7 +1497,10 @@ class Folio extends AbstractAPI implements
                     'Y-m-d H:i',
                     $profile->expirationDate
                 )
-                : null
+                : null,
+            nonDefaultFields: [
+                'id' => $profile->id,
+            ]
         );
     }
 

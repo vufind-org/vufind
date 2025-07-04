@@ -31,6 +31,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 
+use function is_callable;
 use function is_string;
 
 /**
@@ -69,17 +70,21 @@ abstract class AbstractBase implements DriverInterface
     }
 
     /**
-     * Create a patron array. Ensures that all the default keys are present in the resulting array.
+     * Create a patron array according to patronLogin specs defined in the documentation.
+     * Each value is trimmed if they are type of string.
      *
-     * @param string  $id           Patron id in catalog
-     * @param string  $cat_username Catalog username, usually the same as barcode
-     * @param string  $cat_password Catalog password
-     * @param ?string $email        Patron email in catalog
-     * @param string  $firstname    Patron first name
-     * @param string  $lastname     Patron last name
-     * @param string  $barcode      Obtained barcode, if empty default to cat_username
-     * @param ?string $major        Major or null
-     * @param ?string $college      College or null
+     * @param string  $id               The patron's ID in the ILS
+     * @param string  $cat_username     The username used to log in
+     * @param string  $cat_password     The password used to log in
+     * @param ?string $email            The patron's email address (null if unavailable)
+     * @param string  $firstname        The patron's first name
+     * @param string  $lastname         The patron's last name
+     * @param ?string $major            The patron's major (null if unavailable)
+     * @param ?string $college          The patron's college (null if unavailable)
+     * @param array   $nonDefaultFields Non default fields not documented in the documentation.
+     *                                  Merges into the resulting patron array.
+     *
+     * @see https://vufind.org/wiki/development:plugins:ils_drivers#patronlogin
      *
      * @return array
      */
@@ -90,11 +95,10 @@ abstract class AbstractBase implements DriverInterface
         ?string $email = null,
         string $firstname = '',
         string $lastname = '',
-        string $barcode = '',
         ?string $major = null,
-        ?string $college = null
+        ?string $college = null,
+        array $nonDefaultFields = []
     ): array {
-        $barcode = $barcode ?: $cat_username;
         $patron = compact(
             'id',
             'cat_username',
@@ -102,74 +106,75 @@ abstract class AbstractBase implements DriverInterface
             'email',
             'firstname',
             'lastname',
-            'barcode',
             'major',
             'college'
         );
+        // Merge non default fields into the resulting patron array
+        if ($nonDefaultFields) {
+            $patron = array_merge($patron, $nonDefaultFields);
+        }
+        if (is_callable([$this, 'debug'])) {
+            $this->debug(json_encode($patron));
+        }
         return array_map(fn ($val) => is_string($val) ? trim($val) : $val, $patron);
     }
 
     /**
-     * Create profile array containing all default keys.
+     * Create a profile array according to getMyProfile specs defined in the documentation.
+     * Each value is trimmed if they are type of string.
      *
-     * @param ?string $id              Profile id
-     * @param ?string $firstname       Profile first name
-     * @param ?string $lastname        Profile last name
-     * @param ?string $birthdate       Birth date
-     * @param ?string $address1        Address 1
-     * @param ?string $address2        Address 2
-     * @param ?string $address3        Address 3
-     * @param ?string $city            City
-     * @param ?string $country         Country
-     * @param ?string $zip             Postal code
-     * @param ?string $phone           Phone number
-     * @param ?string $mobile_phone    Mobile phone number
-     * @param ?string $email           Email
-     * @param ?string $expiration_date Profile expiration date
-     * @param ?string $group           Profile group
-     * @param ?string $group_code      Profile group code
-     * @param ?string $library         Home library
+     * @param ?string $firstname        Profile first name
+     * @param ?string $lastname         Profile last name
+     * @param string  $birthdate        Y-m-d or an empty string
+     * @param ?string $address1         Address 1
+     * @param ?string $address2         Address 2
+     * @param ?string $city             City
+     * @param ?string $country          Country
+     * @param ?string $zip              Postal code
+     * @param ?string $phone            Phone number
+     * @param ?string $mobile_phone     Mobile phone number
+     * @param ?string $expiration_date  Profile expiration date
+     * @param ?string $group            Group i.e. Student, Staff, Faculty, etc
+     * @param array   $nonDefaultFields Non default fields not documented in the documentation.
+     *                                  Merges into the resulting profile array.
      *
      * @return array
      */
     public function createProfileArray(
-        ?string $id = null,
         ?string $firstname = null,
         ?string $lastname = null,
         ?string $birthdate = null,
         ?string $address1 = null,
         ?string $address2 = null,
-        ?string $address3 = null,
         ?string $city = null,
         ?string $country = null,
         ?string $zip = null,
         ?string $phone = null,
         ?string $mobile_phone = null,
-        ?string $email = null,
         ?string $expiration_date = null,
         ?string $group = null,
-        ?string $group_code = null,
-        ?string $library = null,
+        array $nonDefaultFields = []
     ): array {
         $profile = compact(
-            'id',
             'firstname',
             'lastname',
             'birthdate',
             'address1',
             'address2',
-            'address3',
             'city',
             'country',
             'zip',
             'phone',
             'mobile_phone',
-            'email',
             'expiration_date',
-            'group',
-            'group_code',
-            'library'
+            'group'
         );
+        if ($nonDefaultFields) {
+            $profile = array_merge($profile, $nonDefaultFields);
+        }
+        if (is_callable([$this, 'debug'])) {
+            $this->debug(json_encode($profile));
+        }
         return array_map(fn ($value) => is_string($value) ? trim($value) : $value, $profile);
     }
 

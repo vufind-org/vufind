@@ -991,29 +991,6 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Patron Login
-     *
-     * This is responsible for authenticating a patron against the catalog.
-     *
-     * @param string $username The patron user id or barcode
-     * @param string $password The patron password
-     *
-     * @return mixed           Associative array of patron info on successful login,
-     * null on unsuccessful login.
-     */
-    public function patronLogin($username, $password)
-    {
-        $patron = $this->callMethodIfSupported(null, 'patronLogin', func_get_args());
-        // Save original id, cat_username and target source in locally defined variable
-        if (is_array($patron)) {
-            $patron['__source'] = $this->getSource($username);
-            $patron['__id'] = $this->getLocalId($patron['id']) ?: null;
-            $patron['__cat_username'] = $this->getLocalId($patron['cat_username']) ?: null;
-        }
-        return $patron;
-    }
-
-    /**
      * Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
