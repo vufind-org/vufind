@@ -580,8 +580,13 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Extract URL from email:
-        $email = $this->getLoggedEmail();
-        preg_match('/You can reset your password at this URL: <(http.*)>/', $email->getBody()->getBody(), $matches);
+        $email = $this->getLoggedEmail()->getBody()->getBody();
+        preg_match('/You can reset your password at this URL: <(http.*)>/', $email, $matches);
+        $this->assertArrayHasKey(
+            1,
+            $matches,
+            "No recovery link in email: $email"
+        );
         $link = $matches[1];
 
         // Reset the password:
