@@ -42,7 +42,7 @@ use VuFind\Recommend\FavoriteFacets;
  */
 class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test facet initialization with disabled tags.

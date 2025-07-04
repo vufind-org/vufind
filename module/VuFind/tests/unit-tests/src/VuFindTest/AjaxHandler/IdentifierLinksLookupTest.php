@@ -48,7 +48,7 @@ use function func_get_args;
  */
 class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Set up configuration for a test.

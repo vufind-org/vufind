@@ -56,7 +56,7 @@ use function strlen;
 abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDetectionTrait;
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\RemoteCoverageTrait;
 
     public const DEFAULT_TIMEOUT = 5000;

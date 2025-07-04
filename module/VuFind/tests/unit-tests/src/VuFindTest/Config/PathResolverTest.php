@@ -30,8 +30,8 @@
 namespace VuFindTest\Config;
 
 use VuFind\Config\PathResolver;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config Path Resolver Test Class
@@ -45,7 +45,7 @@ use VuFindTest\Feature\PathResolverTrait;
 class PathResolverTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Stacked path resolver
@@ -61,26 +61,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $fixtureDir = $this->getStackedFixtureDir();
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $this->addConfigHandlerPluginManagerToContainer($container);
-        $this->stackedResolver = new PathResolver(
-            $container->get(\VuFind\Config\Handler\PluginManager::class),
-            [
-                'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
-            ],
-            [
-                [
-                    'directory' => $fixtureDir . 'secondary',
-                    'defaultConfigSubdir' => 'config/custom',
-                ],
-                [
-                    'directory' => $fixtureDir . 'primary',
-                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
-                ],
-            ]
-        );
+        $this->stackedResolver = $this->getPathResolver(localDir: $this->getStackedFixtureDir() . 'primary');
     }
 
     /**
