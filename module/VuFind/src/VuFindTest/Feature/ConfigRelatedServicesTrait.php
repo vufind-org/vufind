@@ -199,9 +199,7 @@ trait ConfigRelatedServicesTrait
     protected function getMockFailingConfigPluginManager(
         \Throwable $exception
     ): ConfigPluginManager {
-        $manager = $this->getMockBuilder(ConfigPluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $manager = $this->createMock(ConfigPluginManager::class);
         $manager->expects($this->any())
             ->method('get')
             ->with($this->isType('string'))
