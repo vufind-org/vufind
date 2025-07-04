@@ -165,9 +165,7 @@ trait ConfigRelatedServicesTrait
         ?InvocationOrder $getExpect = null,
         ?InvocationOrder $hasExpect = null
     ): ConfigPluginManager {
-        $manager = $this->getMockBuilder(ConfigPluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $manager = $this->createMock(ConfigPluginManager::class);
         $manager->expects($getExpect ?? $this->any())
             ->method('get')
             ->with($this->isType('string'))
