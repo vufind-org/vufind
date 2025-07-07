@@ -81,7 +81,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Run config upgrader with fixture.
      *
-     * @param string $fixture Version
+     * @param string $fixture Fixture
      *
      * @return Upgrade
      */
