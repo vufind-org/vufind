@@ -56,7 +56,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
      * @param array   $config              Configuration settings
      * @param array   $doiServices         Configured DOI services
      * @param array   $issnServices        Configured ISSN services
-     * @param array   $bestIntegratorLinks Configuration for 'bestIntegratorLink's
+     * @param array   $bestIntegratorLinks Configuration for bestIntegratorLinks
      */
     public function __construct(
         protected Service $searchService,
