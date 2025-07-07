@@ -45,7 +45,7 @@ use function func_get_args;
  */
 class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Get a container set up for the factory.

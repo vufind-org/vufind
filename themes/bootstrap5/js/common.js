@@ -584,6 +584,30 @@ var VuFind = (function VuFind() {
     return newParams;
   }
 
+  /**
+   * MultiILS: Display password recovery link for enabled login targets
+   * @param {Object} links Recovery links
+   * @param {?String} idPrefix
+   */
+  function displayILSPasswordRecoveryLink(links, idPrefix) {
+    const searchPrefix = idPrefix ? '#' + idPrefix : '#';
+    const targetSelector = document.querySelector(searchPrefix + 'target');
+    const recoveryLink = document.querySelector('#recovery_link');
+    if (targetSelector && recoveryLink) {
+      const changeListener = () => {
+        const target = targetSelector.value;
+        if (links[target]) {
+          recoveryLink.setAttribute('href', links[target]);
+          recoveryLink.classList.remove('hidden');
+        } else {
+          recoveryLink.classList.add('hidden');
+        }
+      };
+      targetSelector.addEventListener('change', changeListener);
+      changeListener();
+    }
+  }
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -623,7 +647,8 @@ var VuFind = (function VuFind() {
     deleteKeyValueFromURLSearchParams: deleteKeyValueFromURLSearchParams,
     deleteParamsFromURLSearchParams: deleteParamsFromURLSearchParams,
     getTheme,
-    setTheme
+    setTheme,
+    displayILSPasswordRecoveryLink
   };
 })();
 

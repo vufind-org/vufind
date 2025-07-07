@@ -44,7 +44,7 @@ use VuFind\Search\Summon\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test that checkbox filters are always visible (or not) as appropriate.

@@ -47,7 +47,7 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  */
 trait LiveSolrTrait
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Container for services related to live Solr connectivity.
@@ -66,7 +66,7 @@ trait LiveSolrTrait
         $container = new \VuFindTest\Container\MockContainer($this);
         $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
         $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
-        $this->addConfigPluginManagerToContainer($container, $config);
+        $this->addConfigRelatedServicesToContainer($container, moduleConfig: $config);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();
         $container->set(
             \VuFindHttp\HttpService::class,

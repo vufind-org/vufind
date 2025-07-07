@@ -52,7 +52,7 @@ use VuFindConsole\Command\Util\SwitchDbHashCommand;
  */
 class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**

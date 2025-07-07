@@ -44,7 +44,7 @@ use VuFind\Search\Solr\Results;
  */
 class SideFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test "getResults"
