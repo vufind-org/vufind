@@ -88,7 +88,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     protected function runAndGetConfigUpgrader(string $fixture): Upgrade
     {
         $upgrader = $this->getUpgrader($fixture);
-        $upgrader->run($this->targetVersion, true);
+        $upgrader->setWriteMode(false);
+        $upgrader->run($this->targetVersion);
         return $upgrader;
     }
 

@@ -85,11 +85,11 @@ class Upgrade
     protected bool $permissionsModified = false;
 
     /**
-     * If writing of new configuration should be disabled (used in tests).
+     * If writing of configuration is enabled (disabled in tests).
      *
      * @var bool
      */
-    protected bool $dryRun = false;
+    protected bool $writeMode = true;
 
     /**
      * Constructor
@@ -104,16 +104,27 @@ class Upgrade
     }
 
     /**
-     * Run through all of the necessary upgrading.
+     * Set write mode
      *
-     * @param string $newVersion Version to upgrade to
-     * @param bool   $dryRun     If writing of new configuration should be disabled (used in tests)
+     * @param bool $writeMode Write mode (true for enabling and false for disabling writing)
      *
      * @return void
      */
-    public function run(string $newVersion, bool $dryRun = false): void
+    public function setWriteMode(bool $writeMode): void
     {
-        $this->dryRun = $dryRun;
+        $this->writeMode = $writeMode;
+    }
+
+    /**
+     * Run through all of the necessary upgrading.
+     *
+     * @param string $newVersion Version to upgrade to
+     *
+     * @return void
+     */
+    public function run(string $newVersion): void
+    {
+        $this->permissionsModified = false;
 
         // Load all old configurations:
         $this->loadConfigs();
@@ -254,8 +265,8 @@ class Upgrade
      */
     protected function saveModifiedConfig(string $filename, bool $forceCreation = false): void
     {
-        // don't write to files in dry run mode
-        if ($this->dryRun) {
+        // don't write to files when write mode is disabled.
+        if (!$this->writeMode) {
             return;
         }
 
