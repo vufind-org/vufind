@@ -295,7 +295,7 @@ class MaintenanceController extends AbstractAdmin
         $cache = new SimpleCacheDecorator($this->cacheManager->getCache('browscap'));
         $client = $this->guzzleService->createClient();
 
-        $bc = new \BrowscapPHP\BrowscapUpdater($cache, new \Laminas\Log\PsrLoggerAdapter($this->logger), $client);
+        $bc = new \BrowscapPHP\BrowscapUpdater($cache, $this->logger, $client);
         try {
             $bc->checkUpdate();
         } catch (\BrowscapPHP\Exception\NoNewVersionException $e) {
