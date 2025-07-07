@@ -1740,6 +1740,111 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get a password recovery data for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryData($params)
+    {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
+            return [
+                'success' => false,
+                'error' => 'Username cannot be blank',
+            ];
+        }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
+        $result = $this->makeRequest(
+            [
+                'path' => 'v1/patrons',
+                'query' => [
+                    '_match' => 'exact',
+                    'cardnumber' => $params['cat_username'],
+                    'email' => $params['email'],
+                ],
+                'errors' => true,
+            ]
+        );
+
+        if (200 === $result['code']) {
+            if (!empty($result['data'][0])) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'username' => $params['cat_username'],
+                        'email' => $params['email'],
+                        'details' => [
+                            'id' => $result['data'][0]['patron_id'],
+                        ],
+                    ],
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'recovery_user_not_found',
+                ];
+            }
+        }
+
+        if (404 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        return [
+            'success' => false,
+            'error' => 'recovery_user_not_found',
+        ];
+    }
+
+    /**
+     * Reset a user's password using password recovery data.
+     *
+     * @param array $details Driver-specific account recovery details.
+     * @param array $params  User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return array Status
+     */
+    public function resetPassword(array $details, array $params)
+    {
+        if (empty($details['id']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
+        $request = [
+            'password' => $params['password'],
+            'password_2' => $params['password'],
+        ];
+
+        $result = $this->makeRequest(
+            [
+                'path' => ['v1', 'patrons', $details['id'], 'password'],
+                'json' => $request,
+                'method' => 'POST',
+                'errors' => true,
+            ]
+        );
+        if ($result['code'] >= 300) {
+            return [
+                'success' => false,
+                'error' => $result['data']['error'] ?? $result['code'],
+            ];
+        }
+        return [
+            'success' => true,
+        ];
+    }
+
+    /**
      * Provide an array of URL data (in the same format returned by the record
      * driver's getURLs method) for the specified bibliographic record.
      *
@@ -1793,7 +1898,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => '-checkout_date',
                 'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
             ];
-        } elseif ('getMyTransactions' === $function) {
+        }
+        if ('getMyTransactions' === $function) {
             $limit = $this->config['Loans']['max_page_size'] ?? 100;
             return [
                 'max_results' => $limit,
@@ -1806,7 +1912,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ],
                 'default_sort' => '+due_date',
             ];
-        } elseif ('Holdings' === $function) {
+        }
+        if ('Holdings' === $function) {
             $config = $this->config['Holdings'] ?? [];
             if ($limitByType = $this->config['Holdings']['itemLimitByType'] ?? null) {
                 $biblio = $this->getBiblio($params['id']);
@@ -1816,6 +1923,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 }
             }
             return $config;
+        }
+        if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
+            $config = $this->config['PasswordRecovery'] ?? [];
+            return ($config['enabled'] ?? false) ? $config : false;
         }
 
         return $this->config[$function] ?? false;

@@ -58,7 +58,7 @@ use function count;
  */
 trait LiveDatabaseTrait
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
@@ -86,7 +86,7 @@ trait LiveDatabaseTrait
             // Set up the bare minimum services to actually load real configs:
             $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
             $container = new MockContainer($this);
-            $this->addConfigPluginManagerToContainer($container, $config);
+            $this->addConfigRelatedServicesToContainer($container, moduleConfig: $config);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $container->get(\VuFind\Config\PluginManager::class)->get('config')
             );

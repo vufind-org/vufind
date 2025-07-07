@@ -35,7 +35,7 @@ use VuFind\Config\ConfigManager;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Exception\ConfigException;
-use VuFindTest\Feature\ConfigPluginManagerTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
 
 use function count;
@@ -54,7 +54,7 @@ use function count;
 class ConfigManagerTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Get config manager.
@@ -64,7 +64,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     protected function getConfigManager(): ConfigManager
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $this->addConfigPluginManagerToContainer($container);
+        $this->addConfigRelatedServicesToContainer($container);
         return $container->get(ConfigManager::class);
     }
 

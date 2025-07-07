@@ -88,13 +88,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      *
      * Stores the required information in the session.
      *
-     * @param string $email       Email address to send the link to
-     * @param array  $data        Information from the authentication request (such as user details)
-     * @param array  $urlParams   Default parameters for the generated URL
-     * @param string $linkRoute   The route to use as the base url for the login link
-     * @param array  $routeParams Route parameters
-     * @param string $subject     Email subject
-     * @param string $template    Email message template
+     * @param string $email          Email address to send the link to
+     * @param array  $data           Information from the authentication request (such as user details)
+     * @param array  $urlParams      Default parameters for the generated URL
+     * @param string $linkRoute      The route to use as the base url for the login link
+     * @param array  $routeParams    Route parameters
+     * @param string $subject        Email subject
+     * @param string $template       Email message template
+     * @param array  $templateParams Extra params for rendering the email message
      *
      * @return void
      */
@@ -105,7 +106,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $linkRoute = 'myresearch-home',
         $routeParams = [],
         $subject = 'email_login_subject',
-        $template = 'Email/login-link.phtml'
+        $template = 'Email/login-link.phtml',
+        $templateParams = []
     ) {
         // Make sure we've waited long enough
         $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
@@ -136,7 +138,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
         $urlParams['hash'] = $hash;
-        $viewParams = $linkData;
+        $viewParams = $linkData + $templateParams;
         $viewParams['url'] = $serverHelper(
             $urlHelper($linkRoute, $routeParams, ['query' => $urlParams])
         );

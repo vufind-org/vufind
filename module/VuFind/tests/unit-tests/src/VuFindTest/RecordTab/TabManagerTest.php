@@ -44,7 +44,7 @@ use VuFind\RecordTab\TabManager;
  */
 class TabManagerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Default configuration for mock plugin manager

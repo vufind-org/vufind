@@ -728,6 +728,24 @@ class Params
     }
 
     /**
+     * Check if sort is valid.
+     *
+     * @param ?string $sort            Sort value
+     * @param bool    $allowHiddenSort If hidden sort is allowed
+     *
+     * @return bool
+     */
+    public function isValidSort(?string $sort, bool $allowHiddenSort = true): bool
+    {
+        $valid = array_keys($this->getOptions()->getSortOptions());
+        return !empty($sort)
+            && (
+                in_array($sort, $valid)
+                || $allowHiddenSort && $this->getMatchingHiddenSortingPatterns($sort)
+            );
+    }
+
+    /**
      * Set the sorting value (note: sort will be set to default if an illegal
      * or empty value is passed in).
      *
@@ -745,12 +763,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        $valid = array_keys($this->getOptions()->getSortOptions());
-
-        if (
-            !empty($sort)
-            && (in_array($sort, $valid) || $this->getMatchingHiddenSortingPatterns($sort))
-        ) {
+        if ($this->isValidSort($sort)) {
             $this->sort = $sort;
         } else {
             $this->sort = $this->getDefaultSort();

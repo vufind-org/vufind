@@ -44,7 +44,7 @@ use VuFind\Config\SearchSpecsReader;
 class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**

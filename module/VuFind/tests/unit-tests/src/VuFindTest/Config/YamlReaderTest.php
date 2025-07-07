@@ -33,8 +33,8 @@ namespace VuFindTest\Config;
 
 use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Config\YamlReader;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config YamlReader Test Class
@@ -49,7 +49,7 @@ use VuFindTest\Feature\PathResolverTrait;
 class YamlReaderTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test that the cache is updated as expected.

@@ -255,6 +255,23 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver. Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        return is_callable([$this, $method]);
+    }
+
+    /**
      * Check for a simulated failure. Returns true for failure, false for
      * success.
      *
@@ -2718,6 +2735,81 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
+     * Get password recovery data for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryData($params)
+    {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
+            return [
+                'success' => false,
+                'error' => 'Username cannot be blank',
+            ];
+        }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
+        $this->checkIntermittentFailure();
+        if ($this->isFailing(__METHOD__, 33)) {
+            return ['success' => false, 'error' => 'Demonstrating failure; keep trying and it will work eventually.'];
+        }
+
+        if (isset($this->config['Users']) && !isset($this->config['Users'][$params['cat_username']])) {
+            return [
+                'success' => false,
+                'error' => 'recovery_user_not_found',
+            ];
+        }
+
+        return [
+            'success' => true,
+            'data' => [
+                'username' => $params['cat_username'],
+                'email' => $params['email'],
+                'details' => [
+                    'cat_username' => 'demo',
+                    'email' => $params['email'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Reset a user's password using password recovery data.
+     *
+     * @param array $details Driver-specific account recovery details.
+     * @param array $params  User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return array Status
+     */
+    public function resetPassword(array $details, array $params)
+    {
+        if (empty($details['cat_username']) || empty($details['email']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
+        $this->checkIntermittentFailure();
+        if (!$this->isFailing(__METHOD__, 33)) {
+            return ['success' => true];
+        }
+        return [
+            'success' => false,
+            'error' => 'Demonstrating failure; keep trying and it will work eventually.',
+        ];
+    }
+
+    /**
      * Public Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
@@ -2812,6 +2904,10 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'loginMethod'
                     => $this->config['Catalog']['loginMethod'] ?? 'password',
             ];
+        }
+        if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
+            $config = $this->config['PasswordRecovery'] ?? [];
+            return ($config['enabled'] ?? false) ? $config : false;
         }
 
         return [];

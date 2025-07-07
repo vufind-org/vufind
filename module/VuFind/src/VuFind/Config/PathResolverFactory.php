@@ -36,7 +36,6 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 use function defined;
-use function in_array;
 use function strlen;
 
 /**
@@ -50,20 +49,6 @@ use function strlen;
  */
 class PathResolverFactory implements FactoryInterface
 {
-    /**
-     * Default base config file subdirectory under the base directory
-     *
-     * @var string
-     */
-    protected $defaultBaseConfigSubdir = PathResolver::DEFAULT_CONFIG_SUBDIR;
-
-    /**
-     * Default config file subdirectory under a local override directory
-     *
-     * @var string
-     */
-    protected $defaultLocalConfigSubdir = PathResolver::DEFAULT_CONFIG_SUBDIR;
-
     /**
      * Create an object
      *
@@ -86,60 +71,13 @@ class PathResolverFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $localDirs = [];
-        $currentDir = defined('LOCAL_OVERRIDE_DIR')
+        $localDir = defined('LOCAL_OVERRIDE_DIR')
             && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-            ? LOCAL_OVERRIDE_DIR : '';
-        while (!empty($currentDir)) {
-            // check if the directory exists
-            if (!($canonicalizedCurrentDir = realpath($currentDir))) {
-                trigger_error('Configured local directory does not exist: ' . $currentDir, E_USER_WARNING);
-                break;
-            }
-            $currentDir = $canonicalizedCurrentDir;
-
-            // check if the current directory was already included in the stack to avoid infinite loops
-            if (in_array($currentDir, array_column($localDirs, 'directory'))) {
-                trigger_error('Current directory was already included in the stack: ' . $currentDir, E_USER_WARNING);
-                break;
-            }
-
-            // loading DirLocations.ini of currentDir
-            $systemConfigFile = $currentDir . '/DirLocations.ini';
-            $systemConfig = new Config(
-                file_exists($systemConfigFile)
-                    ? parse_ini_file($systemConfigFile, true)
-                    : []
-            );
-
-            // adding directory to the stack
-            array_unshift(
-                $localDirs,
-                [
-                    'directory' => $currentDir,
-                    'defaultConfigSubdir' =>
-                        $systemConfig['Local_Dir']['config_subdir']
-                        ?? $this->defaultLocalConfigSubdir,
-                    'dirLocationConfig' => $systemConfig,
-                ]
-            );
-
-            // If there's a parent, set it as the current directory for the next loop iteration:
-            if (!empty($systemConfig['Parent_Dir']['path'])) {
-                $isRelative = $systemConfig['Parent_Dir']['is_relative_path'] ?? false;
-                $parentDir = $systemConfig['Parent_Dir']['path'];
-                $currentDir = $isRelative ? $currentDir . '/' . $parentDir : $parentDir;
-            } else {
-                $currentDir = '';
-            }
-        }
+            ? LOCAL_OVERRIDE_DIR : null;
         return new $requestedName(
             $container->get(\VuFind\Config\Handler\PluginManager::class),
-            [
-                'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => $this->defaultBaseConfigSubdir,
-            ],
-            $localDirs
+            PathResolver::getBaseDirSpec(APPLICATION_PATH),
+            PathResolver::getLocalDirStack($localDir)
         );
     }
 }

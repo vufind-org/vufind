@@ -37,7 +37,6 @@ use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
-use function get_class;
 use function in_array;
 use function is_callable;
 
@@ -246,7 +245,7 @@ abstract class AbstractBase implements
     public function create($request)
     {
         throw new AuthException(
-            'Account creation not supported by ' . get_class($this)
+            'Account creation not supported by ' . static::class
         );
     }
 
@@ -263,8 +262,24 @@ abstract class AbstractBase implements
     public function updatePassword($request)
     {
         throw new AuthException(
-            'Account password updating not supported by ' . get_class($this)
+            'Account password updating not supported by ' . static::class
         );
+    }
+
+    /**
+     * Reset a user's password.
+     *
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
+     * @param array $params       User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function resetPassword(array $recoveryData, array $params)
+    {
+        throw new AuthException('Account password reset not supported by ' . static::class);
     }
 
     /**
@@ -331,12 +346,32 @@ abstract class AbstractBase implements
     /**
      * Does this authentication method support password recovery
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return bool
      */
-    public function supportsPasswordRecovery()
+    public function supportsPasswordRecovery(?string $target = null)
     {
         // By default, password recovery is not supported.
         return false;
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email    User's email address
+     *   string username Username (optional, for display)
+     *   array  details  Array of user details required for resetPassword request
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        // By default, don't return password recovery data
+        return null;
     }
 
     /**
@@ -425,9 +460,11 @@ abstract class AbstractBase implements
     /**
      * Get password policy for a new password (e.g. minLength, maxLength)
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return array
      */
-    public function getPasswordPolicy()
+    public function getPasswordPolicy(?string $target = null): array
     {
         return $this->getPolicyConfig('password');
     }
@@ -464,16 +501,17 @@ abstract class AbstractBase implements
      * Verify that a password fulfills the password policy. Throws exception if
      * the password is invalid.
      *
-     * @param string $password Password to verify
+     * @param string  $password Password to verify
+     * @param ?string $target   Authentication target for methods that support target selection
      *
      * @return void
      * @throws AuthException
      */
-    protected function validatePasswordAgainstPolicy(string $password): void
+    protected function validatePasswordAgainstPolicy(string $password, ?string $target = null): void
     {
         $this->validateStringAgainstPolicy(
             'password',
-            $this->getPasswordPolicy(),
+            $this->getPasswordPolicy($target),
             $password
         );
     }
