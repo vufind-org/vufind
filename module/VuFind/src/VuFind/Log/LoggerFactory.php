@@ -166,6 +166,35 @@ class LoggerFactory implements FactoryInterface
         $this->addHandlers($monologLogger, $mailHandler, $error_types);
     }
 
+
+    /**
+     * Configure Slack webhook handler.
+     *
+     * @param MonologLogger      $monologLogger The Monolog logger instance to add handlers to.
+     * @param Config             $config        VuFind configuration
+     *
+     * @return void
+     */
+    protected function addSlackHandler(MonologLogger $monologLogger, Config $config): void
+    {
+        [$channel, $error_types] = explode(':', $config->Logging->slack);
+        if ($error_types == null) {
+            $error_types = $channel;
+            $channel = null;
+        }
+
+        $username = $config->Logging->slackname;
+        $webhookUrl = $config->Logging->slackurl;
+
+        $baseSlackHandler = new \VuFind\Log\Handler\SlackWebhookHandler(
+            $webhookUrl,
+            $channel,
+            $username
+        );
+        
+        $this->addHandlers($monologLogger, $baseSlackHandler, $error_types);
+    }
+
     /**
      * Is dynamic debug mode enabled?
      *
@@ -220,6 +249,11 @@ class LoggerFactory implements FactoryInterface
         // Activate email logging, if applicable:
         if (isset($config->Logging->email)) {
             $this->addMailHandler($monologLogger, $config, $container);
+        }
+        print_r($config->Logging);
+         // Activate Slack logging, if applicable:
+        if (isset($config->Logging->slack)) {
+            $this->addSlackHandler($monologLogger, $config);
         }
 
         // Add common processors:

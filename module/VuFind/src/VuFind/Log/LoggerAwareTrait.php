@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
+ * Extension of \Psr\Log\LoggerAwareTrait with some convenience methods.
  *
  * PHP version 8
  *
