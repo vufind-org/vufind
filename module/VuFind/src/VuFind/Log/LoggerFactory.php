@@ -29,41 +29,35 @@
 
 namespace VuFind\Log;
 
-use Monolog\Logger as MonologLogger;
-use Monolog\Handler\DeduplicationHandler;
-use Monolog\Handler\FilterHandler;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Processor\PsrLogMessageProcessor;
-use Monolog\Handler\HandlerInterface;
-use Psr\Log\LogLevel;
-
-
-use VuFind\Log\Handler\StreamHandler;
-use VuFind\Log\Handler\MailHandler;
-
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use LmcRbacMvc\Service\AuthorizationService;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\FilterHandler;
+use Monolog\Handler\HandlerInterface;
+use Monolog\Logger as MonologLogger;
+use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-
+use Psr\Log\LogLevel;
+use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Config\PluginManager as ConfigPluginManager;
-use VuFind\Auth\Manager as AuthManager;
-use LmcRbacMvc\Service\AuthorizationService;
-use VuFind\Net\UserIpReader;
+use VuFind\Log\Handler\MailHandler;
+use VuFind\Log\Handler\StreamHandler;
 use VuFind\Mailer\Mailer;
+use VuFind\Net\UserIpReader;
 
-use function count;
+use function error_log;
+use function explode;
 use function is_array;
 use function is_int;
-use function explode;
+use function method_exists;
 use function strrpos;
 use function substr;
 use function trim;
-use function method_exists;
-use function error_log;
 
 /**
  * Factory for instantiating Logger
@@ -89,14 +83,14 @@ class LoggerFactory implements FactoryInterface
     {
         return new LineFormatter(
             "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
-            "Y-m-d H:i:s",
+            'Y-m-d H:i:s',
             true,
             true
         );
     }
 
-
-    protected function addDbHandler(MonologLogger $logger, Config $config, ContainerInterface $container) {
+    protected function addDbHandler(MonologLogger $logger, Config $config, ContainerInterface $container)
+    {
         $parts = explode(':', $config->Logging->database);
         $table_name = $parts[0];
         $error_types = $parts[1] ?? '';
@@ -107,9 +101,8 @@ class LoggerFactory implements FactoryInterface
             'logtime' => 'timestamp',
             'ident' => 'ident',
         ];
-        
+
         $filters = explode(',', $error_types);
-        
     }
 
     /**
@@ -132,7 +125,6 @@ class LoggerFactory implements FactoryInterface
             $file = $configString;
             $error_types = '';
         }
-        
 
         $baseFileHandler = new StreamHandler($file, LogLevel::DEBUG, false);
         $baseFileHandler->setFormatter($this->getStandardFileFormatter());
@@ -144,9 +136,9 @@ class LoggerFactory implements FactoryInterface
     /**
      * Configure Mail handler.
      *
-     * @param MonologLogger $monologLogger The Monolog logger instance to add handlers to.
-     * @param ContainerInterface $container Service manager
-     * @param Config             $config    Configuration
+     * @param MonologLogger      $monologLogger The Monolog logger instance to add handlers to.
+     * @param ContainerInterface $container     Service manager
+     * @param Config             $config        Configuration
      *
      * @return void
      */
@@ -157,21 +149,20 @@ class LoggerFactory implements FactoryInterface
         $error_types = $parts[1] ?? '';
 
         $mailHandler = new MailHandler(
-            $email, 
-            'VuFind Log Message', 
+            $email,
+            'VuFind Log Message',
             $this->getEmailSenderAddress($config),
             $container->get(Mailer::class)
         );
-            
+
         $this->addHandlers($monologLogger, $mailHandler, $error_types);
     }
-
 
     /**
      * Configure Slack webhook handler.
      *
-     * @param MonologLogger      $monologLogger The Monolog logger instance to add handlers to.
-     * @param Config             $config        VuFind configuration
+     * @param MonologLogger $monologLogger The Monolog logger instance to add handlers to.
+     * @param Config        $config        VuFind configuration
      *
      * @return void
      */
@@ -191,7 +182,7 @@ class LoggerFactory implements FactoryInterface
             $channel,
             $username
         );
-        
+
         $this->addHandlers($monologLogger, $baseSlackHandler, $error_types);
     }
 
@@ -214,7 +205,7 @@ class LoggerFactory implements FactoryInterface
             try {
                 return $container->get(AuthorizationService::class)->isGranted('access.DebugMode');
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
-                error_log("VuFind Log: Could not get AuthorizationService for dynamic debug: " . $e->getMessage());
+                error_log('VuFind Log: Could not get AuthorizationService for dynamic debug: ' . $e->getMessage());
                 return false;
             }
         }
@@ -225,7 +216,7 @@ class LoggerFactory implements FactoryInterface
      * Set configuration for the Monolog logger.
      * This method orchestrates the setup of all logging components.
      *
-     * @param ContainerInterface $container Service manager
+     * @param ContainerInterface $container    Service manager
      * @param Logger             $vufindLogger The VuFind\Log\Logger (adapter) instance to configure.
      *
      * @return void
@@ -250,7 +241,7 @@ class LoggerFactory implements FactoryInterface
         if (isset($config->Logging->email)) {
             $this->addMailHandler($monologLogger, $config, $container);
         }
-         // Activate Slack logging, if applicable:
+        // Activate Slack logging, if applicable:
         if (isset($config->Logging->slack)) {
             $this->addSlackHandler($monologLogger, $config);
         }
@@ -262,12 +253,13 @@ class LoggerFactory implements FactoryInterface
     /**
      * Add the standard debug stream handler (output to browser/CLI).
      *
-     * @param MonologLogger      $monologLogger The Monolog logger instance
-     * @param bool|int $debug  Debug mode/level
+     * @param MonologLogger $monologLogger The Monolog logger instance
+     * @param bool|int      $debug         Debug mode/level
      *
      * @return void
      */
-    protected function addDebugHandler(MonologLogger $monologLogger, $debug): void {
+    protected function addDebugHandler(MonologLogger $monologLogger, $debug): void
+    {
         // Only add debug writer ONCE!
         static $hasDebugWriter = false;
         if ($hasDebugWriter) {
@@ -279,7 +271,7 @@ class LoggerFactory implements FactoryInterface
             PHP_SAPI === 'cli'
                 ? "[%datetime%] %level_name%: %message% %context% %extra%\n"
                 : '<pre>[%datetime%] %level_name%: %message% %context% %extra%</pre>' . PHP_EOL,
-            "Y-m-d H:i:s",
+            'Y-m-d H:i:s',
             true,
             true
         );
@@ -316,7 +308,7 @@ class LoggerFactory implements FactoryInterface
                         });
                     }
                 } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
-                    error_log("VuFind Log: Could not get AuthManager for ReferenceId processor: " . $e->getMessage());
+                    error_log('VuFind Log: Could not get AuthManager for ReferenceId processor: ' . $e->getMessage());
                 }
             }
         }
@@ -327,11 +319,11 @@ class LoggerFactory implements FactoryInterface
      *
      * Filter keys: alert, error, notice, debug
      *
-     * @param MonologLogger             $monologLogger The Monolog logger instance to add handlers to.
+     * @param MonologLogger    $monologLogger The Monolog logger instance to add handlers to.
      * @param HandlerInterface $baseHandler   The base Monolog handler to clone and filter
      * (e.g., StreamHandler).
-     * @param string|array              $filters     An array or comma-separated string of
-     * logging levels
+     * @param string|array     $filters       An array or comma-separated string of
+     *                                        logging levels
      *
      * @throws \Exception If the base handler does not support verbosity when specified.
      * @return void

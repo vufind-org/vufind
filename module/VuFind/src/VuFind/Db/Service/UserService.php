@@ -29,8 +29,8 @@
 
 namespace VuFind\Db\Service;
 
-use Psr\Log\LoggerAwareInterface;
 use Laminas\Session\Container as SessionContainer;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;

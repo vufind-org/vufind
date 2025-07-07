@@ -31,8 +31,8 @@ namespace VuFindAdmin\Controller;
 
 use DateTime;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Psr\Log\LoggerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 use VuFind\Db\Service\SearchServiceInterface;

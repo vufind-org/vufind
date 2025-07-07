@@ -27,13 +27,11 @@
  * @link     https://vufind.org Main Site
  */
 
-
 namespace VuFind\Log;
 
 use Monolog\Logger as MonologLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Traversable;
 use VuFind\Net\UserIpReader;
 
 use function in_array;
@@ -42,6 +40,7 @@ use function is_bool;
 use function is_float;
 use function is_int;
 use function is_object;
+use function is_string;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -52,7 +51,6 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-
 
 class Logger implements LoggerInterface
 {
@@ -92,7 +90,7 @@ class Logger implements LoggerInterface
 
     /**
      * System is unusable.
-     * 
+     *
      * @deprecated
      *
      * @param mixed[] $context
@@ -129,7 +127,7 @@ class Logger implements LoggerInterface
 
     /**
      * Critical conditions.
-     * 
+     *
      * @deprecated
      *
      * @param string  $message
@@ -151,14 +149,15 @@ class Logger implements LoggerInterface
      *
      * @return void
      */
-    public function error(string|\Stringable $message, array $context = []): void{
+    public function error(string|\Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::ERROR, $message, $context);
     }
 
     /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
-     * 
+     *
      * @deprecated
      *
      * @param string  $message
@@ -166,7 +165,8 @@ class Logger implements LoggerInterface
      *
      * @return void
      */
-    public function err(string|\Stringable $message, array $context = []): void{
+    public function err(string|\Stringable $message, array $context = []): void
+    {
         $this->error($message, $context);
     }
 
@@ -185,7 +185,7 @@ class Logger implements LoggerInterface
 
     /**
      * Exceptional occurrences that are not errors.
-     * 
+     *
      * @deprecated
      *
      * @param string  $message
@@ -254,7 +254,7 @@ class Logger implements LoggerInterface
         $monologLevel = is_string($level) && isset(self::LEVEL_MAP[$level])
             ? self::LEVEL_MAP[$level]
             : $level;
-            
+
         if (is_array($message)) {
             $context['vufind_log_details'] = $message;
             $mainMonologMessage = 'Exception/Detailed log. See context for levels.'; // Generic main message

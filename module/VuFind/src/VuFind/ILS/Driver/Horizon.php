@@ -30,8 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
-use Psr\Log\LoggerAwareInterface;
 use PDO;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;

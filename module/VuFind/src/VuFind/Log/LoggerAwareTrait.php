@@ -31,6 +31,7 @@ namespace VuFind\Log;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+
 use function get_class;
 
 /**
@@ -39,18 +40,19 @@ use function get_class;
  */
 trait LoggerAwareTrait
 {
+    use VarDumperTrait;
+
     /**
      * @var LoggerInterface
      * This property will hold the logger instance injected by the ServiceManager.
      */
     protected ?LoggerInterface $logger = null;
-    use VarDumperTrait;
 
     /**
      * Sets the logger instance on the object.
      * This method fulfills the contract of Psr\Log\LoggerAwareInterface.
      *
-     * @param LoggerInterface $logger The logger instance, adhering to PSR-3 standard.
+     * @param  LoggerInterface $logger The logger instance, adhering to PSR-3 standard.
      * @return void
      */
     public function setLogger(LoggerInterface $logger): void

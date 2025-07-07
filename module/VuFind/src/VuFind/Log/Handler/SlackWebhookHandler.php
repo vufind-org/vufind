@@ -4,8 +4,6 @@ namespace VuFind\Log\Handler;
 
 use Monolog\Handler\SlackWebhookHandler as MonologSlackWebhookHandler;
 use Monolog\LogRecord;
-use Monolog\Level;
-use VuFind\Log\Handler\VerbosityTrait;
 
 class SlackWebhookHandler extends MonologSlackWebhookHandler
 {
@@ -26,20 +24,20 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
         ':information_source: ', // INFO
         ':beetle: ',             // DEBUG
     ];
-    
+
     public function __construct(
         string $webhookUrl,
-        protected ?string $channel = "#log",
-        protected ?string $username = "VuFind Log",
+        protected ?string $channel = '#log',
+        protected ?string $username = 'VuFind Log',
         bool $useAttachment = true,
         ?string $iconEmoji = null,
         bool $useShortAttachment = false,
         bool $includeContextAndExtra = false
     ) {
-        
+
         parent::__construct($webhookUrl, $this->channel, $this->username, $useAttachment, $iconEmoji, $useShortAttachment, $includeContextAndExtra);
     }
-    
+
     protected function write(LogRecord $record): void
     {
         $event = [
@@ -63,23 +61,23 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
             $filteredEvent['extra'],
             $record->formatted
         );
-        
+
         parent::write($modifiedRecord);
     }
-    
+
     protected function formatMessage(array $event): string
     {
         $icon = $this->messageIcons[$event['priority']] ?? '';
         return $icon . $event['message'];
     }
-    
+
     protected function getSlackData(LogRecord $record): array
     {
         $data = parent::getSlackData($record);
-        
+
         $data['channel'] = $this->channel;
         $data['username'] = $this->username;
-        
+
         return $data;
     }
 }

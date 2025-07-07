@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller\Plugin;
 
-use Psr\Log\LoggerAwareInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Role\PermissionDeniedManager;

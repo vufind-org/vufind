@@ -130,7 +130,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return void
      */
-
     public function crit(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
@@ -149,19 +148,16 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
         $this->__call(__FUNCTION__, func_get_args());
     }
 
-
-
     /**
      * Log an error
      *
      * @deprecated
-     * 
+     *
      * @param Stringable|string $message Message
      * @param array             $context Extra params
      *
      * @return void
      */
-
     public function err(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
@@ -190,7 +186,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return void
      */
-
     public function warn(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
@@ -248,7 +243,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     {
         $this->__call(__FUNCTION__, func_get_args());
     }
-
 
     /**
      * Log an exception triggered by the framework for administrative purposes.
