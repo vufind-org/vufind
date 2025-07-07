@@ -250,7 +250,6 @@ class LoggerFactory implements FactoryInterface
         if (isset($config->Logging->email)) {
             $this->addMailHandler($monologLogger, $config, $container);
         }
-        print_r($config->Logging);
          // Activate Slack logging, if applicable:
         if (isset($config->Logging->slack)) {
             $this->addSlackHandler($monologLogger, $config);

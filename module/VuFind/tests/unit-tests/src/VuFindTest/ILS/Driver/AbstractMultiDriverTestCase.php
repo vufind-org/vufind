@@ -144,8 +144,8 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     public function testLogging()
     {
-        $logger = new \Laminas\Log\Logger();
-        $writer = new \Laminas\Log\Writer\Mock();
+        $testHandler = new TestHandler();
+        $logger = new Logger('test', [$testHandler]);
         $logger->addWriter($writer);
 
         $driver = $this->initDriver(
@@ -156,9 +156,11 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $driver->setLogger($logger);
 
         $this->callMethod($driver, 'getDriverConfig', ['bad']);
+        $records = $testHandler->getRecords();
+        $this->assertCount(1, $records);
         $this->assertEquals(
             $driver::class . ': Could not load config for bad',
-            $writer->events[0]['message']
+            $records[0]['message']
         );
 
         return ['driver' => $driver, 'writer' => $writer];
