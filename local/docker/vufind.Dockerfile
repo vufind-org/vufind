@@ -14,7 +14,7 @@ RUN set -e; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         libfreetype-dev libjpeg62-turbo-dev libpng-dev libzip-dev libicu-dev \
-        nodejs npm parallel; \
+        libxslt1-dev nodejs npm parallel; \
     rm -rf /var/lib/apt/lists/*; \
     docker-php-ext-configure intl; \
         docker-php-ext-install intl; \
@@ -27,7 +27,9 @@ RUN set -e; \
     docker-php-ext-configure mysqli; \
         docker-php-ext-install -j$(nproc) mysqli; \
     docker-php-ext-configure zip; \
-        docker-php-ext-install -j$(nproc) zip
+        docker-php-ext-install -j$(nproc) zip; \
+    docker-php-ext-configure xsl; \
+        docker-php-ext-install -j$(nproc) xsl
 
 RUN set -e; \
     pecl install xdebug; \
