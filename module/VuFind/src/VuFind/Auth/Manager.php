@@ -212,15 +212,37 @@ class Manager implements
     /**
      * Does the current configuration support password recovery?
      *
-     * @param ?string $authMethod optional; check this auth method rather than
-     *  the one in config file
+     * @param ?string $authMethod optional; check this auth method rather than the one in config file
+     * @param ?string $target     Login target (only for MultiILS)
      *
      * @return bool
      */
-    public function supportsRecovery(?string $authMethod = null): bool
+    public function supportsRecovery(?string $authMethod = null, ?string $target = null): bool
     {
         return ($this->config->Authentication->recover_password ?? false)
-            && $this->getAuth($authMethod)->supportsPasswordRecovery();
+            && $this->getAuth($authMethod)->supportsPasswordRecovery($target);
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email       User's email address
+     *   string username    Username (optional, for display)
+     *   string auth_method Authentication method
+     *   string target      Authentication target for methods that support target selection (e.g. MultiILS)
+     *   int    timestamp   Request timestamp (unix time)
+     *   array  details     Array of user details required for resetPassword request
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        if ($result = $this->getAuth()->getPasswordRecoveryData($params)) {
+            $result['auth_method'] = $this->getAuthMethod();
+            $result['timestamp'] = time();
+        }
+        return $result;
     }
 
     /**
@@ -310,15 +332,15 @@ class Manager implements
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
-     * @param ?string $authMethod optional; check this auth method rather than
-     * the one in config file
+     * @param ?string $authMethod optional; check this auth method rather than the one in config file
+     * @param ?string $target     Authentication target for methods that support target selection
      *
      * @return array
      */
-    public function getPasswordPolicy(?string $authMethod = null): array
+    public function getPasswordPolicy(?string $authMethod = null, ?string $target = null): array
     {
         return $this->processPolicyConfig(
-            $this->getAuth($authMethod)->getPasswordPolicy()
+            $this->getAuth($authMethod)->getPasswordPolicy($target)
         );
     }
 
@@ -726,6 +748,20 @@ class Manager implements
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
         return $user;
+    }
+
+    /**
+     * Reset a user's password.
+     *
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
+     * @param array $params       User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function resetPassword(array $recoveryData, array $params)
+    {
+        $this->getAuth()->resetPassword($recoveryData, $params);
     }
 
     /**

@@ -31,7 +31,6 @@
 namespace VuFindTheme;
 
 use VuFind\Config\Config;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
@@ -50,22 +49,14 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
-     * @param ThemeInfo     $info         Theme info object
-     * @param ?PathResolver $pathResolver Config file path resolver
+     * @param ThemeInfo    $info         Theme info object
+     * @param PathResolver $pathResolver Config file path resolver
      */
-    public function __construct(ThemeInfo $info, ?PathResolver $pathResolver = null)
+    public function __construct(ThemeInfo $info, protected PathResolver $pathResolver)
     {
         parent::__construct($info);
-        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -104,9 +95,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     public function configure(Config $config, $name)
     {
         // Enable theme
-        $configPath = $this->pathResolver
-            ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
-            : ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->pathResolver->getLocalConfigPath('config.ini', null, true);
         if (!file_exists($configPath)) {
             return $this
                 ->setLastError("Expected configuration file missing: $configPath");

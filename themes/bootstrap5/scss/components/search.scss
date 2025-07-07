@@ -293,12 +293,6 @@ header .container.navbar { margin-bottom: 0; }
     }
   }
 
-  @include media-breakpoint-down(sm) {
-    a {
-      max-width: 100%;
-      text-decoration: underline;
-    }
-  }
   @include media-breakpoint-up(sm) {
     .record-checkbox {
       display: block;

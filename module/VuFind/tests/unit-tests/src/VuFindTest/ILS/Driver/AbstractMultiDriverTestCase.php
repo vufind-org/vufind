@@ -52,7 +52,7 @@ use function in_array;
  */
 abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**

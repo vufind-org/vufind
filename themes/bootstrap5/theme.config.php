@@ -158,6 +158,7 @@ return [
              * for a strong inheritance safety net but this is not required.
              */
             'barcode' => 'FontAwesome:barcode',
+            'browzine-concern' => 'FontAwesome:exclamation',
             'browzine-issue' => 'Alias:format-serial',
             'browzine-pdf' => 'FontAwesome:file-pdf-o',
             'browzine-retraction' => 'FontAwesome:exclamation',
@@ -171,6 +172,7 @@ return [
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'user-content' => 'FontAwesome:comment',
             'cover-replacement' => 'FontAwesome:question',
             'currency-eur' => 'FontAwesome:eur',
             'currency-gbp' => 'FontAwesome:gbp',

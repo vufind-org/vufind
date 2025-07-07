@@ -51,15 +51,9 @@ use VuFindHarvest\OaiPmh\HarvesterFactory;
 class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 {
     /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
+     * @param PathResolver      $pathResolver Config file path resolver
      * @param Client            $client       HTTP client (omit for default)
      * @param string            $harvestRoot  Root directory for harvesting (omit for
      * default)
@@ -67,18 +61,16 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      * @param bool              $silent       Should we suppress output?
      * @param string|null       $name         The name of the command; passing null
      * means it must be set in configure()
-     * @param ?PathResolver     $pathResolver Config file path resolver
      */
     public function __construct(
+        protected PathResolver $pathResolver,
         $client = null,
         $harvestRoot = null,
         ?HarvesterFactory $factory = null,
         $silent = false,
         $name = null,
-        ?PathResolver $pathResolver = null
     ) {
         parent::__construct($client, $harvestRoot, $factory, $silent, $name);
-        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -119,9 +111,7 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 
         // Add the default --ini setting if missing:
         if (!$input->getOption('ini')) {
-            $ini = $this->pathResolver
-                ? $this->pathResolver->getConfigPath('oai.ini', 'harvest')
-                : \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
+            $ini = $this->pathResolver->getConfigPath('oai.ini', 'harvest');
             $input->setOption('ini', $ini);
         }
         return parent::execute($input, $output);

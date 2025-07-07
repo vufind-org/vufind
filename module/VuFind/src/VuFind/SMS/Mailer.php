@@ -52,12 +52,8 @@ class Mailer extends AbstractBase
      */
     protected $carriers = [
         'virgin' => ['name' => 'Virgin Mobile', 'domain' => 'vmobl.com'],
-        'att' => ['name' => 'AT&T', 'domain' => 'mms.att.net'],
         'verizon' => ['name' => 'Verizon', 'domain' => 'vtext.com'],
-        'nextel' => ['name' => 'Nextel', 'domain' => 'messaging.nextel.com'],
-        'sprint' => ['name' => 'Sprint', 'domain' => 'messaging.sprintpcs.com'],
         'tmobile' => ['name' => 'T Mobile', 'domain' => 'tmomail.net'],
-        'alltel' => ['name' => 'Alltel', 'domain' => 'message.alltel.com'],
         'Cricket' => ['name' => 'Cricket', 'domain' => 'mms.mycricket.com'],
     ];
 

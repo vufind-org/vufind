@@ -1,12 +1,30 @@
 /* global VuFind */
 
-function waitForItemStatuses(fn) {
+function waitForAjaxContentToLoad(fn) {
   var itemDone = typeof VuFind.itemStatuses === "undefined";
   var saveDone = typeof VuFind.saveStatuses === "undefined";
+  var initiallyActiveTab = document.querySelector(".record-tab.initiallyActive");
+  var tabDone = false;
+  if (!initiallyActiveTab) {
+    // No initially active tab? Then not on record page, so treat tab loading as done:
+    tabDone = true;
+  } else {
+    // Check for a tab hash, which could impact which element we check for activity:
+    var newTab = typeof window.location.hash !== 'undefined'
+      ? window.location.hash.toLowerCase() : '';
+    if (newTab.length <= 1 || newTab === '#tabnav') {
+      // No tab hash, check for loading of the initial tab:
+      tabDone = initiallyActiveTab.classList.contains("active");
+    } else {
+      // Tab hash, check that the specified tab is active (if valid):
+      var hashTab = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
+      tabDone = !hashTab || hashTab.classList.contains("active");
+    }
+  }
 
   var fnCalled = false;
-  function checkBoth() {
-    if (!fnCalled && itemDone && saveDone) {
+  function checkAllConditions() {
+    if (!fnCalled && itemDone && saveDone && tabDone) {
       fn();
       fnCalled = true;
       return true;
@@ -14,18 +32,25 @@ function waitForItemStatuses(fn) {
     return false;
   }
 
-  if (checkBoth()) {
+  if (checkAllConditions()) {
     return;
   }
 
   VuFind.listen("item-status-done", function listenForItemStatusDone() {
     itemDone = true;
-    checkBoth();
+    checkAllConditions();
   });
 
   VuFind.listen("save-status-done", function listenForSaveStatusDone() {
     saveDone = true;
-    checkBoth();
+    checkAllConditions();
+  });
+
+  VuFind.listen("record-tab-loaded", function listenForTabLoaded(eventData) {
+    if (eventData.container && eventData.container.classList && eventData.container.classList.contains("active")) {
+      tabDone = true;
+    }
+    checkAllConditions();
   });
 }
 
@@ -38,7 +63,7 @@ VuFind.listen("ready", function triggerPrint() {
     setTimeout(fn, 10);
   }
 
-  waitForItemStatuses(function waitForAjax() {
+  waitForAjaxContentToLoad(function waitForAjax() {
     // Print dialogs cause problems during testing, so disable them
     // when the "test mode" cookie is set. This should never happen
     // under normal usage outside of the Phing startup process.

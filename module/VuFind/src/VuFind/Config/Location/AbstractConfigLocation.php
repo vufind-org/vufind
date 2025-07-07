@@ -71,6 +71,13 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     protected array $subsection = [];
 
     /**
+     * Location of the configuration in the parent directory that might be specified in DirLocations.ini.
+     *
+     * @var ?ConfigLocationInterface
+     */
+    protected ?ConfigLocationInterface $dirLocationsParent = null;
+
+    /**
      * Constructor
      *
      * @param string  $path       Path to configuration
@@ -79,11 +86,17 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     public function __construct(string $path, ?string $configName = null)
     {
         $this->setPath($path);
-        if (null !== $configName) {
-            $this->configName = $configName;
-        } else {
-            $this->configName = pathinfo($this->getFileName(), PATHINFO_FILENAME);
-        }
+        $this->configName = $configName ?? $this->getDefaultConfigName();
+    }
+
+    /**
+     * Get default config name.
+     *
+     * @return string
+     */
+    protected function getDefaultConfigName(): string
+    {
+        return $this->getFileName();
     }
 
     /**
@@ -101,12 +114,13 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $path Path
      *
-     * @return void
+     * @return static
      */
-    public function setPath(string $path): void
+    public function setPath(string $path): static
     {
-        $this->setBasePath(dirname($path));
-        $this->setFileName(basename($path));
+        $this->setBasePath(dirname($path))
+            ->setFileName(basename($path));
+        return $this;
     }
 
     /**
@@ -126,9 +140,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setBasePath(string $basePath): void
+    public function setBasePath(string $basePath): static
     {
         $this->basePath = $basePath;
+        return $this;
     }
 
     /**
@@ -148,9 +163,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setFileName(string $fileName): void
+    public function setFileName(string $fileName): static
     {
         $this->fileName = $fileName;
+        return $this;
     }
 
     /**
@@ -170,9 +186,10 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setConfigName(string $configName): void
+    public function setConfigName(string $configName): static
     {
         $this->configName = $configName;
+        return $this;
     }
 
     /**
@@ -192,9 +209,33 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @return void
      */
-    public function setSubsection(array $subsection): void
+    public function setSubsection(array $subsection): static
     {
         $this->subsection = $subsection;
+        return $this;
+    }
+
+    /**
+     * Get the location of the configuration in the parent directory that might be specified in DirLocations.ini.
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getDirLocationsParent(): ?ConfigLocationInterface
+    {
+        return $this->dirLocationsParent;
+    }
+
+    /**
+     * Set the location of the configuration in the parent directory that might be specified in DirLocations.ini.
+     *
+     * @param ?ConfigLocationInterface $dirLocationsParent Parent location
+     *
+     * @return void
+     */
+    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static
+    {
+        $this->dirLocationsParent = $dirLocationsParent;
+        return $this;
     }
 
     /**

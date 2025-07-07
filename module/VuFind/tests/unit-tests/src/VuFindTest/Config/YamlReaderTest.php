@@ -33,8 +33,8 @@ namespace VuFindTest\Config;
 
 use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Config\YamlReader;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config YamlReader Test Class
@@ -49,7 +49,7 @@ use VuFindTest\Feature\PathResolverTrait;
 class YamlReaderTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test that the cache is updated as expected.
@@ -72,7 +72,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($cache));
         $reader = $this->getMockBuilder(YamlReader::class)
             ->onlyMethods(['parseYaml'])
-            ->setConstructorArgs([$manager])
+            ->setConstructorArgs([$this->getPathResolver(), $manager])
             ->getMock();
         $reader->expects($this->once())
             ->method('parseYaml')
@@ -103,7 +103,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($cache));
         $reader = $this->getMockBuilder(YamlReader::class)
             ->onlyMethods(['parseYaml'])
-            ->setConstructorArgs([$manager])
+            ->setConstructorArgs([$this->getPathResolver(), $manager])
             ->getMock();
         $reader->expects($this->never())->method('parseYaml');
         // Test twice to confirm that cache is only called once (due to secondary
@@ -132,7 +132,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($cache));
         $reader = $this->getMockBuilder(YamlReader::class)
             ->onlyMethods(['parseYaml'])
-            ->setConstructorArgs([$manager])
+            ->setConstructorArgs([$this->getPathResolver(), $manager])
             ->getMock();
         $reader->expects($this->never())->method('parseYaml');
         // Test twice to confirm that cache is re-checked in response to third
@@ -149,7 +149,6 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testParentConfig(): void
     {
         $reader = new YamlReader(
-            null,
             $this->getPathResolver($this->getFixtureDir() . 'configs/yaml')
         );
         $config = $reader->get('yamlreader-child.yaml');

@@ -791,13 +791,37 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get the configured default view.
+     *
+     * @return string
+     */
+    protected function getConfiguredDefaultView(): string
+    {
+        return $this->defaultView;
+    }
+
+    /**
+     * Set the configured default view.
+     *
+     * @param string $defaultView Default view
+     *
+     * @return void
+     */
+    protected function setConfiguredDefaultView(string $defaultView): void
+    {
+        $this->defaultView = $defaultView;
+    }
+
+    /**
      * Get default view setting.
+     *
+     * This determines how the results are presented (e.g. as list or grid)
      *
      * @return int
      */
     public function getDefaultView()
     {
-        return $this->defaultView;
+        return $this->getConfiguredDefaultView();
     }
 
     /**

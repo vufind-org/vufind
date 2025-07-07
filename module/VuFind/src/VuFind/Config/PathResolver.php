@@ -31,8 +31,13 @@
 
 namespace VuFind\Config;
 
+use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
+use VuFind\Config\Location\ConfigDirectory;
+use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
-use VuFind\Config\Location\ConfigLocationTrait;
+
+use function array_key_exists;
+use function in_array;
 
 /**
  * Configuration File Path Resolver
@@ -46,8 +51,6 @@ use VuFind\Config\Location\ConfigLocationTrait;
  */
 class PathResolver
 {
-    use ConfigLocationTrait;
-
     /**
      * Default configuration subdirectory.
      *
@@ -66,7 +69,7 @@ class PathResolver
      *
      * @var array
      */
-    protected $baseDirectorySpec;
+    protected array $baseDirectorySpec;
 
     /**
      * Local configuration directory stack. Local configuration files are searched
@@ -80,21 +83,127 @@ class PathResolver
      *
      * @var array
      */
-    protected $localConfigDirStack;
+    protected array $localConfigDirStack;
+
+    /**
+     * Cache for locations found in getConfigLocationsInPath.
+     *
+     * @var array
+     */
+    protected array $configLocationCache = [];
 
     /**
      * Constructor
      *
-     * @param array $baseDirectorySpec   Base directory specification
-     * @param array $localConfigDirStack Local configuration directory specification
-     * stack
+     * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
+     * @param array                $baseDirectorySpec    Base directory specification
+     * @param array                $localConfigDirStack  Local configuration directory specification stack
      */
     public function __construct(
+        protected HandlerPluginManager $configHandlerManager,
         array $baseDirectorySpec,
         array $localConfigDirStack
     ) {
         $this->baseDirectorySpec = $baseDirectorySpec;
         $this->localConfigDirStack = $localConfigDirStack;
+    }
+
+    /**
+     * Get PathResolver for directories.
+     *
+     * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
+     * @param string               $baseDir              Base directory
+     * @param ?string              $localConfigDir       Local config directory
+     * @param ?string              $localConfigSubDir    Default local config subdirectory
+     *
+     * @return PathResolver
+     */
+    public static function getPathResolverForDirectories(
+        HandlerPluginManager $configHandlerManager,
+        string $baseDir,
+        ?string $localConfigDir,
+        ?string $localConfigSubDir = null
+    ): PathResolver {
+        return new PathResolver(
+            $configHandlerManager,
+            self::getBaseDirSpec($baseDir),
+            self::getLocalDirStack($localConfigDir, $localConfigSubDir)
+        );
+    }
+
+    /**
+     * Get base directory spec for directory.
+     *
+     * @param string $baseDir Base directory
+     *
+     * @return array
+     */
+    public static function getBaseDirSpec(string $baseDir): array
+    {
+        return [
+            'directory' => $baseDir,
+            'defaultConfigSubdir' => self::DEFAULT_CONFIG_SUBDIR,
+        ];
+    }
+
+    /**
+     * Get local directory spec stack for directory.
+     *
+     * @param ?string $localConfigDir    Local config directory
+     * @param ?string $localConfigSubDir Default local config subdirectory
+     *
+     * @return array
+     */
+    public static function getLocalDirStack(?string $localConfigDir, ?string $localConfigSubDir = null): array
+    {
+        $localDirs = [];
+        $localDirsCanonical = [];
+        $currentDir = $localConfigDir;
+        while (!empty($currentDir)) {
+            // check if the directory exists
+            if (!($canonicalizedCurrentDir = realpath($currentDir))) {
+                trigger_error('Configured local directory does not exist: ' . $currentDir, E_USER_WARNING);
+                break;
+            }
+
+            // check if the current directory was already included in the stack to avoid infinite loops
+            if (in_array($canonicalizedCurrentDir, $localDirsCanonical)) {
+                trigger_error('Current directory was already included in the stack: ' . $currentDir, E_USER_WARNING);
+                break;
+            }
+            $localDirsCanonical[] = $canonicalizedCurrentDir;
+
+            // loading DirLocations.ini of currentDir
+            $systemConfigFile = $currentDir . '/DirLocations.ini';
+            $systemConfig = new Config(
+                file_exists($systemConfigFile)
+                    ? parse_ini_file($systemConfigFile, true)
+                    : []
+            );
+
+            // adding directory to the stack
+            array_unshift(
+                $localDirs,
+                [
+                    'directory' => $currentDir,
+                    'defaultConfigSubdir' =>
+                        $systemConfig['Local_Dir']['config_subdir']
+                        ?? $localConfigSubDir
+                        ?? self::DEFAULT_CONFIG_SUBDIR,
+                    'dirLocationConfig' => $systemConfig,
+                ]
+            );
+
+            // If there's a parent, set it as the current directory for the next loop iteration:
+            if (!empty($systemConfig['Parent_Dir']['path'])) {
+                $isRelative = $systemConfig['Parent_Dir']['is_relative_path'] ?? false;
+                $parentDir = $systemConfig['Parent_Dir']['path'];
+                $currentDir = $isRelative ? $currentDir . '/' . $parentDir : $parentDir;
+            } else {
+                $currentDir = '';
+            }
+        }
+        return $localDirs;
     }
 
     /**
@@ -131,10 +240,84 @@ class PathResolver
         foreach ($this->localConfigDirStack as $localDirSpec) {
             $configLocation = $this->getConfigLocationFromSpec($configName, $localDirSpec, $path);
             if ($configLocation !== null) {
+                $configLocation->setDirLocationsParent($currentLocation);
                 $currentLocation = $configLocation;
             }
         }
         return $currentLocation;
+    }
+
+    /**
+     * Get configuration location on a specific path if present.
+     *
+     * @param string $path Path
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getConfigLocationOnPath(string $path): ?ConfigLocationInterface
+    {
+        if (is_dir($path)) {
+            return new ConfigDirectory($path);
+        } elseif (file_exists($path)) {
+            return new ConfigFile($path);
+        }
+        return null;
+    }
+
+    /**
+     * Get all configuration locations in a specific path.
+     *
+     * @param string $path Path of the directory to scan
+     *
+     * @return ConfigLocationInterface[]
+     */
+    public function getConfigLocationsInPath(string $path): array
+    {
+        $path = realpath($path);
+        if (array_key_exists($path, $this->configLocationCache)) {
+            return $this->configLocationCache[$path];
+        }
+        $dirContent = is_dir($path) ? scandir($path) : [];
+        $result = [];
+        foreach ($dirContent as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+            $itemPath = $path . DIRECTORY_SEPARATOR . $item;
+            $configLocation = $this->getConfigLocationOnPath($itemPath);
+            // ignore locations without a matching handler
+            if ($configLocation === null || !$this->configHandlerManager->hasForLocation($configLocation)) {
+                continue;
+            }
+            $result[] = $configLocation;
+        }
+        $this->configLocationCache[$path] = $result;
+        return $result;
+    }
+
+    /**
+     * Get a matching configuration location based on a config name from a directory if present.
+     *
+     * @param string $path       Path of the directory to scan
+     * @param string $configName Configuration name
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getMatchingConfigLocation(string $path, string $configName): ?ConfigLocationInterface
+    {
+        $configLocations = $this->getConfigLocationsInPath($path);
+        $configNameMatch = null;
+        foreach ($configLocations as $configLocation) {
+            // exact matches are preferred
+            if ($configLocation->getFileName() === $configName) {
+                return $configLocation;
+            }
+            // fallback if there is no exact match
+            if ($configLocation->getConfigName() === $configName) {
+                $configNameMatch = $configLocation;
+            }
+        }
+        return $configNameMatch;
     }
 
     /**
@@ -171,15 +354,17 @@ class PathResolver
         ?string $path = null,
         bool $force = false
     ): ?string {
-        $configLocation = $this->getLocalConfigLocation($filename, $path);
-        if ($configLocation !== null) {
-            return $configLocation->getPath();
+        $fallbackResult = null;
+        foreach (array_reverse($this->localConfigDirStack) as $localDirSpec) {
+            $configPath = $this->buildPath($localDirSpec, $path, $filename);
+            if (file_exists($configPath) || is_dir($configPath)) {
+                return $configPath;
+            }
+            if ($force && null === $fallbackResult) {
+                $fallbackResult = $configPath;
+            }
         }
-        if ($force) {
-            $localDir = end($this->localConfigDirStack);
-            return $this->buildPath($localDir, $path, $filename);
-        }
-        return null;
+        return $fallbackResult;
     }
 
     /**
