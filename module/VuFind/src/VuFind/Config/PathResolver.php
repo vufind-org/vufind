@@ -157,6 +157,7 @@ class PathResolver
     public static function getLocalDirStack(?string $localConfigDir, ?string $localConfigSubDir = null): array
     {
         $localDirs = [];
+        $localDirsCanonical = [];
         $currentDir = $localConfigDir;
         while (!empty($currentDir)) {
             // check if the directory exists
@@ -164,13 +165,13 @@ class PathResolver
                 trigger_error('Configured local directory does not exist: ' . $currentDir, E_USER_WARNING);
                 break;
             }
-            $currentDir = $canonicalizedCurrentDir;
 
             // check if the current directory was already included in the stack to avoid infinite loops
-            if (in_array($currentDir, array_column($localDirs, 'directory'))) {
+            if (in_array($canonicalizedCurrentDir, $localDirsCanonical)) {
                 trigger_error('Current directory was already included in the stack: ' . $currentDir, E_USER_WARNING);
                 break;
             }
+            $localDirsCanonical[] = $canonicalizedCurrentDir;
 
             // loading DirLocations.ini of currentDir
             $systemConfigFile = $currentDir . '/DirLocations.ini';

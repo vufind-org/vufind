@@ -117,7 +117,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
             [
                 // A file that exists in the secondary path as well as base path:
                 'facets.ini',
-                'secondary/config/custom/facets.ini',
+                'primary/../secondary/config/custom/facets.ini',
             ],
             [
                 // A file that exists only in the base path:
