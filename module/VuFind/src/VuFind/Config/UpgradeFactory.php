@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Upgrade controller factory.
+ * Factory for Upgrade.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Hebis Verbundzentrale 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Config
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Config;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Upgrade;
 
 /**
- * Upgrade controller factory.
+ * Factory for Upgrade.
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Config
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class UpgradeControllerFactory extends AbstractBaseFactory
+class UpgradeFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,15 +68,9 @@ class UpgradeControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
-        $session = new \Laminas\Session\Container(
-            'upgrade',
-            $container->get(\Laminas\Session\SessionManager::class)
-        );
-        $configUpgrader = $container->get(Upgrade::class);
-        return $this->applyPermissions(
-            $container,
-            new $requestedName($container, $cookieManager, $session, $configUpgrader)
+        return new $requestedName(
+            $container->get(PathResolver::class),
+            $container->get(ConfigManager::class),
         );
     }
 }
