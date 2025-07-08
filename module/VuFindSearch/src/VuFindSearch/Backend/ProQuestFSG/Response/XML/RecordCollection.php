@@ -52,6 +52,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $response;
 
     /**
+     * Facet fields.
+     *
+     * @var array
+     */
+    protected $facetFields = null;
+
+    /**
      * Constructor.
      *
      * @param array $response ProQuestFSG response
@@ -82,6 +89,19 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return $this->response['facets'];
+        if ($this->facetFields === null) {
+            $this->facetFields = [];
+            $facets = $this->response['facets'] ?? [];
+            foreach ($facets as $facetName => $facetValues) {
+                usort($facetValues, fn ($a, $b) => ($a['count'] ?? 0) < ($b['count'] ?? 0));
+                $values = [];
+                foreach ($facetValues as $facetValue) {
+                    $facetValueName = "{$facetValue['code']}|{$facetValue['name']}";
+                    $values[$facetValueName] = $facetValue['count'];
+                }
+                $this->facetFields[$facetName] = $values;
+            }
+        }
+        return $this->facetFields;
     }
 }

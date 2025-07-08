@@ -42,7 +42,7 @@ use VuFind\Recommend\ExpandFacets;
  */
 class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test getEmptyResults()

@@ -275,7 +275,6 @@ class Mailer implements
             $from = new Address($this->fromAddressOverride, $name);
         }
 
-        // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
             if ($body instanceof Email) {
@@ -318,7 +317,8 @@ class Mailer implements
                 file_put_contents($logFile, $data, FILE_APPEND);
             }
         } catch (\Exception $e) {
-            $this->logError($e->getMessage());
+            $this->logError((string)$e);
+            // Convert all exceptions thrown by mailer into MailException objects:
             throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN, $e);
         }
     }

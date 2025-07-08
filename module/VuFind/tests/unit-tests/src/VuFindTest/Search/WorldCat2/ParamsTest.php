@@ -44,7 +44,7 @@ use VuFind\Search\WorldCat2\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test that appropriate default backend parameters are created.

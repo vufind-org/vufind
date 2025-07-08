@@ -174,4 +174,50 @@ class Comments extends Gateway implements DbServiceAwareInterface
         $result = $statement->execute();
         return (array)$result->current();
     }
+
+    /**
+     * Get a paginated result of all comments made by the user.
+     *
+     * @param int    $userId User ID
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return \Laminas\Paginator\Paginator
+     */
+    public function getCommentsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort
+    ): \Laminas\Paginator\Paginator {
+        $commentSelect = new Select();
+        $commentSelect->from('comments')
+            ->where->equalTo('comments.user_id', $userId);
+        $commentSelect->columns([
+            'resource_id',
+            'id',
+            'comment',
+            'user_id',
+            'created',
+        ])
+        ->join(
+            ['re' => 'resource'],
+            'comments.resource_id = re.id',
+            ['record_id', 'source'],
+            Select::JOIN_LEFT
+        );
+        $order = $sort ? $sort : 'created DESC';
+        $commentSelect->order($order);
+        if ($page > 0) {
+            $commentSelect->offset($page);
+        }
+        $commentSelect->limit($limit);
+
+        $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($commentSelect, $this->getSql());
+        $paginator = new \Laminas\Paginator\Paginator($adapter);
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($page);
+        return $paginator;
+    }
 }

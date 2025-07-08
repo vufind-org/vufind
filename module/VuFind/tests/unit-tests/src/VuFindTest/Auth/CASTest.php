@@ -130,16 +130,16 @@ class CASTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test logout().
+     * Test getLogoutRedirectUrl().
      *
      * @return void
      */
-    public function testLogout(): void
+    public function testGetLogoutRedirectUrl(): void
     {
         $cas = $this->getAuthObject();
         $this->assertEquals(
             'http://cas/logout?service=http%3A%2F%2Ffoo%2Fbar',
-            $cas->logout('http://foo/bar')
+            $cas->getLogoutRedirectUrl('http://foo/bar')
         );
     }
 

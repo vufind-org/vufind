@@ -108,7 +108,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
     /**
      * Max limit of search results in API response (default 100);
-     * Applies to searches not using resumptionToken.
+     * Applies to record requests and searches not using resumptionToken.
      *
      * @var int
      */
@@ -267,6 +267,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         $results = [];
         try {
             if (is_array($request['id'])) {
+                if (count($request['id']) > $this->maxLimit) {
+                    return $this->output([], self::STATUS_ERROR, 400, "Record limit ($this->maxLimit) exceeded");
+                }
                 $results = $loader->loadBatchForSource(
                     $request['id'],
                     $this->searchClassId
