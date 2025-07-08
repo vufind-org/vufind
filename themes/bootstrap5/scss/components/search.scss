@@ -747,6 +747,11 @@ header .container.navbar {
     height: auto !important;
   }
 }
+@include color-mode(dark, true) {
+  .top-title {
+    color: #fff;
+  }
+}
 
 /* ------ CURRENT FILTERS ------ */
 .active-filters {

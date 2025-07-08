@@ -1,0 +1,25 @@
+/* Override of built-in color mode, to output both types */
+
+@mixin color-mode($mode: light, $root: false) {
+  // Generally ignore $color-mode-type and output handlers for both types.
+  // Handle media-query $color-mode-type
+  @if $root == true {
+    @media (prefers-color-scheme: $mode) {
+      :root:not([data-bs-theme]) {
+        @content;
+      }
+    }
+  } @else {
+    // Except that for non-root elements, only output the media-query for its own type
+    // And don't use non-root media queries for our customized dark theme
+    @if $color-mode-type == "media-query" {
+      @media (prefers-color-scheme: $mode) {
+        @content;
+      }
+    }
+  }
+  // And handle data $color-mode-type
+  [data-bs-theme="#{$mode}"] {
+    @content;
+  }
+}

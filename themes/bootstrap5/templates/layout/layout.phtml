@@ -19,7 +19,9 @@
     $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', []);
   }
 ?>
-<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+<html
+<?php /* data-bs-theme="dark" */ ?>
+lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
