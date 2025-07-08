@@ -19,12 +19,23 @@
     $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', []);
   }
 ?>
+<?php
+  $colorSchemePreference = null;
+  // $colorSchemePreference = "dark";
+?>
 <html
-<?php /* data-bs-theme="dark" */ ?>
+<?php if ($colorSchemePreference): ?>
+  data-bs-theme="<?=$colorSchemePreference?>"
+<?php endif; ?>
 lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <?php if ('dark' == $colorSchemePreference): ?>
+      <meta name="color-scheme" data-bs-theme="dark light">
+    <?php elseif ('light' == $colorSchemePreference): ?>
+      <meta name="color-scheme" data-bs-theme="light dark">
+    <?php endif; ?>
     <?=$this->headMeta()?>
     <?=$this->googleTagManager()->getHeadCode()?>
 
