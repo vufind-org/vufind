@@ -28,6 +28,8 @@ RUN set -e; \
         docker-php-ext-install -j$(nproc) mysqli; \
     docker-php-ext-configure zip; \
         docker-php-ext-install -j$(nproc) zip; \
+    docker-php-ext-configure sockets; \
+        docker-php-ext-install -j$(nproc) sockets; \
     docker-php-ext-configure xsl; \
         docker-php-ext-install -j$(nproc) xsl
 
