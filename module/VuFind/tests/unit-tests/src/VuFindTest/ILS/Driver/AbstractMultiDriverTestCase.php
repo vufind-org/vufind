@@ -144,9 +144,8 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     public function testLogging()
     {
-        $testHandler = new TestHandler();
-        $logger = new Logger('test', [$testHandler]);
-        $logger->addWriter($writer);
+        $testHandler = new \Monolog\Handler\TestHandler();
+        $logger = new \Monolog\Logger('test', [$testHandler]);
 
         $driver = $this->initDriver(
             [
@@ -163,7 +162,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
             $records[0]['message']
         );
 
-        return ['driver' => $driver, 'writer' => $writer];
+        return ['driver' => $driver, 'writer' => $testHandler];
     }
 
     /**

@@ -81,7 +81,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $this->assertEquals(
             'VuFind\ILS\Driver\MultiBackend: '
             . "Could not find local id in 'bad'",
-            $objs['writer']->events[1]['message']
+            $objs['writer']->getRecords()[1]['message']
         );
     }
 

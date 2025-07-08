@@ -69,6 +69,7 @@ class Logger implements LoggerInterface
     protected MonologLogger $monologLogger;
 
     protected const LEVEL_MAP = [
+        'crit'       => LogLevel::CRITICAL,
         'err'       => LogLevel::ERROR,
         'warn'      => LogLevel::WARNING,
     ];
@@ -257,7 +258,7 @@ class Logger implements LoggerInterface
 
         if (is_array($message)) {
             $context['vufind_log_details'] = $message;
-            $mainMonologMessage = 'Exception/Detailed log. See context for levels.'; // Generic main message
+            $mainMonologMessage = 'Exception/Detailed log. See context for levels.';
         } else {
             $mainMonologMessage = $message;
         }

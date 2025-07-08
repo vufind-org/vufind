@@ -92,10 +92,10 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
         $mockIpReader->expects($this->once())->method('getUserIp')
             ->will($this->returnValue('1.2.3.4'));
         $logger = $this->getMockBuilder(\VuFind\Log\Logger::class)
-            ->setConstructorArgs([$mockIpReader])
+            ->setConstructorArgs([$mockIpReader, new \Monolog\Logger('test')])
             ->onlyMethods(['log'])
             ->getMock();
-        $logger->expects($this->once())->method('log')->with($this->equalTo(Logger::CRIT), $this->callback($callback));
+        $logger->expects($this->once())->method('log')->with($this->equalTo(\Psr\Log\LogLevel::CRITICAL), $this->callback($callback));
         try {
             throw new \Exception('test');
         } catch (\Exception $e) {
