@@ -1,5 +1,32 @@
 <?php
 
+/**
+ * Summon Search API Interface (Psr implementation)
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Search
+ * @author   Sambhav Pokharel <sambhavpokharel@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+
 namespace VuFindSearch\Backend\Summon;
 
 use GuzzleHttp\Client as HttpClient;
@@ -7,25 +34,66 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use SerialsSolutions_Summon_Exception;
 
+use function is_object;
+
 /**
- * PSR-compliant port of VuFindSearch\Backend\Summon\PsrConnector
+ * PSR-compliant port of SerialsSolutions\Summon\Laminas connector
+ *
+ * @category VuFind
+ * @package  Search
+ * @author   Sambhav Pokharel <sambhavpokharel@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org
  */
 class PsrConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareInterface
 {
+    /**
+     * HTTP client instance
+     *
+     * @var HttpClient
+     */
     protected $client;
+
+    /**
+     * Logger instance.
+     *
+     * @var LoggerInterface|false
+     */
     protected $logger = false;
 
-    public function __construct($apiId, $apiKey, $options = array(), $client = null)
+    /**
+     * Constructor.
+     *
+     * @param string          $apiId   Summon API ID
+     * @param string          $apiKey  Summon API Key
+     * @param array           $options Options for the parent constructor
+     * @param HttpClient|null $client  Optional HTTP client to use; defaults to GuzzleHttp\Client
+     */
+    public function __construct($apiId, $apiKey, $options = [], $client = null)
     {
         parent::__construct($apiId, $apiKey, $options);
         $this->client = is_object($client) ? $client : new HttpClient();
     }
 
+    /**
+     * Sets the logger instance.
+     *
+     * @param LoggerInterface $logger The logger instance to set.
+     *
+     * @return void
+     */
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
 
+    /**
+     * Prints a debug message if debug is enabled.
+     *
+     * @param string $msg The message to debug.
+     *
+     * @return void
+     */
     protected function debugPrint($msg)
     {
         if ($this->logger) {
@@ -35,11 +103,29 @@ class PsrConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareI
         }
     }
 
+    /**
+     * Handle a fatal error.
+     *
+     * @param SerialsSolutions_Summon_Exception $e Exception to process.
+     *
+     * @return void
+     */
     public function handleFatalError($e)
     {
         throw $e;
     }
 
+    /**
+     * Perform an HTTP request.
+     *
+     * @param string $baseUrl     Base URL for request
+     * @param string $method      HTTP method for request
+     * @param string $queryString Query string to append to URL
+     * @param array  $headers     HTTP headers to send
+     *
+     * @throws SerialsSolutions_Summon_Exception
+     * @return string             HTTP response body
+     */
     protected function httpRequest($baseUrl, $method, $queryString, $headers)
     {
         $this->debugPrint("{$method}: {$baseUrl}?{$queryString}");
