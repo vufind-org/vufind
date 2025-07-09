@@ -101,4 +101,32 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
         $logic = $this->getTitleHoldsLogic(config: $configArray);
         $this->assertEquals($expectedList, $this->getProperty($logic, 'hideHoldings'));
     }
+
+    /**
+     * Test that title holds can be disabled.
+     *
+     * @return void
+     */
+    public function testDisabledMode(): void
+    {
+        $catalog = $this->createMock(Connection::class);
+        $catalog->expects($this->once())->method('getTitleHoldsMode')->willReturn('disabled');
+        $logic = $this->getTitleHoldsLogic(ils: $catalog);
+        $this->assertFalse($logic->getHold('foo'));
+    }
+
+    /**
+     * Test a failed catalog login
+     *
+     * @return void
+     */
+    public function testFailedCatalogLogin(): void
+    {
+        $catalog = $this->createMock(Connection::class);
+        $catalog->expects($this->once())->method('getTitleHoldsMode')->willReturn('driver');
+        $ilsAuth = $this->createMock(ILSAuthenticator::class);
+        $ilsAuth->expects($this->once())->method('storedCatalogLogin')->willReturn(false);
+        $logic = $this->getTitleHoldsLogic(ils: $catalog, ilsAuth: $ilsAuth);
+        $this->assertFalse($logic->getHold('foo'));
+    }
 }
