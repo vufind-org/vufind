@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2023-2024.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -1386,7 +1386,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $multiselection = $multiselection !== 'false';
 
-        $page = $this->performSearch('building:weird_ids.mrc');
+        $page = $this->performSearch('building:weird_ids.mrc OR building:really_old.xml');
         $sidebar = $this->findCss($page, '.sidebar');
         if ($multiselection) {
             $this->activateMultiFilterSelection($sidebar);
@@ -1404,31 +1404,48 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $elem->click();
         }
 
-        $this->applyRangeFacet($page, 'publishDate', '2000', '', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '2000', '', $multiselection);
 
         // Verify that we have two filters:
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - *']);
 
         // Change date range filter and check results:
-        $this->applyRangeFacet($page, 'publishDate', null, '2001', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', null, '2001', $multiselection);
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - 2001']);
 
         // Change date range filter again and check results:
-        $this->applyRangeFacet($page, 'publishDate', '2001', '2007', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '2001', '2007', $multiselection);
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
 
         // Remove dates in range filter and check results:
-        $this->applyRangeFacet($page, 'publishDate', '', '', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '', '', $multiselection);
         $this->assertAppliedFilters($page, [':Books']);
 
         // Add date range filter again and check results:
-        $this->applyRangeFacet($page, 'publishDate', '2001', '2007', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '2001', '2007', $multiselection);
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
+        $this->assertResultTitles(
+            $page,
+            8,
+            '<HTML> The Basics',
+            'Questions about Percents'
+        );
+
+        // Change date range filter to include old records and check results:
+        $this->applyRangeFacet($page, 'publishDateRange', '-500', '2007', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:-500 - 2007']);
+        $this->assertResultTitles(
+            $page,
+            10,
+            first: 'Pyrgi Gold Tablets',
+            second: 'Book of Kells',
+            last: 'Questions about Percents'
+        );
 
         if ($multiselection) {
             // Apply another facet and change date range at the same time:
             $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
-            $this->applyRangeFacet($page, 'publishDate', '2001', '2010', $multiselection);
+            $this->applyRangeFacet($page, 'publishDateRange', '2001', '2010', $multiselection);
             $this->assertAppliedFilters(
                 $page,
                 [':Books', 'Institution:MyInstitution', 'Year of Publication:2001 - 2010']
@@ -1437,7 +1454,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             // Remove all filters and check results:
             $this->clickCss($checkboxFilters, 'a.checkbox-filter');
             $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
-            $this->applyRangeFacet($page, 'publishDate', '', '', true);
+            $this->applyRangeFacet($page, 'publishDateRange', '', '', true);
             $this->assertNoFilters($page);
             $this->deactivateMultiFilterSelection($sidebar);
         }
