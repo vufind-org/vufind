@@ -1,65 +1,30 @@
 <?php
-
-/**
- * Office 365 Log Writer Test Class
- *
- * PHP version 8
- *
- * Copyright (C) Villanova University 2020.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @category VuFind
- * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
- */
-
-namespace VuFindTest\Log\Writer;
+namespace VuFindTest\Log\Handler;
 
 use Laminas\Http\Client;
-use Laminas\Log\Formatter\Simple;
-use VuFind\Log\Writer\Office365;
+use Monolog\Level;
+use Monolog\LogRecord;
+use VuFind\Log\Handler\Office365Handler;
 
-/**
- * Office 365 Log Writer Test Class
- *
- * @category VuFind
- * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
- */
 class Office365Test extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Test writer functionality
-     *
-     * @return void
-     */
-    public function testWriter(): void
+    public function testHandler(): void
     {
-        // Set up data and expectations:
         $fakeUri = 'http://fake';
-        $expectedBody = '{"@context":"https:\/\/schema.org\/extensions",'
-            . '"@type":"MessageCard","themeColor":"0072C6",'
-            . '"title":"Test Title","text":"Formatted message."}';
-        $message = ['message' => 'test', 'priority' => 1];
+        $expectedBody = '{"@context":"https:\/\/schema.org\/extensions",' .
+            '"@type":"MessageCard","themeColor":"0072C6",' .
+            '"title":"Test Title","text":"[2025-07-09T14:55:20+00:00] test.INFO: test [] []\n"}';
+        
         $options = ['title' => 'Test Title'];
-
-        // Set up mock client:
+        $logRecord = new LogRecord(
+            datetime: new \DateTimeImmutable('2025-07-09T14:55:20+00:00'),
+            channel: 'test',
+            level: Level::Info,
+            message: 'test',
+            context: [],
+            extra: []
+        );
+        
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()->getMock();
         $client->expects($this->once())->method('setUri')
@@ -71,18 +36,8 @@ class Office365Test extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($expectedBody));
         $client->expects($this->once())->method('send');
-
-        // Set up mock formatter:
-        $formatter = $this->getMockBuilder(Simple::class)
-            ->disableOriginalConstructor()->getMock();
-        $formatter->expects($this->once())->method('format')
-            ->with($this->equalTo($message))
-            ->will($this->returnValue('Formatted message.'));
-
-        // Run the test!
-        $writer = new Office365($fakeUri, $client, $options);
-        $writer->setContentType('application/json');
-        $writer->setFormatter($formatter);
-        $writer->write($message);
+        
+        $handler = new Office365Handler($fakeUri, $client, $options);
+        $handler->handle($logRecord);
     }
 }

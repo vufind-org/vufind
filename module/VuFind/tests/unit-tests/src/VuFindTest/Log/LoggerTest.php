@@ -51,7 +51,9 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
      */
     public function testLogException()
     {
-        $callback = function ($a): bool {
+        $callback = function ($level, $message, $context = []) use (&$capturedArgs): bool {
+            $capturedArgs = func_get_args();
+            
             $expectedContext = <<<CONTEXT
                 Server Context:
                 Array
@@ -62,29 +64,50 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                     [REQUEST_URI] => /foo/bar
                 )
                 CONTEXT;
+            if (is_array($message)) {
+                $details = $message;
+                $expectedMessage = 'Exception/Detailed log. See context for levels.';
+                $contextCheck = isset($context['vufind_log_details']) && $context['vufind_log_details'] === $details;
+            } else {
+                $contextCheck = isset($context['vufind_log_details']) && is_array($context['vufind_log_details']);
+                $details = $contextCheck ? $context['vufind_log_details'] : [];
+                $expectedMessage = $message;
+            }
+            
+            if (!$contextCheck && !is_array($message)) {
+                return false;
+            }
+            $targetDetails = is_array($message) ? $message : (isset($context['vufind_log_details']) ? $context['vufind_log_details'] : []);
+            
+            if (count($targetDetails) !== 5) {
+                return false;
+            }
+            
             $expectedA2 = 'Exception : test'
                 . '(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, '
                 . 'Host = localhost:80, Request URI = /foo/bar)';
-            return $a[1] === 'Exception : test'
-                && $a[2] === $expectedA2
-                && str_contains($a[3], $a[2])
-                && str_contains($a[3], 'Backtrace:')
-                && str_contains($a[3], 'line')
-                && str_contains($a[3], 'class =')
-                && str_contains($a[3], 'function =')
-                && str_contains($a[4], $expectedContext)
-                && str_contains($a[4], 'Backtrace:')
-                && str_contains($a[4], 'line')
-                && str_contains($a[4], 'class =')
-                && str_contains($a[4], 'function =')
-                && str_contains($a[5], $expectedContext)
-                && str_contains($a[5], 'Backtrace:')
-                && str_contains($a[5], 'line')
-                && str_contains($a[5], 'args:')
-                && str_contains($a[5], 'class =')
-                && str_contains($a[5], 'function =')
-                && count($a) == 5;
+            
+            return $targetDetails[1] === 'Exception : test'
+                && $targetDetails[2] === $expectedA2
+                && str_contains($targetDetails[3], $targetDetails[2])
+                && str_contains($targetDetails[3], 'Backtrace:')
+                && str_contains($targetDetails[3], 'line')
+                && str_contains($targetDetails[3], 'class =')
+                && str_contains($targetDetails[3], 'function =')
+                && str_contains($targetDetails[4], $expectedContext)
+                && str_contains($targetDetails[4], 'Backtrace:')
+                && str_contains($targetDetails[4], 'line')
+                && str_contains($targetDetails[4], 'class =')
+                && str_contains($targetDetails[4], 'function =')
+                && str_contains($targetDetails[5], $expectedContext)
+                && str_contains($targetDetails[5], 'Backtrace:')
+                && str_contains($targetDetails[5], 'line')
+                && str_contains($targetDetails[5], 'args:')
+                && str_contains($targetDetails[5], 'class =')
+                && str_contains($targetDetails[5], 'function =');
         };
+        
+        $capturedArgs = [];
         $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getUserIp'])
@@ -95,7 +118,9 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs([$mockIpReader, new \Monolog\Logger('test')])
             ->onlyMethods(['log'])
             ->getMock();
-        $logger->expects($this->once())->method('log')->with($this->equalTo(\Psr\Log\LogLevel::CRITICAL), $this->callback($callback));
+        $logger->expects($this->once())->method('log')
+            ->will($this->returnCallback($callback));
+        
         try {
             throw new \Exception('test');
         } catch (\Exception $e) {

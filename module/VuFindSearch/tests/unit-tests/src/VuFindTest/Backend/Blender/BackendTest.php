@@ -816,13 +816,14 @@ class BackendTest extends TestCase
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
-            ->method('warn')
+            ->method('log')
             ->with(
+                \Psr\Log\LogLevel::WARNING,
                 'VuFindSearch\Backend\Blender\Backend:'
                 . ' Invalid blender_backend filter: Backend Foo not enabled',
                 []
             )
-            ->willReturn(null);
+            ;
         $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }
