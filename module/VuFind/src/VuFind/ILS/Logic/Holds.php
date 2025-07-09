@@ -49,65 +49,19 @@ use function is_array;
 class Holds
 {
     /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
-     * Catalog connection object
-     *
-     * @var ILSConnection
-     */
-    protected $catalog;
-
-    /**
-     * HMAC generator
-     *
-     * @var \VuFind\Crypt\HMAC
-     */
-    protected $hmac;
-
-    /**
-     * VuFind configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Holding locations to hide from display
-     *
-     * @var array
-     */
-    protected $hideHoldings = [];
-
-    /**
      * Constructor
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
-     * @param ILSConnection                 $ils     A catalog connection
+     * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
      * @param \VuFind\Config\Config         $config  VuFind configuration
      */
     public function __construct(
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        ILSConnection $ils,
-        \VuFind\Crypt\HMAC $hmac,
-        \VuFind\Config\Config $config
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        protected ILSConnection $catalog,
+        protected \VuFind\Crypt\HMAC $hmac,
+        protected \VuFind\Config\Config $config
     ) {
-        $this->ilsAuth = $ilsAuth;
-        $this->hmac = $hmac;
-        $this->config = $config;
-
-        if (isset($this->config->Record->hide_holdings)) {
-            foreach ($this->config->Record->hide_holdings as $current) {
-                $this->hideHoldings[] = $current;
-            }
-        }
-
-        $this->catalog = $ils;
     }
 
     /**
@@ -192,9 +146,6 @@ class Holds
      */
     public function getHoldings($id, $ids = null, $options = [])
     {
-        if (!$this->catalog) {
-            return [];
-        }
         // Retrieve stored patron credentials; it is the responsibility of the
         // controller and view to inform the user that these credentials are
         // needed for hold data.
@@ -268,7 +219,7 @@ class Holds
         $holdings = [];
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->getSuppressedLocations());
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
@@ -293,7 +244,7 @@ class Holds
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->getSuppressedLocations());
                 if ($show) {
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
@@ -341,7 +292,7 @@ class Holds
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->getSuppressedLocations());
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
@@ -617,6 +568,6 @@ class Holds
      */
     public function getSuppressedLocations()
     {
-        return $this->hideHoldings;
+        return (array)($this->config?->Record?->hide_holdings?->toArray() ?? []);
     }
 }
