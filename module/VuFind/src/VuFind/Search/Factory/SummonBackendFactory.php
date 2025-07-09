@@ -30,7 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
-use SerialsSolutions\Summon\Laminas as Connector;
+use VuFindSearch\Backend\Summon\PsrConnector as Connector;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\Backend\Summon\QueryBuilder;

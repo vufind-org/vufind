@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
+use VuFindSearch\Backend\Summon\PsrConnector as Connector;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Summon;

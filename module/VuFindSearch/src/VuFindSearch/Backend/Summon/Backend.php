@@ -29,7 +29,7 @@
 
 namespace VuFindSearch\Backend\Summon;
 
-use SerialsSolutions\Summon\Laminas as Connector;
+use VuFindSearch\Backend\Summon\PsrConnector as Connector;
 use SerialsSolutions_Summon_Exception as SummonException;
 use SerialsSolutions_Summon_Query as SummonQuery;
 use VuFind\Exception\RecordMissing as RecordMissingException;
