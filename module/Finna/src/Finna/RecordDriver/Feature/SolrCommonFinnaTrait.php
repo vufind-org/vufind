@@ -257,6 +257,21 @@ trait SolrCommonFinnaTrait
     }
 
     /**
+     * Return the unique identifier of this record within the index;
+     * useful for retrieving additional information (like tags and user
+     * comments) from the external MySQL database.
+     *
+     * @return string Unique identifier.
+     */
+    public function getUniqueID()
+    {
+        if ($this->getExtraDetail('preview_record')) {
+            return '0';
+        }
+        return parent::getUniqueID();
+    }
+
+    /**
      * Get the VuFind configuration.
      *
      * @return \VuFind\Config\Config

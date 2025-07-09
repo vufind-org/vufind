@@ -53,6 +53,8 @@ local/config/finna/*.ini
 local/config/finna/*.yaml
 local/config/finna/*.json
 local/config/finna/*.wsdl
+local/config/finna/*.xsd
+local/config/finna/*.sch
 local/config/vufind/*.ini
 local/config/vufind/*.yaml
 local/config/vufind/*.wsdl

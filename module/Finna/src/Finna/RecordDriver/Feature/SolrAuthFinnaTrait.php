@@ -75,21 +75,6 @@ trait SolrAuthFinnaTrait
     }
 
     /**
-     * Return the unique identifier of this record within the index;
-     * useful for retrieving additional information (like tags and user
-     * comments) from the external MySQL database.
-     *
-     * @return string Unique identifier.
-     */
-    public function getUniqueID()
-    {
-        if (!isset($this->fields['id'])) {
-            throw new \Exception('ID not set!');
-        }
-        return $this->fields['id'];
-    }
-
-    /**
      * Get additional identifiers (isni etc).
      *
      * @return array

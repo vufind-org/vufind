@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,18 +23,22 @@
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
 
 namespace Finna\Controller;
 
+use Finna\Controller\Plugin\Preview;
 use Finna\Form\Form;
+use Laminas\Session\Exception\RuntimeException as SessionRuntimeException;
 use VuFindSearch\ParamBag;
 
 use function count;
 use function in_array;
 use function is_array;
+use function is_object;
 use function is_string;
 
 /**
@@ -43,6 +47,7 @@ use function is_string;
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -50,6 +55,13 @@ class RecordController extends \VuFind\Controller\RecordController
 {
     use FinnaRecordControllerTrait;
     use \Finna\Statistics\ReporterTrait;
+
+    /**
+     * Any preview record validation result
+     *
+     * @var ?int
+     */
+    protected ?int $validationResult = null;
 
     /**
      * Create record feedback form and send feedback to correct recipient.
@@ -102,163 +114,26 @@ class RecordController extends \VuFind\Controller\RecordController
     {
         $result = parent::homeAction();
         $this->triggerStatsRecordView($result->driver ?? null);
-        return $result;
-    }
 
-    /**
-     * Helper for building a route to a record form
-     * (Feedback, Repository library request).
-     *
-     * @param string $id Form id
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
-    protected function getRecordForm($id)
-    {
-        $driver = $this->loadRecord();
-        return $this->redirect()->toRoute(
-            'feedback-form',
-            ['id' => $id],
-            ['query' => [
-                'layout' => $this->getRequest()->getQuery('layout', false),
-                'record_id'
-                    => $driver->getSourceIdentifier() . '|' . $driver->getUniqueID(),
-            ]]
-        );
-    }
-
-    /**
-     * Load normalized record metadata from RecordManager for preview
-     *
-     * @param string $data   Record Metadata
-     * @param string $format Metadata format
-     * @param string $source Data source
-     *
-     * @return array
-     * @throw  \Exception
-     */
-    protected function loadPreviewRecordData($data, $format, $source): array
-    {
-        $config = $this->getConfig();
-        if (empty($config->NormalizationPreview->url)) {
-            throw new \Exception('Normalization preview URL not configured');
-        }
-
-        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
-        $client = $httpService->createClient(
-            $config->NormalizationPreview->url,
-            \Laminas\Http\Request::METHOD_POST
-        );
-        $client->setOptions(['useragent' => 'FinnaRecordPreview VuFind']);
-        $client->setParameterPost(
-            ['data' => $data, 'format' => $format, 'source' => $source]
-        );
-        $response = $client->send();
-        if (!$response->isSuccess()) {
-            if ($response->getStatusCode() === 400) {
-                $this->flashMessenger()->addErrorMessage('Failed to load preview');
-                $result = json_decode($response->getBody(), true);
-                foreach (explode("\n", $result['error_message']) as $msg) {
-                    if ($msg) {
-                        $this->flashMessenger()->addErrorMessage($msg);
-                    }
-                }
-                $metadata = [
-                    'id' => '1',
-                    'record_format' => $format,
-                    'title' => 'Failed to load preview',
-                    'title_short' => 'Failed to load preview',
-                    'title_full' => 'Failed to load preview',
-                    // This works for MARC and other XML loaders too
-                    'fullrecord'
-                        => '<collection><record><leader/></record></collection>',
-                ];
-            } else {
-                throw new \Exception(
-                    'Failed to load preview: ' . $response->getStatusCode() . ' '
-                    . $response->getReasonPhrase()
+        // Add flash messages about any validation issues:
+        if ($this->validationResult) {
+            $msg = Preview::VALIDATION_ERRORS === $this->validationResult
+                ? 'Validation::metadata_errors_html'
+                : 'Validation::metadata_issues_html';
+            try {
+                $this->flashMessenger()->addErrorMessage(
+                    [
+                        'msg' => $msg,
+                        'tokens' => ['%%url%%' => $this->url()->fromRoute('record-validationreport', ['id' => 0])],
+                        'html' => true,
+                    ]
                 );
+            } catch (SessionRuntimeException $e) {
+                // This will fail in tabs etc. where session is immutable
             }
-        } else {
-            $body = $response->getBody();
-            $metadata = json_decode($body, true);
         }
 
-        return $metadata;
-    }
-
-    /**
-     * Load the record requested by the user; note that this is not done in the
-     * init() method since we don't want to perform an expensive search twice
-     * when homeAction() forwards to another method.
-     *
-     * @param ?ParamBag $params Search backend parameters
-     * @param bool      $force  Set to true to force a reload of the record, even if
-     * already loaded (useful if loading a record using different parameters)
-     *
-     * @return AbstractRecordDriver
-     */
-    protected function loadRecord(?ParamBag $params = null, bool $force = false)
-    {
-        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        // 0 = preview record
-        if ($id != '0') {
-            return parent::loadRecord($params, $force);
-        }
-
-        $data = $this->params()->fromPost('data')
-            ?: $this->params()->fromQuery('data');
-        $format = $this->params()->fromPost('format')
-            ?: $this->params()->fromQuery('format');
-        $source = $this->params()->fromPost('source')
-            ?: $this->params()->fromQuery('source');
-
-        $manager
-            = $this->serviceLocator->get(\Laminas\Session\SessionManager::class);
-        $sessionContainer = new \Laminas\Session\Container(
-            'RecordPreview',
-            $manager
-        );
-        if ($data && $format && $source) {
-            $metadata = $this->loadPreviewRecordData($data, $format, $source);
-            $sessionContainer['metadata'] = $metadata;
-        } elseif (null === $data && !empty($sessionContainer['metadata'])) {
-            // Use cached record for tab support:
-            $metadata = $sessionContainer['metadata'];
-        } else {
-            throw new \Exception('Missing parameters');
-        }
-        $recordFactory = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
-        $this->driver = $recordFactory->getSolrRecord($metadata);
-        $locale = $this->serviceLocator->get(\VuFind\I18n\Locale\LocaleSettings::class)->getUserLocale();
-        $this->driver->tryMethod('setPreferredLanguage', [$locale]);
-        return $this->driver;
-    }
-
-    /**
-     * Display a particular tab.
-     *
-     * @param string $tab  Name of tab to display
-     * @param bool   $ajax Are we in AJAX mode?
-     *
-     * @return mixed
-     */
-    protected function showTab($tab, $ajax = false)
-    {
-        // Special case -- handle lightbox login request if login has already been
-        // done
-        if (
-            $this->inLightbox()
-            && $this->params()->fromQuery('catalogLogin', 'false') == 'true'
-            && is_array($this->catalogLogin())
-        ) {
-            $response = $this->getResponse();
-            $response->setStatusCode(205);
-            return $response;
-        }
-
-        return parent::showTab($tab, $ajax);
+        return $result;
     }
 
     /**
@@ -820,77 +695,19 @@ class RecordController extends \VuFind\Controller\RecordController
     }
 
     /**
-     * Action for record preview form.
+     * Action for displaying a record validation report.
      *
      * @return mixed
      */
-    public function previewFormAction()
+    public function validationReportAction()
     {
-        $config = $this->getConfig();
-        if (empty($config->NormalizationPreview->url)) {
-            throw new \Exception('Normalization preview URL not configured');
+        $manager = $this->serviceLocator->get(\Laminas\Session\SessionManager::class);
+        $sessionContainer = new \Laminas\Session\Container('RecordPreview', $manager);
+        if (null === ($validationReport = $sessionContainer->validation_report ?? null)) {
+            $this->flashMessenger()->addErrorMessage('Validation report unavailable');
         }
 
-        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
-        $client = $httpService->createClient(
-            $config->NormalizationPreview->url,
-            \Laminas\Http\Request::METHOD_POST
-        );
-        $client->setOptions(['useragent' => 'FinnaRecordPreview VuFind']);
-        $client->setParameterPost(
-            ['func' => 'get_sources']
-        );
-        $response = $client->send();
-        if (!$response->isSuccess()) {
-            throw new \Exception(
-                'Failed to load source list: ' . $response->getStatusCode() . ' '
-                . $response->getReasonPhrase()
-            );
-        }
-        $body = $response->getBody();
-        $sources = json_decode($body, true);
-        array_walk(
-            $sources,
-            function (&$a) {
-                if ($a['institution'] === '_preview') {
-                    $a['institutionName'] = $this->translate('Generic Preview');
-                } else {
-                    $a['institutionName'] = $this->translate(
-                        '0/' . $a['institution'] . '/',
-                        [],
-                        $a['institution']
-                    );
-                }
-            }
-        );
-        $searchConfig = $this->getConfig('searches');
-        if (!empty($searchConfig->Records->sources)) {
-            foreach (explode(',', $searchConfig->Records->sources) as $priority => $id) {
-                foreach ($sources as &$source) {
-                    if ($id === $source['id']) {
-                        $source['priority'] = $priority;
-                        break;
-                    }
-                }
-                unset($source);
-            }
-        }
-        usort(
-            $sources,
-            function ($a, $b) {
-                $res = strcmp($a['institutionName'], $b['institutionName']);
-                if ($res === 0) {
-                    $res = strcasecmp($a['id'], $b['id']);
-                }
-                return $res;
-            }
-        );
-        $view = new \Laminas\View\Model\ViewModel(
-            [
-                'sources' => $sources,
-            ]
-        );
-        return $view;
+        return $this->createViewModel(compact('validationReport'));
     }
 
     /**
@@ -1043,5 +860,85 @@ class RecordController extends \VuFind\Controller\RecordController
         }
 
         return $response;
+    }
+
+    /**
+     * Helper for building a route to a record form
+     * (Feedback, Repository library request).
+     *
+     * @param string $id Form id
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    protected function getRecordForm($id)
+    {
+        $driver = $this->loadRecord();
+        return $this->redirect()->toRoute(
+            'feedback-form',
+            ['id' => $id],
+            ['query' => [
+                'layout' => $this->getRequest()->getQuery('layout', false),
+                'record_id'
+                    => $driver->getSourceIdentifier() . '|' . $driver->getUniqueID(),
+            ]]
+        );
+    }
+
+    /**
+     * Load the record requested by the user; note that this is not done in the
+     * init() method since we don't want to perform an expensive search twice
+     * when homeAction() forwards to another method.
+     *
+     * @param ?ParamBag $params Search backend parameters
+     * @param bool      $force  Set to true to force a reload of the record, even if
+     * already loaded (useful if loading a record using different parameters)
+     *
+     * @return AbstractRecordDriver
+     */
+    protected function loadRecord(?ParamBag $params = null, bool $force = false)
+    {
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        // 0 = preview record
+        if ($id != '0') {
+            return parent::loadRecord($params, $force);
+        }
+
+        if (!$force && is_object($this->driver)) {
+            return $this->driver;
+        }
+
+        $result = $this->plugin('preview')->loadAndValidatePreviewRecord();
+        $this->driver = $result['driver'];
+        $this->validationResult = $result['validation_result'];
+        // Add flash messages about any load issues:
+        foreach ($result['errors'] as $error) {
+            $this->flashMessenger()->addErrorMessage($error);
+        }
+        return $this->driver;
+    }
+
+    /**
+     * Display a particular tab.
+     *
+     * @param string $tab  Name of tab to display
+     * @param bool   $ajax Are we in AJAX mode?
+     *
+     * @return mixed
+     */
+    protected function showTab($tab, $ajax = false)
+    {
+        // Special case -- handle lightbox login request if login has already been
+        // done
+        if (
+            $this->inLightbox()
+            && $this->params()->fromQuery('catalogLogin', 'false') == 'true'
+            && is_array($this->catalogLogin())
+        ) {
+            $response = $this->getResponse();
+            $response->setStatusCode(205);
+            return $response;
+        }
+
+        return parent::showTab($tab, $ajax);
     }
 }

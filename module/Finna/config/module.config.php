@@ -197,13 +197,33 @@ $config = [
                     ],
                 ],
             ],
-            'record-preview' => [
+            'recordpreview' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/RecordPreview',
                     'defaults' => [
-                        'controller' => 'Record',
+                        'controller' => 'RecordPreview',
                         'action'     => 'PreviewForm',
+                    ],
+                ],
+            ],
+            'recordpreview-validate' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/RecordPreview/Validate',
+                    'defaults' => [
+                        'controller' => 'RecordPreview',
+                        'action'     => 'Validate',
+                    ],
+                ],
+            ],
+            'recordpreview-validationreport' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/RecordPreview/ValidationReport',
+                    'defaults' => [
+                        'controller' => 'RecordPreview',
+                        'action'     => 'ValidationReport',
                     ],
                 ],
             ],
@@ -266,6 +286,7 @@ $config = [
             \Finna\Controller\OAuth2Controller::class => \VuFind\Controller\OAuth2ControllerFactory::class,
             'Finna\Controller\OrganisationInfoController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\PCIController' => 'VuFind\Controller\AbstractBaseFactory',
+            \Finna\Controller\RecordPreviewController::class => \VuFind\Controller\AbstractBaseFactory::class,
             'Finna\Controller\PrimoController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\PrimorecordController' => 'Finna\Controller\AbstractBaseFactory',
             'Finna\Controller\RecordController' => 'Finna\Controller\AbstractBaseWithConfigFactory',
@@ -300,6 +321,8 @@ $config = [
             'MetaLibRecord' => 'Finna\Controller\MetaLibrecordController',
             'metalibrecord' => 'Finna\Controller\MetaLibrecordController',
             'OrganisationInfo' => 'Finna\Controller\OrganisationInfoController',
+            'RecordPreview' => \Finna\Controller\RecordPreviewController::class,
+            'recordPreview' => \Finna\Controller\RecordPreviewController::class,
             'ReservationList' => \Finna\Controller\ReservationListController::class,
             'reservationList' => \Finna\Controller\ReservationListController::class,
             'reservationlist' => \Finna\Controller\ReservationListController::class,
@@ -335,6 +358,10 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'VuFind\Controller\Plugin\Captcha' => 'Finna\Controller\Plugin\CaptchaFactory',
+            \Finna\Controller\Plugin\Preview::class => \Finna\Controller\Plugin\PreviewFactory::class,
+        ],
+        'aliases' => [
+            'preview' => \Finna\Controller\Plugin\Preview::class,
         ],
     ],
     'service_manager' => [
@@ -354,6 +381,7 @@ $config = [
             'Finna\Cover\Loader' => 'VuFind\Cover\LoaderFactory',
             'Finna\Crypt\SecretCalculator' => 'VuFind\Crypt\SecretCalculatorFactory',
             'Finna\Export' => 'VuFind\ExportFactory',
+            'Finna\Favorites\FavoritesService' => 'Finna\Favorites\FavoritesServiceFactory',
             'Finna\File\Loader' => 'Finna\File\LoaderFactory',
             'Finna\Feed\Feed' => 'Finna\Feed\FeedFactory',
             'Finna\Feed\LinkedEvents' => 'Finna\Feed\LinkedEventsFactory',
@@ -383,7 +411,7 @@ $config = [
             \Finna\ReservationList\Form\Form::class => \Finna\Form\FormFactory::class,
             \Finna\ReservationList\ReservationListService::class => \Finna\ReservationList\ReservationListServiceFactory::class,
             \Finna\ReservationList\Handler\PluginManager::class => \VuFind\ServiceManager\AbstractPluginManagerFactory::class,
-            'Finna\Favorites\FavoritesService' => 'Finna\Favorites\FavoritesServiceFactory',
+            \Finna\Util\CachingXmlEntityLoader::class => \Finna\Util\CachingXmlEntityLoaderFactory::class,
             'Finna\View\CustomElement\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Video\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Video\Video' => 'Finna\Video\VideoFactory',
@@ -1121,7 +1149,7 @@ $recordRoutes = [
 
 // Define non tab record actions
 $nonTabRecordActions = [
-    'Feedback', 'RepositoryLibraryRequest', 'ArchiveRequest',
+    'Feedback', 'RepositoryLibraryRequest', 'ArchiveRequest', 'ValidationReport',
 ];
 
 // Define dynamic routes -- controller => [route name => action]

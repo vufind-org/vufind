@@ -1,8 +1,11 @@
 <!-- START of: finna - record/previewform.phtml -->
+<?php
+  $this->headTitle($this->translate('Preview'));
+?>
 <h2><?= $this->transEsc('Preview'); ?></h2>
 
 <?=$this->flashmessages()?>
-<form class="form preview-record-form" method="post" name="previewRecord" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl('0', 'Preview')) ?>" target="_blank">
+<form class="form preview-record-form" method="post" name="previewRecord" target="_blank">
   <div class="form-group">
     <label for="data" class="form-label"><?=$this->transEsc('Metadata')?>:</label>
     <div>

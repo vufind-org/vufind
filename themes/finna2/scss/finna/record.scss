@@ -1268,12 +1268,29 @@ finna-model-viewer .object-editor {
   }
 }
 
-
 /* Labels */
 .record .label {
   margin-bottom: 0.5rem;
 
   &.label-retraction {
     @extend .label-warning;
+  }
+}
+
+/* Validation report */
+.validation-report-xml {
+  white-space: pre-line;
+
+  .line {
+    display: inline-flex;
+    gap: 0.75rem;
+
+    .line__num {
+      min-width: 2rem;
+    }
+
+    .line__content {
+      white-space: pre-wrap;
+    }
   }
 }

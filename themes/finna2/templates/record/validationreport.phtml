@@ -1,0 +1,83 @@
+<!-- START of: finna - record/validationreport.phtml -->
+<?php
+  $this->headTitle($this->translate('Validation::report_title'));
+
+  $list = function (array $items): string {
+    return '<ul class="list-bullets">'
+      . implode(
+          '',
+          array_map(
+              function ($s) {
+                if (preg_match('/^\[(\d+)\] (.+)/', $s, $matches)) {
+                  $s = "<a href=\"#l$matches[1]\">[$matches[1]]</a> " . $this->escapeHtml($matches[2]);
+                } else {
+                  $s = $this->escapeHtml($s);
+                }
+                return "<li>$s</li>";
+              },
+              $items
+          )
+      )
+      . '</ul>';
+  };
+?>
+<h2><?=$this->transEsc('Validation::report_title')?></h2>
+
+<?=$this->flashmessages()?>
+
+<?=$this->translate('Validation::report_description_html', ['%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))])?>
+
+<?php if ($errors = $this->validationReport['errors'] ?? null): ?>
+  <h3><?=$this->escapeHtml('Errors') // Report contents always in English! ?></h3>
+  <?=$list($errors)?>
+<?php endif; ?>
+
+<?php if ($warnings = $this->validationReport['warnings'] ?? null): ?>
+  <h3><?=$this->escapeHtml('Warnings') // Report contents always in English! ?></h3>
+  <?=$list($warnings)?>
+<?php endif; ?>
+
+<?php if ($recommendations = $this->validationReport['recommendations'] ?? null): ?>
+  <h3><?=$this->escapeHtml('Recommendations') // Report contents always in English! ?></h3>
+  <?=$list($recommendations)?>
+<?php endif; ?>
+
+<?php
+  $rawFieldData = $this->driver->getRawData();
+  $formattedXml = null;
+  if ($xml = $rawFieldData['fullrecord'] ?? null) {
+    $dom = new DOMDocument('1.0');
+    $dom->preserveWhiteSpace = false;
+    $dom->formatOutput = true;
+    if ($dom->loadXML($xml)) {
+      $formattedXml = $dom->saveXML();
+    }
+  }
+  if ($formattedXml):
+?>
+  <h2><?=$this->transEsc('Metadata')?></h2>
+
+  <pre id="validation-data" class="hljs validation-report-xml">
+    <?php foreach (explode("\n", $formattedXml) as $lineNo => $line): ?>
+      <div class="line">
+        <div class="line__num"><?=$lineNo + 1 . ':'?></div><div class="line__content" id="l<?=$lineNo + 1?>"><?=$this->escapeHtml($line)?></div>
+      </div>
+    <?php endforeach; ?>
+  </pre>
+  <?php
+    $script = <<<JS
+          const recordData = document.getElementById('validation-data');
+          if (recordData) {
+            finna.scriptLoader.load(
+              {'vendor-highlight': 'vendor/highlight.pack.js'},
+              () => {
+                hljs.highlightBlock(recordData);
+              }
+            );
+          }
+        JS;
+    echo $this->assetManager()->outputInlineScriptString($script);
+  ?>
+<?php endif; ?>
+
+<!-- END of: finna - record/validationreport.phtml -->

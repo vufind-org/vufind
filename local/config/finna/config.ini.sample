@@ -1735,6 +1735,11 @@ custom_dimensions[Language] = 16
 [NormalizationPreview]
 ; Backend URL
 url = http://finna-be-1.csc.fi/preview
+; Validation settings. Files are searched in the configuration directory stack.
+; XML schema
+validation_xsd[lido] = "lido-v1.1-profile-FINNA-v0.1.xsd"
+; Schematron validation rules
+validation_schematron[lido] = "lido-v1.1-profile-FINNA-v0.1.sch"
 
 ; Links to copyright information used for image rights.
 ; Note: keys must be in ALL CAPS.

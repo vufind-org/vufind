@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<lidoWrap>
+  <lido>
+    <lidoRecID type="ITEM">EC2C8026-E8DE-457D-9054-AA49C64818B2</lidoRecID>
+    <descriptiveMetadata lang="fi">
+      <objectClassificationWrap>
+        <objectWorkTypeWrap>
+          <objectWorkType>
+            <term>valokuva</term>
+          </objectWorkType>
+        </objectWorkTypeWrap>
+      </objectClassificationWrap>
+      <objectIdentificationWrap>
+        <titleWrap>
+          <titleSet type="title">
+            <appellationValue lang="fi" pref="preferred" label="nimi">Martti Mattila huoltaa suksia kev&#xE4;ttalvella 1952</appellationValue>
+          </titleSet>
+        </titleWrap>
+        <inscriptionsWrap/>
+        <repositoryWrap>
+          <repositorySet>
+            <repositoryName>
+              <legalBodyName>
+                <appellationValue/>
+              </legalBodyName>
+              <legalBodyWeblink/>
+            </repositoryName>
+            <workID>199828; N181832</workID>
+          </repositorySet>
+        </repositoryWrap>
+        <objectMeasurementsWrap>
+          <objectMeasurementsSet>
+            <displayObjectMeasurements>mitat, 9x12 18x24</displayObjectMeasurements>
+          </objectMeasurementsSet>
+        </objectMeasurementsWrap>
+      </objectIdentificationWrap>
+    </descriptiveMetadata>
+    <administrativeMetadata lang="fi">
+      <recordWrap>
+        <recordID type="item">199828; N181832</recordID>
+        <recordType>
+          <term>item</term>
+        </recordType>
+        <recordSource>
+          <legalBodyName>
+            <appellationValue>HKM Valokuva</appellationValue>
+          </legalBodyName>
+        </recordSource>
+        <recordRights>
+          <rightsType>
+            <conceptID type="copyright">CC0</conceptID>
+            <term>julkinen</term>
+          </rightsType>
+        </recordRights>
+        <recordInfoSet>
+          <recordInfoID type="old item">00000v0j</recordInfoID>
+        </recordInfoSet>
+      </recordWrap>
+      <resourceWrap>
+        <resourceSet>
+          <resourceID type="ID">2337976</resourceID>
+          <rightsResource>
+            <rightsType>
+              <conceptID type="copyright">Public Domain</conceptID>
+              <term lang="fi">Ei tiedossa olevia tekij&#xE4;noikeusrajoituksia. Kuvia saa k&#xE4;ytt&#xE4;&#xE4; vapaasti. Pyyd&#xE4;mme, ett&#xE4; k&#xE4;yt&#xF6;n yhteydess&#xE4; mainitaan valokuvaaja ja kuva-arkisto (valokuvaajan nimi ja Helsingin kaupunginmuseo). Kuvan k&#xE4;ytt&#xE4;j&#xE4;ll&#xE4; on vastuu tekij&#xE4;noikeuksien ja yksityisyyden suojan kunnioittamisesta. Esimerkiksi henkil&#xF6;kuvien k&#xE4;ytt&#xF6; markkinoinnissa ja/tai mainonnassa on kielletty ilman kuvassa olevan henkil&#xF6;n suostumusta.</term>
+              <term lang="en">Images may be used freely. We ask that you give appropriate credit to the photographer and the photographic archives (the name of the photographer and the Helsinki City Museum). The user is responsible for respecting copyright and privacy. Using portraits, for example, in marketing and/or advertising is forbidden without permission from the person pictured.</term>
+              <term lang="sv">Bilderna f&#xE5;r anv&#xE4;ndas fritt. Vi ber att du i samband med anv&#xE4;ndningen n&#xE4;mner fotografen och bildarkivet (fotografens namn och Helsingfors stadsmuseum). Den som anv&#xE4;nder bilden ansvarar f&#xF6;r att respektera upphovsr&#xE4;tten och integritetsskyddet. Bilder av personer f&#xE5;r exempelvis inte anv&#xE4;ndas i marknadsf&#xF6;ring och/eller reklam utan tillst&#xE5;nd av de personer som syns p&#xE5; bilderna.</term>
+            </rightsType>
+          </rightsResource>
+        </resourceSet>
+      </resourceWrap>
+    </administrativeMetadata>
+  </lido>
+</lidoWrap>
