@@ -198,6 +198,35 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test getMyProfile
+     *
+     * @return void
+     */
+    public function testGetMyProfile(): void
+    {
+        $this->createConnector('get-profile-response');
+        $result = $this->driver->getMyProfile(['id' => '1111']);
+        $expected = [
+            'firstname' => 'John',
+            'lastname' => 'Smith',
+            'birthdate' => null,
+            'address1' => 'A street 1',
+            'address2' => '',
+            'city' => 'Far away',
+            'country' => 'Far',
+            'zip' => '00000',
+            'phone' => '0123456789',
+            'mobile_phone' => null,
+            'expiration_date' => null,
+            'group' => 'test',
+            'address3' => 'Not a default field',
+            'group_code' => 'test',
+            'email' => null,
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test getHolding with location type to item status mappings
      *
      * @return void

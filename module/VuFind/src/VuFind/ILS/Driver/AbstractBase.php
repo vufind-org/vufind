@@ -71,7 +71,7 @@ abstract class AbstractBase implements DriverInterface
 
     /**
      * Create a patron array according to patronLogin specs defined in the documentation.
-     * Each value is trimmed if they are type of string.
+     * Each value is trimmed if they are string-typed.
      *
      * @param string  $id               The patron's ID in the ILS
      * @param string  $cat_username     The username used to log in
@@ -101,27 +101,26 @@ abstract class AbstractBase implements DriverInterface
     ): array {
         $patron = compact(
             'id',
-            'cat_username',
-            'cat_password',
             'email',
             'firstname',
             'lastname',
             'major',
             'college'
         );
+        $this->debugDriverResult(__FUNCTION__, $patron, $nonDefaultFields);
         // Merge non default fields into the resulting patron array
         if ($nonDefaultFields) {
             $patron = array_merge($patron, $nonDefaultFields);
         }
-        if (is_callable([$this, 'debug'])) {
-            $this->debug(json_encode($patron));
-        }
+        // Add cat_username and cat_password after debugging to avoid logging these values into a log file
+        $patron['cat_username'] = $cat_username;
+        $patron['cat_password'] = $cat_password;
         return array_map(fn ($val) => is_string($val) ? trim($val) : $val, $patron);
     }
 
     /**
      * Create a profile array according to getMyProfile specs defined in the documentation.
-     * Each value is trimmed if they are type of string.
+     * Each value is trimmed if they are not null.
      *
      * @param ?string $firstname        Profile first name
      * @param ?string $lastname         Profile last name
@@ -171,13 +170,33 @@ abstract class AbstractBase implements DriverInterface
             'expiration_date',
             'group'
         );
+        $this->debugDriverResult(__FUNCTION__, $profile, $nonDefaultFields);
+
         if ($nonDefaultFields) {
             $profile = array_merge($profile, $nonDefaultFields);
         }
-        if (is_callable([$this, 'debug'])) {
-            $this->debug(json_encode($profile));
+        return array_map(fn ($value) => null !== $value ? trim((string)$value) : null, $profile);
+    }
+
+    /**
+     * Debug an array into an log file.
+     *
+     * @param string $function         Will be logged into the start of debugging result
+     * @param array  $defaultFields    Default fields to be logged into the debug level log file
+     * @param array  $nonDefaultFields Contains non default fields from which keys are only logged into the log file.
+     *
+     * @return void
+     */
+    protected function debugDriverResult(string $function, array $defaultFields, array $nonDefaultFields = []): void
+    {
+        if (!is_callable([$this, 'debug'])) {
+            return;
         }
-        return array_map(fn ($value) => is_string($value) ? trim($value) : $value, $profile);
+        $debugContext = [
+            'default fields' => $defaultFields,
+            'non default field keys' => array_keys($nonDefaultFields),
+        ];
+        $this->debug($function . ' result:', $debugContext);
     }
 
     /**

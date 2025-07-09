@@ -1189,42 +1189,31 @@ class Aleph extends AbstractBase implements
             ],
             true
         );
-        $id = (string)$xml->z303->{'z303-id'};
-        $address1 = (string)$xml->z304->{'z304-address-2'};
-        $address2 = (string)$xml->z304->{'z304-address-3'};
-        $zip = (string)$xml->z304->{'z304-zip'};
-        $phone = (string)$xml->z304->{'z304-telephone'};
-        $barcode = (string)$xml->z304->{'z304-address-0'};
-        $group = (string)$xml->z305->{'z305-bor-status'};
-        $expiry = (string)$xml->z305->{'z305-expiry-date'};
-        $credit_sum = (string)$xml->z305->{'z305-sum'};
-        $credit_sign = (string)$xml->z305->{'z305-credit-debit'};
+
         $name = (string)$xml->z303->{'z303-name'};
-        if (strstr($name, ',')) {
-            [$lastname, $firstname] = explode(',', $name);
-        } else {
-            $lastname = $name;
-            $firstname = '';
+        if (!str_contains($name, ',')) {
+            $name = ',' . $name;
         }
-        if ($credit_sign == null) {
-            $credit_sign = 'C';
-        }
-        $recordList = compact('firstname', 'lastname');
-        if (isset($user['email'])) {
-            $recordList['email'] = $user['email'];
-        }
-        $recordList['address1'] = $address1;
-        $recordList['address2'] = $address2;
-        $recordList['zip'] = $zip;
-        $recordList['phone'] = $phone;
-        $recordList['group'] = $group;
-        $recordList['barcode'] = $barcode;
-        $recordList['expire'] = $this->parseDate($expiry);
-        $recordList['credit'] = $expiry;
-        $recordList['credit_sum'] = $credit_sum;
-        $recordList['credit_sign'] = $credit_sign;
-        $recordList['id'] = $id;
-        return $recordList;
+        [$firstName, $lastName] = explode(',', $name, 2);
+        $expiry = (string)$xml->z305->{'z305-expiry-date'};
+        return $this->createProfileArray(
+            firstname: $firstName,
+            lastname: $lastName,
+            address1: (string)$xml->z304->{'z304-address-2'},
+            address2: (string)$xml->z304->{'z304-address-3'},
+            zip: (string)$xml->z304->{'z304-zip'},
+            phone: (string)$xml->z304->{'z304-telephone'},
+            group: (string)$xml->z304->{'z304-bor-status'},
+            nonDefaultFields: [
+                'id' => (string)$xml->z303->{'z303-id'},
+                'barcode' => (string)$xml->z304->{'z304-address-0'},
+                'expire' => $this->parseDate($expiry),
+                'credit' => $expiry,
+                'credit_sum' => (string)$xml->z305->{'z305-sum'},
+                'credit_sign' => (string)$xml->z305->{'z305-credit-debit'} ?? 'C',
+                'email' => $user['email'] ?? null,
+            ]
+        );
     }
 
     /**
@@ -1237,35 +1226,50 @@ class Aleph extends AbstractBase implements
      */
     public function getMyProfileDLF($user)
     {
-        $recordList = [];
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
-        $profile = [];
-        $profile['id'] = $user['id'];
-        $profile['cat_username'] = $user['id'];
         $address = $xml->xpath('//address-information')[0];
+        $mappedValues = [];
         foreach ($this->addressMappings as $key => $value) {
             if (!empty($value)) {
-                $profile[$key] = (string)$address->{$value};
+                $mappedValues[$key] = (string)$address->{$value};
             }
         }
-        $fullName = $profile['fullname'];
+        $fullName = $mappedValues['fullname'];
         if (!str_contains($fullName, ',')) {
-            $profile['lastname'] = $fullName;
-            $profile['firstname'] = '';
-        } else {
-            [$profile['lastname'], $profile['firstname']]
-                = explode(',', $fullName);
+            $fullName = $fullName . ',';
         }
+        [$lastName, $firstName] = explode(',', $fullName, 2);
+
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronStatus', 'registration']
         );
-        $status = $xml->xpath('//institution/z305-bor-status');
         $expiry = $xml->xpath('//institution/z305-expiry-date');
-        $profile['expiration_date'] = $this->parseDate($expiry[0]);
-        $profile['group'] = $status[0];
-        return $profile;
+        return $this->createProfileArray(
+            firstname: $firstName,
+            lastname: $lastName,
+            group: $xml->xpath('//institution/z305-bor-status')[0],
+            city: $mappedValues['city'] ?? null,
+            country: $mappedValues['country'] ?? null,
+            phone: $mappedValues['phone'] ?? null,
+            mobile_phone: $mappedValues['mobile_phone'] ?? null,
+            address1: $mappedValues['address1'] ?? null,
+            address2: $mappedValues['address2'] ?? null,
+            zip: $mappedValues['zip'] ?? null,
+            birthdate: $mappedValues['birthdate'] ?? null,
+            expiration_date: $this->parseDate($expiry[0]),
+            // Merge all mapped values here even if all the default values are checked
+            // independently. This ensures that all the possible values are being set correctly
+            // and clarification what is being output remains.
+            nonDefaultFields: array_merge(
+                $mappedValues,
+                [
+                    'cat_username' => $user['id'],
+                    'id' => $user['id'],
+                ]
+            )
+        );
     }
 
     /**

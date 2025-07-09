@@ -847,7 +847,7 @@ class Alma extends AbstractBase implements
 
         $group = $xml?->user_group;
         $contact = $xml->contact_info ?? null;
-        $address = $contact->addressess[0]->address ?? null;
+        $address = $contact->addresses[0]->address ?? null;
 
         $profile = $this->createProfileArray(
             firstname: $xml->first_name ?? null,

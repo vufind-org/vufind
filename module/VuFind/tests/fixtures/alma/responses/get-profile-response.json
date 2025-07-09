@@ -1,0 +1,15 @@
+[
+    {
+        "expectedParams": [
+            "/users/1111",
+            [],
+            [],
+            "GET",
+            null,
+            null,
+            [],
+            false
+        ],
+        "resultFixture": "get-my-profile.xml"
+    }
+]
