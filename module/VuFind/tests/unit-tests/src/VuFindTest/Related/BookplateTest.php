@@ -46,7 +46,7 @@ use VuFindTest\RecordDriver\TestHarness as RecordDriver;
  */
 class BookplateTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test default behavior (no bookplates)

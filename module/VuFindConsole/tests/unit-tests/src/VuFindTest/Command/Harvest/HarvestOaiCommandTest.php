@@ -31,7 +31,7 @@ namespace VuFindTest\Command\Harvest;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Harvest\HarvestOaiCommand;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * HarvestOai command test.
@@ -44,7 +44,7 @@ use VuFindTest\Feature\PathResolverTrait;
  */
 class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test that the --ini setting is overridden automatically.

@@ -125,23 +125,22 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
 
-        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
-            // Add timestamp hash to avoid browser cache
-            $thumb['hash'] = md5(time());
-        }
-
-        // Array? It's parameters to send to the cover generator:
-        if (is_array($thumb)) {
-            if (!$resolveDynamic) {
-                return null;
-            }
-            $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
-        } else {
+        // If $thumb is not an array, it is a full URL to a thumbnail image.
+        if (!is_array($thumb)) {
             return ['url' => $thumb];
         }
 
-        $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
-            : ['size' => $size];
+        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
+            // Add timestamp hash to avoid browser cache
+            $thumb['browser_cache_hash'] = md5(time());
+        }
+
+        // If we got this far, $thumb is an array, meaning it contains parameters to send to the cover generator.
+        if (!$resolveDynamic) {
+            return null;
+        }
+        $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
+        $settings = array_merge($thumb, ['size' => $size]);
         $handlers = $this->coverLoader->getHandlers();
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
         foreach ($handlers as $handler) {

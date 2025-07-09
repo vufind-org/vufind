@@ -97,6 +97,12 @@ Account:
       icon: search
       checkMethod: checkHistory
 
+    - name: usercontent
+      label: user_content
+      route: myresearch-usercontent
+      icon: user-content
+      checkMethod: checkUserContent
+
     - name: logout
       label: Log Out
       route: myresearch-logout

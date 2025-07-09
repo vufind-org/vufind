@@ -31,7 +31,6 @@
 
 namespace VuFind\Search\EDS;
 
-use function count;
 use function in_array;
 use function is_callable;
 
@@ -45,10 +44,9 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends AbstractEDSOptions
 {
     use \VuFind\Config\Feature\ExplodeSettingTrait;
-    use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
      * Default limit option
@@ -56,13 +54,6 @@ class Options extends \VuFind\Search\Base\Options
      * @var ?int
      */
     protected $defaultLimit = null;
-
-    /**
-     * Default view option
-     *
-     * @var ?string
-     */
-    protected $defaultView = null;
 
     /**
      * Available search mode options
@@ -278,16 +269,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getDefaultMode()
     {
         return $this->getApiProperty('defaultMode');
-    }
-
-    /**
-     * Return the view type to request from the EDS API.
-     *
-     * @return string
-     */
-    public function getEdsView()
-    {
-        return $this->getDefaultViewPart(1);
     }
 
     /**
@@ -678,7 +659,9 @@ class Options extends \VuFind\Search\Base\Options
         $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
 
         // default view
-        $this->defaultView ??= 'list_' . ($settings['ResultListView'] ?? 'brief');
+        if (null === $this->defaultView) {
+            $this->setConfiguredDefaultView('list_' . ($settings['ResultListView'] ?? 'brief'));
+        }
     }
 
     /**
@@ -744,16 +727,6 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get default view setting.
-     *
-     * @return int
-     */
-    public function getDefaultView()
-    {
-        return $this->getDefaultViewPart(0, 'list');
-    }
-
-    /**
      * Get default filters to apply to an empty search.
      *
      * @return array
@@ -783,22 +756,13 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Extract a component from the defaultView API property.
-     *
-     * The defaultView API property takes the form vufindSetting_ebscoSetting -- the first component
-     * of the underscore-delimited string is the view name used by VuFind (e.g. list or grid).
-     * However, for EDS only list is suggested to be used. The second component is the format
-     * requested from the EDS API (e.g. title, brief or detailed).
-     *
-     * @param int     $index   Index of part to extract from the property
-     * @param ?string $default Default to use as a fallback if the property does not contain delimited values
+     * Get default view setting.
      *
      * @return string
      */
-    protected function getDefaultViewPart(int $index, ?string $default = null): string
+    protected function getConfiguredDefaultView(): string
     {
-        $apiDefaultView = $this->getApiProperty('defaultView');
-        $viewArr = explode('_', $apiDefaultView);
-        return (count($viewArr) > 1) ? $viewArr[$index] : ($default ?? $apiDefaultView);
+        // Note that getApiProperty() will retrieve any defaultView value set by setConfiguredDefaultView().
+        return $this->getApiProperty('defaultView');
     }
 }

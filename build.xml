@@ -7,14 +7,23 @@
   <property name="srcdir"   value="${project.basedir}" override="true" />
   <property name="downloadsdir" value="${srcdir}/downloads" override="true" />
   <!--
-    Use builddir/local as the local directory if defaultconfigs=true. This allows the
-    tests to be run without any custom configuration possibly interfering in the
-    normal local directory.
+    Use builddir/local-symlink that points to builddir/local as the local directory
+    if defaultconfigs=true. This allows the tests to be run without any custom
+    configuration possibly interfering in the normal local directory. It also
+    ensures that a local directory containing symlinks works properly.
   -->
   <if>
     <equals arg1="${defaultconfigs}" arg2="true" />
     <then>
-      <property name="localdir" value="${builddir}/local" override="true" />
+      <property name="localdir" value="${builddir}/local-symlink" override="true" />
+      <mkdir dir="${builddir}/local"/>
+      <!-- Create the local directory symlink if it doesn't already exist: -->
+      <if>
+        <not><available file="${builddir}/local-symlink"/></not>
+        <then>
+          <symlink target="${builddir}/local" link="${builddir}/local-symlink" overwrite="true"/>
+        </then>
+      </if>
     </then>
     <else>
       <property name="localdir" value="${srcdir}/local" override="false" />

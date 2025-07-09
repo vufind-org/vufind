@@ -100,6 +100,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         return [
             'unfiltered' => [
                 [],
+                [],
+                [],
                 [
                     0 => [
                         [
@@ -117,6 +119,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             ],
             'exclude filter' => [
                 ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
+                [],
+                [],
                 [
                     0 => [
                         [
@@ -129,6 +133,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             ],
             'include filter' => [
                 ['filterType' => 'include', 'filter' => ['browzineWebLink']],
+                [],
+                [],
                 [
                     0 => [
                         [
@@ -139,20 +145,87 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'best integrator link with no section in config' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                null,
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'PDF Full Text',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with empty config section' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                [],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Get full text',
+                            'localIcon' => 'browzine-best',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with configured label' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                ['fullTextFile' =>
+                    'Fancy Full Text|browzine-pdf|' .
+                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Fancy Full Text',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with browzine label override' => [
+                ['useBrowzineLabel' => true],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                ['fullTextFile' =>
+                    'PDF Full Text|browzine-pdf|' .
+                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Download Best PDF Ever',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 
     /**
      * Build the BrowZine handler to test.
      *
-     * @param array $ids     ID test data
-     * @param array $rawData Raw data for connector to return
-     * @param array $config  BrowZine configuration
+     * @param array  $ids                       ID test data
+     * @param array  $rawData                   Raw data for connector to return
+     * @param array  $identifierLinksConfig     BrowZine configuration for identifier links
+     * @param ?array $doiServicesConfig         BrowZine configuration for DOI services
+     * @param ?array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
      *
      * @return BrowZine
      */
-    protected function getBrowZineHandler(array $ids, array $rawData, array $config = []): BrowZine
-    {
+    protected function getBrowZineHandler(
+        array $ids,
+        array $rawData,
+        array $identifierLinksConfig = [],
+        ?array $doiServicesConfig = null,
+        ?array $bestIntegratorLinksConfig = null
+    ): BrowZine {
         $connector = $this->getMockConnector($ids[0], $rawData);
         $ss = $this->getSearchService($this->getBackendManager($connector));
 
@@ -160,7 +233,14 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         // injected. We'll use a mock container to set up all the dependencies.
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFindSearch\Service::class, $ss);
-        $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $config]);
+        $configArray = ['IdentifierLinks' => $identifierLinksConfig];
+        if ($doiServicesConfig) {
+            $configArray['DOIServices'] = $doiServicesConfig;
+        }
+        if ($bestIntegratorLinksConfig !== null) {
+            $configArray['BestIntegratorLinks'] = $bestIntegratorLinksConfig;
+        }
+        $configObj = new \VuFind\Config\Config($configArray);
         $mockConfigManager = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockConfigManager->expects($this->once())->method('get')->with('BrowZine')->willReturn($configObj);
         $container->set(\VuFind\Config\PluginManager::class, $mockConfigManager);
@@ -171,18 +251,30 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Test a DOI API response.
      *
-     * @param array $config           Configuration
-     * @param array $expectedResponse Expected response
+     * @param array $identifierLinksConfig     BrowZine configuration for identifier links
+     * @param array $doiServicesConfig         BrowZine configuration for DOI services
+     * @param array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
+     * @param array $expectedResponse          Expected response
      *
      * @return void
      *
      * @dataProvider doiProvider
      */
-    public function testDOIApiSuccess(array $config, array $expectedResponse): void
-    {
+    public function testDOIApiSuccess(
+        array $identifierLinksConfig,
+        array $doiServicesConfig,
+        ?array $bestIntegratorLinksConfig,
+        array $expectedResponse
+    ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
         $ids = [['doi' => '10.1155/2020/8690540']];
-        $browzine = $this->getBrowZineHandler($ids, $rawData, $config);
+        $browzine = $this->getBrowZineHandler(
+            $ids,
+            $rawData,
+            $identifierLinksConfig,
+            $doiServicesConfig,
+            $bestIntegratorLinksConfig
+        );
         foreach ($expectedResponse[0] as & $current) {
             $current['data'] = $rawData['data'];
         }
