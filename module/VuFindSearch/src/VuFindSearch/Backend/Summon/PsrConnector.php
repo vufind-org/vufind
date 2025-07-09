@@ -67,7 +67,7 @@ class PsrConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareI
      * @param string          $apiId   Summon API ID
      * @param string          $apiKey  Summon API Key
      * @param array           $options Options for the parent constructor
-     * @param HttpClient|null $client  Optional HTTP client to use; defaults to GuzzleHttp\Client
+     * @param HttpClient|null $client  Optional HTTP client to use
      */
     public function __construct($apiId, $apiKey, $options = [], $client = null)
     {
