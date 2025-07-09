@@ -53,7 +53,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
      * Get a TitleHolds object for testing.
      *
      * @param ?\VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator (null for mock)
-     * @param ?ILSConnection                 $ils     A catalog connection (null for mock)
+     * @param ?ILSConnection                 $catalog A catalog connection (null for mock)
      * @param ?\VuFind\Crypt\HMAC            $hmac    HMAC generator (null for mock)
      * @param ?array                         $config  Configuration array (empty by default)
      *
@@ -61,13 +61,13 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getTitleHoldsLogic(
         ?ILSAuthenticator $ilsAuth = null,
-        ?Connection $ils = null,
+        ?Connection $catalog = null,
         ?HMAC $hmac = null,
         array $config = []
     ): TitleHolds {
         return new TitleHolds(
             $ilsAuth ?? $this->createMock(ILSAuthenticator::class),
-            $ils ?? $this->createMock(Connection::class),
+            $catalog ?? $this->createMock(Connection::class),
             $hmac ?? $this->createMock(HMAC::class),
             new Config($config)
         );
@@ -111,7 +111,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
     {
         $catalog = $this->createMock(Connection::class);
         $catalog->expects($this->once())->method('getTitleHoldsMode')->willReturn('disabled');
-        $logic = $this->getTitleHoldsLogic(ils: $catalog);
+        $logic = $this->getTitleHoldsLogic(catalog: $catalog);
         $this->assertFalse($logic->getHold('foo'));
     }
 
@@ -126,7 +126,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
         $catalog->expects($this->once())->method('getTitleHoldsMode')->willReturn('driver');
         $ilsAuth = $this->createMock(ILSAuthenticator::class);
         $ilsAuth->expects($this->once())->method('storedCatalogLogin')->willReturn(false);
-        $logic = $this->getTitleHoldsLogic(ils: $catalog, ilsAuth: $ilsAuth);
+        $logic = $this->getTitleHoldsLogic(catalog: $catalog, ilsAuth: $ilsAuth);
         $this->assertFalse($logic->getHold('foo'));
     }
 }

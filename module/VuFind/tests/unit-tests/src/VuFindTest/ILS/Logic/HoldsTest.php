@@ -50,7 +50,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
      * Get a Holds object for testing.
      *
      * @param ?\VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator (null for mock)
-     * @param ?ILSConnection                 $ils     A catalog connection (null for mock)
+     * @param ?ILSConnection                 $catalog A catalog connection (null for mock)
      * @param ?\VuFind\Crypt\HMAC            $hmac    HMAC generator (null for mock)
      * @param ?array                         $config  Configuration array (empty by default)
      *
@@ -58,13 +58,13 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHoldsLogic(
         ?ILSAuthenticator $ilsAuth = null,
-        ?Connection $ils = null,
+        ?Connection $catalog = null,
         ?HMAC $hmac = null,
         array $config = []
     ): Holds {
         return new Holds(
             $ilsAuth ?? $this->createMock(ILSAuthenticator::class),
-            $ils ?? $this->createMock(Connection::class),
+            $catalog ?? $this->createMock(Connection::class),
             $hmac ?? $this->createMock(HMAC::class),
             new Config($config)
         );
