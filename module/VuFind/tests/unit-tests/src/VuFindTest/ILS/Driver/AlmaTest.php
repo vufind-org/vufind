@@ -227,6 +227,33 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test patron login when login method is set to email
+     *
+     * @return void
+     */
+    public function testPatronLoginEmail(): void
+    {
+        $adjustedConfig = $this->defaultDriverConfig;
+        $adjustedConfig['Catalog']['loginMethod'] = 'email';
+        $this->createConnector(
+            'get-patron-response',
+            $adjustedConfig
+        );
+        $result = $this->driver->patronLogin('1111', '1212');
+        $expected = [
+            'id' => '57391',
+            'firstname' => 'John',
+            'lastname' => 'Smith',
+            'email' => 'pref@email.if',
+            'cat_username' => '1111',
+            'cat_password' => '1212',
+            'major' => null,
+            'college' => null,
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test getHolding with location type to item status mappings
      *
      * @return void

@@ -1,0 +1,35 @@
+[
+    {
+        "expectedParams": [
+            "/users/1111",
+            {
+                "view": "full"
+            },
+            [],
+            "GET",
+            null,
+            null,
+            [400],
+            true
+        ],
+        "resultFixture": "get-patron-login.xml"
+    },
+    {
+        "expectedParams": [
+            "/users/57391",
+            {
+                "user_id_type": "all_unique",
+                "view": "full",
+                "expand": "none"
+            },
+            [],
+            "GET",
+            null,
+            null,
+            [400],
+            true
+        ],
+        "resultFixture": "get-patron-login.xml"
+    }
+
+]

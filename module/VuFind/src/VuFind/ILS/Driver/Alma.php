@@ -822,8 +822,8 @@ class Alma extends AbstractBase implements
             id: (string)$response->primary_id,
             cat_username: $username,
             cat_password: $password,
-            firstname: (string)($response->first_name ?? ''),
-            lastname: (string)($response->last_name ?? ''),
+            firstname: (string)$response?->first_name,
+            lastname: (string)$response?->last_name,
             email: $this->getPreferredEmail($response)
         ) : null;
     }
@@ -846,22 +846,22 @@ class Alma extends AbstractBase implements
         }
 
         $group = $xml?->user_group;
-        $contact = $xml->contact_info ?? null;
-        $address = $contact->addresses[0]->address ?? null;
+        $contact = $xml?->contact_info;
+        $address = $contact?->addresses[0]?->address;
 
         $profile = $this->createProfileArray(
-            firstname: $xml->first_name ?? null,
-            lastname: $xml->last_name ?? null,
-            address1: $address->line1 ?? null,
-            address2: $address->line2 ?? null,
-            city: $address->city ?? null,
-            zip: $address->postal_code ?? null,
-            country: $address->country ?? null,
+            firstname: (string)$xml?->first_name,
+            lastname: (string)$xml?->last_name,
+            address1: (string)$address?->line1,
+            address2: (string)$address?->line2,
+            city: (string)$address?->city,
+            zip: (string)$address?->postal_code,
+            country: (string)$address?->country,
             group: $group,
-            phone: $contact->phones[0]->phone->phone_number ?? null,
-            birthdate: $xml->birth_date ? substr((string)$xml->birth_date, 0, 10) : null,
+            phone: (string)$contact?->phones[0]?->phone?->phone_number,
+            birthdate: $xml?->birth_date ? substr((string)$xml->birth_date, 0, 10) : null,
             nonDefaultFields: [
-                'address3' => $address->line3 ?? null,
+                'address3' => (string)$address?->line3,
                 'group_code' => $group ? $this->getTranslatableString($group) : null,
                 'email' => $this->getPreferredEmail($xml),
             ]
