@@ -364,8 +364,8 @@ class Innovative extends AbstractBase implements
     public function patronLogin($username, $password)
     {
         // TODO: if username is a barcode, test to make sure it fits proper format
-        $enabled = $this->config['PATRONAPI']['enabled'] ?? false;
-        if (!$enabled && strtolower($enabled) === 'false') {
+        $enabled = (bool)($this->config['PATRONAPI']['enabled'] ?? false);
+        if (!$enabled) {
             return null;
         }
         // use patronAPI to authenticate customer
