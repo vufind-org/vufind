@@ -198,6 +198,11 @@ class Initializer
         if (isset($error)) {
             throw new \Exception($error->getMessage());
         }
+
+        // Initialize the color scheme
+        $colorSchemeManager = new ColorSchemeManager($this->config, $this->serviceManager, $this->cookieManager);
+        $selectedColorScheme = $colorSchemeManager->getSelectedColorScheme($this->event?->getRequest());
+        $colorSchemeManager->sendColorSchemeInfoToView($selectedColorScheme);
     }
 
     /**

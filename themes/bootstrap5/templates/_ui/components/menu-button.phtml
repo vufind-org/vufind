@@ -45,6 +45,14 @@
   }
 
   $toggleAttrs = array_merge($defaultAttrs, $this->toggleAttrs ?? []);
+
+  $toggleLabel = $this->transEsc($this->toggleLabel);
+  if ($this->toggleLabelIconOnly) {
+    $toggleLabel = '<span class="sr-only">' . $toggleLabel . '</span>';
+  }
+  if ($this->toggleLabelIcon) {
+    $toggleLabel = $this->icon($this->toggleLabelIcon) . $toggleLabel;
+  }
 ?>
 
 <?php ob_start(); ?>
@@ -74,6 +82,7 @@
           <?php if ($current['selected'] ?? false): ?> aria-current="true"<?php endif; ?>
           rel="nofollow"
         >
+          <?php if ($current['icon'] ?? false): ?> <?=$this->icon($current['icon']) ?> <?php endif; ?>
           <span><?=$this->transEsc($current['label']) ?></span>
           <?php if ($description = $current['description'] ?? false): ?>
             <span class="description"><?=$this->transEsc($description)?></span>
