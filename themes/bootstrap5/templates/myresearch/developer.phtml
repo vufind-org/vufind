@@ -3,27 +3,23 @@
     $revoked = $apiKey['revoked'] ?? false;
 ?>
 <h2><?=$this->transEsc('Developer::settings')?></h2>
-<?php ob_start(); ?>
-    <div class="centered-end">
-        <?php if ($revoked): ?>
-            <span><?=$this->transEsc('Developer::api_key_locked')?></span>
-        <?php else: ?>
-            <?=$this->component('link-button', ['class' => 'btn btn-primary', 'url' => $this->url('myresearch-generateapikey'), 'text' => 'Developer::api_key_generate']);?>
-            <?php if ($apiKey): ?>
-                <?=$this->component('link-button', ['class' => 'btn btn-default', 'url' => $this->url('myresearch-deleteapikey'), 'text' => 'Developer::api_key_delete']);?>
-            <?php endif; ?>
-        <?php endif; ?>
-    </div>
-<?php $apiKeyRow = ob_get_contents(); ?>
-<?php ob_end_clean(); ?>
 
-<?=
-    $this->component(
-        'table-striped',
-        [
-            'contents' => [
-                $this->transEsc('Developer::api_key') => [$apiKeyRow],
-            ],
-        ],
-    );
-?>
+<table class="table table-striped">
+    <tr>
+        <th class="vertical-center">
+            <?=$this->transEsc('Developer::api_key')?>
+        </th>
+        <td class="flex align-center justify-end">
+            <div>
+                <?php if ($revoked): ?>
+                    <span><?=$this->transEsc('Developer::api_key_locked')?></span>
+                <?php else: ?>
+                    <a class="btn btn-primary" href="<?=$this->url('myresearch-generateapikey')?>"><?=$this->transEsc('Developer::api_key_generate')?></a>
+                    <?php if ($apiKey): ?>
+                        <a class="btn btn-secondary" href="<?=$this->url('myresearch-deleteapikey')?>"><?=$this->transEsc('Developer::api_key_delete')?></a>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </td>
+    </tr>
+</table>
