@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\AccessToken;
 
@@ -44,13 +45,39 @@ use VuFind\Db\Table\AccessToken;
 class ApiKeyService extends AccessTokenService implements ApiKeyServiceInterface
 {
     /**
-     * Generate a random token using random_bytes and bin2hex
+     * Constructor.
+     *
+     * @param AccessToken $accessTokenTable Access token table
+     * @param Config      $config           Main config
+     */
+    public function __construct(
+        AccessToken $accessTokenTable,
+        protected Config $config
+    ) {
+        parent::__construct($accessTokenTable);
+    }
+
+    /**
+     * Generate a new api key token
+     *
+     * @param UserEntityInterface $user User to create salt for
      *
      * @return string
      */
-    protected function createRandomToken(): string
+    protected function createRandomToken(UserEntityInterface $user): string
     {
-        return bin2hex(random_bytes(32));
+        $salt = $this->config->API_Keys->token_salt ?? null;
+        if (!$salt) {
+            throw new \Exception('APIKeyService: Salt missing');
+        }
+        $valuesForToken = [
+            $user->getEmailVerified(),
+            $user->getFirstname(),
+            $user->getLastname(),
+            strtotime('now'),
+            $salt,
+        ];
+        return hash('sha256', implode('|', $valuesForToken));
     }
 
     /**
@@ -99,7 +126,7 @@ class ApiKeyService extends AccessTokenService implements ApiKeyServiceInterface
         if ($row?->isRevoked()) {
             return false;
         }
-        $token = $this->createRandomToken();
+        $token = $this->createRandomToken($user);
         $this->accessTokenTable->storeData($user->getId(), AccessToken::TYPE_API_KEY, $token);
         return $token;
     }
