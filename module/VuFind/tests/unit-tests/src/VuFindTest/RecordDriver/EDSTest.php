@@ -74,6 +74,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         ],
         'ItemGlobalOrder' => [],
         'Catalog' => [
+            'driver' => 'Folio',
+            'ilsBackends' => ['Solr', 'EDS'],
             'EDSHasCatalog' => true,
             'CatalogDatabaseId' => 'cat012345a',
             'CatalogANRegex' => [
