@@ -32,9 +32,9 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\Config;
 use VuFind\Crypt\HMAC;
+use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
-use VuFind\Exception\ILS as ILSException;
 
 /**
  * Holds logic test
@@ -126,6 +126,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $result = $method->invoke($logic, $holdings);
 
         // assert various properties of the result
+        // I need to update the fixture and test to be more readable - remove UUIDs and replace with simple strings
         $this->assertArrayHasKey('location1_id|Main Library', $result);
         $this->assertEquals('Main Library', $result['location1_id|Main Library']['location']);
         $this->assertCount(2, $result['location1_id|Main Library']['items']);
@@ -146,14 +147,14 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-     /**
-      * Create a mock availability status for testing
-      *
-      * @param bool   $available   Whether the item is available
-      * @param string $description Status description
-      *
-      * @return object
-      */
+    /**
+     * Create a mock availability status for testing
+     *
+     * @param bool   $available   Whether the item is available
+     * @param string $description Status description
+     *
+     * @return object
+     */
     protected function createMockAvailabilityStatus($available = true, $description = 'Available')
     {
         // Create an anonymous class that implements the required methods
@@ -161,6 +162,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         // i.e. by hooking into the AvailabilityStatusInterface directly.
         return new class ($available, $description) {
             private $available;
+
             private $description;
 
             /**
@@ -215,11 +217,11 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
 
         // Example holdings data; lacks 'availability' field
         $result = $this->getJsonFixture('ils/holdings_formatted_example.json');
-        $availabilityStatus = array(
-            array(false, 'Checked Out'),
-            array(true, 'Available'),
-            array(true, 'Available')
-        );
+        $availabilityStatus = [
+            [false, 'Checked Out'],
+            [true, 'Available'],
+            [true, 'Available'],
+        ];
         $i = 0;
         foreach ($result['holdings'] as &$holding) {
             // Add 'availability' field to simulate different hold types
@@ -231,7 +233,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         }
         $holdConfig = [
             'function' => 'placeHold',
-            'HMACKeys' => ['id', 'location']
+            'HMACKeys' => ['id', 'location'],
         ];
 
         // Test 'all' mode (all items get a link)
@@ -269,7 +271,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $details = [
             'id' => 'test123',
             'location' => 'Main Library',
-            'source' => 'Solr'
+            'source' => 'Solr',
         ];
 
         $hmacKeys = ['id', 'location'];
@@ -308,7 +310,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $copy = [
             'holdings_id' => 'holdings_id_1',
             'location' => 'Main Library',
-            'call_number' => 'c123456'
+            'call_number' => 'c123456',
         ];
 
         $result = $method->invoke($logic, $copy);
@@ -351,7 +353,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $catalog->method('getHoldsMode')->willReturn('disabled');
         $catalog->method('getHolding')->willReturn([
             'total' => 0,
-            'holdings' => []
+            'holdings' => [],
         ]);
         $catalog->method('getHoldingsTextFieldNames')->willReturn([]);
 
@@ -380,29 +382,29 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             'total' => 1,
             'holdings' => [
                 [
-                    "callnumber_prefix" => "",
-                    "callnumber" => "c123456-1",
-                    "is_holdable" => true,
-                    "holdings_notes" => null,
-                    "summary" => [],
-                    "supplements" => [],
-                    "indexes" => [],
-                    "location" => "Main Library",
-                    "location_code" => "MAIN",
-                    "folio_location_is_active" => true,
-                    "id" => "instance_id",
-                    "item_id" => "item_id_1",
-                    "holdings_id" => "holdings_id_1",
-                    "number" =>  1,
-                    "enumchron" => "",
-                    "barcode" => "468109755",
-                    "duedate" => "02.09.2025",
-                    "availability" => $this->createMockAvailabilityStatus(false, 'Checked Out'),
-                    "bound_with_records" => [],
-                    "loan_type_id" => "loan_type_id",
-                    "loan_type_name" => "Circulating"
-                ]
-            ]
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'c123456-1',
+                    'is_holdable' => true,
+                    'holdings_notes' => null,
+                    'summary' => [],
+                    'supplements' => [],
+                    'indexes' => [],
+                    'location' => 'Main Library',
+                    'location_code' => 'MAIN',
+                    'folio_location_is_active' => true,
+                    'id' => 'instance_id',
+                    'item_id' => 'item_id_1',
+                    'holdings_id' => 'holdings_id_1',
+                    'number' =>  1,
+                    'enumchron' => '',
+                    'barcode' => '468109755',
+                    'duedate' => '02.09.2025',
+                    'availability' => $this->createMockAvailabilityStatus(false, 'Checked Out'),
+                    'bound_with_records' => [],
+                    'loan_type_id' => 'loan_type_id',
+                    'loan_type_name' => 'Circulating',
+                ],
+            ],
         ]);
         $catalog->method('getHoldingsTextFieldNames')->willReturn(['holdings_notes', 'summary']);
 
