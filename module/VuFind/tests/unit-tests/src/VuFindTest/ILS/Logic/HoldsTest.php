@@ -224,7 +224,46 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $holdings = $method->invoke($logic, $result, 'recalls', $holdConfig);
         $this->assertArrayHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayNotHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
+    }
 
-
+    /**
+     * Test getRequestDetails method
+     *
+     * @return void
+     */
+    public function testGetRequestDetails(): void
+    {
+        $hmac = $this->createMock(HMAC::class);
+        $hmac->method('generate')->willReturn('test-hash-key');
+        
+        $logic = $this->getHoldsLogic(hmac: $hmac);
+        
+        $reflection = new \ReflectionClass($logic);
+        $method = $reflection->getMethod('getRequestDetails');
+        $method->setAccessible(true);
+        
+        $details = [
+            'id' => 'test123',
+            'location' => 'Main Library',
+            'source' => 'Solr'
+        ];
+        
+        $hmacKeys = ['id', 'location'];
+        $action = 'Hold';
+        
+        $result = $method->invoke($logic, $details, $hmacKeys, $action);
+        
+        $this->assertEquals('Hold', $result['action']);
+        $this->assertEquals('test123', $result['record']);
+        $this->assertEquals('Solr', $result['source']);
+        $this->assertStringContainsString('hashKey=test-hash-key', $result['query']);
+        $this->assertEquals('#tabnav', $result['anchor']);
+        
+        // Test with link overrides
+        $linkOverrides = ['id' => 'override123', 'source' => 'Override'];
+        $result = $method->invoke($logic, $details, $hmacKeys, $action, $linkOverrides);
+        
+        $this->assertEquals('override123', $result['record']);
+        $this->assertEquals('Override', $result['source']);
     }
 }
