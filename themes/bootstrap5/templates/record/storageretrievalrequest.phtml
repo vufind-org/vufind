@@ -1,7 +1,4 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb());
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
     if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -10,7 +7,7 @@
     $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
       ->add($this->translate('storage_retrieval_request_place_text'), active: true);
 ?>
-<h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('storage_retrieval_request_place_text'), 'headTitle' => $this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
 <?php if ($this->helpTextHtml): ?>
 <p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>

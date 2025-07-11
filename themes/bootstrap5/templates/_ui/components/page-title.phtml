@@ -1,0 +1,38 @@
+<?php
+  /**
+   * Page title component, which checks if the current template is rendered in lightbox or not. Use only once for each page.
+   *
+   * @param string       title         Translated title to be used as the header element value
+   * @param string|false headTitle     Translated head title to be set for the page. Default is same as the title.
+   *                                   Set to false to disable.
+   * @param int          level         Header level. Default is 2. Level 1 in lightbox context will be changed to 2
+   *                                   if lightboxLevel is unset.
+   * @param int          lightboxLevel Header level in lightbox context. Allows level 1 header to be set.
+   * @param string       class         Same as header element class attribute.
+   *                                   Appended values are 'vc-page-title' and in lightbox 'vc-page-title lightbox-title'.
+   */
+  $title = $this->title ?? 'title_missing';
+  $headerAttrs = [
+    'class' => trim($this->class ?? '' . ' ' . $this->_componentClass),
+  ];
+
+  $level = intval($this->level ?? 0) ?: 2;
+  if ($this->inLightbox) {
+    if ($lightboxLevel = intval($this->lightboxLevel ?? 0)) {
+      $level = $lightboxLevel;
+    } elseif ($level === 1) {
+      // If level 1 title is set in lightbox and no lightboxLevel was given, change it to 2.
+      $level = 2;
+    }
+    // Setting tabindex to 0 is intentional for accessibility as content displayed in popup/dialog should focus title first.
+    $headerAttrs['tabindex'] = '0';
+    $headerAttrs['class'] .= ' lightbox-title';
+  }
+  $tag = "h$level";
+  $headTitle = $this->headTitle ?? $title;
+  // Allow disabling head title by setting the option to false
+  if (false !== $headTitle) {
+    $this->headTitle($headTitle);
+  }
+?>
+<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($title);?></<?=$tag?>>
