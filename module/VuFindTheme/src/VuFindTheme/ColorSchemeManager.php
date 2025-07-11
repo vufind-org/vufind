@@ -34,6 +34,8 @@ use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 
+use function in_array;
+
 /**
  * Color Scheme Manager
  *
@@ -46,17 +48,28 @@ use VuFind\Cookie\CookieManager;
 class ColorSchemeManager
 {
     /**
+     * Supported color schemes for the current theme
+     *
+     * @var array
+     */
+    protected $supportedColorSchemes;
+
+    /**
      * Constructor
      *
      * @param Config             $config         Theme configuration object
      * @param ContainerInterface $serviceManager Top-level service container
      * @param CookieManager      $cookieManager  Cookie manager
+     * @param string             $currentTheme   Current theme
      */
     public function __construct(
         protected Config $config,
         protected ContainerInterface $serviceManager,
         protected CookieManager $cookieManager,
+        protected string $currentTheme,
     ) {
+        $rawSupportedColorSchemes = $this->config->supported_color_schemes[$this->currentTheme] ?? '';
+        $this->supportedColorSchemes = explode(',', $rawSupportedColorSchemes);
     }
 
     /**
@@ -72,15 +85,27 @@ class ColorSchemeManager
     {
         // Find out if the user has a saved preference in the POST, URL or cookies:
         $selectedColorScheme = null;
+        $saveColorScheme = false;
+        $themeColorSchemeKey = $this->currentTheme . '_color_scheme';
         if (isset($request)) {
             $selectedColorScheme = $request->getPost()->get('color_scheme')
                 ?? $request->getQuery()->get('color_scheme')
-                ?? $request->getCookie()->color_scheme
+                ?? $request->getCookie()->$themeColorSchemeKey
                 ?? 'normal';
+            $saveColorScheme = true;
         }
 
-        // Save the current setting to a cookie so it persists:
-        $this->cookieManager->set('color_scheme', $selectedColorScheme);
+        // Only use the selected color scheme (or system-suggested color scheme) if it's supported
+        // by the current theme.
+        if (!$this->isSupportedColorScheme($selectedColorScheme)) {
+            $selectedColorScheme = $this->supportedColorSchemes[0] ?? 'light';
+            $saveColorScheme = false;
+        }
+
+        // Save the current setting to a cookie so it persists.
+        if ($saveColorScheme) {
+            $this->cookieManager->set($themeColorSchemeKey, $selectedColorScheme);
+        }
 
         return $selectedColorScheme;
     }
@@ -113,8 +138,9 @@ class ColorSchemeManager
      */
     protected function getColorSchemeOptions()
     {
-        $rawOptions = $this->config->color_schemes?->toArray() ?? [];
-        return array_map(function ($rawOption) {
+        // Load all options from config
+        $rawOptions = $this->config->selectable_color_schemes?->toArray() ?? [];
+        $options = array_map(function ($rawOption) {
             $option = explode(':', $rawOption);
             return [
                 'name' => $option[0],
@@ -122,5 +148,24 @@ class ColorSchemeManager
                 'icon' => $option[2] ?? false,
             ];
         }, $rawOptions);
+
+        // Only return valid options for the current theme
+        $options = array_filter($options, function ($option) {
+            return $this->isSupportedColorScheme($option['name']);
+        });
+
+        return $options;
+    }
+
+    /**
+     * Determines if the specified color scheme is supported under the current theme.
+     *
+     * @param string $desiredColorScheme Color scheme name
+     *
+     * @return bool
+     */
+    protected function isSupportedColorScheme($desiredColorScheme)
+    {
+        return in_array($desiredColorScheme, $this->supportedColorSchemes);
     }
 }

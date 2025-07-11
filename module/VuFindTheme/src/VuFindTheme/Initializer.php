@@ -200,7 +200,12 @@ class Initializer
         }
 
         // Initialize the color scheme
-        $colorSchemeManager = new ColorSchemeManager($this->config, $this->serviceManager, $this->cookieManager);
+        $colorSchemeManager = new ColorSchemeManager(
+            $this->config,
+            $this->serviceManager,
+            $this->cookieManager,
+            $currentTheme
+        );
         $selectedColorScheme = $colorSchemeManager->getSelectedColorScheme($this->event?->getRequest());
         $colorSchemeManager->sendColorSchemeInfoToView($selectedColorScheme);
     }
