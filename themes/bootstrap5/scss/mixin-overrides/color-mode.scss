@@ -1,10 +1,13 @@
 /* Override of built-in color mode, to output both types */
 
 @mixin color-mode($mode: light, $root: false) {
-  // Generally ignore $color-mode-type and output handlers for both types.
+  // Generally ignore $color-mode-type. Output handlers for both types:
+  // media queries and data-bs-theme DOM attributes.
+
   // Handle media-query $color-mode-type
   @if $root == true {
     @media (prefers-color-scheme: $mode) {
+      // Except ignore the media query if there is a data-bs-theme set.
       :root:not([data-bs-theme]) {
         @content;
       }
@@ -18,7 +21,7 @@
       }
     }
   }
-  // And handle data $color-mode-type
+  // And handle data-bs-theme $color-mode-type
   [data-bs-theme="#{$mode}"] {
     @content;
   }
