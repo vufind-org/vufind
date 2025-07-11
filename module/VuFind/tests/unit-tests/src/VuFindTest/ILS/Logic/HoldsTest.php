@@ -34,6 +34,7 @@ use VuFind\Config\Config;
 use VuFind\Crypt\HMAC;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Holds logic test
@@ -311,5 +312,86 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         
         $result = $method->invoke($logic, $copy);
         $this->assertEquals('Main Library', $result);
+    }
+
+    /**
+     * Test getHoldings with ILS exception
+     *
+     * @return void
+     */
+    public function testGetHoldingsWithILSException(): void
+    {
+        $ilsAuth = $this->createMock(ILSAuthenticator::class);
+        $ilsAuth->method('storedCatalogLogin')->willThrowException(new ILSException('Login failed'));
+        
+        $catalog = $this->createMock(Connection::class);
+        $catalog->method('getHoldsMode')->willReturn('disabled');
+        $catalog->method('getHolding')->willReturn([
+            'total' => 0,
+            'holdings' => []
+        ]);
+        $catalog->method('getHoldingsTextFieldNames')->willReturn([]);
+        
+        $logic = $this->getHoldsLogic(ilsAuth: $ilsAuth, catalog: $catalog);
+        
+        $result = $logic->getHoldings('test123');
+        
+        $this->assertArrayHasKey('holdings', $result);
+        $this->assertArrayHasKey('blocks', $result);
+        $this->assertFalse($result['blocks']);
+    }
+
+    /**
+     * Test getHoldings with other mode
+     *
+     * @return void
+     */
+    public function testGetHoldingsOther(): void
+    {
+        $ilsAuth = $this->createMock(ILSAuthenticator::class);
+        $ilsAuth->method('storedCatalogLogin')->willThrowException(new ILSException('Login failed'));
+        
+        $catalog = $this->createMock(Connection::class);
+        $catalog->method('getHoldsMode')->willReturn('other');
+        $catalog->method('getHolding')->willReturn([
+            'total' => 1,
+            'holdings' => [
+                [
+                    "callnumber_prefix" => "",
+                    "callnumber" => "c123456-1",
+                    "is_holdable" => true,
+                    "holdings_notes" => null,
+                    "summary" => [],
+                    "supplements" => [],
+                    "indexes" => [],
+                    "location" => "Main Library",
+                    "location_code" => "MAIN",
+                    "folio_location_is_active" => true,
+                    "id" => "instance_id",
+                    "item_id" => "item_id_1",
+                    "holdings_id" => "holdings_id_1",
+                    "number" =>  1,
+                    "enumchron" => "",
+                    "barcode" => "468109755",
+                    "duedate" => "02.09.2025",
+                    "availability" => $this->createMockAvailabilityStatus(false, 'Checked Out'),
+                    "bound_with_records" => [],
+                    "loan_type_id" => "loan_type_id",
+                    "loan_type_name" => "Circulating"
+                ]
+            ]
+        ]);
+        $catalog->method('getHoldingsTextFieldNames')->willReturn(['holdings_notes', 'summary']);
+        
+        $logic = $this->getHoldsLogic(ilsAuth: $ilsAuth, catalog: $catalog);
+        
+        $result = $logic->getHoldings('test123');
+        
+        $this->assertArrayHasKey('holdings', $result);
+        $this->assertArrayHasKey('blocks', $result);
+        $this->assertArrayHasKey('holdings_id_1|Main Library', $result['holdings']);
+        $this->assertCount(1, $result['holdings']['holdings_id_1|Main Library']['items']);
+        $this->assertEquals('Main Library', $result['holdings']['holdings_id_1|Main Library']['location']);
+        $this->assertFalse($result['blocks']);
     }
 }
