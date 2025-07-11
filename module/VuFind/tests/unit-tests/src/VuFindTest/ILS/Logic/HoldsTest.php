@@ -133,15 +133,15 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Circulating', $result['location1_id|Main Library']['items'][0]['loan_type_name']);
         $this->assertEquals(true, $result['location1_id|Main Library']['items'][0]['is_holdable']);
         $this->assertEquals(
-            'ac4cf292-ffca-40e8-a91a-5bb349532fe0',
+            'item_id_1',
             $result['location1_id|Main Library']['items'][0]['item_id']
         );
         $this->assertEquals(
-            '228bcdc1-4c16-488d-88d4-57374f412c6e',
+            'holdings_id_1',
             $result['location1_id|Main Library']['items'][0]['holdings_id']
         );
         $this->assertEquals(
-            'item_id=ac4cf292-ffca-40e8-a91a-5bb349532fe0&holdings_id=228bcdc1-4c16-488d-88d4-57374f412c6e&status=Checked+out&hashKey=fb00698a17b30097c95d55a79f658d9d',
+            'item_id=item_id_1&holdings_id=holdings_id_1&status=Checked+out&hashKey=sample_hash_key',
             $result['location1_id|Main Library']['items'][0]['link']['query']
         );
     }
