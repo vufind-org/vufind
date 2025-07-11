@@ -111,18 +111,18 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     {
         $catalog = $this->createMock(Connection::class);
         $catalog->method('getHoldingsTextFieldNames')->willReturn(['notes', 'summary']);
-        
+
         $logic = $this->getHoldsLogic(catalog: $catalog);
-        
+
         // Use reflection to access the protected formatHoldings method
         $reflection = new \ReflectionClass($logic);
         $method = $reflection->getMethod('formatHoldings');
         $method->setAccessible(true);
-        
+
         // Example holdings data
         // note that this is a simplified example; actual data may vary and include an availability object
         $holdings = $this->getJsonFixture('ils/holdings_example.json');
-        
+
         $result = $method->invoke($logic, $holdings);
 
         // assert various properties of the result
@@ -132,8 +132,14 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('02.09.2025', $result['location1_id|Main Library']['items'][0]['duedate']);
         $this->assertEquals('Circulating', $result['location1_id|Main Library']['items'][0]['loan_type_name']);
         $this->assertEquals(true, $result['location1_id|Main Library']['items'][0]['is_holdable']);
-        $this->assertEquals('ac4cf292-ffca-40e8-a91a-5bb349532fe0', $result['location1_id|Main Library']['items'][0]['item_id']);
-        $this->assertEquals('228bcdc1-4c16-488d-88d4-57374f412c6e', $result['location1_id|Main Library']['items'][0]['holdings_id']);
+        $this->assertEquals(
+            'ac4cf292-ffca-40e8-a91a-5bb349532fe0',
+            $result['location1_id|Main Library']['items'][0]['item_id']
+        );
+        $this->assertEquals(
+            '228bcdc1-4c16-488d-88d4-57374f412c6e',
+            $result['location1_id|Main Library']['items'][0]['holdings_id']
+        );
         $this->assertEquals(
             'item_id=ac4cf292-ffca-40e8-a91a-5bb349532fe0&holdings_id=228bcdc1-4c16-488d-88d4-57374f412c6e&status=Checked+out&hashKey=fb00698a17b30097c95d55a79f658d9d',
             $result['location1_id|Main Library']['items'][0]['link']['query']
@@ -141,33 +147,49 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
      /**
-     * Create a mock availability status for testing
-     *
-     * @param bool $available Whether the item is available
-     * @param string $description Status description
-     *
-     * @return object
-     */
+      * Create a mock availability status for testing
+      *
+      * @param bool   $available   Whether the item is available
+      * @param string $description Status description
+      *
+      * @return object
+      */
     protected function createMockAvailabilityStatus($available = true, $description = 'Available')
     {
         // Create an anonymous class that implements the required methods
         // generated with Claude Sonnet 4 - but there must be a better way to do this,
         // i.e. by hooking into the AvailabilityStatusInterface directly.
-        return new class($available, $description) {
+        return new class ($available, $description) {
             private $available;
             private $description;
-            
+
+            /**
+             * Constructor to initialize properties
+             *
+             * @param bool   $available   Whether the item is available
+             * @param string $description Status description
+             */
             public function __construct($available, $description)
             {
                 $this->available = $available;
                 $this->description = $description;
             }
-            
+
+            /**
+             * Check if the item is available
+             *
+             * @return bool
+             */
             public function isAvailable(): bool
             {
                 return $this->available;
             }
-            
+
+            /**
+             * Get the status description
+             *
+             * @return string
+             */
             public function getStatusDescription(): string
             {
                 return $this->description;
@@ -184,13 +206,13 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     {
         $hmac = $this->createMock(HMAC::class);
         $hmac->method('generate')->willReturn('test-hash');
-        
+
         $logic = $this->getHoldsLogic(hmac: $hmac);
-        
+
         $reflection = new \ReflectionClass($logic);
         $method = $reflection->getMethod('generateHoldings');
         $method->setAccessible(true);
-        
+
         // Example holdings data; lacks 'availability' field
         $result = $this->getJsonFixture('ils/holdings_formatted_example.json');
         $availabilityStatus = array(
@@ -202,7 +224,8 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         foreach ($result['holdings'] as &$holding) {
             // Add 'availability' field to simulate different hold types
             $holding['availability'] = $this->createMockAvailabilityStatus(
-                $availabilityStatus[$i][0], $availabilityStatus[$i][1]
+                $availabilityStatus[$i][0],
+                $availabilityStatus[$i][1]
             );
             $i++;
         }
@@ -210,17 +233,17 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             'function' => 'placeHold',
             'HMACKeys' => ['id', 'location']
         ];
-        
+
         // Test 'all' mode (all items get a link)
         $holdings = $method->invoke($logic, $result, 'all', $holdConfig);
         $this->assertArrayHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
-        
+
         // Test 'holds' mode (only available items get a link)
         $holdings = $method->invoke($logic, $result, 'holds', $holdConfig);
         $this->assertArrayNotHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
-        
+
         // // Test 'recalls' mode (only unavailable items get a link)
         $holdings = $method->invoke($logic, $result, 'recalls', $holdConfig);
         $this->assertArrayHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
@@ -236,34 +259,34 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     {
         $hmac = $this->createMock(HMAC::class);
         $hmac->method('generate')->willReturn('test-hash-key');
-        
+
         $logic = $this->getHoldsLogic(hmac: $hmac);
-        
+
         $reflection = new \ReflectionClass($logic);
         $method = $reflection->getMethod('getRequestDetails');
         $method->setAccessible(true);
-        
+
         $details = [
             'id' => 'test123',
             'location' => 'Main Library',
             'source' => 'Solr'
         ];
-        
+
         $hmacKeys = ['id', 'location'];
         $action = 'Hold';
-        
+
         $result = $method->invoke($logic, $details, $hmacKeys, $action);
-        
+
         $this->assertEquals('Hold', $result['action']);
         $this->assertEquals('test123', $result['record']);
         $this->assertEquals('Solr', $result['source']);
         $this->assertStringContainsString('hashKey=test-hash-key', $result['query']);
         $this->assertEquals('#tabnav', $result['anchor']);
-        
+
         // Test with link overrides
         $linkOverrides = ['id' => 'override123', 'source' => 'Override'];
         $result = $method->invoke($logic, $details, $hmacKeys, $action, $linkOverrides);
-        
+
         $this->assertEquals('override123', $result['record']);
         $this->assertEquals('Override', $result['source']);
     }
@@ -277,39 +300,39 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     {
         // Test default grouping
         $logic = $this->getHoldsLogic();
-        
+
         $reflection = new \ReflectionClass($logic);
         $method = $reflection->getMethod('getHoldingsGroupKey');
         $method->setAccessible(true);
-        
+
         $copy = [
             'holdings_id' => 'holdings_id_1',
             'location' => 'Main Library',
             'call_number' => 'c123456'
         ];
-        
+
         $result = $method->invoke($logic, $copy);
         $this->assertEquals('holdings_id_1|Main Library', $result);
-        
+
         // Test custom grouping
         $config['Catalog']['holdings_grouping'] = 'location,call_number';
         $logic = $this->getHoldsLogic(config: $config);
-        
+
         $reflection = new \ReflectionClass($logic);
         $method = $reflection->getMethod('getHoldingsGroupKey');
         $method->setAccessible(true);
-        
+
         $result = $method->invoke($logic, $copy);
         $this->assertEquals('Main Library|c123456', $result);
-        
+
         // Test legacy location_name
         $config['Catalog']['holdings_grouping'] = 'location_name';
         $logic = $this->getHoldsLogic(config: $config);
-        
+
         $reflection = new \ReflectionClass($logic);
         $method = $reflection->getMethod('getHoldingsGroupKey');
         $method->setAccessible(true);
-        
+
         $result = $method->invoke($logic, $copy);
         $this->assertEquals('Main Library', $result);
     }
@@ -323,7 +346,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     {
         $ilsAuth = $this->createMock(ILSAuthenticator::class);
         $ilsAuth->method('storedCatalogLogin')->willThrowException(new ILSException('Login failed'));
-        
+
         $catalog = $this->createMock(Connection::class);
         $catalog->method('getHoldsMode')->willReturn('disabled');
         $catalog->method('getHolding')->willReturn([
@@ -331,11 +354,11 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             'holdings' => []
         ]);
         $catalog->method('getHoldingsTextFieldNames')->willReturn([]);
-        
+
         $logic = $this->getHoldsLogic(ilsAuth: $ilsAuth, catalog: $catalog);
-        
+
         $result = $logic->getHoldings('test123');
-        
+
         $this->assertArrayHasKey('holdings', $result);
         $this->assertArrayHasKey('blocks', $result);
         $this->assertFalse($result['blocks']);
@@ -350,7 +373,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     {
         $ilsAuth = $this->createMock(ILSAuthenticator::class);
         $ilsAuth->method('storedCatalogLogin')->willThrowException(new ILSException('Login failed'));
-        
+
         $catalog = $this->createMock(Connection::class);
         $catalog->method('getHoldsMode')->willReturn('other');
         $catalog->method('getHolding')->willReturn([
@@ -382,11 +405,11 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             ]
         ]);
         $catalog->method('getHoldingsTextFieldNames')->willReturn(['holdings_notes', 'summary']);
-        
+
         $logic = $this->getHoldsLogic(ilsAuth: $ilsAuth, catalog: $catalog);
-        
+
         $result = $logic->getHoldings('test123');
-        
+
         $this->assertArrayHasKey('holdings', $result);
         $this->assertArrayHasKey('blocks', $result);
         $this->assertArrayHasKey('holdings_id_1|Main Library', $result['holdings']);
