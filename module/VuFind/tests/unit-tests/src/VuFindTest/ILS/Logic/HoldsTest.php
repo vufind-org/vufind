@@ -266,4 +266,50 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('override123', $result['record']);
         $this->assertEquals('Override', $result['source']);
     }
+
+    /**
+     * Test getHoldingsGroupKey method
+     *
+     * @return void
+     */
+    public function testGetHoldingsGroupKey(): void
+    {
+        // Test default grouping
+        $logic = $this->getHoldsLogic();
+        
+        $reflection = new \ReflectionClass($logic);
+        $method = $reflection->getMethod('getHoldingsGroupKey');
+        $method->setAccessible(true);
+        
+        $copy = [
+            'holdings_id' => 'holdings_id_1',
+            'location' => 'Main Library',
+            'call_number' => 'c123456'
+        ];
+        
+        $result = $method->invoke($logic, $copy);
+        $this->assertEquals('holdings_id_1|Main Library', $result);
+        
+        // Test custom grouping
+        $config['Catalog']['holdings_grouping'] = 'location,call_number';
+        $logic = $this->getHoldsLogic(config: $config);
+        
+        $reflection = new \ReflectionClass($logic);
+        $method = $reflection->getMethod('getHoldingsGroupKey');
+        $method->setAccessible(true);
+        
+        $result = $method->invoke($logic, $copy);
+        $this->assertEquals('Main Library|c123456', $result);
+        
+        // Test legacy location_name
+        $config['Catalog']['holdings_grouping'] = 'location_name';
+        $logic = $this->getHoldsLogic(config: $config);
+        
+        $reflection = new \ReflectionClass($logic);
+        $method = $reflection->getMethod('getHoldingsGroupKey');
+        $method->setAccessible(true);
+        
+        $result = $method->invoke($logic, $copy);
+        $this->assertEquals('Main Library', $result);
+    }
 }
