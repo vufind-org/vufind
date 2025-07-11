@@ -1,0 +1,102 @@
+{
+  "total": 3,
+  "holdings": [
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-1",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Main Library",
+      "location_code": "MAIN",
+      "folio_location_is_active": true,
+      "id": "976cbaf6-fb02-48a2-8f82-a19203769b52",
+      "item_id": "ac4cf292-ffca-40e8-a91a-5bb349532fe0",
+      "holdings_id": "holdings_id_1",
+      "number": 1,
+      "enumchron": "",
+      "barcode": "468109755",
+      "duedate": "02.09.2025",
+      "availability": {
+      },
+      "item_notes": null,
+      "reserve": "TODO",
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "2b94c631-fca9-4892-a730-03ee529ffe27",
+      "loan_type_name": "Circulating"
+    },
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-2",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Main Library",
+      "location_code": "MAIN",
+      "folio_location_is_active": true,
+      "id": "976cbaf6-fb02-48a2-8f82-a19203769b52",
+      "item_id": "84b3e24e-b0c5-4e54-9cb2-2a136d01e0c0",
+      "holdings_id": "holdings_id_1",
+      "number": 2,
+      "enumchron": "",
+      "barcode": "468109753",
+      "duedate": "",
+      "availability": {
+      },
+      "item_notes": null,
+      "reserve": "TODO",
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "2b94c631-fca9-4892-a730-03ee529ffe27",
+      "loan_type_name": "Circulating"
+    },
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-3",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Secondary Library",
+      "location_code": "SECOND",
+      "folio_location_is_active": true,
+      "id": "976cbaf6-fb02-48a2-8f82-a19203769b52",
+      "item_id": "926ecaaf-58e3-4f11-8536-cedaa47caa3f",
+      "holdings_id": "holdings_id_2",
+      "number": 1,
+      "enumchron": "",
+      "barcode": "468109754",
+      "duedate": "",
+      "availability": {
+      },
+      "item_notes": null,
+      "reserve": "TODO",
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "2b94c631-fca9-4892-a730-03ee529ffe27",
+      "loan_type_name": "Circulating"
+    }
+  ],
+  "electronic_holdings": [
+  ],
+  "page": 1,
+  "itemLimit": null
+}
