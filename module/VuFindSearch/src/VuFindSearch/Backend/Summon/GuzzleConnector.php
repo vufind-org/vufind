@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Summon Search API Interface (Psr implementation)
+ * Summon Search API Interface (Guzzle and Psr implementation)
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -37,7 +37,7 @@ use SerialsSolutions_Summon_Exception;
 use function is_object;
 
 /**
- * PSR-compliant port of SerialsSolutions\Summon\Laminas connector
+ * Guzzle and PSR-compliant port of SerialsSolutions\Summon\Laminas connector
  *
  * @category VuFind
  * @package  Search
@@ -45,7 +45,7 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class PsrConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareInterface
+class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareInterface
 {
     /**
      * HTTP client instance
@@ -57,22 +57,22 @@ class PsrConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareI
     /**
      * Logger instance.
      *
-     * @var LoggerInterface|false
+     * @var ?LoggerInterface
      */
-    protected $logger = false;
+    protected $logger = null;
 
     /**
      * Constructor.
      *
-     * @param string          $apiId   Summon API ID
-     * @param string          $apiKey  Summon API Key
-     * @param array           $options Options for the parent constructor
-     * @param HttpClient|null $client  Optional HTTP client to use
+     * @param string     $apiId   Summon API ID
+     * @param string     $apiKey  Summon API Key
+     * @param array      $options Options for the parent constructor
+     * @param HttpClient $client  Optional HTTP client to use
      */
-    public function __construct($apiId, $apiKey, $options = [], $client = null)
+    public function __construct(string $apiId, string $apiKey, array $options = [], ?HttpClient $client = null)
     {
         parent::__construct($apiId, $apiKey, $options);
-        $this->client = is_object($client) ? $client : new HttpClient();
+        $this->client = $client ?? new HttpClient();
     }
 
     /**
@@ -97,7 +97,7 @@ class PsrConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareI
     protected function debugPrint($msg)
     {
         if ($this->logger) {
-            $this->logger->debug("$msg\n");
+            $this->logger->debug("$msg");
         } else {
             parent::debugPrint($msg);
         }
