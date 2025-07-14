@@ -34,8 +34,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use SerialsSolutions_Summon_Exception;
 
-use function is_object;
-
 /**
  * Guzzle and PSR-compliant port of SerialsSolutions\Summon\Laminas connector
  *

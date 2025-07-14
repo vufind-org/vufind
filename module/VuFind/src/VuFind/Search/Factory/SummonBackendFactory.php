@@ -30,6 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
+use VuFind\Http\GuzzleService;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
@@ -50,7 +51,7 @@ class SummonBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -125,7 +126,7 @@ class SummonBackendFactory extends AbstractBackendFactory
             $id,
             $key,
             $options,
-            $this->getService(\VuFind\Http\GuzzleService::class)->createClient(null, $this->summonConfig->General->timeout ?? 30)
+            $this->getService(GuzzleService::class)->createClient(null, $this->summonConfig->General->timeout ?? 30)
         );
         $connector->setLogger(new \Laminas\Log\PsrLoggerAdapter($this->logger));
         return $connector;
