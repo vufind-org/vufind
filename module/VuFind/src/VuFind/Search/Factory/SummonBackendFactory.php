@@ -127,7 +127,7 @@ class SummonBackendFactory extends AbstractBackendFactory
             $options,
             new \GuzzleHttp\Client(['timeout' => $this->summonConfig->General->timeout ?? 30])
         );
-        $connector->setLogger($this->logger);
+        $connector->setLogger(new \Laminas\Log\PsrLoggerAdapter($this->logger));
         return $connector;
     }
 
