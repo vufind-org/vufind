@@ -125,7 +125,7 @@ class SummonBackendFactory extends AbstractBackendFactory
             $id,
             $key,
             $options,
-            new \GuzzleHttp\Client(['timeout' => $this->summonConfig->General->timeout ?? 30])
+            $this->getService(\VuFind\Http\GuzzleService::class)->createClient(null, $this->summonConfig->General->timeout ?? 30)
         );
         $connector->setLogger(new \Laminas\Log\PsrLoggerAdapter($this->logger));
         return $connector;
