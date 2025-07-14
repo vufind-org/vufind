@@ -97,7 +97,7 @@ class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwa
     protected function debugPrint($msg)
     {
         if ($this->logger) {
-            $this->logger->debug("$msg");
+            $this->logger->debug($msg);
         } else {
             parent::debugPrint($msg);
         }
