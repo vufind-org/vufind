@@ -262,7 +262,6 @@ class Logger implements LoggerInterface
         } else {
             $mainMonologMessage = $message;
         }
-        print_r([$message, $context]);
         $this->monologLogger->log($monologLevel, $mainMonologMessage, $context);
     }
 

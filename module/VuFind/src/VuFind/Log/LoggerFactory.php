@@ -159,6 +159,37 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
+     * Configure Office365 writers.
+     *
+     * @param Logger             $logger    Logger object
+     * @param ContainerInterface $container Service manager
+     * @param Config             $config    Configuration
+     *
+     * @return void
+     */
+    protected function addOffice365Writers(MonologLogger $logger, Config $config, ContainerInterface $container) {
+        $options = [];
+        $error_types = $config->Logging->office365;
+        if (isset($config->Logging->office365_title)) {
+            $options['title'] = $config->Logging->office365_title;
+        }
+        $filters = explode(',', $error_types);
+        // Make Writers
+        $writer = new Writer\Office365(
+            $config->Logging->office365_url,
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
+            $options
+        );
+
+        $handler = new \VuFind\Log\Handler\Office365Handler(
+            $config->Logging->office365_url,
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
+            $options
+        );
+        $this->addHandlers($logger, $handler, $filters);
+    }
+
+    /**
      * Configure Slack webhook handler.
      *
      * @param MonologLogger $monologLogger The Monolog logger instance to add handlers to.
@@ -244,6 +275,11 @@ class LoggerFactory implements FactoryInterface
         // Activate Slack logging, if applicable:
         if (isset($config->Logging->slack)) {
             $this->addSlackHandler($monologLogger, $config);
+        }
+
+        // Activate Office365 logging, if applicable:
+        if (isset($config->Logging->office365) && isset($config->Logging->office365_url)) {
+            $this->addOffice365Handler($logger, $config, $container);
         }
 
         // Add common processors:
