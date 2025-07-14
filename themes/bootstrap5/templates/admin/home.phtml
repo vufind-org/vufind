@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('VuFind Administration - Home'));
-
   // Set up map of core name => label
   $coreLabels = [
     'biblio' => $this->translate('Bibliographic Index'),
@@ -9,7 +6,7 @@
   ];
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('VuFind Administration')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('VuFind Administration'), 'headTitle' => $this->translate('VuFind Administration - Home')]);?>
   <?php $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
   <?php foreach ($cores as $core): ?>
     <?php $coreName = (string)$core['name']; ?>

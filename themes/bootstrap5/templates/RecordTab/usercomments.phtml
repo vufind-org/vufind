@@ -24,7 +24,8 @@
         <?=$this->captcha()->html(true, false) ?>
       <?php endif; ?>
       <div class="clearfix"></div>
-      <input class="btn btn-primary" data-loading-text="<?=$this->transEscAttr('Submitting') ?>" type="submit" value="<?=$this->transEscAttr('Add your comment')?>">
+      <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Add your comment')?>">
+      <div class="loading-spinner js-loading-spinner hidden"><?=$this->icon('spinner') ?> <?=$this->translate('loading_ellipsis')?></div>
     </div>
   <?php else: ?>
     <?php $singleSignOn = $this->auth()->hasSessionInitiator(); ?>

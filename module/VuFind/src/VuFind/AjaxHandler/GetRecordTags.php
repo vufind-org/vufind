@@ -71,9 +71,11 @@ class GetRecordTags extends AbstractBase
         $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
+        $id = $params->fromQuery('id');
+        $source = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $tags = $this->tagsService->getRecordTags(
-            $params->fromQuery('id'),
-            $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
+            $id,
+            $source,
             0,
             null,
             null,
@@ -91,7 +93,7 @@ class GetRecordTags extends AbstractBase
             ];
         }
 
-        $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user];
+        $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user, 'driver' => "$source|$id"];
         $html = $this->renderer->render('record/taglist', $viewParams);
         return $this->formatResponse(compact('html'));
     }
