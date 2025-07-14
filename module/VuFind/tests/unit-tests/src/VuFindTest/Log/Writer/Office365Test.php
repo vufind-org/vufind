@@ -1,5 +1,6 @@
 <?php
-namespace VuFindTest\Log\Handler;
+
+namespace VuFindTest\Log\Writer;
 
 use Laminas\Http\Client;
 use Monolog\Level;
@@ -14,7 +15,7 @@ class Office365Test extends \PHPUnit\Framework\TestCase
         $expectedBody = '{"@context":"https:\/\/schema.org\/extensions",' .
             '"@type":"MessageCard","themeColor":"0072C6",' .
             '"title":"Test Title","text":"[2025-07-09T14:55:20+00:00] test.INFO: test [] []\n"}';
-        
+
         $options = ['title' => 'Test Title'];
         $logRecord = new LogRecord(
             datetime: new \DateTimeImmutable('2025-07-09T14:55:20+00:00'),
@@ -24,7 +25,7 @@ class Office365Test extends \PHPUnit\Framework\TestCase
             context: [],
             extra: []
         );
-        
+
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()->getMock();
         $client->expects($this->once())->method('setUri')
@@ -36,7 +37,7 @@ class Office365Test extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($expectedBody));
         $client->expects($this->once())->method('send');
-        
+
         $handler = new Office365Handler($fakeUri, $client, $options);
         $handler->handle($logRecord);
     }

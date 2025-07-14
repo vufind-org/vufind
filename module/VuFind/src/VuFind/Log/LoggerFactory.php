@@ -167,7 +167,8 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addOffice365Writers(MonologLogger $logger, Config $config, ContainerInterface $container) {
+    protected function addOffice365Writers(MonologLogger $logger, Config $config, ContainerInterface $container)
+    {
         $options = [];
         $error_types = $config->Logging->office365;
         if (isset($config->Logging->office365_title)) {

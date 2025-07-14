@@ -32,6 +32,8 @@ namespace VuFindTest\Log;
 use VuFind\Log\Logger;
 
 use function count;
+use function func_get_args;
+use function is_array;
 
 /**
  * Logger Test Class
@@ -53,7 +55,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
     {
         $callback = function ($level, $message, $context = []) use (&$capturedArgs): bool {
             $capturedArgs = func_get_args();
-            
+
             $expectedContext = <<<CONTEXT
                 Server Context:
                 Array
@@ -73,20 +75,20 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                 $details = $contextCheck ? $context['vufind_log_details'] : [];
                 $expectedMessage = $message;
             }
-            
+
             if (!$contextCheck && !is_array($message)) {
                 return false;
             }
-            $targetDetails = is_array($message) ? $message : (isset($context['vufind_log_details']) ? $context['vufind_log_details'] : []);
-            
+            $targetDetails = is_array($message) ? $message : ($context['vufind_log_details'] ?? []);
+
             if (count($targetDetails) !== 5) {
                 return false;
             }
-            
+
             $expectedA2 = 'Exception : test'
                 . '(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, '
                 . 'Host = localhost:80, Request URI = /foo/bar)';
-            
+
             return $targetDetails[1] === 'Exception : test'
                 && $targetDetails[2] === $expectedA2
                 && str_contains($targetDetails[3], $targetDetails[2])
@@ -106,7 +108,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                 && str_contains($targetDetails[5], 'class =')
                 && str_contains($targetDetails[5], 'function =');
         };
-        
+
         $capturedArgs = [];
         $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
             ->disableOriginalConstructor()
@@ -120,7 +122,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $logger->expects($this->once())->method('log')
             ->will($this->returnCallback($callback));
-        
+
         try {
             throw new \Exception('test');
         } catch (\Exception $e) {

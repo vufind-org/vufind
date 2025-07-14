@@ -823,7 +823,7 @@ class BackendTest extends TestCase
                 . ' Invalid blender_backend filter: Backend Foo not enabled',
                 []
             )
-            ;
+        ;
         $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }

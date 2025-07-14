@@ -1,5 +1,6 @@
 <?php
-namespace VuFindTest\Log\Handler;
+
+namespace VuFindTest\Log\Writer;
 
 use Laminas\Http\Client;
 use Monolog\Level;
@@ -12,7 +13,7 @@ class PostTest extends \PHPUnit\Framework\TestCase
     {
         $fakeUri = 'http://fake';
         $expectedBody = json_encode(['message' => '[2025-07-09T14:57:30+00:00] test.INFO: test [] []' . PHP_EOL . PHP_EOL]);
-        
+
         $logRecord = new LogRecord(
             datetime: new \DateTimeImmutable('2025-07-09T14:57:30+00:00'),
             channel: 'test',
@@ -21,7 +22,7 @@ class PostTest extends \PHPUnit\Framework\TestCase
             context: [],
             extra: []
         );
-        
+
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()->getMock();
         $client->expects($this->once())->method('setUri')
@@ -33,7 +34,7 @@ class PostTest extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($expectedBody));
         $client->expects($this->once())->method('send');
-        
+
         $handler = new PostHandler($fakeUri, $client);
         $handler->handle($logRecord);
     }
