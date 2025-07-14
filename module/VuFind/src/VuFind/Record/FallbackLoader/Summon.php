@@ -29,7 +29,7 @@
 
 namespace VuFind\Record\FallbackLoader;
 
-use VuFindSearch\Backend\Summon\PsrConnector as Connector;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 

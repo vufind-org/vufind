@@ -34,7 +34,7 @@ use SerialsSolutions_Summon_Query as SummonQuery;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Backend\Summon\PsrConnector as Connector;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;

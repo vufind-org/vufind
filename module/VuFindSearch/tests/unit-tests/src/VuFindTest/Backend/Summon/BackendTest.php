@@ -257,7 +257,7 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        return $this->getMockBuilder(\VuFindSearch\Backend\Summon\PsrConnector::class)
+        return $this->getMockBuilder(\VuFindSearch\Backend\Summon\GuzzleConnector::class)
             ->onlyMethods($mock)
             ->setConstructorArgs(['id', 'key'])
             ->getMock();

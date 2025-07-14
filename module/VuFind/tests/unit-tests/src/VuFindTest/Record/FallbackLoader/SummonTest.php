@@ -33,7 +33,7 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Summon;
 use VuFind\Record\RecordIdUpdater;
-use VuFindSearch\Backend\Summon\PsrConnector as Connector;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
 use VuFindSearch\ParamBag;
 
 /**
