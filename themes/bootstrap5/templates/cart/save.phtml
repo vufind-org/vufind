@@ -1,7 +1,4 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('bulk_save_cart'));
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
     if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -9,7 +6,7 @@
     }
     $this->breadcrumbs()->add($this->translate('bulk_save_cart'), active: true);
 ?>
-<h2><?=$this->transEsc('bulk_save_cart')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('bulk_save_cart')]);?>
 
 <?=$this->flashmessages()?>
 

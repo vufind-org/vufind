@@ -25,7 +25,7 @@
   }
 ?>
 <?php if ($ratingData['count']): ?>
-  <h2><?=$this->transEsc($ratingData['count'] === 1 ? 'rating_summary_single' : 'rating_summary', ['%%count%%' => $ratingData['count']])?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate($ratingData['count'] === 1 ? 'rating_summary_single' : 'rating_summary', ['%%count%%' => $ratingData['count']])]);?>
   <div class="rating-breakdown">
     <?php foreach ($ratingData['groups'] as $group => $groupCount): ?>
       <div class="rating-breakdown-stars" title="<?=$groupTitleTransEscAttr[$group]?>">
