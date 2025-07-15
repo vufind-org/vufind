@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Config;
 
+use VuFind\Config\ConfigManager;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFind\Exception\FileAccess;
 use VuFind\Feature\DirUtilityTrait;
@@ -133,9 +135,11 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
             self::rmDir($localDirPath);
         }
         self::cpDir($fixtureDir, $localDirPath);
-        $oldDir = realpath($localDirPath);
-        $rawDir = realpath($this->baseDirPath);
-        return new Upgrade($fixture, self::$targetVersion, $oldDir, $rawDir, $oldDir);
+        $container = $this->getContainerWithConfigRelatedServices();
+        return new Upgrade(
+            $container->get(PathResolver::class),
+            $container->get(ConfigManager::class),
+        );
     }
 
     /**
@@ -168,7 +172,7 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertContains('config.ini', $dirContent);
         $oldContent = file_get_contents($this->localDirPath . '/config.ini');
 
-        $upgrader->run();
+        $upgrader->run(self::$targetVersion);
 
         $dirContent = scandir($this->localDirPath);
         $hasBackup = false;
@@ -217,7 +221,7 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
         unset($baseConfig['Site']['generator']);
 
         $upgrader = $this->getUpgrader($fixture);
-        $upgrader->run();
+        $upgrader->run(self::$targetVersion);
         $upgradedConfig = $this->readConfig('config');
         $this->assertEquals(
             $expectedGenerator,
