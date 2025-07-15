@@ -176,7 +176,7 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addOffice365Writers(MonologLogger $logger, Config $config, ContainerInterface $container)
+    protected function addOffice365Handler(MonologLogger $logger, Config $config, ContainerInterface $container)
     {
         $options = [];
         $error_types = $config->Logging->office365;
@@ -184,12 +184,6 @@ class LoggerFactory implements FactoryInterface
             $options['title'] = $config->Logging->office365_title;
         }
         $filters = explode(',', $error_types);
-        // Make Writers
-        $writer = new Writer\Office365(
-            $config->Logging->office365_url,
-            $container->get(\VuFindHttp\HttpService::class)->createClient(),
-            $options
-        );
 
         $handler = new \VuFind\Log\Handler\Office365Handler(
             $config->Logging->office365_url,
@@ -289,7 +283,7 @@ class LoggerFactory implements FactoryInterface
 
         // Activate Office365 logging, if applicable:
         if (isset($config->Logging->office365) && isset($config->Logging->office365_url)) {
-            $this->addOffice365Handler($logger, $config, $container);
+            $this->addOffice365Handler($monologLogger, $config, $container);
         }
 
         // Add common processors:

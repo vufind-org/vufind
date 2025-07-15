@@ -149,7 +149,7 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
      */
     protected function getSlackData(LogRecord $record): array
     {
-        $data = parent::getSlackData($record);
+        $data = this->slackRecord->getSlackData($record);;
 
         $data['channel'] = $this->channel;
         $data['username'] = $this->username;
