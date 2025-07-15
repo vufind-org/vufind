@@ -181,6 +181,7 @@ class Upgrade
         // so we should save it last. It doesn't have its own upgrade routine.
         $this->saveModifiedConfig('permissions', $this->permissionsModified);
 
+        // Make sure to update any remaining configurations that were not explicitly updated above.
         foreach ($this->newConfigs as $filename => $newConfig) {
             if (!in_array($filename, $this->writtenConfig)) {
                 $fullGroups = in_array($filename, $this->searchConfigs) ? $this->searchConfigGroups : [];
