@@ -549,4 +549,18 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(isset($results['config.ini']['Mail']['require_login']));
         $this->assertEquals($expected, $results['config.ini']['Mail']['email_action']);
     }
+
+    /**
+     * Test upgrades without a special logic.
+     *
+     * @return void
+     */
+    public function testDefaultUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('default-upgrade');
+        $results = $upgrader->getNewConfigs();
+        $authorityConfig = $results['authority.ini'];
+        $this->assertEquals('CustomHandler', $authorityConfig['General']['default_handler']);
+        $this->assertEquals('relevance', $authorityConfig['General']['default_sort']);
+    }
 }
