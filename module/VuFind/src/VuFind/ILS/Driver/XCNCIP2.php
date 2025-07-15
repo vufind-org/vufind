@@ -1468,6 +1468,7 @@ class XCNCIP2 extends AbstractBase implements
         );
         $expirationDate = !empty($expirationDate) ?
             $this->displayDate((string)$expirationDate[0]) : null;
+        // TODO: add phone number support
         return $this->createProfileArray(
             firstname: (string)($firstname[0] ?? null),
             lastname: (string)($lastname[0] ?? null),
