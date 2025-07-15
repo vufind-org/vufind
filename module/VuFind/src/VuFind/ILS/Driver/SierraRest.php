@@ -676,11 +676,11 @@ class SierraRest extends AbstractBase implements
             }
         }
         $name = $patron['names'][0] ?? '';
-        $nameParts = explode(', ', $name, 2);
+        [$lastname, $firstname] = $this->getLastAndFirstName($name);
         return $this->createPatronArray(
             id: $patron['id'],
-            firstname: $nameParts[1] ?? '',
-            lastname: $nameParts[0] ?? '',
+            firstname: $firstname,
+            lastname: $lastname,
             cat_username: $username,
             cat_password: $password,
             email: $patron['emails'][0] ?? null
