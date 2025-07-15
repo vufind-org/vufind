@@ -433,6 +433,7 @@ $config = [
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Config\AccountCapabilities' => 'VuFind\Config\AccountCapabilitiesFactory',
             'VuFind\Config\ConfigManager' => 'VuFind\Config\ConfigManagerFactory',
+            'VuFind\Config\Upgrade' => 'VuFind\Config\UpgradeFactory',
             'VuFind\Config\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Config\PathResolver' => 'VuFind\Config\PathResolverFactory',
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',

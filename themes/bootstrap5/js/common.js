@@ -297,6 +297,21 @@ var VuFind = (function VuFind() {
   };
 
   /**
+   * Return an overlay html element that contains a spinner with loading text
+   * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
+   * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
+   * @returns {HTMLDivElement}
+   */
+  function loadingOverlay(text = null, extraClass = '') {
+    const overlay = document.createElement('div');
+    overlay.classList = 'loading-overlay';
+    overlay.setAttribute('aria-live', 'polite');
+    overlay.setAttribute('role', 'status');
+    overlay.append(loadingElement(text, extraClass));
+    return overlay;
+  }
+
+  /**
    * Reload the page without causing trouble with POST parameters while keeping hash
    */
   var refreshPage = function refreshPage(forceGet) {
@@ -632,6 +647,7 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     loadingElement: loadingElement,
+    loadingOverlay,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,

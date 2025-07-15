@@ -1,7 +1,4 @@
 <?php
-  // Set up page title:
-  $this->headTitle($this->translate('Checked Out Items'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
     ->add($this->translate('Checked Out Items'), active: true);
@@ -15,7 +12,7 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('Your Checked Out Items'), 'headTitle' => $this->translate('Checked Out Items')]);?>
   <?=$this->flashmessages()?>
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>

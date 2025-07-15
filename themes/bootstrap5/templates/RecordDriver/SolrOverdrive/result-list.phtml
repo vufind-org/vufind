@@ -178,7 +178,7 @@
       <a class="hidden full-record-link icon-link" href="<?=$recordLinker->getUrl($this->driver)?>">
         <?=$this->icon('link', 'icon-link__icon') ?>
         <span class="icon-link__label"><?=$this->transEsc('standalone_record_link')?></span>
-      </a><br>
+      </a>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
@@ -186,7 +186,7 @@
           <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record result-link icon-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
             <?=$this->icon('user-favorites', 'icon-link__icon') ?>
             <span class="result-link-label icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
-          </a><br>
+          </a>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block?>
         <?php endif; ?>
