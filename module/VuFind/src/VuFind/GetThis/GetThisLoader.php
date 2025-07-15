@@ -15,8 +15,8 @@
 namespace VuFind\GetThis;
 
 use Exception;
+use Laminas\Log\LoggerAwareInterface;
 use Throwable;
-use VuFind\Config\YamlReader;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Regex\Regex;
@@ -36,7 +36,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/vufind/ Main page
  */
-class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
+class GetThisLoader implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -45,17 +45,17 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      *
      * @var string
      */
-    protected string $configFilename = 'GetThis.yaml';
+    const CONFIG_FILENAME = 'GetThis.yaml';
 
     /**
-     * Config pulled from the above file
+     * Items
      *
-     * @var array
+     * @var
      */
-    protected $config;
+    protected $items;
 
     /**
-     * Holding item for set item_id
+     * Holding current item
      *
      * @var
      */
@@ -83,32 +83,17 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     protected $record;
 
     /**
-     * Item id
-     *
-     * @var
-     */
-    protected $itemId = null;
-
-    /**
-     * Items
-     *
-     * @var
-     */
-    protected $items;
-
-    /**
      * Initializes the loader
      *
-     * @param YamlReader $yamlReader YamlReader service
-     * @param Regex      $regex      Regex service
-     * @param Translate  $translator Translator plugin
+     * @param array     $config     Config pulled from the config file defined above
+     * @param Regex     $regex      Regex service
+     * @param Translate $translator Translator plugin
      */
     public function __construct(
-        protected YamlReader $yamlReader,
+        protected array $config,
         protected Regex $regex,
         protected Translate $translator
     ) {
-        $this->config = $yamlReader->get($this->configFilename);
     }
 
     /**
@@ -240,10 +225,10 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     /**
      * Get the templates to display according to the config file
      *
-     * @return array|null
+     * @return array
      * @throws Exception
      */
-    public function getSubTemplates(): ?array
+    public function getSubTemplates(): array
     {
         if (isset($this->subTemplates)) {
             return $this->subTemplates;
@@ -254,10 +239,10 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
                 if ($template['enabled'] ?? true) {
                     // If condition_function is not present we display the templates
                     // If it's present we display the template only if the function exists and return true
-
-                    if (!isset($template['condition_function']) && !isset($template['condition_group'])) {
-                        $this->addSubTemplates($templateName, $template);
-                    } elseif ($this->areConditionsFilled($template)) {
+                    if (
+                        !isset($template['condition_function']) && !isset($template['condition_group'])
+                        || $this->areConditionsFilled($template)
+                    ) {
                         $this->addSubTemplates($templateName, $template);
                     }
                 }
@@ -266,7 +251,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             throw new Exception('Error with the get this configuration : ' . $t->getMessage(), previous: $t);
         }
         $this->sortSubTemplateParams();
-        return $this->subTemplates;
+        return $this->subTemplates ?? [];
     }
 
     /**
@@ -276,12 +261,12 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      */
     public function sortSubTemplateParams(): void
     {
-        if (!isset($this->config['templates_order'])) {
+        if (!isset($this->config['templates_order'], $this->subTemplates)) {
             return;
         }
         $orderMap = array_flip($this->config['templates_order']);
         usort($this->subTemplates, function ($a, $b) use ($orderMap) {
-            return $orderMap[$a] <=> $orderMap[$b];
+            return isset($orderMap[$a], $orderMap[$b])? $orderMap[$a] <=> $orderMap[$b] : 0;
         });
     }
 
@@ -297,50 +282,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         if (isset($templateName)) {
             return $this->subTemplatesParams[$templateName] ?? [];
         }
-        return $this->subTemplatesParams;
-    }
-
-    /**
-     * Logic used to determine which item id to use
-     *
-     * @param string|null $itemId The holding item UUID.
-     *
-     * @return string|null $itemId for the selected item
-     */
-    private function getItemId(?string $itemId = null): ?string
-    {
-        if (null !== $itemId) {
-            return $itemId; // use the one passed as a parameter first
-        } elseif (null !== $this->itemId) {
-            return $this->itemId; // get the one set by the loader
-        } elseif (count($this->items) > 0) {
-            return $this->items[0]['item_id']; // grab the first holding record
-        } else {
-            return null; // This shouldn't happen, but we have no item id!
-        }
-    }
-
-    /**
-     * Get the holding record for the given item id. If none is provided, the first holding
-     * record will be returned.
-     *
-     * @param string|null $itemId  The holding item UUID. If null (default) will return for what
-     *                             is set in the class if available, else the first item
-     * @param bool        $refresh Either to force refresh of the property
-     *
-     * @return array The data for with the holding information of the given item
-     */
-    public function getItem(?string $itemId = null, bool $refresh = false)
-    {
-        if (!isset($this->item) || !$refresh) {
-            $itemId = $this->getItemId($itemId);
-            foreach ($this->getItems() as $hold_item) {
-                if ($hold_item['item_id'] == $itemId) {
-                    $this->item = $hold_item;
-                }
-            }
-        }
-        return $this->item;
+        return $this->subTemplatesParams ?? [];
     }
 
     /**
@@ -352,7 +294,11 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      */
     public function getStatus(?string $itemId = null): string
     {
-        return $this->getItem($itemId)['availability']?->getStatusDescription() ?? 'Unknown';
+        $item = $this->getItem($itemId);
+        if (empty($item['availability']) || !$item['availability'] instanceof AvailabilityStatusInterface) {
+            return 'Unknown';
+        }
+        return $item['availability']->getStatusDescription();
     }
 
     /**
@@ -375,12 +321,8 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             }
             return $default;
         }
-        try {
-            return $this->regex->matches($regexName, $haystack, $default);
-        } catch (Exception $e) {
-            $this->logError(__METHOD__ . ' : ' . $e->getMessage(), $e->getTrace());
-            return false;
-        }
+        // The exception can not happen as we are passing a boolean
+        return $this->regex->matches($regexName, $haystack, $default);
     }
 
     /**
@@ -416,6 +358,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      */
     public function getLink(?string $itemId = null): array|string
     {
+        $isProvidedItemIdNull = is_null($itemId);
         // If $itemId is null, call getItem just in case $items returns the items in a different order
         // than the real time holdings information
         $itemId = $this->getItem($itemId)['item_id'] ?? null;
@@ -426,14 +369,19 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         }
         $link = '';
         foreach ($holdings['holdings'] as $location) {
-            if (isset($location['items'])) {
-                foreach ((array)$location['items'] as $item) {
-                    if (
-                        $itemId === null || (isset($item['item_id']) && $item['item_id'] == $itemId)
-                    ) {
-                        $link = $item['link'] ?? '';
-                        break;
-                    }
+            if (!isset($location['items'])) {
+                continue;
+            }
+            foreach ((array) $location['items'] as $item) {
+                if (empty($item['link'])) {
+                    continue;
+                }
+                if (isset($item['item_id']) && $item['item_id'] == $itemId) {
+                    $link = $item['link'];
+                    break 2;
+                } elseif ($itemId === null || $isProvidedItemIdNull) {
+                    $link = $item['link'];
+                    break;
                 }
             }
         }
@@ -451,31 +399,23 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     {
         $item = $this->getItem($itemId);
 
-        $callNum = '';
-        if ($item['callnumber'] ?? false) {
-            $callNum .= ($item['callnumber_prefix'] ? $item['callnumber_prefix'] . ' ' : '') .
-                $item['callnumber'];
+        if ($this->isOnlineResource($itemId)) {
+            return $this->translator->translate('Online');
         }
 
-        if ($item['enumchron'] ?? false) {
+        $callNum = '';
+        if (!empty($item['callnumber'])) {
+            if (!empty($item['callnumber_prefix'])) {
+                $callNum .= $item['callnumber_prefix'] . ' ';
+            }
+            $callNum .= $item['callnumber'];
+        }
+
+        if (!empty($item['enumchron'])) {
             $callNum .= ' ' . $item['enumchron'];
         }
 
-        if ($this->isOnlineResource($itemId)) {
-            $callNum = $this->translator->translate('Online');
-        }
-
         return empty($callNum) ? null : $callNum;
-    }
-
-    /**
-     * Either to display or not copy number
-     *
-     * @return bool
-     */
-    public function showCopyNumber(): bool
-    {
-        return ($this->config['showCopyNumber'] ?? false) && $this->showHoldings();
     }
 
     /**
@@ -495,6 +435,16 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Get the description for the record
+     *
+     * @return string The description string
+     */
+    public function getSummary(): string
+    {
+        return implode(', ', $this->record->getSummary());
+    }
+
+    /**
      * Determine if the given item is an online resource
      *
      * @param string|null $itemId Item ID to filter for
@@ -505,16 +455,6 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     {
         $location = $this->getLocation($itemId);
         return $this->matches('LOCATION_ONLINE', $location);
-    }
-
-    /**
-     * Get the description for the record
-     *
-     * @return string The description string
-     */
-    public function getSummary(): string
-    {
-        return implode(', ', $this->record->getSummary());
     }
 
     /**
@@ -545,7 +485,8 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
         $haystack = [];
-        if ($availability = $item['availability']?->getStatusDescription()) {
+        if (!empty($item['availability']) && $item['availability'] instanceof AvailabilityStatusInterface
+            && $availability = $item['availability']->getStatusDescription()) {
             $haystack[] = $availability;
         }
         if ($loanType = $item['temporary_loan_type'] ?? null) {
@@ -563,7 +504,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      */
     public function isAudioVideoMedia(?string $itemId = null): bool
     {
-        if ($callNum = $this->getItem($itemId)['callnumber']) {
+        if ($callNum = $this->getItem($itemId)['callnumber'] ?? false) {
             return $this->matches('CALLNUMBER_AV_MEDIA', $callNum);
         }
         return false;
@@ -582,7 +523,8 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
         $haystack = [];
-        if ($availability = $item['availability']?->getStatusDescription()) {
+        if (!empty($item['availability']) && $item['availability'] instanceof AvailabilityStatusInterface
+            && $availability = $item['availability']->getStatusDescription()) {
             $haystack[] = $availability;
         }
         if ($loanType = $item['temporary_loan_type'] ?? null) {
@@ -592,7 +534,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Determine if the given item is unavailable
+     * Determine if the given item is unavailable (false if uncertain)
      *
      * @param string|null $itemId Item ID to filter for
      *
@@ -603,8 +545,21 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
         if (!$item = $this->getItem($itemId)) {
             return false;
         }
-        $availability = $item['availability']?->getStatusDescription();
-        return isset($availability) && $this->matches('STATUS_UNAVAILABLE', $availability);
+        if (empty($item['availability']) || !$item['availability'] instanceof AvailabilityStatusInterface) {
+            return false;
+        }
+        $availability = $item['availability']->getStatusDescription();
+        return !empty($availability) && $this->matches('STATUS_UNAVAILABLE', $availability);
+    }
+
+    /**
+     * Either to display or not copy number
+     *
+     * @return bool
+     */
+    public function showCopyNumber(): bool
+    {
+        return ($this->config['showCopyNumber'] ?? false) && $this->showHoldings();
     }
 
     /**
@@ -614,7 +569,7 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      */
     public function showHoldings(): bool
     {
-        return count($this->items) > 1;
+        return isset($this->items) && count($this->items) > 1;
     }
 
     /**
@@ -626,16 +581,19 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      */
     public function showStaffDelivery(?string $itemId = null): bool
     {
-        $itemId = $this->getItemId($itemId);
-        if ($this->isOut($itemId) || $this->isUnavailable($itemId)) {
+        $item = $this->getItem($itemId);
+        if (
+            empty($item)
+            || empty($item['availability'])
+            || $this->isOut($itemId)
+            || $this->isUnavailable($itemId)
+            || !$item['availability'] instanceof AvailabilityStatusInterface
+        ) {
             return false;
         }
 
-        if (!$item = $this->getItem($itemId)) {
-            return false;
-        }
-        $availability = $item['availability']?->getStatusDescription();
-        return isset($availability) && $this->matches('STATUS_AVAILABLE', $availability);
+        $availability = $item['availability']->getStatusDescription();
+        return !empty($availability) && $this->matches('STATUS_AVAILABLE', $availability);
     }
 
     /**
@@ -645,18 +603,20 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      *
      * @return bool  If the template should display
      */
-    public function showRemotePatron(?string $itemId = null): bool
+    public function showRemoteDelivery(?string $itemId = null): bool
     {
-        $itemId = $this->getItemId($itemId);
-        if ($this->isOut($itemId) || $this->isUnavailable($itemId)) {
+        $item = $this->getItem($itemId);
+        if (
+            empty($item)
+            || empty($item['availability'])
+            || $this->isOut($itemId)
+            || $this->isUnavailable($itemId)
+            || !$item['availability'] instanceof AvailabilityStatusInterface
+        ) {
             return false;
         }
-
-        if (!$item = $this->getItem($itemId)) {
-            return false;
-        }
-        $availability = $item['availability']?->getStatusDescription();
-        return isset($availability) && $this->matches('STATUS_AVAILABLE', $availability);
+        $availability = $item['availability']->getStatusDescription();
+        return !empty($availability) && $this->matches('STATUS_AVAILABLE', $availability);
     }
 
     /**
@@ -697,20 +657,8 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
      */
     public function showMicroForm(?string $itemId = null): bool
     {
-        if ($this->getItemId($itemId) !== null) {
-            foreach ($this->items as $item) {
-                $location = $this->getLocation($item['item_id']);
-                if ($this->matches('LOCATION_MICROFORMS', $location)) {
-                    return true;
-                }
-            }
-        } else {
-            $location = $this->getLocation();
-            if ($this->matches('LOCATION_MICROFORMS', $location)) {
-                return true;
-            }
-        }
-        return false;
+        $location = $this->getLocation($itemId);
+        return $this->matches('LOCATION_MICROFORMS', $location);
     }
 
     /**
@@ -750,19 +698,73 @@ class GetThisLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Logic used to determine which item id to use
+     *
+     * @param string|null $itemId The holding item UUID.
+     *
+     * @return string|null $itemId for the selected item
+     */
+    private function getItemId(?string $itemId = null): ?string
+    {
+        if (isset($itemId)) {
+            return $itemId; // Use the one passed as a parameter first
+        } elseif (isset($this->item['item_id'])) {
+            return $this->item['item_id']; // Get the one set by the loader
+        } elseif (is_array($this->items) && count($this->items) > 0) {
+            return $this->items[0]['item_id']; // Grab the first holding record
+        } else {
+            return null; // This shouldn't happen, but we have no item id!
+        }
+    }
+
+    /**
+     * Get the holding record for the given item id. If none is provided, the first holding
+     * record will be returned.
+     *
+     * @param string|null $itemId  The holding item UUID. If null (default) will return for what
+     *                             is set in the class if available, else the first item
+     *
+     * @return array The data for with the holding information of the given item
+     */
+    public function getItem(?string $itemId = null)
+    {
+        if (!isset($this->item)
+            || (isset($itemId) && $this->item['item_id'] != $itemId)) {
+            $this->cacheItem($itemId);
+        }
+        return $this->item;
+    }
+
+    /**
+     * Will cache the item passed as parameter if it exists
+     *
+     * @param string|null $itemId  The holding item UUID. If null (default) will return for what
+     *                             is set in the class if available, else the first item
+     *
+     * @return void
+     */
+    protected function cacheItem(?string $itemId = null): void
+    {
+        $this->item = null;
+        $itemId = $this->getItemId($itemId);
+        foreach ($this->getItems() as $hold_item) {
+            if ($hold_item['item_id'] == $itemId) {
+                $this->item = $hold_item;
+                break;
+            }
+        }
+    }
+
+    /**
      * Setter for itemId
      *
      * @param ?string $itemId Item id of the holding for the record
      *
      * @return void
      */
-    public function setItemId(?string $itemId): void
+    public function setItemById(?string $itemId): void
     {
-        $this->itemId = $itemId;
-        if (isset($this->itemId)) {
-            $this->getItem($this->itemId, true);
-        }
-        $this->subTemplates = null;
+        $this->cacheItem($itemId);
     }
 
     /**

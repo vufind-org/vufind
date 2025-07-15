@@ -29,6 +29,14 @@ use function array_key_exists;
  */
 class Regex
 {
+
+    /**
+     * Config file name
+     *
+     * @var string
+     */
+    const CONFIG_FILENAME = 'Regex.yaml';
+
     /**
      * Initializes the loader
      *
@@ -65,7 +73,7 @@ class Regex
         if (!isset($this->config[$regexName])) {
             // We don't throw an error if the regex key exist but is null (empty)
             if (!array_key_exists($regexName, $this->config) && null === $default) {
-                throw new Exception('The regex named "' . $regexName . '" does not exist in the config file.');
+                throw new Exception('The regex named "' . $regexName . '" does not exist in the config.');
             }
             return $default;
         }

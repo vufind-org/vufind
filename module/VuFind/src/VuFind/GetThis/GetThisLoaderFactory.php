@@ -33,6 +33,9 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\YamlReader;
+use VuFind\Regex\Regex;
+use VuFind\View\Helper\Root\Translate;
 
 /**
  * Factory for GetThisLoader
@@ -68,12 +71,11 @@ class GetThisLoaderFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $requestedName,
         ?array $options = null
     ) {
-
         $viewHelperManager = $container->get('ViewHelperManager');
         return new $requestedName(
-            $container->get(\VuFind\Config\YamlReader::class),
-            $container->get(\VuFind\Regex\Regex::class),
-            $viewHelperManager->get('translate'),
+            $container->get(YamlReader::class)->get($requestedName::CONFIG_FILENAME),
+            $container->get(Regex::class),
+            $viewHelperManager->get(Translate::class),
         );
     }
 }

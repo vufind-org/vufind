@@ -5,7 +5,7 @@
   # Regex in this section are used to match against the specific item status value
   # Each heading in this section is a grouping of those statuses used for logic within the GetThis feature
 STATUS_AVAILABLE:
-  # Used within GetThisLoader in the following functions : showRemotePatron, showStaffDelivery
+  # Used within GetThisLoader in the following functions : showRemoteDelivery, showStaffDelivery
   - '/^AVAILABLE/i'
   - '/ITEM IN LIBRARY/i'
 STATUS_LIB_USE_ONLY:
@@ -24,6 +24,7 @@ STATUS_CHECKED_OUT:
   - '/PAGES/i'
 STATUS_UNAVAILABLE:
   # Used within GetThisLoader in the following functions : isUnavailable
+  - '/UNAVAILABLE/i'
   - '/AGED TO LOST/i'
   - '/CLAIMED RETURNED/i'
   - '/DECLARED LOST/i'

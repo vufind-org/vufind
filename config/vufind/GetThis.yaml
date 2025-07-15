@@ -64,7 +64,6 @@ templates:
       general_link: https://your_lib.edu/facstaffdelivery
       request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
 
-
   inter-library:
     condition_function: showInterLibrary
     view_variables:
@@ -81,7 +80,7 @@ templates:
 
 
   remote-delivery:
-    condition_function: showRemotePatron
+    condition_function: showRemoteDelivery
     view_variables:
       # Has the following placeholders available:
       #   %%item%% : Item record
