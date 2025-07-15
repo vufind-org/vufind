@@ -204,17 +204,9 @@ class ImportLokaliseCommand extends AbstractCommand
         // If we're importing the default language, we should check for missing strings and issue warnings,
         // since this may indicate a problem with data lolading from GitHub to Lokalise.
         if (str_ends_with($sourceFile, 'en.ini')) {
-            $processFile = function ($contents) {
-                $extractKey = function ($string) {
-                    $parts = explode('=', $string);
-                    return trim($parts[0]);
-                };
-                $omitComments = function ($string) {
-                    return !str_starts_with($string, ';');
-                };
-                return array_map($extractKey, array_filter($contents, $omitComments));
-            };
-            $missingKeys = array_diff($processFile($targetStrings), $processFile($sourceStrings));
+            $sourceKeys = array_keys(iterator_to_array($this->reader->getTextDomain($sourceStrings, false)));
+            $targetKeys = array_keys(iterator_to_array($this->reader->getTextDomain($targetStrings, false)));
+            $missingKeys = array_diff($targetKeys, $sourceKeys);
             foreach ($missingKeys as $key) {
                 // The key will be missing if the string is intentionally empty, so ignore that case:
                 if (!in_array("$key = \"\"\n", $targetStrings)) {
