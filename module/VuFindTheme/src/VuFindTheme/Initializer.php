@@ -201,7 +201,7 @@ class Initializer
 
         // Initialize the color scheme
         $colorSchemeManager = new ColorSchemeManager(
-            $this->config,
+            $this->config->toArray(),
             $this->serviceManager,
             $this->cookieManager,
             $currentTheme

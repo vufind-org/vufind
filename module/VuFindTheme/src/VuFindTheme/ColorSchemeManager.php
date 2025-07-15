@@ -31,7 +31,6 @@ namespace VuFindTheme;
 
 use Laminas\Stdlib\RequestInterface as Request;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 
 use function in_array;
@@ -57,18 +56,18 @@ class ColorSchemeManager
     /**
      * Constructor
      *
-     * @param Config             $config         Theme configuration object
+     * @param array              $config         Theme configuration
      * @param ContainerInterface $serviceManager Top-level service container
      * @param CookieManager      $cookieManager  Cookie manager
      * @param string             $currentTheme   Current theme
      */
     public function __construct(
-        protected Config $config,
+        protected array $config,
         protected ContainerInterface $serviceManager,
         protected CookieManager $cookieManager,
         protected string $currentTheme,
     ) {
-        $rawSupportedColorSchemes = $config->supported_color_schemes[$currentTheme] ?? '';
+        $rawSupportedColorSchemes = $config['supported_color_schemes'][$currentTheme] ?? '';
         $this->supportedColorSchemes = explode(',', $rawSupportedColorSchemes);
     }
 
@@ -139,7 +138,7 @@ class ColorSchemeManager
     protected function getColorSchemeOptions()
     {
         // Load all options from config
-        $rawOptions = $this->config->selectable_color_schemes?->toArray() ?? [];
+        $rawOptions = $this->config['selectable_color_schemes'] ?? [];
         $options = array_map(function ($rawOption) {
             $option = explode(':', $rawOption);
             return [
