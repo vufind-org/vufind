@@ -50,32 +50,14 @@ use function is_array;
 class Upgrade
 {
     /**
-     * Search configuration
+     * Default full sections.
+     *
+     * @var array
      */
-    protected array $searchConfigs = [
-        'searches.ini',
-        'facets.ini',
-        'Collection.ini',
-        'EDS.ini',
-        'EPF.ini',
-        'Summon.ini',
-        'Primo.ini',
-        'authority.ini',
-        'Pazpar2.ini',
-        'Blender.ini',
-        'EIT.ini',
-        'ProQuestFSG.ini',
-        'Search2.ini',
-        'WorldCat2.ini',
-        'combined.ini',
-        'reserves.ini',
-        'website.ini',
-    ];
-
-    protected array $searchConfigGroups = [
+    protected array $defaultFullSections = [
         'Results', 'ResultsTop', 'Advanced', 'Author', 'CheckboxFacets',
         'HomePage', 'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches',
-        'Sorting', 'DefaultSortingByType',
+        'Sort', 'Sorting', 'DefaultSortingByType',
     ];
 
     /**
@@ -184,8 +166,7 @@ class Upgrade
         // Make sure to update any remaining configurations that were not explicitly updated above.
         foreach ($this->newConfigs as $filename => $newConfig) {
             if (!in_array($filename, $this->writtenConfig)) {
-                $fullGroups = in_array($filename, $this->searchConfigs) ? $this->searchConfigGroups : [];
-                $this->applyOldSettings($filename, $fullGroups);
+                $this->applyOldSettings($filename);
                 $this->saveModifiedConfig($filename);
             }
         }
@@ -274,13 +255,17 @@ class Upgrade
      * Apply settings from an old configuration to a new configuration.
      *
      * @param string $filename     Name of the configuration being updated.
-     * @param array  $fullSections Array of section names that need to be fully
+     * @param ?array $fullSections Array of section names that need to be fully
      * overridden (as opposed to overridden on a setting-by-setting basis).
      *
      * @return void
      */
-    protected function applyOldSettings(string $filename, array $fullSections = []): void
+    protected function applyOldSettings(string $filename, ?array $fullSections = null): void
     {
+        if ($fullSections === null) {
+            $fullSections = $this->defaultFullSections;
+        }
+
         // First override all individual settings:
         foreach ($this->oldConfigs[$filename] as $section => $subsection) {
             foreach ($subsection as $key => $value) {
@@ -416,7 +401,7 @@ class Upgrade
     protected function upgradeConfig(string $newVersion): void
     {
         // override new version's defaults with matching settings from old version:
-        $this->applyOldSettings('config.ini');
+        $this->applyOldSettings('config.ini', []);
 
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
@@ -696,8 +681,8 @@ class Upgrade
     {
         // we want to retain the old installation's various facet groups
         // exactly as-is
-        $this->applyOldSettings('facets.ini', $this->searchConfigGroups);
-        $this->applyOldSettings('Collection.ini', $this->searchConfigGroups);
+        $this->applyOldSettings('facets.ini');
+        $this->applyOldSettings('Collection.ini');
 
         // fill in home page facets with advanced facets if missing:
         if (!isset($this->oldConfigs['facets.ini']['HomePage'])) {
@@ -723,7 +708,7 @@ class Upgrade
     {
         // we want to retain the old installation's Basic/Advanced search settings
         // and sort settings exactly as-is
-        $this->applyOldSettings('searches.ini', $this->searchConfigGroups);
+        $this->applyOldSettings('searches.ini');
 
         // fix call number sort settings:
         $newConfig = & $this->newConfigs['searches.ini'];
@@ -790,7 +775,7 @@ class Upgrade
     {
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $this->applyOldSettings($filename, $this->searchConfigGroups);
+        $this->applyOldSettings($filename);
 
         // Fix default view settings in case they use the old style:
         $newConfig = & $this->newConfigs[$filename]['General'];
@@ -819,7 +804,7 @@ class Upgrade
 
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $this->applyOldSettings('Summon.ini', $this->searchConfigGroups);
+        $this->applyOldSettings('Summon.ini');
 
         // update permission settings
         $this->upgradeSummonPermissions();
@@ -873,7 +858,7 @@ class Upgrade
     {
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $this->applyOldSettings('Primo.ini', $this->searchConfigGroups);
+        $this->applyOldSettings('Primo.ini');
 
         // update permission settings
         $this->upgradePrimoPermissions();
