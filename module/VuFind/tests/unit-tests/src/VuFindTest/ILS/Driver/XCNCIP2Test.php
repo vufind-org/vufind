@@ -279,7 +279,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'expiration_date' => '12-30-2099', 'birthdate' => null,
                 'address2' => null, 'city' => null, 'country' => null,
                 'zip' => null, 'phone' => null, 'mobile_phone' => null,
-                'group' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
@@ -289,7 +289,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'expiration_date' => '12-30-2099', 'birthdate' => null,
                 'address2' => null, 'city' => null, 'country' => null,
                 'zip' => null, 'phone' => null, 'mobile_phone' => null,
-                'group' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseStructuredAddress.xml', 'result' => [
@@ -298,7 +298,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'expiration_date' => '12-30-2099', 'birthdate' => null,
                 'city' => null, 'country' => null,
                 'zip' => null, 'phone' => null, 'mobile_phone' => null,
-                'group' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseStructuredAddressDetail.xml',
@@ -307,7 +307,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'address1' => 'Trvalá ulice 123', 'address2' => 'Big City',
                 'zip' => '12345', 'expiration_date' => '12-30-2099', 'birthdate' => null,
                 'city' => null, 'country' => null, 'phone' => null, 'mobile_phone' => null,
-                'group' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseUnstructuredName.xml', 'result' => [
@@ -315,7 +315,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
                 'expiration_date' => '12-30-2099', 'birthdate' => null,
                 'city' => null, 'country' => null, 'zip' => null,
-                'phone' => null, 'mobile_phone' => null, 'group' => null,
+                'phone' => null, 'mobile_phone' => null, 'group' => null, 'home_library' => null,
             ],
         ],
     ];

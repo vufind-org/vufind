@@ -222,6 +222,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
             'address3' => 'Not a default field',
             'group_code' => 'test',
             'email' => null,
+            'home_library' => null,
         ];
         $this->assertEquals($expected, $result);
     }

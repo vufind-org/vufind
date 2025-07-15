@@ -1172,9 +1172,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             return null;
         }
 
-        $split      = strpos($result['NAME'], ',');
-        $last_name  = trim(substr($result['NAME'], 0, $split));
-        $first_name = trim(substr($result['NAME'], $split + 1));
+        [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
         $split      = strpos($first_name, ' ');
         if ($split !== false) {
             $first_name = trim(substr($first_name, 0, $split));
@@ -1211,30 +1209,20 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND   p.patron_id      = :patron_id';
 
         $fields = ['patron_id:string' => $patron['id']];
+
         $result = $this->db->simpleSelect($sql, $fields)[0] ?? null;
         if (!$result) {
             return null;
         }
-        $split      = strpos($result['NAME'], ',');
-        $last_name  = substr($result['NAME'], 0, $split);
-        $first_name = substr($result['NAME'], $split + 1);
-        $split      = strpos($result['NAME'], ' ');
+        [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
+        $split = strpos($first_name, ' ');
         if ($split !== false) {
             $first_name = substr($first_name, 0, $split);
         }
 
-        $patron = [
-            'firstname' => trim($first_name),
-            'lastname'  => trim($last_name),
-            'address1'  => trim($result['STREET_ADDRESS_1']),
-            'address2'  => trim($result['STREET_ADDRESS_2']),
-            'zip'       => trim($result['POSTAL_CODE']),
-            'phone'     => trim($result['TELEPHONE_PRIMARY']),
-            'group'     => trim($result['PATRON_TYPE']),
-        ];
         $address2 = trim($result['STREET_ADDRESS_2']);
-        if ($addressCity = $result[0]['CITY'] ?: '') {
-            $address2 = trim("$address2, $addressCity", ' ,\n\r\t\v\0');
+        if ($addressCity = $result['CITY']) {
+            $address2 = trim("$address2, $addressCity", " ,\n\r\t\v\0");
         }
 
         return $this->createProfileArray(

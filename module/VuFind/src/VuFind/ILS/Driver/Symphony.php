@@ -1163,7 +1163,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             cat_username: $username,
             cat_password: $password,
             nonDefaultFields: [
-                // TODO: if we expose this as home_library through getMyProfile, it may be possible to improve
+                // Legacy support, see createProfileArray:home_library
                 'library' => $resp->patronInfo->patronLibraryID,
             ]
         );
@@ -1232,8 +1232,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $group = null;
             }
 
-            [$lastname, $firstname]
-                = explode(', ', $result->patronInfo->displayName);
+            [$lastname, $firstname] = $this->getLastAndFirstName($result->patronInfo->displayName);
             return $this->createProfileArray(
                 firstname: $firstname,
                 lastname: $lastname,
@@ -1241,7 +1240,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 address2: $address2,
                 zip: $zip,
                 phone: $phone,
-                group: $group
+                group: $group,
+                home_library: $result->patronInfo->patronLibraryID ?: $patron['library'],
             );
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);

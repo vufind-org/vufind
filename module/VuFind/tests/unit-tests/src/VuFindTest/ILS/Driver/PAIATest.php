@@ -336,6 +336,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'expires' => '12-31-9999',
         'statuscode' => 0,
         'canWrite' => true,
+        'home_library' => null,
     ];
 
     /*******************

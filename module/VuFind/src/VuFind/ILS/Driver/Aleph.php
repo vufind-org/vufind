@@ -1189,16 +1189,12 @@ class Aleph extends AbstractBase implements
             ],
             true
         );
+        [$lastname, $firstname] = $this->getLastAndFirstName((string)$xml->z303->{'z303-name'});
 
-        $name = (string)$xml->z303->{'z303-name'};
-        if (!str_contains($name, ',')) {
-            $name = ',' . $name;
-        }
-        [$firstName, $lastName] = explode(',', $name, 2);
         $expiry = (string)$xml->z305->{'z305-expiry-date'};
         return $this->createProfileArray(
-            firstname: $firstName,
-            lastname: $lastName,
+            firstname: $firstname,
+            lastname: $lastname,
             address1: (string)$xml->z304->{'z304-address-2'},
             address2: (string)$xml->z304->{'z304-address-3'},
             zip: (string)$xml->z304->{'z304-zip'},
@@ -1236,19 +1232,15 @@ class Aleph extends AbstractBase implements
                 $mappedValues[$key] = (string)$address->{$value};
             }
         }
-        $fullName = $mappedValues['fullname'];
-        if (!str_contains($fullName, ',')) {
-            $fullName = $fullName . ',';
-        }
-        [$lastName, $firstName] = explode(',', $fullName, 2);
+        [$lastname, $firstname] = $this->getLastAndFirstName($mappedValues['fullname'] ?? '');
 
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronStatus', 'registration']
         );
         $expiry = $xml->xpath('//institution/z305-expiry-date');
         return $this->createProfileArray(
-            firstname: $firstName,
-            lastname: $lastName,
+            firstname: $firstname,
+            lastname: $lastname,
             group: $xml->xpath('//institution/z305-bor-status')[0],
             city: $mappedValues['city'] ?? null,
             country: $mappedValues['country'] ?? null,

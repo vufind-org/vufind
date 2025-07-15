@@ -504,6 +504,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 'mobile_phone' => null,
                 'expiration_date' => '12/31/2022 3:55:00 PM',
                 'group' => null,
+                'home_library' => null,
             ],
             $this->driver->getMyProfile($this->defaultPatron)
         );

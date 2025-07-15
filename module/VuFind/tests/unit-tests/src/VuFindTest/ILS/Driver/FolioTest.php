@@ -867,6 +867,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'mobile_phone' => '1234567890',
             'expiration_date' => '05-29-2030',
             'group' => null,
+            'home_library' => null,
         ];
         $this->assertEquals($expected, $result);
     }

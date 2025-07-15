@@ -517,8 +517,7 @@ class Unicorn extends AbstractBase implements
         [$user_key, $alt_id, $barcode, $name, $library, $profile, $cat1, $cat2,
             $cat3, $cat4, $cat5, $expiry, $holds, $status] = explode('|', $response);
 
-        [$last, $first] = explode(',', $name);
-        $first = rtrim($first, ' ');
+        [$last, $first] = $this->getLastAndFirstName($name);
 
         if ($expiry != '0') {
             $expiry = $this->parseDateTime(trim($expiry));
@@ -580,9 +579,10 @@ class Unicorn extends AbstractBase implements
             zip: $zip,
             phone: $phone,
             group: $profile,
+            home_library: $library,
             nonDefaultFields: [
                 'email' => $email,
-                'library' => $library,
+                'library' => $library, // Leave library for legacy support
             ]
         );
     }

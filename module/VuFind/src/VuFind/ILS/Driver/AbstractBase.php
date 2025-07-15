@@ -134,6 +134,8 @@ abstract class AbstractBase implements DriverInterface
      * @param ?string $mobile_phone     Mobile phone number
      * @param ?string $expiration_date  Profile expiration date
      * @param ?string $group            Group i.e. Student, Staff, Faculty, etc
+     * @param mixed   $home_library     The locationID value of a pick-up location (see getPickUpLocations)
+     *                                  that should be used as the patron's default
      * @param array   $nonDefaultFields Non default fields not documented in the documentation.
      *                                  Merges into the resulting profile array.
      *
@@ -154,6 +156,7 @@ abstract class AbstractBase implements DriverInterface
         ?string $mobile_phone = null,
         ?string $expiration_date = null,
         ?string $group = null,
+        mixed $home_library = null,
         array $nonDefaultFields = []
     ): array {
         $profile = compact(
@@ -168,7 +171,8 @@ abstract class AbstractBase implements DriverInterface
             'phone',
             'mobile_phone',
             'expiration_date',
-            'group'
+            'group',
+            'home_library'
         );
         $this->debugDriverResult(__FUNCTION__, $profile, $nonDefaultFields);
 
@@ -176,6 +180,27 @@ abstract class AbstractBase implements DriverInterface
             $profile = array_merge($profile, $nonDefaultFields);
         }
         return array_map(fn ($value) => null !== $value ? trim((string)$value) : null, $profile);
+    }
+
+    /**
+     * Get array containing last and first name from string. This function expects that
+     * the template of name is: "lastName,firstName"
+     *
+     * @param string $fullname Name to parse
+     *
+     * @return array An array containing:
+     * - 0 => last name
+     * - 1 => first name
+     */
+    protected function getLastAndFirstName(string $fullname): array
+    {
+        if (!str_contains($fullname, ',')) {
+            // Append a comma if it does not exist to ensure that last name and first name are found
+            // and in proper order
+            $fullname .= ',';
+        }
+        [$lastName, $firstName] = explode(',', $fullname, 2);
+        return array_map('trim', [$lastName, $firstName]);
     }
 
     /**

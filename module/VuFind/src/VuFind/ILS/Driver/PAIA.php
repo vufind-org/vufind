@@ -1424,7 +1424,7 @@ class PAIA extends DAIA
         // while parsing
         $undefinedData = [];
         foreach ($user_response as $key => $value) {
-            if (in_array($key, ['id', 'firstname', 'lastname'])) {
+            if (in_array($key, ['id', 'firstname', 'lastname', 'email'])) {
                 continue;
             }
             $undefinedData[$key] = $value;
@@ -1433,6 +1433,7 @@ class PAIA extends DAIA
             id: $patron,
             firstname: $firstname,
             lastname: $lastname,
+            email: $user_response['email'] ?? null,
             nonDefaultFields: $undefinedData
         );
     }

@@ -857,12 +857,12 @@ class Alma extends AbstractBase implements
             city: (string)$address?->city,
             zip: (string)$address?->postal_code,
             country: (string)$address?->country,
-            group: $group,
+            group: $group ? $this->getTranslatableString($group) : null,
             phone: (string)$contact?->phones[0]?->phone?->phone_number,
             birthdate: $xml?->birth_date ? substr((string)$xml->birth_date, 0, 10) : null,
             nonDefaultFields: [
                 'address3' => (string)$address?->line3,
-                'group_code' => $group ? $this->getTranslatableString($group) : null,
+                'group_code' => (string)$group,
                 'email' => $this->getPreferredEmail($xml),
             ]
         );
