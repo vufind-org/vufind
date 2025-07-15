@@ -37,14 +37,21 @@ use function get_class;
 /**
  * Extension of PSR-3 LoggerAwareTrait with some convenience methods.
  * This trait provides methods to log messages, now utilizing a PSR-3 compatible logger.
+ *
+ * @category VuFind
+ * @package  Error_Logging
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
  */
 trait LoggerAwareTrait
 {
     use VarDumperTrait;
 
     /**
-     * @var LoggerInterface
      * This property will hold the logger instance injected by the ServiceManager.
+     *
+     * @var LoggerInterface
      */
     protected ?LoggerInterface $logger = null;
 
@@ -52,7 +59,8 @@ trait LoggerAwareTrait
      * Sets the logger instance on the object.
      * This method fulfills the contract of Psr\Log\LoggerAwareInterface.
      *
-     * @param  LoggerInterface $logger The logger instance, adhering to PSR-3 standard.
+     * @param LoggerInterface $logger The logger instance, adhering to PSR-3 standard.
+     *
      * @return void
      */
     public function setLogger(LoggerInterface $logger): void

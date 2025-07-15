@@ -1,5 +1,32 @@
 <?php
 
+/**
+ * Mail log handler
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2025.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Error_Logging
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+
 namespace VuFind\Log\Handler;
 
 use Monolog\Handler\MailHandler as MonologMailHandler;
@@ -10,6 +37,12 @@ use function sprintf;
 
 /**
  * Custom Mail Handler for VuFind with verbosity support and VuFind mailer integration
+ *
+ * @category VuFind
+ * @package  Error_Logging
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
  */
 class MailHandler extends MonologMailHandler
 {
@@ -23,15 +56,20 @@ class MailHandler extends MonologMailHandler
      * @param string $from    Sender email address
      * @param Mailer $mailer  VuFind mailer instance
      */
-    public function __construct(protected string $to, protected string $subject, protected string $from, protected Mailer $mailer)
-    {
+    public function __construct(
+        protected string $to,
+        protected string $subject,
+        protected string $from,
+        protected Mailer $mailer
+    ) {
     }
 
     /**
      * Send the mail using VuFind's mailer
      *
-     * @param  string $content The email content
-     * @param  array  $records The log records that triggered this handler
+     * @param string $content The email content
+     * @param array  $records The log records that triggered this handler
+     *
      * @return void
      */
     protected function send(string $content, array $records): void
@@ -39,6 +77,13 @@ class MailHandler extends MonologMailHandler
         $this->mailer->send($this->to, $this->from, $this->subject, $this->buildMessage($records));
     }
 
+    /**
+     * Writes the record down to the log
+     *
+     * @param LogRecord $record Log record to process
+     *
+     * @return void
+     */
     protected function write(LogRecord $record): void
     {
         // Apply verbosity to the record before processing
@@ -61,7 +106,8 @@ class MailHandler extends MonologMailHandler
     /**
      * Gets the formatted content for this handler
      *
-     * @param  array $records Array of LogRecord objects
+     * @param array $records Array of LogRecord objects
+     *
      * @return string The formatted content
      */
     protected function buildMessage(array $records): string

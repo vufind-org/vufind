@@ -89,6 +89,15 @@ class LoggerFactory implements FactoryInterface
         );
     }
 
+    /**
+     * Configure Database handler.
+     *
+     * @param MonologLogger      $logger    The Monolog logger instance to add handlers to.
+     * @param Config             $config    Configuration
+     * @param ContainerInterface $container Service manager
+     *
+     * @return void
+     */
     protected function addDbHandler(MonologLogger $logger, Config $config, ContainerInterface $container)
     {
         $parts = explode(':', $config->Logging->database);
@@ -137,8 +146,8 @@ class LoggerFactory implements FactoryInterface
      * Configure Mail handler.
      *
      * @param MonologLogger      $monologLogger The Monolog logger instance to add handlers to.
-     * @param ContainerInterface $container     Service manager
      * @param Config             $config        Configuration
+     * @param ContainerInterface $container     Service manager
      *
      * @return void
      */
@@ -162,8 +171,8 @@ class LoggerFactory implements FactoryInterface
      * Configure Office365 writers.
      *
      * @param Logger             $logger    Logger object
-     * @param ContainerInterface $container Service manager
      * @param Config             $config    Configuration
+     * @param ContainerInterface $container Service manager
      *
      * @return void
      */
@@ -248,8 +257,8 @@ class LoggerFactory implements FactoryInterface
      * Set configuration for the Monolog logger.
      * This method orchestrates the setup of all logging components.
      *
-     * @param ContainerInterface $container    Service manager
-     * @param Logger             $vufindLogger The VuFind\Log\Logger (adapter) instance to configure.
+     * @param ContainerInterface $container     Service manager
+     * @param MonologLogger      $monologLogger The Monolog logger instance to add handlers to.
      *
      * @return void
      */

@@ -87,6 +87,16 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
         $this->__call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * Log an emergency
+     *
+     * @param Stringable|string $message Message
+     * @param array             $context Extra params (context from PSR-3)
+     *
+     * @return void
+     *
+     * @deprecated
+     */
     public function emerg(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
@@ -108,8 +118,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log a critical error
      *
-     * @deprecated
-     *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
      *
@@ -123,12 +131,12 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log a critical error
      *
-     * @deprecated
-     *
      * @param Stringable|string $message Message
      * @param array             $context Extra params
      *
      * @return void
+     *
+     * @deprecated
      */
     public function crit(Stringable|string $message, array $context = []): void
     {
@@ -151,12 +159,12 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log an error
      *
-     * @deprecated
-     *
      * @param Stringable|string $message Message
      * @param array             $context Extra params
      *
      * @return void
+     *
+     * @deprecated
      */
     public function err(Stringable|string $message, array $context = []): void
     {
@@ -179,12 +187,12 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log a warning
      *
-     * @deprecated
-     *
      * @param Stringable|string $message Message
      * @param array             $context Extra params
      *
      * @return void
+     *
+     * @deprecated
      */
     public function warn(Stringable|string $message, array $context = []): void
     {

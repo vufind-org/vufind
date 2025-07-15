@@ -61,11 +61,6 @@ class Logger implements LoggerInterface
      */
     protected bool $debugNeeded = false;
 
-    /**
-     * User IP address reader
-     *
-     * @var UserIpReader
-     */
     protected MonologLogger $monologLogger;
 
     protected const LEVEL_MAP = [
@@ -74,6 +69,12 @@ class Logger implements LoggerInterface
         'warn'      => LogLevel::WARNING,
     ];
 
+    /**
+     * Constructor
+     *
+     * @param UserIpReader       $userIpReader  User IP reader service
+     * @param MonologLogger|null $monologLogger Optional Monolog logger instance
+     */
     public function __construct(protected UserIpReader $userIpReader, ?MonologLogger $monologLogger)
     {
         $this->monologLogger = $monologLogger ?? new MonologLogger('default');
@@ -82,7 +83,10 @@ class Logger implements LoggerInterface
     /**
      * System is unusable.
      *
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
      */
     public function emergency(string|\Stringable $message, array $context = []): void
     {
@@ -92,9 +96,12 @@ class Logger implements LoggerInterface
     /**
      * System is unusable.
      *
-     * @deprecated
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
-     * @param mixed[] $context
+     * @return void
+     *
+     * @deprecated
      */
     public function emerg(string|\Stringable $message, array $context = []): void
     {
@@ -104,7 +111,8 @@ class Logger implements LoggerInterface
     /**
      * Action must be taken immediately.
      *
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      */
@@ -116,8 +124,8 @@ class Logger implements LoggerInterface
     /**
      * Critical conditions.
      *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      */
@@ -129,12 +137,12 @@ class Logger implements LoggerInterface
     /**
      * Critical conditions.
      *
-     * @deprecated
-     *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
+     *
+     * @deprecated
      */
     public function crit(string|\Stringable $message, array $context = []): void
     {
@@ -145,8 +153,8 @@ class Logger implements LoggerInterface
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      */
@@ -159,12 +167,12 @@ class Logger implements LoggerInterface
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
-     * @deprecated
-     *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
+     *
+     * @deprecated
      */
     public function err(string|\Stringable $message, array $context = []): void
     {
@@ -174,8 +182,8 @@ class Logger implements LoggerInterface
     /**
      * Exceptional occurrences that are not errors.
      *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      */
@@ -187,12 +195,12 @@ class Logger implements LoggerInterface
     /**
      * Exceptional occurrences that are not errors.
      *
-     * @deprecated
-     *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
+     *
+     * @deprecated
      */
     public function warn(string|\Stringable $message, array $context = []): void
     {
@@ -202,8 +210,8 @@ class Logger implements LoggerInterface
     /**
      * Normal but significant events.
      *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      */
@@ -215,8 +223,8 @@ class Logger implements LoggerInterface
     /**
      * Interesting events.
      *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      */
@@ -228,8 +236,8 @@ class Logger implements LoggerInterface
     /**
      * Detailed debug information.
      *
-     * @param string  $message
-     * @param mixed[] $context
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      */
@@ -241,9 +249,9 @@ class Logger implements LoggerInterface
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed   $level
-     * @param string  $message
-     * @param mixed[] $context
+     * @param mixed              $level   Log level
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
      *
      * @return void
      *
@@ -348,7 +356,15 @@ class Logger implements LoggerInterface
             5 => $baseError . $detailedServer . $detailedBacktrace,
         ];
 
-        $this->log($this->getSeverityFromException($error), $baseError, ['exception' => $error, 'server_data' => $server, 'details' => $errorDetails]);
+        $this->log(
+            $this->getSeverityFromException($error),
+            $baseError,
+            [
+                'exception' => $error,
+                'server_data' => $server,
+                'details' => $errorDetails,
+            ]
+        );
     }
 
     /**
@@ -364,7 +380,7 @@ class Logger implements LoggerInterface
         if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {
             return $error->getSeverityLevel();
         }
-        // Treat unexpected or 5xx errors as more severe than 4xx errors.
+
         if (
             $error instanceof \VuFind\Exception\HttpStatusInterface
             && in_array($error->getHttpStatus(), [403, 404])
