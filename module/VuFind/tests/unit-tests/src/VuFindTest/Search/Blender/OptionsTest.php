@@ -30,7 +30,7 @@
 namespace VuFindTest\Search\Blender;
 
 use VuFind\Search\Blender\Options;
-use VuFindTest\Feature\ConfigPluginManagerTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Blender Options Test
@@ -43,7 +43,7 @@ use VuFindTest\Feature\ConfigPluginManagerTrait;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Data provider for testOptions

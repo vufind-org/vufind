@@ -56,7 +56,7 @@ use VuFindTest\Container\MockContainer;
  */
 trait LiveDatabaseTrait
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
@@ -187,7 +187,7 @@ trait LiveDatabaseTrait
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
         $container->set('config', $config);
-        $this->addConfigPluginManagerToContainer($container, $config);
+        $this->addConfigRelatedServicesToContainer($container, moduleConfig: $config);
         $this->addDoctrineDependenciesToContainer($container);
         return $container;
     }

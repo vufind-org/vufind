@@ -138,6 +138,7 @@ class TagController extends AbstractSearch
         if (!empty($tags = $this->params()->fromPost('deleteSelectedtag', []))) {
             $tagService = $this->getDbService(\VuFind\Db\Service\ResourceTagsServiceInterface::class);
             $tagService->deleteLinksByResourceTagsIdArray($tags);
+            $this->getDbService(\VuFind\Db\Service\TagServiceInterface::class)->deleteOrphanedTags();
         }
 
         return $this->redirect()->toRoute('tag-userlist');

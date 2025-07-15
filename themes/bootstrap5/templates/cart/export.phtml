@@ -1,7 +1,4 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('Export Favorites'));
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
     if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -10,7 +7,7 @@
     $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
       ->add($this->translate('Export Favorites'), active: true);
 ?>
-<h2><?=$this->transEsc('Export Favorites')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Export Favorites')]);?>
 
 <?=$this->flashmessages()?>
 

@@ -39,7 +39,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Upgrade;
+use VuFind\Config\Upgrade as ConfigUpgrader;
 use VuFind\Config\Version;
 use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
@@ -107,11 +107,13 @@ class UpgradeController extends AbstractBase
      * @param ServiceLocatorInterface $sm               Service manager
      * @param CookieManager           $cookieManager    Cookie manager
      * @param Container               $sessionContainer Session container
+     * @param ConfigUpgrader          $configUpgrader   Config upgrader
      */
     public function __construct(
         ServiceLocatorInterface $sm,
         CookieManager $cookieManager,
-        Container $sessionContainer
+        Container $sessionContainer,
+        protected ConfigUpgrader $configUpgrader
     ) {
         parent::__construct($sm);
 
@@ -201,17 +203,11 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
-        $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
-        $upgrader = new Upgrade(
-            $this->cookie->oldVersion,
-            $this->cookie->newVersion,
-            $localConfig,
-            dirname($this->getBaseConfigFilePath('config.ini')),
-            $localConfig
-        );
         try {
-            $upgrader->run();
-            $this->cookie->warnings = $upgrader->getWarnings();
+            $this->configUpgrader->run(
+                $this->cookie->newVersion,
+            );
+            $this->cookie->warnings = $this->configUpgrader->getWarnings();
             $this->cookie->configOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         } catch (Exception $e) {

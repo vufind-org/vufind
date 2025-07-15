@@ -34,7 +34,7 @@ namespace VuFindTest\ILS;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
 use VuFind\ILS\Driver\XCNCIP2;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Class OAuth2TokenTraitTest
@@ -47,7 +47,7 @@ use VuFindTest\Feature\PathResolverTrait;
  */
 class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
 {
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Tested service

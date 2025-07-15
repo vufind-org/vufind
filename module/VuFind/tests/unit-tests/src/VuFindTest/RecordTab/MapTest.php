@@ -30,7 +30,7 @@
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\Map;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Map Test Class
@@ -44,7 +44,7 @@ use VuFindTest\Feature\PathResolverTrait;
 class MapTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\WithConsecutiveTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Get a Map object

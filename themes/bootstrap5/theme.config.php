@@ -157,10 +157,14 @@ return [
              * for a strong inheritance safety net but this is not required.
              */
             'barcode' => 'FontAwesome:barcode',
+            'browzine-best' => 'FontAwesome:file-lines',
             'browzine-concern' => 'FontAwesome:exclamation',
+            'browzine-delivery' => 'FontAwesome:paper-plane',
             'browzine-issue' => 'Alias:format-serial',
+            'browzine-link-resolver' => 'FontAwesome:file',
             'browzine-pdf' => 'FontAwesome:file-pdf-o',
             'browzine-retraction' => 'FontAwesome:exclamation',
+            'browzine-view' => 'FontAwesome:file',
             'cart' => 'FontAwesome:suitcase',
             'cart-add' => 'FontAwesome:plus',
             'cart-empty' => 'FontAwesome:times',

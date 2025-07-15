@@ -297,9 +297,11 @@ class ChoiceAuth extends AbstractBase
     /**
      * Does this authentication method support password recovery
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return bool
      */
-    public function supportsPasswordRecovery()
+    public function supportsPasswordRecovery(?string $target = null)
     {
         return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
     }
@@ -317,9 +319,11 @@ class ChoiceAuth extends AbstractBase
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return array
      */
-    public function getPasswordPolicy()
+    public function getPasswordPolicy(?string $target = null): array
     {
         return $this->proxyAuthMethod('getPasswordPolicy', func_get_args()) ?: [];
     }

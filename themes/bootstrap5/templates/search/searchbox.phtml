@@ -55,7 +55,8 @@
         $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
-    $showFilters = $filterDetails && ($results || $options->getRetainFilterSetting());
+    $retainFilters = $this->retainFilters ?? $options->getRetainFilterSetting();
+    $showFilters = $filterDetails && ($results || $retainFilters);
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
@@ -201,7 +202,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
       <?php if (($hasDefaultsApplied ?? false) || !empty($filterDetails)): ?>
-        <?php if ($options->getRetainFilterSetting()): ?>
+        <?php if ($retainFilters): ?>
           <?php foreach ($filterDetails as $current): ?>
             <input class="applied-filter" id="<?=$this->escapeHtmlAttr($current['id'])?>" type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($current['value'])?>">
           <?php endforeach; ?>

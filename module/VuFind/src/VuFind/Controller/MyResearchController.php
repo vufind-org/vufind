@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,10 +33,12 @@ namespace VuFind\Controller;
 
 use DateTime;
 use Exception;
+use Laminas\Http\PhpEnvironment\Response;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Account\UserAccountService;
+use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Crypt\SecretCalculator;
@@ -52,6 +54,7 @@ use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
@@ -85,6 +88,13 @@ class MyResearchController extends AbstractBase
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
     use ListItemSelectionTrait;
+
+    /**
+     * Default life time for recovery hashes (one hour)
+     *
+     * @var int
+     */
+    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
 
     /**
      * Configuration loader
@@ -1697,32 +1707,37 @@ class MyResearchController extends AbstractBase
     {
         // Make sure we're configured to do this
         $this->setUpAuthenticationFromRequest();
-        if (!$this->getAuthManager()->supportsRecovery()) {
-            $this->flashMessenger()->addMessage('recovery_disabled', 'error');
+        $target = $this->params()->fromQuery('target') ?? $this->params()->fromPost('target') ?? '';
+        $authManager = $this->getAuthManager();
+        if (!$authManager->supportsRecovery(target: $target)) {
+            $this->flashMessenger()->addErrorMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
         }
         if ($this->getUser()) {
             return $this->redirect()->toRoute('myresearch-home');
         }
-        // Database
-        $userService = $this->getDbService(UserServiceInterface::class);
-        $user = false;
-        // Check if we have a submitted form, and use the information
-        // to get the user's information
-        if ($email = $this->params()->fromPost('email')) {
-            $user = $userService->getUserByEmail($email);
-        } elseif ($username = $this->params()->fromPost('username')) {
-            $user = $userService->getUserByUsername($username);
-        }
-        $view = $this->createViewModel();
+        $view = $this->createViewModel(compact('target'));
         $view->useCaptcha = $this->captcha()->active('passwordRecovery');
         // If we have a submitted form
         if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
-            if ($user) {
-                $this->sendRecoveryEmail($user, $this->getConfig());
+            $csrf = $this->getService(CsrfInterface::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             } else {
-                $this->flashMessenger()
-                    ->addMessage('recovery_user_not_found', 'error');
+                // After successful token verification, clear list to shrink session:
+                $csrf->trimTokenList(0);
+            }
+
+            try {
+                if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
+                    $this->sendRecoveryEmail($recoveryData);
+                } else {
+                    $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                }
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             }
         }
         return $view;
@@ -1731,52 +1746,32 @@ class MyResearchController extends AbstractBase
     /**
      * Helper function for recoverAction
      *
-     * @param UserEntityInterface $user   User object we're recovering
-     * @param \VuFind\Config      $config Configuration object
+     * @param array $recoveryData Recovery information required by the authentication to reset the password
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail(UserEntityInterface $user, $config)
+    protected function sendRecoveryEmail(array $recoveryData)
     {
-        // If we can't find a user
-        if (!$user) {
-            $this->flashMessenger()->addMessage('recovery_user_not_found', 'error');
-        } else {
-            // Make sure we've waited long enough
-            $hashtime = $this->getHashAge($user->getVerifyHash());
-            $recoveryInterval = $config->Authentication->recover_interval ?? 60;
-            if (time() - $hashtime < $recoveryInterval) {
-                $this->flashMessenger()->addMessage('recovery_too_soon', 'error');
-            } else {
-                // Attempt to send the email
-                try {
-                    // Create a fresh hash
-                    $this->getAuthManager()->updateUserVerifyHash($user);
-                    $config = $this->getConfig();
-                    $renderer = $this->getViewRenderer();
-                    $method = $this->getAuthManager()->getAuthMethod();
-                    // Custom template for emails (text-only)
-                    $message = $renderer->render(
-                        'Email/recover-password.phtml',
-                        [
-                            'library' => $config->Site->title,
-                            'url' => $this->getServerUrl('myresearch-verify')
-                                . '?hash='
-                                . $user->getVerifyHash() . '&auth_method=' . $method,
-                        ]
-                    );
-                    $this->getService(Mailer::class)->send(
-                        $user->getEmail(),
-                        $this->getEmailSenderAddress($config),
-                        $this->translate('recovery_email_subject'),
-                        $message
-                    );
-                    $this->flashMessenger()
-                        ->addMessage('recovery_email_sent', 'success');
-                } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
-                }
-            }
+        if (empty($recoveryData['email'])) {
+            throw new AuthException('no_email_address');
+        }
+        $emailAuthenticator = $this->getService(EmailAuthenticator::class);
+        $authHelper = $this->getViewRenderer()->plugin('auth');
+        $target = $this->params()->fromPost('target');
+        try {
+            $emailAuthenticator->sendAuthenticationLink(
+                email: $recoveryData['email'],
+                data: $recoveryData,
+                urlParams: [],
+                linkRoute: 'myresearch-resetpassword',
+                subject: 'recovery_email_subject',
+                template: $authHelper->getPasswordRecoveryEmailTemplate(),
+                templateParams: compact('target'),
+            );
+
+            $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+        } catch (MailException $e) {
+            $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
         }
     }
 
@@ -1899,7 +1894,11 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Receive a hash and display the new password form if it's valid
+     * Receive a hash and display the new password form if it's valid.
+     *
+     * Used for Alma and legacy password reset links.
+     *
+     * @see resetPasswordAction
      *
      * @return mixed
      */
@@ -1910,8 +1909,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime
-                ?? 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -1940,6 +1938,65 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Reset user's password with details from email authentication hash.
+     *
+     * @return mixed
+     */
+    public function resetPasswordAction()
+    {
+        $sessionStorage = new \Laminas\Session\Container(
+            'PasswordRecovery',
+            $this->getService(\Laminas\Session\SessionManager::class)
+        );
+        // Check for recovery hash in query:
+        if ($hash = ($this->params()->fromQuery('hash'))) {
+            $emailAuthenticator = $this->getService(EmailAuthenticator::class);
+            try {
+                $sessionStorage['recoveryData'] = $emailAuthenticator->authenticate($hash, true);
+                // Redirect to clear the query parameters before proceeding.
+                return $this->redirect()->toRoute('myresearch-resetpassword');
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                return $this->forwardTo('MyResearch', 'Login');
+            }
+        }
+        if (!($recoveryData = $sessionStorage['recoveryData'])) {
+            $this->flashMessenger()->addErrorMessage('recovery_invalid_hash');
+            return $this->forwardTo('MyResearch', 'Login');
+        }
+        // Check if hash is expired (we do this here to ensure that repeated calls work but not for too long):
+        $config = $this->getConfig();
+        $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+        if (time() - $recoveryData['timestamp'] > $hashLifetime) {
+            $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
+            return $this->forwardTo('MyResearch', 'Login');
+        }
+
+        // At this point we have password recovery details, so prompt for a new password or process the form
+        $useCaptcha = $this->captcha()->active('passwordRecovery');
+        $this->getAuthManager()->setAuthMethod($recoveryData['auth_method']);
+        if ($this->formWasSubmitted(useCaptcha: $useCaptcha)) {
+            try {
+                $this->getAuthManager()
+                    ->resetPassword($recoveryData, $this->params()->fromPost());
+                $sessionStorage['recoveryData'] = null;
+                $this->flashMessenger()->addSuccessMessage('new_password_success');
+                return $this->getNonRedirectingMyResearchHomeRedirect();
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+        return $this->createViewModel(
+            [
+                'auth_method' => $this->getAuthManager()->getAuthMethod(),
+                'passwordPolicy' => $this->getAuthManager()->getPasswordPolicy(target: $recoveryData['target'] ?? null),
+                'useCaptcha' => $useCaptcha,
+                'recoveryData' => $sessionStorage['recoveryData'],
+            ]
+        );
+    }
+
+    /**
      * Receive a hash and display the new password form if it's valid
      *
      * @return mixed
@@ -1951,8 +2008,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime
-                ?? 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -2379,5 +2435,15 @@ class MyResearchController extends AbstractBase
                 ]
             );
         }
+    }
+
+    /**
+     * Return a response that redirects to MyResearch/Home with any further redirects disabled
+     *
+     * @return Response
+     */
+    protected function getNonRedirectingMyResearchHomeRedirect(): Response
+    {
+        return $this->redirect()->toRoute('myresearch-home', options: ['query' => ['redirect' => 0]]);
     }
 }
