@@ -262,9 +262,7 @@ class Upgrade
      */
     protected function applyOldSettings(string $filename, ?array $fullSections = null): void
     {
-        if ($fullSections === null) {
-            $fullSections = $this->defaultFullSections;
-        }
+        $fullSections ??= $this->defaultFullSections;
 
         // First override all individual settings:
         foreach ($this->oldConfigs[$filename] as $section => $subsection) {
