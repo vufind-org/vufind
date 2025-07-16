@@ -134,7 +134,7 @@ abstract class AbstractBase implements DriverInterface
      * @param ?string $mobile_phone     Mobile phone number
      * @param ?string $expiration_date  Profile expiration date
      * @param ?string $group            Group i.e. Student, Staff, Faculty, etc
-     * @param mixed   $home_library     The locationID value of a pick-up location (see getPickUpLocations)
+     * @param ?string $home_library     The locationID value of a pick-up location (see getPickUpLocations)
      *                                  that should be used as the patron's default
      * @param array   $nonDefaultFields Non default fields not documented in the documentation.
      *                                  Merges into the resulting profile array.
@@ -156,7 +156,7 @@ abstract class AbstractBase implements DriverInterface
         ?string $mobile_phone = null,
         ?string $expiration_date = null,
         ?string $group = null,
-        mixed $home_library = null,
+        ?string $home_library = null,
         array $nonDefaultFields = []
     ): array {
         $profile = compact(
@@ -179,7 +179,7 @@ abstract class AbstractBase implements DriverInterface
         if ($nonDefaultFields) {
             $profile = array_merge($profile, $nonDefaultFields);
         }
-        return array_map(fn ($value) => null !== $value ? trim((string)$value) : null, $profile);
+        return array_map(fn ($value) => $value ? trim((string)$value) : null, $profile);
     }
 
     /**

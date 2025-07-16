@@ -1241,7 +1241,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 zip: $zip,
                 phone: $phone,
                 group: $group,
-                home_library: $result->patronInfo->patronLibraryID ?: $patron['library'],
+                home_library: (string)($result->patronInfo->patronLibraryID ?: $patron['library']),
             );
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);

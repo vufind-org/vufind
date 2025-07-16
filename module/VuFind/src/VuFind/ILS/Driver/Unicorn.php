@@ -579,7 +579,7 @@ class Unicorn extends AbstractBase implements
             zip: $zip,
             phone: $phone,
             group: $profile,
-            home_library: $library,
+            home_library: (string)$library,
             nonDefaultFields: [
                 'email' => $email,
                 'library' => $library, // Leave library for legacy support
