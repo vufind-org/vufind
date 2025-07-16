@@ -262,18 +262,13 @@ class Upgrade
      */
     protected function applyOldSettings(string $filename, ?array $fullSections = null): void
     {
-        // First override all individual settings:
         foreach ($this->oldConfigs[$filename] as $section => $subsection) {
-            foreach ($subsection as $key => $value) {
-                $this->newConfigs[$filename][$section][$key] = $value;
-            }
-        }
-
-        // Now override on a section-by-section basis where necessary:
-        foreach (($fullSections ?? $this->defaultFullSections) as $section) {
-            if (isset($this->newConfigs[$filename][$section])) {
-                $this->newConfigs[$filename][$section]
-                    = $this->oldConfigs[$filename][$section] ?? [];
+            if (in_array($section, $fullSections ?? $this->defaultFullSections)) {
+                $this->newConfigs[$filename][$section] = $this->oldConfigs[$filename][$section];
+            } else {
+                foreach ($subsection as $key => $value) {
+                    $this->newConfigs[$filename][$section][$key] = $value;
+                }
             }
         }
     }
