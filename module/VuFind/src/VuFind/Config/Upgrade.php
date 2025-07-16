@@ -273,8 +273,10 @@ class Upgrade
 
         // Now override on a section-by-section basis where necessary:
         foreach ($fullSections as $section) {
-            $this->newConfigs[$filename][$section]
-                = $this->oldConfigs[$filename][$section] ?? [];
+            if (isset($this->newConfigs[$filename][$section])) {
+                $this->newConfigs[$filename][$section]
+                    = $this->oldConfigs[$filename][$section] ?? [];
+            }
         }
     }
 

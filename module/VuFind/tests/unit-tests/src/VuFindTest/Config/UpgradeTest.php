@@ -562,5 +562,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $authorityConfig = $results['authority.ini'];
         $this->assertEquals('CustomHandler', $authorityConfig['General']['default_handler']);
         $this->assertEquals('relevance', $authorityConfig['General']['default_sort']);
+        // check that only default full sections included in the base config are added
+        $this->assertFalse(isset($authorityConfig['Sort']));
     }
 }
