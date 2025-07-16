@@ -29,6 +29,7 @@
 
 namespace VuFindTest\ILS\Driver;
 
+use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionClass;
 use VuFind\Connection\Oracle;
@@ -71,23 +72,82 @@ class VirtuaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test patron login
+     * Data provider for testing getMyProfile
      *
-     * @return void
+     * @return Generator
      */
-    public function testGetMyProfile(): void
+    public static function getTestGetMyProfileData(): Generator
     {
-        $profiles = [
-            [
-                'NAME' => 'Last,First',
-                'STREET_ADDRESS_1' => 'Address 1',
-                'STREET_ADDRESS_2' => '',
-                'POSTAL_CODE' => '01zip',
-                'TELEPHONE_PRIMARY' => '0-cat-1',
-                'PATRON_TYPE' => 'test',
-                'CITY' => 'new City',
+        yield 'address 2 empty but city set' => [
+            'profiles' => [
+                [
+                    'NAME' => 'Last,First',
+                    'STREET_ADDRESS_1' => 'Address 1',
+                    'STREET_ADDRESS_2' => '',
+                    'POSTAL_CODE' => '01zip',
+                    'TELEPHONE_PRIMARY' => '0-cat-1',
+                    'PATRON_TYPE' => 'test',
+                    'CITY' => 'new City',
+                ],
+            ],
+            'expected' => [
+                'firstname' => 'First',
+                'lastname' => 'Last',
+                'birthdate' => null,
+                'address1' => 'Address 1',
+                'address2' => 'new City',
+                'city' => null,
+                'country' => null,
+                'zip' => '01zip',
+                'phone' => '0-cat-1',
+                'mobile_phone' => null,
+                'expiration_date' => null,
+                'group' => 'test',
+                'home_library' => null,
             ],
         ];
+
+        yield 'first name and city empty' => [
+            'profiles' => [
+                [
+                    'NAME' => 'Von Last',
+                    'STREET_ADDRESS_1' => 'Address 1',
+                    'STREET_ADDRESS_2' => 'Address 2',
+                    'POSTAL_CODE' => '01zip',
+                    'TELEPHONE_PRIMARY' => '0-cat-1',
+                    'PATRON_TYPE' => 'test',
+                    'CITY' => '',
+                ],
+            ],
+            'expected' => [
+                'firstname' => '',
+                'lastname' => 'Von Last',
+                'birthdate' => null,
+                'address1' => 'Address 1',
+                'address2' => 'Address 2',
+                'city' => null,
+                'country' => null,
+                'zip' => '01zip',
+                'phone' => '0-cat-1',
+                'mobile_phone' => null,
+                'expiration_date' => null,
+                'group' => 'test',
+                'home_library' => null,
+            ],
+        ];
+    }
+
+    /**
+     * Test get my profile
+     *
+     * @param array $profiles Profiles mocking db select
+     * @param array $expected Expected results
+     *
+     * @return       void
+     * @dataProvider getTestGetMyProfileData
+     */
+    public function testGetMyProfile(array $profiles, array $expected): void
+    {
         $db = $this->getMockBuilder(Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
         $db->expects($this->any())->method('simpleSelect')->willReturn($profiles);
@@ -99,21 +159,7 @@ class VirtuaTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         $this->createConnector(db: $db);
         $result = $this->driver->getMyProfile(['id' => '1111']);
-        $this->assertEquals([
-            'firstname' => 'First',
-            'lastname' => 'Last',
-            'birthdate' => null,
-            'address1' => 'Address 1',
-            'address2' => 'new City',
-            'city' => null,
-            'country' => null,
-            'zip' => '01zip',
-            'phone' => '0-cat-1',
-            'mobile_phone' => null,
-            'expiration_date' => null,
-            'group' => 'test',
-            'home_library' => null,
-        ], $result);
+        $this->assertEquals($expected, $result);
     }
 
     /**
