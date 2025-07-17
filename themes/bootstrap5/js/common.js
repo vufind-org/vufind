@@ -1,4 +1,4 @@
-/*global grecaptcha, isPhoneNumberValid, loadCovers */
+/*global grecaptcha, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -813,7 +813,7 @@ function getUrlRoot(url) {
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
-  var valid = isPhoneNumberValid(number, regionCode);
+  var valid = window.libphonenumber.isValidPhoneNumber(number, regionCode);
   if (valid !== true) {
     if (typeof valid === 'string') {
       valid = VuFind.translate(valid);

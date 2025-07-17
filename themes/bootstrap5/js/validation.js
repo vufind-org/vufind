@@ -1,4 +1,4 @@
-/* global VuFind, isPhoneNumberValid */
+/* global VuFind */
 
 VuFind.register('validation', function Validation() {
   /**
@@ -29,7 +29,7 @@ VuFind.register('validation', function Validation() {
   function checkPhoneNumberValidity(ev) {
     const field = ev.target;
     if (field.id && field.type === 'tel' && field.dataset.validatorRegion) {
-      const valid = isPhoneNumberValid(field.value, field.dataset.validatorRegion);
+      const valid = window.libphonenumber.isValidPhoneNumber(field.value, field.dataset.validatorRegion);
       if (true !== valid) {
         field.setCustomValidity(typeof valid === 'string' ? valid : VuFind.translate('libphonenumber_invalid'));
         return false;
