@@ -179,7 +179,7 @@ abstract class AbstractBase implements DriverInterface
         if ($nonDefaultFields) {
             $profile = array_merge($profile, $nonDefaultFields);
         }
-        return array_map(fn ($value) => $value ? trim((string)$value) : null, $profile);
+        return array_map(fn ($value) => null !== $value ? trim((string)$value) : null, $profile);
     }
 
     /**
