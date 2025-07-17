@@ -136,7 +136,7 @@ class Dir extends AbstractBase
             if ($subBaseConfigLocation === null) {
                 throw new ConfigException(
                     'Can not add config ' . $subConfigName
-                    . ' without a having it in the base config that provides the structure.'
+                    . ' without having it in the base config that provides the structure.'
                 );
             }
 
