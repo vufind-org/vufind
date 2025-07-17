@@ -53,6 +53,8 @@ class GenericFile extends AbstractBase
      * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {

@@ -168,16 +168,30 @@ class Ini extends AbstractBase
         if ($baseLocation !== null) {
             $comments = $this->extractComments($baseLocation->getPath());
         }
-        $writer = new ConfigWriter(
-            $outfile,
-            $config,
-            $comments
-        );
+        $writer = $this->getConfigWriter($outfile, $comments, $comments);
         if (!$writer->save()) {
             throw new FileAccessException(
                 "Error: Problem writing to {$outfile}."
             );
         }
+    }
+
+    /**
+     * Get writer object.
+     *
+     * @param string $outfile  Path to output file
+     * @param array  $config   Configuration to write
+     * @param array  $comments Comments
+     *
+     * @return ConfigWriter
+     */
+    protected function getConfigWriter(string $outfile, array $config, array $comments): ConfigWriter
+    {
+        return new ConfigWriter(
+            $outfile,
+            $config,
+            $comments
+        );
     }
 
     /**
