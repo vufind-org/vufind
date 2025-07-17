@@ -623,6 +623,32 @@ var VuFind = (function VuFind() {
     }
   }
 
+  /**
+   * Is the provided phone number valid? Returns error string or false if not;
+   * true if so.
+   * @param {String} number Phone number to validate
+   * @param {String} region Region for validation
+   *
+   * @returns String|boolean
+   */
+  function isPhoneNumberValid(number, region) {
+    const result = window.libphonenumber.isValidPhoneNumber(number, region);
+    // If the result is negative, see if we can map it to a standard error message:
+    if (!result) {
+      const lengthMessage = window.libphonenumber.validatePhoneNumberLength(number, region);
+      if (lengthMessage === 'NOT_A_NUMBER') {
+        return 'libphonenumber_notanumber';
+      }
+      if (lengthMessage === 'TOO_LONG') {
+        return 'libphonenumber_toolong';
+      }
+      if (lengthMessage === 'TOO_SHORT') {
+        return 'libphonenumber_tooshort';
+      }
+    }
+    return result;
+  }
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -638,6 +664,7 @@ var VuFind = (function VuFind() {
     evalCallback: evalCallback,
     getCspNonce: getCspNonce,
     icon: icon,
+    isPhoneNumberValid,
     isPrinting: isPrinting,
     refreshPage: refreshPage,
     register: register,
@@ -813,7 +840,7 @@ function getUrlRoot(url) {
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
-  var valid = window.libphonenumber.isValidPhoneNumber(number, regionCode);
+  var valid = VuFind.isPhoneNumberValid(number, regionCode);
   if (valid !== true) {
     if (typeof valid === 'string') {
       valid = VuFind.translate(valid);

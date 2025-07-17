@@ -29,9 +29,9 @@ VuFind.register('validation', function Validation() {
   function checkPhoneNumberValidity(ev) {
     const field = ev.target;
     if (field.id && field.type === 'tel' && field.dataset.validatorRegion) {
-      const valid = window.libphonenumber.isValidPhoneNumber(field.value, field.dataset.validatorRegion);
+      const valid = VuFind.isPhoneNumberValid(field.value, field.dataset.validatorRegion);
       if (true !== valid) {
-        field.setCustomValidity(typeof valid === 'string' ? valid : VuFind.translate('libphonenumber_invalid'));
+        field.setCustomValidity(VuFind.translate(typeof valid === 'string' ? valid : 'libphonenumber_invalid'));
         return false;
       }
     }
