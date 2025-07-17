@@ -45,7 +45,7 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @var string
      */
-    const CONFIG_FILENAME = 'GetThis.yaml';
+    public const CONFIG_FILENAME = 'GetThis.yaml';
 
     /**
      * Items
@@ -266,7 +266,7 @@ class GetThisLoader implements LoggerAwareInterface
         }
         $orderMap = array_flip($this->config['templates_order']);
         usort($this->subTemplates, function ($a, $b) use ($orderMap) {
-            return isset($orderMap[$a], $orderMap[$b])? $orderMap[$a] <=> $orderMap[$b] : 0;
+            return isset($orderMap[$a], $orderMap[$b]) ? $orderMap[$a] <=> $orderMap[$b] : 0;
         });
     }
 
@@ -485,8 +485,10 @@ class GetThisLoader implements LoggerAwareInterface
             return false;
         }
         $haystack = [];
-        if (!empty($item['availability']) && $item['availability'] instanceof AvailabilityStatusInterface
-            && $availability = $item['availability']->getStatusDescription()) {
+        if (
+            !empty($item['availability']) && $item['availability'] instanceof AvailabilityStatusInterface
+            && $availability = $item['availability']->getStatusDescription()
+        ) {
             $haystack[] = $availability;
         }
         if ($loanType = $item['temporary_loan_type'] ?? null) {
@@ -523,8 +525,10 @@ class GetThisLoader implements LoggerAwareInterface
             return false;
         }
         $haystack = [];
-        if (!empty($item['availability']) && $item['availability'] instanceof AvailabilityStatusInterface
-            && $availability = $item['availability']->getStatusDescription()) {
+        if (
+            !empty($item['availability']) && $item['availability'] instanceof AvailabilityStatusInterface
+            && $availability = $item['availability']->getStatusDescription()
+        ) {
             $haystack[] = $availability;
         }
         if ($loanType = $item['temporary_loan_type'] ?? null) {
@@ -721,15 +725,17 @@ class GetThisLoader implements LoggerAwareInterface
      * Get the holding record for the given item id. If none is provided, the first holding
      * record will be returned.
      *
-     * @param string|null $itemId  The holding item UUID. If null (default) will return for what
-     *                             is set in the class if available, else the first item
+     * @param string|null $itemId The holding item UUID. If null (default) will return for what
+     *                            is set in the class if available, else the first item
      *
      * @return array The data for with the holding information of the given item
      */
     public function getItem(?string $itemId = null)
     {
-        if (!isset($this->item)
-            || (isset($itemId) && $this->item['item_id'] != $itemId)) {
+        if (
+            !isset($this->item)
+            || (isset($itemId) && $this->item['item_id'] != $itemId)
+        ) {
             $this->cacheItem($itemId);
         }
         return $this->item;
@@ -738,8 +744,8 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Will cache the item passed as parameter if it exists
      *
-     * @param string|null $itemId  The holding item UUID. If null (default) will return for what
-     *                             is set in the class if available, else the first item
+     * @param string|null $itemId The holding item UUID. If null (default) will return for what
+     *                            is set in the class if available, else the first item
      *
      * @return void
      */

@@ -29,13 +29,12 @@ use function array_key_exists;
  */
 class Regex
 {
-
     /**
      * Config file name
      *
      * @var string
      */
-    const CONFIG_FILENAME = 'Regex.yaml';
+    public const CONFIG_FILENAME = 'Regex.yaml';
 
     /**
      * Initializes the loader
