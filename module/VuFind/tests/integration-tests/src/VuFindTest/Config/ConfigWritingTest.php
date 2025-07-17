@@ -196,7 +196,7 @@ class ConfigWritingTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function readFile(string $path): string
+    protected function readFileAndNormalizeWhitespace(string $path): string
     {
         $content = file_get_contents($path);
         return trim(preg_replace('/\s+/', ' ', $content));
