@@ -715,7 +715,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             city: $result['city'],
             country: $result['country'],
             expiration_date: $this->convertDate($result['expiry_date'] ?? null),
-            birthdate: $result['date_of_birth'] ?? null,
+            birthdate: $result['date_of_birth'] ?? '',
             home_library: isset($result['library_id']) ? (string)$result['library_id'] : null,
             nonDefaultFields: [
                 'email' => $result['email'],

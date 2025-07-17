@@ -764,7 +764,7 @@ class SierraRest extends AbstractBase implements
             address1: $address,
             zip: $zip,
             city: $city,
-            birthdate: $result['birthDate'] ?? null,
+            birthdate: $result['birthDate'] ?? '',
             expiration_date: !empty($result['expirationDate'])
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',

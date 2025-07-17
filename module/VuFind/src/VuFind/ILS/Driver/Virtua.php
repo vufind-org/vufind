@@ -1216,23 +1216,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
         [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
         $split = strpos($first_name, ' ');
+        // TODO: Is this necessary
         if ($split !== false) {
             $first_name = substr($first_name, 0, $split);
         }
 
-        $address2 = trim($result['STREET_ADDRESS_2']);
-        if ($addressCity = $result['CITY']) {
+        $address2 = trim($result['STREET_ADDRESS_2'] ?? '');
+        if ($addressCity = $result['CITY'] ?? null) {
             $address2 = trim("$address2, $addressCity", " ,\n\r\t\v\0");
         }
 
         return $this->createProfileArray(
             firstname: $first_name,
             lastname: $last_name,
-            address1: $result['STREET_ADDRESS_1'],
+            address1: $result['STREET_ADDRESS_1'] ?? null,
             address2: $address2,
-            zip: $result['POSTAL_CODE'],
-            phone: $result['TELEPHONE_PRIMARY'],
-            group: $result['PATRON_TYPE']
+            zip: $result['POSTAL_CODE'] ?? null,
+            phone: $result['TELEPHONE_PRIMARY'] ?? null,
+            group: $result['PATRON_TYPE'] ?? null
         );
     }
 

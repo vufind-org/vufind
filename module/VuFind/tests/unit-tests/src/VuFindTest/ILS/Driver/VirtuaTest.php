@@ -31,10 +31,10 @@ namespace VuFindTest\ILS\Driver;
 
 use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionClass;
 use VuFind\Connection\Oracle;
 use VuFind\ILS\Driver\Virtua;
 use VuFindTest\Feature\FixtureTrait;
+use VuFindTest\Feature\MockObjectTrait;
 
 /**
  * ILS driver test
@@ -45,9 +45,10 @@ use VuFindTest\Feature\FixtureTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class VirtuaTest extends \VuFindTest\Unit\ILSDriverTestCase
+class VirtuaTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
+    use MockObjectTrait;
 
     /**
      * Default test configuration
@@ -60,16 +61,6 @@ class VirtuaTest extends \VuFindTest\Unit\ILSDriverTestCase
             'apiKey' => 'key123',
         ],
     ];
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        $this->driver = new Virtua();
-    }
 
     /**
      * Data provider for testing getMyProfile
@@ -135,6 +126,33 @@ class VirtuaTest extends \VuFindTest\Unit\ILSDriverTestCase
                 'home_library' => null,
             ],
         ];
+
+        yield 'address2 and city both exists, first name more complicated' => [
+            'profiles' => [
+                [
+                    'NAME' => 'Von Last,S ome`special chars',
+                    'STREET_ADDRESS_1' => 'Address 1',
+                    'STREET_ADDRESS_2' => 'Address 2',
+                    'PATRON_TYPE' => 'wizard',
+                    'CITY' => 'Tammisaari',
+                ],
+            ],
+            'expected' => [
+                'firstname' => 'S',
+                'lastname' => 'Von Last',
+                'birthdate' => null,
+                'address1' => 'Address 1',
+                'address2' => 'Address 2, Tammisaari',
+                'city' => null,
+                'country' => null,
+                'zip' => null,
+                'phone' => null,
+                'mobile_phone' => null,
+                'expiration_date' => null,
+                'group' => 'wizard',
+                'home_library' => null,
+            ],
+        ];
     }
 
     /**
@@ -151,14 +169,10 @@ class VirtuaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $db = $this->getMockBuilder(Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
         $db->expects($this->any())->method('simpleSelect')->willReturn($profiles);
-        // Set dbHandle to false to avoid destructor error
-        $reflection = new ReflectionClass($db);
-        $property = $reflection->getProperty('dbHandle');
-        $property->setAccessible(true);
-        $property->setValue($db, false);
-
-        $this->createConnector(db: $db);
-        $result = $this->driver->getMyProfile(['id' => '1111']);
+        // Mocks can not alter the destructor function and it will be called so set it to false to not
+        // throw an error.
+        $this->setObjectVariable($db, 'dbHandle', false);
+        $result = $this->createConnector(db: $db)->getMyProfile(['id' => '1111']);
         $this->assertEquals($expected, $result);
     }
 
@@ -170,25 +184,19 @@ class VirtuaTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param ?array      $config Driver configuration (null to use default)
      * @param ?MockObject $db     Db mock object.
      *
-     * @return void
+     * @return MockObject&Virtua
      */
-    protected function createConnector(?array $config = null, ?MockObject $db = null): void
+    protected function createConnector(?array $config = null, ?MockObject $db = null): MockObject&Virtua
     {
         // Create a stub for the class
-        $this->driver = $this->getMockBuilder(Virtua::class)
-            ->onlyMethods([])
-            ->getMock();
+        $driver = $this->getMockBuilder(Virtua::class)->onlyMethods([])->getMock();
         // Configure the stub
-        $this->driver->setConfig($config ?? $this->defaultDriverConfig);
-        $cache = new \Laminas\Cache\Storage\Adapter\Memory();
-        $cache->setOptions(['memory_limit' => -1]);
+        $driver->setConfig($config ?? $this->defaultDriverConfig);
 
         $db ??= $this->getMockBuilder(\VuFind\Connection\Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
         // Reveal the protected db property and set the mock db as its value
-        $reflection = new ReflectionClass($this->driver);
-        $property = $reflection->getProperty('db');
-        $property->setAccessible(true);
-        $property->setValue($this->driver, $db);
+        $this->setObjectVariable($driver, 'db', $db);
+        return $driver;
     }
 }

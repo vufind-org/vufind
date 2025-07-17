@@ -151,16 +151,23 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * Overwrites $this->driver
      *
-     * @param string $test   Name of test fixture to load
-     * @param ?array $config Driver configuration (null to use default)
+     * @param string  $test       Name of test fixture to load.
+     * @param ?array  $config     Driver configuration (null to use default)
+     * @param ?string $fixtureKey If test fixture contains multiple different tests, then setting the
+     *                            fixtureKey will load the correct test. Default is null.
      *
      * @return void
      */
-    protected function createConnector(string $test, ?array $config = null): void
+    protected function createConnector(string $test, ?array $config = null, ?string $fixtureKey = null): void
     {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("alma/responses/$test.json");
         $this->currentFixture = $test;
+        // If fixture key is provided, then try to obtain correct test data with it.
+        if ($fixtureKey) {
+            $this->fixtureSteps = $this->fixtureSteps[$fixtureKey];
+            $this->currentFixture .= " [$fixtureKey]";
+        }
         $this->currentFixtureStep = 0;
         // Create a stub for the class
         $this->driver = $this->getMockBuilder(Alma::class)
@@ -198,32 +205,77 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Data provider for testing getMyProfile
+     *
+     * @return Generator
+     */
+    public static function getTestGetMyProfileData(): \Generator
+    {
+        yield 'Address 2 not set' => [
+            'fixtureKey' => 'getMyProfile test 1',
+            'expected' => [
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+                'birthdate' => '',
+                'address1' => 'A street 1',
+                'address2' => '',
+                'city' => 'Far away',
+                'country' => 'Far',
+                'zip' => '00000',
+                'phone' => '0123456789',
+                'mobile_phone' => null,
+                'expiration_date' => null,
+                'group' => 'prefix_test',
+                'address3' => 'Not a default field',
+                'group_code' => 'test',
+                'email' => null,
+                'home_library' => null,
+            ],
+        ];
+
+        yield 'Missing most fields' => [
+            'fixtureKey' => 'getMyProfile test 2',
+            'expected' => [
+                'firstname' => '',
+                'lastname' => 'Smith',
+                'birthdate' => '',
+                'address1' => '',
+                'address2' => '',
+                'city' => '',
+                'country' => '',
+                'zip' => '',
+                'phone' => '',
+                'mobile_phone' => null,
+                'expiration_date' => null,
+                'group' => 'prefix_test',
+                'address3' => '',
+                'group_code' => 'test',
+                'email' => null,
+                'home_library' => null,
+            ],
+        ];
+    }
+
+    /**
      * Test getMyProfile
      *
-     * @return void
+     * @param string $fixtureKey Key which selects the correct test path in json file containing
+     *                           multiple tests.
+     * @param array  $expected   Expected results for the test
+     *
+     * @return       void
+     * @dataProvider getTestGetMyProfileData
      */
-    public function testGetMyProfile(): void
+    public function testGetMyProfile(string $fixtureKey, array $expected): void
     {
-        $this->createConnector('get-profile-response');
+        $adjustedConfig = $this->defaultDriverConfig;
+        $adjustedConfig['Catalog']['translationPrefix'] = 'prefix_';
+        $this->createConnector('get-my-profile', $adjustedConfig, $fixtureKey);
         $result = $this->driver->getMyProfile(['id' => '1111']);
-        $expected = [
-            'firstname' => 'John',
-            'lastname' => 'Smith',
-            'birthdate' => null,
-            'address1' => 'A street 1',
-            'address2' => '',
-            'city' => 'Far away',
-            'country' => 'Far',
-            'zip' => '00000',
-            'phone' => '0123456789',
-            'mobile_phone' => null,
-            'expiration_date' => null,
-            'group' => 'test',
-            'address3' => 'Not a default field',
-            'group_code' => 'test',
-            'email' => null,
-            'home_library' => null,
-        ];
+        if ($result['group']) {
+            // Alma uses Translatable strings in group field so do a truth check here to assure result.
+            $this->assertTrue($result['group'] instanceof TranslatableString);
+        }
         $this->assertEquals($expected, $result);
     }
 

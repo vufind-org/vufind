@@ -30,6 +30,7 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\TranslatableString;
 
 use function is_callable;
 use function is_string;
@@ -122,22 +123,23 @@ abstract class AbstractBase implements DriverInterface
      * Create a profile array according to getMyProfile specs defined in the documentation.
      * Each value is trimmed if they are not null.
      *
-     * @param ?string $firstname        Profile first name
-     * @param ?string $lastname         Profile last name
-     * @param string  $birthdate        Y-m-d or an empty string
-     * @param ?string $address1         Address 1
-     * @param ?string $address2         Address 2
-     * @param ?string $city             City
-     * @param ?string $country          Country
-     * @param ?string $zip              Postal code
-     * @param ?string $phone            Phone number
-     * @param ?string $mobile_phone     Mobile phone number
-     * @param ?string $expiration_date  Profile expiration date
-     * @param ?string $group            Group i.e. Student, Staff, Faculty, etc
-     * @param ?string $home_library     The locationID value of a pick-up location (see getPickUpLocations)
-     *                                  that should be used as the patron's default
-     * @param array   $nonDefaultFields Non default fields not documented in the documentation.
-     *                                  Merges into the resulting profile array.
+     * @param ?string                        $firstname        Profile first name
+     * @param ?string                        $lastname         Profile last name
+     * @param string                         $birthdate        Y-m-d or an empty string
+     * @param ?string                        $address1         Address 1
+     * @param ?string                        $address2         Address 2
+     * @param ?string                        $city             City
+     * @param ?string                        $country          Country
+     * @param ?string                        $zip              Postal code
+     * @param ?string                        $phone            Phone number
+     * @param ?string                        $mobile_phone     Mobile phone number
+     * @param ?string                        $expiration_date  Profile expiration date
+     * @param TranslatableString|string|null $group            Group i.e. Student, Staff, Faculty, etc
+     * @param ?string                        $home_library     The locationID value of a pick-up location
+     *                                                         (see getPickUpLocations)
+     *                                                         that should be used as the patron's default
+     * @param array                          $nonDefaultFields Non default fields not documented in the documentation.
+     *                                                         Merges into the resulting profile array.
      *
      * @see https://vufind.org/wiki/development:plugins:ils_drivers#getmyprofile
      *
@@ -146,7 +148,7 @@ abstract class AbstractBase implements DriverInterface
     public function createProfileArray(
         ?string $firstname = null,
         ?string $lastname = null,
-        ?string $birthdate = null,
+        string $birthdate = '',
         ?string $address1 = null,
         ?string $address2 = null,
         ?string $city = null,
@@ -155,7 +157,7 @@ abstract class AbstractBase implements DriverInterface
         ?string $phone = null,
         ?string $mobile_phone = null,
         ?string $expiration_date = null,
-        ?string $group = null,
+        TranslatableString|string|null $group = null,
         ?string $home_library = null,
         array $nonDefaultFields = []
     ): array {
@@ -179,7 +181,15 @@ abstract class AbstractBase implements DriverInterface
         if ($nonDefaultFields) {
             $profile = array_merge($profile, $nonDefaultFields);
         }
-        return array_map(fn ($value) => null !== $value ? trim((string)$value) : null, $profile);
+        return array_map(
+            function ($value) {
+                if ($value === null || $value instanceof TranslatableString) {
+                    return $value;
+                }
+                return trim((string)$value);
+            },
+            $profile
+        );
     }
 
     /**

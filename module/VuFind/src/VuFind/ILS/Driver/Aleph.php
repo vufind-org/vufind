@@ -1249,7 +1249,7 @@ class Aleph extends AbstractBase implements
             address1: $mappedValues['address1'] ?? null,
             address2: $mappedValues['address2'] ?? null,
             zip: $mappedValues['zip'] ?? null,
-            birthdate: $mappedValues['birthdate'] ?? null,
+            birthdate: $mappedValues['birthdate'] ?? '',
             expiration_date: $this->parseDate($expiry[0]),
             // Merge all mapped values here even if all the default values are checked
             // independently. This ensures that all the possible values are being set correctly

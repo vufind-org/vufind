@@ -859,7 +859,7 @@ class Alma extends AbstractBase implements
             country: (string)$address?->country,
             group: $group ? $this->getTranslatableString($group) : null,
             phone: (string)$contact?->phones[0]?->phone?->phone_number,
-            birthdate: $xml?->birth_date ? substr((string)$xml->birth_date, 0, 10) : null,
+            birthdate: $xml?->birth_date ? substr((string)$xml->birth_date, 0, 10) : '',
             nonDefaultFields: [
                 'address3' => (string)$address?->line3,
                 'group_code' => (string)$group,
