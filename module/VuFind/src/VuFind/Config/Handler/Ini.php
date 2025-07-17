@@ -219,7 +219,7 @@ class Ini extends AbstractBase
             // line:
             $trimmed = trim($line);
 
-            // Is the current line a comment?  If so, add to the currentComments
+            // Is the current line a comment?  If so, add to the current comments
             // string. Note that we treat blank lines as comments.
             if ('' === $trimmed || str_starts_with($trimmed, ';')) {
                 $comments .= $line;
