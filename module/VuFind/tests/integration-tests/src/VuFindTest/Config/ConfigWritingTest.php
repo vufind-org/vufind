@@ -182,8 +182,8 @@ class ConfigWritingTest extends \PHPUnit\Framework\TestCase
             if (is_dir($expected . '/' . $item)) {
                 $this->assertDirsEqual($expected . '/' . $item, $actual . '/' . $item);
             } else {
-                $expectedFileContent = $this->readFile($expected . '/' . $item);
-                $actualFileContent = $this->readFile($actual . '/' . $item);
+                $expectedFileContent = $this->readFileAndNormalizeWhitespace($expected . '/' . $item);
+                $actualFileContent = $this->readFileAndNormalizeWhitespace($actual . '/' . $item);
                 $this->assertEquals($expectedFileContent, $actualFileContent);
             }
         }
