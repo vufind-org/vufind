@@ -69,10 +69,14 @@ class SpecBuilder
      * @param ?string     $renderType Type of rendering to use to generate output
      * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setLine(string $key, string|bool $dataMethod, ?string $renderType = null, array $options = []): void
-    {
+    public function setLine(
+        string $key,
+        string|bool $dataMethod,
+        ?string $renderType = null,
+        array $options = []
+    ): static {
         $options['dataMethod'] = $dataMethod;
         $options['renderType'] = $renderType;
         if (!isset($options['pos'])) {
@@ -80,6 +84,7 @@ class SpecBuilder
             $options['pos'] = $this->maxPos;
         }
         $this->spec[$key] = $options;
+        return $this;
     }
 
     /**
@@ -87,11 +92,12 @@ class SpecBuilder
      *
      * @param string $key Label associated with this spec line
      *
-     * @return void
+     * @return static
      */
-    public function removeLine(string $key): void
+    public function removeLine(string $key): static
     {
         unset($this->spec[$key]);
+        return $this;
     }
 
     /**
@@ -102,12 +108,12 @@ class SpecBuilder
      * @param callable    $callback   Callback function for multi-processing
      * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setMultiLine(string $key, string|bool $dataMethod, callable $callback, array $options = []): void
+    public function setMultiLine(string $key, string|bool $dataMethod, callable $callback, array $options = []): static
     {
         $options['multiFunction'] = $callback;
-        $this->setLine($key, $dataMethod, 'Multi', $options);
+        return $this->setLine($key, $dataMethod, 'Multi', $options);
     }
 
     /**
@@ -117,11 +123,11 @@ class SpecBuilder
      * @param string|bool $dataMethod Method of data retrieval for rendering element
      * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setCombineAltLine(string $key, string|bool $dataMethod, array $options = []): void
+    public function setCombineAltLine(string $key, string|bool $dataMethod, array $options = []): static
     {
-        $this->setLine($key, $dataMethod, 'CombineAlt', $options);
+        return $this->setLine($key, $dataMethod, 'CombineAlt', $options);
     }
 
     /**
@@ -132,12 +138,12 @@ class SpecBuilder
      * @param string      $template   Record driver template to render with data
      * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setTemplateLine(string $key, string|bool $dataMethod, string $template, array $options = []): void
+    public function setTemplateLine(string $key, string|bool $dataMethod, string $template, array $options = []): static
     {
         $options['template'] = $template;
-        $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
+        return $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
     }
 
     /**
@@ -147,9 +153,9 @@ class SpecBuilder
      * @param ?int  $defaultPos  Position to use for elements not included in
      * $orderedKeys (null to put unrecognized items at end of list).
      *
-     * @return void
+     * @return static
      */
-    public function reorderKeys(array $orderedKeys, ?int $defaultPos = null): void
+    public function reorderKeys(array $orderedKeys, ?int $defaultPos = null): static
     {
         $lookup = array_flip($orderedKeys);
         if (null === $defaultPos) {
@@ -159,6 +165,7 @@ class SpecBuilder
             $this->spec[$key]['pos'] = isset($lookup[$key])
                 ? ($lookup[$key] + 1) * 100 : $defaultPos;
         }
+        return $this;
     }
 
     /**

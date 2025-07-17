@@ -46,7 +46,7 @@ use VuFind\Session\Settings;
  */
 class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Set up configuration for a test.

@@ -92,7 +92,7 @@ if not "!%SOLR_SECURITY_MANAGER_ENABLED%!"=="!!" goto solrsecmanset
 set SOLR_SECURITY_MANAGER_ENABLED=false
 :solrsecmanset
 
-call %SOLR_BIN%\solr.cmd %1 %SOLR_ADDITIONAL_START_OPTIONS% -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Ddisable.configEdit=true -Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"
+call %SOLR_BIN%\solr.cmd %1 %SOLR_ADDITIONAL_START_OPTIONS% -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Ddisable.configEdit=true -Dsolr.log=%SOLR_LOGS_DIR% -Dsolr.config.lib.enabled=true %SOLR_ADDITIONAL_JVM_OPTIONS%"
 goto end
 
 :usage

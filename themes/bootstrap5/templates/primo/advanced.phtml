@@ -54,12 +54,12 @@
           <?php for ($j = 0; $j < $numRows; $j++): ?>
             <?php $currRow = $currentGroup[$j] ?? false; ?>
             <div class="search">
-              <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control adv-term-type">
+              <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-select adv-term-type">
                 <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
                 <?php endforeach; ?>
               </select>
-              <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control adv-term-type">
+              <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-select adv-term-type">
                 <?php foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
                 <?php endforeach; ?>

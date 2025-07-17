@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -42,104 +43,133 @@ use function is_array;
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 class Upgrade
 {
     /**
+     * Default full sections.
+     *
+     * @var array
+     */
+    protected array $defaultFullSections = [
+        'Results', 'ResultsTop', 'Advanced', 'Author', 'CheckboxFacets',
+        'HomePage', 'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches',
+        'Sort', 'Sorting', 'DefaultSortingByType',
+    ];
+
+    /**
      * Parsed old configurations
      *
      * @var array
      */
-    protected $oldConfigs = [];
+    protected array $oldConfigs = [];
 
     /**
      * Processed new configurations
      *
      * @var array
      */
-    protected $newConfigs = [];
+    protected array $newConfigs = [];
 
     /**
      * Comments parsed from configuration files
      *
      * @var array
      */
-    protected $comments = [];
+    protected array $comments = [];
 
     /**
      * Warnings generated during upgrade process
      *
      * @var array
      */
-    protected $warnings = [];
-
-    /**
-     * Are we upgrading files in place rather than creating them?
-     *
-     * @var bool
-     */
-    protected $inPlaceUpgrade;
+    protected array $warnings = [];
 
     /**
      * Have we modified permissions.ini?
      *
      * @var bool
      */
-    protected $permissionsModified = false;
+    protected bool $permissionsModified = false;
+
+    /**
+     * If writing of configuration is enabled (disabled in tests).
+     *
+     * @var bool
+     */
+    protected bool $writeMode = true;
+
+    /**
+     * Track which configs have already been written.
+     */
+    protected array $writtenConfig = [];
 
     /**
      * Constructor
      *
-     * @param string  $from   Version we're upgrading from.
-     * @param string  $to     Version we're upgrading to.
-     * @param string  $oldDir Directory containing old configurations.
-     * @param string  $rawDir Directory containing raw new configurations.
-     * @param ?string $newDir Directory to write updated new configurations into
-     * (leave null to disable writes -- used in test mode).
+     * @param PathResolver  $pathResolver  Path Resolver
+     * @param ConfigManager $configManager Config Manager
      */
     public function __construct(
-        protected string $from,
-        protected string $to,
-        protected string $oldDir,
-        protected string $rawDir,
-        protected ?string $newDir = null
+        protected PathResolver $pathResolver,
+        protected ConfigManager $configManager,
     ) {
-        $this->inPlaceUpgrade = ($this->oldDir == $this->newDir);
+    }
+
+    /**
+     * Set write mode
+     *
+     * @param bool $writeMode Write mode (true for enabling and false for disabling writing)
+     *
+     * @return void
+     */
+    public function setWriteMode(bool $writeMode): void
+    {
+        $this->writeMode = $writeMode;
     }
 
     /**
      * Run through all of the necessary upgrading.
      *
+     * @param string $newVersion Version to upgrade to
+     *
      * @return void
      */
-    public function run()
+    public function run(string $newVersion): void
     {
+        // Reset upgrading state
+        $this->permissionsModified = false;
+        $this->writtenConfig = [];
+
         // Load all old configurations:
         $this->loadConfigs();
 
         // Upgrade them one by one and write the results to disk; order is
         // important since in some cases, settings may migrate out of config.ini
         // and into other files.
-        $this->upgradeConfig();
-        $this->upgradeAuthority();
+        $this->upgradeConfig($newVersion);
         $this->upgradeFacetsAndCollection();
-        $this->upgradeFulltext();
-        $this->upgradeReserves();
         $this->upgradeSearches();
-        $this->upgradeSitemap();
         $this->upgradeSms();
         $this->upgradeEDS();
+        $this->upgradeEPF();
         $this->upgradeSummon();
         $this->upgradePrimo();
-        $this->upgradeRecordDataFormatter();
 
         // The previous upgrade routines may have added values to permissions.ini,
         // so we should save it last. It doesn't have its own upgrade routine.
-        $this->saveModifiedConfig('permissions.ini');
+        $this->saveModifiedConfig('permissions', $this->permissionsModified);
 
-        $this->upgradeILS();
+        // Make sure to update any remaining configurations that were not explicitly updated above.
+        foreach ($this->newConfigs as $filename => $newConfig) {
+            if (!in_array($filename, $this->writtenConfig)) {
+                $this->applyOldSettings($filename);
+                $this->saveModifiedConfig($filename);
+            }
+        }
     }
 
     /**
@@ -147,7 +177,7 @@ class Upgrade
      *
      * @return array
      */
-    public function getNewConfigs()
+    public function getNewConfigs(): array
     {
         return $this->newConfigs;
     }
@@ -157,7 +187,7 @@ class Upgrade
      *
      * @return array
      */
-    public function getWarnings()
+    public function getWarnings(): array
     {
         return $this->warnings;
     }
@@ -169,7 +199,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function addWarning($msg)
+    protected function addWarning(string $msg): void
     {
         $this->warnings[] = $msg;
     }
@@ -199,34 +229,25 @@ class Upgrade
     }
 
     /**
-     * Find the path to the old configuration file.
-     *
-     * @param string $filename Filename of configuration file.
-     *
-     * @return string
-     */
-    protected function getOldConfigPath($filename)
-    {
-        return $this->oldDir . '/' . $filename;
-    }
-
-    /**
      * Load all of the user's existing configurations.
      *
      * @return void
      */
-    protected function loadConfigs()
+    protected function loadConfigs(): void
     {
-        foreach (glob($this->rawDir . '/*.ini') as $ini) {
-            $parts = explode('/', str_replace('\\', '/', $ini));
-            $config = array_pop($parts);
-            $path = $this->getOldConfigPath($config);
-            $this->oldConfigs[$config]
-                = file_exists($path) ? parse_ini_file($path, true) : [];
-            $this->newConfigs[$config]
-                = parse_ini_file($this->rawDir . '/' . $config, true);
-            $this->comments[$config]
-                = $this->extractComments($this->rawDir . '/' . $config);
+        $baseConfigLocations = $this->pathResolver->getConfigLocationsInPath(
+            $this->pathResolver->getBaseConfigDirPath()
+        );
+        foreach ($baseConfigLocations as $configLocation) {
+            $fileName = $configLocation->getFileName();
+            $path = $this->pathResolver->getLocalConfigPath($fileName);
+            $this->oldConfigs[$fileName] =
+                ($path != null && file_exists($path)) ? parse_ini_file($path, true) : [];
+
+            $this->newConfigs[$fileName] =
+                parse_ini_file($configLocation->getPath(), true);
+            $this->comments[$fileName]
+                = $this->extractComments($configLocation->getPath());
         }
     }
 
@@ -234,54 +255,53 @@ class Upgrade
      * Apply settings from an old configuration to a new configuration.
      *
      * @param string $filename     Name of the configuration being updated.
-     * @param array  $fullSections Array of section names that need to be fully
+     * @param ?array $fullSections Array of section names that need to be fully
      * overridden (as opposed to overridden on a setting-by-setting basis).
      *
      * @return void
      */
-    protected function applyOldSettings($filename, $fullSections = [])
+    protected function applyOldSettings(string $filename, ?array $fullSections = null): void
     {
-        // First override all individual settings:
         foreach ($this->oldConfigs[$filename] as $section => $subsection) {
-            foreach ($subsection as $key => $value) {
-                $this->newConfigs[$filename][$section][$key] = $value;
+            if (in_array($section, $fullSections ?? $this->defaultFullSections)) {
+                $this->newConfigs[$filename][$section] = $this->oldConfigs[$filename][$section];
+            } else {
+                foreach ($subsection as $key => $value) {
+                    $this->newConfigs[$filename][$section][$key] = $value;
+                }
             }
-        }
-
-        // Now override on a section-by-section basis where necessary:
-        foreach ($fullSections as $section) {
-            $this->newConfigs[$filename][$section]
-                = $this->oldConfigs[$filename][$section] ?? [];
         }
     }
 
     /**
      * Save a modified configuration file.
      *
-     * @param string $filename Name of config file to write (contents will be
+     * @param string $filename      Name of config file to write (contents will be
      * pulled from current state of object properties).
+     * @param bool   $forceCreation Force the creation of the file even if the file does not exist.
      *
      * @throws FileAccessException
      * @return void
      */
-    protected function saveModifiedConfig($filename)
+    protected function saveModifiedConfig(string $filename, bool $forceCreation = false): void
     {
-        if (null === $this->newDir) {   // skip write if no destination
+        $this->writtenConfig[] = $filename;
+
+        // don't write to files when write mode is disabled.
+        if (!$this->writeMode) {
             return;
         }
 
-        // If we're doing an in-place upgrade, and the source file is empty,
-        // there is no point in upgrading anything (the file doesn't exist).
-        if (empty($this->oldConfigs[$filename]) && $this->inPlaceUpgrade) {
-            // Special case: if we set up custom permissions, we need to
-            // write the file even if it didn't previously exist.
-            if (!$this->permissionsModified || $filename !== 'permissions.ini') {
-                return;
-            }
+        // If the source file is empty, there is usually no point in upgrading anything (the file doesn't exist).
+        if (
+            empty($this->oldConfigs[$filename])
+            && !$forceCreation
+        ) {
+            return;
         }
 
         // If target file already exists, back it up:
-        $outfile = $this->newDir . '/' . $filename;
+        $outfile = $this->pathResolver->getLocalConfigPath($filename);
         $bakfile = $outfile . '.bak.' . time();
         if (file_exists($outfile) && !copy($outfile, $bakfile)) {
             throw new FileAccessException(
@@ -302,55 +322,14 @@ class Upgrade
     }
 
     /**
-     * Save an unmodified configuration file -- copy the old version, unless it is
-     * the same as the new version!
-     *
-     * @param string $filename Path to the old config file
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function saveUnmodifiedConfig($filename)
-    {
-        if (null === $this->newDir) {   // skip write if no destination
-            return;
-        }
-
-        if ($this->inPlaceUpgrade) {    // skip write if doing in-place upgrade
-            return;
-        }
-
-        // Figure out directories for all versions of this config file:
-        $src = $this->getOldConfigPath($filename);
-        $raw = $this->rawDir . '/' . $filename;
-        $dest = $this->newDir . '/' . $filename;
-
-        // Compare the source file against the raw file; if they happen to be the
-        // same, we don't need to copy anything!
-        if (
-            file_exists($src) && file_exists($raw)
-            && md5(file_get_contents($src)) === md5(file_get_contents($raw))
-        ) {
-            return;
-        }
-
-        // If we got this far, we need to copy the user's file into place:
-        if (file_exists($src) && !copy($src, $dest)) {
-            throw new FileAccessException(
-                "Error: Could not copy {$src} to {$dest}."
-            );
-        }
-    }
-
-    /**
      * Check for invalid theme setting.
      *
-     * @param string $setting Name of setting in [Site] section to check.
-     * @param string $default Default value to use if invalid option was found.
+     * @param string  $setting Name of setting in [Site] section to check.
+     * @param ?string $default Default value to use if invalid option was found.
      *
      * @return void
      */
-    protected function checkTheme($setting, $default = null)
+    protected function checkTheme(string $setting, ?string $default = null): void
     {
         // If a setting is not set, there is nothing to check:
         $theme = $this->newConfigs['config.ini']['Site'][$setting] ?? null;
@@ -390,7 +369,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function checkAmazonConfig($config)
+    protected function checkAmazonConfig(array $config): void
     {
         // Warn the user if they have Amazon enabled but do not have the appropriate
         // credentials set up.
@@ -407,13 +386,15 @@ class Upgrade
     /**
      * Upgrade config.ini.
      *
+     * @param string $newVersion Version to upgrade to
+     *
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradeConfig()
+    protected function upgradeConfig(string $newVersion): void
     {
         // override new version's defaults with matching settings from old version:
-        $this->applyOldSettings('config.ini');
+        $this->applyOldSettings('config.ini', []);
 
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
@@ -556,7 +537,7 @@ class Upgrade
             isset($newConfig['Site']['generator'])
             && preg_match('/^VuFind (\d+\.?)+$/', $newConfig['Site']['generator'])
         ) {
-            $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
+            $newConfig['Site']['generator'] = 'VuFind ' . $newVersion;
         }
 
         // Update Syndetics config:
@@ -601,7 +582,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function upgradeAdminPermissions()
+    protected function upgradeAdminPermissions(): void
     {
         $config = & $this->newConfigs['config.ini'];
         $permissions = & $this->newConfigs['permissions.ini'];
@@ -638,7 +619,7 @@ class Upgrade
      *
      * @return array
      */
-    protected function changeArrayKey($array, $old, $new)
+    protected function changeArrayKey(array $array, string $old, string $new): array
     {
         $newArr = [];
         foreach ($array as $k => $v) {
@@ -659,7 +640,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function renameFacet($old, $new)
+    protected function renameFacet(string $old, string $new): void
     {
         $didWork = false;
         if (isset($this->newConfigs['facets.ini']['Results'][$old])) {
@@ -689,16 +670,12 @@ class Upgrade
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradeFacetsAndCollection()
+    protected function upgradeFacetsAndCollection(): void
     {
         // we want to retain the old installation's various facet groups
         // exactly as-is
-        $facetGroups = [
-            'Results', 'ResultsTop', 'Advanced', 'Author', 'CheckboxFacets',
-            'HomePage',
-        ];
-        $this->applyOldSettings('facets.ini', $facetGroups);
-        $this->applyOldSettings('Collection.ini', ['Facets', 'Sort']);
+        $this->applyOldSettings('facets.ini');
+        $this->applyOldSettings('Collection.ini');
 
         // fill in home page facets with advanced facets if missing:
         if (!isset($this->oldConfigs['facets.ini']['HomePage'])) {
@@ -720,14 +697,11 @@ class Upgrade
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradeSearches()
+    protected function upgradeSearches(): void
     {
         // we want to retain the old installation's Basic/Advanced search settings
         // and sort settings exactly as-is
-        $groups = [
-            'Basic_Searches', 'Advanced_Searches', 'Sorting', 'DefaultSortingByType',
-        ];
-        $this->applyOldSettings('searches.ini', $groups);
+        $this->applyOldSettings('searches.ini');
 
         // fix call number sort settings:
         $newConfig = & $this->newConfigs['searches.ini'];
@@ -749,83 +723,15 @@ class Upgrade
     }
 
     /**
-     * Upgrade fulltext.ini.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeFulltext()
-    {
-        $this->saveUnmodifiedConfig('fulltext.ini');
-    }
-
-    /**
-     * Upgrade sitemap.ini.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeSitemap()
-    {
-        $this->saveUnmodifiedConfig('sitemap.ini');
-    }
-
-    /**
      * Upgrade sms.ini.
      *
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradeSms()
+    protected function upgradeSms(): void
     {
         $this->applyOldSettings('sms.ini', ['Carriers']);
         $this->saveModifiedConfig('sms.ini');
-    }
-
-    /**
-     * Upgrade authority.ini.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeAuthority()
-    {
-        // we want to retain the old installation's search and facet settings
-        // exactly as-is
-        $groups = [
-            'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
-        ];
-        $this->applyOldSettings('authority.ini', $groups);
-
-        // save the file
-        $this->saveModifiedConfig('authority.ini');
-    }
-
-    /**
-     * Upgrade reserves.ini.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeReserves()
-    {
-        // If Reserves module is disabled, don't bother updating config:
-        if (
-            !isset($this->newConfigs['config.ini']['Reserves']['search_enabled'])
-            || !$this->newConfigs['config.ini']['Reserves']['search_enabled']
-        ) {
-            return;
-        }
-
-        // we want to retain the old installation's search and facet settings
-        // exactly as-is
-        $groups = [
-            'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
-        ];
-        $this->applyOldSettings('reserves.ini', $groups);
-
-        // save the file
-        $this->saveModifiedConfig('reserves.ini');
     }
 
     /**
@@ -834,24 +740,45 @@ class Upgrade
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradeEDS()
+    protected function upgradeEDS(): void
+    {
+        $this->upgradeEbsco('EDS.ini');
+    }
+
+    /**
+     * Upgrade EPF.ini.
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradeEPF(): void
+    {
+        $this->upgradeEbsco('EPF.ini');
+    }
+
+    /**
+     * Upgrade EDS.ini or EPF.ini.
+     *
+     * @param string $filename Config filename
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradeEbsco(string $filename): void
     {
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $groups = [
-            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
-        ];
-        $this->applyOldSettings('EDS.ini', $groups);
+        $this->applyOldSettings($filename);
 
         // Fix default view settings in case they use the old style:
-        $newConfig = & $this->newConfigs['EDS.ini']['General'];
+        $newConfig = & $this->newConfigs[$filename]['General'];
 
         if (!str_contains($newConfig['default_view'], '_')) {
             $newConfig['default_view'] = 'list_' . $newConfig['default_view'];
         }
 
         // save the file
-        $this->saveModifiedConfig('EDS.ini');
+        $this->saveModifiedConfig($filename);
     }
 
     /**
@@ -860,7 +787,7 @@ class Upgrade
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradeSummon()
+    protected function upgradeSummon(): void
     {
         // If Summon is disabled in our current configuration, we don't need to
         // load any Summon-specific settings:
@@ -870,10 +797,7 @@ class Upgrade
 
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $groups = [
-            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
-        ];
-        $this->applyOldSettings('Summon.ini', $groups);
+        $this->applyOldSettings('Summon.ini');
 
         // update permission settings
         $this->upgradeSummonPermissions();
@@ -887,7 +811,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function upgradeSummonPermissions()
+    protected function upgradeSummonPermissions(): void
     {
         $config = & $this->newConfigs['Summon.ini'];
         $permissions = & $this->newConfigs['permissions.ini'];
@@ -923,14 +847,11 @@ class Upgrade
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradePrimo()
+    protected function upgradePrimo(): void
     {
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $groups = [
-            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
-        ];
-        $this->applyOldSettings('Primo.ini', $groups);
+        $this->applyOldSettings('Primo.ini');
 
         // update permission settings
         $this->upgradePrimoPermissions();
@@ -943,23 +864,11 @@ class Upgrade
     }
 
     /**
-     * Upgrade RecordDataFormatter.ini.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeRecordDataFormatter(): void
-    {
-        $this->applyOldSettings('RecordDataFormatter.ini');
-        $this->saveModifiedConfig('RecordDataFormatter.ini');
-    }
-
-    /**
      * Translate obsolete permission settings.
      *
      * @return void
      */
-    protected function upgradePrimoPermissions()
+    protected function upgradePrimoPermissions(): void
     {
         $config = & $this->newConfigs['Primo.ini'];
         $permissions = & $this->newConfigs['permissions.ini'];
@@ -1012,7 +921,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function upgradePrimoServerSettings()
+    protected function upgradePrimoServerSettings(): void
     {
         $config = & $this->newConfigs['Primo.ini'];
         // Convert apiId to url
@@ -1034,59 +943,6 @@ class Upgrade
     }
 
     /**
-     * Does the specified properties file contain any meaningful
-     * (non-empty/non-comment) lines?
-     *
-     * @param string $src File to check
-     *
-     * @return bool
-     */
-    protected function fileContainsMeaningfulLines($src)
-    {
-        // Does the file contain any meaningful lines?
-        foreach (file($src) as $line) {
-            $line = trim($line);
-            if ('' !== $line && !str_starts_with($line, '#')) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Upgrade ILS driver configuration.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeILS()
-    {
-        $driver = $this->newConfigs['config.ini']['Catalog']['driver'] ?? '';
-        if (empty($driver)) {
-            $this->addWarning('WARNING: Could not find ILS driver setting.');
-        } elseif ('Sample' == $driver) {
-            // No configuration file for Sample driver
-        } elseif ('AdminScripts' == $driver) {
-            // Prevent abuse if upgrade process is hijacked
-        } elseif (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
-            $this->addWarning(
-                "WARNING: Could not find {$driver}.ini file; "
-                . 'check your ILS driver configuration.'
-            );
-        } else {
-            $this->saveUnmodifiedConfig($driver . '.ini');
-        }
-
-        // If we're set to load NoILS.ini on failure, copy that over as well:
-        if ($this->newConfigs['config.ini']['Catalog']['loadNoILSOnFailure'] ?? false) {
-            // If NoILS is also the main driver, we don't need to copy it twice:
-            if ($driver != 'NoILS') {
-                $this->saveUnmodifiedConfig('NoILS.ini');
-            }
-        }
-    }
-
-    /**
      * Upgrade shard settings (they have moved to a different config file, so
      * this is handled as a separate method so that all affected settings are
      * addressed in one place.
@@ -1100,7 +956,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function upgradeShardSettings()
+    protected function upgradeShardSettings(): void
     {
         // move settings from config.ini to searches.ini:
         if (isset($this->newConfigs['config.ini']['IndexShards'])) {
@@ -1160,7 +1016,7 @@ class Upgrade
      *
      * @return array           Associative array as described above.
      */
-    protected function extractComments($filename)
+    protected function extractComments(string $filename): array
     {
         $lines = file($filename);
 

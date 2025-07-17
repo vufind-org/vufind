@@ -44,13 +44,6 @@ namespace VuFind\Search\Combined;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Options plugin manager
-     *
-     * @var \VuFind\Search\Options\PluginManager
-     */
-    protected $optionsManager;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager         $configLoader   Config loader
@@ -58,16 +51,11 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function __construct(
         \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Search\Options\PluginManager $optionsManager
+        protected \VuFind\Search\Options\PluginManager $optionsManager
     ) {
         parent::__construct($configLoader);
-        $this->optionsManager = $optionsManager;
-        $searchSettings = $this->configLoader->get('combined');
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
+        $searchSettings = $this->configLoader->get('combined')->toArray();
+        $this->basicHandlers = $searchSettings['Basic_Searches'] ?? [];
     }
 
     /**

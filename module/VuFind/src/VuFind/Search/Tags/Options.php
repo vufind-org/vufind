@@ -46,7 +46,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var bool
      */
-    protected $useSolrSearchOptions = false;
+    protected $useSolrSearchOptions;
 
     /**
      * Constructor
@@ -56,20 +56,9 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-        $config = $configLoader->get($this->mainIni);
-        if (
-            isset($config->Social->show_solr_options_in_tag_search)
-            && $config->Social->show_solr_options_in_tag_search
-        ) {
-            $this->useSolrSearchOptions = true;
-        }
-        $searchSettings = $this->useSolrSearchOptions
-            ? $configLoader->get($this->searchIni) : null;
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        } else {
+
+        $this->useSolrSearchOptions = (bool)($this->mainConfig['Social']['show_solr_options_in_tag_search'] ?? false);
+        if (!$this->useSolrSearchOptions) {
             $this->basicHandlers = ['tag' => 'Tag'];
         }
         $this->defaultHandler = 'tag';
@@ -79,7 +68,7 @@ class Options extends \VuFind\Search\Base\Options
             'year DESC' => 'sort_year', 'year' => 'sort_year_asc',
         ];
         // Load autocomplete preferences:
-        $this->configureAutocomplete($searchSettings);
+        $this->configureAutocomplete($this->useSolrSearchOptions ? $this->searchSettings : []);
     }
 
     /**

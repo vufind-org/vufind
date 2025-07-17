@@ -203,7 +203,7 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
 
         // Verify query except timestamp hash for deactivated browser cache
         $imageSrcQuery = explode('&', explode('?', $imageSrc)[1] ?? '');
-        $imageSrcQuery = array_filter($imageSrcQuery, fn ($part) => !str_starts_with($part, 'hash'));
+        $imageSrcQuery = array_filter($imageSrcQuery, fn ($part) => !str_starts_with($part, 'browser_cache_hash'));
         $expectedQuery = explode('&', $expectedImageParts[1] ?? '');
         sort($expectedQuery);
         sort($imageSrcQuery);

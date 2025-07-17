@@ -986,4 +986,18 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Undefined method: ');
         $this->assertFalse($this->callMethod($driver, 'extractEbscoData', [['invalid-method:invalid-path']]));
     }
+
+    /**
+     * Test HTML FT with tables & mathML will be parsed correctly
+     *
+     * @return void
+     */
+    public function testHTMLParsingWithEPHTML(): void
+    {
+        $driver = $this->getDriver('eds_retrieve_ft_html');
+        // define what to expect
+        $actual = $driver->getHTMLFullText();
+        $expected = $this->getFixture('eds/eds_mathml_table.html');
+        $this->assertEquals($expected, $actual);
+    }
 }

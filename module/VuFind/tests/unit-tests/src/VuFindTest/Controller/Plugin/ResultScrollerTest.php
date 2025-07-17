@@ -43,7 +43,7 @@ use VuFind\Controller\Plugin\ResultScroller;
  */
 class ResultScrollerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test next_prev_nav bug
