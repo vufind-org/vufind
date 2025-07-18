@@ -168,7 +168,7 @@ class Ini extends AbstractBase
         if ($baseLocation !== null) {
             $comments = $this->extractComments($baseLocation->getPath());
         }
-        $writer = $this->getConfigWriter($outfile, $comments, $comments);
+        $writer = $this->getConfigWriter($outfile, $config, $comments);
         if (!$writer->save()) {
             throw new FileAccessException(
                 "Error: Problem writing to {$outfile}."
