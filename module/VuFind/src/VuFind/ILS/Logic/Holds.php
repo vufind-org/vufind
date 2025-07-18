@@ -536,7 +536,7 @@ class Holds
         return [
             'action' => $action,
             'record' => $linkOverrides['id'] ?? $details['id'],
-            'source' => $linkOverrides['source'] ?? ($details['source'] ?? DEFAULT_SEARCH_BACKEND),
+            'source' => $linkOverrides['source'] ?? $details['source'] ?? DEFAULT_SEARCH_BACKEND,
             'query' => $queryString,
             'anchor' => '#tabnav',
         ];
