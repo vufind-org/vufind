@@ -105,7 +105,7 @@ class EDS extends DefaultRecord
      * Identify if config tells us to expect a catalog, if catalog id is set
      * and if catalog id matches databaseid
      *
-     * @return boolean
+     * @return bool
      */
     public function hasCatalog()
     {
