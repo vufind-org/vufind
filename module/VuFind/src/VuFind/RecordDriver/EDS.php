@@ -129,7 +129,7 @@ class EDS extends DefaultRecord
     /**
      * Based on publication type determine if RTAC should be available
      *
-     * @return boolean
+     * @return bool
      */
     public function pubTypeRtacEnabled()
     {
