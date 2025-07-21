@@ -50,7 +50,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'demo' => Demo::class,
         'dumb' => Dumb::class,
-        'figlet' => Figlet::class,
         'image' => Image::class,
         'interval' => Interval::class,
         'recaptcha' => ReCaptcha::class,
@@ -64,7 +63,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         Demo::class => InvokableFactory::class,
         Dumb::class => DumbFactory::class,
-        Figlet::class => FigletFactory::class,
         Image::class => ImageFactory::class,
         Interval::class => IntervalFactory::class,
         ReCaptcha::class => ReCaptchaFactory::class,
