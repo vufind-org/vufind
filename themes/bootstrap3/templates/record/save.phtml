@@ -41,7 +41,11 @@
       </select>
     <?php endif; ?>
 
-    <a id="make-list" class="btn btn-link" href="<?=$this->url('editList', ['id' => 'NEW'], ['query' => ['recordId' => $this->driver?->getUniqueId() ?? $this->recordId ?? false]]) ?>">
+    <?php
+      $recordId = $this->driver?->getUniqueId() ?? $this->recordId ?? false;
+      $recordSource = $this->driver?->getSourceIdentifier() ?? $this->recordSource ?? DEFAULT_SEARCH_BACKEND;
+    ?>
+    <a id="make-list" class="btn btn-link" href="<?=$this->url('editList', ['id' => 'NEW'], ['query' => compact('recordId', 'recordSource')]) ?>">
       <?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List') ?>
     </a>
   </div>
