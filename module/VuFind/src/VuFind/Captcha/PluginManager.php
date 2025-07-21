@@ -52,6 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'dumb' => Dumb::class,
         'image' => Image::class,
         'interval' => Interval::class,
+        'pow' => PoW::class,
         'recaptcha' => ReCaptcha::class,
     ];
 
@@ -65,6 +66,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Dumb::class => DumbFactory::class,
         Image::class => ImageFactory::class,
         Interval::class => IntervalFactory::class,
+        PoW::class => PoWFactory::class,
         ReCaptcha::class => ReCaptchaFactory::class,
     ];
 
