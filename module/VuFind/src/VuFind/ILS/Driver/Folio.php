@@ -706,6 +706,35 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get data about a loan type.
+     *
+     * @param string $loanTypeId UUID
+     *
+     * @return array
+     */
+    protected function getLoanTypeData($loanTypeId)
+    {
+        $cacheKey = 'loanTypeMap';
+        $loanTypeMap = $this->getCachedData($cacheKey);
+        if (null === $loanTypeMap) {
+            $loanTypeMap = [];
+            foreach (
+                $this->getPagedResults(
+                    'loantypes',
+                    '/loan-types'
+                ) as $loanType
+            ) {
+                if (isset($loanType->name)) {
+                    $name = $loanType->name;
+                    $loanTypeMap[$loanType->id] = compact('name');
+                }
+            }
+        }
+        $this->putCachedData($cacheKey, $loanTypeMap);
+        return $loanTypeMap[$loanTypeId];
+    }
+
+    /**
      * Choose a call number and callnumber prefix.
      *
      * @param string $hCallNumP Holding-level call number prefix
@@ -872,6 +901,15 @@ class Folio extends AbstractAPI implements
         );
         $locAndHoldings = $this->getItemFieldsFromNonItemData($locationId, $holdingDetails, $currentLoan);
 
+        $loanTypeName = '';
+        $tempLoanTypeId = $item->temporaryLoanType->id ?? '';
+        $permLoanTypeId = $item->permanentLoanType->id ?? '';
+        $loanTypeId = !empty($tempLoanTypeId) ? $tempLoanTypeId : $permLoanTypeId;
+        if (!empty($loanTypeId)) {
+            $loanData = $this->getLoanTypeData($loanTypeId);
+            $loanTypeName = $loanData['name'];
+        }
+
         return $callNumberData + $locAndHoldings + [
             'id' => $bibId,
             'item_id' => $item->id,
@@ -886,6 +924,8 @@ class Folio extends AbstractAPI implements
             'reserve' => 'TODO',
             'addLink' => 'check',
             'bound_with_records' => $boundWithRecords,
+            'loan_type_id' => $loanTypeId,
+            'loan_type_name' => $loanTypeName,
         ];
     }
 
@@ -943,14 +983,14 @@ class Folio extends AbstractAPI implements
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
-     * @param array  $patron  Patron login information from $this->patronLogin
+     * @param ?array $patron  Patron login information from $this->patronLogin
      * @param array  $options Extra options (not currently used)
      *
      * @return array An array of associative holding arrays
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($bibId, array $patron = null, array $options = [])
+    public function getHolding($bibId, ?array $patron = null, array $options = [])
     {
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
@@ -1074,7 +1114,7 @@ class Folio extends AbstractAPI implements
      * current loan, adjusting the timezone and formatting in universal
      * time with or without due time
      *
-     * @param \stdClass|string $loan     The current loan, or its itemId for backwards compatibility
+     * @param \stdClass|string $loan     The current loan, or its itemId for legacy backwards compatibility
      * @param bool             $showTime Determines if date or date & time is returned
      *
      * @return string
@@ -1686,7 +1726,11 @@ class Folio extends AbstractAPI implements
         // have to obtain a list of IDs to use as a filter below.
         $legalServicePoints = null;
         if ($holdInfo) {
-            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($holdInfo['id'])->id, $patron['id']);
+            $allowed = $this->getAllowedServicePoints(
+                $this->getInstanceByBibId($holdInfo['id'])->id,
+                $holdInfo['item_id'] ?? null,
+                $patron['id']
+            );
             if ($allowed !== null) {
                 $legalServicePoints = [];
                 $preferredRequestType = $this->getPreferredRequestType($holdInfo);
@@ -2030,14 +2074,16 @@ class Folio extends AbstractAPI implements
     /**
      * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
-     * @param string $instanceId  Instance UUID being requested
-     * @param string $requesterId Patron UUID placing request
-     * @param string $operation   Operation type (default = create)
+     * @param string  $instanceId  Instance UUID being requested
+     * @param ?string $itemId      Item UUID being requested (or null if unavailable/inapplicable)
+     * @param string  $requesterId Patron UUID placing request
+     * @param string  $operation   Operation type (default = create)
      *
      * @return ?array
      */
-    public function getAllowedServicePoints(
+    protected function getAllowedServicePoints(
         string $instanceId,
+        ?string $itemId,
         string $requesterId,
         string $operation = 'create'
     ): ?array {
@@ -2046,7 +2092,7 @@ class Folio extends AbstractAPI implements
             $response = $this->makeRequest(
                 'GET',
                 '/circulation/requests/allowed-service-points?'
-                . http_build_query(compact('instanceId', 'requesterId', 'operation'))
+                . http_build_query(compact(empty($itemId) ? 'instanceId' : 'itemId', 'requesterId', 'operation'))
             );
             if (!$response->isSuccess()) {
                 $this->warning('Unexpected service point lookup response: ' . $response->getBody());
@@ -2135,7 +2181,11 @@ class Folio extends AbstractAPI implements
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
-        $allowed = $this->getAllowedServicePoints($instance->id, $holdDetails['patron']['id']);
+        $allowed = $this->getAllowedServicePoints(
+            $instance->id,
+            $holdDetails['item_id'] ?? null,
+            $holdDetails['patron']['id']
+        );
         $preferredRequestType = $this->getPreferredRequestType($holdDetails);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
             // Skip illegal request types, if we have validation data available:
@@ -2257,12 +2307,18 @@ class Folio extends AbstractAPI implements
             ];
         }
 
-        $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($id)->id, $patron['id']);
+        $allowed = $this->getAllowedServicePoints(
+            $this->getInstanceByBibId($id)->id,
+            $data['item_id'] ?? null,
+            $patron['id']
+        );
+
+        // If we got this far, it's valid if we can't obtain allowed service point
+        // data, or if the allowed service point data is non-empty:
+        $valid = null === $allowed || !empty($allowed);
         return [
-            // If we got this far, it's valid if we can't obtain allowed service point
-            // data, or if the allowed service point data is non-empty:
-            'valid' => null === $allowed || !empty($allowed),
-            'status' => 'request_place_text',
+            'valid' => $valid,
+            'status' => $valid ? 'request_place_text' : 'No pickup locations available',
         ];
     }
 

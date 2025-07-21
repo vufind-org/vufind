@@ -46,7 +46,7 @@ use VuFind\Db\Entity\ShortlinksEntityInterface;
  * @property string $hash
  * @property string $created
  */
-class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntityInterface
+class Shortlinks extends RowGateway implements ShortlinksEntityInterface
 {
     /**
      * Constructor
@@ -84,9 +84,9 @@ class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntit
      *
      * @param string $path Path
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setPath(string $path): ShortlinksEntityInterface
+    public function setPath(string $path): static
     {
         $this->path = $path;
         return $this;
@@ -107,9 +107,9 @@ class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntit
      *
      * @param ?string $hash Shortlinks hash
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setHash(?string $hash): ShortlinksEntityInterface
+    public function setHash(?string $hash): static
     {
         $this->hash = $hash;
         return $this;
@@ -130,9 +130,9 @@ class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntit
      *
      * @param DateTime $dateTime Creation timestamp
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): ShortlinksEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;

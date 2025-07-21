@@ -61,7 +61,7 @@ use function is_resource;
  * @property string  $notification_base_url
  */
 class Search extends RowGateway implements
-    \VuFind\Db\Entity\SearchEntityInterface,
+    SearchEntityInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     DbServiceAwareInterface
 {
@@ -217,9 +217,9 @@ class Search extends RowGateway implements
      *
      * @param ?UserEntityInterface $user User
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): SearchEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user_id = $user?->getId();
         return $this;
@@ -240,9 +240,9 @@ class Search extends RowGateway implements
      *
      * @param ?string $sessionId Session id
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSessionId(?string $sessionId): SearchEntityInterface
+    public function setSessionId(?string $sessionId): static
     {
         $this->session_id = $sessionId;
         return $this;
@@ -263,9 +263,9 @@ class Search extends RowGateway implements
      *
      * @param DateTime $dateTime Created date
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): SearchEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -286,9 +286,9 @@ class Search extends RowGateway implements
      *
      * @param ?string $title Title
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setTitle(?string $title): SearchEntityInterface
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
         return $this;
@@ -309,9 +309,9 @@ class Search extends RowGateway implements
      *
      * @param bool $saved Saved
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSaved(bool $saved): SearchEntityInterface
+    public function setSaved(bool $saved): static
     {
         $this->saved = $saved ? 1 : 0;
         return $this;
@@ -322,9 +322,9 @@ class Search extends RowGateway implements
      *
      * @param ?\VuFind\Search\Minified $searchObject Search object
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setSearchObject(?\VuFind\Search\Minified $searchObject): SearchEntityInterface
+    public function setSearchObject(?\VuFind\Search\Minified $searchObject): static
     {
         $this->search_object = $searchObject ? serialize($searchObject) : null;
         return $this;
@@ -345,9 +345,9 @@ class Search extends RowGateway implements
      *
      * @param ?int $checksum Checksum
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setChecksum(?int $checksum): SearchEntityInterface
+    public function setChecksum(?int $checksum): static
     {
         $this->checksum = $checksum;
         return $this;
@@ -368,9 +368,9 @@ class Search extends RowGateway implements
      *
      * @param int $notificationFrequency Notification frequency
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setNotificationFrequency(int $notificationFrequency): SearchEntityInterface
+    public function setNotificationFrequency(int $notificationFrequency): static
     {
         $this->notification_frequency = $notificationFrequency;
         return $this;
@@ -391,9 +391,9 @@ class Search extends RowGateway implements
      *
      * @param DateTime $lastNotificationSent Time when last notification was sent
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setLastNotificationSent(Datetime $lastNotificationSent): SearchEntityInterface
+    public function setLastNotificationSent(Datetime $lastNotificationSent): static
     {
         $this->last_notification_sent = $lastNotificationSent->format('Y-m-d H:i:s');
         return $this;
@@ -414,9 +414,9 @@ class Search extends RowGateway implements
      *
      * @param string $notificationBaseUrl Notification base URL
      *
-     * @return SearchEntityInterface
+     * @return static
      */
-    public function setNotificationBaseUrl(string $notificationBaseUrl): SearchEntityInterface
+    public function setNotificationBaseUrl(string $notificationBaseUrl): static
     {
         $this->notification_base_url = $notificationBaseUrl;
         return $this;

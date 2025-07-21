@@ -1,11 +1,9 @@
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('User Account'));
-
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Account') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Account'), active: true);
 ?>
-<h2><?=$this->transEsc('User Account')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('User Account')]);?>
 <?=$this->flashmessages()?>
 
 <form method="post" name="accountForm" id="accountForm" class="form-user-create">

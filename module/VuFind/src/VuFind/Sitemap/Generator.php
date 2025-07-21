@@ -29,7 +29,7 @@
 
 namespace VuFind\Sitemap;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function call_user_func;
 use function in_array;

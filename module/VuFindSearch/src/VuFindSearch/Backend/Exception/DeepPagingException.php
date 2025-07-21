@@ -53,10 +53,10 @@ class DeepPagingException extends RuntimeException
     /**
      * Constructor.
      *
-     * @param string    $message   Exception message
-     * @param int       $code      Exception code
-     * @param int       $legalPage A legal page number for results
-     * @param Exception $prev      Previous exception
+     * @param string     $message   Exception message
+     * @param int        $code      Exception code
+     * @param int        $legalPage A legal page number for results
+     * @param ?Exception $prev      Previous exception
      *
      * @return void
      */
@@ -64,7 +64,7 @@ class DeepPagingException extends RuntimeException
         $message,
         $code,
         $legalPage = 0,
-        Exception $prev = null
+        ?Exception $prev = null
     ) {
         parent::__construct($message, $code, $prev);
         $this->legalPage = $legalPage;

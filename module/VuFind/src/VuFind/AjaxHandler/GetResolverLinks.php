@@ -30,9 +30,9 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Resolver\Connection;
 use VuFind\Resolver\Driver\PluginManager as ResolverManager;

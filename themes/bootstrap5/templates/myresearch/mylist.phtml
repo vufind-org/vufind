@@ -7,7 +7,8 @@
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'saved_items';
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate($currPage), active: true);
 
   // Load Javascript dependencies into header:
   $this->assetManager()->appendScriptLink('check_item_statuses.js');
@@ -95,8 +96,9 @@
           <?=$this->record($current)->getListEntry($list, $user)?>
         <?php endforeach; ?>
       </ul>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['isBottom' => true, 'list' => $list ?? null, 'account' => $this->account])?>
     </form>
-    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results]])?>
   <?php else: ?>
     <p><?=$this->transEsc('You do not have any saved resources')?></p>
   <?php endif; ?>

@@ -32,7 +32,7 @@
 
 namespace VuFind\Search\EPF;
 
-use function count;
+use VuFind\Search\EDS\AbstractEDSOptions;
 
 /**
  * EPF API Options
@@ -45,22 +45,8 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends AbstractEDSOptions
 {
-    /**
-     * Default view option
-     *
-     * @var ?string
-     */
-    protected $defaultView = null;
-
-    /**
-     * Search configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $searchSettings;
-
     /**
      * Constructor
      *
@@ -70,7 +56,6 @@ class Options extends \VuFind\Search\Base\Options
         \VuFind\Config\PluginManager $configLoader
     ) {
         $this->searchIni = $this->facetsIni = 'EPF';
-        $this->searchSettings = $configLoader->get($this->searchIni);
 
         parent::__construct($configLoader);
 
@@ -85,27 +70,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getSearchAction()
     {
         return 'epf-search';
-    }
-
-    /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        return $this->defaultView;
-    }
-
-    /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getEpfView()
-    {
-        $viewArr = explode('|', $this->defaultView);
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
     }
 
     /**
@@ -127,9 +91,6 @@ class Options extends \VuFind\Search\Base\Options
     protected function setOptionsFromConfig()
     {
         // View preferences
-        if (isset($this->searchSettings->General->default_view)) {
-            $this->defaultView
-                = 'list|' . $this->searchSettings->General->default_view;
-        }
+        $this->initViewOptions($this->searchSettings);
     }
 }

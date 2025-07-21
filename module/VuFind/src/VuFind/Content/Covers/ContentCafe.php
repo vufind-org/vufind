@@ -57,9 +57,9 @@ class ContentCafe extends \VuFind\Content\AbstractCover
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration
+     * @param \VuFind\Config\Config $config Configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->password = $config->pw;
         $this->baseURL = $config->url ?? 'http://contentcafe2.btol.com';

@@ -12,7 +12,7 @@
   $advancedSearchAction = ($currentSearch['advanced_link_bottom'] ?? false)
     ? $params->getOptions()->getAdvancedSearchAction() : false;
   $advancedSearchUrl = $advancedSearchAction
-    ? $this->url($advancedSearchAction, [], ['query' => ['edit' => $results->getSearchId()]])
+    ? $this->url($advancedSearchAction, [], ['query' => ['sid' => $results->getSearchId()]])
     : false;
 
   // Generate JS code that will move a given recommendation module over to the sidebar
@@ -43,22 +43,26 @@
         JS;
   };
 
-  // Update result counts in jump links
+  // Update result counts (and, if necessary, href attributes) in jump links
   $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
+  $jsMoreUrl = $this->escapeJs(html_entity_decode($moreUrl));
   $countsJs = <<<JS
       function updateJumpLink_$classId() {
-        let count = $recordTotal;
-        count = count.toLocaleString();
-
-        const template = document.createElement('template');
-        template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
-        const span = template.content.children[0];
-
         const combinedJumpLinks = document.querySelector('.combined-jump-links');
-        const link = combinedJumpLinks?.querySelector('.$classId');
-        if (link) {
-          link.append(span);
-          link.style.display = "inline";
+        const linkContainer = combinedJumpLinks?.querySelector('.$classId');
+        if (linkContainer) {
+          let count = $recordTotal;
+          count = count.toLocaleString();
+          const spanText = document.createTextNode('(' + count + ')');
+          const totalSpan = document.createElement('span');
+          totalSpan.className = 'record-total';
+          totalSpan.append(spanText);
+          linkContainer.append(totalSpan);
+          linkContainer.style.display = "inline";
+          const link = linkContainer.querySelector('a');
+          if (link.dataset.linkMode === 'link') {
+            link.href = "$jsMoreUrl";
+          };
           combinedJumpLinks.style.visibility = "inherit";
         }
       }
@@ -74,7 +78,7 @@
 <?=$this->assetManager()->outputInlineScriptString($countsJs)?>
 
 <?php if ($currentSearch['more_link'] ?? false): ?>
-  <div class="pull-right flip">
+  <div class="float-end">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
       <?=$this->icon('options', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('More options')?></span>
@@ -97,7 +101,7 @@
 <?php endif; ?>
 
 <div class="clearfix">
-  <div class="pull-left flip help-block">
+  <div class="float-start help-block">
     <?php if ($recordTotal > 0): ?>
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
@@ -123,6 +127,10 @@
   </div>
 </div>
 <?php /* End Listing Options */ ?>
+
+<?php if ($results->getOptions()->showRestrictedViewWarning() && $results->isRestrictedView()): ?>
+  <?=$this->render('error/restrictedViewWarning.phtml')?>
+<?php endif; ?>
 
 <?php foreach ($this->extraErrors ?? [] as $error): ?>
   <div class="alert alert-danger"><?=$this->transEsc($error)?></div>

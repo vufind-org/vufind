@@ -57,7 +57,7 @@ class MarkdownFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $markdownService = $container
             ->get(\League\CommonMark\ConverterInterface::class);

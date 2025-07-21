@@ -50,7 +50,7 @@ trait LowerCaseServiceNameTrait
      *
      * @return mixed
      */
-    public function get($name, array $options = null)
+    public function get($name, ?array $options = null)
     {
         return parent::get($this->getNormalizedServiceName($name), $options);
     }

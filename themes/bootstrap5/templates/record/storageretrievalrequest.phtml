@@ -1,13 +1,13 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb());
-
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li>')
-        . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>'
-        . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+      ->add($this->translate('storage_retrieval_request_place_text'), active: true);
 ?>
-<h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('storage_retrieval_request_place_text'), 'headTitle' => $this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
 <?php if ($this->helpTextHtml): ?>
 <p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
@@ -32,11 +32,11 @@
     </div>
     <div class="form-group">
       <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
-        <label class="control-label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
+        <label class="form-label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
         <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="form-control"><br>
-        <label class="control-label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
+        <label class="form-label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
         <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtmlAttr($this->gatheredDetails['issue']) : ''?>" class="form-control"><br>
-        <label class="control-label"><?=$this->transEsc('storage_retrieval_request_year')?>:</label>
+        <label class="form-label"><?=$this->transEsc('storage_retrieval_request_year')?>:</label>
         <input type="text" name="gatheredDetails[year]" value="<?=isset($this->gatheredDetails['year']) ? $this->escapeHtmlAttr($this->gatheredDetails['year']) : ''?>" class="form-control"><br>
       </div>
     </div>
@@ -44,7 +44,7 @@
 
   <?php if (in_array('requiredByDate', $this->extraFields)): ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc('hold_required_by')?>:</label>
+      <label class="form-label"><?=$this->transEsc('hold_required_by')?>:</label>
       <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
@@ -68,8 +68,8 @@
             $selected = $this->homeLibrary ?? false;
           }
         ?>
-        <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
-        <select name="gatheredDetails[pickUpLocation]" class="form-control">
+        <label class="form-label"><?=$this->transEsc('pick_up_location')?>:</label>
+        <select name="gatheredDetails[pickUpLocation]" class="form-select">
           <?php if ($selected === false && count($this->pickup) > 1): ?>
             <option value="" selected="selected">
               <?=$this->transEsc('select_pickup_location')?>
@@ -89,7 +89,7 @@
 
   <?php if (in_array('comments', $this->extraFields)): ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc('Comments')?>:</label>
+      <label class="form-label"><?=$this->transEsc('Comments')?>:</label>
       <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
     </div>
   <?php endif; ?>

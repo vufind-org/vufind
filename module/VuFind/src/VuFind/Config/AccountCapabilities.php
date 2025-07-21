@@ -30,7 +30,6 @@
 
 namespace VuFind\Config;
 
-use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
 
 use function in_array;
@@ -88,6 +87,49 @@ class AccountCapabilities
         return isset($this->config->Social->comments)
             && $this->config->Social->comments === 'disabled'
             ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get rating setting.
+     *
+     * @return string
+     */
+    public function getRatingSetting(): string
+    {
+        return empty($this->config->Social->rating)
+            || $this->config->Social->rating === 'disabled'
+            ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get page size for comments, ratings and tags in user account.
+     *
+     * @return int
+     */
+    public function getUserContentPageSize(): int
+    {
+        return $this->config->Social->user_content_page_size ?? 50;
+    }
+
+    /**
+     * Get enabled tabs for user content as an array with controller names
+     * as keys and tab titles as values.
+     *
+     * @return array
+     */
+    public function getUserContentTabs(): array
+    {
+        $tabs = [];
+        if ('enabled' === $this->getCommentSetting()) {
+            $tabs['comments'] = 'Comments';
+        }
+        if ('enabled' === $this->getRatingSetting()) {
+            $tabs['ratings'] = 'Ratings';
+        }
+        if ('enabled' === $this->getTagSetting()) {
+            $tabs['tag'] = 'Tags';
+        }
+        return $tabs;
     }
 
     /**

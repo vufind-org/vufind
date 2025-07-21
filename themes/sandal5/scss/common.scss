@@ -1,6 +1,7 @@
 /* ------ Border radius changes ------ */
 $list-group-border-radius: 0;
-$border-radius-large: 0; // modal
+$border-radius-lg: 0; // modal
+$btn-border-radius: .25rem;
 
 /* ------ Common element changes ------ */
 .help-block {
@@ -17,18 +18,14 @@ mark { background-color: $highlighter-color; }
 .badge {
   margin-bottom: 1px;
 }
-.btn {
-  border-radius: .25rem;
-  border-color: $silver;
-}
 .btn-link,
 .btn-primary { border-color: transparent; }
 .btn-primary:hover {
   background-color: $action-hover-bg;
   color: $action-color;
-  border-color: $brand-primary;
+  border-color: $primary;
 }
-.btn-link { color: $brand-primary; }
+.btn-link { color: $primary; }
 
 .media,
 .media-body { overflow: initial; }
@@ -36,14 +33,9 @@ mark { background-color: $highlighter-color; }
 .form-control { box-shadow: none; }
 .form-control:hover,
 .form-control:focus {
-  /* #LESS>
-  --outline-color: rgba($brand-primary, (40/100));
-  <#LESS */
-  /* #SCSS> */
-  --outline-color: color.change($brand-primary, $alpha: 0.4);
-  /* <#SCSS */
+  --outline-color: color.change($primary, $alpha: 0.4);
 
-  border-color: $brand-primary;
+  border-color: $primary;
   outline: 4px solid var(--outline-color);
 }
 .form-control:focus {
@@ -54,7 +46,7 @@ mark { background-color: $highlighter-color; }
 .breadcrumb .active { color: $near-black; }
 
 .nav > li > a {
-  color: $brand-primary;
+  color: $primary;
 }
 .navbar-collapse,
 .navbar-form { box-shadow: none; }
@@ -114,7 +106,7 @@ $pagination-hover-border: transparent;
   &.page-next a {
     font-size: 1rem;
     font-weight: bold;
-    color: $brand-primary;
+    color: $primary;
   }
 }
-.pagination > .active > a { border-radius: $border-radius-base; }
+.pagination > .active > a { border-radius: $border-radius; }

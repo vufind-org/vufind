@@ -6,7 +6,7 @@ $primary: #0045a1;
 $navbar-dark-color: white;
 $grid-gutter-width: 20px;
 
-@import "bootstrap"; /* Include bootstrap theme's less base */
+@import "bootstrap"; /* Include bootstrap theme's scss base */
 
 /* Change specific styles below */
 body {

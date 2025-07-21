@@ -226,20 +226,34 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
         // Send proper caching headers so that the user's browser
         // is able to cache the cover images and not have to re-request
         // then on each page load. Default TTL set at 14 days
-
-        $coverImageTtl = (60 * 60 * 24 * 14); // 14 days
-        $headers->addHeaderLine(
-            'Cache-Control',
-            'maxage=' . $coverImageTtl
-        );
-        $headers->addHeaderLine(
-            'Pragma',
-            'public'
-        );
-        $headers->addHeaderLine(
-            'Expires',
-            gmdate('D, d M Y H:i:s', time() + $coverImageTtl) . ' GMT'
-        );
+        if ($this->config['coverimagesBrowserCache'] ?? true) {
+            $coverImageTtl = (60 * 60 * 24 * 14); // 14 days
+            $headers->addHeaderLine(
+                'Cache-Control',
+                'maxage=' . $coverImageTtl
+            );
+            $headers->addHeaderLine(
+                'Pragma',
+                'public'
+            );
+            $headers->addHeaderLine(
+                'Expires',
+                gmdate('D, d M Y H:i:s', time() + $coverImageTtl) . ' GMT'
+            );
+        } else {
+            $headers->addHeaderLine(
+                'Cache-Control',
+                'no-cache, no-store, must-revalidate'
+            );
+            $headers->addHeaderLine(
+                'Pragma',
+                'no-cache'
+            );
+            $headers->addHeaderLine(
+                'Expires',
+                '0'
+            );
+        }
 
         $response->setContent($image ?: $this->loader->getImage());
         return $response;

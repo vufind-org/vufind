@@ -194,7 +194,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Blended',
-            $this->findCssAndGetText($page, '.searchbox li.active')
+            $this->findCssAndGetText($page, '.searchbox li a.active')
         );
     }
 

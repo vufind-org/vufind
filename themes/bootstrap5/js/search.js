@@ -17,10 +17,8 @@ VuFind.register('search', function search() {
 
   /**
    * Get the URL without any parameters
-   *
-   * @param {string} url
-   *
-   * @returns string
+   * @param {string} url URL to get base from
+   * @returns {string} Base URL without query parameters
    */
   function getBaseUrl(url) {
     const parts = url.split('?');
@@ -62,6 +60,10 @@ VuFind.register('search', function search() {
             let urlParts = form.getAttribute('action').split('?', 2);
             const query = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
 
+            /**
+             * Add data from an element to query
+             * @param {HTMLElement|RadioNodeList} el Element or RadioNodeList to add values from
+             */
             function _addToQuery(el) {
               if ('radio' === el.type && !el.checked) {
                 return;
@@ -95,10 +97,9 @@ VuFind.register('search', function search() {
 
   /**
    * Prepend a hidden field to a form.
-   *
-   * @param {?Element} form
-   * @param {string} name
-   * @param {string} value
+   * @param {?Element} form Form to prepend element into or null
+   * @param {string} name Name for the input element
+   * @param {string} value Value for the input element
    */
   function prependHiddenField(form, name, value) {
     if (!form) {
@@ -115,10 +116,9 @@ VuFind.register('search', function search() {
    * Handle a hidden field.
    *
    * Adds, updates or removes the field as necessary.
-   *
-   * @param {string} formSelector
-   * @param {string} fieldName
-   * @param {?string} value
+   * @param {string} formSelector Selector for searching the form
+   * @param {string} fieldName Name of the field to search from the form
+   * @param {?string} value Value to set or null to remove the field
    */
   function handleHiddenField(formSelector, fieldName, value) {
     let form = document.querySelector(formSelector);
@@ -139,9 +139,8 @@ VuFind.register('search', function search() {
 
   /**
    * Update value of a select field
-   *
-   * @param {?Element} select
-   * @param {?string} value
+   * @param {?Element} select Select element to update
+   * @param {?string} value Value to set
    */
   function updateSelectValue(select, value) {
     if (!select) {
@@ -164,8 +163,7 @@ VuFind.register('search', function search() {
    *
    * We will deliberately avoid replacing the controls for accessibility, so we need
    * to ensure that they contain current URL parameters.
-   *
-   * @param {string} pageUrl
+   * @param {string} pageUrl Current page URL to use for updating sort and limit controls
    */
   function updateResultControls(pageUrl) {
     const parts = pageUrl.split('?', 2);
@@ -213,8 +211,7 @@ VuFind.register('search', function search() {
    * Updates links pointing to this page to ensure that they contain current URL
    * parameters (e.g. sort and limit). Any link that only contains query parameters
    * is considered.
-   *
-   * @param {string} pageUrl
+   * @param {string} pageUrl Current page URL to use for updating links
    */
   function updateResultLinks(pageUrl) {
     let urlParts = pageUrl.split('?', 2);
@@ -245,7 +242,6 @@ VuFind.register('search', function search() {
 
   /**
    * Scroll view port to results
-   *
    * @param {string} _style Scroll behavior ('smooth' (default), 'instant' or 'auto')
    */
   function scrollToResults(_style) {
@@ -258,23 +254,20 @@ VuFind.register('search', function search() {
 
   /**
    * Show an error message
-   *
-   * @param {string} error
+   * @param {string} error Error message to show
    */
   function showError(error) {
     let errorMsg = document.createElement('div');
     errorMsg.classList = 'alert alert-danger';
     errorMsg.textContent = error;
     const recordList = document.querySelector(jsRecordListSelector);
-    recordList.innerHTML = '';
-    recordList.append(errorMsg);
+    recordList.replaceChildren(errorMsg);
   }
 
   /**
    * Load results and update associated elements.
-   *
-   * @param {string} pageUrl
-   * @param {string} addToHistory
+   * @param {string} pageUrl Current page URL to load results
+   * @param {boolean} addToHistory Add current search into history
    */
   loadResults = function loadResultsReal(pageUrl, addToHistory) {
     const recordList = document.querySelector(jsRecordListSelector);
@@ -289,12 +282,7 @@ VuFind.register('search', function search() {
     recordList.classList.add('loading');
     const history = recordList.dataset.history;
 
-    const loadingOverlay = document.createElement('div');
-    loadingOverlay.classList = 'loading-overlay';
-    loadingOverlay.setAttribute('aria-live', 'polite');
-    loadingOverlay.setAttribute('role', 'status');
-    loadingOverlay.innerHTML = VuFind.loading();
-    recordList.prepend(loadingOverlay);
+    recordList.prepend(VuFind.loadingOverlay());
     scrollToResults();
     const searchStats = document.querySelector(searchStatsSelector);
     const statsKey = searchStats.dataset.key;
@@ -337,7 +325,7 @@ VuFind.register('search', function search() {
               throw result.data;
             }
             // We expect to get the results list in elements, but reset it to hide spinner just in case:
-            recordList.innerHTML = '';
+            recordList.textContent = '';
             Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
               document.querySelectorAll(elementSelector).forEach((element) => {
                 VuFind.setElementContents(
@@ -373,8 +361,7 @@ VuFind.register('search', function search() {
 
   /**
    * Handle history state change event and load results accordingly.
-   *
-   * @param {Event} event
+   * @param {Event} event Event to use for loading results
    */
   function historyStateListener(event) {
     if (event.state && event.state.url && getBaseUrl(window.location.href) === getBaseUrl(event.state.url)) {

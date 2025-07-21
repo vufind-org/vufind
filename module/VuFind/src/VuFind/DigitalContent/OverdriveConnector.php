@@ -32,7 +32,6 @@ namespace VuFind\DigitalContent;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
 use Laminas\Http\Client;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
@@ -40,6 +39,7 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
+use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
@@ -78,7 +78,7 @@ class OverdriveConnector implements
     /**
      * Session Container
      *
-     * @var Container
+     * @var ?Container
      */
     protected $sessionContainer;
 
@@ -125,13 +125,13 @@ class OverdriveConnector implements
      * @param Config           $mainConfig       VuFind main conf
      * @param Config           $recordConfig     Record-specific conf file
      * @param ILSAuthenticator $ilsAuth          ILS Authenticator
-     * @param Container        $sessionContainer container
+     * @param ?Container       $sessionContainer container
      */
     public function __construct(
         Config $mainConfig,
         Config $recordConfig,
         ILSAuthenticator $ilsAuth,
-        Container $sessionContainer = null
+        ?Container $sessionContainer = null
     ) {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
@@ -225,6 +225,29 @@ class OverdriveConnector implements
         }
 
         return $result;
+    }
+
+    /**
+     * Is Overdrive content active?
+     *
+     * @return bool
+     */
+    public function isContentActive()
+    {
+        $config = $this->getConfig();
+        if ($config->showMyContent == 'always') {
+            return true;
+        } elseif ($config->showMyContent == 'never') {
+            return false;
+        } else {
+            // assume that it is accessOnly
+            $result = $this->getAccess();
+
+            if (!$result->status && $result->code == 'od_account_noaccess') {
+                return false;
+            }
+            return true;
+        }
     }
 
     /**
@@ -1744,11 +1767,11 @@ class OverdriveConnector implements
     /**
      * Set a cache storage object.
      *
-     * @param StorageInterface $cache Cache storage interface
+     * @param ?StorageInterface $cache Cache storage interface
      *
      * @return void
      */
-    public function setCacheStorage(StorageInterface $cache = null)
+    public function setCacheStorage(?StorageInterface $cache = null)
     {
         $this->cache = $cache;
     }

@@ -34,8 +34,12 @@
 namespace VuFind\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
+use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
+use Laminas\Log\LoggerAwareInterface;
+use stdClass;
+use VuFind\Config\Config;
+use VuFind\Log\LoggerAwareTrait;
 
 use function dirname;
 use function is_array;
@@ -54,8 +58,10 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager
+class Manager implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Default configuration settings.
      *
@@ -152,7 +158,7 @@ class Manager
     ) {
         $this->factory = $factory;
 
-        // $config and $config->Cache are Laminas\Config\Config objects
+        // $config and $config->Cache are VuFind\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
         $this->defaults = $config->Cache?->toArray() ?? [];
@@ -211,7 +217,7 @@ class Manager
     public function getCacheDir($allowCliOverride = true)
     {
         if (isset($this->defaults['cache_dir'])) {
-            // cache_dir setting in config.ini is obsolete
+            // Handle legacy configuration: cache_dir setting in config.ini is obsolete
             throw new \Exception(
                 'Obsolete cache_dir setting found in config.ini - please use '
                 . 'Apache environment variable VUFIND_CACHE_DIR in '
@@ -409,5 +415,52 @@ class Manager
                 ['name' => 'serializer'],
             ],
         ];
+    }
+
+    /**
+     * Create an in-memory cache
+     *
+     * @param array $storageConfig See Storage in RateLimiter.yaml
+     *
+     * @return StorageInterface
+     */
+    public function createInMemoryCache(array $storageConfig): StorageInterface
+    {
+        $adapter = $storageConfig['adapter'] ?? 'memcached';
+
+        // The 'vufind' adapter uses a standard file-based cache to simulate an in-memory cache.
+        // This is intended for TESTING PURPOSES ONLY, since it allows us to test related functionality
+        // without setting up a real in-memory data store. It should not be used for any other purpose.
+        if ('vufind' === strtolower($adapter)) {
+            $this->logWarning('Using standard cache instead of in-memory cache -- for testing only!');
+            $laminasCache = $this->getCache('object', $storageConfig['options']['namespace']);
+            // Fake the capabilities to include static TTL support:
+            $eventManager = $laminasCache->getEventManager();
+            $eventManager->attach(
+                'getCapabilities.post',
+                function ($event) use ($laminasCache) {
+                    $oldCapacities = $event->getResult();
+                    $newCapacities = new Capabilities(
+                        $laminasCache,
+                        new stdClass(),
+                        ['staticTtl' => true],
+                        $oldCapacities
+                    );
+                    $event->setResult($newCapacities);
+                }
+            );
+            if ($ttl = ($storageConfig['options']['ttl'] ?? null)) {
+                $laminasCache->getOptions()->setTtl($ttl);
+            }
+            return $laminasCache;
+        }
+
+        $options = $storageConfig['options'];
+        if ('memcached' === strtolower($adapter)) {
+            $options['servers'] ??= 'localhost:11211';
+        }
+        $settings = compact('adapter', 'options');
+        $laminasCache = $this->factory->createFromArrayConfiguration($settings);
+        return $laminasCache;
     }
 }

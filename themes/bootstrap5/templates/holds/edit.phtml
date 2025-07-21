@@ -1,13 +1,10 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('hold_edit_title'));
-
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    . '<li><a href="' . $this->url('holds-list') . '">' . $this->transEsc('My Holds') . '</a></li>'
-    . '<li class="active">' . $this->transEsc('hold_edit_title') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('My Holds'), $this->url('holds-list'))
+    ->add($this->translate('hold_edit_title'), active: true);
 ?>
-<h2><?=$this->transEsc('hold_edit_title')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('hold_edit_title')]);?>
 <?php if ($this->helpTextHtml): ?>
   <p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
@@ -22,8 +19,8 @@
 
   <?php if (in_array('frozen', $this->fields)): ?>
     <div class="form-group hold-frozen">
-      <label for="frozen" class="control-label"><?=$this->transEsc('hold_edit_frozen')?>:</label>
-      <select id="frozen" name="gatheredDetails[frozen]" class="form-control">
+      <label for="frozen" class="form-label"><?=$this->transEsc('hold_edit_frozen')?>:</label>
+      <select id="frozen" name="gatheredDetails[frozen]" class="form-select">
         <?php $current = $gatheredDetails['frozen'] ?? '';?>
         <option value=""<?=$current === '' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_no_change')?></option>
         <option value="1"<?=$current === '1' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_frozen_set')?></option>
@@ -32,7 +29,7 @@
     </div>
     <?php if (in_array('frozenThrough', $this->fields)): ?>
       <div class="form-group hold-frozen-through">
-        <label for="frozen_through" class="control-label"><?=$this->transEsc('hold_edit_frozen_through')?>:</label>
+        <label for="frozen_through" class="form-label"><?=$this->transEsc('hold_edit_frozen_through')?>:</label>
         <input id="frozen_through" type="text" name="gatheredDetails[frozenThrough]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['frozenThrough'] ?? '')?>" size="10" class="form-control">
         (<?=$this->dateTime()->getDisplayDateFormat()?>)
       </div>
@@ -41,7 +38,7 @@
 
   <?php if (in_array('startDate', $this->fields)): ?>
     <div class="form-group hold-start-date">
-      <label for="start_date" class="control-label"><?=$this->transEsc('hold_start_date')?>:</label>
+      <label for="start_date" class="form-label"><?=$this->transEsc('hold_start_date')?>:</label>
       <input id="start_date" type="text" name="gatheredDetails[startDate]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['startDate'] ?? '')?>" size="10" class="form-control">
         (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
@@ -49,7 +46,7 @@
 
   <?php if (in_array('requiredByDate', $this->fields)): ?>
     <div class="form-group hold-required-by">
-      <label for="required_by_date" class="control-label"><?=$this->transEsc('hold_required_by')?>:</label>
+      <label for="required_by_date" class="form-label"><?=$this->transEsc('hold_required_by')?>:</label>
       <input id="required_by_date" type="text" name="gatheredDetails[requiredBy]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['requiredBy'] ?? '')?>" size="10" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
@@ -58,14 +55,14 @@
   <?php if (in_array('pickUpLocation', $this->fields)): ?>
     <?php if ($this->conflictingPickupLocations): ?>
       <div class="form-group hold-pickup-location">
-        <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label><br>
+        <label class="form-label"><?=$this->transEsc('pick_up_location')?>:</label><br>
         <?=$this->transEsc('hold_edit_conflicting_pickup_locations')?>
       </div>
     <?php elseif ($this->pickupLocations): ?>
       <?php $selected = $this->gatheredDetails['pickUpLocation'] ?? ''; ?>
       <div class="form-group hold-pickup-location">
-        <label for="pickup_location" class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
-        <select id="pickup_location" name="gatheredDetails[pickUpLocation]" class="form-control">
+        <label for="pickup_location" class="form-label"><?=$this->transEsc('pick_up_location')?>:</label>
+        <select id="pickup_location" name="gatheredDetails[pickUpLocation]" class="form-select">
           <option value=""<?=$selected === '' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_no_change')?></option>
           <?php foreach ($this->pickupLocations as $loc): ?>
             <option value="<?=$this->escapeHtmlAttr($loc['locationID'])?>"<?=($selected === $loc['locationID']) ? ' selected' : ''?>>

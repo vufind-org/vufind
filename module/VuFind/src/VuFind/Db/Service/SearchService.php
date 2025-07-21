@@ -36,8 +36,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
-use function count;
-
 /**
  * Database service for search.
  *
@@ -154,17 +152,24 @@ class SearchService extends AbstractDbService implements
     /**
      * Get an array of rows for the specified user.
      *
-     * @param string                       $sessionId Session ID of current user.
+     * @param ?string                      $sessionId Session ID of current user or null to ignore searches in session.
      * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
      *
      * @return SearchEntityInterface[]
      */
-    public function getSearches(string $sessionId, UserEntityInterface|int|null $userOrId = null): array
+    public function getSearches(?string $sessionId, UserEntityInterface|int|null $userOrId = null): array
     {
+        // If we don't get a session id or user id, don't return anything:
+        if (null === $sessionId && null === $userOrId) {
+            return [];
+        }
         $uid = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $callback = function ($select) use ($sessionId, $uid) {
-            $select->where->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if (null !== $sessionId) {
+                $select->where->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            }
             if ($uid !== null) {
+                // Note: It doesn't hurt to use OR here even if there are no other terms
                 $select->where->OR->equalTo('user_id', $uid);
             }
             $select->order('created');
@@ -215,26 +220,6 @@ class SearchService extends AbstractDbService implements
             }
         };
         return iterator_to_array($this->getDbTable('search')->select($callback));
-    }
-
-    /**
-     * Set invalid user_id values in the table to null; return count of affected rows.
-     *
-     * @return int
-     */
-    public function cleanUpInvalidUserIds(): int
-    {
-        $searchTable = $this->getDbTable('search');
-        $allIds = $this->getDbTable('user')->getSql()->select()->columns(['id']);
-        $searchCallback = function ($select) use ($allIds) {
-            $select->where->isNotNull('user_id')->AND->notIn('user_id', $allIds);
-        };
-        $badRows = $searchTable->select($searchCallback);
-        $count = count($badRows);
-        if ($count > 0) {
-            $searchTable->update(['user_id' => null], $searchCallback);
-        }
-        return $count;
     }
 
     /**

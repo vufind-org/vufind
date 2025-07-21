@@ -109,17 +109,17 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Constructor
      *
-     * @param array             $pathStack       List of directories to search for
+     * @param array              $pathStack       List of directories to search for
      * language files.
-     * @param string|string[]   $fallbackLocales Fallback locale(s) to use for
+     * @param string|string[]    $fallbackLocales Fallback locale(s) to use for
      * language strings missing from selected file.
-     * @param ExtendedIniReader $reader          Helper for reading .ini files from
+     * @param ?ExtendedIniReader $reader          Helper for reading .ini files from
      * disk.
      */
     public function __construct(
         $pathStack = [],
         $fallbackLocales = null,
-        ExtendedIniReader $reader = null
+        ?ExtendedIniReader $reader = null
     ) {
         $this->pathStack = $pathStack;
         $this->fallbackLocales = $fallbackLocales ? (array)$fallbackLocales : [];

@@ -61,10 +61,10 @@ class Container
     /**
      * Constructor
      *
-     * @param string        $groupName Prefix to use for cookie values.
-     * @param CookieManager $manager   Cookie manager.
+     * @param string         $groupName Prefix to use for cookie values.
+     * @param ?CookieManager $manager   Cookie manager.
      */
-    public function __construct($groupName, CookieManager $manager = null)
+    public function __construct($groupName, ?CookieManager $manager = null)
     {
         $this->groupName = $groupName;
         $this->manager = $manager ?? new CookieManager($_COOKIE);

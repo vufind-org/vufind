@@ -63,5 +63,5 @@ abstract class AbstractLayoutClass extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string       CSS classes to apply
      */
-    abstract public function __invoke($class);
+    abstract public function __invoke(string $class);
 }

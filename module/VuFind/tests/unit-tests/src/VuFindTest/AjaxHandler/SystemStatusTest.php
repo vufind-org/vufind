@@ -52,7 +52,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     {
         $sessionManager = $this->createMock(\Laminas\Session\SessionManager::class);
         $resultsManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
-        $config = new \Laminas\Config\Config(['System' => ['healthCheckFile' => __FILE__]]);
+        $config = new \VuFind\Config\Config(['System' => ['healthCheckFile' => __FILE__]]);
         $sessionService = $this->createMock(\VuFind\Db\Service\SessionServiceInterface::class);
         $handler = new SystemStatus($sessionManager, $resultsManager, $config, $sessionService);
         $response = $handler->handleRequest($this->getMockRequestParams());
@@ -74,7 +74,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager->expects($this->once())->method('get')->with($this->equalTo('Solr'))->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $sessionService = $this->createMock(\VuFind\Db\Service\SessionServiceInterface::class);
         $handler = new SystemStatus($sessionManager, $resultsManager, $config, $sessionService);
         $response = $handler->handleRequest($this->getMockRequestParams());
@@ -98,7 +98,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager->expects($this->exactly(2))->method('get')->with($this->equalTo('Solr'))->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->exactly(2))->method('getParams')->willReturn($params);
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $sessionService = $this->createMock(\VuFind\Db\Service\SessionServiceInterface::class);
         $e = new \Exception('kaboom');
         $sessionService->expects($this->once())->method('getSessionById')->willThrowException($e);
@@ -125,7 +125,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager->expects($this->once())->method('get')->with($this->equalTo('Solr'))->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $sessionService = $this->createMock(\VuFind\Db\Service\SessionServiceInterface::class);
         $sessionService->expects($this->once())->method('getSessionById');
         $handler = new SystemStatus($sessionManager, $resultsManager, $config, $sessionService);

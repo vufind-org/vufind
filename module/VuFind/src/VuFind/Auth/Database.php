@@ -31,8 +31,9 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Crypt\Password\Bcrypt;
+use DateTime;
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
@@ -55,6 +56,13 @@ use function is_object;
 class Database extends AbstractBase
 {
     /**
+     * Password hasher
+     *
+     * @var PasswordHasher
+     */
+    protected $hasher;
+
+    /**
      * Username
      *
      * @var string
@@ -67,6 +75,16 @@ class Database extends AbstractBase
      * @var string
      */
     protected $password;
+
+    /**
+     * Constructor
+     *
+     * @param ?PasswordHasher $hasher Password hash service (null to create one)
+     */
+    public function __construct(?PasswordHasher $hasher = null)
+    {
+        $this->hasher = $hasher ?? new PasswordHasher();
+    }
 
     /**
      * Attempt to authenticate the current user. Throws exception if login fails.
@@ -121,8 +139,7 @@ class Database extends AbstractBase
     protected function setUserPassword(UserEntityInterface $user, string $pass): void
     {
         if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $user->setPasswordHash($bcrypt->create($pass));
+            $user->setPasswordHash($this->hasher->create($pass));
         } else {
             $user->setRawPassword($pass);
         }
@@ -300,8 +317,7 @@ class Database extends AbstractBase
                 );
             }
 
-            $bcrypt = new Bcrypt();
-            return $bcrypt->verify($password, $userRow->getPasswordHash() ?? '');
+            return $this->hasher->verify($password, $userRow->getPasswordHash() ?? '');
         }
 
         // Default case: unencrypted passwords:
@@ -365,11 +381,64 @@ class Database extends AbstractBase
     /**
      * Does this authentication method support password recovery
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function supportsPasswordRecovery()
+    public function supportsPasswordRecovery(?string $target = null)
     {
         return true;
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email    User's email address
+     *   string username Username (optional, for display)
+     *   array  details  Array of user details required for resetPassword request
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        $userService = $this->getUserService();
+        if ($email = $params['email'] ?? null) {
+            $user = $userService->getUserByEmail($email);
+        } elseif ($username = $params['username'] ?? null) {
+            $user = $userService->getUserByUsername($username);
+        }
+        if ($email = $user?->getEmail()) {
+            return [
+                'email' => $email,
+                'username' => $user->getUsername(),
+                'details' => [
+                    'id' => $user->getId(),
+                ],
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * Reset a user's password.
+     *
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
+     * @param array $params       User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function resetPassword(array $recoveryData, array $params)
+    {
+        $this->validatePassword($params);
+        $user = $this->getUserService()->getUserById($recoveryData['details']['id']);
+        $this->setUserPassword($user, $params['password']);
+        // Also treat email address as verified
+        $user->setEmailVerified(new DateTime());
+        $this->getUserService()->persistEntity($user);
     }
 
     /**
@@ -390,9 +459,13 @@ class Database extends AbstractBase
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getPasswordPolicy()
+    public function getPasswordPolicy(?string $target = null): array
     {
         $policy = parent::getPasswordPolicy();
         // Limit maxLength to the database limit

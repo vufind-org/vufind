@@ -3,9 +3,12 @@
   $this->headTitle($this->translate('email_selected_favorites'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-    . '<li><a href="' . $this->url('cart-home') . '">' . $this->transEsc('Cart') . '</a></li> '
-    . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
+    ->add($this->translate('email_selected_favorites'), active: true);
 ?>
 <h2><?=$this->transEsc('bulk_email_cart') ?></h2>
 <?=$this->flashmessages()?>
@@ -15,12 +18,12 @@
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
     <?php endforeach; ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc('Title')?>:</label>
+      <label class="form-label"><?=$this->transEsc('Title')?>:</label>
       <?php if (count($this->records) > 1): ?>
         <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
         </button>
-        <div id="itemhide" class="collapse in">
+        <div id="itemhide" class="collapse show">
           <ul>
             <?php foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
@@ -37,7 +40,7 @@
 <?php
   $script = <<<JS
       $('button.btn.hidden').removeClass('hidden');
-      $('#itemhide').removeClass('in');
+      $('#itemhide').removeClass('show');
       JS;
 ?>
 <?=$this->assetManager()->outputInlineScriptString($script) ?>

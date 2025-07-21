@@ -1,11 +1,10 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('auto_configure_title'));
-
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix SSL Certificates') . '</li>';
+    $this->breadcrumbs()->set($this->translate('auto_configure_title'), $this->url('install-home'))
+      ->add($this->translate('Fix SSL Certificates'), active: true);
+
 ?>
-<h2><?=$this->transEsc('auto_configure_title')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('auto_configure_title')]);?>
 
 <p>VuFind® is unable to verify SSL certificates. This may adversely impact consumption of secure APIs.</p>
 

@@ -79,8 +79,12 @@
     $confirmAttrs['data-lightbox-ignore'] = '';
     $cancelAttrs['data-lightbox-ignore'] = '';
   }
+
+  $wrapperAttrs = [
+    'class' => 'btn-group ' . $this->_componentClass,
+  ];
 ?>
-<div class="btn-group">
+<div<?=$this->htmlAttributes($wrapperAttrs)?>>
   <?php if ($this->buttonLink): ?>
     <a<?=$this->htmlAttributes($buttonAttrs)?>><?=$buttonLabelHtml?></a>
   <?php else: ?>

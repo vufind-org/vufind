@@ -1,9 +1,6 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('Install VuFind'));
-
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Install VuFind') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Install VuFind'), active: true);
 
     // Set up styles:
     $this->assetManager()->appendStyleString(
@@ -12,7 +9,7 @@
         . "}\n"
     );
 ?>
-<h2><?=$this->transEsc('Install VuFind')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Install VuFind')]);?>
 <?=$this->flashmessages()?>
 <p>Save this SQL somewhere safe:</p>
 

@@ -29,9 +29,9 @@
 
 namespace VuFind\Controller\Plugin;
 
-use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use VuFind\Config\Config;
 
 use function array_slice;
 use function count;

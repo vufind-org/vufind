@@ -32,7 +32,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function get_class;
 use function in_array;
@@ -58,10 +58,10 @@ class Memcache extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config                    $config Session configuration ([Session] section of config.ini)
+     * @param ?Config                   $config Session configuration ([Session] section of config.ini)
      * @param \Memcache|\Memcached|null $client Optional Memcache client object
      */
-    public function __construct(Config $config = null, object $client = null)
+    public function __construct(?Config $config = null, ?object $client = null)
     {
         parent::__construct($config);
         $this->connect($config, $client);

@@ -78,7 +78,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $config Name of configuration
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function get($config)
     {
@@ -193,5 +193,16 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     public function dateTimeFormat($separator = ' '): string
     {
         return $this->dateFormat() . $separator . $this->timeFormat();
+    }
+
+    /**
+     * Check if the loan type should be displayed in holdings
+     *
+     * @return bool
+     */
+    public function displayLoanType(): bool
+    {
+        return (bool)($this->get('config')->Catalog
+            ->display_loan_type_in_holdings ?? false);
     }
 }

@@ -87,10 +87,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Loader       $loader       Record loader
-     * @param CacheManager $cacheManager Cache manager (optional)
+     * @param Loader        $loader       Record loader
+     * @param ?CacheManager $cacheManager Cache manager (optional)
      */
-    public function __construct(Loader $loader, CacheManager $cacheManager = null)
+    public function __construct(Loader $loader, ?CacheManager $cacheManager = null)
     {
         $this->recordLoader = $loader;
         $this->cacheManager = $cacheManager;
@@ -1049,7 +1049,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws ILSException
@@ -1059,7 +1059,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }

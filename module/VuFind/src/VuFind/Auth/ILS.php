@@ -114,6 +114,21 @@ class ILS extends AbstractBase
     }
 
     /**
+     * Does this authentication method support password recovery
+     *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsPasswordRecovery(?string $target = null)
+    {
+        $recoveryConfig = $this->getCatalog()->checkFunction('resetPassword');
+        return $recoveryConfig ? true : false;
+    }
+
+    /**
      * Does this authentication method support password changing
      *
      * @return bool
@@ -133,11 +148,15 @@ class ILS extends AbstractBase
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return array
      */
-    public function getPasswordPolicy()
+    public function getPasswordPolicy(?string $target = null): array
     {
-        $policy = $this->getCatalog()->getPasswordPolicy($this->getLoggedInPatron());
+        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
+        $patron = $target ? ['cat_username' => "$target.123"] : $this->getLoggedInPatron();
+        $policy = $this->getCatalog()->getPasswordPolicy($patron);
         if ($policy === false) {
             return parent::getPasswordPolicy();
         }
@@ -166,7 +185,6 @@ class ILS extends AbstractBase
         foreach (['oldpwd', 'password', 'password2'] as $param) {
             $params[$param] = $request->getPost()->get($param, '');
         }
-
         // Connect to catalog:
         if (!($patron = $this->authenticator->storedCatalogLogin())) {
             throw new AuthException('authentication_error_technical');
@@ -191,6 +209,45 @@ class ILS extends AbstractBase
         $user = $this->getOrCreateUserByUsername($username);
         $this->authenticator->saveUserCatalogCredentials($user, $patron['cat_username'], $params['password']);
         return $user;
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email    User's email address
+     *   string username Username (optional, for display)
+     *   array  details  Array of user details required for resetPassword request
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        $result = $this->getCatalog()->getPasswordRecoveryData($params);
+        if (!$result['success']) {
+            throw new AuthException($result['error']);
+        }
+        return $result['data'];
+    }
+
+    /**
+     * Reset a user's password.
+     *
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
+     * @param array $params       User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function resetPassword(array $recoveryData, array $params)
+    {
+        // Validate Input
+        $this->validatePasswordUpdate($params, $recoveryData['target'] ?? null);
+
+        $result = $this->getCatalog()->resetPassword($recoveryData['details'], $params);
+        if (!$result['success']) {
+            throw new AuthException($result['error']);
+        }
     }
 
     /**
@@ -333,11 +390,12 @@ class ILS extends AbstractBase
     /**
      * Make sure passwords match and fulfill ILS policy
      *
-     * @param array $params request parameters
+     * @param array   $params request parameters
+     * @param ?string $target Authentication target for methods that support target selection
      *
      * @return void
      */
-    protected function validatePasswordUpdate($params)
+    protected function validatePasswordUpdate($params, ?string $target = null)
     {
         // Needs a password
         if (trim($params['password']) == '') {
@@ -348,7 +406,7 @@ class ILS extends AbstractBase
             throw new AuthException('Passwords do not match');
         }
 
-        $this->validatePasswordAgainstPolicy($params['password']);
+        $this->validatePasswordAgainstPolicy($params['password'], $target);
     }
 
     /**

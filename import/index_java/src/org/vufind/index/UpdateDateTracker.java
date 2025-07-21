@@ -22,11 +22,19 @@ import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
+import org.apache.log4j.Logger;
+
 /**
  * Class for managing record update dates.
  */
 public class UpdateDateTracker
 {
+    private static Logger logger = Logger.getLogger(UpdateDateTracker.class);
+
+    private static final int BATCH_SIZE = 100;
+    private int insertBatchCount = 0;
+    private int updateBatchCount = 0;
+
     private Connection db;
     private String core;
     private String id;
@@ -37,6 +45,10 @@ public class UpdateDateTracker
     private Timestamp lastRecordChange;
     private Timestamp deleted;
 
+    PreparedStatement insertSql;
+    PreparedStatement selectSql;
+    PreparedStatement updateSql;
+
     private static ThreadLocal<UpdateDateTracker> trackerCache =
         new ThreadLocal<UpdateDateTracker>()
         {
@@ -44,7 +56,10 @@ public class UpdateDateTracker
             protected UpdateDateTracker initialValue()
             {
                 try {
-                    return new UpdateDateTracker(DatabaseManager.instance().getConnection());
+                    DatabaseManager dbm = DatabaseManager.instance();
+                    UpdateDateTracker udt = new UpdateDateTracker(dbm.getConnection());
+                    dbm.setUpdateDateTracker(udt);
+                    return udt;
                 } catch (SQLException e) {
                     throw new RuntimeException(e.getMessage());
                 }
@@ -56,6 +71,25 @@ public class UpdateDateTracker
         return trackerCache.get();
     }
 
+    private void possiblyExecuteBatch(boolean update, PreparedStatement statement, boolean force) throws SQLException
+    {
+        int count = update ? updateBatchCount : insertBatchCount;
+        if (count >= BATCH_SIZE || (count > 0 && force)) {
+            try {
+                statement.executeBatch();
+                db.commit();
+            } catch (SQLException ex) {
+                logger.error("SQLException in possiblyExecuteBatch(): " + ex.getMessage());
+                throw ex;
+            }
+            if (update) {
+                updateBatchCount = 0;
+            } else {
+                insertBatchCount = 0;
+            }
+        }
+    }
+
     /* Private support method: create a row in the change_tracker table.
      */
     private void createRow(Timestamp newRecordChange) throws SQLException
@@ -65,46 +99,32 @@ public class UpdateDateTracker
         lastRecordChange = newRecordChange;
 
         // Save new values to the database:
-        try (
-            PreparedStatement insertSql = db.prepareStatement(
-                "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
-                "VALUES(?, ?, ?, ?, ?);"
-            );
-        ) {
-            insertSql.setString(1, core);
-            insertSql.setString(2, id);
-            insertSql.setTimestamp(3, firstIndexed);
-            insertSql.setTimestamp(4, lastIndexed);
-            insertSql.setTimestamp(5, lastRecordChange);
-            insertSql.executeUpdate();
-        }
+        insertSql.setString(1, core);
+        insertSql.setString(2, id);
+        insertSql.setTimestamp(3, firstIndexed);
+        insertSql.setTimestamp(4, lastIndexed);
+        insertSql.setTimestamp(5, lastRecordChange);
+        insertSql.addBatch();
+        insertBatchCount++;
+        possiblyExecuteBatch(false, insertSql, false);
     }
 
     /* Private support method: read a row from the change_tracker table.
      */
     private boolean readRow() throws SQLException
     {
-        try (
-            PreparedStatement selectSql = db.prepareStatement(
-                "SELECT first_indexed, last_indexed, last_record_change, deleted " +
-                "FROM change_tracker WHERE core = ? AND id = ?;",
-                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
-            )
-        ) {
-            selectSql.setString(1, core);
-            selectSql.setString(2, id);
-            try (ResultSet result = selectSql.executeQuery()) {
-                // No results? Return false:
-                if (!result.first()) {
-                    return false;
-                } else {
-                    // If we got this far, we have results -- load them into the object:
-                    firstIndexed = result.getTimestamp(1);
-                    lastIndexed = result.getTimestamp(2);
-                    lastRecordChange = result.getTimestamp(3);
-                    deleted = result.getTimestamp(4);
-                }
+        selectSql.setString(1, core);
+        selectSql.setString(2, id);
+        try (ResultSet result = selectSql.executeQuery()) {
+            // No results?  Free resources and return false:
+            if (!result.first()) {
+                return false;
             }
+            // If we got this far, we have results -- load them into the object:
+            firstIndexed = result.getTimestamp(1);
+            lastIndexed = result.getTimestamp(2);
+            lastRecordChange = result.getTimestamp(3);
+            deleted = result.getTimestamp(4);
         }
         return true;
     }
@@ -123,21 +143,15 @@ public class UpdateDateTracker
         lastRecordChange = newRecordChange;
 
         // Save new values to the database:
-        try (
-            PreparedStatement updateSql = db.prepareStatement(
-                "UPDATE change_tracker " +
-                "SET first_indexed = ?, last_indexed = ?, last_record_change = ?, deleted = ? " +
-                "WHERE core = ? AND id = ?;"
-            )
-        ) {
-            updateSql.setTimestamp(1, firstIndexed);
-            updateSql.setTimestamp(2, lastIndexed);
-            updateSql.setTimestamp(3, lastRecordChange);
-            updateSql.setNull(4, java.sql.Types.NULL);
-            updateSql.setString(5, core);
-            updateSql.setString(6, id);
-            updateSql.executeUpdate();
-        }
+        updateSql.setTimestamp(1, firstIndexed);
+        updateSql.setTimestamp(2, lastIndexed);
+        updateSql.setTimestamp(3, lastRecordChange);
+        updateSql.setNull(4, java.sql.Types.NULL);
+        updateSql.setString(5, core);
+        updateSql.setString(6, id);
+        updateSql.addBatch();
+        updateBatchCount++;
+        possiblyExecuteBatch(true, updateSql, false);
     }
 
     /* Constructor:
@@ -145,6 +159,29 @@ public class UpdateDateTracker
     public UpdateDateTracker(Connection dbConnection) throws SQLException
     {
         db = dbConnection;
+        db.setAutoCommit(false);
+        insertSql = db.prepareStatement(
+            "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
+            "VALUES(?, ?, ?, ?, ?);");
+        selectSql = db.prepareStatement(
+            "SELECT first_indexed, last_indexed, last_record_change, deleted " +
+            "FROM change_tracker WHERE core = ? AND id = ?;",
+            ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        updateSql = db.prepareStatement("UPDATE change_tracker " +
+            "SET first_indexed = ?, last_indexed = ?, last_record_change = ?, deleted = ? " +
+            "WHERE core = ? AND id = ?;");
+    }
+
+    void shutdown() {
+        try {
+            possiblyExecuteBatch(false, insertSql, true);
+            possiblyExecuteBatch(true, updateSql, true);
+            insertSql.close();
+            selectSql.close();
+            updateSql.close();
+        } catch (SQLException ex) {
+            logger.error("SQLException in shutdown hook: " + ex.getMessage());
+        }
     }
 
     /* Get the first indexed date (IMPORTANT: index() must be called before this method)

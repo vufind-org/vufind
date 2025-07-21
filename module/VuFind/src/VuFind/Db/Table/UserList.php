@@ -66,8 +66,8 @@ class UserList extends Gateway implements DbServiceAwareInterface
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
-     * @param Container     $session Session container (must use same
+     * @param ?RowGateway   $rowObj  Row prototype object (null for default)
+     * @param ?Container    $session Session container (must use same
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).
      * @param string        $table   Name of database table to interface with
      */
@@ -76,7 +76,7 @@ class UserList extends Gateway implements DbServiceAwareInterface
         PluginManager $tm,
         $cfg,
         ?RowGateway $rowObj = null,
-        Container $session = null,
+        ?Container $session = null,
         $table = 'user_list'
     ) {
         $this->session = $session;

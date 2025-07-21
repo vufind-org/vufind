@@ -29,7 +29,7 @@
 
 namespace VuFind\Config\Feature;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * Trait to import secret from file rather than a hardcoded config

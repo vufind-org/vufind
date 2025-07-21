@@ -75,9 +75,11 @@ CREATE TABLE `ratings` (
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `oai_resumption` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `token` varchar(255) DEFAULT NULL,
   `params` text,
   `expires` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -148,7 +150,8 @@ CREATE TABLE `search` (
   KEY `session_id` (`session_id`),
   KEY `notification_frequency` (`notification_frequency`),
   KEY `notification_base_url` (`notification_base_url`(190)),
-  KEY `created_saved` (`created`, `saved`)
+  KEY `created_saved` (`created`, `saved`),
+  CONSTRAINT `search_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -429,6 +432,7 @@ CREATE TABLE `login_token` (
   `expires` int NOT NULL,
   `last_session_id` varchar(255) NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id_series` (`user_id`, `series`)
+  KEY `user_id` (`user_id`),
+  KEY `series` (`series`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

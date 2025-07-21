@@ -44,7 +44,7 @@ use VuFind\Search\Summon\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test that checkbox filters are always visible (or not) as appropriate.
@@ -97,14 +97,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options       $options    Options object (null to create)
+     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
      *
      * @return Params
      */
     protected function getParams(
-        Options $options = null,
-        PluginManager $mockConfig = null
+        ?Options $options = null,
+        ?PluginManager $mockConfig = null
     ): Params {
         $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(

@@ -255,3 +255,27 @@ forms:
       - name: message
         type: textarea
         label: Comments
+  TestWithNoFormActionRouteSet:
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments
+  TestWithFormActionRouteSet:
+    formActionRoute: 'test-action'
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments
+

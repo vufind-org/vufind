@@ -70,6 +70,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
         'LibGuidesAZ' => Factory\LibGuidesAZBackendFactory::class,
         'Pazpar2' => Factory\Pazpar2BackendFactory::class,
         'Primo' => Factory\PrimoBackendFactory::class,
+        'ProQuestFSG' => Factory\ProQuestFSGBackendFactory::class,
         'Search2' => Factory\Search2BackendFactory::class,
         'Search2Collection' => Factory\Search2BackendFactory::class,
         'Solr' => Factory\SolrDefaultBackendFactory::class,

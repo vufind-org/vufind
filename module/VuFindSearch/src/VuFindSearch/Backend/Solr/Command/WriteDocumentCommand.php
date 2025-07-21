@@ -77,7 +77,7 @@ class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
     public function __construct(
         string $backendId,
         DocumentInterface $doc,
-        int $timeout = null,
+        ?int $timeout = null,
         string $handler = 'update',
         ?ParamBag $params = null
     ) {

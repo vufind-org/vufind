@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Cover;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFind\Cover\Router;
 use VuFindTest\RecordDriver\TestHarness;
@@ -51,7 +51,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected $testTheme = 'bootstrap3';
+    protected $testTheme = 'bootstrap5';
 
     /**
      * Get a fake record driver

@@ -37,7 +37,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 use function array_key_exists;
 
@@ -52,7 +52,7 @@ use function array_key_exists;
  */
 class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Container for building mocks.
@@ -330,11 +330,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock search results.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record to return
+     * @param ?\VuFind\RecordDriver\AbstractBase $record Record to return
      *
      * @return array
      */
-    protected function getMockSearchResultsSet(\VuFind\RecordDriver\AbstractBase $record = null): array
+    protected function getMockSearchResultsSet(?\VuFind\RecordDriver\AbstractBase $record = null): array
     {
         return [
             $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class),
@@ -494,7 +494,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
-            new \Laminas\Config\Config(
+            new \VuFind\Config\Config(
                 $options['configArray'] ?? [
                     'Site' => [
                         'institution' => 'My Institution',

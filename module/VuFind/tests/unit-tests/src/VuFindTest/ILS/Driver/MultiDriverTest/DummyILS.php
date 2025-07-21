@@ -98,7 +98,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws \VuFind\Exception\ILS
@@ -108,7 +108,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return [];
     }

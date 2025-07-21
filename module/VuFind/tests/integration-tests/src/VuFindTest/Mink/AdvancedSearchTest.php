@@ -203,6 +203,38 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that the advanced search breadcrumb is operational.
+     *
+     * @return void
+     */
+    public function testAdvancedSearchBreadcrumb()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Check breadcrumb without link
+        $this->assertEquals('Search', $this->findCssAndGetHtml($page, '.breadcrumb-item'));
+
+        // Enter and submit search
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'miller');
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+
+        // Test breadcrumb link
+        $this->editAdvancedSearch($page);
+        $this->clickCss($page, '.breadcrumb-item a');
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+    }
+
+    /**
      * Test that the advanced search form works correctly with a NOT group combined
      * with another group.
      *
@@ -279,16 +311,16 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm Serial',
+            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
+            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
@@ -315,16 +347,16 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm Serial',
+            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
+            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }

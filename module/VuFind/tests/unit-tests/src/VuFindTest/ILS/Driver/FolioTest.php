@@ -155,11 +155,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Uses session cache
      *
      * @param string $test   Name of test fixture to load
-     * @param array  $config Driver configuration (null to use default)
+     * @param ?array $config Driver configuration (null to use default)
      *
      * @return void
      */
-    protected function createConnector(string $test, array $config = null): void
+    protected function createConnector(string $test, ?array $config = null): void
     {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("folio/responses/$test.json");
@@ -934,6 +934,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1014,6 +1016,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1060,6 +1064,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1104,6 +1110,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],
@@ -1150,6 +1158,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
                 1 => [
                     'callnumber_prefix' => '',
@@ -1175,6 +1185,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'addLink' => true,
                     'bound_with_records' => [],
                     'folio_location_is_active' => true,
+                    'loan_type_id' => '',
+                    'loan_type_name' => '',
                 ],
             ],
             'electronic_holdings' => [],

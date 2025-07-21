@@ -3,15 +3,18 @@
   $this->headTitle($this->translate('permanent_link'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
-    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="active">' . $this->transEsc('permanent_link') . '</li>';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('permanent_link'), active: true);
 
   // Collect permalink data:
   $link = $this->serverUrl() . $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
 ?>
 <h2><?=$this->transEsc('permanent_link') ?></h2>
-<p>
+<div class="copy-to-clipboard-container">
   <pre id="permalink"><?=$this->escapeHtml($link)?></pre>
-</p>
-<?=$this->copyToClipboardButton('#permalink');?>
+  <?=$this->copyToClipboardButton('#permalink');?>
+</div>

@@ -36,6 +36,7 @@ use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
@@ -59,7 +60,6 @@ use function is_object;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  *
  * @method Plugin\Captcha captcha() Captcha plugin
- * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
@@ -77,6 +77,7 @@ use function is_object;
  */
 class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
+    use EmailSettingsTrait;
     use GetServiceTrait;
     use TranslatorAwareTrait;
 
@@ -266,7 +267,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // Fail if we're missing a from and the form element is disabled:
         if ($view->disableFrom) {
             if (empty($view->from)) {
-                $view->from = $config->Site->email;
+                $view->from = $this->getEmailSenderAddress($config);
             }
             if (empty($view->from)) {
                 throw new \Exception('Unable to determine email from address');
@@ -449,7 +450,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @param string $id Configuration identifier (default = main VuFind config)
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function getConfig($id = 'config')
     {
@@ -573,7 +574,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     ) {
         $buttonFound = false;
         // Use of 'submit' as an input name was deprecated in release 10.0, but the
-        // check is retained for backward compatibility with custom templates.
+        // check is retained for backward compatibility with legacy custom templates.
         $defaultSubmitElements = ['submitButton', 'submit'];
         foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
             if ($this->params()->fromPost($submitElement, false)) {
@@ -651,6 +652,17 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getCommentSetting() !== 'disabled';
+    }
+
+    /**
+     * Are ratings enabled?
+     *
+     * @return bool
+     */
+    protected function ratingsEnabled(): bool
+    {
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
+        return $check->getRatingSetting() !== 'disabled';
     }
 
     /**

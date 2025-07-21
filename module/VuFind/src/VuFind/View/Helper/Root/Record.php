@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -94,7 +94,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      * Constructor
      *
      * @param TagsService $tagsService Tags service
-     * @param Config      $config      Configuration from config.ini
+     * @param ?Config     $config      Configuration from config.ini
      */
     public function __construct(protected TagsService $tagsService, protected ?Config $config = null)
     {
@@ -451,16 +451,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     public function getTitleHtml($maxLength = 180)
     {
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
-        $title = trim($this->driver->tryMethod('getTitle'));
-        if (!empty($highlightedTitle)) {
+        $title = $this->driver->tryMethod('getTitle');
+        if ('' !== $highlightedTitle) {
             $highlight = $this->getView()->plugin('highlight');
             $addEllipsis = $this->getView()->plugin('addEllipsis');
             return $highlight($addEllipsis($highlightedTitle, $title));
         }
-        if (!empty($title)) {
-            $escapeHtml = $this->getView()->plugin('escapeHtml');
+        if ('' !== trim($title)) {
+            $escape = $this->getView()->plugin('escapeOrCleanHtml');
             $truncate = $this->getView()->plugin('truncate');
-            return $escapeHtml($truncate($title, $maxLength));
+            return $escape($truncate($title, $maxLength), dataContext: 'title', renderingContext: 'link');
         }
         $transEsc = $this->getView()->plugin('transEsc');
         return $transEsc('Title not available');
@@ -836,16 +836,13 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Get all the links associated with this record depending on the OpenURL setting
-     * replace_other_urls. Returns an array of associative arrays each containing
-     * 'desc' and 'url' keys.
+     * Return the OpenURL setting replace_other_urls, defaulting to false.
      *
      * @return bool
      */
     protected function hasOpenUrlReplaceSetting()
     {
-        return isset($this->config->OpenURL->replace_other_urls)
-            && $this->config->OpenURL->replace_other_urls;
+        return $this->config?->OpenURL?->replace_other_urls ?? false;
     }
 
     /**

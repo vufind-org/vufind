@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 use Exception;
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Translator\TranslatorInterface;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;

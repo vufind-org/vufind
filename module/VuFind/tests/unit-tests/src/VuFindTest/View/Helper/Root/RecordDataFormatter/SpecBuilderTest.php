@@ -53,9 +53,9 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
     {
         // Test building a spec:
         $builder = new SpecBuilder();
-        $builder->setLine('foo', 'getFoo');
-        $builder->setLine('bar', 'getBar');
-        $builder->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
+        $builder->setLine('foo', 'getFoo')
+            ->setLine('bar', 'getBar')
+            ->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
         $expected = [
             'foo' => [
                 'dataMethod' => 'getFoo',

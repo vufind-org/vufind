@@ -1,8 +1,8 @@
 // Dropdowns Mixin
 
 // Mixin for dropdown link styles:
-// This mixin copies Bootstrap dropdown styles for .dropdown-menu > li > a (vendor/bootstrap/dropdowns.less)
-// to create a mixin that can easily be integrated in LESS _and_ SCSS
+// This mixin copies Bootstrap dropdown styles for .dropdown-menu > li > a
+// to create a mixin that can easily be integrated in SCSS
 
 .dropdown-menu-ul-links {
   display: block;

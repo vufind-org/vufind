@@ -21,15 +21,60 @@ VuFind.register('account', function Account() {
   _accountIcons[ICON_LEVELS.WARNING] = ["my-account-notification", "account-status-warning text-warning"];
   _accountIcons[ICON_LEVELS.DANGER] = ["my-account-warning", "account-status-danger text-danger"];
 
-  var _submodules = [];
+  var _submodules = {};
   var _clearCaches = false;
   var _sessionDataPrefix = "vf-account-status-";
 
-  var _save = function _save(module) {
+  /**
+   * Get storage key used for saving data into session storage
+   * @param {string} module Name of the module to get session storage key for
+   * @returns {string} Complete session storage key
+   */
+  var _getStorageKey = function _getStorageKey(module) {
+    return _sessionDataPrefix + module;
+  };
+
+  /**
+   * Load data from session storage
+   * @param {string} module Name of the module to load data for
+   * @returns {any|null} Parsed value from storage or null if not defined
+   */
+  var _loadSessionData = function _loadSessionData(module) {
+    var theme = VuFind.getTheme();
+    var json = sessionStorage.getItem(_getStorageKey(module));
+    if (null !== json) {
+      var data = JSON.parse(json);
+      if (typeof data[theme] !== 'undefined') {
+        return data[theme];
+      }
+    }
+    return null;
+  };
+
+  /**
+   * Save data for module into session storage
+   * @param {string} module Name of the module to save data for
+   */
+  var _saveSessionData = function _saveSessionData(module) {
+    var theme = VuFind.getTheme();
+    var json = sessionStorage.getItem(_getStorageKey(module));
+    var data = {};
+    if (null !== json) {
+      data = JSON.parse(json) || {};
+    }
+    data[theme] = _statuses[module];
     sessionStorage.setItem(
-      _sessionDataPrefix + module,
-      JSON.stringify(_statuses[module])
+      _getStorageKey(module),
+      JSON.stringify(data)
     );
+  };
+
+  /**
+   * Remove data from session storage for module
+   * @param {string} module Name of the module to clear session storage
+   */
+  var _clearSessionData = function _clearSessionData(module) {
+    sessionStorage.removeItem(_getStorageKey(module));
   };
 
   // Forward declaration for clearAllCaches
@@ -41,61 +86,84 @@ VuFind.register('account', function Account() {
    * on the current page, and should only be performed when exiting the page via a
    * link, form submission, etc. Cleared data will be reloaded by AJAX on the next
    * page load.
-   *
    * @param {string|undefined} name Cache to clear (undefined/empty for all)
    */
   var clearCache = function clearCache(name) {
     if (typeof name === "undefined" || name === '') {
       clearAllCaches();
     } else {
-      sessionStorage.removeItem(_sessionDataPrefix + name);
+      _clearSessionData(name);
     }
   };
 
+  /**
+   * Get status as a number for module from _statuses object.
+   * (See constants defined above -- LOADING, MISSING, INACTIVE)
+   * @param {string} module Name of the module to get status for
+   * @returns {number} Number indicating the current status for the module
+   */
   var _getStatus = function _getStatus(module) {
     return (typeof _statuses[module] === "undefined") ? LOADING : _statuses[module];
   };
 
+  /**
+   * Render statuses for each module defined in _submodules object. Contains module name
+   * and associated data.
+   */
   var _render = function _render() {
     var accountStatus = ICON_LEVELS.NONE;
-    for (var sub in _submodules) {
-      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
-        var status = _getStatus(sub);
-        if (status === INACTIVE) {
-          continue;
-        }
-        var $element = $(_submodules[sub].selector);
-        if ($element.length === 0) {
-          // This could happen if the DOM is changed dynamically
-          _statuses[sub] = INACTIVE;
-          continue;
-        }
-        if (status === MISSING) {
-          $element.addClass('hidden');
-        } else {
-          $element.removeClass('hidden');
-          if (status === LOADING) {
-            $element.html(VuFind.spinner());
-          } else {
-            var moduleStatus = _submodules[sub].render($element, _statuses[sub], ICON_LEVELS);
-            if (moduleStatus > accountStatus) {
-              accountStatus = moduleStatus;
-            }
-          }
-        }
+    Object.entries(_submodules).forEach(([moduleName, moduleData]) => {
+      const status = _getStatus(moduleName);
+      if (status === INACTIVE) {
+        return;
       }
-    }
+      const elements = document.querySelectorAll(moduleData.selector);
+      if (elements.length === 0) {
+        // This could happen if the DOM is changed dynamically
+        _statuses[moduleName] = INACTIVE;
+        return;
+      }
+      if (status === MISSING) {
+        elements.forEach((element) => element.classList.add('hidden'));
+      } else if (status === LOADING) {
+        elements.forEach((element) => {
+          element.classList.remove('hidden');
+          VuFind.setInnerHtml(element, VuFind.spinner());
+        });
+      } else if (Object.prototype.hasOwnProperty.call(moduleData, 'render')) {
+        // Render using render function (with jQuery for back-compatibility):
+        let moduleStatus = moduleData.render($(elements), _statuses[moduleName], ICON_LEVELS);
+        if (moduleStatus > accountStatus) {
+          accountStatus = moduleStatus;
+        }
+      } else {
+        // Render with default method:
+        const subStatus = _statuses[moduleName];
+        if (subStatus.level > accountStatus) {
+          accountStatus = subStatus.level;
+        }
+        elements.forEach((element) => {
+          if (subStatus.html !== '') {
+            element.classList.remove('hidden');
+            VuFind.setInnerHtml(element, subStatus.html);
+            element.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((subEl) => bootstrap.Tooltip.getOrCreateInstance(subEl));
+          } else {
+            element.classList.add('hidden');
+          }
+        });
+      }
+    });
+
     const accountIconEl = document.querySelector('#account-icon');
     if (accountIconEl) {
-      accountIconEl.innerHTML = VuFind.icon(..._accountIcons[accountStatus]);
+      VuFind.setInnerHtml(accountIconEl, VuFind.icon(..._accountIcons[accountStatus]));
       if (accountStatus > ICON_LEVELS.NONE) {
         accountIconEl.dataset.bsToggle = 'tooltip';
         accountIconEl.dataset.bsPlacement = 'bottom';
         accountIconEl.title = VuFind.translate('account_has_alerts');
         bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
       } else {
-        const tooltip = bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
-        tooltip.dispose();
+        bootstrap.Tooltip.getOrCreateInstance(accountIconEl).dispose();
       }
       Object.entries(ICON_LEVELS).forEach(([, level]) => {
         accountIconEl.classList.remove('notification-level-' + level);
@@ -103,6 +171,10 @@ VuFind.register('account', function Account() {
       accountIconEl.classList.add('notification-level-' + accountStatus);
     }
   };
+  /**
+   * Get module status with ajax call.
+   * @param {string} module Name of the module to lookup
+   */
   var _ajaxLookup = function _ajaxLookup(module) {
     $.ajax({
       url: VuFind.path + '/AJAX/JSON?method=' + _submodules[module].ajaxMethod,
@@ -115,22 +187,27 @@ VuFind.register('account', function Account() {
         _statuses[module] = MISSING;
       })
       .always(function ajaxLookupAlways() {
-        _save(module);
+        _saveSessionData(module);
         _render();
       });
   };
 
+  /**
+   * Find module elements and set initial values for them using previously saved session data. If _clearCaches is set
+   * to true, will clear session data and return.
+   * @param {string} module Name of the module
+   * @returns {void}
+   */
   var _load = function _load(module) {
     if (_clearCaches) {
-      sessionStorage.removeItem(_sessionDataPrefix + module);
+      _clearSessionData(module);
       return;
     }
     var $element = $(_submodules[module].selector);
     if (!$element) {
       _statuses[module] = INACTIVE;
     } else {
-      var json = sessionStorage.getItem(_sessionDataPrefix + module);
-      var session = typeof json === "undefined" ? null : JSON.parse(json);
+      var session = _loadSessionData(module);
       if (
         session === null ||
         session === LOADING ||
@@ -145,6 +222,11 @@ VuFind.register('account', function Account() {
     }
   };
 
+  /**
+   * Set a notification message for a specific module
+   * @param {string} module Name of the module
+   * @param {object} status Status to update
+   */
   var notify = function notify(module, status) {
     if (Object.prototype.hasOwnProperty.call(_submodules, module) && typeof _submodules[module].updateNeeded !== 'undefined') {
       if (_submodules[module].updateNeeded(_getStatus(module), status)) {
@@ -157,6 +239,9 @@ VuFind.register('account', function Account() {
     }
   };
 
+  /**
+   * Initialize the account AJAX system
+   */
   var init = function init() {
     // Update information when certain actions are performed
     $("form[data-clear-account-cache]").on("submit", function dataClearCacheForm() {
@@ -170,6 +255,11 @@ VuFind.register('account', function Account() {
     });
   };
 
+  /**
+   * Register a module for account statuses
+   * @param {string} name Name of the module to register
+   * @param {Function | object} module Function or object to save into _submodules object
+   */
   var register = function register(name, module) {
     if (typeof _submodules[name] === "undefined") {
       _submodules[name] = typeof module == 'function' ? module() : module;
@@ -215,18 +305,9 @@ VuFind.register('account', function Account() {
 });
 
 $(function registerAccountAjax() {
-
   VuFind.account.register("fines", {
     selector: ".fines-status",
     ajaxMethod: "getUserFines",
-    render: function render($element, status, ICON_LEVELS) {
-      if (status.total === 0) {
-        $element.addClass("hidden");
-        return ICON_LEVELS.NONE;
-      }
-      $element.html('<span class="badge account-alert">' + status.display + '</span>');
-      return ICON_LEVELS.DANGER;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.total !== currentStatus.total;
     }
@@ -235,24 +316,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("checkedOut", {
     selector: ".checkedout-status",
     ajaxMethod: "getUserTransactions",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.ok > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
-      }
-      if (status.warn > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
-        level = ICON_LEVELS.WARNING;
-      }
-      if (status.overdue > 0) {
-        html += '<span class="badge account-alert" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_overdue') + '">' + status.overdue + '</span>';
-        level = ICON_LEVELS.DANGER;
-      }
-      $element.html(html);
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.ok !== currentStatus.ok || status.warn !== currentStatus.warn || status.overdue !== currentStatus.overdue;
     }
@@ -261,27 +324,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("holds", {
     selector: ".holds-status",
     ajaxMethod: "getUserHolds",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
-        level = ICON_LEVELS.GOOD;
-      }
-      if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
-      }
-      if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
-      }
-      if (html !== '') {
-        $element.html(html);
-      } else {
-        $element.addClass("holds-status hidden");
-      }
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
@@ -290,27 +332,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("illRequests", {
     selector: ".illrequests-status",
     ajaxMethod: "getUserILLRequests",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
-        level = ICON_LEVELS.GOOD;
-      }
-      if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
-      }
-      if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
-      }
-      if (html !== '') {
-        $element.html(html);
-      } else {
-        $element.addClass("holds-status hidden");
-      }
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
@@ -319,27 +340,6 @@ $(function registerAccountAjax() {
   VuFind.account.register("storageRetrievalRequests", {
     selector: ".storageretrievalrequests-status",
     ajaxMethod: "getUserStorageRetrievalRequests",
-    render: function render($element, status, ICON_LEVELS) {
-      var html = '';
-      var level = ICON_LEVELS.NONE;
-      if (status.available > 0) {
-        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
-        level = ICON_LEVELS.GOOD;
-      }
-      if (status.in_transit > 0) {
-        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
-      }
-      if (status.other > 0) {
-        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
-      }
-      if (html !== '') {
-        $element.html(html);
-      } else {
-        $element.addClass("holds-status hidden");
-      }
-      $('[data-toggle="tooltip"]', $element).tooltip();
-      return level;
-    },
     updateNeeded: function updateNeeded(currentStatus, status) {
       return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }

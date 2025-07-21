@@ -364,12 +364,12 @@ class ResourceContainer
     /**
      * Get Javascript files.
      *
-     * @param string $position Position where the files should be inserted
-     * (allowed values are 'header' or 'footer').
+     * @param ?string $position Position where the files should be inserted
+     * (allowed values are 'header', 'footer' or null for all).
      *
      * @return array
      */
-    public function getJs(string $position = null)
+    public function getJs(?string $position = null)
     {
         if (!isset($position)) {
             return $this->js;

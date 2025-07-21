@@ -29,8 +29,8 @@
 
 namespace VuFind\Sitemap\Plugin;
 
-use Laminas\Config\Config;
 use Laminas\Router\RouteStackInterface;
+use VuFind\Config\Config;
 use VuFindTheme\ThemeInfo;
 use Webmozart\Glob\Glob;
 

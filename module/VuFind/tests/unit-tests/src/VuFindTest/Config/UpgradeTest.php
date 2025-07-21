@@ -29,7 +29,10 @@
 
 namespace VuFindTest\Config;
 
+use VuFind\Config\ConfigManager;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 use function in_array;
 
@@ -47,196 +50,47 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ReflectionTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Target upgrade version
      *
      * @var string
      */
-    protected $targetVersion = '2.4';
+    protected string $targetVersion = '11.0';
 
     /**
      * Get an upgrade object for the specified source version:
      *
-     * @param string $version Version
+     * @param string $fixture Fixture
      *
      * @return Upgrade
      */
-    protected function getUpgrader(string $version): Upgrade
+    protected function getUpgrader(string $fixture): Upgrade
     {
-        $oldDir = realpath($this->getFixtureDir() . 'configs/' . $version);
-        $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
-        return new Upgrade($version, $this->targetVersion, $oldDir, $rawDir);
+        $container = $this->getContainerWithConfigRelatedServices(
+            localDir: $this->getFixtureDir() . 'configs/' . $fixture,
+            localSubDir: ''
+        );
+        return new Upgrade(
+            $container->get(PathResolver::class),
+            $container->get(ConfigManager::class),
+        );
     }
 
     /**
-     * Perform standard tests for the specified version and return resulting configs
-     * and warnings so that further assertions can be performed by calling code if
-     * necessary.
+     * Run config upgrader with fixture.
      *
-     * @param string $version Version to test
+     * @param string $fixture Fixture
      *
-     * @return array
+     * @return Upgrade
      */
-    protected function checkVersion(string $version): array
+    protected function runAndGetConfigUpgrader(string $fixture): Upgrade
     {
-        $upgrader = $this->getUpgrader($version);
-        $upgrader->run();
-        $results = $upgrader->getNewConfigs();
-
-        // Prior to 1.4, Advanced should always == HomePage after upgrade:
-        if ((float)$version < 1.4) {
-            $this->assertEquals(
-                print_r($results['facets.ini']['Advanced'], true),
-                print_r($results['facets.ini']['HomePage'], true)
-            );
-        }
-
-        // SMS configuration should contain general and carriers sections:
-        $this->assertTrue(isset($results['sms.ini']['General']));
-        $this->assertTrue(isset($results['sms.ini']['Carriers']));
-        $warnings = $upgrader->getWarnings();
-
-        // Prior to 2.4, we expect exactly one warning about using a deprecated
-        // theme:
-        $expectedWarnings = [
-            'The Statistics module has been removed from VuFind. '
-            . 'For usage tracking, please configure Google Analytics or Matomo.',
-        ];
-        if ((float)$version < 1.3) {
-            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
-                . 'the default theme. Your config.ini [Site] theme setting '
-                . 'has been reset to the default: bootprint3. You may need to '
-                . 'reimplement your custom theme.';
-        } elseif ((float)$version < 2.4) {
-            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
-                . 'the blueprint theme. Your config.ini [Site] theme setting '
-                . 'has been reset to the default: bootprint3. You may need to '
-                . 'reimplement your custom theme.';
-        }
-        $this->assertEquals($expectedWarnings, $warnings);
-
-        // Summon should always have the checkboxes setting turned on after
-        // upgrade:
-        $this->assertEquals(
-            'daterange,checkboxes:Summon',
-            $results['Summon.ini']['Advanced_Facet_Settings']['special_facets']
-        );
-
-        // Make sure the obsolete Index/local setting is removed:
-        $this->assertFalse(isset($results['config.ini']['Index']['local']));
-
-        // Make sure that spelling recommendations are set up appropriately:
-        $this->assertEquals(
-            ['TopFacets:ResultsTop', 'SpellingSuggestions'],
-            $results['searches.ini']['General']['default_top_recommend']
-        );
-        $this->assertTrue(
-            in_array(
-                'SpellingSuggestions',
-                $results['searches.ini']['General']['default_noresults_recommend']
-            )
-        );
-        $this->assertEquals(
-            [
-                'Author' => ['AuthorFacets', 'SpellingSuggestions'],
-                'CallNumber' => ['TopFacets:ResultsTop'],
-                'WorkKeys' => [''],
-            ],
-            $results['searches.ini']['TopRecommendations']
-        );
-        $this->assertEquals(
-            ['CallNumber' => 'callnumber-sort'],
-            $results['searches.ini']['DefaultSortingByType']
-        );
-        $this->assertEquals(
-            'sort_callnumber',
-            $results['searches.ini']['Sorting']['callnumber-sort']
-        );
-        $this->assertEquals(
-            ['SummonDatabases', 'SpellingSuggestions'],
-            $results['Summon.ini']['General']['default_top_recommend']
-        );
-        $this->assertTrue(
-            in_array(
-                'SpellingSuggestions',
-                $results['Summon.ini']['General']['default_noresults_recommend']
-            )
-        );
-        $this->assertEquals(
-            [],
-            $results['Summon.ini']['TopRecommendations']
-        );
-
-        // Confirm that author facets have been upgraded appropriately.
-        $this->assertFalse(isset($results['facets.ini']['Results']['authorStr']));
-        $this->assertFalse(isset($results['Collection.ini']['Facets']['authorStr']));
-        $this->assertEquals(
-            'Author',
-            $results['facets.ini']['Results']['author_facet']
-        );
-        $this->assertEquals(
-            'author_facet',
-            $results['facets.ini']['LegacyFields']['authorStr']
-        );
-        // Collection.ini only exists after release 1.3:
-        if ((float)$version > 1.3) {
-            $this->assertEquals(
-                'Author',
-                $results['Collection.ini']['Facets']['author_facet']
-            );
-        }
-        // verify expected order of facet fields
-        $this->assertEquals(
-            [
-                'institution', 'building', 'format', 'callnumber-first',
-                'author_facet', 'language', 'genre_facet', 'era_facet',
-                'geographic_facet', 'publishDate',
-            ],
-            array_keys($results['facets.ini']['Results'])
-        );
-
-        return ['configs' => $results, 'warnings' => $warnings];
-    }
-
-    /**
-     * Test upgrading from 1.1.
-     *
-     * @return void
-     */
-    public function testUpgrade11(): void
-    {
-        $this->checkVersion('1.1');
-    }
-
-    /**
-     * Test upgrading from 1.2.
-     *
-     * @return void
-     */
-    public function testUpgrade12(): void
-    {
-        $this->checkVersion('1.2');
-    }
-
-    /**
-     * Test upgrading from 1.3.
-     *
-     * @return void
-     */
-    public function testUpgrade13(): void
-    {
-        $this->checkVersion('1.3');
-    }
-
-    /**
-     * Test upgrading from 1.4.
-     *
-     * @return void
-     */
-    public function testUpgrade14(): void
-    {
-        $this->checkVersion('1.4');
+        $upgrader = $this->getUpgrader($fixture);
+        $upgrader->setWriteMode(false);
+        $upgrader->run($this->targetVersion);
+        return $upgrader;
     }
 
     /**
@@ -310,10 +164,9 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testDatabaseUpgrade(string $fixture, array $expected): void
     {
-        $upgrader = $this->getUpgrader($fixture);
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
         $results = $upgrader->getNewConfigs();
-        $this->assertEquals($expected, $results['config.ini']['Database']);
+        $this->assertEquals($expected, $results['config']['Database']);
     }
 
     /**
@@ -324,21 +177,19 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testDefaultGenerator(): void
     {
         // We expect the upgrader to switch default values:
-        $upgrader = $this->getUpgrader('defaultgenerator');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('defaultgenerator');
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'VuFind ' . $this->targetVersion,
-            $results['config.ini']['Site']['generator']
+            $results['config']['Site']['generator']
         );
 
         // We expect the upgrader not to change custom values:
-        $upgrader = $this->getUpgrader('customgenerator');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('customgenerator');
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'Custom Generator',
-            $results['config.ini']['Site']['generator']
+            $results['config']['Site']['generator']
         );
     }
 
@@ -349,13 +200,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testSpelling(): void
     {
-        $upgrader = $this->getUpgrader('spelling');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('spelling');
         $results = $upgrader->getNewConfigs();
 
         // Make sure spellcheck 'simple' is replaced by 'dictionaries'
-        $this->assertFalse(isset($results['config.ini']['Spelling']['simple']));
-        $this->assertTrue(isset($results['config.ini']['Spelling']['dictionaries']));
+        $this->assertFalse(isset($results['config']['Spelling']['simple']));
+        $this->assertTrue(isset($results['config']['Spelling']['dictionaries']));
     }
 
     /**
@@ -366,21 +216,19 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testSyndetics(): void
     {
         // Test upgrading an SSL URL
-        $upgrader = $this->getUpgrader('syndeticsurlssl');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlssl');
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             1,
-            $results['config.ini']['Syndetics']['use_ssl']
+            $results['config']['Syndetics']['use_ssl']
         );
 
         // Test upgrading a non-SSL URL
-        $upgrader = $this->getUpgrader('syndeticsurlnossl');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlnossl');
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             '',
-            $results['config.ini']['Syndetics']['use_ssl']
+            $results['config']['Syndetics']['use_ssl']
         );
     }
 
@@ -391,12 +239,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGooglePreviewUpgrade(): void
     {
-        $upgrader = $this->getUpgrader('googlepreview');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('googlepreview');
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'noview,full',
-            $results['config.ini']['Content']['GoogleOptions']['link']
+            $results['config']['Content']['GoogleOptions']['link']
         );
     }
 
@@ -407,12 +254,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testPermissionUpgrade(): void
     {
-        $upgrader = $this->getUpgrader('permissions');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('permissions');
         $results = $upgrader->getNewConfigs();
 
         // Admin assertions:
-        $this->assertFalse(isset($results['config.ini']['AdminAuth']));
+        $this->assertFalse(isset($results['config']['AdminAuth']));
         $adminConfig = [
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'username' => ['username1', 'username2'],
@@ -420,11 +266,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $adminConfig,
-            $results['permissions.ini']['access.AdminModule']
+            $results['permissions']['access.AdminModule']
         );
 
         // Summon assertions
-        $this->assertFalse(isset($results['Summon.ini']['Auth']));
+        $this->assertFalse(isset($results['Summon']['Auth']));
         $summonConfig = [
             'role' => ['loggedin'],
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
@@ -433,22 +279,22 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $summonConfig,
-            $results['permissions.ini']['access.SummonExtendedResults']
+            $results['permissions']['access.SummonExtendedResults']
         );
 
         // EIT assertions:
         $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
         $this->assertEquals(
             $eitConfig,
-            $results['permissions.ini']['default.EITModule']
+            $results['permissions']['default.EITModule']
         );
 
         // Primo assertions:
-        $this->assertFalse(isset($results['Primo.ini']['Institutions']['code']));
-        $this->assertFalse(isset($results['Primo.ini']['Institutions']['regex']));
+        $this->assertFalse(isset($results['Primo']['Institutions']['code']));
+        $this->assertFalse(isset($results['Primo']['Institutions']['regex']));
         $this->assertEquals(
             'DEFAULT',
-            $results['Primo.ini']['Institutions']['defaultCode']
+            $results['Primo']['Institutions']['defaultCode']
         );
         $expectedRegex = [
             'MEMBER1' => '/^1\.2\..*/',
@@ -458,13 +304,13 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $perm = "access.PrimoInstitution.$code";
             $this->assertEquals(
                 $perm,
-                $results['Primo.ini']['Institutions']["onCampusRule['$code']"]
+                $results['Primo']['Institutions']["onCampusRule['$code']"]
             );
             $permDetails = [
                 'ipRegEx' => $regex,
                 'permission' => $perm,
             ];
-            $this->assertEquals($permDetails, $results['permissions.ini'][$perm]);
+            $this->assertEquals($permDetails, $results['permissions'][$perm]);
         }
     }
 
@@ -475,8 +321,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGoogleWarnings(): void
     {
-        $upgrader = $this->getUpgrader('googlewarnings');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('googlewarnings');
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
             in_array(
@@ -500,9 +345,9 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             )
         );
         $results = $upgrader->getNewConfigs();
-        $this->assertFalse(isset($results['config.ini']['Content']['recordMap']));
+        $this->assertFalse(isset($results['config']['Content']['recordMap']));
         $this->assertFalse(
-            isset($results['config.ini']['Content']['googleMapApiKey'])
+            isset($results['config']['Content']['googleMapApiKey'])
         );
     }
 
@@ -513,8 +358,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testWorldCatWarnings(): void
     {
-        $upgrader = $this->getUpgrader('worldcatwarnings');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('worldcatwarnings');
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
             in_array(
@@ -526,70 +370,46 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "meaningful line" detection in SolrMarc properties files.
+     * Data provider for testEbscoUpgrades
      *
-     * @return void
+     * @return array
      */
-    public function testMeaningfulLineDetection(): void
+    public static function ebscoUpgradeProvider(): array
     {
-        $upgrader = $this->getUpgrader('1.4');
-        $meaningless = realpath(
-            $this->getFixtureDir() . 'configs/solrmarc/empty.properties'
-        );
-        $this->assertFalse(
-            $this->callMethod(
-                $upgrader,
-                'fileContainsMeaningfulLines',
-                [$meaningless]
-            )
-        );
-        $meaningful = realpath(
-            $this->getFixtureDir() . 'configs/solrmarc/meaningful.properties'
-        );
-        $this->assertTrue(
-            $this->callMethod(
-                $upgrader,
-                'fileContainsMeaningfulLines',
-                [$meaningful]
-            )
-        );
+        return [
+            [
+                'eds',
+                'EDS',
+            ],
+            [
+                'epf',
+                'EPF',
+            ],
+        ];
     }
 
     /**
-     * Test comment extraction.
+     * Test EDS and EPF upgrades.
+     *
+     * @param string $backend    Name of the backend
+     * @param string $configName Configuration name, EDS or EPF
      *
      * @return void
+     *
+     * @dataProvider ebscoUpgradeProvider
      */
-    public function testCommentExtraction(): void
+    public function testEbscoUpgrade(string $backend, string $configName): void
     {
-        $upgrader = $this->getUpgrader('comments');
-        $config = $this->getFixtureDir() . 'configs/comments/config.ini';
+        $upgrader = $this->runAndGetConfigUpgrader($backend);
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
         $this->assertEquals(
-            [
-                'sections' => [
-                    'Section' => [
-                        'before' => "; This is a top comment\n",
-                        'inline' => '',
-                        'settings' => [
-                            'foo' => [
-                                'before' => "; This is a setting comment\n",
-                                'inline' => '',
-                            ],
-                            'bar' => [
-                                'before' => "\n",
-                                'inline' => '; this is an inline comment',
-                            ],
-                        ],
-                    ],
-                    'NextSection' => [
-                        'before' => "\n",
-                        'inline' => '; this is an inline section comment',
-                        'settings' => [],
-                    ],
-                ],
-                'after' => "\n; This is a trailing comment",
-            ],
-            $this->callMethod($upgrader, 'extractComments', [$config])
+            ['foo' => 'bar'],
+            $results[$configName]['Facets']
+        );
+        $this->assertEquals(
+            'list_test',
+            $results[$configName]['General']['default_view']
         );
     }
 
@@ -600,13 +420,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testPrimoUpgrade(): void
     {
-        $upgrader = $this->getUpgrader('primo');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('primo');
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'http://my-id.hosted.exlibrisgroup.com:1701',
-            $results['Primo.ini']['General']['url']
+            $results['Primo']['General']['url']
         );
     }
 
@@ -617,8 +436,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testAmazonCoverWarning(): void
     {
-        $upgrader = $this->getUpgrader('amazoncover');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
             in_array(
@@ -636,8 +454,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testAmazonReviewWarning(): void
     {
-        $upgrader = $this->getUpgrader('amazonreview');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
             in_array(
@@ -655,10 +472,9 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testReCaptcha(): void
     {
-        $upgrader = $this->getUpgrader('recaptcha');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('recaptcha');
         $results = $upgrader->getNewConfigs();
-        $captcha = $results['config.ini']['Captcha'];
+        $captcha = $results['config']['Captcha'];
         $this->assertEquals('public', $captcha['recaptcha_siteKey']);
         $this->assertEquals('private', $captcha['recaptcha_secretKey']);
         $this->assertEquals('theme', $captcha['recaptcha_theme']);
@@ -690,10 +506,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testMailRequireLoginMigration(string $fixture, string $expected): void
     {
-        $upgrader = $this->getUpgrader($fixture);
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
         $results = $upgrader->getNewConfigs();
-        $this->assertFalse(isset($results['config.ini']['Mail']['require_login']));
-        $this->assertEquals($expected, $results['config.ini']['Mail']['email_action']);
+        $this->assertFalse(isset($results['config']['Mail']['require_login']));
+        $this->assertEquals($expected, $results['config']['Mail']['email_action']);
+    }
+
+    /**
+     * Test upgrades without a special logic.
+     *
+     * @return void
+     */
+    public function testDefaultUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('default-upgrade');
+        $results = $upgrader->getNewConfigs();
+        $authorityConfig = $results['authority'];
+        $this->assertEquals('CustomHandler', $authorityConfig['General']['default_handler']);
+        $this->assertEquals('relevance', $authorityConfig['General']['default_sort']);
+        // check that only default full sections included in the base config are added
+        $this->assertFalse(isset($authorityConfig['Sort']));
     }
 }
