@@ -1,11 +1,9 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('auto_configure_title'));
-
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix ILS') . '</li>';
+    $this->breadcrumbs()->set($this->translate('auto_configure_title'), $this->url('install-home'))
+      ->add($this->translate('Fix ILS'), active: true);
 ?>
-<h2><?=$this->transEsc('auto_configure_title')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('auto_configure_title')]);?>
 
 <?php if (isset($this->demo)): ?>
   <p>You are using one of VuFind®'s simulated Integrated Library System (ILS) drivers, which display fake information
@@ -14,8 +12,8 @@
 
   <form method="post" class="form-fix-ils">
     <div class="form-group">
-      <label for="driver" class="control-label">Pick a driver:</label>
-      <select id="driver" name="driver" class="form-control">
+      <label for="driver" class="form-label">Pick a driver:</label>
+      <select id="driver" name="driver" class="form-select">
         <?php foreach ($this->drivers as $driver): ?>
           <option value="<?=$this->escapeHtmlAttr($driver)?>"><?=$this->escapeHtml($driver)?></option>
         <?php endforeach; ?>

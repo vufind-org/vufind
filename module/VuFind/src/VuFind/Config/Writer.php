@@ -340,4 +340,104 @@ class Writer
         }
         return $content;
     }
+
+    /**
+     * Read the specified file and return an associative array of this format
+     * containing all comments extracted from the file:
+     *
+     * [
+     *   'sections' => array
+     *     'section_name_1' => array
+     *       'before' => string ("Comments found at the beginning of this section")
+     *       'inline' => string ("Comments found at the end of the section's line")
+     *       'settings' => array
+     *         'setting_name_1' => array
+     *           'before' => string ("Comments found before this setting")
+     *           'inline' => string ("Comments found at the end of setting's line")
+     *           ...
+     *         'setting_name_n' => array (same keys as setting_name_1)
+     *        ...
+     *      'section_name_n' => array (same keys as section_name_1)
+     *   'after' => string ("Comments found at the very end of the file")
+     * ]
+     *
+     * @param string $filename Name of ini file to read.
+     *
+     * @return array           Associative array as described above.
+     */
+    public static function extractComments($filename)
+    {
+        $lines = file($filename);
+
+        // Initialize our return value:
+        $retVal = ['sections' => []];
+
+        // Initialize variables for tracking status during parsing:
+        $section = $comments = '';
+
+        foreach ($lines as $line) {
+            // To avoid redundant processing, create a trimmed version of the current
+            // line:
+            $trimmed = trim($line);
+
+            // Is the current line a comment?  If so, add to the current comments
+            // string. Note that we treat blank lines as comments.
+            if ('' === $trimmed || str_starts_with($trimmed, ';')) {
+                $comments .= $line;
+            } elseif (
+                str_starts_with($trimmed, '[')
+                && ($closeBracket = strpos($trimmed, ']')) > 1
+            ) {
+                // Is the current line the start of a section? If so, create the
+                // appropriate section of the return value:
+                $section = substr($trimmed, 1, $closeBracket - 1);
+                if ('' !== $section) {
+                    // Grab comments at the end of the line, if any:
+                    if (($semicolon = strpos($trimmed, ';')) !== false) {
+                        $inline = trim(substr($trimmed, $semicolon));
+                    } else {
+                        $inline = '';
+                    }
+                    $retVal['sections'][$section] = [
+                        'before' => $comments,
+                        'inline' => $inline,
+                        'settings' => []];
+                    $comments = '';
+                }
+            } elseif (($equals = strpos($trimmed, '=')) !== false) {
+                // Is the current line a setting?  If so, add to the return value:
+                $set = trim(substr($trimmed, 0, $equals));
+                $set = trim(str_replace('[]', '', $set));
+                if ('' !== $section && '' !== $set) {
+                    // Grab comments at the end of the line, if any:
+                    if (($semicolon = strpos($trimmed, ';')) !== false) {
+                        $inline = trim(substr($trimmed, $semicolon));
+                    } else {
+                        $inline = '';
+                    }
+                    // Currently, this data structure doesn't support arrays very
+                    // well, since it can't distinguish which line of the array
+                    // corresponds with which comments. For now, we just append all
+                    // the preceding and inline comments together for arrays.  Since
+                    // we rarely use arrays in the config.ini file, this isn't a big
+                    // concern, but we should improve it if we ever need to.
+                    if (!isset($retVal['sections'][$section]['settings'][$set])) {
+                        $retVal['sections'][$section]['settings'][$set]
+                            = ['before' => $comments, 'inline' => $inline];
+                    } else {
+                        $retVal['sections'][$section]['settings'][$set]['before']
+                            .= $comments;
+                        $retVal['sections'][$section]['settings'][$set]['inline']
+                            .= "\n" . $inline;
+                    }
+                    $comments = '';
+                }
+            }
+        }
+
+        // Store any leftover comments following the last setting:
+        $retVal['after'] = $comments;
+
+        return $retVal;
+    }
 }

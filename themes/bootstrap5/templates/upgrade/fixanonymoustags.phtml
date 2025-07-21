@@ -1,11 +1,9 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('Upgrade VuFind'));
-
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('upgrade-home') . '">' . $this->transEsc('Upgrade') . '</a></li> <li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Upgrade'), $this->url('upgrade-home'))
+        ->add($this->translate('Upgrade VuFind'), active: true);
 ?>
-<h2><?=$this->transEsc('Upgrade VuFind')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Upgrade VuFind')]);?>
 <?=$this->flashmessages()?>
 
 <p>Due to a bug in earlier versions of VuFind, you have <?=$this->anonymousTags?> tags

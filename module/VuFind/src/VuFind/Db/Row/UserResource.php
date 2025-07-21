@@ -57,7 +57,7 @@ use VuFind\Db\Service\UserServiceInterface;
  * @property string $saved
  */
 class UserResource extends RowGateway implements
-    \VuFind\Db\Entity\UserResourceEntityInterface,
+    UserResourceEntityInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     DbServiceAwareInterface
 {
@@ -100,9 +100,9 @@ class UserResource extends RowGateway implements
      *
      * @param UserEntityInterface $user User
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): UserResourceEntityInterface
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user_id = $user->getId();
         return $this;
@@ -124,9 +124,9 @@ class UserResource extends RowGateway implements
      *
      * @param ResourceEntityInterface $resource Resource
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): UserResourceEntityInterface
+    public function setResource(ResourceEntityInterface $resource): static
     {
         $this->resource_id = $resource->getId();
         return $this;
@@ -149,9 +149,9 @@ class UserResource extends RowGateway implements
      *
      * @param ?UserListEntityInterface $list User list
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setUserList(?UserListEntityInterface $list): UserResourceEntityInterface
+    public function setUserList(?UserListEntityInterface $list): static
     {
         $this->list_id = $list?->getId();
         return $this;
@@ -172,9 +172,9 @@ class UserResource extends RowGateway implements
      *
      * @param ?string $notes Notes associated with the resource
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setNotes(?string $notes): UserResourceEntityInterface
+    public function setNotes(?string $notes): static
     {
         $this->notes = $notes;
         return $this;
@@ -195,9 +195,9 @@ class UserResource extends RowGateway implements
      *
      * @param DateTime $dateTime Created date
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setSaved(DateTime $dateTime): UserResourceEntityInterface
+    public function setSaved(DateTime $dateTime): static
     {
         $this->saved = $dateTime->format('Y-m-d H:i:s');
         return $this;

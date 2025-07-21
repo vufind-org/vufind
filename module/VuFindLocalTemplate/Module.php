@@ -54,22 +54,6 @@ class Module
     }
 
     /**
-     * Get autoloader configuration
-     *
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
-
-    /**
      * Initialize the module
      *
      * @param ModuleManager $m Module manager

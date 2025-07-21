@@ -30,7 +30,6 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
-use Laminas\View\Helper\Layout;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Yaml\Yaml;
@@ -213,7 +212,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         };
 
         $plugins = [
-            'escapeHtmlAttr' => new EscapeHtmlAttr(),
+            'escapeHtmlAttr' => new EscapeHtmlAttr(new \VuFind\Escaper\Escaper()),
             'layout' => $layout,
             'serverUrl' => $serverUrl,
             'url' => $url,

@@ -51,17 +51,17 @@ class HoldSettings
     /**
      * ILS configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration representing the [Catalog]
+     * @param \VuFind\Config\Config $config Configuration representing the [Catalog]
      * section of config.ini
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

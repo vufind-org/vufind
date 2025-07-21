@@ -49,7 +49,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecord(): void
     {
-        $conf = $this->getMockBuilder(\Laminas\Config\Config::class)
+        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
@@ -79,7 +79,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecordWithEmptyId(): void
     {
-        $conf = $this->getMockBuilder(\Laminas\Config\Config::class)
+        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load = $this->getMockBuilder(\VuFind\Record\Loader::class)

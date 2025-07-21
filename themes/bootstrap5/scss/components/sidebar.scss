@@ -6,18 +6,14 @@
     margin-bottom: 1rem;
   }
 
-  [data-toggle="collapse"] {
-    cursor: pointer;
-  }
-
   .collapse,
   .collapsing,
   &.full-facet-list .facet {
     position: relative;
-    border-left: 1px solid $list-group-border;
-    border-right: 1px solid $list-group-border;
+    border-left: 1px solid $list-group-border-color;
+    border-right: 1px solid $list-group-border-color;
   }
-  &.full-facet-list :first-child .facet { border-top: 1px solid $list-group-border; }
+  &.full-facet-list :first-child .facet { border-top: 1px solid $list-group-border-color; }
 }
 
 .facet__list {
@@ -32,7 +28,8 @@
 .facet,
 .facet-group .title,
 .facet-load-indicator,
-.facet-load-failed {
+.facet-load-failed,
+.sidebar .datevis-form {
   padding: .5rem;
   line-height: 1.5rem;
   background-color: transparent;
@@ -71,13 +68,13 @@
 .facet-group .facet,
 .facet-load-indicator,
 .facet-load-failed {
-  border-bottom: 1px solid $list-group-border;
+  border-bottom: 1px solid $list-group-border-color;
 }
 .facet-group .title {
   display: flex;
   width: 100%;
   padding-right: 8px;
-  border: 1px solid $list-group-border;
+  border: 1px solid $list-group-border-color;
   font-weight: bold;
   text-align: inherit;
 }
@@ -141,7 +138,7 @@
 .top-facet-inner {
   display: inline-block;
   padding: .25rem;
-  border: 1px solid $list-group-border;
+  border: 1px solid $list-group-border-color;
 }
 
 .checkbox-filters {
@@ -153,7 +150,7 @@
   display: flex;
   width: 100%;
   font-weight: bold;
-  color: $text-color;
+  color: $body-color;
 }
 .facet-group > .checkbox,
 .sidebar .facet.checkbox {
@@ -162,15 +159,16 @@
 }
 
 .active-filters .facet,
-.facet-group .active {
+.facet-group .facet.active {
   background-color: $list-group-active-bg;
   color: #fff;
 
   a { color: #fff; }
-}
-.facet.active .badge {
-  background-color: #fff;
-  color: $brand-primary;
+
+  .badge {
+    background-color: #fff;
+    color: $primary;
+  }
 }
 
 .narrow-toggle { text-align: center; }
@@ -191,29 +189,32 @@
 
 .full-facets {
   margin: 1rem 0;
-  border-top: 1px solid $list-group-border;
-  border-bottom: 1px solid $list-group-border;
+  border-top: 1px solid $list-group-border-color;
+  border-bottom: 1px solid $list-group-border-color;
 }
 .full-facet-list .active .fa.fa-times {
   float: right;
   margin-top: .25rem;
   margin-left: 0.5rem;
 }
+
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
 .full-facet-controls .form-group {
   margin: 0;
-  padding: $padding-base-vertical 0;
+  padding: $btn-padding-y 0;
 }
 
 .truncate-done {
   overflow: clip;
 }
-.more-less-btn-wrapper .fa {
-  line-height: inherit;
-}
-.more-less-btn-wrapper .facet {
-  display: block;
-  width: 100%;
+.more-less-btn-wrapper {
+  .icon {
+    line-height: inherit;
+  }
+  .facet {
+    display: block;
+    width: 100%;
+  }
 }
 
 .facet-range-form {
@@ -230,7 +231,7 @@ h3.facet-title {
   font-size: $font-size-base;
   margin: 0;
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
 }
@@ -260,12 +261,39 @@ h3.facet-title {
   top: 0;
   padding: 1em;
   z-index: 40;
-  border-bottom: 1px solid $list-group-border;
+  border-bottom: 1px solid $list-group-border-color;
   box-shadow: 0 5px 5px -4px #000;
 }
 .multi-facet-selection-active {
   // Hide submit buttons of range forms when multi-facet selection is active:
   .facet input[type="submit"] {
     display: none;
+  }
+}
+
+.sidebar .datevis-form {
+  border: 1px solid $list-group-border-color;
+
+  .datevis-controls-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+
+    input {
+      margin-right: 0;
+    }
+
+    .datevis-controls-row {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .datevis-input {
+      margin-bottom: .5rem;
+    }
+
+    .datevis-input-from {
+      margin-right: 1rem
+    }
   }
 }

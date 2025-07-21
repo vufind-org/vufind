@@ -64,14 +64,14 @@ class PrimoPermissionHandler
     /**
      * Constructor.
      *
-     * @param Laminas\Config\Config|array $primoPermConfig Primo-Config for
+     * @param VuFind\Config\Config|array $primoPermConfig Primo-Config for
      * Institutions
      *
      * @return void
      */
     public function __construct($primoPermConfig)
     {
-        if ($primoPermConfig instanceof \Laminas\Config\Config) {
+        if ($primoPermConfig instanceof \VuFind\Config\Config) {
             $primoPermConfig = $primoPermConfig->toArray();
         }
         $this->primoConfig = is_array($primoPermConfig) ? $primoPermConfig : [];

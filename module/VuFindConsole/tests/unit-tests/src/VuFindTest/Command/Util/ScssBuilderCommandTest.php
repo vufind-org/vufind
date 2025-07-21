@@ -50,22 +50,13 @@ class ScssBuilderCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicOperation()
     {
-        $cacheDir = '/foo';
-        $compiler = $this->getMockBuilder(\VuFindTheme\ScssCompiler::class)
-            ->disableOriginalConstructor()->getMock();
-        $compiler->expects($this->once())->method('setTempPath')
-            ->with($this->equalTo($cacheDir));
-        $compiler->expects($this->once())->method('compile')
-            ->with($this->equalTo(['foo', 'bar']));
-        $command = $this->getMockBuilder(ScssBuilderCommand::class)
-            ->onlyMethods(['getCompiler'])
-            ->setConstructorArgs([$cacheDir])
-            ->getMock();
-        $command->expects($this->once())->method('getCompiler')
-            ->will($this->returnValue($compiler));
+        $command = new ScssBuilderCommand();
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['themes' => ['foo', 'bar', 'foo']]);
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $commandTester->execute([]);
+        $this->assertEquals(
+            "This utility is no longer supported. Please use `npm run build:css` instead.\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(1, $commandTester->getStatusCode());
     }
 }

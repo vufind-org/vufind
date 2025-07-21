@@ -29,12 +29,12 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Helper\Url;
 use Laminas\View\Resolver\ResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager;
@@ -67,7 +67,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected $testTheme = 'bootstrap3';
+    protected $testTheme = 'bootstrap5';
 
     /**
      * Test attempting to display a template that does not exist.
@@ -292,7 +292,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetPreviews(): void
     {
         $driver = $this->loadRecordFixture('testbug1.json');
-        $config = new \Laminas\Config\Config(['foo' => 'bar']);
+        $config = new \VuFind\Config\Config(['foo' => 'bar']);
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('apply')
             ->with($this->equalTo(compact('driver', 'config')))
@@ -762,7 +762,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @param RecordDriver $driver                   Record driver
      * @param array|Config $config                   Configuration
-     * @param Context      $context                  Context helper
+     * @param ?Context     $context                  Context helper
      * @param bool|string  $url                      Should we add a URL helper? False if no, expected route if yes.
      * @param bool         $serverurl                Should we add a ServerURL helper?
      * @param bool         $setSearchTabExpectations Should we set default search tab expectations?
@@ -772,7 +772,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     protected function getRecord(
         RecordDriver $driver,
         array|Config $config = [],
-        Context $context = null,
+        ?Context $context = null,
         bool|string $url = false,
         bool $serverurl = false,
         bool $setSearchTabExpectations = true
@@ -792,7 +792,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $view->setHelperPluginManager($container);
         $view->expects($this->any())->method('resolver')
             ->willReturn($this->getMockResolver());
-        $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
+        $config = is_array($config) ? new \VuFind\Config\Config($config) : $config;
         $record = new Record($this->createMock(TagsService::class), $config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);
@@ -908,19 +908,19 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a loader object to test.
      *
-     * @param array                                $config      Configuration
-     * @param \VuFind\Content\Covers\PluginManager $manager     Plugin manager (null to create mock)
-     * @param ThemeInfo                            $theme       Theme info object (null to create default)
-     * @param \VuFindHttp\HttpService              $httpService HTTP client factory
-     * @param array|bool                           $mock        Array of functions to mock, or false for real object
+     * @param array                                 $config      Configuration
+     * @param ?\VuFind\Content\Covers\PluginManager $manager     Plugin manager (null to create mock)
+     * @param ?ThemeInfo                            $theme       Theme info object (null to create default)
+     * @param ?\VuFindHttp\HttpService              $httpService HTTP client factory
+     * @param array|bool                            $mock        Array of functions to mock, or false for real object
      *
      * @return Loader
      */
     protected function getCoverLoader(
         array $config = [],
-        \VuFind\Content\Covers\PluginManager $manager = null,
-        ThemeInfo $theme = null,
-        \VuFindHttp\HttpService $httpService = null,
+        ?\VuFind\Content\Covers\PluginManager $manager = null,
+        ?ThemeInfo $theme = null,
+        ?\VuFindHttp\HttpService $httpService = null,
         array|bool $mock = false
     ): Loader {
         $config = new Config($config);

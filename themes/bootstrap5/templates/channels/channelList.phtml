@@ -23,7 +23,7 @@
   }
 ?>
 
-<?php if (empty($token)): ?>
+<?php if (empty($token) && ($displaySearchBox ?? true)): ?>
   <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
     <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>" aria-label="<?=$this->transEscAttr('search_terms') ?>">

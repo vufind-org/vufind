@@ -1,13 +1,13 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('Export Favorites'));
-
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-    . '<li><a href="' . $this->url('cart-home') . '">' . $this->transEsc('Cart') . '</a></li> '
-    . '<li class="active">' . $this->transEsc('Export Favorites') . '</li>';
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
+      ->add($this->translate('Export Favorites'), active: true);
 ?>
-<h2><?=$this->transEsc('Export Favorites')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Export Favorites')]);?>
 
 <?=$this->flashmessages()?>
 
@@ -17,12 +17,12 @@
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
     <?php endforeach; ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc('Title')?>:</label>
+      <label class="form-label"><?=$this->transEsc('Title')?>:</label>
       <?php if (count($this->records) > 1): ?>
-        <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
+        <button type="button" class="btn btn-default hidden js-item-button" data-bs-toggle="collapse" data-bs-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
         </button>
-        <div id="itemhide" class="collapse in">
+        <div id="itemhide" class="collapse show">
           <ul>
             <?php foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
@@ -34,8 +34,8 @@
       <?php endif; ?>
     </div>
     <div class="form-group">
-    <label for="format" class="control-label"><?=$this->transEsc('Format')?>:</label>
-      <select name="format" id="format" class="form-control">
+    <label for="format" class="form-label"><?=$this->transEsc('Format')?>:</label>
+      <select name="format" id="format" class="form-select">
         <?php $firstOption = null; ?>
         <?php foreach ($this->exportOptions as $exportOption): ?>
           <?php
@@ -43,7 +43,7 @@
               $firstOption = $exportOption;
             }
           ?>
-          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect="<?=$this->escapeHtmlAttr($this->export()->getTargetWindow($exportOption))?>"<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
         <?php endforeach; ?>
       </select>
     </div>
@@ -54,22 +54,39 @@
 <?php endif; ?>
 <?php
   $script = <<<JS
-        $('button.btn.hidden').removeClass('hidden');
-        $('#itemhide').removeClass('in');
-        $('.export.btn').click(function exportButtonClick() {
-          if (typeof $('#format option:selected').attr('data-redirect') !== 'undefined') {
-            VuFind.modal('hide');
+        (function initExport() {
+          const collapseBtn = document.querySelector('.js-item-button');
+          const itemCollapseEl = document.getElementById('itemhide');
+          if (collapseBtn && itemCollapseEl) {
+            collapseBtn.classList.remove('hidden');
+            itemCollapseEl.classList.remove('show');
           }
-        });
-        $('#format').change(function exportFormatChange(e) {
-          if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
-            $('.export.btn').removeAttr('data-lightbox-ignore');
-            $('form[name=exportForm]').removeAttr('target');
-          } else {
-            $('.export.btn').attr('data-lightbox-ignore', '1');
-            $('form[name=exportForm]').attr('target', this.selectedOptions[0].value + 'Main');
+          const formatEl = document.getElementById('format');
+          const exportBtn = document.querySelector('.export.btn');
+          const formEl = document.querySelector('form[name=exportForm]');
+          if (!formatEl || !exportBtn || !formEl) {
+            console.warn('Export element(s) missing!');
+            return;
           }
-        }).trigger('change');
+          exportBtn.addEventListener('click', () => {
+            if (formatEl.selectedOptions[0].dataset.redirect !== undefined) {
+              VuFind.modal('hide');
+            }
+          });
+
+          const formatChangeHandler = () => {
+            const redirect = formatEl.selectedOptions[0].dataset.redirect;
+            if (redirect === undefined) {
+              delete exportBtn.dataset.lightboxIgnore;
+              formEl.removeAttribute('target');
+            } else {
+              exportBtn.dataset.lightboxIgnore = '1';
+              formEl.setAttribute('target', redirect);
+            }
+          };
+          formatEl.addEventListener('change', formatChangeHandler);
+          formatChangeHandler();
+        })();
       JS;
 ?>
 <?=$this->assetManager()->outputInlineScriptString($script) ?>

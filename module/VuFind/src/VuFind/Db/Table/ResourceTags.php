@@ -706,7 +706,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
         $select->join(
             ['r' => 'resource'],
             'resource_tags.resource_id = r.id',
-            ['title' => 'title']
+            ['title', 'record_id', 'source']
         );
         if (null !== $userId) {
             $select->where->equalTo('resource_tags.user_id', $userId);

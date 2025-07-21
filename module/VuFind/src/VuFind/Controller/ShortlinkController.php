@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 use function is_callable;

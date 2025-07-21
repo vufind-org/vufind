@@ -1,0 +1,16 @@
+<h2><?=$this->transEsc('Additional data')?></h2>
+
+<?php foreach ($feedbackEntity->getFormData() as $key => $value): ?>
+    <strong><?=$this->escapeHtml($key)?></strong>: <?=$this->escapeHtml($value)?><br>
+<?php endforeach; ?>
+<strong><?=$this->transEsc('Created')?></strong>:
+<?=$this->escapeHtml($feedbackEntity->getCreated()->format($this->config()->dateTimeFormat()))?>
+<?php if ($user = $feedbackEntity->getUser()): ?>
+  <?=$this->transEsc('by')?> <?=$this->escapeHtml($user->getFirstName() . ' ' . $user->getLastName())?> (<?=$this->escapeHtml($user->getId())?>)
+<?php endif; ?>
+<br>
+<strong><?=$this->transEsc('Updated')?></strong>:
+<?=$this->escapeHtml($feedbackEntity->getUpdated()->format($this->config()->dateTimeFormat()))?>
+<?php if ($manager = $feedbackEntity->getUpdatedBy()): ?>
+  <?=$this->transEsc('by')?> <?=$this->escapeHtml($manager->getFirstName() . ' ' . $manager->getLastName())?> (<?=$this->escapeHtml($manager->getId())?>)
+<?php endif;?>

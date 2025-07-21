@@ -3,8 +3,8 @@
   $this->headTitle($this->translate('Manage Scheduled Alerts'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    . '<li class="active">' . $this->transEsc('Manage Scheduled Alerts') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Manage Scheduled Alerts'), active: true);
 
   $user = $this->auth()->getUserObject();
 ?>
@@ -36,7 +36,7 @@
       <th><?=$this->transEsc('history_schedule')?>: </th>
       <td>
         <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
-          <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEscAttr('history_schedule')?>">
+          <select name="schedule" class="jumpMenu form-select" aria-haspopup="true" title="<?=$this->transEscAttr('history_schedule')?>">
             <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
               <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($this->search->getNotificationFrequency() == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
             <?php endforeach; ?>

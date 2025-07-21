@@ -166,6 +166,7 @@ VuFind.register('lightbox', function Lightbox() {
     runScripts.each(function addScript(i2, script) {
       $(document).find('head').append(script);
     });
+    VuFind.emit('lightbox.rendered', {container: _modal});
   }
 
   var _xhr = false;
@@ -175,9 +176,10 @@ VuFind.register('lightbox', function Lightbox() {
       return;
     }
     // Loading
-    _modalBody.find('.modal-loading-overlay,.loading-spinner').remove();
+    _modalBody.find('.loading-overlay,.loading-spinner').remove();
     if (_modalBody.children().length > 0) {
-      _modalBody.prepend('<div class="modal-loading-overlay">' + VuFind.loading() + '</div>');
+
+      _modalBody.prepend(VuFind.loadingOverlay());
     } else {
       _modalBody.prepend(VuFind.loading());
     }
@@ -376,7 +378,7 @@ VuFind.register('lightbox', function Lightbox() {
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
-      resetCaptcha($(form));
+      resetCaptcha(form);
     });
 
     VuFind.modal('show');
@@ -546,6 +548,7 @@ VuFind.register('lightbox', function Lightbox() {
           _beforeOpenElement = document.activeElement;
         }
         _bsModal.show();
+        VuFind.emit('lightbox.show', {container: _modal});
       } else if (cmd === 'hide') {
         _bsModal.hide();
       } else {
@@ -553,6 +556,7 @@ VuFind.register('lightbox', function Lightbox() {
       }
     };
     VuFind.listen('results-init', updateContainer);
+    VuFind.listen('record-tab-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

@@ -43,13 +43,6 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Available sort options (BrowZine only supports relevance sorting)
-     *
-     * @var array
-     */
-    protected $sortOptions = ['relevance' => 'Relevance'];
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -59,9 +52,11 @@ class Options extends \VuFind\Search\Base\Options
         $this->facetsIni = $this->searchIni = 'BrowZine';
         parent::__construct($configLoader);
 
+        // BrowZine only supports relevance sorting:
+        $this->sortOptions = ['relevance' => 'Relevance'];
+
         // Set up views
-        $searchSettings = $configLoader->get($this->searchIni);
-        $this->initViewOptions($searchSettings);
+        $this->initViewOptions($this->searchSettings);
     }
 
     /**

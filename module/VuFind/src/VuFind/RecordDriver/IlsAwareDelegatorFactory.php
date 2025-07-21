@@ -62,7 +62,7 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ) {
         $driver = call_user_func($callback);
 

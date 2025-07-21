@@ -333,7 +333,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($overrides = [], $searchConfig = [])
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
-        $record = new SolrDefault(null, null, new \Laminas\Config\Config($searchConfig));
+        $record = new SolrDefault(null, null, new \VuFind\Config\Config($searchConfig));
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

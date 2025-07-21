@@ -56,7 +56,7 @@ class Ratings extends Gateway implements DbServiceAwareInterface
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
      * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param ?RowGateway   $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(
@@ -233,5 +233,51 @@ class Ratings extends Gateway implements DbServiceAwareInterface
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
         return (array)$result->current();
+    }
+
+    /**
+     * Get a paginated result of all ratings made by the user.
+     *
+     * @param int    $userId User ID
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return \Laminas\Paginator\Paginator
+     */
+    public function getRatingsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort
+    ): \Laminas\Paginator\Paginator {
+        $ratingSelect = new Select();
+        $ratingSelect->from('ratings')
+            ->where->equalTo('ratings.user_id', $userId);
+        $ratingSelect->columns([
+            'resource_id',
+            'user_id',
+            'created',
+            'id',
+            'rating',
+        ])
+        ->join(
+            ['re' => 'resource'],
+            'ratings.resource_id = re.id',
+            ['record_id', 'source'],
+            Select::JOIN_LEFT
+        );
+        $order = $sort ? $sort : 'created DESC';
+        $ratingSelect->order($order);
+        if ($page > 0) {
+            $ratingSelect->offset($page);
+        }
+        $ratingSelect->limit($limit);
+
+        $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($ratingSelect, $this->getSql());
+        $paginator = new \Laminas\Paginator\Paginator($adapter);
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($page);
+        return $paginator;
     }
 }

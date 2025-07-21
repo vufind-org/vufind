@@ -72,7 +72,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->container->set(\VuFind\Auth\Manager::class, $authManager);
 
         // Set up capability configuration:
-        $cfg = new \Laminas\Config\Config(
+        $cfg = new \VuFind\Config\Config(
             ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']]
         );
         $capabilities = new AccountCapabilities(

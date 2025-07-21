@@ -3,12 +3,10 @@
   $this->headTitle($this->translate('Edit') . ' : ' . $this->driver->getBreadcrumb());
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    . (
-        isset($listID)
-          ? '<li><a href="' . $this->url('userList', ['id' => $listID]) . '">' . $this->transEsc('List') . '</a></li>'
-          : '<li><a href="' . $this->url('myresearch-favorites') . '">' . $this->transEsc('saved_items') . '</a></li>'
-    ) . '<li class="active">' . $this->transEsc('Edit') . '</li>';
+  $listLink = isset($listID) ? $this->url('userList', ['id' => $listID]) : $this->url('myresearch-favorites');
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate(isset($listID) ? 'List' : 'saved_items'), $listLink)
+    ->add($this->translate('Edit'), active: true);
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->component('show-account-menu-button')?>
@@ -32,13 +30,13 @@
           <input type="hidden" name="lists[]" value="<?=$this->escapeHtmlAttr($current['listId']) ?>">
           <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
             <div class="form-group">
-              <label class="control-label" for="edit_tags<?=$current['listId'] ?>"><?=$this->transEsc('Tags') ?>:</label>
+              <label class="form-label" for="edit_tags<?=$current['listId'] ?>"><?=$this->transEsc('Tags') ?>:</label>
               <input type="text" name="tags<?=$current['listId'] ?>" id="edit_tags<?=$current['listId'] ?>" class="form-control" value="<?=$this->escapeHtmlAttr($current['tags'])?>">
               <span class="help-block"><?=$this->transEsc('add_tag_note') ?></span>
             </div>
           <?php endif; ?>
           <div class="form-group">
-            <label class="control-label" for="edit_notes<?=$current['listId'] ?>"><?=$this->transEsc('Notes') ?>:</label>
+            <label class="form-label" for="edit_notes<?=$current['listId'] ?>"><?=$this->transEsc('Notes') ?>:</label>
             <textarea class="form-control" id="edit_notes<?=$current['listId'] ?>" name="notes<?=$current['listId'] ?>" rows="3"><?=$this->escapeHtml($current['notes'])?></textarea>
           </div>
           <a class="icon-link" href="<?=$this->url('userList', ['id' => $current['listId']]) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getSourceIdentifier())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" data-lightbox>
@@ -52,7 +50,7 @@
   <?php if (count($this->lists) > 0): ?>
     <hr>
     <div class="form-group">
-      <select name="addToList" class="form-control">
+      <select name="addToList" class="form-select">
         <option value="-1">- <?=$this->transEsc('Add to another list')?> -</option>
         <?php foreach ($this->lists as $listID => $listTitle): ?>
           <option value="<?=$this->escapeHtmlAttr($listID) ?>"><?=$this->escapeHtml($listTitle) ?></option>

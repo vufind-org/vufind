@@ -80,9 +80,9 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      *
      * @param string $comment Comment
      *
-     * @return Comments
+     * @return static
      */
-    public function setComment(string $comment): CommentsEntityInterface
+    public function setComment(string $comment): static
     {
         $this->comment = $comment;
         return $this;
@@ -103,9 +103,9 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      *
      * @param DateTime $dateTime Created date
      *
-     * @return Comments
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): CommentsEntityInterface
+    public function setCreated(DateTime $dateTime): static
     {
         $this->created = $dateTime->format('Y-m-d H:i:s');
         return $this;
@@ -126,9 +126,9 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      *
      * @param ?UserEntityInterface $user User that created comment
      *
-     * @return Comments
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): CommentsEntityInterface
+    public function setUser(?UserEntityInterface $user): static
     {
         $this->user_id = $user ? $user->getId() : null;
         return $this;
@@ -151,9 +151,9 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      *
      * @param ResourceEntityInterface $resource Resource id.
      *
-     * @return Comments
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): CommentsEntityInterface
+    public function setResource(ResourceEntityInterface $resource): static
     {
         $this->resource_id = $resource->getId();
         return $this;

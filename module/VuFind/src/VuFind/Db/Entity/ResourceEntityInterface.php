@@ -52,9 +52,9 @@ interface ResourceEntityInterface extends EntityInterface
      *
      * @param string $recordId recordId
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setRecordId(string $recordId): ResourceEntityInterface;
+    public function setRecordId(string $recordId): static;
 
     /**
      * Record Id getter
@@ -68,9 +68,9 @@ interface ResourceEntityInterface extends EntityInterface
      *
      * @param string $title Title of the record.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setTitle(string $title): ResourceEntityInterface;
+    public function setTitle(string $title): static;
 
     /**
      * Title getter
@@ -84,27 +84,27 @@ interface ResourceEntityInterface extends EntityInterface
      *
      * @param ?string $author Author of the title.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setAuthor(?string $author): ResourceEntityInterface;
+    public function setAuthor(?string $author): static;
 
     /**
      * Year setter
      *
      * @param ?int $year Year title is published.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setYear(?int $year): ResourceEntityInterface;
+    public function setYear(?int $year): static;
 
     /**
      * Source setter
      *
      * @param string $source Source (a search backend ID).
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setSource(string $source): ResourceEntityInterface;
+    public function setSource(string $source): static;
 
     /**
      * Source getter
@@ -118,9 +118,9 @@ interface ResourceEntityInterface extends EntityInterface
      *
      * @param ?string $extraMetadata ExtraMetadata.
      *
-     * @return ResourceEntityInterface
+     * @return static
      */
-    public function setExtraMetadata(?string $extraMetadata): ResourceEntityInterface;
+    public function setExtraMetadata(?string $extraMetadata): static;
 
     /**
      * Extra Metadata getter

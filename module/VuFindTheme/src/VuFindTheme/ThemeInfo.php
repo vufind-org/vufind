@@ -189,6 +189,7 @@ class ThemeInfo
     {
         // Load theme configuration...
         $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        $this->allThemeInfo[$theme]['themeName'] = $theme;
         // ..and if there are mixins, load those too!
         if (isset($this->allThemeInfo[$theme]['mixins'])) {
             foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {

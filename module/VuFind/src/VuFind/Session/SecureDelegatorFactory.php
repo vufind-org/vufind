@@ -33,6 +33,7 @@ namespace VuFind\Session;
 
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
 
 use function call_user_func;
 
@@ -64,7 +65,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ): HandlerInterface {
         /**
          * The wrapped session handler.
@@ -90,6 +91,6 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         HandlerInterface $handler
     ): HandlerInterface {
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
-        return new SecureDelegator($cookieManager, $handler);
+        return new SecureDelegator($cookieManager, $handler, $container->get(BlockCipher::class));
     }
 }

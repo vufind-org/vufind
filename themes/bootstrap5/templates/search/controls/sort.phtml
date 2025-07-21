@@ -6,7 +6,7 @@
   <form class="search-sort" action="<?=$this->currentPath()?>" method="get" name="sort">
     <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/', 'page' => '/.*/']);?>
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
-    <select id="sort_options_1" name="sort" class="jumpMenu form-control"<?=$listCount === 1 ? ' disabled' : ''?>>
+    <select id="sort_options_1" name="sort" class="jumpMenu form-select"<?=$listCount === 1 ? ' disabled' : ''?>>
       <?php foreach ($list as $sortType => $sortData): ?>
         <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected'] ? ' selected="selected"' : ''?><?=$sortData['default'] ? ' data-default' : ''?>><?=$this->transEsc($sortData['desc'])?></option>
       <?php endforeach; ?>

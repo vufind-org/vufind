@@ -113,4 +113,18 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $text = $this->findCssAndGetText($page, 'table.alphabrowse td.lcc ~ td');
         $this->assertStringContainsString('<HTML> The Basics', $text);
     }
+
+    /**
+     * Test that topic separators are applied correctly.
+     *
+     * @return void
+     */
+    public function testTopicSeparators(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=topic&from=peat+bogs');
+        $page = $session->getPage();
+        $text = $this->findCssAndGetText($page, 'table.alphabrowse td.topic b');
+        $this->assertStringContainsString('Peat bogs > Ireland', $text);
+    }
 }

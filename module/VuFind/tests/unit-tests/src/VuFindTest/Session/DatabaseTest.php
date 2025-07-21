@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Session;
 
-use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Session\Database;
 
@@ -123,11 +123,11 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param Config $config Optional configuration
+     * @param ?Config $config Optional configuration
      *
      * @return Database
      */
-    protected function getHandler(Config $config = null): Database
+    protected function getHandler(?Config $config = null): Database
     {
         $handler = new Database($config);
         $this->injectMockDatabaseDependencies($handler);

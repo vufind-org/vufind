@@ -75,7 +75,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container->addCss('a');
         $container->addCss(['file' => 'p2', 'priority' => 220]);
         $container->addCss(['b', 'c', 'd']);
-        $container->addCss('http://foo/bar:(min-width: 768px):!IE');
+        $container->addCss('http://foo/bar:(min-width: 768px)');
         $container->addCss(['file' => 'd1', 'load_after' => 'd']);
         $container->addCss(['file' => 'p1', 'priority' => 110]);
         $container->addCss(['file' => 'd2', 'load_after' => 'd1']);
@@ -93,7 +93,6 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             [
                 'file' => 'http://foo/bar',
                 'media' => '(min-width: 768px)',
-                'conditional' => '!IE',
             ],
         ];
         $this->assertEquals($expectedResult, $container->getCss());
@@ -149,7 +148,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container->addJs(['b', 'c']);
         $container->addJs(['file' => 'd', 'position' => 'header']);
         $container->addJs(['file' => 'df', 'position' => 'footer']);
-        $container->addJs('http://foo/bar:lt IE 7');
+        $container->addJs('http://foo/bar');
         $container->addJs(['file' => 'd1', 'load_after' => 'd']);
         $container->addJs(['file' => 'p1', 'priority' => 110]);
         $container->addJs(['file' => 'd2', 'load_after' => 'd1']);
@@ -168,7 +167,6 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             [
                 'file' => 'http://foo/bar',
                 'position' => 'header',
-                'attributes' => ['conditional' => 'lt IE 7'],
             ],
         ];
         $this->assertEquals($expectedResult, $container->getJs());
@@ -185,7 +183,6 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             [
                 'file' => 'http://foo/bar',
                 'position' => 'header',
-                'attributes' => ['conditional' => 'lt IE 7'],
             ],
         ];
         $this->assertEquals(

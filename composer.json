@@ -18,6 +18,25 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
+    "autoload": {
+        "psr-4": {
+            "VuFind\\": "module/VuFind/src/VuFind",
+            "VuFindAdmin\\": "module/VuFindAdmin/src/VuFindAdmin",
+            "VuFindApi\\": "module/VuFindApi/src/VuFindApi",
+            "VuFindConsole\\": "module/VuFindConsole/src/VuFindConsole",
+            "VuFindDevTools\\": "module/VuFindDevTools/src/VuFindDevTools",
+            "VuFindSearch\\": "module/VuFindSearch/src/VuFindSearch",
+            "VuFindTheme\\": "module/VuFindTheme/src/VuFindTheme"
+        },
+        "psr-0": {
+            "minSO": "module/VuFind/src/VuFind/Search"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "VuFindTest\\": ["module/VuFind/src/VuFindTest", "module/VuFind/tests/unit-tests/src/VuFindTest"]
+        }
+    },
     "provide": {
         "ext-memcached": "*",
         "ext-oci8": "*",
@@ -34,6 +53,7 @@
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.3",
         "endroid/qr-code": "5.1.0",
+        "ezyang/htmlpurifier": "4.17.0",
         "firebase/php-jwt": "6.11.1",
         "guzzlehttp/guzzle": "7.9.2",
         "jaybizzle/crawler-detect": "^1.2",
@@ -44,20 +64,15 @@
         "laminas/laminas-cache-storage-adapter-memory": "^2.0",
         "laminas/laminas-captcha": "2.18.0",
         "laminas/laminas-code": "4.16.0",
-        "laminas/laminas-config": "3.9.0",
-        "laminas/laminas-crypt": "3.11.0",
         "laminas/laminas-db": "2.20.0",
         "laminas/laminas-diactoros": "3.5.0",
-        "laminas/laminas-dom": "2.14.0",
         "laminas/laminas-escaper": "2.14.0",
         "laminas/laminas-eventmanager": "3.14.0",
         "laminas/laminas-feed": "2.23.0",
         "laminas/laminas-form": "3.21.0",
         "laminas/laminas-http": "2.21.0",
         "laminas/laminas-i18n": "2.30.0",
-        "laminas/laminas-loader": "2.11.0",
         "laminas/laminas-log": "2.17.1",
-        "laminas/laminas-mail": "2.25.1",
         "laminas/laminas-modulemanager": "2.17.0",
         "laminas/laminas-mvc": "3.8.0",
         "laminas/laminas-mvc-i18n": "1.9.0",
@@ -70,24 +85,25 @@
         "laminas/laminas-servicemanager": "3.23.0",
         "laminas/laminas-session": "2.24.0",
         "laminas/laminas-stdlib": "3.20.0",
-        "laminas/laminas-validator": "2.55.0",
-        "laminas/laminas-view": "2.27.0",
+        "laminas/laminas-translator": "^1",
+        "laminas/laminas-validator": "2.64.2",
+        "laminas/laminas-view": "2.36.0",
         "league/commonmark": "2.7.0",
         "league/oauth2-client": "^2.7",
         "league/oauth2-server": "8.5.5",
         "lm-commons/lmc-rbac-mvc": "3.5.0",
-        "matthiasmullie/minify": "1.3.73",
+        "matthiasmullie/minify": "1.3.75",
         "pear/archive_tar": "^1.4",
         "pear/http_request2": "2.7.0",
         "phing/phing": "3.0.1",
         "ppito/laminas-whoops": "2.2.0",
         "ramsey/uuid": "^4.7",
-        "scssphp/scssphp": "1.13.0",
         "serialssolutions/summon": "1.3.1",
         "slm/locale": "1.2.0",
         "steverhoades/oauth2-openid-connect-server": "2.6.1",
         "swagger-api/swagger-ui": "5.21.0",
         "symfony/console": "6.4.21",
+        "symfony/mailer": "6.4.21",
         "symfony/rate-limiter": "^6.4",
         "symfony/var-dumper": "6.4.21",
         "symfony/yaml": "6.4.21",
@@ -138,7 +154,6 @@
         "show-outdated": "composer show -oD --ignore-platform-req=ext-oci8",
         "update-npm-deps": [
             "npm update",
-            "cd themes/bootstrap3 && npm run updateDeps",
             "cd themes/bootstrap5 && npm run updateDeps"
         ],
         "install-build-deps": [

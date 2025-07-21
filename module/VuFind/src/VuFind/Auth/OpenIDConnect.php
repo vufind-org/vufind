@@ -338,10 +338,10 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @param string $target Full URL where external authentication method should send user after login (some drivers
      * may override this).
      *
-     * @return bool|string
+     * @return ?string
      * @throws AuthException
      */
-    public function getSessionInitiator($target): bool|string
+    public function getSessionInitiator(string $target): ?string
     {
         // Adding the auth_method setting makes it possible to handle logins when
         // using an auth method that proxies others (e.g. ChoiceAuth)

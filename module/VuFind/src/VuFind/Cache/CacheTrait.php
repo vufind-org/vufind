@@ -61,11 +61,11 @@ trait CacheTrait
     /**
      * Set a cache storage object.
      *
-     * @param StorageInterface $cache Cache storage interface
+     * @param ?StorageInterface $cache Cache storage interface
      *
      * @return void
      */
-    public function setCacheStorage(StorageInterface $cache = null)
+    public function setCacheStorage(?StorageInterface $cache = null)
     {
         $this->cache = $cache;
     }

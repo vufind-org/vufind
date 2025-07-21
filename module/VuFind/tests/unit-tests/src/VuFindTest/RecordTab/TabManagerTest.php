@@ -44,7 +44,7 @@ use VuFind\RecordTab\TabManager;
  */
 class TabManagerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Default configuration for mock plugin manager
@@ -67,14 +67,14 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Set up a tab manager for testing.
      *
-     * @param PluginManager $pluginManager Plugin manager to use (null for default)
-     * @param ConfigManager $configManager Config manager to use (null for default)
+     * @param ?PluginManager $pluginManager Plugin manager to use (null for default)
+     * @param ?ConfigManager $configManager Config manager to use (null for default)
      *
      * @return TabManager
      */
     protected function getTabManager(
-        PluginManager $pluginManager = null,
-        ConfigManager $configManager = null
+        ?PluginManager $pluginManager = null,
+        ?ConfigManager $configManager = null
     ) {
         $legacyConfig = [
             'vufind' => [

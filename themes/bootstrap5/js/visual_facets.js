@@ -34,7 +34,7 @@ function settext() {
 }
 
 function setscreenreader() {
-  this.attr("class", "sr-only")
+  this.attr("class", "visually-hidden")
     .text(function createTextForScreenReader(d) {
       if (typeof d.parentfield !== "undefined") {
         return VuFind.translate('visual_facet_parent') + " " + d.parentlevel;

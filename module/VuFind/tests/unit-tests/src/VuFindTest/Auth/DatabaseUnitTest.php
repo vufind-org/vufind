@@ -29,10 +29,10 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Http\PhpEnvironment\Request;

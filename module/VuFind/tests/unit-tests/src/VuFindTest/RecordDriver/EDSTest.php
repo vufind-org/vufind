@@ -69,14 +69,14 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param string $test   Name of test fixture to load
-     * @param array  $config Driver configuration (null to use default)
+     * @param ?string $test   Name of test fixture to load
+     * @param ?array  $config Driver configuration (null to use default)
      *
      * @return EDS
      */
-    protected function getDriver(string $test = null, array $config = null): EDS
+    protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
-        $record = new EDS(null, new \Laminas\Config\Config($config ?? $this->defaultDriverConfig));
+        $record = new EDS(null, new \VuFind\Config\Config($config ?? $this->defaultDriverConfig));
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);
@@ -985,5 +985,19 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Undefined method: ');
         $this->assertFalse($this->callMethod($driver, 'extractEbscoData', [['invalid-method:invalid-path']]));
+    }
+
+    /**
+     * Test HTML FT with tables & mathML will be parsed correctly
+     *
+     * @return void
+     */
+    public function testHTMLParsingWithEPHTML(): void
+    {
+        $driver = $this->getDriver('eds_retrieve_ft_html');
+        // define what to expect
+        $actual = $driver->getHTMLFullText();
+        $expected = $this->getFixture('eds/eds_mathml_table.html');
+        $this->assertEquals($expected, $actual);
     }
 }

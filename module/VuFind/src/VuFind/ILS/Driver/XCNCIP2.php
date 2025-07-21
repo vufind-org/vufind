@@ -311,7 +311,7 @@ class XCNCIP2 extends AbstractBase implements
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        PathResolver $pathResolver = null
+        PathResolver $pathResolver
     ) {
         $this->dateConverter = $dateConverter;
         $this->pathResolver = $pathResolver;
@@ -426,16 +426,14 @@ class XCNCIP2 extends AbstractBase implements
     protected function loadPickUpLocationsFromFile($filename)
     {
         // Load pickup locations file:
-        $pickupLocationsFile = $this->pathResolver
-            ? $this->pathResolver->getConfigPath($filename)
-            : \VuFind\Config\Locator::getConfigPath($filename);
+        $pickupLocationsFile = $this->pathResolver->getConfigPath($filename);
         if (!file_exists($pickupLocationsFile)) {
             throw new ILSException(
                 "Cannot load pickup locations file: {$pickupLocationsFile}."
             );
         }
         if (($handle = fopen($pickupLocationsFile, 'r')) !== false) {
-            while (($data = fgetcsv($handle)) !== false) {
+            while (($data = fgetcsv($handle, escape: '\\')) !== false) {
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
                     'locationID' => $agencyId,
@@ -922,8 +920,8 @@ class XCNCIP2 extends AbstractBase implements
      * consortial record.
      *
      * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     * @param array  $ids    The (consortial) source records for the record id
+     * @param ?array $patron Patron data
+     * @param ?array $ids    The (consortial) source records for the record id
      *
      * @throws DateException
      * @throws ILSException
@@ -935,8 +933,8 @@ class XCNCIP2 extends AbstractBase implements
      */
     public function getConsortialHoldings(
         $id,
-        array $patron = null,
-        array $ids = null
+        ?array $patron = null,
+        ?array $ids = null
     ) {
         $aggregateId = $id;
 
@@ -1020,7 +1018,7 @@ class XCNCIP2 extends AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -1031,7 +1029,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $ids = null;
         if (! $this->consortium) {

@@ -33,7 +33,7 @@
 
 namespace VuFind\DigitalContent;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * FakeOverdriveConnector

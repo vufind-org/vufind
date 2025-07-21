@@ -32,7 +32,6 @@ namespace VuFindSearch\Backend\Pazpar2\Response;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use function call_user_func;
 use function is_callable;
 
 /**
@@ -96,7 +95,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             $response['offset']
         );
         foreach ($response['records'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
+            $collection->add(($this->recordFactory)($doc), false);
         }
         return $collection;
     }

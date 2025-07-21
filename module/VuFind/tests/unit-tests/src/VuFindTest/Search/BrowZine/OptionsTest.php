@@ -30,7 +30,7 @@
 namespace VuFindTest\Search\BrowZine;
 
 use VuFind\Search\BrowZine\Options;
-use VuFindTest\Feature\ConfigPluginManagerTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * BrowZine Options Test
@@ -43,7 +43,7 @@ use VuFindTest\Feature\ConfigPluginManagerTrait;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test that the Options object returns correct data .

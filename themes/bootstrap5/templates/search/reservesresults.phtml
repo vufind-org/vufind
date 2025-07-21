@@ -4,16 +4,16 @@
     $this->slot('search-heading')->set($this->transEsc('Reserves'));
     $headingParts = [];
     if (isset($this->instructor)) {
-        $headingParts[] = $this->transEsc('Instructor') . ': <strong>' . $this->escapeHtml($this->instructor) . '</strong>';
+        $headingParts[] = $this->transEsc('Instructor') . ': <strong>' . $this->transEsc('Reserves::' . $this->instructor) . '</strong>';
     }
     if (isset($this->course)) {
-        $headingParts[] = $this->transEsc('Course') . ': <strong>' . $this->escapeHtml($this->course) . '</strong>';
+        $headingParts[] = $this->transEsc('Course') . ': <strong>' . $this->transEsc('Reserves::' . $this->course) . '</strong>';
     }
     if (!empty($headingParts)) {
         $this->slot('search-heading')->append(' (' . implode(', ', $headingParts) . ')');
     }
     $this->slot('empty-message')->set($this->transEsc('course_reserves_empty_list'));
-    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('search-reserves') . '">' . $this->transEsc('Search For Items on Reserve') . '</a>';
+    $this->breadcrumbs()->set($this->translate('Search For Items on Reserve'), $this->url('search-reserves'));
     // Disable loading of results with JS for now since it doesn't handle the special parameters:
     $this->results->getOptions()->setLoadResultsWithJs(false);
     echo $this->render('search/results.phtml');

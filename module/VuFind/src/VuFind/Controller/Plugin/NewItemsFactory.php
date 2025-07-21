@@ -63,14 +63,14 @@ class NewItemsFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         $search
             = $container->get(\VuFind\Config\PluginManager::class)->get('searches');
-        $config = $search->NewItem ?? new \Laminas\Config\Config([]);
+        $config = $search->NewItem ?? new \VuFind\Config\Config([]);
         return new $requestedName($config);
     }
 }

@@ -6,7 +6,7 @@
     $mainFields = $formatter->getData($formatter->getDefaults('description'));
 ?>
 <table class="table table-striped">
-  <caption class="sr-only"><?=$this->transEsc('Description')?></caption>
+  <caption class="visually-hidden"><?=$this->transEsc('Description')?></caption>
   <?php if (!empty($mainFields)): ?>
     <?php foreach ($mainFields as $current): ?>
       <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>

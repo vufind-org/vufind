@@ -57,18 +57,18 @@ class Options extends \VuFind\Search\Base\Options
             'year DESC' => 'sort_year', 'year' => 'sort_year_asc',
             'last_saved DESC' => 'sort_saved', 'last_saved' => 'sort_saved_asc',
         ];
-        $config = $configLoader->get($this->mainIni);
-        if (isset($config->Social->lists_default_limit)) {
-            $this->defaultLimit = $config->Social->lists_default_limit;
+
+        if (null !== ($limit = $this->mainConfig['Social']['lists_default_limit'] ?? null)) {
+            $this->defaultLimit = $limit;
         }
-        if (isset($config->Social->lists_limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($config->Social->lists_limit_options);
+        if (null !== ($limitOptions = $this->mainConfig['Social']['lists_limit_options'] ?? null)) {
+            $this->limitOptions = $this->explodeListSetting($limitOptions);
         }
-        if (isset($config->Social->lists_view)) {
-            $this->listviewOption = $config->Social->lists_view;
+        if (null !== ($view = $this->mainConfig['Social']['lists_view'] ?? null)) {
+            $this->listviewOption = $view;
         }
-        if (!empty($config->List_Sorting)) {
-            $this->sortOptions = $config->List_Sorting->toArray();
+        if ($sortOptions = $this->mainConfig['List_Sorting'] ?? null) {
+            $this->sortOptions = (array)$sortOptions;
             $this->defaultSort = array_keys($this->sortOptions)[0];
         }
     }

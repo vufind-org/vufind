@@ -19,8 +19,7 @@
     $urlBase .= '&baseUriExtra=' . urlencode($this->baseUriExtra);
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
-  $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
-  $this->assetManager()->appendScriptString('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
+  $this->assetManager()->appendScriptString('var multiFacetsSelection = "' . $this->multiFacetsSelection . '";');
   $this->assetManager()->appendScriptLink('facets.js');
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
@@ -29,7 +28,7 @@
   <form class="form-inline full-facet-controls">
     <?php if (count($this->sortOptions) > 1): ?>
       <div class="full-facet-sort-options form-group" role="group" aria-labelledby="full-facet-sort-label">
-        <label id="full-facet-sort-label" class="control-label"><?=$this->translate('Sort') ?></label>
+        <label id="full-facet-sort-label" class="form-label"><?=$this->translate('Sort') ?></label>
         <div id="btn-group-sort" class="btn-group">
           <?php foreach ($this->sortOptions as $key => $sort): ?>
             <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => 1, 'facetsort' => $key, 'contains' => $contains])) ?>" class="btn btn-default js-facet-sort<?php if ($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
@@ -40,7 +39,7 @@
 
     <div class="facet-lightbox-filter form-group hidden" role="group" aria-labelledby="facet-lightbox-filter-label">
       <?php if ($this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
-        <label id="facet-lightbox-filter-label" class="control-label" for="input-contains"><?=$this->transEsc('Filter') ?></label>
+        <label id="facet-lightbox-filter-label" class="form-label" for="input-contains"><?=$this->transEsc('Filter') ?></label>
         <input id="input-contains" class="ajax_param form-control" data-name="contains" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
         <button id="btn-reset-contains" class="btn btn-default <?=strlen($this->contains) < 1 ? 'hidden' : ''?>" type="reset" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
       <?php endif; ?>

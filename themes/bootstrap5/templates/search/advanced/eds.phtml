@@ -12,7 +12,7 @@
     <?php endforeach; ?>
 
     <label for="searchModes"><?=$this->transEsc('Search Mode')?></label>
-    <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-control">
+    <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-select">
       <?php foreach ($this->searchModes as $field => $searchMode):
         $value = $searchMode['Value'] ?>
         <option <?=(isset($searchMode['selected']) && $searchMode['selected']) ? 'selected="selected"' : ''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
@@ -30,7 +30,7 @@
       <?php switch ($facet['Type']) {
           case 'multiselectvalue': ?>
             <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br>
-            <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
+            <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-select">
               <?php
               // Sort the current facet list alphabetically; we'll use this data
               // along with the foreach below to display facet options in the
@@ -98,50 +98,21 @@
     <div class="date-fields">
       <div class="date-from">
         <label for="PublicationDatefrom"><?=$this->transEsc('date_from')?>:</label>
-        <input type="text" name="PublicationDatefrom" id="PublicationDatefrom" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[0])?>" class="form-control">
+        <input type="number" name="PublicationDatefrom" id="PublicationDatefrom" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[0])?>" class="form-control" min="-9999" max="9999">
       </div>
       <div class="date-to">
         <label for="PublicationDateto"><?=$this->transEsc('date_to')?>:</label>
-        <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control">
+        <input type="number" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control" min="-9999" max="9999">
       </div>
     </div>
-    <div class="slider-container">
-      <input type="text" id="PublicationDateSlider">
-    </div>
-    <?php
-      $this->assetManager()->appendScriptLink('vendor/bootstrap-slider.min.js');
-      $this->assetManager()->appendStyleLink('vendor/bootstrap-slider.min.css');
-      $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
-      $future = date('Y', time() + 31536000);
-      $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
-      $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
-      $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
-      $min = intval($min);
-      $max = intval($max);
-      $low = intval($low);
-      $high = intval($high);
-      $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
-      $script = <<<JS
-          $(document).ready(function() {
-            var fillTexts = function() {
-              var v = PublicationDateSlider.getValue();
-              $('#PublicationDatefrom').val(v[0]);
-              $('#PublicationDateto').val(v[1]);
-            };
-            var PublicationDateSlider = $('#PublicationDateSlider')
-              .slider({
-                  'min':{$min},
-                  'max':{$max},
-                  'handle':"square",
-                  'tooltip':"hide",
-                  'value':[{$low},{$high}]
-              })
-              .on('change', fillTexts)
-              .data('slider');
-            {$init}
-          });
-          JS;
-    ?>
-    <?=$this->assetManager()->outputInlineScriptString($script); ?>
+    <?php $options = $this->searchOptions($this->searchClassId); ?>
+    <?=$this->component('date-range-slider', [
+      'values' => $current['values'] ?? [],
+      'sliderId' => 'PublicationDateSlider',
+      'inputMinId' => 'PublicationDatefrom',
+      'inputMaxId' => 'PublicationDateto',
+      'rangeMin' => $options->getDateRangeSliderMinValue('PublicationDate'),
+      'rangeMax' => $options->getDateRangeSliderMaxValue('PublicationDate'),
+    ])?>
   </fieldset>
 <?php endif; ?>

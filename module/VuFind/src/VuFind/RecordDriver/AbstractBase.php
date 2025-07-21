@@ -68,14 +68,14 @@ abstract class AbstractBase implements
     /**
      * Main VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $mainConfig;
 
     /**
      * Record-specific configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $recordConfig;
 
@@ -96,9 +96,9 @@ abstract class AbstractBase implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig   VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig Record-specific configuration file
+     * @param \VuFind\Config\Config $recordConfig Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)
@@ -477,6 +477,17 @@ abstract class AbstractBase implements
     public function getExtraDetail($key)
     {
         return $this->extraDetails[$key] ?? null;
+    }
+
+    /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        // Override this if the RecordDataFormatter view helper should be used to format this record driver's data.
+        return null;
     }
 
     /**

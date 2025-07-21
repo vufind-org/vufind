@@ -130,14 +130,14 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Laminas\Config\Config $config Optional configuration
+     * @param \VuFind\Config\Config $config Optional configuration
      *
      * @return Database
      */
     protected function getHandler($config = null)
     {
         if (null === $config) {
-            $config = new \Laminas\Config\Config(
+            $config = new \VuFind\Config\Config(
                 ['file_save_path' => $this->path]
             );
         }

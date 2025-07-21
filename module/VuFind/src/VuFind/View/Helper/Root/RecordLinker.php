@@ -257,14 +257,31 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      * @param AbstractRecord $driver Record to link to.
      *
      * @return string
+     *
+     * @deprecated Use getBreadcrumbParams()
      */
     public function getBreadcrumbHtml($driver)
     {
-        $truncateHelper = $this->getView()->plugin('truncate');
         $escapeHelper = $this->getView()->plugin('escapeHtml');
-        return '<a href="' . $this->getUrl($driver) . '">' .
-            $escapeHelper($truncateHelper($driver->getBreadcrumb(), 30))
-            . '</a>';
+        [$text, $url] = $this->getBreadcrumbParams($driver);
+        return '<a href="' . $url . '">' . $escapeHelper($text) . '</a>';
+    }
+
+    /**
+     * Given a record driver, generate an array of parameters that can be sent to
+     * a breadcrumb helper method ([text, href]).
+     *
+     * @param AbstractRecord $driver Record to link to.
+     *
+     * @return array
+     */
+    public function getBreadcrumbParams(AbstractRecord $driver): array
+    {
+        $breadcrumb = $driver->getBreadcrumb();
+        $breadcrumbText = empty($breadcrumb)
+            ? ($this->getView()->plugin('translate'))('Title not available')
+            : ($this->getView()->plugin('truncate'))($breadcrumb, 30);
+        return [$breadcrumbText, $this->getUrl($driver)];
     }
 
     /**

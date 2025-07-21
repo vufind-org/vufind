@@ -510,12 +510,12 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Return search string based on input and handler.
      *
-     * @param string        $string  Input search string
-     * @param SearchHandler $handler Search handler
+     * @param string         $string  Input search string
+     * @param ?SearchHandler $handler Search handler
      *
      * @return string
      */
-    protected function createSearchString($string, SearchHandler $handler = null)
+    protected function createSearchString($string, ?SearchHandler $handler = null)
     {
         $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 

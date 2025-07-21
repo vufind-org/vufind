@@ -1,14 +1,11 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('permission_denied_title'));
-
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;
 
-  $this->layout()->breadcrumbs = '<li class="active">Error</li>';
+  $this->breadcrumbs()->set($this->translate('An error has occurred'), active: true);
 ?>
 <div>
-  <h2><?=$this->transEsc('permission_denied_title')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('permission_denied_title')]);?>
   <p><?=$this->flashmessages()?></p>
   <p>
     <?=$this->transEsc('permission_denied')?>
@@ -16,10 +13,5 @@
       <div class="alert alert-danger"><?=$this->transEsc($msg)?></div>
     <?php endif; ?>
   </p>
-  <p>
-    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
-    <br>
-    <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
-  </p>
+  <?=$this->render('error/contact.phtml')?>
 </div>

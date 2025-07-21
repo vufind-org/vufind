@@ -32,7 +32,7 @@
 
 namespace VuFindTest\ILS\Driver;
 
-use Laminas\Config\Exception\RuntimeException;
+use RuntimeException;
 use VuFind\ILS\Driver\AbstractMultiDriver;
 
 use function call_user_func_array;
@@ -52,7 +52,7 @@ use function in_array;
  */
 abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**

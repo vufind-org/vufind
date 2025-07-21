@@ -52,7 +52,7 @@ class PasswordAccess extends AbstractBase
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function getConfig()
     {

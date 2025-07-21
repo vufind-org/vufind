@@ -194,7 +194,7 @@ class QueryAdapter implements QueryAdapterInterface
      */
     public function fromRequest(Parameters $request, $defaultHandler)
     {
-        // Check for a work keys query first (id and keys included for back-compatibility):
+        // Check for a work keys query first (id and keys included for back-compatibility with legacy code):
         if (
             $request->get('search') === 'versions'
             || ($request->offsetExists('id') && $request->offsetExists('keys'))

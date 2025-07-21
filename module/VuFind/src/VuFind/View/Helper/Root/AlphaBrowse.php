@@ -84,7 +84,7 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
 
         $query = [
             'type' => ucwords($source) . 'Browse',
-            'lookfor' => $this->escapeForSolr($item['heading']),
+            'lookfor' => $this->escapeForSolr($item['sort_key']),
         ];
         if ($this->options['bypass_default_filters'] ?? true) {
             $query['dfApplied'] = 1;

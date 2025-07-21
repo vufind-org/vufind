@@ -969,11 +969,11 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button->click();
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
+        $this->waitForLightboxHidden();
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCssAndGetText($page, '.modal .alert-success')
+            $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->closeLightbox($page);
         $this->unFindCss($page, '.result');
     }
 

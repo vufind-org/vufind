@@ -64,7 +64,7 @@ class AbstractIlsAndUserActionFactory implements \Laminas\ServiceManager\Factory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName(
             $container->get(\VuFind\Session\Settings::class),

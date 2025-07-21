@@ -63,7 +63,7 @@ class ThemeInfoFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
@@ -71,7 +71,7 @@ class ThemeInfoFactory implements FactoryInterface
 
         $themeInfo = new $requestedName(
             realpath(APPLICATION_PATH . '/themes'),
-            'bootprint3'
+            'sandal5'
         );
 
         // As of release 1.1.0, the memory storage adapter has a flaw which can cause

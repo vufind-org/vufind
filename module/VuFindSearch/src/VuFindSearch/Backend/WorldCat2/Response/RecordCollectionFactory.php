@@ -33,7 +33,6 @@ namespace VuFindSearch\Backend\WorldCat2\Response;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use function call_user_func;
 use function gettype;
 use function is_array;
 use function is_callable;
@@ -105,7 +104,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['docs'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
+            $collection->add(($this->recordFactory)($doc), false);
         }
         return $collection;
     }

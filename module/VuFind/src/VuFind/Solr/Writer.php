@@ -147,7 +147,7 @@ class Writer
      * @param string            $backend Backend ID
      * @param DocumentInterface $doc     Document(s) to save
      * @param string            $handler Update handler
-     * @param ParamBag          $params  Update handler parameters
+     * @param ?ParamBag         $params  Update handler parameters
      *
      * @return void
      */
@@ -155,7 +155,7 @@ class Writer
         $backend,
         DocumentInterface $doc,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $this->write($backend, $doc, null, $handler, $params);
     }

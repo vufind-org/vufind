@@ -151,7 +151,7 @@ class EmailTest extends \PHPUnit\Framework\TestCase
     {
         return new Email(
             $this->createMock(\Laminas\View\Renderer\RendererInterface::class),
-            new \Laminas\Config\Config($config),
+            new \VuFind\Config\Config($config),
             $this->createMock(\VuFind\Mailer\Mailer::class)
         );
     }

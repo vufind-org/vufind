@@ -1,0 +1,31 @@
+/* ------ Badges ------ */
+$badge-bg-color: #595959 !default;
+.badge {
+  background-color: $badge-bg-color;
+
+  a {
+    color: color-contrast($badge-bg-color);
+  }
+}
+
+/* ------ Labels ------ */
+.label {
+  @extend .badge;
+  margin-bottom: 5px;
+}
+.label-info {
+  color: color-contrast($primary);
+  background-color: $primary;
+}
+.label-success {
+  color: color-contrast($success);
+  background-color: $success;
+}
+.label-warning {
+  color: color-contrast($warning);
+  background-color: $warning;
+}
+.label-danger {
+  color: color-contrast($danger);
+  background-color: $danger;
+}

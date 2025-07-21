@@ -30,9 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-
-use function function_exists;
-use function strlen;
+use VuFind\String\PropertyStringInterface;
 
 /**
  * Truncate view helper
@@ -48,23 +46,21 @@ class Truncate extends AbstractHelper
     /**
      * Truncate a string
      *
-     * @param string $str    the string to be truncated
-     * @param string $len    how long the truncated string will be
-     * @param string $append what to add to the end of the string to
-     * indicate it's been truncated
+     * Note that any PropertyString with a plain string value that exceeds the maximum length is converted to a plain
+     * string before truncation. This means that the returned value is a plain string without e.g. any HTML content.
      *
-     * @return string
+     * @param string|PropertyStringInterface $str    The string to be truncated
+     * @param int                            $len    Maximum length of the resulting string
+     * @param string                         $append Truncation indicator to append to truncated strings
+     *
+     * @return string|PropertyStringInterface
      */
     public function __invoke($str, $len, $append = '...')
     {
         if ($len == 0) {
             return '';
-        } elseif (strlen($str) > $len) {
-            if (function_exists('mb_substr')) {
-                return trim(mb_substr($str, 0, $len, 'UTF-8')) . $append;
-            } else {
-                return trim(substr($str, 0, $len)) . $append;
-            }
+        } elseif (mb_strlen((string)$str, 'UTF-8') > $len) {
+            return trim(mb_substr((string)$str, 0, $len, 'UTF-8')) . $append;
         }
         return $str;
     }

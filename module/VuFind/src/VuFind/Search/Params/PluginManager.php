@@ -59,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'mixedlist' => \VuFind\Search\MixedList\Params::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Params::class,
         'primo' => \VuFind\Search\Primo\Params::class,
+        'proquestfsg' => \VuFind\Search\ProQuestFSG\Params::class,
         'search2' => \VuFind\Search\Search2\Params::class,
         'solr' => \VuFind\Search\Solr\Params::class,
         'solrauth' => \VuFind\Search\SolrAuth\Params::class,
@@ -93,6 +94,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\MixedList\Params::class => ParamsFactory::class,
         \VuFind\Search\Pazpar2\Params::class => ParamsFactory::class,
         \VuFind\Search\Primo\Params::class => ParamsFactory::class,
+        \VuFind\Search\ProQuestFSG\Params::class => ParamsFactory::class,
         \VuFind\Search\Search2\Params::class =>
             \VuFind\Search\Solr\ParamsFactory::class,
         \VuFind\Search\Solr\Params::class =>

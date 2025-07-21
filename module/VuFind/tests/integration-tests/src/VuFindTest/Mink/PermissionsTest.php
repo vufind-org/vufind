@@ -85,7 +85,7 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '.alert-danger')
         );
         $this->assertEquals(
-            'Error',
+            'An error has occurred',
             $this->findCssAndGetText($page, '.breadcrumb .active')
         );
 

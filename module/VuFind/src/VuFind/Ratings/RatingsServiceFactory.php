@@ -58,7 +58,7 @@ class RatingsServiceFactory implements FactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $name, array $options = null)
+    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
     {
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new RatingsService(

@@ -29,7 +29,7 @@
 
 namespace VuFind\ContentBlock;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
 

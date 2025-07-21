@@ -1,9 +1,5 @@
-<?php
-  // Set page title.
-  $this->headTitle($this->translate('VuFind Administration - Tag Management'));
-?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->translate('Tag Management')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Management')]);?>
 
   <?=$this->render('admin/tags/menu.phtml')?>
 
@@ -16,5 +12,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->render('admin/menu.phtml')?>
+  <?=$this->adminMenu()->render()?>
 </div>

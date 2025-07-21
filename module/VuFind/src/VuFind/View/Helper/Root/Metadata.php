@@ -43,7 +43,7 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
     /**
      * Metadata configuration entries
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -65,12 +65,12 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
      * Constructor
      *
      * @param \VuFind\MetadataVocabulary\PluginManager $pm         Plugin manager
-     * @param \Laminas\Config\Config                   $config     Configuration
+     * @param \VuFind\Config\Config                    $config     Configuration
      * @param \Laminas\View\Helper\HeadMeta            $metaHelper Head meta helper
      */
     public function __construct(
         \VuFind\MetadataVocabulary\PluginManager $pm,
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \Laminas\View\Helper\HeadMeta $metaHelper
     ) {
         $this->pluginManager = $pm;

@@ -52,18 +52,18 @@ use VuFindSearch\Query\Query;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Get mock Options object
      *
-     * @param PluginManager $configManager Config manager for Options object (null
+     * @param ?PluginManager $configManager Config manager for Options object (null
      * for new mock)
      *
      * @return Options
      */
-    protected function getMockOptions(PluginManager $configManager = null): Options
+    protected function getMockOptions(?PluginManager $configManager = null): Options
     {
         return $this->getMockForAbstractClass(
             Options::class,
