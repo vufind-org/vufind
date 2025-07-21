@@ -23,8 +23,7 @@ VuFind.register('validation', function Validation() {
 
 
   /**
-   * Is the provided phone number valid? Returns error string or false if not;
-   * true if so.
+   * Is the provided phone number valid?
    * @param {string} number Phone number to validate
    * @param {string} region Region for validation
    * @returns {string|boolean} True if valid, error string or false if not valid
