@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for Image CAPTCHA module.
+ * Factory for Proof of Work CAPTCHA module.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use Psr\Container\ContainerInterface;
 use function is_callable;
 
 /**
- * Image CAPTCHA factory.
+ * Proof of Work CAPTCHA factory.
  *
  * @category VuFind
  * @package  CAPTCHA
