@@ -34,7 +34,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Connection\Oracle;
 use VuFind\ILS\Driver\Virtua;
 use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\MockObjectTrait;
+use VuFindTest\Feature\ReflectionTrait;
 
 /**
  * ILS driver test
@@ -48,7 +48,7 @@ use VuFindTest\Feature\MockObjectTrait;
 class VirtuaTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use MockObjectTrait;
+    use ReflectionTrait;
 
     /**
      * Default test configuration
@@ -61,6 +61,18 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
             'apiKey' => 'key123',
         ],
     ];
+
+    /**
+     * Test that driver complains about missing configuration.
+     *
+     * @return void
+     */
+    public function testMissingConfiguration()
+    {
+        $this->expectException(\VuFind\Exception\ILS::class);
+
+        $this->createConnector([])->init();
+    }
 
     /**
      * Data provider for testing getMyProfile
@@ -169,9 +181,6 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
         $db = $this->getMockBuilder(Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
         $db->expects($this->any())->method('simpleSelect')->willReturn($profiles);
-        // Mocks can not alter the destructor function and it will be called so set it to false to not
-        // throw an error.
-        $this->setObjectVariable($db, 'dbHandle', false);
         $result = $this->createConnector(db: $db)->getMyProfile(['id' => '1111']);
         $this->assertEquals($expected, $result);
     }
@@ -195,8 +204,11 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
 
         $db ??= $this->getMockBuilder(\VuFind\Connection\Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
+        // Mocks can not alter the destructor function and it will be called so set it to false to not
+        // throw an error.
+        $this->setProperty($db, 'dbHandle', false);
         // Reveal the protected db property and set the mock db as its value
-        $this->setObjectVariable($driver, 'db', $db);
+        $this->setProperty($driver, 'db', $db);
         return $driver;
     }
 }

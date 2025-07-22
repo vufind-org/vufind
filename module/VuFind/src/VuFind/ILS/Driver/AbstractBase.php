@@ -29,8 +29,8 @@
 
 namespace VuFind\ILS\Driver;
 
+use Stringable;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\I18n\TranslatableString;
 
 use function is_callable;
 use function is_string;
@@ -74,16 +74,16 @@ abstract class AbstractBase implements DriverInterface
      * Create a patron array according to patronLogin specs defined in the documentation.
      * Each value is trimmed if they are string-typed.
      *
-     * @param string  $id               The patron's ID in the ILS
-     * @param string  $cat_username     The username used to log in
-     * @param string  $cat_password     The password used to log in
-     * @param ?string $email            The patron's email address (null if unavailable)
-     * @param string  $firstname        The patron's first name
-     * @param string  $lastname         The patron's last name
-     * @param ?string $major            The patron's major (null if unavailable)
-     * @param ?string $college          The patron's college (null if unavailable)
-     * @param array   $nonDefaultFields Non default fields not documented in the documentation.
-     *                                  Merges into the resulting patron array.
+     * @param string                 $id               The patron's ID in the ILS
+     * @param string                 $cat_username     The username used to log in
+     * @param string                 $cat_password     The password used to log in
+     * @param Stringable|string|null $email            The patron's email address (null if unavailable)
+     * @param string                 $firstname        The patron's first name
+     * @param string                 $lastname         The patron's last name
+     * @param Stringable|string|null $major            The patron's major (null if unavailable)
+     * @param Stringable|string|null $college          The patron's college (null if unavailable)
+     * @param array                  $nonDefaultFields Non default fields not documented in the documentation.
+     *                                                 Merges into the resulting patron array.
      *
      * @see https://vufind.org/wiki/development:plugins:ils_drivers#patronlogin
      *
@@ -93,11 +93,11 @@ abstract class AbstractBase implements DriverInterface
         string $id,
         string $cat_username = '',
         string $cat_password = '',
-        ?string $email = null,
+        Stringable|string|null $email = null,
         string $firstname = '',
         string $lastname = '',
-        ?string $major = null,
-        ?string $college = null,
+        Stringable|string|null $major = null,
+        Stringable|string|null $college = null,
         array $nonDefaultFields = []
     ): array {
         $patron = compact(
@@ -123,42 +123,42 @@ abstract class AbstractBase implements DriverInterface
      * Create a profile array according to getMyProfile specs defined in the documentation.
      * Each value is trimmed if they are not null.
      *
-     * @param ?string                        $firstname        Profile first name
-     * @param ?string                        $lastname         Profile last name
-     * @param string                         $birthdate        Y-m-d or an empty string
-     * @param ?string                        $address1         Address 1
-     * @param ?string                        $address2         Address 2
-     * @param ?string                        $city             City
-     * @param ?string                        $country          Country
-     * @param ?string                        $zip              Postal code
-     * @param ?string                        $phone            Phone number
-     * @param ?string                        $mobile_phone     Mobile phone number
-     * @param ?string                        $expiration_date  Profile expiration date
-     * @param TranslatableString|string|null $group            Group i.e. Student, Staff, Faculty, etc
-     * @param ?string                        $home_library     The locationID value of a pick-up location
-     *                                                         (see getPickUpLocations)
-     *                                                         that should be used as the patron's default
-     * @param array                          $nonDefaultFields Non default fields not documented in the documentation.
-     *                                                         Merges into the resulting profile array.
+     * @param Stringable|string|null $firstname        Profile first name
+     * @param Stringable|string|null $lastname         Profile last name
+     * @param string                 $birthdate        Y-m-d or an empty string
+     * @param Stringable|string|null $address1         Address 1
+     * @param Stringable|string|null $address2         Address 2
+     * @param Stringable|string|null $city             City
+     * @param Stringable|string|null $country          Country
+     * @param Stringable|string|null $zip              Postal code
+     * @param Stringable|string|null $phone            Phone number
+     * @param Stringable|string|null $mobile_phone     Mobile phone number
+     * @param Stringable|string|null $expiration_date  Profile expiration date
+     * @param Stringable|string|null $group            Group i.e. Student, Staff, Faculty, etc
+     * @param Stringable|string|null $home_library     The locationID value of a pick-up location
+     *                                                 (see getPickUpLocations) that should be
+     *                                                 used as the patron's default
+     * @param array                  $nonDefaultFields Non default fields not documented in the documentation.
+     *                                                 Merges into the resulting profile array.
      *
      * @see https://vufind.org/wiki/development:plugins:ils_drivers#getmyprofile
      *
      * @return array
      */
     public function createProfileArray(
-        ?string $firstname = null,
-        ?string $lastname = null,
+        Stringable|string|null $firstname = null,
+        Stringable|string|null $lastname = null,
         string $birthdate = '',
-        ?string $address1 = null,
-        ?string $address2 = null,
-        ?string $city = null,
-        ?string $country = null,
-        ?string $zip = null,
-        ?string $phone = null,
-        ?string $mobile_phone = null,
-        ?string $expiration_date = null,
-        TranslatableString|string|null $group = null,
-        ?string $home_library = null,
+        Stringable|string|null $address1 = null,
+        Stringable|string|null $address2 = null,
+        Stringable|string|null $city = null,
+        Stringable|string|null $country = null,
+        Stringable|string|null $zip = null,
+        Stringable|string|null $phone = null,
+        Stringable|string|null $mobile_phone = null,
+        Stringable|string|null $expiration_date = null,
+        Stringable|string|null $group = null,
+        Stringable|string|null $home_library = null,
         array $nonDefaultFields = []
     ): array {
         $profile = compact(
@@ -183,7 +183,7 @@ abstract class AbstractBase implements DriverInterface
         }
         return array_map(
             function ($value) {
-                if ($value === null || $value instanceof TranslatableString) {
+                if ($value === null || $value instanceof Stringable) {
                     return $value;
                 }
                 return trim((string)$value);
