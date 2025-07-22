@@ -35,7 +35,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
-use function is_callable;
+use function in_array;
+use function intval;
 
 /**
  * Proof of Work CAPTCHA factory.

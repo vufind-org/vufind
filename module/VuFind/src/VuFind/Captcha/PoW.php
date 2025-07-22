@@ -32,6 +32,8 @@ namespace VuFind\Captcha;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\ManagerInterface;
 
+use function intval;
+
 /**
  * Proof of Work CAPTCHA.
  *
@@ -109,7 +111,8 @@ class PoW extends AbstractBase
      *
      * @return string
      */
-    public function getChallenge($salt) {
+    public function getChallenge($salt)
+    {
         return hash('sha256', $this->session->getId() . $salt);
     }
 
@@ -118,7 +121,8 @@ class PoW extends AbstractBase
      *
      * @return int
      */
-    public function getDifficulty() {
+    public function getDifficulty()
+    {
         return $this->difficulty;
     }
 
@@ -127,7 +131,8 @@ class PoW extends AbstractBase
      *
      * @return string
      */
-    public function getHashAlgo() {
+    public function getHashAlgo()
+    {
         return $this->hashAlgo;
     }
 
@@ -136,7 +141,8 @@ class PoW extends AbstractBase
      *
      * @return int
      */
-    public function getStart() {
+    public function getStart()
+    {
         return random_int(1000, 9999);
     }
 }
