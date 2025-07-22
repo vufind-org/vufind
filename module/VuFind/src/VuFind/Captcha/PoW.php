@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ReCaptcha CAPTCHA.
+ * Proof of Work CAPTCHA.
  *
  * PHP version 8
  *
