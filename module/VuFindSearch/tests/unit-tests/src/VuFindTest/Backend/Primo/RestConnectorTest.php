@@ -62,7 +62,7 @@ class RestConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testInstitutionCode()
+    public function testInstitutionCode(): void
     {
         $this->assertEquals('fakeinst', $this->createConnector()->getInstitutionCode());
     }
@@ -72,7 +72,7 @@ class RestConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testEmptyQueryError()
+    public function testEmptyQueryError(): void
     {
         $conn = $this->createConnector();
         $terms = [];
