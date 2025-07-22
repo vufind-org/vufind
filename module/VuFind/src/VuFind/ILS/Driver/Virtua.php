@@ -1216,7 +1216,6 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
         [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
         $split = strpos($first_name, ' ');
-        // TODO: Is this necessary
         if ($split !== false) {
             $first_name = substr($first_name, 0, $split);
         }
