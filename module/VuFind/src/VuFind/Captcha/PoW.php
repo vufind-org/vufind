@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  CAPTCHA
- * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -37,7 +37,7 @@ use Laminas\Session\ManagerInterface;
  *
  * @category VuFind
  * @package  CAPTCHA
- * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
