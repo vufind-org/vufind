@@ -2,7 +2,7 @@
 
 VuFind.register('pow-captcha', function PoWCaptchas() {
   const READY_CLASS = "js-pow-captcha-ready";
-  const CHALLENGE_SELECTOR = '[name="pow-captcha-challenge"]';
+  const CHALLENGE_SELECTOR = ".pow-captcha-challenge";
 
   function powCaptchaInit(form) {
     if (form.classList.contains(READY_CLASS)) {
@@ -20,8 +20,8 @@ VuFind.register('pow-captcha', function PoWCaptchas() {
   }
 
   function powPerformWork(form) {
-    const challenge = form.querySelector('[name="pow-captcha-challenge"]').value;
-    const difficulty = Number(form.querySelector('[name="pow-captcha-difficulty"]').value);
+    const challenge = form.querySelector(CHALLENGE_SELECTOR).value;
+    const difficulty = Number(form.querySelector(".pow-captcha-difficulty").value);
     const hashAlgo = form.querySelector('[name="pow-captcha-hash-algo"]').value;
     const start = Number(form.querySelector('[name="pow-captcha-start"]')?.value ?? 0);
 

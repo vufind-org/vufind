@@ -88,28 +88,16 @@ class PoW extends AbstractBase
             return false;
         }
 
-        // Verify provided challenge to challenge generated from session
-        // That way bad actors can't choose their own challenge
-        $challenge_gen = $this->getChallenge($start);
-        $challenge_param = $params->fromPost('pow-captcha-challenge');
-        if ($challenge_gen !== $challenge_param) {
-            error_log(
-                'PoW: submitted challenge does not match provided challenge'
-            );
-            return false;
-        }
-
         // Verify work
+        $challenge = $this->getChallenge($start);
         $hashAlgo = $params->fromPost('pow-captcha-hash-algo');
-        $hash = hash($hashAlgo, $challenge_gen . $nonce);
+        $hash = hash($hashAlgo, $challenge . $nonce);
         if (substr($hash, 0, $this->difficulty) !== str_repeat('0', $this->difficulty)) {
             error_log(
                 'PoW: nonce (' . $nonce . ') produces invalid hash (' . $hash . ')'
             );
             return false;
         }
-
-        // @TODO set COOKIE to bypass work for a limited time
 
         return true;
     }

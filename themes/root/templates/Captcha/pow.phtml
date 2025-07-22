@@ -2,8 +2,8 @@
   $start = $this->captcha->getStart();
   $challenge = $this->captcha->getChallenge($start);
 ?>
-<input type="hidden" name="pow-captcha-challenge" value="<?=$challenge ?>">
-<input type="hidden" name="pow-captcha-difficulty" value="<?=$this->captcha->getDifficulty() ?>">
+<input type="hidden" class="pow-captcha-challenge" value="<?=$challenge ?>">
+<input type="hidden" class="pow-captcha-difficulty" value="<?=$this->captcha->getDifficulty() ?>">
 <input type="hidden" name="pow-captcha-hash-algo" value="<?=$this->captcha->getHashAlgo() ?>">
 <input type="hidden" name="pow-captcha-nonce" value="">
 <input type="hidden" name="pow-captcha-start" value="<?=$start ?>">
