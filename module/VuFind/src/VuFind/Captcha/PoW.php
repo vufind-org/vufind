@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\ManagerInterface;
 
 /**
- * ReCaptcha CAPTCHA.
+ * Proof of Work CAPTCHA.
  *
  * @category VuFind
  * @package  CAPTCHA
