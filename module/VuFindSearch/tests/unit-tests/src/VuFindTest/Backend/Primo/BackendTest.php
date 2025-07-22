@@ -30,7 +30,9 @@
 namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFindSearch\Backend\Primo\Backend;
+use VuFindSearch\Backend\Primo\ConnectorInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
@@ -252,8 +254,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     /**
      * Test pcAvailability filter.
      *
-     * @param string $value    Input value of filter
-     * @param string $expected Expected output value of filter
+     * @param mixed $value    Input value of filter
+     * @param mixed $expected Expected output value of filter
      *
      * @dataProvider getPcAvailabilityData
      *
@@ -292,7 +294,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('inst-id'),
                 $this->equalTo($expectedParams['query']),
                 $this->equalTo($expectedParams)
-            )->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            )->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('foo'), 0, 10, $params);
     }
@@ -308,7 +310,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture)
+    protected function loadResponse(string $fixture)
     {
         return unserialize(
             $this->getFixture("primo/response/$fixture", 'VuFindSearch')
@@ -320,14 +322,16 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $mock Functions to mock
      *
-     * @return array
+     * @return MockObject&ConnectorInterface
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = []): MockObject&ConnectorInterface
     {
-        $client = $this->createMock(\Laminas\Http\Client::class);
-        return $this->getMockBuilder(\VuFindSearch\Backend\Primo\Connector::class)
+        $fakeUrl = 'http://fakeaddress.none';
+        $clientFactory = fn () => null;
+        $session = $this->createMock(\Laminas\Session\Container::class);
+        return $this->getMockBuilder(\VuFindSearch\Backend\Primo\RestConnector::class)
             ->onlyMethods($mock)
-            ->setConstructorArgs(['http://fakeaddress.none', 'inst-id', $client])
+            ->setConstructorArgs([$fakeUrl, $fakeUrl, 'inst-id', $clientFactory, $session])
             ->getMock();
     }
 }
