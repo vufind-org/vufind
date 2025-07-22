@@ -5,7 +5,7 @@
 <?php if (count($this->captchas) == 1):?>
   <?php if ($captchaHtml = $this->captcha()->getHtmlForCaptcha($this->captchas[0])): ?>
     <label class="form-label"><?=$this->transEsc('captcha_label_single')?></label>
-    <p><?=$captchaHtml?></p>
+    <div><?=$captchaHtml?></div>
   <?php endif; ?>
 <?php else:?>
   <label class="form-label"><?=$this->transEsc('captcha_label_multiple')?></label>

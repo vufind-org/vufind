@@ -20,10 +20,10 @@
           <?=$this->component('star-rating', ['ratingData' => $ratingData, 'allowClear' => 0 === $ratingData['count'] || $this->accountCapabilities()->isRatingRemovalAllowed()]);?>
         </div>
       <?php endif; ?>
+      <div class="clearfix"></div>
       <?php if ($this->tab->isCaptchaActive()): ?>
         <?=$this->captcha()->html(true, false) ?>
       <?php endif; ?>
-      <div class="clearfix"></div>
       <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Add your comment')?>">
       <div class="loading-spinner js-loading-spinner hidden"><?=$this->icon('spinner') ?> <?=$this->translate('loading_ellipsis')?></div>
     </div>
