@@ -1,6 +1,6 @@
 function hashChallenge(hashAlgo, challenge, nonce) {
   return new Promise((resolve, reject) => {
-    let buffer = new TextEncoder().encode(`${challenge}:${nonce}`);
+    let buffer = new TextEncoder().encode(`${challenge}${nonce}`);
     crypto.subtle.digest(phpAlgoToJS(hashAlgo), buffer.buffer).then((result) => {
       // convert buffer to byte array
       const bytes = Array.from(new Uint8Array(result));
@@ -30,20 +30,17 @@ self.addEventListener("message", async (event) => {
   const algo = phpAlgoToJS(hashAlgo);
 
   let nonce = start;
+  const startTime = Date.now();
   const target = "0".repeat(difficulty);
-  console.log(target);
   let attempt = await hashChallenge(algo, challenge, nonce);
   while (!attempt.startsWith(target)) {
     nonce += 1;
     attempt = await hashChallenge(algo, challenge, nonce);
-
-    if (attempt.startsWith("0000")) {
-      console.log(attempt);
-    }
   }
 
   self.postMessage({
     nonce,
     iters: nonce - start,
+    ms: Date.now() - startTime,
   });
 });

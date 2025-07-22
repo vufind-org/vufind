@@ -26,7 +26,7 @@ VuFind.register('pow-captcha', function PoWCaptchas() {
     const start = Number(form.querySelector('[name="pow-captcha-start"]')?.value ?? 0);
 
     const statusEl = form.querySelector(".pow-captcha-status");
-    statusEl.textContent = `PoW Captcha doing work (${hashAlgo} x${difficulty}).`;
+    statusEl.textContent = `PoW Captcha doing work (${hashAlgo}, difficulty ${difficulty}).`;
 
     // Do the number crunching in a Web Worker for speed and responsiveness
     const worker = new Worker(`${VuFind.path}/themes/root/js/captcha-pow-worker.js`);
@@ -44,16 +44,17 @@ VuFind.register('pow-captcha', function PoWCaptchas() {
     worker.postMessage({ challenge, difficulty, hashAlgo, start });
   }
 
-  function powResolveWork(form, { nonce, iters }) {
+  function powResolveWork(form, { nonce, iters, ms }) {
     const nonceInput = form.querySelector('[name="pow-captcha-nonce"]');
     nonceInput.value = nonce;
 
     const statusEl = form.querySelector(".pow-captcha-status");
-    statusEl.textContent = `PoW Captcha: nonce (${nonce}) found after ${iters} iterations.`;
+    statusEl.textContent = `PoW Captcha: nonce (${nonce}) found after ${iters} iterations (${ms}ms).`;
   }
 
   function powRejectWork(form, event) {
-      console.error(event);
+    // @TODO: click here to request a new challenge
+    console.error(event);
   }
 
   function init() {

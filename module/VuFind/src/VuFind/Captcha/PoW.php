@@ -30,6 +30,7 @@
 namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Session\ManagerInterface;
 
 /**
  * ReCaptcha CAPTCHA.
@@ -45,15 +46,15 @@ class PoW extends AbstractBase
     /**
      * Constructor
      *
-     * @param string $hashAlgo hash algorithm (default sha256)
-     * @param int $difficulty number of zeroes needed for proof (default 5)
+     * @param string           $hashAlgo   Hash algorithm (default sha256)
+     * @param int              $difficulty Number of leading zeroes needed for proof (default 5)
+     * @param ManagerInterface $session    Session manager
      */
     public function __construct(
-        string $hashAlgo,
-        int $difficulty,
+        protected string $hashAlgo,
+        protected int $difficulty,
+        protected ManagerInterface $session,
     ) {
-        $this->hashAlgo = $hashAlgo;
-        $this->difficulty = $difficulty;
     }
 
     /**
@@ -68,6 +69,7 @@ class PoW extends AbstractBase
 
     /**
      * Pull the captcha field from controller params and check them for accuracy
+     * We pull from the form in case config changed since challenge was sent
      *
      * @param Params $params Controller params
      *
@@ -75,29 +77,78 @@ class PoW extends AbstractBase
      */
     public function verify(Params $params): bool
     {
-        error_log($params->fromPost('pow-captcha-challenge'));
-        error_log($params->fromPost('pow-captcha-nonce'));
+        $nonce = intval($params->fromPost('pow-captcha-nonce'));
+        $start = intval($params->fromPost('pow-captcha-start', 0));
 
-        // @TODO: compare to Session challenge
+        // Verify nonce search began with start
+        if ($nonce < $start) {
+            error_log(
+                'PoW: nonce (' . $nonce . ') not incremental from start (' . $start . ')'
+            );
+            return false;
+        }
 
-        return false;
+        // Verify provided challenge to challenge generated from session
+        // That way bad actors can't choose their own challenge
+        $challenge_gen = $this->getChallenge($start);
+        $challenge_param = $params->fromPost('pow-captcha-challenge');
+        if ($challenge_gen !== $challenge_param) {
+            error_log(
+                'PoW: submitted challenge does not match provided challenge'
+            );
+            return false;
+        }
+
+        // Verify work
+        $hashAlgo = $params->fromPost('pow-captcha-hash-algo');
+        $hash = hash($hashAlgo, $challenge_gen . $nonce);
+        if (substr($hash, 0, $this->difficulty) !== str_repeat('0', $this->difficulty)) {
+            error_log(
+                'PoW: nonce (' . $nonce . ') produces invalid hash (' . $hash . ')'
+            );
+            return false;
+        }
+
+        // @TODO set COOKIE to bypass work for a limited time
+
+        return true;
     }
 
-    public function getChallenge() {
-        // @TODO: random challenge
-        // @TODO: story in session for verify
-        return $this->challenge ?? "WOW VERY CHALLENGE MUCH FIND";
+    /**
+     * Generate challenge string from session id
+     *
+     * @param int $salt Number to add to session id (we use start number)
+     *
+     * @return string
+     */
+    public function getChallenge($salt) {
+        return hash('sha256', $this->session->getId() . $salt);
     }
 
+    /**
+     * Get difficulty from config
+     *
+     * @return int
+     */
     public function getDifficulty() {
         return $this->difficulty;
     }
 
+    /**
+     * Get difficulty from config
+     *
+     * @return string
+     */
     public function getHashAlgo() {
         return $this->hashAlgo;
     }
 
+    /**
+     * Get random starting point to prevent repeatable work
+     *
+     * @return int
+     */
     public function getStart() {
-        return random_int(0, 1000);
+        return random_int(1000, 9999);
     }
 }

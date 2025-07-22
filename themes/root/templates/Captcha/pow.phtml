@@ -1,7 +1,10 @@
-<?php ?>
-<input type="hidden" name="pow-captcha-challenge" value="<?=$this->captcha->getChallenge() ?>">
+<?php
+  $start = $this->captcha->getStart();
+  $challenge = $this->captcha->getChallenge($start);
+?>
+<input type="hidden" name="pow-captcha-challenge" value="<?=$challenge ?>">
 <input type="hidden" name="pow-captcha-difficulty" value="<?=$this->captcha->getDifficulty() ?>">
 <input type="hidden" name="pow-captcha-hash-algo" value="<?=$this->captcha->getHashAlgo() ?>">
-<input type="hidden" name="pow-captcha-start" value="<?=$this->captcha->getStart() ?>">
 <input type="hidden" name="pow-captcha-nonce" value="">
+<input type="hidden" name="pow-captcha-start" value="<?=$start ?>">
 <p class="pow-captcha-status">PoW Captcha not initiated.</p>

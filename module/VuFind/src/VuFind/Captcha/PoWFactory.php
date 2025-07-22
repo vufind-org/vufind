@@ -80,8 +80,10 @@ class PoWFactory implements FactoryInterface
             throw new \Exception('Invalid hash algorithm: ' . $hashAlgo . '.');
         }
 
-        $difficulty = intval($config->Captcha->pow_difficulty ?? 5);
-
-        return new $requestedName($hashAlgo, $difficulty);
+        return new $requestedName(
+            $hashAlgo,
+            intval($config->Captcha->pow_difficulty ?? 5),
+            $container->get(\Laminas\Session\SessionManager::class),
+        );
     }
 }
