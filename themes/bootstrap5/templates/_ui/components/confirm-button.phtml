@@ -2,12 +2,13 @@
   /**
    * Confirm button component: display a button that drops down yes/no options to confirm an action.
    *
-   * @param ?string $align             Text alignment (default = left)
+   * @param ?string $align             Menu alignment (default = left)
    * @param ?string $buttonClass       CSS class to apply to button element (if omitted, default is based on
    *                                   $buttonLink)
    * @param ?string $buttonId          ID to use for the button element (defaults to confirm_ concatenated with the
    *                                   invocation counter)
-   * @param ?string $buttonIcon        Icon name to display with button text (optional)
+   * @param ?string $buttonIcon        Icon name to display with button text (optional; also requires $buttonLabel
+   *                                   to be set)
    * @param ?string $buttonLabel       Text to display on button
    * @param ?string $buttonLabelHtml   HTML to display on button (ignored when $buttonIcon and $buttonLabel are
    *                                   both set; overrides $buttonLabel otherwise)
