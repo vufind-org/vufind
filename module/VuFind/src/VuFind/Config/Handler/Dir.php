@@ -90,10 +90,11 @@ class Dir extends AbstractBase
             if ($subsection !== null) {
                 $location->setSubsection($subsection);
             }
-            $config[$configName] = $this->configManager->loadConfigFromLocation($location);
+            $config[$configName] = $this->configManager->loadConfigFromLocation($location, $handleParentConfig);
         } else {
             foreach ($this->pathResolver->getConfigLocationsInPath($path) as $location) {
-                $config[$location->getConfigName()] = $this->configManager->loadConfigFromLocation($location);
+                $config[$location->getConfigName()] = $this->configManager
+                    ->loadConfigFromLocation($location, $handleParentConfig);
             }
         }
 
