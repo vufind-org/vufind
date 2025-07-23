@@ -24,7 +24,6 @@ module.exports = {
     "themes/bootstrap5/js/ill.js",
     "themes/bootstrap5/js/record.js",
     "themes/bootstrap5/js/keep_alive.js",
-    "themes/bootstrap5/js/embedGBS.js",
     "themes/bootstrap5/js/lib/ajax_request_queue.js",
     "themes/bootstrap5/js/covers.js",
     "themes/bootstrap5/js/trigger_print.js",
