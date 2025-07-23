@@ -68,8 +68,6 @@ class Dir extends AbstractBase
      * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
@@ -90,10 +88,11 @@ class Dir extends AbstractBase
             if ($subsection !== null) {
                 $location->setSubsection($subsection);
             }
-            $config[$configName] = $this->configManager->loadConfigFromLocation($location);
+            $config[$configName] = $this->configManager->loadConfigFromLocation($location, $handleParentConfig);
         } else {
             foreach ($this->pathResolver->getConfigLocationsInPath($path) as $location) {
-                $config[$location->getConfigName()] = $this->configManager->loadConfigFromLocation($location);
+                $config[$location->getConfigName()] = $this->configManager
+                    ->loadConfigFromLocation($location, $handleParentConfig);
             }
         }
 

@@ -71,12 +71,13 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Wrapper around loadConfigFromLocation method.
      *
-     * @param string $name       Configuration to load
-     * @param array  $subsection Subsection
+     * @param string $name               Configuration to load
+     * @param array  $subsection         Subsection
+     * @param bool   $handleParentConfig If parent configuration should be handled
      *
      * @return mixed
      */
-    protected function getConfig(string $name, array $subsection = []): mixed
+    protected function getConfig(string $name, array $subsection = [], bool $handleParentConfig = true): mixed
     {
         $fileMap = [
             'unit-test-parent'
@@ -87,12 +88,17 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                 => new ConfigFile($this->getFixturePath('configs/inheritance/unit-test-child2.ini')),
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
+            'dir-config-with-inheritance'
+                => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
         ];
         $realResolver = $this->getPathResolver();
         $configLocation = $fileMap[$name]
             ?? $realResolver->getConfigLocation($name);
         $configLocation->setSubsection($subsection);
-        return $this->getConfigManager()->loadConfigFromLocation($configLocation);
+        return $this->getConfigManager()->loadConfigFromLocation(
+            $configLocation,
+            handleParentConfig: $handleParentConfig
+        );
     }
 
     /**
@@ -414,5 +420,44 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             ],
             $config
         );
+    }
+
+    /**
+     * Test loading of INI config with handling of parent configuration disabled.
+     *
+     * @return void
+     */
+    public function testIniConfigWithHandleParentConfigDisabled(): void
+    {
+        $config = $this->getConfig('unit-test-child', handleParentConfig: false);
+        $this->assertEquals(
+            [
+                'relative_path' => 'unit-test-parent.ini',
+                'override_full_sections' => 'Section1',
+            ],
+            $config['Parent_Config']
+        );
+        $this->assertEquals(10, $config['Section1']['j']);
+        $this->assertArrayNotHasKey('Section3', $config);
+    }
+
+    /**
+     * Test loading of directory config with handling of parent configuration disabled.
+     *
+     * @return void
+     */
+    public function testDirConfigWithHandleParentConfigDisabled(): void
+    {
+        $config = $this->getConfig('dir-config-with-inheritance', handleParentConfig: false);
+        $subdirConfig = $config['subdir-child'];
+        $this->assertEquals(
+            [
+                'relative_path' => '../unit-test-parent.ini',
+                'override_full_sections' => 'Section1',
+            ],
+            $subdirConfig['Parent_Config']
+        );
+        $this->assertEquals(10, $subdirConfig['Section1']['j']);
+        $this->assertArrayNotHasKey('Section3', $subdirConfig);
     }
 }

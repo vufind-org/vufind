@@ -110,18 +110,6 @@ class CspHeaderGenerator implements
      * Create CSP header base on given configuration
      *
      * @return ContentSecurityPolicy
-     *
-     * @deprecated Use getCspHeader instead
-     */
-    public function getHeader()
-    {
-        return $this->getCspHeader();
-    }
-
-    /**
-     * Create CSP header base on given configuration
-     *
-     * @return ContentSecurityPolicy
      */
     public function getCspHeader()
     {
