@@ -136,6 +136,17 @@ class Upgrade
         $this->permissionsModified = false;
         $this->writtenConfig = [];
 
+        // Move RecordDataFormatter.ini to RecordDataFormatter/DefaultRecord.ini
+        $localConfigDir = $this->pathResolver->getLocalConfigDirPath();
+        $oldRecordDataFormatterConfigFile = $localConfigDir . '/RecordDataFormatter.ini';
+        if ($this->writeMode && file_exists($oldRecordDataFormatterConfigFile)) {
+            $recordDataFormatterConfigDir = $localConfigDir . '/RecordDataFormatter';
+            if (!is_dir($recordDataFormatterConfigDir)) {
+                mkdir($recordDataFormatterConfigDir);
+            }
+            rename($oldRecordDataFormatterConfigFile, $recordDataFormatterConfigDir . '/DefaultRecord.ini');
+        }
+
         // Load all old configurations:
         $this->loadConfigs();
 
