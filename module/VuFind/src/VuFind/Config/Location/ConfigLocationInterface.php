@@ -75,7 +75,7 @@ interface ConfigLocationInterface
      *
      * @param string $path Path
      *
-     * @return void
+     * @return static
      */
     public function setPath(string $path): static;
 
@@ -91,7 +91,7 @@ interface ConfigLocationInterface
      *
      * @param string $basePath Base path
      *
-     * @return void
+     * @return static
      */
     public function setBasePath(string $basePath): static;
 
@@ -107,7 +107,7 @@ interface ConfigLocationInterface
      *
      * @param string $fileName string
      *
-     * @return void
+     * @return static
      */
     public function setFileName(string $fileName): static;
 
@@ -123,7 +123,7 @@ interface ConfigLocationInterface
      *
      * @param string $configName Config name
      *
-     * @return void
+     * @return static
      */
     public function setConfigName(string $configName): static;
 
@@ -139,7 +139,7 @@ interface ConfigLocationInterface
      *
      * @param array $subsection Subsection
      *
-     * @return void
+     * @return static
      */
     public function setSubsection(array $subsection): static;
 
@@ -155,7 +155,7 @@ interface ConfigLocationInterface
      *
      * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
-     * @return void
+     * @return static
      */
     public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static;
 
