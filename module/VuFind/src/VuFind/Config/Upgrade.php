@@ -30,9 +30,12 @@
 
 namespace VuFind\Config;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
+use VuFind\Log\LoggerAwareTrait;
 
 use function count;
+use function dirname;
 use function in_array;
 use function is_array;
 
@@ -46,8 +49,10 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Upgrade
+class Upgrade implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Default full sections.
      *
@@ -137,15 +142,7 @@ class Upgrade
         $this->writtenConfig = [];
 
         // Move RecordDataFormatter.ini to RecordDataFormatter/DefaultRecord.ini
-        $localConfigDir = $this->pathResolver->getLocalConfigDirPath();
-        $oldRecordDataFormatterConfigFile = $localConfigDir . '/RecordDataFormatter.ini';
-        if ($this->writeMode && file_exists($oldRecordDataFormatterConfigFile)) {
-            $recordDataFormatterConfigDir = $localConfigDir . '/RecordDataFormatter';
-            if (!is_dir($recordDataFormatterConfigDir)) {
-                mkdir($recordDataFormatterConfigDir);
-            }
-            rename($oldRecordDataFormatterConfigFile, $recordDataFormatterConfigDir . '/DefaultRecord.ini');
-        }
+        $this->moveRenamedConfig('RecordDataFormatter.ini', 'RecordDataFormatter/DefaultRecord.ini');
 
         // Load all old configurations:
         $this->loadConfigs();
@@ -229,6 +226,36 @@ class Upgrade
             }
         }
         return $config_ini;
+    }
+
+    /**
+     * Move configuration that was renamed to new location.
+     *
+     * @param string $from Relative path of source
+     * @param string $to   Relative path of destination
+     *
+     * @return void
+     */
+    protected function moveRenamedConfig(string $from, string $to): void
+    {
+        $localConfigDir = $this->pathResolver->getLocalConfigDirPath();
+        $fullFrom = $localConfigDir . '/' . $from;
+        if ($this->writeMode && file_exists($fullFrom)) {
+            $fullTo = $localConfigDir . '/' . $to;
+            $toDir = dirname($fullTo);
+            if (!is_dir($toDir)) {
+                mkdir($toDir, recursive: true);
+            }
+            if (!file_exists($fullTo)) {
+                rename($fullFrom, $fullTo);
+            } else {
+                $this->logWarning(
+                    'Legacy configuration file ' . $fullFrom
+                    . ' still exists besides updated file ' . $fullTo
+                    . ' and should be removed!'
+                );
+            }
+        }
     }
 
     /**
