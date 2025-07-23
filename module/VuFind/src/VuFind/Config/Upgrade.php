@@ -31,6 +31,7 @@
 namespace VuFind\Config;
 
 use VuFind\Config\Location\ConfigDirectory;
+use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
 
 use function count;
@@ -244,28 +245,38 @@ class Upgrade
                         $localConfigDir . '/' . $configName,
                         $subDirLocation->getConfigName()
                     );
-                    $this->oldConfigs[$subConfigName] = ($oldConfigLocation !== null)
-                        ? $this->configManager->loadConfigFromLocation(
-                            $oldConfigLocation,
-                            handleParentConfig: false
-                        ) : [];
-                    $this->newConfigs[$subConfigName] = $this->configManager->loadConfigFromLocation(
-                        $subDirLocation,
-                        handleParentConfig: false
-                    );
+                    $this->registerConfigToUpgrade($subConfigName, $subDirLocation, $oldConfigLocation);
                 }
             } else {
                 $oldConfigLocation = $this->pathResolver->getMatchingConfigLocation($localConfigDir, $configName);
-                $this->oldConfigs[$configName] = ($oldConfigLocation !== null)
-                    ? $this->configManager->loadConfigFromLocation($oldConfigLocation, handleParentConfig: false)
-                    : [];
-
-                $this->newConfigs[$configName] = $this->configManager->loadConfigFromLocation(
-                    $configLocation,
-                    handleParentConfig: false
-                );
+                $this->registerConfigToUpgrade($configName, $configLocation, $oldConfigLocation);
             }
         }
+    }
+
+    /**
+     * Load configuration used during upgrade.
+     *
+     * @param string                   $name        Identifier for the configuration
+     * @param ConfigLocationInterface  $newLocation Location of new configuration
+     * @param ?ConfigLocationInterface $oldLocation Optional location of old configuration
+     *
+     * @return void
+     */
+    protected function registerConfigToUpgrade(
+        string $name,
+        ConfigLocationInterface $newLocation,
+        ?ConfigLocationInterface $oldLocation
+    ): void {
+        $this->oldConfigs[$name] = ($oldLocation !== null)
+            ? $this->configManager->loadConfigFromLocation(
+                $oldLocation,
+                handleParentConfig: false
+            ) : [];
+        $this->newConfigs[$name] = $this->configManager->loadConfigFromLocation(
+            $newLocation,
+            handleParentConfig: false
+        );
     }
 
     /**
@@ -317,7 +328,7 @@ class Upgrade
             return;
         }
 
-        $configNameParts = explode('/', $configName);
+        $configNameParts = explode('/', $configName, 2);
         $subDir = (count($configNameParts) > 1) ? '/' . $configNameParts[0] : '';
         $baseConfigLocation = $this->pathResolver->getMatchingConfigLocation(
             $this->pathResolver->getBaseConfigDirPath() . $subDir,
