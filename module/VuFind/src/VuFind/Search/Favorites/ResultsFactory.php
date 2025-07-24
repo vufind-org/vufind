@@ -31,7 +31,6 @@ namespace VuFind\Search\Favorites;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
