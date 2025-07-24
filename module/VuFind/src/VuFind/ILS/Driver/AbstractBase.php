@@ -31,9 +31,10 @@ namespace VuFind\ILS\Driver;
 
 use Stringable;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\TranslatableString;
 
+use function is_array;
 use function is_callable;
-use function is_string;
 
 /**
  * Default ILS driver base class.
@@ -111,12 +112,12 @@ abstract class AbstractBase implements DriverInterface
         $this->debugDriverResult(__FUNCTION__, $patron, $nonDefaultFields);
         // Merge non default fields into the resulting patron array
         if ($nonDefaultFields) {
-            $patron = array_merge($patron, $nonDefaultFields);
+            $patron = [...$nonDefaultFields, ...$patron];
         }
         // Add cat_username and cat_password after debugging to avoid logging these values into a log file
         $patron['cat_username'] = $cat_username;
         $patron['cat_password'] = $cat_password;
-        return array_map(fn ($val) => is_string($val) ? trim($val) : $val, $patron);
+        return array_map([$this, 'stringNullCastFunc'], $patron);
     }
 
     /**
@@ -179,17 +180,24 @@ abstract class AbstractBase implements DriverInterface
         $this->debugDriverResult(__FUNCTION__, $profile, $nonDefaultFields);
 
         if ($nonDefaultFields) {
-            $profile = array_merge($profile, $nonDefaultFields);
+            $profile = [...$nonDefaultFields, ...$profile];
         }
-        return array_map(
-            function ($value) {
-                if ($value === null || $value instanceof Stringable) {
-                    return $value;
-                }
-                return trim((string)$value);
-            },
-            $profile
-        );
+        return array_map([$this, 'stringNullCastFunc'], $profile);
+    }
+
+    /**
+     * Trim and cast value to string if it is not null, instance of TranslatableString or an array.
+     *
+     * @param mixed $value Value to cast.
+     *
+     * @return null|string|TranslatableString|array
+     */
+    protected function stringNullCastFunc(mixed $value): null|string|TranslatableString|array
+    {
+        if (is_array($value) || $value === null || $value instanceof TranslatableString) {
+            return $value;
+        }
+        return trim((string)$value);
     }
 
     /**
@@ -224,7 +232,7 @@ abstract class AbstractBase implements DriverInterface
      */
     protected function debugDriverResult(string $function, array $defaultFields, array $nonDefaultFields = []): void
     {
-        if (!is_callable([$this, 'debug'])) {
+        if (!is_callable([$this, 'debug']) || empty($this->config['Debug']['log_function_result'][$function])) {
             return;
         }
         $debugContext = [

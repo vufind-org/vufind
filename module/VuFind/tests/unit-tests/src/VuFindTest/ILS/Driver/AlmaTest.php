@@ -175,10 +175,20 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     new \VuFind\Date\Converter(),
                 ]
-            )->onlyMethods(['makeRequest'])
+            )->onlyMethods(['makeRequest', 'debug'])
             ->getMock();
+        $config ??= $this->defaultDriverConfig;
         // Configure the stub
-        $this->driver->setConfig($config ?? $this->defaultDriverConfig);
+        $this->driver->setConfig($config);
+
+        // Add test for debugging function result, if enabled
+        foreach ($config['Debug']['log_function_result'] ?? [] as $function => $value) {
+            $this->driver->expects($this->once())->method('debug')->willReturnCallBack(
+                function ($msg, array $context = [], $prependClass = true) use ($function) {
+                    $this->assertEquals("$function result:", $msg);
+                }
+            );
+        }
         $cache = new \Laminas\Cache\Storage\Adapter\Memory();
         $cache->setOptions(['memory_limit' => -1]);
         $this->driver->setCacheStorage($cache);
@@ -270,6 +280,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $adjustedConfig = $this->defaultDriverConfig;
         $adjustedConfig['Catalog']['translationPrefix'] = 'prefix_';
+        $adjustedConfig['Debug']['log_function_result'] = ['createProfileArray' => true];
         $this->createConnector('get-my-profile', $adjustedConfig, $fixtureKey);
         $result = $this->driver->getMyProfile(['id' => '1111']);
         if ($result['group']) {
@@ -288,10 +299,8 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $adjustedConfig = $this->defaultDriverConfig;
         $adjustedConfig['Catalog']['loginMethod'] = 'email';
-        $this->createConnector(
-            'get-patron-response',
-            $adjustedConfig
-        );
+        $adjustedConfig['Debug']['log_function_result'] = ['createPatronArray' => true];
+        $this->createConnector('get-patron-response', $adjustedConfig);
         $result = $this->driver->patronLogin('1111', '1212');
         $expected = [
             'id' => '57391',
