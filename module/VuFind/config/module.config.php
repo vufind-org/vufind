@@ -524,6 +524,7 @@ $config = [
             'VuFind\RecordTab\TabManager' => 'VuFind\RecordTab\TabManagerFactory',
             'VuFind\Related\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Resolver\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Role\DynamicRoleProvider' => 'VuFind\Role\DynamicRoleProviderFactory',
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Role\PermissionDeniedManagerFactory',
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'VuFind\Role\PermissionProvider\PluginManager' => 'VuFind\Role\PermissionProvider\PluginManagerFactory',
@@ -751,11 +752,6 @@ $config = [
         'role_provider' => [
             'VuFind\Role\DynamicRoleProvider' => [
                 'map_legacy_settings' => true,
-            ],
-        ],
-        'role_provider_manager' => [
-            'factories' => [
-                'VuFind\Role\DynamicRoleProvider' => 'VuFind\Role\DynamicRoleProviderFactory',
             ],
         ],
         'vufind_permission_provider_manager' => [ /* see VuFind\Role\PermissionProvider\PluginManager for defaults */ ],
