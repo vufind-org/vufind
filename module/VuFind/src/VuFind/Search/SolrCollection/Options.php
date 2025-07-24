@@ -50,13 +50,11 @@ class Options extends \VuFind\Search\Solr\Options
         $this->facetsIni = 'Collection';
         parent::__construct($configLoader);
 
-        // Load sort preferences (or defaults if none in .ini file):
-        $searchSettings = $configLoader->get('Collection');
-        if (isset($searchSettings->Sort)) {
-            $this->sortOptions = [];
-            foreach ($searchSettings->Sort as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
+        // Load sort preferences from Collection.ini even though other settings are loaded from searches.ini
+        // (or set defaults if none in .ini file):
+        $searchSettings = $configLoader->get('Collection')->toArray();
+        if (null !== ($sortOptions = $searchSettings['Sort'] ?? null)) {
+            $this->sortOptions = (array)$sortOptions;
         } else {
             $this->sortOptions = [
                 'title' => 'sort_title',

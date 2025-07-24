@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Upgrade;
 
 /**
  * Upgrade controller factory.
@@ -72,9 +73,10 @@ class UpgradeControllerFactory extends AbstractBaseFactory
             'upgrade',
             $container->get(\Laminas\Session\SessionManager::class)
         );
+        $configUpgrader = $container->get(Upgrade::class);
         return $this->applyPermissions(
             $container,
-            new $requestedName($container, $cookieManager, $session)
+            new $requestedName($container, $cookieManager, $session, $configUpgrader)
         );
     }
 }

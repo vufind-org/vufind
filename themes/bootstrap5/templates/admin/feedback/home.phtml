@@ -1,9 +1,5 @@
-<?php
-// Set page title.
-$this->headTitle($this->translate('VuFind Administration - Feedback Management'));
-?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->translate('Feedback Management')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('Feedback Management'), 'headTitle' => $this->translate('VuFind Administration - Feedback Management')]);?>
 
   <?=$this->flashmessages()?>
 

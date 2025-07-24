@@ -37,7 +37,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 use function array_key_exists;
 
@@ -52,7 +52,7 @@ use function array_key_exists;
  */
 class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Container for building mocks.

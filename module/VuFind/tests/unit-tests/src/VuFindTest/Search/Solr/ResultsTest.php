@@ -56,7 +56,7 @@ use function get_class;
  */
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**

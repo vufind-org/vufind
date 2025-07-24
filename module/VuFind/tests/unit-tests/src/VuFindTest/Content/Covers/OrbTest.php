@@ -44,7 +44,7 @@ use VuFindCode\ISBN;
  */
 class OrbTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\FixtureTrait;
 
     /**

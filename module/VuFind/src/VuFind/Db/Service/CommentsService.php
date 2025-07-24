@@ -165,4 +165,45 @@ class CommentsService extends AbstractDbService implements
     {
         $this->getDbTable('comments')->update(['resource_id' => $new], ['resource_id' => $old]);
     }
+
+    /**
+     * Get a paginated result of all comments by user id.
+     *
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return Paginator
+     */
+    public function getCommentsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort,
+    ): \Laminas\Paginator\Paginator {
+        return $this->getDbTable('Comments')->getCommentsPaginator(
+            $userId,
+            $limit,
+            $page,
+            $sort,
+        );
+    }
+
+    /**
+     * Delete comments by given user and comment ids.
+     *
+     * @param array $ids    Array of comment ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void
+    {
+        $callback = function ($select) use ($ids, $userId) {
+            $select->where->in('id', $ids);
+            $select->where->equalTo('user_id', $userId);
+        };
+        $this->getDbTable('Comments')->delete($callback);
+    }
 }

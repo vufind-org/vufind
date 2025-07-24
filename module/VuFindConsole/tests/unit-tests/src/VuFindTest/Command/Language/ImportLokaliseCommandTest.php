@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Command\Language;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\I18n\ExtendedIniNormalizer;
 use VuFindConsole\Command\Language\ImportLokaliseCommand;
@@ -142,14 +143,18 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
+        $this->assertEquals(
+            "Warning: unexpected missing key in $source/en.ini - bar\nImport complete.\n",
+            $commandTester->getDisplay()
+        );
     }
 
     /**
      * Get a mock command (with file writing stubbed out).
      *
-     * @return ImportLokaliseCommand
+     * @return MockObject&ImportLokaliseCommand
      */
-    protected function getMockCommand(): ImportLokaliseCommand
+    protected function getMockCommand(): MockObject&ImportLokaliseCommand
     {
         return $this->getMockBuilder(ImportLokaliseCommand::class)
             ->setConstructorArgs([new ExtendedIniNormalizer()])

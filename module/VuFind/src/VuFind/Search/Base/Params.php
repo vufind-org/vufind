@@ -728,6 +728,24 @@ class Params
     }
 
     /**
+     * Check if sort is valid.
+     *
+     * @param ?string $sort            Sort value
+     * @param bool    $allowHiddenSort If hidden sort is allowed
+     *
+     * @return bool
+     */
+    public function isValidSort(?string $sort, bool $allowHiddenSort = true): bool
+    {
+        $valid = array_keys($this->getOptions()->getSortOptions());
+        return !empty($sort)
+            && (
+                in_array($sort, $valid)
+                || $allowHiddenSort && $this->getMatchingHiddenSortingPatterns($sort)
+            );
+    }
+
+    /**
      * Set the sorting value (note: sort will be set to default if an illegal
      * or empty value is passed in).
      *
@@ -745,12 +763,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        $valid = array_keys($this->getOptions()->getSortOptions());
-
-        if (
-            !empty($sort)
-            && (in_array($sort, $valid) || $this->getMatchingHiddenSortingPatterns($sort))
-        ) {
+        if ($this->isValidSort($sort)) {
             $this->sort = $sort;
         } else {
             $this->sort = $this->getDefaultSort();
@@ -1410,13 +1423,15 @@ class Params
     protected function formatYearForDateRange($year, $rangeEnd = false)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
-        $year = ($year && preg_match('/\d{2,4}/', $year)) ? $year : '*';
+        $year = preg_match('/^-?\d+$/', $year ?? '') ? $year : '*';
 
-        // Pad to four digits:
-        if (strlen($year) == 2) {
-            $year = '19' . $year;
-        } elseif (strlen($year) == 3) {
-            $year = '0' . $year;
+        // Pad two or three character positive range to four digits:
+        if (!str_starts_with($year, '-')) {
+            if (strlen($year) == 2) {
+                $year = '19' . $year;
+            } elseif (strlen($year) == 3) {
+                $year = '0' . $year;
+            }
         }
 
         return $year;

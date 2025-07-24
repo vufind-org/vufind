@@ -1,20 +1,31 @@
 /*global VuFind, multiFacetsSelection, unwrapJQuery */
 
 /**
- * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
+ * Get the globally-configured multi-facets selection setting (or default to 'false').
  *
- * @type {Function} Function to check for multiFacetsSelectionEnabled
+ * @returns string
+ */
+const getMultiFacetsSelectionSetting = () => {
+  return typeof multiFacetsSelection === 'undefined' ? 'false' : multiFacetsSelection;
+};
+
+/**
+ * Returns whether multi-facets selection is enabled.
+ *
+ * @returns boolean
  */
 const isMultiFacetsSelectionEnabled = () => {
-  return multiFacetsSelection !== 'false';
+  return getMultiFacetsSelectionSetting() !== 'false';
 };
 
+/**
+ * Get the default checkbox selection state to apply if overriding user state is not found.
+ *
+ * @returns boolean
+ */
 const getMultiFacetsSelectionPageLoadValue = () => {
-  return multiFacetsSelection === 'always' || multiFacetsSelection === 'checked';
-};
-
-const getMultiFacetsSelectionSetting = () => {
-  return multiFacetsSelection;
+  const setting = getMultiFacetsSelectionSetting();
+  return setting === 'always' || setting === 'checked';
 };
 
 /* --- Facet List --- */
@@ -368,7 +379,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function initOriginalCountText(context) {
     if (typeof defaultCountText === 'undefined') {
-      defaultCountText = context.getElementsByClassName('multi-filters-text')[0].textContent;
+      const multiFiltersTextEl = context.querySelector('.multi-filters-text');
+      defaultCountText = multiFiltersTextEl ? multiFiltersTextEl.textContent : '-';
     }
   }
 
@@ -697,13 +709,15 @@ VuFind.register('sideFacets', function SideFacets() {
     delayLoadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
-    $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
-      var $dropdown = $(e.target).find(".dropdown-menu");
-      if ($(e.target).position().left + $dropdown.width() >= window.innerWidth) {
-        $dropdown.addClass("dropdown-menu-right");
-      } else {
-        $dropdown.removeClass("dropdown-menu-right");
-      }
+    document.querySelectorAll('.search-filter-dropdown').forEach((dropdown) => {
+      dropdown.addEventListener('shown.bs.dropdown', () => {
+        let dropdownMenu = dropdown.querySelector('.dropdown-menu');
+        if (dropdown.getBoundingClientRect().left + dropdownMenu.offsetWidth >= window.innerWidth) {
+          dropdownMenu.classList.add('dropdown-menu-end');
+        } else {
+          dropdownMenu.classList.remove('dropdown-menu-end');
+        }
+      });
     });
 
     setupFacetFormListeners();
