@@ -32,6 +32,7 @@ namespace VuFind\Db\Row;
 use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use Traversable;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -695,7 +696,7 @@ class User extends RowGateway implements
      *
      * @return string[]|\Rbac\Role\RoleInterface[]
      */
-    public function getRoles()
+    public function getRoles(): Traversable|array
     {
         return ['loggedin'];
     }

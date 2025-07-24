@@ -32,7 +32,7 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
-use LmcRbacMvc\Identity\IdentityInterface;
+use Lmc\Rbac\Identity\IdentityInterface;
 use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -54,7 +54,6 @@ use function is_callable;
  * @link     https://vufind.org Main Page
  */
 class Manager implements
-    \LmcRbacMvc\Identity\IdentityProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

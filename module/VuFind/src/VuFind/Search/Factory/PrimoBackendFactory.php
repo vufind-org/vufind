@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Factory;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerInterface;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;

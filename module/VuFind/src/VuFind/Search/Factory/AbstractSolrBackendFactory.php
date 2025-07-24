@@ -708,7 +708,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $search->ConditionalHiddenFilters->toArray()
         );
         $listener->setAuthorizationService(
-            $this->getService(\LmcRbacMvc\Service\AuthorizationService::class)
+            $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
         );
         return $listener;
     }

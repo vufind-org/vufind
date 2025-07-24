@@ -139,7 +139,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      */
     protected function isAuthed()
     {
-        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class)
+        return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
             ->isGranted('access.SummonExtendedResults');
     }
 
