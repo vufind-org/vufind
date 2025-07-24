@@ -29,10 +29,9 @@
 
 namespace VuFind\Role;
 
-use Lmc\Rbac\Role\RoleProviderInterface;
 use Laminas\Permissions\Rbac\Role;
 use Laminas\Permissions\Rbac\RoleInterface;
-use Traversable;
+use Lmc\Rbac\Role\RoleProviderInterface;
 
 /**
  * VuFind dynamic role provider.
