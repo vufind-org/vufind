@@ -420,11 +420,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testEDSRecordDataFormatterUpgradeSimple(): void
     {
-        $upgrader = $this->getUpgrader('eds-record-data-formatter-default');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-default');
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
-        $edsConfig = $results['EDS.ini'];
+        $edsConfig = $results['EDS'];
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
         $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
         $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
@@ -437,12 +436,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      */
     public function testEDSRecordDataFormatterUpgradeAdvanced(): void
     {
-        $upgrader = $this->getUpgrader('eds-record-data-formatter-advanced');
-        $upgrader->run();
+        $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-advanced');
         $this->assertEquals([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
-        $edsConfig = $results['EDS.ini'];
-        $edsRecordDataFormatterConfig = $results['EDSRecordDataFormatter.ini'];
+        $edsConfig = $results['EDS'];
+        $edsRecordDataFormatterConfig = $results['RecordDataFormatter/EDS'];
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
         $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
         $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);

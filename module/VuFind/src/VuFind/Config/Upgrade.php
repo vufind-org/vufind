@@ -826,61 +826,68 @@ class Upgrade implements LoggerAwareInterface
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $this->applyOldSettings($configName);
-        $this->applyOldSettings('EDSRecordDataFormatter');
+        $this->applyOldSettings('RecordDataFormatter/' . $configName);
 
         // Fix default view settings in case they use the old style:
-        $newConfig = & $this->newConfigs[$configName];
-        $newEDSRecordDataFormatterConfig = & $this->newConfigs['EDSRecordDataFormatter.ini'];
+        $newBaseConfig = & $this->newConfigs[$configName];
+        $newRecordDataFormatterConfig = & $this->newConfigs['RecordDataFormatter/' . $configName];
+        $recordDataFormatterConfigModified = false;
 
-        if (!str_contains($newConfig['General']['default_view'], '_')) {
-            $newConfig['General']['default_view'] = 'list_' . $newConfig['General']['default_view'];
+        if (!str_contains($newBaseConfig['General']['default_view'], '_')) {
+            $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
         }
 
-        // Move several settings to EDSRecordDataFormatter.ini
-        foreach ($newConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
-            $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Label:' . $label;
+        // Move several settings to RecordDataFormatter/EDS
+        foreach ($newBaseConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
+            $newRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Label:' . $label;
+            $recordDataFormatterConfigModified = true;
         }
-        foreach ($newConfig['ItemCoreFilter']['excludeGroup'] ?? [] as $label) {
-            $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:' . $label;
+        foreach ($newBaseConfig['ItemCoreFilter']['excludeGroup'] ?? [] as $label) {
+            $newRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:' . $label;
+            $recordDataFormatterConfigModified = true;
         }
-        unset($newConfig['ItemCoreFilter']);
+        unset($newBaseConfig['ItemCoreFilter']);
 
-        foreach ($newConfig['ItemResultListFilter']['excludeLabel'] ?? [] as $label) {
-            $newEDSRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Label:' . $label;
+        foreach ($newBaseConfig['ItemResultListFilter']['excludeLabel'] ?? [] as $label) {
+            $newRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Label:' . $label;
+            $recordDataFormatterConfigModified = true;
         }
-        foreach ($newConfig['ItemResultListFilter']['excludeGroup'] ?? [] as $label) {
-            $newEDSRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Group:' . $label;
+        foreach ($newBaseConfig['ItemResultListFilter']['excludeGroup'] ?? [] as $label) {
+            $newRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Group:' . $label;
+            $recordDataFormatterConfigModified = true;
         }
-        unset($newConfig['ItemResultListFilter']);
+        unset($newBaseConfig['ItemResultListFilter']);
 
         if (
-            isset($newConfig['AuthorDisplay']['DetailPageFormat'])
-            && $newConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
+            isset($newBaseConfig['AuthorDisplay']['DetailPageFormat'])
+            && $newBaseConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
         ) {
-            $newEDSRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:AuInfo';
-            $newEDSRecordDataFormatterConfig['CoreItems']['extraLineOptions'][] = 'CoreAuthors';
-            $newEDSRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod'] =
+            $newRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:AuInfo';
+            $newRecordDataFormatterConfig['CoreItems']['extraLineOptions'][] = 'CoreAuthors';
+            $newRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod'] =
                 'getPrimaryAuthorsWithHighlighting';
-            $newEDSRecordDataFormatterConfig['CoreAuthors']['limit'] =
-                $newConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            $newRecordDataFormatterConfig['CoreAuthors']['limit'] =
+                $newBaseConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            $recordDataFormatterConfigModified = true;
         }
 
         if (
-            isset($newConfig['AuthorDisplay']['ResultListFormat'])
+            isset($newBaseConfig['AuthorDisplay']['ResultListFormat'])
         ) {
-            if ($newConfig['AuthorDisplay']['ResultListFormat'] === 'Short') {
-                $newEDSRecordDataFormatterConfig['ResultListAuthors']['limit']
-                    = $newConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            if ($newBaseConfig['AuthorDisplay']['ResultListFormat'] === 'Short') {
+                $newRecordDataFormatterConfig['ResultListAuthors']['limit']
+                    = $newBaseConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
             } else {
-                unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['limit']);
-                unset($newEDSRecordDataFormatterConfig['ResultListAuthors']['multiAltDataMethod']);
+                unset($newRecordDataFormatterConfig['ResultListAuthors']['limit']);
+                unset($newRecordDataFormatterConfig['ResultListAuthors']['multiAltDataMethod']);
             }
+            $recordDataFormatterConfigModified = true;
         }
-        unset($newConfig['AuthorDisplay']);
+        unset($newBaseConfig['AuthorDisplay']);
 
         // save the configuration
         $this->saveModifiedConfig($configName);
-        $this->saveModifiedConfig('EDSRecordDataFormatter');
+        $this->saveModifiedConfig('RecordDataFormatter/' . $configName, $recordDataFormatterConfigModified);
     }
 
     /**
