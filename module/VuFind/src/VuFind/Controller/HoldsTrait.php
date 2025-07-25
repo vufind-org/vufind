@@ -53,9 +53,9 @@ trait HoldsTrait
     {
         $driver = $this->loadRecord();
         // Holds on EDS API records require a different ID.
-        // This id can be obtained from the getRtacIdentifier method
+        // This id can be obtained from the getUniqueIDOverrideForRequest method
         $originalId = $driver->getUniqueID();
-        $id = $driver->tryMethod('getRtacIdentifier', default: $originalId);
+        $id = $driver->tryMethod('getUniqueIDOverrideForRequest', default: $originalId);
 
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
@@ -75,9 +75,9 @@ trait HoldsTrait
         if (!$gatheredDetails) {
             return $this->redirectToRecord();
         }
-        // the gatheredDetails['id'] is the original ID, but for EDS API Holds
-        // we need to use the RTAC id. So only in that case we will set it to the
-        // RTAC id.
+        // the gatheredDetails['id'] is the original ID, but for API Holds
+        // we need to use the originalId. So only in that case we will set it to the
+        // value returned by getUniqueIDOverrideForRequest.
         if ($originalId != $id && $originalId == $gatheredDetails['id']) {
             $gatheredDetails['id'] = $id;
         }

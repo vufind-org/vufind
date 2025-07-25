@@ -82,7 +82,7 @@ class EDS extends DefaultRecord
      *
      * @return string unique rtac identifier
      */
-    public function getRtacIdentifier()
+    public function getUniqueIDOverrideForRequest()
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
@@ -139,7 +139,7 @@ class EDS extends DefaultRecord
 
     /**
      * Get an array of information about record holdings, obtained in real-time
-     * from the ILS. Instead of getUniqueID we use getRtacIdentifier
+     * from the ILS. Instead of getUniqueID we use getUniqueIDOverrideForRequest
      *
      * @return array
      */
@@ -156,7 +156,7 @@ class EDS extends DefaultRecord
         // Retrieve holdings -- note that we need to use overrides because the ID used
         // for retrieving values from the ILS differs from the ID used for linking to
         // the EDS record.
-        $bibId = $this->getRtacIdentifier();
+        $bibId = $this->getUniqueIDOverrideForRequest();
         $overrides = ['source' => 'EDS', 'id' => $this->getUniqueID()];
         return $this->holdLogic->getHoldings($bibId, linkOverrides: $overrides);
     }
