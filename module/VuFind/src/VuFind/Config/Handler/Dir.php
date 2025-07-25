@@ -121,12 +121,11 @@ class Dir extends AbstractBase
     protected function getParentLocation(ConfigLocationInterface $configLocation): ?ConfigLocationInterface
     {
         if ($dirLocationsParent = $configLocation->getDirLocationsParent()) {
-            $dirLocationsParent = clone $dirLocationsParent;
-            return  $dirLocationsParent->setSubsection($configLocation->getSubsection());
+            return (clone $dirLocationsParent)->setSubsection($configLocation->getSubsection());
         }
         $baseLocation = $this->pathResolver->getBaseConfigLocation($configLocation->getConfigName());
         if ($baseLocation !== null && realpath($baseLocation->getPath()) !== realpath($configLocation->getPath())) {
-            return $baseLocation->setSubsection($configLocation->getSubsection());
+            return (clone $baseLocation)->setSubsection($configLocation->getSubsection());
         }
         return null;
     }
