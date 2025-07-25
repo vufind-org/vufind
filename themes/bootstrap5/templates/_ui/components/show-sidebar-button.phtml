@@ -1,4 +1,11 @@
 <?php
+    /**
+     * Component to display a link to navigate to a sidebar (used in responsive mobile modes)
+     *
+     * @param ?string $title    Title for link (will be translated; defaults to sidebar_expand)
+     * @param string  $targetId HTML element ID to link to
+     * @param string  $linkText Text to display within link
+     */
     $side = $this->config()->offcanvasSide();
     $aAttrs = [
         'class' => 'search-filter-toggle ' . $this->_componentClass,

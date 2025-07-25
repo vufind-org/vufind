@@ -22,7 +22,6 @@ module.exports = {
     "themes/bootstrap5/js/openurl.js",
     "themes/bootstrap5/js/ill.js",
     "themes/bootstrap5/js/record.js",
-    "themes/bootstrap5/js/embedGBS.js",
     "themes/bootstrap5/js/lib/ajax_request_queue.js",
     "themes/bootstrap5/js/covers.js",
     "themes/bootstrap5/js/visual_facets.js",
