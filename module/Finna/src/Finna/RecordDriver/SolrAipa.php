@@ -129,7 +129,10 @@ class SolrAipa extends SolrQdc implements ContainerFormatInterface
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        return $this->getFieldData('subject', $extended);
+        return array_map(
+            fn ($value) => (array)$value,
+            $this->getFieldData('subject', $extended)
+        );
     }
 
     /**
