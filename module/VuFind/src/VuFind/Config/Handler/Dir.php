@@ -125,7 +125,7 @@ class Dir extends AbstractBase
         }
         $baseLocation = $this->pathResolver->getBaseConfigLocation($configLocation->getConfigName());
         if ($baseLocation !== null && realpath($baseLocation->getPath()) !== realpath($configLocation->getPath())) {
-            return (clone $baseLocation)->setSubsection($configLocation->getSubsection());
+            return $baseLocation->setSubsection($configLocation->getSubsection());
         }
         return null;
     }
