@@ -116,15 +116,10 @@
       <?php if ($identifierLinksHtml): ?>
         <div><?=$identifierLinksHtml?></div>
       <?php endif; ?>
-      <?php /* Format / Label / Clear Availability Display */ ?>
-      <?php
-        $openUrl = $this->openUrl($this->driver, 'results');
-        $openUrlActive = $openUrl->isActive();
-      ?>
       <div class="result-formats">
         <?=$this->record($this->driver)->getFormatList() ?>
         <?=$this->record($this->driver)->getLabelList() ?>
-        <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled()): ?>
+        <?php if (empty($urls) && $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled()): ?>
           <span class="status ajax-availability hidden">
             <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
           </span>
