@@ -114,6 +114,7 @@ class PathResolver
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param string               $baseDir              Base directory
      * @param ?string              $localConfigDir       Local config directory
+     * @param ?string              $baseSubDir           Default base config subdirectory
      * @param ?string              $localConfigSubDir    Default local config subdirectory
      *
      * @return PathResolver
@@ -122,11 +123,12 @@ class PathResolver
         HandlerPluginManager $configHandlerManager,
         string $baseDir,
         ?string $localConfigDir,
+        ?string $baseSubDir = null,
         ?string $localConfigSubDir = null
     ): PathResolver {
         return new PathResolver(
             $configHandlerManager,
-            self::getBaseDirSpec($baseDir),
+            self::getBaseDirSpec($baseDir, $baseSubDir),
             self::getLocalDirStack($localConfigDir, $localConfigSubDir)
         );
     }
@@ -134,15 +136,16 @@ class PathResolver
     /**
      * Get base directory spec for directory.
      *
-     * @param string $baseDir Base directory
+     * @param string  $baseDir    Base directory
+     * @param ?string $baseSubDir Default base config subdirectory
      *
      * @return array
      */
-    public static function getBaseDirSpec(string $baseDir): array
+    public static function getBaseDirSpec(string $baseDir, ?string $baseSubDir = null): array
     {
         return [
             'directory' => $baseDir,
-            'defaultConfigSubdir' => self::DEFAULT_CONFIG_SUBDIR,
+            'defaultConfigSubdir' => $baseSubDir ?? self::DEFAULT_CONFIG_SUBDIR,
         ];
     }
 
@@ -220,7 +223,7 @@ class PathResolver
         ?string $path = null,
     ): ?ConfigLocationInterface {
         return $this->getLocalConfigLocation($configName, $path)
-            ?? $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
+            ?? $this->getBaseConfigLocation($configName, $path);
     }
 
     /**
@@ -245,6 +248,22 @@ class PathResolver
             }
         }
         return $currentLocation;
+    }
+
+    /**
+     * Get the base config location based on the config name.
+     *
+     * @param string  $configName Config name
+     * @param ?string $path       path relative to VuFind base (optional; use null for
+     * default)
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getBaseConfigLocation(
+        string $configName,
+        ?string $path = null,
+    ): ?ConfigLocationInterface {
+        return $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
     }
 
     /**

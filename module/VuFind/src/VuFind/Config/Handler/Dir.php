@@ -32,6 +32,10 @@ namespace VuFind\Config\Handler;
 use VuFind\Config\ConfigManager;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
+use VuFind\Exception\ConfigException;
+use VuFind\Exception\FileAccess as FileAccessException;
+
+use function is_array;
 
 /**
  * Dir config handler.
@@ -60,11 +64,12 @@ class Dir extends AbstractBase
     /**
      * Parses the configuration in a config location.
      *
-     * @param ConfigLocationInterface $configLocation Config location
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
      */
-    public function parseConfig(ConfigLocationInterface $configLocation): array
+    public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
         $path = $configLocation->getPath();
 
@@ -76,23 +81,98 @@ class Dir extends AbstractBase
             $path = $path . DIRECTORY_SEPARATOR . $subsectionPart;
         }
 
-        $config = [];
+        $data = [];
         if (!empty($subsection)) {
             $configName = array_shift($subsection);
             $location = $this->pathResolver->getMatchingConfigLocation($path, $configName);
-            if ($subsection !== null) {
+            if ($location !== null && $subsection !== null) {
                 $location->setSubsection($subsection);
             }
-            $config[$configName] = $this->configManager->loadConfigFromLocation($location);
+            $data[$configName] = ($location !== null)
+                ? $this->configManager->loadConfigFromLocation($location, $handleParentConfig)
+                : [];
         } else {
             foreach ($this->pathResolver->getConfigLocationsInPath($path) as $location) {
-                $config[$location->getConfigName()] = $this->configManager->loadConfigFromLocation($location);
+                $data[$location->getConfigName()] = $this->configManager
+                    ->loadConfigFromLocation($location, $handleParentConfig);
             }
         }
 
         foreach (array_reverse($dirSubsection) as $subsectionPart) {
-            $config = [$subsectionPart => $config];
+            $data = [$subsectionPart => $data];
         }
-        return ['data' => $config];
+
+        $config = ['data' => $data];
+
+        if ($handleParentConfig && $parentLocation = $this->getParentLocation($configLocation)) {
+            $config['parentLocation'] = $parentLocation;
+        }
+
+        return $config;
+    }
+
+    /**
+     * Get parent location for current location.
+     *
+     * @param ConfigLocationInterface $configLocation Config location
+     *
+     * @return ?ConfigLocationInterface
+     */
+    protected function getParentLocation(ConfigLocationInterface $configLocation): ?ConfigLocationInterface
+    {
+        if ($dirLocationsParent = $configLocation->getDirLocationsParent()) {
+            return (clone $dirLocationsParent)->setSubsection($configLocation->getSubsection());
+        }
+        $baseLocation = $this->pathResolver->getBaseConfigLocation($configLocation->getConfigName());
+        if ($baseLocation !== null && realpath($baseLocation->getPath()) !== realpath($configLocation->getPath())) {
+            return $baseLocation->setSubsection($configLocation->getSubsection());
+        }
+        return null;
+    }
+
+    /**
+     * Write configuration to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location for the config
+     * @param array|string             $config              Config to write
+     * @param ?ConfigLocationInterface $baseLocation        Location of a base configuration that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void {
+        if (!is_array($config)) {
+            throw new ConfigException('Dir handler can only write array config.');
+        }
+        if ($baseLocation === null) {
+            throw new ConfigException('Can not write Dir config without a base config that provides the structure.');
+        }
+        $destinationPath = $destinationLocation->getPath();
+        if (!is_dir($destinationPath)) {
+            if (!mkdir($destinationPath)) {
+                throw new FileAccessException(
+                    "Error: Could not create directory {$destinationPath}."
+                );
+            }
+        }
+        foreach ($config as $subConfigName => $subConfigValues) {
+            $subBaseConfigLocation = $this->pathResolver
+                ->getMatchingConfigLocation($baseLocation->getPath(), $subConfigName);
+            if ($subBaseConfigLocation === null) {
+                throw new ConfigException(
+                    'Can not add config ' . $subConfigName
+                    . ' without having it in the base config that provides the structure.'
+                );
+            }
+
+            $subDestinationLocation = clone $subBaseConfigLocation;
+            $subDestinationLocation->setBasePath($destinationPath);
+
+            $this->configManager->writeConfig($subDestinationLocation, $subConfigValues, $subBaseConfigLocation);
+        }
     }
 }

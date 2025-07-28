@@ -117,12 +117,15 @@ class ConfigManager
     /**
      * Load config from a specific location.
      *
-     * @param ConfigLocationInterface $configLocation Config location
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return mixed
      */
-    public function loadConfigFromLocation(ConfigLocationInterface $configLocation): mixed
-    {
+    public function loadConfigFromLocation(
+        ConfigLocationInterface $configLocation,
+        bool $handleParentConfig = true
+    ): mixed {
         $loadedConfigPaths = [];
 
         $configs = [];
@@ -144,10 +147,10 @@ class ConfigManager
             $loadedConfigPaths[] = $currentConfigLocationPath;
             $currentConfig = $this->configHandlerManager
                 ->getForLocation($currentConfigLocation)
-                ->parseConfig($currentConfigLocation);
+                ->parseConfig($currentConfigLocation, $handleParentConfig);
             $configs[] = $currentConfig;
             $currentConfigLocation = null;
-            if ($parentLocation = $currentConfig['parentLocation'] ?? null) {
+            if ($handleParentConfig && $parentLocation = $currentConfig['parentLocation'] ?? null) {
                 $currentConfigLocation = $parentLocation;
             }
         } while ($currentConfigLocation);
@@ -166,5 +169,25 @@ class ConfigManager
             $result = $result[$subsectionPart] ?? null;
         }
         return $result;
+    }
+
+    /**
+     * Write config to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location
+     * @param array|string             $config              Configuration
+     * @param ?ConfigLocationInterface $baseLocation        Optional base location that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void {
+        $this->configHandlerManager
+            ->getForLocation($destinationLocation)
+            ->writeConfig($destinationLocation, $config, $baseLocation);
     }
 }
