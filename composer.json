@@ -46,6 +46,7 @@
     "require": {
         "php": ">=8.1",
         "ahand/mobileesp": "dev-master",
+        "altcha-org/altcha": "^1.1",
         "apereo/phpcas": "1.6.1",
         "browscap/browscap-php": "^7.2",
         "cap60552/php-sip2": "1.0.0",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f56858457053cff5b05c203eb55ad050",
+    "content-hash": "dee8c2ad5310c51bc4a0a719d34397eb",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -64,6 +64,53 @@
                 "source": "https://github.com/ahand/mobileesp/"
             },
             "time": "2017-06-06T22:20:56+00:00"
+        },
+        {
+            "name": "altcha-org/altcha",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/altcha-org/altcha-lib-php.git",
+                "reference": "e5fcea2e6eeb44ca2f24c32fc235f7e51d84f413"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/altcha-org/altcha-lib-php/zipball/e5fcea2e6eeb44ca2f24c32fc235f7e51d84f413",
+                "reference": "e5fcea2e6eeb44ca2f24c32fc235f7e51d84f413",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.72",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^11.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AltchaOrg\\Altcha\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Regeci",
+                    "email": "536331+ovx@users.noreply.github.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/altcha-org/altcha-lib-php/issues",
+                "source": "https://github.com/altcha-org/altcha-lib-php/tree/v1.1.1"
+            },
+            "time": "2025-03-23T09:35:46+00:00"
         },
         {
             "name": "apereo/phpcas",
@@ -14382,9 +14429,9 @@
     "platform": {
         "php": ">=8.1"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.1"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.2.0"
 }
