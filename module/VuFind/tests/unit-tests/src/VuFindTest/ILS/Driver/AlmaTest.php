@@ -183,11 +183,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         // Add test for debugging function result, if enabled
         foreach ($config['Debug']['log_function_result'] ?? [] as $function => $value) {
-            $this->driver->expects($this->once())->method('debug')->willReturnCallBack(
-                function ($msg, array $context = [], $prependClass = true) use ($function) {
-                    $this->assertEquals("$function result:", $msg);
-                }
-            );
+            $this->driver->expects($this->once())->method('debug')->with("$function result:");
         }
         $cache = new \Laminas\Cache\Storage\Adapter\Memory();
         $cache->setOptions(['memory_limit' => -1]);
