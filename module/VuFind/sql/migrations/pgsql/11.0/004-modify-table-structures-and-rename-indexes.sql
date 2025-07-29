@@ -124,7 +124,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS shortlinks_hash_idx ON shortlinks (hash);
 
 ALTER TABLE auth_hash DROP CONSTRAINT IF EXISTS auth_hash_hash_type_key;
 ALTER TABLE session DROP CONSTRAINT IF EXISTS session_session_id_key;
-ALTER TABLE external_session DROP CONSTRAINT IF EXISTS external_session_session_key;
+ALTER TABLE external_session DROP CONSTRAINT IF EXISTS external_session_session_id_key;
 ALTER TABLE "user" DROP CONSTRAINT IF EXISTS user_cat_id_key;
 ALTER TABLE "user" DROP CONSTRAINT IF EXISTS user_username_key;
 ALTER TABLE oai_resumption DROP CONSTRAINT IF EXISTS oai_resumption_token_key;
