@@ -43,7 +43,7 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'user_list')]
-#[ORM\Index(name: 'user_id', columns: ['user_id'])]
+#[ORM\Index(name: 'user_list_user_id_idx', columns: ['user_id'])]
 #[ORM\Entity]
 class UserList implements UserListEntityInterface
 {
@@ -80,7 +80,7 @@ class UserList implements UserListEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $created;
 
     /**
@@ -88,7 +88,7 @@ class UserList implements UserListEntityInterface
      *
      * @var bool
      */
-    #[ORM\Column(name: 'public', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'public', type: 'boolean', nullable: false, options: ['default' => false])]
     protected bool $public = false;
 
     /**
@@ -96,7 +96,7 @@ class UserList implements UserListEntityInterface
      *
      * @var UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected UserEntityInterface $user;
 

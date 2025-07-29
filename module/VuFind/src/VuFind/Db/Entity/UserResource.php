@@ -42,9 +42,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'user_resource')]
-#[ORM\Index(name: 'list_id', columns: ['list_id'])]
-#[ORM\Index(name: 'resource_id', columns: ['resource_id'])]
-#[ORM\Index(name: 'user_id', columns: ['user_id'])]
+#[ORM\Index(name: 'user_resource_list_id_idx', columns: ['list_id'])]
+#[ORM\Index(name: 'user_resource_resource_id_idx', columns: ['resource_id'])]
+#[ORM\Index(name: 'user_resource_user_id_idx', columns: ['user_id'])]
 #[ORM\Entity]
 class UserResource implements UserResourceEntityInterface
 {
@@ -79,7 +79,7 @@ class UserResource implements UserResourceEntityInterface
      *
      * @var UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected UserEntityInterface $user;
 
@@ -88,7 +88,7 @@ class UserResource implements UserResourceEntityInterface
      *
      * @var ResourceEntityInterface
      */
-    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: ResourceEntityInterface::class)]
     protected ResourceEntityInterface $resource;
 
@@ -97,7 +97,7 @@ class UserResource implements UserResourceEntityInterface
      *
      * @var ?UserListEntityInterface
      */
-    #[ORM\JoinColumn(name: 'list_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'list_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserListEntityInterface::class)]
     protected ?UserListEntityInterface $list = null;
 

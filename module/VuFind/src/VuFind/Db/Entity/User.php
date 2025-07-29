@@ -43,8 +43,10 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: '`user`')]
-#[ORM\UniqueConstraint(name: 'cat_id', columns: ['cat_id'])]
-#[ORM\UniqueConstraint(name: 'username', columns: ['username'])]
+#[ORM\UniqueConstraint(name: 'user_cat_id_idx', columns: ['cat_id'], options: ['lengths' => [190]])]
+#[ORM\UniqueConstraint(name: 'user_username_idx', columns: ['username'], options: ['lengths' => [190]])]
+#[ORM\Index(name: 'user_email_idx', columns: ['email'], options: ['lengths' => [190]])]
+#[ORM\Index(name: 'user_verify_hash_idx', columns: ['verify_hash'])]
 #[ORM\Entity]
 class User implements UserEntityInterface
 {
@@ -66,7 +68,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'username', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'username', type: 'string', length: 255, nullable: false, options: ['default' => ''])]
     protected string $username = '';
 
     /**
@@ -74,7 +76,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'password', type: 'string', length: 32, nullable: false)]
+    #[ORM\Column(name: 'password', type: 'string', length: 32, nullable: false, options: ['default' => ''])]
     protected string $password = '';
 
     /**
@@ -90,7 +92,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'firstname', type: 'string', length: 50, nullable: false)]
+    #[ORM\Column(name: 'firstname', type: 'string', length: 50, nullable: false, options: ['default' => ''])]
     protected string $firstname = '';
 
     /**
@@ -98,7 +100,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'lastname', type: 'string', length: 50, nullable: false)]
+    #[ORM\Column(name: 'lastname', type: 'string', length: 50, nullable: false, options: ['default' => ''])]
     protected string $lastname = '';
 
     /**
@@ -106,7 +108,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'email', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'email', type: 'string', length: 255, nullable: false, options: ['default' => ''])]
     protected string $email = '';
 
     /**
@@ -122,7 +124,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'pending_email', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'pending_email', type: 'string', length: 255, nullable: false, options: ['default' => ''])]
     protected string $pendingEmail = '';
 
     /**
@@ -130,7 +132,7 @@ class User implements UserEntityInterface
      *
      * @var bool
      */
-    #[ORM\Column(name: 'user_provided_email', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'user_provided_email', type: 'boolean', nullable: false, options: ['default' => false])]
     protected bool $userProvidedEmail = false;
 
     /**
@@ -170,7 +172,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'college', type: 'string', length: 100, nullable: false)]
+    #[ORM\Column(name: 'college', type: 'string', length: 100, nullable: false, options: ['default' => ''])]
     protected string $college = '';
 
     /**
@@ -178,7 +180,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'major', type: 'string', length: 100, nullable: false)]
+    #[ORM\Column(name: 'major', type: 'string', length: 100, nullable: false, options: ['default' => ''])]
     protected string $major = '';
 
     /**
@@ -186,7 +188,7 @@ class User implements UserEntityInterface
      *
      * @var ?string
      */
-    #[ORM\Column(name: 'home_library', type: 'string', length: 100, nullable: true)]
+    #[ORM\Column(name: 'home_library', type: 'string', length: 100, nullable: true, options: ['default' => ''])]
     protected ?string $homeLibrary = '';
 
     /**
@@ -194,7 +196,7 @@ class User implements UserEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $created;
 
     /**
@@ -202,7 +204,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'verify_hash', type: 'string', length: 42, nullable: false)]
+    #[ORM\Column(name: 'verify_hash', type: 'string', length: 42, nullable: false, options: ['default' => ''])]
     protected string $verifyHash = '';
 
     /**
@@ -210,7 +212,7 @@ class User implements UserEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'last_login', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'last_login', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $lastLogin;
 
     /**
@@ -226,7 +228,7 @@ class User implements UserEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'last_language', type: 'string', length: 30, nullable: false)]
+    #[ORM\Column(name: 'last_language', type: 'string', length: 30, nullable: false, options: ['default' => ''])]
     protected string $lastLanguage = '';
 
     /**

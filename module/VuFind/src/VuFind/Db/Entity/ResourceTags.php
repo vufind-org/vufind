@@ -42,6 +42,10 @@ use Doctrine\ORM\Mapping as ORM;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'resource_tags')]
+#[ORM\Index(name: 'resource_tags_user_id_idx', columns: ['user_id'])]
+#[ORM\Index(name: 'resource_tags_resource_id_idx', columns: ['resource_id'])]
+#[ORM\Index(name: 'resource_tags_tag_id_idx', columns: ['tag_id'])]
+#[ORM\Index(name: 'resource_tags_list_id_idx', columns: ['list_id'])]
 #[ORM\Entity]
 class ResourceTags implements ResourceTagsEntityInterface
 {
@@ -68,7 +72,7 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @var ?ResourceEntityInterface
      */
-    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: ResourceEntityInterface::class)]
     protected ?ResourceEntityInterface $resource = null;
 
@@ -77,7 +81,13 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @var TagsEntityInterface
      */
-    #[ORM\JoinColumn(name: 'tag_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(
+        name: 'tag_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        onDelete: 'CASCADE',
+        options: ['default' => 0]
+    )]
     #[ORM\ManyToOne(targetEntity: TagsEntityInterface::class)]
     protected TagsEntityInterface $tag;
 
@@ -86,7 +96,7 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @var ?UserListEntityInterface
      */
-    #[ORM\JoinColumn(name: 'list_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'list_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: UserListEntityInterface::class)]
     protected ?UserListEntityInterface $list = null;
 
@@ -95,7 +105,7 @@ class ResourceTags implements ResourceTagsEntityInterface
      *
      * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $user = null;
 

@@ -43,6 +43,8 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'login_token')]
+#[ORM\Index(name: 'login_token_user_id_idx', columns: ['user_id'])]
+#[ORM\Index(name: 'login_token_series_idx', columns: ['series'])]
 #[ORM\Entity]
 class LoginToken implements LoginTokenEntityInterface
 {
@@ -63,7 +65,7 @@ class LoginToken implements LoginTokenEntityInterface
      *
      * @var UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected UserEntityInterface $user;
 

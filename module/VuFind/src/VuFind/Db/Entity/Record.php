@@ -43,7 +43,11 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'record')]
-#[ORM\UniqueConstraint(name: 'record_id_source', columns: ['record_id', 'source'])]
+#[ORM\UniqueConstraint(
+    name: 'record_record_id_source_index',
+    columns: ['record_id', 'source'],
+    options: ['lengths' => [140, null]]
+)]
 #[ORM\Entity]
 class Record implements RecordEntityInterface
 {
@@ -96,7 +100,7 @@ class Record implements RecordEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'updated', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'updated', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $updated;
 
     /**

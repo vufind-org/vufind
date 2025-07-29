@@ -43,6 +43,7 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'access_token')]
+#[ORM\Index(name: 'access_token_user_id_idx', columns: ['user_id'])]
 #[ORM\Entity]
 class AccessToken implements AccessTokenEntityInterface
 {
@@ -73,7 +74,7 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $user = null;
 
@@ -82,7 +83,7 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $created;
 
     /**
@@ -98,7 +99,7 @@ class AccessToken implements AccessTokenEntityInterface
      *
      * @var bool
      */
-    #[ORM\Column(name: 'revoked', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'revoked', type: 'boolean', nullable: false, options: ['default' => false])]
     protected bool $revoked = false;
 
     /**

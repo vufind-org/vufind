@@ -43,8 +43,8 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'user_card')]
-#[ORM\Index(name: 'user_card_cat_username', columns: ['cat_username'])]
-#[ORM\Index(name: 'user_id', columns: ['user_id'])]
+#[ORM\Index(name: 'user_card_cat_username_idx', columns: ['cat_username'])]
+#[ORM\Index(name: 'user_card_user_id_idx', columns: ['user_id'])]
 #[ORM\Entity]
 class UserCard implements UserCardEntityInterface
 {
@@ -65,7 +65,7 @@ class UserCard implements UserCardEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'card_name', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'card_name', type: 'string', length: 255, nullable: false, options: ['default' => ''])]
     protected string $cardName = '';
 
     /**
@@ -73,7 +73,7 @@ class UserCard implements UserCardEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'cat_username', type: 'string', length: 50, nullable: false)]
+    #[ORM\Column(name: 'cat_username', type: 'string', length: 50, nullable: false, options: ['default' => ''])]
     protected string $catUsername = '';
 
     /**
@@ -97,7 +97,7 @@ class UserCard implements UserCardEntityInterface
      *
      * @var ?string
      */
-    #[ORM\Column(name: 'home_library', type: 'string', length: 100, nullable: true)]
+    #[ORM\Column(name: 'home_library', type: 'string', length: 100, nullable: true, options: ['default' => ''])]
     protected ?string $homeLibrary = '';
 
     /**
@@ -105,7 +105,7 @@ class UserCard implements UserCardEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $created;
 
     /**
@@ -121,7 +121,7 @@ class UserCard implements UserCardEntityInterface
      *
      * @var UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected UserEntityInterface $user;
 

@@ -43,6 +43,8 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'comments')]
+#[ORM\Index(name: 'comments_user_id_idx', columns: ['user_id'])]
+#[ORM\Index(name: 'comments_resource_id_idx', columns: ['resource_id'])]
 #[ORM\Entity]
 class Comments implements CommentsEntityInterface
 {
@@ -71,7 +73,7 @@ class Comments implements CommentsEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $created;
 
     /**
@@ -79,7 +81,7 @@ class Comments implements CommentsEntityInterface
      *
      * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $user = null;
 
@@ -88,7 +90,13 @@ class Comments implements CommentsEntityInterface
      *
      * @var ResourceEntityInterface
      */
-    #[ORM\JoinColumn(name: 'resource_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(
+        name: 'resource_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        options: ['default' => 0],
+        onDelete: 'CASCADE'
+    )]
     #[ORM\ManyToOne(targetEntity: ResourceEntityInterface::class)]
     protected ResourceEntityInterface $resource;
 

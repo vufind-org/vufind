@@ -42,9 +42,11 @@ use Doctrine\ORM\Mapping as ORM;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'feedback')]
-#[ORM\Index(name: 'created', columns: ['created'])]
-#[ORM\Index(name: 'status', columns: ['status'])]
-#[ORM\Index(name: 'form_name', columns: ['form_name'])]
+#[ORM\Index(name: 'feedback_user_id_idx', columns: ['user_id'])]
+#[ORM\Index(name: 'feedback_created_idx', columns: ['created'])]
+#[ORM\Index(name: 'feedback_status_idx', columns: ['status'], options: ['lengths' => [191]])]
+#[ORM\Index(name: 'feedback_form_name_idx', columns: ['form_name'], options: ['lengths' => [191]])]
+#[ORM\Index(name: 'feedback_updated_by_idx', columns: ['updated_by'])]
 #[ORM\Entity]
 class Feedback implements FeedbackEntityInterface
 {
@@ -63,7 +65,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'message', type: 'text', length: 0, nullable: false)]
+    #[ORM\Column(name: 'message', type: 'text', nullable: true)]
     protected string $message;
 
     /**
@@ -119,7 +121,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $user = null;
 
@@ -128,7 +130,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'updated_by', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'updated_by', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $updatedBy = null;
 

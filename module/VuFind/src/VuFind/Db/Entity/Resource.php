@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'resource')]
-#[ORM\Index(name: 'record_id', columns: ['record_id'])]
+#[ORM\Index(name: 'resource_record_id_idx', columns: ['record_id'], options: ['lengths' => [190]])]
 #[ORM\Entity]
 class Resource implements ResourceEntityInterface
 {
@@ -60,7 +60,7 @@ class Resource implements ResourceEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'record_id', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'record_id', type: 'string', length: 255, nullable: false, options: ['default' => ''])]
     protected string $recordId = '';
 
     /**
@@ -68,7 +68,7 @@ class Resource implements ResourceEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'title', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'title', type: 'string', length: 255, nullable: false, options: ['default' => ''])]
     protected string $title = '';
 
     /**

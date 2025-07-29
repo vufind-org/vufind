@@ -47,10 +47,11 @@ use function is_resource;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'search')]
-#[ORM\Index(name: 'notification_base_url', columns: ['notification_base_url'])]
-#[ORM\Index(name: 'notification_frequency', columns: ['notification_frequency'])]
-#[ORM\Index(name: 'session_id', columns: ['session_id'])]
-#[ORM\Index(name: 'user_id', columns: ['user_id'])]
+#[ORM\Index(name: 'notification_base_url_idx', columns: ['notification_base_url'], options: ['lengths' => [190]])]
+#[ORM\Index(name: 'notification_frequency_idx', columns: ['notification_frequency'])]
+#[ORM\Index(name: 'search_created_saved_idx', columns: ['created', 'saved'])]
+#[ORM\Index(name: 'session_id_idx', columns: ['session_id'])]
+#[ORM\Index(name: 'search_user_id_idx', columns: ['user_id'])]
 #[ORM\Entity]
 class Search implements SearchEntityInterface
 {
@@ -71,7 +72,7 @@ class Search implements SearchEntityInterface
      *
      * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $user = null;
 
@@ -88,7 +89,12 @@ class Search implements SearchEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
+    #[ORM\Column(
+        name: 'created',
+        type: 'datetime',
+        nullable: false,
+        options: ['default' => '2000-01-01 00:00:00']
+    )]
     protected DateTime $created;
 
     /**
@@ -104,7 +110,7 @@ class Search implements SearchEntityInterface
      *
      * @var bool
      */
-    #[ORM\Column(name: 'saved', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'saved', type: 'boolean', nullable: false, options: ['default' => false])]
     protected bool $saved = false;
 
     /**
@@ -135,7 +141,7 @@ class Search implements SearchEntityInterface
      *
      * @var int
      */
-    #[ORM\Column(name: 'notification_frequency', type: 'integer', nullable: false)]
+    #[ORM\Column(name: 'notification_frequency', type: 'integer', nullable: false, options: ['default' => 0])]
     protected int $notificationFrequency = 0;
 
     /**
@@ -143,7 +149,12 @@ class Search implements SearchEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'last_notification_sent', type: 'datetime', nullable: false)]
+    #[ORM\Column(
+        name: 'last_notification_sent',
+        type: 'datetime',
+        nullable: false,
+        options: ['default' => '2000-01-01 00:00:00']
+    )]
     protected DateTime $lastNotificationSent;
 
     /**
@@ -151,7 +162,13 @@ class Search implements SearchEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'notification_base_url', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(
+        name: 'notification_base_url',
+        type: 'string',
+        length: 255,
+        nullable: false,
+        options: ['default' => '']
+    )]
     protected string $notificationBaseUrl = '';
 
     /**

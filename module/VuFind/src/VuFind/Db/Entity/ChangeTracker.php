@@ -42,7 +42,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'change_tracker')]
-#[ORM\Index(name: 'deleted_index', columns: ['deleted'])]
+#[ORM\Index(name: 'change_tracker_deleted_idx', columns: ['deleted'])]
 #[ORM\Entity]
 class ChangeTracker implements ChangeTrackerEntityInterface
 {

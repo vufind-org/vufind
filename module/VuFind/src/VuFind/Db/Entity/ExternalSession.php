@@ -43,8 +43,8 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'external_session')]
-#[ORM\Index(name: 'external_session_id', columns: ['external_session_id'])]
-#[ORM\UniqueConstraint(name: 'session_id', columns: ['session_id'])]
+#[ORM\Index(name: 'external_session_id_idx', columns: ['external_session_id'], options: ['lengths' => [190]])]
+#[ORM\UniqueConstraint(name: 'external_session_session_id_idx', columns: ['session_id'])]
 #[ORM\Entity]
 class ExternalSession implements ExternalSessionEntityInterface
 {
@@ -81,7 +81,7 @@ class ExternalSession implements ExternalSessionEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $created;
 
     /**

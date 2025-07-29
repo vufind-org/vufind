@@ -45,6 +45,7 @@ use VuFind\Db\Feature\DateTimeTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'oai_resumption')]
+#[ORM\UniqueConstraint(name: 'oai_resumption_token_idx', columns: ['token'])]
 #[ORM\Entity]
 class OaiResumption implements OaiResumptionEntityInterface
 {
@@ -73,7 +74,7 @@ class OaiResumption implements OaiResumptionEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'expires', type: 'datetime', nullable: false)]
+    #[ORM\Column(name: 'expires', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
     protected DateTime $expires;
 
     /**

@@ -42,9 +42,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 #[ORM\Table(name: 'auth_hash')]
-#[ORM\Index(name: 'created', columns: ['created'])]
-#[ORM\Index(name: 'session_id', columns: ['session_id'])]
-#[ORM\UniqueConstraint(name: 'hash_type', columns: ['hash', 'type'])]
+#[ORM\Index(name: 'auth_hash_created_idx', columns: ['created'])]
+#[ORM\Index(name: 'auth_hash_session_id_idx', columns: ['session_id'])]
+#[ORM\UniqueConstraint(name: 'auth_hash_hash_type_idx', columns: ['hash', 'type'], options: ['lengths' => [140, null]])]
 #[ORM\Entity]
 class AuthHash implements AuthHashEntityInterface
 {
@@ -71,7 +71,7 @@ class AuthHash implements AuthHashEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'hash', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'hash', type: 'string', length: 255, nullable: false, options: ['default' => ''])]
     protected string $hash = '';
 
     /**

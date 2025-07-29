@@ -59,7 +59,7 @@ class Tags implements TagsEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'tag', type: 'string', length: 64, nullable: false)]
+    #[ORM\Column(name: 'tag', type: 'string', length: 64, nullable: false, options: ['default' => ''])]
     protected string $tag = '';
 
     /**
