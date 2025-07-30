@@ -38,7 +38,6 @@ module.exports = {
     "themes/bootstrap5/js/advanced_search.js",
     "themes/bootstrap5/js/check_save_statuses.js",
     "themes/bootstrap5/js/hold.js",
-    "themes/bootstrap5/js/config.js",
     "themes/bootstrap5/js/channels.js",
   ],
   extends: [],
