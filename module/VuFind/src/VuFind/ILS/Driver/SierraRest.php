@@ -742,10 +742,8 @@ class SierraRest extends AbstractBase implements
         $address = '';
         $zip = '';
         $city = '';
-        if (!empty($result['names'])) {
-            $nameParts = explode(', ', $result['names'][0], 2);
-            $lastname = $nameParts[0];
-            $firstname = $nameParts[1] ?? '';
+        if ($nameParts = $result['names'][0] ?? '') {
+            [$lastname, $firstname] = $this->getLastAndFirstName($nameParts);
         }
         if (!empty($result['addresses'][0]['lines'][1])) {
             $address = $result['addresses'][0]['lines'][0];
