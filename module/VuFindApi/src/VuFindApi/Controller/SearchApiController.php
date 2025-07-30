@@ -32,6 +32,7 @@ namespace VuFindApi\Controller;
 
 use Exception;
 use Laminas\Http\Exception\InvalidArgumentException;
+use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
@@ -52,11 +53,16 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class SearchApiController extends \VuFind\Controller\AbstractSearch implements ApiInterface
+class SearchApiController extends \VuFind\Controller\AbstractSearch implements
+    ApiInterface,
+    LoggerAwareInterface
 {
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
     use \VuFind\ApiKey\ApiKeyTrait;
+    use \VuFind\Log\LoggerAwareTrait {
+        logError as error;
+    }
 
     /**
      * Default record fields to return if a request does not define the fields
@@ -172,9 +178,14 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             }
         }
         $mainConfig = $this->getConfig('config');
-        $this->setApiKeyMode($mainConfig?->API_Key?->mode ?? 'disabled');
+        $this->setApiKeyMode($mainConfig?->API_Keys?->mode ?? 'disabled');
         if ($this->isApiKeyEnabled()) {
-            $this->setApiKeyService($this->getDbService(\VuFind\Db\Service\ApiKeyServiceInterface::class));
+            $this->setApiKeyHeader($mainConfig?->API_Keys?->header_field ?? 'X-API-KEY');
+            $this->setApiKeyService($this->getService(\VuFind\ApiKey\ApiKeyService::class));
+            if ($logRequests = $mainConfig?->API_Keys?->log_requests ?? false) {
+                $this->setApiKeyLogging($logRequests);
+                $this->setLogger($this->getService(\VuFind\Log\Logger::class));
+            }
         }
     }
 
@@ -322,7 +333,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         if ($result = $this->isAccessDenied($this->searchAccessPermission)) {
             return $result;
         }
-
+        $apiKeyResult = $this->checkRequestForApiKey();
+        if (!$apiKeyResult) {
+            return $this->getBadApiKeyResponse();
+        }
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();

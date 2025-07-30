@@ -45,7 +45,6 @@ use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\ApiKeyServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -794,11 +793,6 @@ class MyResearchController extends AbstractBase
             = !empty($config->Authentication->account_deletion);
 
         $this->addPendingEmailChangeMessage($user);
-
-        // Check if user has an api key set
-        if ($this->apiKeysEnabled()) {
-            $view->apiKey = $this->getDbService(ApiKeyServiceInterface::class)->getApiKeyForUser($user);
-        }
 
         return $view;
     }
@@ -2189,63 +2183,6 @@ class MyResearchController extends AbstractBase
         }
         $this->addPendingEmailChangeMessage($user);
         return $view;
-    }
-
-    /**
-     * Generate an API key for a user.
-     *
-     * @return mixed
-     */
-    public function generateApiKeyAction()
-    {
-        if (!$user = $this->getUser()) {
-            return $this->forceLogin();
-        }
-        // If not submitted, are we logged in?
-        if (!$this->apiKeysEnabled()) {
-            throw new ForbiddenException('API keys disabled.');
-        }
-        $token = $this->getDbService(\VuFind\Db\Service\ApiKeyServiceInterface::class)->createApiKeyForUser($user);
-        if ($token) {
-            $successMsg = $this->translate('Developer::api_key_generation_success', ['%%TOKEN%%' => $token]);
-            $this->flashMessenger()->addMessage($successMsg, 'success');
-        } else {
-            $this->flashMessenger()->addMessage('Developer::api_key_generation_failed', 'error');
-        }
-        return $this->redirect()->toRoute('myresearch-profile');
-    }
-
-    /**
-     * Delete an API key for a user.
-     *
-     * @return mixed
-     */
-    public function deleteApiKeyAction()
-    {
-        if (!$user = $this->getUser()) {
-            return $this->forceLogin();
-        }
-        // If not submitted, are we logged in?
-        if (!$this->apiKeysEnabled()) {
-            throw new ForbiddenException('API keys disabled.');
-        }
-        $result = $this->getDbService(\VuFind\Db\Service\ApiKeyServiceInterface::class)->deleteApiKeyForUser($user);
-        if ($result) {
-            $this->flashMessenger()->addMessage('Developer::api_key_deletion_success', 'success');
-        } else {
-            $this->flashMessenger()->addMessage('Developer::api_key_deletion_failed', 'error');
-        }
-        return $this->redirect()->toRoute('myresearch-profile');
-    }
-
-    /**
-     * Check if API keys are enabled.
-     *
-     * @return bool
-     */
-    protected function apiKeysEnabled(): bool
-    {
-        return in_array($this->getConfig()->API_Keys?->mode ?? 'disabled', ['enabled', 'enforced']);
     }
 
     /**

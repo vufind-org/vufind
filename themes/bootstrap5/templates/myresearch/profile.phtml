@@ -172,7 +172,7 @@
   <?php endif; ?>
 
   <?php if ($this->config()->apiKeysEnabled()): ?>
-    <?=$this->context($this)->renderInContext('myresearch/developer.phtml', ['user' => $this->user]); ?>
+    <a class="btn btn-default" data-lightbox href="<?=$this->url('apikey-displaysettings')?>" role="button"><?=$this->transEsc('Developer::settings')?></a>
   <?php endif; ?>
 </div>
 

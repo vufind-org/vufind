@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
@@ -42,9 +43,12 @@ use VuFindApi\Formatter\RecordFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class OaiController extends AbstractBase
+class OaiController extends AbstractBase implements LoggerAwareInterface
 {
     use \VuFind\ApiKey\ApiKeyTrait;
+    use \VuFind\Log\LoggerAwareTrait {
+        logError as error;
+    }
 
     /**
      * Display OAI server form.
@@ -102,7 +106,12 @@ class OaiController extends AbstractBase
         // Initialize api key settings
         $this->setApiKeyMode($config->API_Key->mode ?? 'disabled');
         if ($this->isApiKeyEnabled()) {
-            $this->setApiKeyService($this->getDbService(\VuFind\Db\Service\ApiKeyServiceInterface::class));
+            $this->setApiKeyService($this->getDbService(\VuFind\ApiKey\ApiKeyService::class));
+            $this->setApiKeyHeader($config?->API_Keys?->header_field ?? 'X-API-KEY');
+            if ($logRequests = $config->API_Keys?->log_requests ?? false) {
+                $this->setApiKeyLogging($logRequests);
+                $this->setLogger($this->getService(\VuFind\Log\Logger::class));
+            }
             $result = $this->checkRequestForApiKey();
             if (!$result) {
                 return $this->getBadApiKeyResponse();

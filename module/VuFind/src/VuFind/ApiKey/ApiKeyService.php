@@ -27,11 +27,14 @@
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Service;
+namespace VuFind\ApiKey;
 
 use VuFind\Config\Config;
+use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Service\AccessTokenService;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 
 /**
  * Database service for api keys.
@@ -42,19 +45,18 @@ use VuFind\Db\Table\AccessToken;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ApiKeyService extends AccessTokenService implements ApiKeyServiceInterface
+class ApiKeyService implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor.
      *
-     * @param AccessToken $accessTokenTable Access token table
-     * @param Config      $config           Main config
+     * @param Config $config Main config
      */
     public function __construct(
-        AccessToken $accessTokenTable,
         protected Config $config
     ) {
-        parent::__construct($accessTokenTable);
     }
 
     /**
@@ -71,32 +73,30 @@ class ApiKeyService extends AccessTokenService implements ApiKeyServiceInterface
             throw new \Exception('APIKeyService: Salt missing');
         }
         $valuesForToken = [
-            $user->getEmailVerified(),
+            $user->getEmailVerified()->format('Y-m-d'),
             $user->getFirstname(),
             $user->getLastname(),
-            strtotime('now'),
+            (string)strtotime('now'),
             $salt,
         ];
         return hash('sha256', implode('|', $valuesForToken));
     }
 
     /**
-     * Retrieve an Api Key for a user. Return associative array containing data for the key
+     * Retrieve an Api Key for a user. Return associative array containing token, revoked or empty
+     * array if not found.
      *
      * @param UserEntityInterface $user User
      *
-     * @return array
+     * @return ?AccessTokenEntityInterface
      */
-    public function getApiKeyForUser(UserEntityInterface $user): array
+    public function getApiKeyForUser(UserEntityInterface $user): ?AccessTokenEntityInterface
     {
-        $token = $this->getByIdAndType($user->getId(), AccessToken::TYPE_API_KEY, false);
-        if (!$token) {
-            return [];
-        }
-        return [
-            'token' => json_decode($token->__get('data')),
-            'revoked' => $token->isRevoked(),
-        ];
+        return $this->getDbService(AccessTokenService::class)->getByIdAndType(
+            (string)$user->getId(),
+            AccessTokenService::TYPE_API_KEY,
+            false
+        );
     }
 
     /**
@@ -108,27 +108,47 @@ class ApiKeyService extends AccessTokenService implements ApiKeyServiceInterface
      */
     public function isTokenValid(string $token): bool
     {
-        $row = $this->accessTokenTable->select(['type' => AccessToken::TYPE_API_KEY, 'data' => $token])->current();
-        return $row && !$row->isRevoked();
+        $token = $this->getDbService(AccessTokenService::class)->getByDataAndType(
+            $token,
+            AccessTokenService::TYPE_API_KEY
+        );
+        return $token && !$token->isRevoked();
     }
 
     /**
-     * Create an Api Key for a user.
+     * Validate user can use api keys. It is expected that the user has a verified email address.
+     *
+     * @param UserEntityInterface $user User
+     *
+     * @return bool
+     */
+    public function isUserValid(UserEntityInterface $user): bool
+    {
+        return $user->getEmailVerified() !== null;
+    }
+
+    /**
+     * Generate an Api Key for a user.
      *
      * @param UserEntityInterface $user User
      *
      * @return string|false API key token on success, false on failure
      */
-    public function createApiKeyForUser(UserEntityInterface $user): string|false
+    public function generateApiKeyForUser(UserEntityInterface $user): string|false
     {
         // Check if the user has an existing token and the token has not been revoked.
-        $row = $this->getByIdAndType($user->getId(), AccessToken::TYPE_API_KEY, false);
-        if ($row?->isRevoked()) {
+        $token = $this->getDbService(AccessTokenService::class)->getByIdAndType(
+            (string)$user->getId(),
+            AccessTokenService::TYPE_API_KEY
+        );
+        if ($token?->isRevoked()) {
             return false;
         }
-        $token = $this->createRandomToken($user);
-        $this->accessTokenTable->storeData($user->getId(), AccessToken::TYPE_API_KEY, $token);
-        return $token;
+        $tokenHash = $this->createRandomToken($user);
+        $token->setData($tokenHash);
+        $token->setUser($user);
+        $this->getDbService(AccessTokenService::class)->persistEntity($token);
+        return $tokenHash;
     }
 
     /**
@@ -140,9 +160,12 @@ class ApiKeyService extends AccessTokenService implements ApiKeyServiceInterface
      */
     public function deleteApiKeyForUser(UserEntityInterface $user): bool
     {
-        $row = $this->getByIdAndType($user->getId(), AccessToken::TYPE_API_KEY, false);
-        if ($row && !$row->isRevoked()) {
-            $row->delete();
+        $token = $this->getDbService(AccessTokenService::class)->getByIdAndType(
+            (string)$user->getId(),
+            AccessTokenService::TYPE_API_KEY
+        );
+        if ($token && !$token->isRevoked()) {
+            $this->getDbService(AccessTokenService::class)->deleteEntity($token);
             return true;
         }
         return false;

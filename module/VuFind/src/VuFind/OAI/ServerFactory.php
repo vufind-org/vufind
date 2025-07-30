@@ -76,7 +76,7 @@ class ServerFactory implements FactoryInterface
             $container->get(\VuFind\Record\Loader::class),
             $servicePluginManager->get(\VuFind\Db\Service\ChangeTrackerServiceInterface::class),
             $servicePluginManager->get(\VuFind\Db\Service\OaiResumptionServiceInterface::class),
-            $servicePluginManager->get(\VuFind\Db\Service\ApiKeyServiceInterface::class)
+            $servicePluginManager->get(\VuFind\ApiKey\ApiKeyService::class)
         );
     }
 }
