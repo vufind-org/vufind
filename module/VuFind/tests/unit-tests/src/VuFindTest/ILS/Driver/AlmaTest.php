@@ -279,10 +279,9 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $adjustedConfig['Debug']['log_function_result'] = ['createProfileArray' => true];
         $this->createConnector('get-my-profile', $adjustedConfig, $fixtureKey);
         $result = $this->driver->getMyProfile(['id' => '1111']);
-        if ($result['group']) {
-            // Alma uses Translatable strings in group field; make sure that passed through correctly.
-            $this->assertTrue($result['group'] instanceof TranslatableString);
-        }
+        $this->assertArrayHasKey('group', $result);
+        // Alma uses Translatable strings in group field; make sure that passed through correctly.
+        $this->assertTrue($result['group'] instanceof TranslatableString);
         $this->assertEquals($expected, $result);
     }
 
