@@ -286,27 +286,69 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Data provider for testing patronLogin
+     *
+     * @return Generator
+     */
+    public static function getTestPatronLoginData(): \Generator
+    {
+        $localConfig = [
+            'Catalog' => [
+                'apiBaseUrl' => 'http://localhost/v1',
+                'apiKey' => 'key123',
+                'loginMethod' => 'email',
+            ],
+            'Debug' => [
+                'log_function_result' => [
+                    'createPatronArray' => true,
+                ],
+            ],
+        ];
+        yield 'Test with login method email' => [
+            'config' => $localConfig,
+            'expected' => [
+                'id' => '57391',
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+                'email' => 'pref@email.if',
+                'cat_username' => '1111',
+                'cat_password' => '1212',
+                'major' => null,
+                'college' => null,
+            ],
+            'fixtureKey' => 'test patron login email',
+        ];
+        $localConfig['Catalog']['loginMethod'] = 'password';
+        yield 'Test with login method password' => [
+            'config' => $localConfig,
+            'expected' => [
+                'id' => '21991',
+                'email' => null,
+                'firstname' => 'Sauna',
+                'lastname' => 'Tonttu',
+                'major' => null,
+                'college' => null,
+                'cat_username' => '1111',
+                'cat_password' => '1212',
+            ],
+            'fixtureKey' => 'test patron login password',
+        ];
+    }
+
+    /**
      * Test patron login when login method is set to email
      *
-     * @return void
+     * @param array  $config     Driver config
+     * @param array  $expected   Expected results
+     * @param string $fixtureKey Fixture key for response mapping
+     *
+     * @return       void
+     * @dataProvider getTestPatronLoginData
      */
-    public function testPatronLoginEmail(): void
+    public function testPatronLogin(array $config, array $expected, string $fixtureKey): void
     {
-        $adjustedConfig = $this->defaultDriverConfig;
-        $adjustedConfig['Catalog']['loginMethod'] = 'email';
-        $adjustedConfig['Debug']['log_function_result'] = ['createPatronArray' => true];
-        $this->createConnector('get-patron-response', $adjustedConfig);
+        $this->createConnector('get-patron-response', $config, $fixtureKey);
         $result = $this->driver->patronLogin('1111', '1212');
-        $expected = [
-            'id' => '57391',
-            'firstname' => 'John',
-            'lastname' => 'Smith',
-            'email' => 'pref@email.if',
-            'cat_username' => '1111',
-            'cat_password' => '1212',
-            'major' => null,
-            'college' => null,
-        ];
         $this->assertEquals($expected, $result);
     }
 
