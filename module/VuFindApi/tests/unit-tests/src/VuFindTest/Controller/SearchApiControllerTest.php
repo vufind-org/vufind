@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Holds controller plugin test class
+ * Search api controller test
  *
  * PHP version 8
  *
- * Copyright (C) Moravian Library 2023.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -54,11 +54,11 @@ use VuFindApi\Formatter\RecordFormatter;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Class HoldsTest
+ * Search api controller tests
  *
  * @category VuFind
  * @package  Tests
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -274,7 +274,13 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods([])->getMock();
         $controller->expects($this->any())->method('getRequest')->willReturn($request);
         $controller->expects($this->any())->method('isAccessDenied')->willReturn(false);
-
+        $searchResponse = [
+            'resultCount' => 1,
+            'records' => [
+                ['id' => 'record.1111', 'title' => 'hai!'],
+            ],
+        ];
+        $controller->expects($this->any())->method('doDefaultSearch')->willReturn($searchResponse);
         return $controller;
     }
 
@@ -311,13 +317,6 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     {
         $request = $this->createRequest($requestParams);
         $controller = $this->createController($config, $request);
-        $searchResponse = [
-            'resultCount' => 1,
-            'records' => [
-                ['id' => 'record.1111', 'title' => 'hai!'],
-            ],
-        ];
-        $controller->expects($this->any())->method('doDefaultSearch')->willReturn($searchResponse);
         $result = $controller->searchAction();
         $this->assertEquals($expected['code'], $result->getStatusCode());
         $this->assertEquals($expected['content'], $result->getContent());
