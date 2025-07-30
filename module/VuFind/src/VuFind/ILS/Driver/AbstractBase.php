@@ -34,6 +34,7 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\TranslatableString;
 
 use function is_array;
+use function is_bool;
 use function is_callable;
 
 /**
@@ -90,7 +91,7 @@ abstract class AbstractBase implements DriverInterface
      *
      * @return array
      */
-    public function createPatronArray(
+    protected function createPatronArray(
         string $id,
         string $cat_username = '',
         string $cat_password = '',
@@ -146,7 +147,7 @@ abstract class AbstractBase implements DriverInterface
      *
      * @return array
      */
-    public function createProfileArray(
+    protected function createProfileArray(
         Stringable|string|null $firstname = null,
         Stringable|string|null $lastname = null,
         string $birthdate = '',
@@ -190,11 +191,11 @@ abstract class AbstractBase implements DriverInterface
      *
      * @param mixed $value Value to cast.
      *
-     * @return null|string|TranslatableString|array
+     * @return null|string|bool|TranslatableString|array
      */
-    protected function stringNullCastFunc(mixed $value): null|string|TranslatableString|array
+    protected function stringNullCastFunc(mixed $value): null|string|bool|TranslatableString|array
     {
-        if (is_array($value) || $value === null || $value instanceof TranslatableString) {
+        if (is_array($value) || is_bool($value) || $value === null || $value instanceof TranslatableString) {
             return $value;
         }
         return trim((string)$value);
