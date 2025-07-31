@@ -141,7 +141,7 @@ class ApiKeyService implements DbServiceAwareInterface
             (string)$user->getId(),
             AccessTokenService::TYPE_API_KEY
         );
-        if ($token?->isRevoked()) {
+        if (!$token || $token->isRevoked()) {
             return false;
         }
         $tokenHash = $this->createRandomToken($user);
