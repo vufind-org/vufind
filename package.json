@@ -19,9 +19,7 @@
     "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
     "build:scss": "npm run install:scss-dependencies && grunt scss",
     "check:scss": "npm run install:scss-dependencies && grunt check:scss",
-    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss",
-
-    "postinstall": "cd themes/root && npm run installDeps"
+    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss"
   },
   "dependencies": {
     "grunt": "^1.0.4",
