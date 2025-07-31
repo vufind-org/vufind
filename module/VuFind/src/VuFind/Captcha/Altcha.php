@@ -29,12 +29,9 @@
 
 namespace VuFind\Captcha;
 
-use AltchaOrg\Altcha\Altcha as AltchaController;
 use AltchaOrg\Altcha\ChallengeOptions;
 use AltchaOrg\Altcha\Hasher\Algorithm;
 use Laminas\Mvc\Controller\Plugin\Params;
-
-use function intval;
 
 /**
  * Altcha proof-of-work CAPTCHA.
@@ -50,8 +47,7 @@ class Altcha extends AbstractBase
     /**
      * Constructor
      *
-     * @param string                  $hmacKey Required HMAC key for challenge calculation and solution verification.
-     *
+     * @param AltchaOrg\Altcha\Altcha $altcha Required HMAC key for challenge calculation and solution verification.
      * @param Algorithm               $algorithm  Hashing algorithm to use (`SHA-1`, `SHA-256`, `SHA-512`, default: `SHA-256`).
      * @param int                     $maxNumber  Maximum number for the random number generator (default: 1,000,000)
      * @param null|\DateTimeInterface $expires    Optional expiration time for the challenge.
@@ -59,13 +55,11 @@ class Altcha extends AbstractBase
      * @param int<1, max>             $saltLength Length of the random salt (default: 12 bytes).
      */
     public function __construct(
-        protected string $hmacKey,
+        protected AltchaOrg\Altcha\Altcha $altcha,
         // Options for creation of a new challenge
         protected Algorithm $algorithm = Algorithm::SHA256,
-        protected int $maxNumber = AltchaController::DEFAULT_MAX_NUMBER,
         protected ?\DateTimeInterface $expires = null,
         protected array $params = [],
-        protected int $saltLength = AltchaController::DEFAULT_SALT_LENGTH,
     ) {
     }
 
@@ -86,8 +80,6 @@ class Altcha extends AbstractBase
      */
     public function getChallenge()
     {
-        $altcha = new AltchaController($this->hmacKey);
-
         $options = new ChallengeOptions(
             algorithm: $this->algorithm,
             maxNumber: $this->maxNumber,
@@ -96,7 +88,7 @@ class Altcha extends AbstractBase
             saltLength: $this->saltLength,
         );
 
-        return json_encode($altcha->createChallenge($options));
+        return json_encode($this->altcha->createChallenge($options));
     }
 
     /**
@@ -113,7 +105,6 @@ class Altcha extends AbstractBase
         $json = base64_decode($encoded);
         $payload = json_decode($json, true);
 
-        $altcha = new AltchaController($this->hmacKey);
-        return $altcha->verifySolution($payload, checkExpires: true);
+        return $this->altcha->verifySolution($payload, checkExpires: true);
     }
 }

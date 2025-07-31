@@ -36,9 +36,6 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
-use function in_array;
-use function intval;
-
 /**
  * Altcha proof-of-work CAPTCHA factory.
  *
@@ -93,8 +90,10 @@ class AltchaFactory implements FactoryInterface
             ? (new \DateTimeImmutable())->add(new \DateInterval($expires_interval))
             : null;
 
+        $altcha = new AltchaOrg\Altcha\Altcha($secret);
+
         return new $requestedName(
-            $secret,
+            $altcha,
             // challenge options
             $algorithm,
             $max_number,
