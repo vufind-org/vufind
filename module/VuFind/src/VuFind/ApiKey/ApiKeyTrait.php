@@ -98,7 +98,7 @@ trait ApiKeyTrait
     /**
      * Set api key mode.
      *
-     * @param $apiKeyMode Api key mode, disabled, enabled, enforced.
+     * @param $apiKeyMode Api key mode: disabled, enabled, enforced.
      *
      * @return void
      */
