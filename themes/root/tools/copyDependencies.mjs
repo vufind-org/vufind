@@ -17,6 +17,7 @@ if (buildDepsOnly) {
 }
 
 // Altcha
+await copyFile('node_modules/altcha/LICENSE.txt', 'js/vendor/altcha-LICENSE.txt');
 await copyFile('node_modules/altcha/dist/altcha.umd.cjs', 'js/vendor/altcha.js');
 await copyFile('node_modules/altcha/dist_i18n/all.umd.cjs', 'js/vendor/altcha-i18n.js');
 
