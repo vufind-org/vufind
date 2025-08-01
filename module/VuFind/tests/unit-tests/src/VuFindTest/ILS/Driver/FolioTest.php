@@ -170,9 +170,13 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             $manager = new \Laminas\Session\SessionManager();
             return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
+        // Create a mock Auth Manager
+        $authManager = $this->getMockBuilder(\VuFind\Auth\Manager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(Folio::class)
-            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
+            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, $authManager])
             ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
