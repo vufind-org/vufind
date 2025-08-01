@@ -709,13 +709,15 @@ VuFind.register('sideFacets', function SideFacets() {
     delayLoadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
-    $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
-      var $dropdown = $(e.target).find(".dropdown-menu");
-      if ($(e.target).position().left + $dropdown.width() >= window.innerWidth) {
-        $dropdown.addClass("dropdown-menu-right");
-      } else {
-        $dropdown.removeClass("dropdown-menu-right");
-      }
+    document.querySelectorAll('.search-filter-dropdown').forEach((dropdown) => {
+      dropdown.addEventListener('shown.bs.dropdown', () => {
+        let dropdownMenu = dropdown.querySelector('.dropdown-menu');
+        if (dropdown.getBoundingClientRect().left + dropdownMenu.offsetWidth >= window.innerWidth) {
+          dropdownMenu.classList.add('dropdown-menu-end');
+        } else {
+          dropdownMenu.classList.remove('dropdown-menu-end');
+        }
+      });
     });
 
     setupFacetFormListeners();

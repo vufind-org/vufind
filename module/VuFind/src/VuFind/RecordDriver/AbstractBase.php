@@ -209,50 +209,6 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Add tags to the record.
-     *
-     * @param UserEntityInterface $user The user posting the tag
-     * @param array               $tags The user-provided tags
-     *
-     * @return void
-     *
-     * @deprecated Use \VuFind\Tags\TagsService::linkTagsToRecord()
-     */
-    public function addTags($user, $tags)
-    {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier()
-        );
-        foreach ($tags as $tag) {
-            $resource->addTag($tag, $user);
-        }
-    }
-
-    /**
-     * Remove tags from the record.
-     *
-     * @param UserEntityInterface $user The user posting the tag
-     * @param array               $tags The user-provided tags
-     *
-     * @return void
-     *
-     * @deprecated Use \VuFind\Tags\TagsService::unlinkTagsFromRecord()
-     */
-    public function deleteTags($user, $tags)
-    {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier()
-        );
-        foreach ($tags as $tag) {
-            $resource->deleteTag($tag, $user);
-        }
-    }
-
-    /**
      * Get rating information for this record.
      *
      * Returns an array with the following keys:

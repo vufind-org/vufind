@@ -230,4 +230,22 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
         unset($upgradedConfig['Site']['generator']);
         $this->assertEquals($baseConfig, $upgradedConfig);
     }
+
+    /**
+     * Test that legacy RecordDataFormatter.ini is moved to RecordDataFormatter/DefaultRecord.ini.
+     *
+     * @return void
+     */
+    public function testMovingOfRecordDataFormatterConfig(): void
+    {
+        $upgrader = $this->getUpgrader('legacy-record-data-formatter-config');
+        $oldConfig = $this->readConfig('RecordDataFormatter');
+        $upgrader->run(self::$targetVersion);
+        $this->assertFileDoesNotExist($this->localDirPath . '/RecordDataFormatter.ini');
+        $movedConfig = $this->readConfig('RecordDataFormatter/DefaultRecord');
+        $this->assertEquals(
+            $oldConfig,
+            $movedConfig
+        );
+    }
 }

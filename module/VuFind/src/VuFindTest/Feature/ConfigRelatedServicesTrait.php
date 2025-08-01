@@ -59,6 +59,7 @@ trait ConfigRelatedServicesTrait
      *
      * @param ?string $baseDir     Optional directory to override APPLICATION_PATH
      * @param ?string $localDir    Optional directory to override LOCAL_OVERRIDE_DIR
+     * @param ?string $baseSubDir  Optional subdirectory for base directories (for simplified fixture dirs)
      * @param ?string $localSubDir Optional subdirectory for local directories (for simplified fixture dirs)
      *
      * @return PathResolver
@@ -66,11 +67,13 @@ trait ConfigRelatedServicesTrait
     protected function getPathResolver(
         ?string $baseDir = null,
         ?string $localDir = null,
+        ?string $baseSubDir = null,
         ?string $localSubDir = null,
     ): PathResolver {
         return $this->getContainerWithConfigRelatedServices(
             baseDir: $baseDir,
             localDir: $localDir,
+            baseSubDir: $baseSubDir,
             localSubDir: $localSubDir,
         )->get(PathResolver::class);
     }
@@ -82,6 +85,7 @@ trait ConfigRelatedServicesTrait
      * APPLICATION_PATH . '/module/VuFind/config/module.config.php'
      * @param ?string $baseDir      Optional directory to override APPLICATION_PATH
      * @param ?string $localDir     Optional directory to override LOCAL_OVERRIDE_DIR
+     * @param ?string $baseSubDir   Optional subdirectory for base directories (for simplified fixture dirs)
      * @param ?string $localSubDir  Optional subdirectory for local directories (for simplified fixture dirs)
      *
      * @return MockContainer
@@ -90,10 +94,18 @@ trait ConfigRelatedServicesTrait
         ?array $moduleConfig = null,
         ?string $baseDir = null,
         ?string $localDir = null,
+        ?string $baseSubDir = null,
         ?string $localSubDir = null
     ): MockContainer {
         $container = new MockContainer($this);
-        $this->addConfigRelatedServicesToContainer($container, $moduleConfig, $baseDir, $localDir, $localSubDir);
+        $this->addConfigRelatedServicesToContainer(
+            $container,
+            $moduleConfig,
+            $baseDir,
+            $localDir,
+            $baseSubDir,
+            $localSubDir
+        );
         return $container;
     }
 
@@ -105,6 +117,7 @@ trait ConfigRelatedServicesTrait
      * APPLICATION_PATH . '/module/VuFind/config/module.config.php'
      * @param ?string       $baseDir      Optional directory to override APPLICATION_PATH
      * @param ?string       $localDir     Optional directory to override LOCAL_OVERRIDE_DIR
+     * @param ?string       $baseSubDir   Optional subdirectory for base directories (for simplified fixture dirs)
      * @param ?string       $localSubDir  Optional subdirectory for local directories (for simplified fixture dirs)
      *
      * @return void
@@ -114,6 +127,7 @@ trait ConfigRelatedServicesTrait
         ?array $moduleConfig = null,
         ?string $baseDir = null,
         ?string $localDir = null,
+        ?string $baseSubDir = null,
         ?string $localSubDir = null
     ): void {
         $moduleConfig ??= include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
@@ -132,6 +146,7 @@ trait ConfigRelatedServicesTrait
             $configHandlerPluginManager,
             $baseDir,
             $localDir,
+            $baseSubDir,
             $localSubDir
         );
         $container->set(PathResolver::class, $pathResolver);
