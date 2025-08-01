@@ -22,12 +22,6 @@ form {
             margin-top: 5px;
         }
     }
-    .form-group label.required::before,
-    .form-group .radio-label.required::before,
-    .form-group .radio-label.require-one::before
-    {
-        content: '* ';
-    }
 
     input[type=checkbox],
     input[type=radio] {
