@@ -29,7 +29,6 @@
 
 namespace VuFind\ApiKey;
 
-use VuFind\Config\Config;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AccessTokenService;
@@ -68,7 +67,7 @@ class ApiKeyService implements DbServiceAwareInterface
      */
     protected function createRandomToken(UserEntityInterface $user): string
     {
-        $salt = $this->apiKeySettings->token_salt ?? null;
+        $salt = $this->apiKeySettings['token_salt'] ?? null;
         if (!$salt) {
             throw new \Exception('APIKeyService: Salt missing');
         }
