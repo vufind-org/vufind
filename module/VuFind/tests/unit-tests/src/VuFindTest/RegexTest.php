@@ -33,6 +33,8 @@ use VuFindTest\Container\MockContainer;
 class RegexTest extends TestCase
 {
     /**
+     * Getter for a sample config
+     *
      * @return array[]
      */
     protected static function getConfig(): array
