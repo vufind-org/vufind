@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Controller for Api keys.
+ * Controller for API keys.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Exception\Forbidden;
 use function in_array;
 
 /**
- * Controller for Api keys.
+ * Controller for API keys.
  *
  * @category VuFind
  * @package  Controller
@@ -81,16 +81,16 @@ class ApiKeyController extends AbstractBase
         if (!$this->apiKeysEnabled()) {
             throw new Forbidden('API keys disabled.');
         }
-        if (!$this->getService(ApiKeyService::class)->isUserValid($user)) {
+        $apiKeyService = $this->getService(ApiKeyService::class);
+        if (!$apiKeyService->isUserValid($user)) {
             $this->flashMessenger()->addMessage('Developer::verify_email_address', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');
         }
-        if ($this->getService(ApiKeyService::class)->getApiKeyForUser($user)?->isRevoked()) {
+        if ($apiKeyService->getApiKeyForUser($user)?->isRevoked()) {
             $this->flashMessenger()->addMessage('Developer::api_key_locked', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');
         }
-        $token = $this->getService(ApiKeyService::class)->generateApiKeyForUser($user);
-        if ($token) {
+        if ($token = $apiKeyService->generateApiKeyForUser($user)) {
             $successMsg = $this->translate('Developer::api_key_generation_success', ['%%TOKEN%%' => $token]);
             $this->flashMessenger()->addMessage($successMsg, 'success');
         } else {
@@ -113,16 +113,16 @@ class ApiKeyController extends AbstractBase
         if (!$this->apiKeysEnabled()) {
             throw new Forbidden('API keys disabled.');
         }
-        if (!$this->getService(ApiKeyService::class)->isUserValid($user)) {
+        $apiKeyService = $this->getService(ApiKeyService::class);
+        if (!$apiKeyService->isUserValid($user)) {
             $this->flashMessenger()->addMessage('Developer::verify_email_address', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');
         }
-        if ($this->getService(ApiKeyService::class)->getApiKeyForUser($user)?->isRevoked()) {
+        if ($apiKeyService->getApiKeyForUser($user)?->isRevoked()) {
             $this->flashMessenger()->addMessage('Developer::api_key_locked', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');
         }
-        $result = $this->getService(ApiKeyService::class)->deleteApiKeyForUser($user);
-        if ($result) {
+        if ($apiKeyService->deleteApiKeyForUser($user)) {
             $this->flashMessenger()->addMessage('Developer::api_key_deletion_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('Developer::api_key_deletion_failed', 'error');

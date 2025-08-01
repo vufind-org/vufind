@@ -184,7 +184,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             $this->setApiKeyService($this->getService(\VuFind\ApiKey\ApiKeyService::class));
             if ($logRequests = $mainConfig?->API_Keys?->log_requests ?? false) {
                 $this->setApiKeyLogging($logRequests);
-                $this->setLogger($this->getService(\VuFind\Log\Logger::class));
             }
         }
     }

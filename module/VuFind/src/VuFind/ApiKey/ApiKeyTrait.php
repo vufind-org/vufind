@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api Key trait.
+ * API key trait.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * Api Key trait.
+ * API key trait.
  *
  * @category VuFind
  * @package  ApiKey
@@ -46,7 +46,7 @@ use function is_callable;
 trait ApiKeyTrait
 {
     /**
-     * Is api key used?
+     * Is API key used?
      * - 'disabled' => Keys are not used and cannot be created
      * 'enabled' => Keys can be created and used but not enforced
      * 'enforced' => Keys are enforced
@@ -56,21 +56,21 @@ trait ApiKeyTrait
     protected string $apiKeyMode;
 
     /**
-     * Request header field name for the API key
+     * Name of HTTP header
      *
      * @var string
      */
     protected string $apiKeyHeaderField = '';
 
     /**
-     * Api key service
+     * API key service
      *
      * @var ApiKeyService
      */
     protected ApiKeyService $apiKeyService;
 
     /**
-     * Key for header to look for an api key
+     * Key for header to look for an API key
      *
      * @var string
      */
@@ -84,9 +84,9 @@ trait ApiKeyTrait
     protected bool $logApiKeyRequests = false;
 
     /**
-     * Set Api Key service
+     * Set API key service
      *
-     * @param ApiKeyService $apiKeyService Api Key service
+     * @param ApiKeyService $apiKeyService API key service
      *
      * @return void
      */
@@ -96,13 +96,13 @@ trait ApiKeyTrait
     }
 
     /**
-     * Set api key mode.
+     * Set API key mode.
      *
-     * @param $apiKeyMode Api key mode, disabled, enabled, enforced.
+     * @param $apiKeyMode API key mode, disabled, enabled, enforced.
      *
      * @return void
      */
-    protected function setApiKeyMode(string $apiKeyMode = 'disabled'): void
+    protected function setApiKeyMode(string $apiKeyMode): void
     {
         $this->apiKeyMode = $apiKeyMode;
     }
@@ -110,11 +110,11 @@ trait ApiKeyTrait
     /**
      * Set API key header field.
      *
-     * @param string $header Header field name for the api key. Default X-API-KEY.
+     * @param string $header Header field name for the API key.
      *
      * @return void
      */
-    protected function setApiKeyHeader(string $header = 'X-API-KEY'): void
+    protected function setApiKeyHeader(string $header): void
     {
         $this->apiKeyHeaderField = $header;
     }
@@ -132,7 +132,7 @@ trait ApiKeyTrait
     }
 
     /**
-     * Is api key enabled?
+     * Is API key enabled?
      *
      * @return bool
      */
@@ -142,7 +142,7 @@ trait ApiKeyTrait
     }
 
     /**
-     * Check request for api key if mode is not set to disabled.
+     * Check request for API key if mode is not set to disabled.
      *
      * @return bool
      */
@@ -163,7 +163,7 @@ trait ApiKeyTrait
     }
 
     /**
-     * Get response to display bad or missing api key.
+     * Get response to display bad or missing API key.
      *
      * @return Response
      */

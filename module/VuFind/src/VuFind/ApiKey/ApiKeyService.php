@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service for api keys.
+ * Service for managing API keys
  *
  * PHP version 8
  *
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Database
+ * @package  Service
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -37,10 +37,10 @@ use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 
 /**
- * Database service for api keys.
+ * Service for managing API keys
  *
  * @category VuFind
- * @package  Database
+ * @package  Service
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -52,10 +52,10 @@ class ApiKeyService implements DbServiceAwareInterface
     /**
      * Constructor.
      *
-     * @param Config $config Main config
+     * @param array $apiKeySettings Section API_Keys from main configuration.
      */
     public function __construct(
-        protected Config $config
+        protected array $apiKeySettings
     ) {
     }
 
@@ -68,7 +68,7 @@ class ApiKeyService implements DbServiceAwareInterface
      */
     protected function createRandomToken(UserEntityInterface $user): string
     {
-        $salt = $this->config->API_Keys->token_salt ?? null;
+        $salt = $this->apiKeySettings->token_salt ?? null;
         if (!$salt) {
             throw new \Exception('APIKeyService: Salt missing');
         }
@@ -83,7 +83,7 @@ class ApiKeyService implements DbServiceAwareInterface
     }
 
     /**
-     * Retrieve an Api Key for a user. Return associative array containing token, revoked or empty
+     * Retrieve an API key for a user. Return associative array containing token, revoked or empty
      * array if not found.
      *
      * @param UserEntityInterface $user User
@@ -100,7 +100,7 @@ class ApiKeyService implements DbServiceAwareInterface
     }
 
     /**
-     * Check if Api Key is valid to be used.
+     * Check if API key is valid to be used.
      *
      * @param string $token Token to search for.
      *
@@ -116,7 +116,7 @@ class ApiKeyService implements DbServiceAwareInterface
     }
 
     /**
-     * Validate user can use api keys. It is expected that the user has a verified email address.
+     * Validate user can use API keys. It is expected that the user has a verified email address.
      *
      * @param UserEntityInterface $user User
      *
@@ -128,7 +128,7 @@ class ApiKeyService implements DbServiceAwareInterface
     }
 
     /**
-     * Generate an Api Key for a user.
+     * Generate an API key for a user.
      *
      * @param UserEntityInterface $user User
      *
@@ -152,7 +152,7 @@ class ApiKeyService implements DbServiceAwareInterface
     }
 
     /**
-     * Delete an Api Key for a user
+     * Delete an API key for a user
      *
      * @param UserEntityInterface $user User
      *
