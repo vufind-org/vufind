@@ -48,8 +48,8 @@ trait ApiKeyTrait
     /**
      * Is API key used?
      * - 'disabled' => Keys are not used and cannot be created
-     * 'enabled' => Keys can be created and used but not enforced
-     * 'enforced' => Keys are enforced
+     * - 'enabled' => Keys can be created and used but not enforced
+     * - 'enforced' => Keys are enforced
      *
      * @var string
      */
