@@ -48,7 +48,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  */
 class ExplanationTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Solr 9 example response

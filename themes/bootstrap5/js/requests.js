@@ -1,3 +1,9 @@
+/**
+ * Confirms a cancellation request by setting a hidden field,
+ * updating the submit action, and submitting the form.
+ * @param {HTMLElement} link   The HTML element that triggers the cancel request
+ * @param {string}      action The name for the 'submitType' field
+ */
 function confirmCancelRequest(link, action) {
   $('#cancelConfirm').val(1);
   $('#submitType').attr('name', action);

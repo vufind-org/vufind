@@ -30,6 +30,10 @@
 namespace VuFind\Config\Handler;
 
 use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\Exception\ConfigException;
+use VuFind\Exception\FileAccess as FileAccessException;
+
+use function is_string;
 
 /**
  * Generic file config handler.
@@ -45,13 +49,41 @@ class GenericFile extends AbstractBase
     /**
      * Parses the configuration in a config location.
      *
-     * @param ConfigLocationInterface $configLocation Config location
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function parseConfig(ConfigLocationInterface $configLocation): array
+    public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
         $content = file_get_contents($configLocation->getPath());
         return ['data' => trim($content)];
+    }
+
+    /**
+     * Write configuration to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location for the config
+     * @param array|string             $config              Config to write
+     * @param ?ConfigLocationInterface $baseLocation        Location of a base configuration that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void {
+        if (!is_string($config)) {
+            throw new ConfigException('Generic file handler can only write string config.');
+        }
+        $destinationPath = $destinationLocation->getPath();
+        $this->backupFile($destinationPath);
+        if (!file_put_contents($destinationPath, $config)) {
+            throw new FileAccessException('Could not write to file ' . $destinationPath);
+        }
     }
 }

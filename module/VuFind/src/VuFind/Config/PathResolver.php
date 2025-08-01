@@ -37,6 +37,7 @@ use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
 
 use function array_key_exists;
+use function in_array;
 
 /**
  * Configuration File Path Resolver
@@ -108,6 +109,107 @@ class PathResolver
     }
 
     /**
+     * Get PathResolver for directories.
+     *
+     * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
+     * @param string               $baseDir              Base directory
+     * @param ?string              $localConfigDir       Local config directory
+     * @param ?string              $baseSubDir           Default base config subdirectory
+     * @param ?string              $localConfigSubDir    Default local config subdirectory
+     *
+     * @return PathResolver
+     */
+    public static function getPathResolverForDirectories(
+        HandlerPluginManager $configHandlerManager,
+        string $baseDir,
+        ?string $localConfigDir,
+        ?string $baseSubDir = null,
+        ?string $localConfigSubDir = null
+    ): PathResolver {
+        return new PathResolver(
+            $configHandlerManager,
+            self::getBaseDirSpec($baseDir, $baseSubDir),
+            self::getLocalDirStack($localConfigDir, $localConfigSubDir)
+        );
+    }
+
+    /**
+     * Get base directory spec for directory.
+     *
+     * @param string  $baseDir    Base directory
+     * @param ?string $baseSubDir Default base config subdirectory
+     *
+     * @return array
+     */
+    public static function getBaseDirSpec(string $baseDir, ?string $baseSubDir = null): array
+    {
+        return [
+            'directory' => $baseDir,
+            'defaultConfigSubdir' => $baseSubDir ?? self::DEFAULT_CONFIG_SUBDIR,
+        ];
+    }
+
+    /**
+     * Get local directory spec stack for directory.
+     *
+     * @param ?string $localConfigDir    Local config directory
+     * @param ?string $localConfigSubDir Default local config subdirectory
+     *
+     * @return array
+     */
+    public static function getLocalDirStack(?string $localConfigDir, ?string $localConfigSubDir = null): array
+    {
+        $localDirs = [];
+        $localDirsCanonical = [];
+        $currentDir = $localConfigDir;
+        while (!empty($currentDir)) {
+            // check if the directory exists
+            if (!($canonicalizedCurrentDir = realpath($currentDir))) {
+                trigger_error('Configured local directory does not exist: ' . $currentDir, E_USER_WARNING);
+                break;
+            }
+
+            // check if the current directory was already included in the stack to avoid infinite loops
+            if (in_array($canonicalizedCurrentDir, $localDirsCanonical)) {
+                trigger_error('Current directory was already included in the stack: ' . $currentDir, E_USER_WARNING);
+                break;
+            }
+            $localDirsCanonical[] = $canonicalizedCurrentDir;
+
+            // loading DirLocations.ini of currentDir
+            $systemConfigFile = $currentDir . '/DirLocations.ini';
+            $systemConfig = new Config(
+                file_exists($systemConfigFile)
+                    ? parse_ini_file($systemConfigFile, true)
+                    : []
+            );
+
+            // adding directory to the stack
+            array_unshift(
+                $localDirs,
+                [
+                    'directory' => $currentDir,
+                    'defaultConfigSubdir' =>
+                        $systemConfig['Local_Dir']['config_subdir']
+                        ?? $localConfigSubDir
+                        ?? self::DEFAULT_CONFIG_SUBDIR,
+                    'dirLocationConfig' => $systemConfig,
+                ]
+            );
+
+            // If there's a parent, set it as the current directory for the next loop iteration:
+            if (!empty($systemConfig['Parent_Dir']['path'])) {
+                $isRelative = $systemConfig['Parent_Dir']['is_relative_path'] ?? false;
+                $parentDir = $systemConfig['Parent_Dir']['path'];
+                $currentDir = $isRelative ? $currentDir . '/' . $parentDir : $parentDir;
+            } else {
+                $currentDir = '';
+            }
+        }
+        return $localDirs;
+    }
+
+    /**
      * Get the config location based on the config name.
      *
      * @param string  $configName Config name
@@ -121,7 +223,7 @@ class PathResolver
         ?string $path = null,
     ): ?ConfigLocationInterface {
         return $this->getLocalConfigLocation($configName, $path)
-            ?? $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
+            ?? $this->getBaseConfigLocation($configName, $path);
     }
 
     /**
@@ -146,6 +248,22 @@ class PathResolver
             }
         }
         return $currentLocation;
+    }
+
+    /**
+     * Get the base config location based on the config name.
+     *
+     * @param string  $configName Config name
+     * @param ?string $path       path relative to VuFind base (optional; use null for
+     * default)
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getBaseConfigLocation(
+        string $configName,
+        ?string $path = null,
+    ): ?ConfigLocationInterface {
+        return $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
     }
 
     /**

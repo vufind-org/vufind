@@ -1,10 +1,9 @@
 <?php
-  $this->headTitle($this->translate('OAI Server'));
   $this->breadcrumbs()->set($this->translate('OAI Server'));
   $baseUrl = $this->url('oai-server');
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('OAI Server')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('OAI Server')]);?>
   <p>This OAI server is OAI 2.0 compliant.</p>
   <p>The OAI Server URL is: <?=$this->serverUrl($baseUrl)?></p>
   <hr>

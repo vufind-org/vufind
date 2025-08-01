@@ -75,9 +75,9 @@ interface ConfigLocationInterface
      *
      * @param string $path Path
      *
-     * @return void
+     * @return static
      */
-    public function setPath(string $path): void;
+    public function setPath(string $path): static;
 
     /**
      * Get the base path.
@@ -91,9 +91,9 @@ interface ConfigLocationInterface
      *
      * @param string $basePath Base path
      *
-     * @return void
+     * @return static
      */
-    public function setBasePath(string $basePath): void;
+    public function setBasePath(string $basePath): static;
 
     /**
      * Get the file name.
@@ -107,9 +107,9 @@ interface ConfigLocationInterface
      *
      * @param string $fileName string
      *
-     * @return void
+     * @return static
      */
-    public function setFileName(string $fileName): void;
+    public function setFileName(string $fileName): static;
 
     /**
      * Get the config name.
@@ -123,9 +123,9 @@ interface ConfigLocationInterface
      *
      * @param string $configName Config name
      *
-     * @return void
+     * @return static
      */
-    public function setConfigName(string $configName): void;
+    public function setConfigName(string $configName): static;
 
     /**
      * Get subsection of the configuration.
@@ -139,9 +139,9 @@ interface ConfigLocationInterface
      *
      * @param array $subsection Subsection
      *
-     * @return void
+     * @return static
      */
-    public function setSubsection(array $subsection): void;
+    public function setSubsection(array $subsection): static;
 
     /**
      * Get the location of the configuration in the parent directory that might be specified in DirLocations.ini.
@@ -155,9 +155,9 @@ interface ConfigLocationInterface
      *
      * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
-     * @return void
+     * @return static
      */
-    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): void;
+    public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static;
 
     /**
      * Get the name of the configuration handler to be used for this location.

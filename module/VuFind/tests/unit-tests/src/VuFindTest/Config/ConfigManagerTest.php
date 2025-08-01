@@ -35,7 +35,7 @@ use VuFind\Config\ConfigManager;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Exception\ConfigException;
-use VuFindTest\Feature\ConfigPluginManagerTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
 
 use function count;
@@ -54,7 +54,7 @@ use function count;
 class ConfigManagerTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Get config manager.
@@ -64,19 +64,20 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     protected function getConfigManager(): ConfigManager
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $this->addConfigPluginManagerToContainer($container);
+        $this->addConfigRelatedServicesToContainer($container);
         return $container->get(ConfigManager::class);
     }
 
     /**
      * Wrapper around loadConfigFromLocation method.
      *
-     * @param string $name       Configuration to load
-     * @param array  $subsection Subsection
+     * @param string $name               Configuration to load
+     * @param array  $subsection         Subsection
+     * @param bool   $handleParentConfig If parent configuration should be handled
      *
      * @return mixed
      */
-    protected function getConfig(string $name, array $subsection = []): mixed
+    protected function getConfig(string $name, array $subsection = [], bool $handleParentConfig = true): mixed
     {
         $fileMap = [
             'unit-test-parent'
@@ -87,12 +88,17 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                 => new ConfigFile($this->getFixturePath('configs/inheritance/unit-test-child2.ini')),
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
+            'dir-config-with-inheritance'
+                => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
         ];
         $realResolver = $this->getPathResolver();
         $configLocation = $fileMap[$name]
             ?? $realResolver->getConfigLocation($name);
         $configLocation->setSubsection($subsection);
-        return $this->getConfigManager()->loadConfigFromLocation($configLocation);
+        return $this->getConfigManager()->loadConfigFromLocation(
+            $configLocation,
+            handleParentConfig: $handleParentConfig
+        );
     }
 
     /**
@@ -412,6 +418,181 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                     'b' => 1,
                 ],
             ],
+            $config
+        );
+    }
+
+    /**
+     * Test loading of INI config with handling of parent configuration disabled.
+     *
+     * @return void
+     */
+    public function testIniConfigWithHandleParentConfigDisabled(): void
+    {
+        $config = $this->getConfig('unit-test-child', handleParentConfig: false);
+        $this->assertEquals(
+            [
+                'relative_path' => 'unit-test-parent.ini',
+                'override_full_sections' => 'Section1',
+            ],
+            $config['Parent_Config']
+        );
+        $this->assertEquals(10, $config['Section1']['j']);
+        $this->assertArrayNotHasKey('Section3', $config);
+    }
+
+    /**
+     * Test loading of directory config with handling of parent configuration disabled.
+     *
+     * @return void
+     */
+    public function testDirConfigWithHandleParentConfigDisabled(): void
+    {
+        $config = $this->getConfig('dir-config-with-inheritance', handleParentConfig: false);
+        $subdirConfig = $config['subdir-child'];
+        $this->assertEquals(
+            [
+                'relative_path' => '../unit-test-parent.ini',
+                'override_full_sections' => 'Section1',
+            ],
+            $subdirConfig['Parent_Config']
+        );
+        $this->assertEquals(10, $subdirConfig['Section1']['j']);
+        $this->assertArrayNotHasKey('Section3', $subdirConfig);
+    }
+
+    /**
+     * Data provider for testConfigsInLocalDirStack().
+     *
+     * @return array
+     */
+    public static function localDirStackTestProvider(): array
+    {
+        return [
+            'all' => [
+                'all',
+                [
+                    'Section' => [
+                        'value' => 'primary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+            ],
+            'primary' => [
+                'primary',
+                [
+                    'Section' => [
+                        'value' => 'primary',
+                    ],
+                ],
+            ],
+            'base-secondary' => [
+                'base-secondary',
+                [
+                    'Section' => [
+                        'value' => 'secondary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+            ],
+            'base' => [
+                'base',
+                [
+                    'Section' => [
+                        'value' => 'base',
+                        'value2' => 'base',
+                    ],
+                ],
+            ],
+            'dir_config' => [
+                'dir_config',
+                [
+                    'all-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'primary-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                        ],
+                    ],
+                    'base-secondary-sub' => [
+                        'Section' => [
+                            'value' => 'secondary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'base-sub' => [
+                        'Section' => [
+                            'value' => 'base',
+                            'value2' => 'base',
+                        ],
+                    ],
+                ],
+            ],
+            'all-sub' => [
+                'dir_config/all-sub',
+                [
+                    'Section' => [
+                        'value' => 'primary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+            ],
+            'primary-sub' => [
+                'dir_config/primary-sub',
+                [
+                    'Section' => [
+                        'value' => 'primary',
+                    ],
+                ],
+            ],
+            'base-secondary-sub' => [
+                'dir_config/base-secondary-sub',
+                [
+                    'Section' => [
+                        'value' => 'secondary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+            ],
+            'base-sub' => [
+                'dir_config/base-sub',
+                [
+                    'Section' => [
+                        'value' => 'base',
+                        'value2' => 'base',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test loading of configs with inheritance and a local dir stack.
+     *
+     * @param string $configPath     Config path
+     * @param array  $expectedConfig Expected config
+     *
+     * @return void
+     *
+     * @dataProvider localDirStackTestProvider
+     */
+    public function testConfigsInLocalDirStack(
+        $configPath,
+        $expectedConfig
+    ): void {
+        $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
+        $configManager = $this->getContainerWithConfigRelatedServices(
+            baseDir: $fixtureDir . 'base',
+            localDir: $fixtureDir . 'primary'
+        )->get(ConfigManager::class);
+
+        $config = $configManager->getConfigArray($configPath);
+        $this->assertEquals(
+            $expectedConfig,
             $config
         );
     }

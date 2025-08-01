@@ -173,6 +173,13 @@ class AccountMenu extends AbstractMenu
                         'checkMethod' => 'checkHistory',
                     ],
                     [
+                        'name' => 'usercontent',
+                        'label' => 'user_content',
+                        'route' => 'myresearch-usercontent',
+                        'icon' => 'user-content',
+                        'checkMethod' => 'checkUserContent',
+                    ],
+                    [
                         'name' => 'logout',
                         'label' => 'Log Out',
                         'route' => 'myresearch-logout',
@@ -350,6 +357,18 @@ class AccountMenu extends AbstractMenu
     {
         return $this->isIlsOnline()
             && $this->ilsConnection->checkFunction($function, $this->getCapabilityParams());
+    }
+
+    /**
+     * Check whether to show user content (comments, ratings, tags)
+     *
+     * @return bool
+     */
+    protected function checkUserContent(): bool
+    {
+        return ('enabled' === $this->accountCapabilities->getCommentSetting())
+            || ('enabled' === $this->accountCapabilities->getRatingSetting())
+            || ('enabled' === $this->accountCapabilities->getTagSetting());
     }
 
     /**

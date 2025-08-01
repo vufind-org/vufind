@@ -1726,7 +1726,11 @@ class Folio extends AbstractAPI implements
         // have to obtain a list of IDs to use as a filter below.
         $legalServicePoints = null;
         if ($holdInfo) {
-            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($holdInfo['id'])->id, $patron['id']);
+            $allowed = $this->getAllowedServicePoints(
+                $this->getInstanceByBibId($holdInfo['id'])->id,
+                $holdInfo['item_id'] ?? null,
+                $patron['id']
+            );
             if ($allowed !== null) {
                 $legalServicePoints = [];
                 $preferredRequestType = $this->getPreferredRequestType($holdInfo);
@@ -2070,14 +2074,16 @@ class Folio extends AbstractAPI implements
     /**
      * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
-     * @param string $instanceId  Instance UUID being requested
-     * @param string $requesterId Patron UUID placing request
-     * @param string $operation   Operation type (default = create)
+     * @param string  $instanceId  Instance UUID being requested
+     * @param ?string $itemId      Item UUID being requested (or null if unavailable/inapplicable)
+     * @param string  $requesterId Patron UUID placing request
+     * @param string  $operation   Operation type (default = create)
      *
      * @return ?array
      */
-    public function getAllowedServicePoints(
+    protected function getAllowedServicePoints(
         string $instanceId,
+        ?string $itemId,
         string $requesterId,
         string $operation = 'create'
     ): ?array {
@@ -2086,7 +2092,7 @@ class Folio extends AbstractAPI implements
             $response = $this->makeRequest(
                 'GET',
                 '/circulation/requests/allowed-service-points?'
-                . http_build_query(compact('instanceId', 'requesterId', 'operation'))
+                . http_build_query(compact(empty($itemId) ? 'instanceId' : 'itemId', 'requesterId', 'operation'))
             );
             if (!$response->isSuccess()) {
                 $this->warning('Unexpected service point lookup response: ' . $response->getBody());
@@ -2175,7 +2181,11 @@ class Folio extends AbstractAPI implements
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
-        $allowed = $this->getAllowedServicePoints($instance->id, $holdDetails['patron']['id']);
+        $allowed = $this->getAllowedServicePoints(
+            $instance->id,
+            $holdDetails['item_id'] ?? null,
+            $holdDetails['patron']['id']
+        );
         $preferredRequestType = $this->getPreferredRequestType($holdDetails);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
             // Skip illegal request types, if we have validation data available:
@@ -2297,12 +2307,18 @@ class Folio extends AbstractAPI implements
             ];
         }
 
-        $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($id)->id, $patron['id']);
+        $allowed = $this->getAllowedServicePoints(
+            $this->getInstanceByBibId($id)->id,
+            $data['item_id'] ?? null,
+            $patron['id']
+        );
+
+        // If we got this far, it's valid if we can't obtain allowed service point
+        // data, or if the allowed service point data is non-empty:
+        $valid = null === $allowed || !empty($allowed);
         return [
-            // If we got this far, it's valid if we can't obtain allowed service point
-            // data, or if the allowed service point data is non-empty:
-            'valid' => null === $allowed || !empty($allowed),
-            'status' => 'request_place_text',
+            'valid' => $valid,
+            'status' => $valid ? 'request_place_text' : 'No pickup locations available',
         ];
     }
 

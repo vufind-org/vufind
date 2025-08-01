@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use LmcRbacMvc\Identity\IdentityInterface;
+use RuntimeException;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
@@ -103,19 +104,6 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     public function getManager()
     {
         return $this->manager;
-    }
-
-    /**
-     * Checks whether the user is logged in.
-     *
-     * @return UserEntityInterface|bool Object if user is logged in, false
-     * otherwise.
-     *
-     * @deprecated Use getIdentity() or getUserObject() instead.
-     */
-    public function isLoggedIn()
-    {
-        return $this->getManager()->isLoggedIn();
     }
 
     /**
@@ -246,6 +234,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
+     * Render the reset password form template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getResetPasswordForm($context = [])
+    {
+        return $this->renderTemplate('resetpassword.phtml', $context);
+    }
+
+    /**
      * Render the password recovery form template.
      *
      * @param array $context Context for rendering template
@@ -255,5 +255,25 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     public function getPasswordRecoveryForm($context = [])
     {
         return $this->renderTemplate('recovery.phtml', $context);
+    }
+
+    /**
+     * Get the password recovery email template path.
+     *
+     * @return string
+     */
+    public function getPasswordRecoveryEmailTemplate()
+    {
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
+        $template = 'Auth/%s/recovery-email.phtml';
+        $classTemplate = $this->getCachedClassTemplate($template, $className);
+        if (!$classTemplate) {
+            throw new RuntimeException(
+                'Cannot find '
+                . $this->getTemplateWithClass($template, '[brief class name]')
+                . " for class $className or any of its parent classes"
+            );
+        }
+        return $classTemplate;
     }
 }
