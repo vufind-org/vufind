@@ -34,6 +34,8 @@ use Behat\Mink\Element\NodeElement;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+use function count;
+
 /**
  * Test class for the GetThis functionality.
  *
@@ -138,7 +140,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($callNumbers as $callNumber) {
             $items[] = [
                 'id' => $recordId,
-                ...$availableItems[$callNumber]
+                ...$availableItems[$callNumber],
             ];
         }
         return $items;
@@ -192,7 +194,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                         'CallNumberOne',
                         'CallNumberTwo',
                         'CallNumberThree',
-                        'CallNumberFour'
+                        'CallNumberFour',
                     ]
                 ),
                 // $expectedPresence
@@ -279,7 +281,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                         'CallNumberOne',
                         'CallNumberTwo',
                         'CallNumberThree',
-                        'CallNumberFour'
+                        'CallNumberFour',
                     ]
                 ),
                 // $expectedBlockPresence

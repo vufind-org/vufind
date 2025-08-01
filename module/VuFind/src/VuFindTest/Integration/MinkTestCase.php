@@ -34,7 +34,6 @@ use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Element\NodeElement;
 use DMore\ChromeDriver\ChromeDriver;
-use League\CommonMark\Node\Query\OrExpr;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;

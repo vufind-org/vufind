@@ -358,7 +358,7 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function getLink(?string $itemId = null): array|string
     {
-        $isProvidedItemIdNull = is_null($itemId);
+        $isProvidedItemIdNull = null === $itemId;
         // If $itemId is null, call getItem just in case $items returns the items in a different order
         // than the real time holdings information
         $itemId = $this->getItem($itemId)['item_id'] ?? null;
@@ -372,7 +372,7 @@ class GetThisLoader implements LoggerAwareInterface
             if (!isset($location['items'])) {
                 continue;
             }
-            foreach ((array) $location['items'] as $item) {
+            foreach ((array)$location['items'] as $item) {
                 if (empty($item['link'])) {
                     continue;
                 }

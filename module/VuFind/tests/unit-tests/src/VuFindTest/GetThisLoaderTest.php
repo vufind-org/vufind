@@ -92,7 +92,7 @@ class GetThisLoaderTest extends TestCase
         $regexConfig = $this->yamlReader->get('Regex.yaml');
         $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
         $translator = $this->createMock(Translate::class);
-        $translator->expects($this->any())->method('translate')->willReturnCallback(fn($p) => $p);
+        $translator->expects($this->any())->method('translate')->willReturnCallback(fn ($p) => $p);
         $this->getThis = new GetThisLoader(
             $this->config,
             new Regex($regexConfig),
@@ -112,7 +112,7 @@ class GetThisLoaderTest extends TestCase
         try {
             $this->setProperty($this->getThis, 'config', $config);
         } catch (ReflectionException $e) {
-            die("Reflection exception when trying to set the config: " . $e->getMessage());
+            die('Reflection exception when trying to set the config: ' . $e->getMessage());
         }
     }
 
@@ -126,7 +126,7 @@ class GetThisLoaderTest extends TestCase
         try {
             return $this->createMock(SolrDefault::class);
         } catch (\PHPUnit\Framework\MockObject\Exception $e) {
-            die("An exception has occurred while creating a mock for the record driver: " . $e->getMessage());
+            die('An exception has occurred while creating a mock for the record driver: ' . $e->getMessage());
         }
     }
 
@@ -624,7 +624,7 @@ class GetThisLoaderTest extends TestCase
                             ],
                         ],
                     ],
-                ]
+                ],
             ]);
         $this->setProperty($this->getThis, 'record', $driver);
         $this->assertEquals('https://what_a_great_link.com', $this->getThis->getLink());
@@ -931,7 +931,7 @@ class GetThisLoaderTest extends TestCase
         $regex = $this->createMock(Regex::class);
 
         $translator = $this->createMock(Translate::class);
-        $translator->expects($this->any())->method('translate')->willReturnCallback(fn($p) => $p);
+        $translator->expects($this->any())->method('translate')->willReturnCallback(fn ($p) => $p);
 
         $viewHelperManager = $this->createMock(HelperPluginManager::class);
         $viewHelperManager->expects($this->once())->method('get')->willReturn($translator);
