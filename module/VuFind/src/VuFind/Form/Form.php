@@ -951,11 +951,9 @@ class Form extends \Laminas\Form\Form implements
             'id' => $this->getElementId($el['name']),
             'class' => [$el['settings']['class'] ?? null],
         ];
-
-        if ($type !== 'submit') {
+        if ($type !== 'submit' && $type !== 'radio' && $type !== 'checkbox' && $type !== 'select') {
             $attributes['class'][] = 'form-control';
         }
-
         if (!empty($el['required'])) {
             $attributes['required'] = true;
         }
@@ -1019,6 +1017,7 @@ class Form extends \Laminas\Form\Form implements
                 $conf['options'] = ['value_options' => $optionElements];
                 break;
             case 'select':
+                $attributes['class'][] = 'form-select';
                 if (isset($el['options'])) {
                     $options = $el['options'];
                     foreach ($options as $key => &$option) {
