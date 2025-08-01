@@ -116,6 +116,13 @@ class Folio extends AbstractAPI implements
     protected $dateConverter;
 
     /**
+     * Auth Manager
+     *
+     * @var \VuFind\Auth\Manager
+     */
+    protected $authManager = null;
+
+    /**
      * Default availability messages, in case they are not defined in Folio.ini
      *
      * @var string[]
@@ -133,13 +140,6 @@ class Folio extends AbstractAPI implements
     ];
 
     /**
-     * VuFind configuration, config.ini
-     *
-     * @var array
-     */
-    protected $mainConfig = null;
-
-    /**
      * Cache for course reserves course data (null if not yet populated)
      *
      * @var ?array
@@ -152,13 +152,16 @@ class Folio extends AbstractAPI implements
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param callable               $sessionFactory Factory function returning
      * SessionContainer object
+     * @param \VuFind\Auth\Manager   $authManager    Auth Manager object
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory,
+        \VuFind\Auth\Manager $authManager
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
+        $this->authManager = $authManager;
     }
 
     /**
@@ -194,20 +197,6 @@ class Folio extends AbstractAPI implements
     {
         parent::setConfig($config);
         $this->tenant = $this->config['API']['tenant'];
-    }
-
-    /**
-     * Set main configuration
-     *
-     * Store a reference to the config.ini configuration
-     *
-     * @param array $mainConfig Configuration array loaded from the main VuFind configuration
-     *
-     * @return void
-     */
-    public function setMainConfig($mainConfig)
-    {
-        $this->mainConfig = $mainConfig;
     }
 
     /**
@@ -1292,12 +1281,43 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get the CQL query template for retrieving the patron's information.
+     *
+     * It checks if Shibboleth authentication is being used and returns the
+     * corresponding CQL query template. Otherwise, it uses the configured CQL query
+     * to retrieve the patron's information.
+     *
+     * @param string $usernameField The field to use for the username in the CQL query
+     * @param string $passwordField The field to use for password in the CQL query
+     *
+     * @return string The patron lookup CQL query with placeholders.
+     */
+    protected function getLoginCql($usernameField, $passwordField)
+    {
+        if (
+            isset($this->config['User']['shib_cql'])
+            && $this->authManager->getSelectedAuthMethod() === 'Shibboleth'
+        ) {
+            $cql = $this->config['User']['shib_cql'];
+        } else {
+            $cql = $this->config['User']['cql']
+                ?? '%%username_field%% == "%%username%%"'
+                . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
+        }
+        $placeholders = [
+            '%%username_field%%',
+            '%%password_field%%',
+        ];
+        $values = [
+            $usernameField,
+            $passwordField,
+        ];
+        return str_replace($placeholders, $values, $cql);
+    }
+
+    /**
      * Support method for patronLogin(): authenticate the patron with a CQL looup.
      * Returns the CQL query for retrieving more information about the user.
-     *
-     * NOTE: this method looks for the existence of a $SERVER['Shib-Session-ID'] variable
-     * and, if found, looks for a `shib-cql` configuration stanza to use instead of the
-     * standard `cql` stanza.
      *
      * @param string $username The patron username
      * @param string $password The patron password
@@ -1309,25 +1329,12 @@ class Folio extends AbstractAPI implements
         // Construct user query using barcode, username, etc.
         $usernameField = $this->config['User']['username_field'] ?? 'username';
         $passwordField = $this->config['User']['password_field'] ?? false;
-        if (
-            isset($this->config['User']['shib_cql'])
-            && array_key_exists('Shib-Session-ID', $_SERVER)
-        ) {
-            $cql = $this->config['User']['shib_cql'];
-        } else {
-            $cql = $this->config['User']['cql']
-                ?? '%%username_field%% == "%%username%%"'
-                . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
-        }
+        $cql = $this->getLoginCql($usernameField, $passwordField);
         $placeholders = [
-            '%%username_field%%',
-            '%%password_field%%',
             '%%username%%',
             '%%password%%',
         ];
         $values = [
-            $usernameField,
-            $passwordField,
             $this->escapeCql($username),
             $this->escapeCql($password),
         ];
