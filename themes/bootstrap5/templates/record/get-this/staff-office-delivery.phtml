@@ -1,4 +1,4 @@
-<!-- Get-this: staff-delivery -->
+<!-- Get-this: staff-office-delivery -->
 <?php
 $data = [
     '%%item%%' => $this->getThis->getItem(),
@@ -14,7 +14,7 @@ $requestCopyLink = $this->translate($getThisParams['request_link'] ?? '', $data)
 <div>
   <p>
     <strong><a href="<?= $this->escapeHtml($link) ?>"
-               target="_blank"><?= $this->transEsc('staff_office_delivery') ?></a>:</strong>
+               target="_blank"><?= $this->transEsc('staff_office_delivery') ?></a> :</strong>
     <?= $this->transEsc('staff_office_delivery_text') ?>
   </p>
   <ul>

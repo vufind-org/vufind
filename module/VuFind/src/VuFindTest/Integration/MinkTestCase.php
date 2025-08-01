@@ -29,9 +29,12 @@
 
 namespace VuFindTest\Integration;
 
+use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
 use DMore\ChromeDriver\ChromeDriver;
+use League\CommonMark\Node\Query\OrExpr;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
@@ -394,7 +397,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get the Mink driver, initializing it if necessary.
      *
-     * @return Selenium2Driver
+     * @return CoreDriver
      */
     protected function getMinkDriver()
     {
@@ -541,14 +544,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param int     $timeout  Wait timeout (in ms)
      * @param int     $index    Index of the element (0-based)
      *
-     * @return mixed
+     * @return ?NodeElement
      */
     protected function findCss(
         Element $page,
         $selector,
         $timeout = null,
         $index = 0
-    ) {
+    ): ?NodeElement {
         $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
@@ -573,9 +576,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string $statement JavaScript statement to evaluate
      * @param int    $timeout   Wait timeout (in ms)
      *
-     * @return mixed
+     * @return void
      */
-    protected function waitStatement($statement, $timeout = null)
+    protected function waitStatement($statement, $timeout = null): void
     {
         $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();

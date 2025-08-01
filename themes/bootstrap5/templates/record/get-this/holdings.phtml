@@ -63,3 +63,7 @@ function getLink($view, $item)
   </ul>
 </nav>
 <br>
+<?php
+    // Resetting the item to the selected one as we looped over all of them and cache was updated
+    $this->getThis->setItemById($selectedItem['item_id']);
+?>
