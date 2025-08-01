@@ -49,17 +49,23 @@ class GetThisLoaderTest extends TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * @var YamlReader Yaml reader needed for GetThis
+     * Yaml reader needed for GetThis
+     *
+     * @var YamlReader
      */
     protected YamlReader $yamlReader;
 
     /**
-     * @var array GetThis config
+     * GetThis config
+     *
+     * @var array
      */
     protected array $config;
 
     /**
-     * @var GetThisLoader Loader itself
+     * Loader itself
+     *
+     * @var GetThisLoader
      */
     protected GetThisLoader $getThis;
 
@@ -97,7 +103,7 @@ class GetThisLoaderTest extends TestCase
     /**
      * Using reflection class replace current GetThis config
      *
-     * @param array $config
+     * @param array $config Config to set
      *
      * @return void
      */
