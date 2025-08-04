@@ -951,6 +951,7 @@ class Form extends \Laminas\Form\Form implements
             'id' => $this->getElementId($el['name']),
             'class' => [$el['settings']['class'] ?? null],
         ];
+
         if ($type !== 'submit' && $type !== 'radio' && $type !== 'checkbox' && $type !== 'select') {
             $attributes['class'][] = 'form-control';
         }
