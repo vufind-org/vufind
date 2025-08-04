@@ -955,6 +955,7 @@ class Form extends \Laminas\Form\Form implements
         if ($type !== 'submit' && $type !== 'radio' && $type !== 'checkbox' && $type !== 'select') {
             $attributes['class'][] = 'form-control';
         }
+
         if (!empty($el['required'])) {
             $attributes['required'] = true;
         }
