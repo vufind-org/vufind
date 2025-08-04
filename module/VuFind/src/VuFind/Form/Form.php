@@ -981,6 +981,7 @@ class Form extends \Laminas\Form\Form implements
                         'value' => $key,
                         'attributes' => [
                             'id' => $this->getElementId($el['name'] . '_' . $key),
+                            'class' => 'form-check-input',
                         ],
                     ];
                 }
@@ -1009,6 +1010,7 @@ class Form extends \Laminas\Form\Form implements
                         'label_attributes' => ['for' => $elemId],
                         'attributes' => [
                             'id' => $elemId,
+                            'class' => 'form-check-input',
                         ],
                         'selected' => $first,
                     ];
