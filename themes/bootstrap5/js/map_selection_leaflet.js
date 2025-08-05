@@ -6,10 +6,10 @@
  * Initialize a Leaflet map.
  * @param {string}       geoField      The name of the geospatial field.
  * @param {Array}        boundingBox   An array of four numbers representing the initial search box coordinates.
- * @param {string}       baseURL       The base URL for the search page.
- * @param {string}       homeURL       The base URL for individual record pages.
+ * @param {string}       baseURL       The base URL for the search results page.
+ * @param {string}       homeURL       The URL for VuFind's home page (root of application).
  * @param {string}       searchParams  Existing search parameters to be appended to new search URLs.
- * @param {Array<Array>} resultsCoords An array of search results.
+ * @param {Array<Array>} resultsCoords An array of search results; each result is [id, title, west, east, north, south].
  * @param {Array}        basemap       An array containing the URL template and attribution for the map's basemap.
  */
 function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, resultsCoords, basemap) {
