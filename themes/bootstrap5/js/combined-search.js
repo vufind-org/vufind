@@ -2,8 +2,8 @@
 VuFind.combinedSearch = (function CombinedSearch() {
   /**
    * Initialize the combined search functionality
-   * @param {string|HTMLElement} container The container element or a selector for it.
-   * @param {string}             url       The URL to fetch the combined search results from.
+   * @param {string|jQuery} container The container element or a selector for it.
+   * @param {string}        url       The URL to fetch the combined search results from.
    */
   function init(container, url) {
     VuFind.loadHtml(container, url, '', function containerLoad(responseText) {
