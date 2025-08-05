@@ -7,6 +7,7 @@ module.exports = {
   ignorePatterns: [
     "themes/**/vendor/**",
     "themes/**/node_modules/**",
+    "themes/bootstrap5/js/map_tab_leaflet.js",
     "themes/bootstrap5/js/check_item_statuses.js",
     "themes/bootstrap5/js/combined-search.js",
     "themes/bootstrap5/js/cart.js",
