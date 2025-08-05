@@ -3,7 +3,7 @@
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
 /**
- * Initializes and displays an interactive map on the '#map-canvas' element.
+ * Initialize and display an interactive map on the '#map-canvas' element.
  * @param {Array<Array<string|number>>} mapData      An array of arrays, where each inner array represents a geographic feature
  * @param {boolean}                     mapGraticule A boolean indicating whether to display a graticule on the map.
  * @param {Array<string>}               basemap      An array containing the basemap URL template and its attribution text.
