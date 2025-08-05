@@ -8,7 +8,6 @@ module.exports = {
     "themes/**/vendor/**",
     "themes/**/node_modules/**",
     "themes/bootstrap5/js/check_item_statuses.js",
-    "themes/bootstrap5/js/combined-search.js",
     "themes/bootstrap5/js/cart.js",
     "themes/bootstrap5/js/pubdate_vis.js",
     "themes/bootstrap5/js/map_selection_leaflet.js",
