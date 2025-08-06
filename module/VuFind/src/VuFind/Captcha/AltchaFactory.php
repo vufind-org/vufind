@@ -81,25 +81,25 @@ class AltchaFactory implements FactoryInterface
         }
 
         $algorithm = Algorithm::from($config->Captcha->altcha_algorithm ?? 'SHA-256');
-        $max_number = $config->Captcha->altcha_max_number ?? 100000;
-        $salt_len = $config->Captcha->altcha_salt_len ?? 12;
-        $expires_interval = $config->Captcha->altcha_expires_interval ?? null;
+        $maxNumber = $config->Captcha->altcha_max_number ?? 100000;
+        $saltLength = $config->Captcha->altcha_salt_len ?? 12;
+        $expiresInterval = $config->Captcha->altcha_expires_interval ?? null;
         $params = $config->Captcha->altcha_params ?? [];
 
-        $expires = !empty($expires_interval)
-            ? (new \DateTimeImmutable())->add(new \DateInterval($expires_interval))
+        $expires = !empty($expiresInterval)
+            ? (new \DateTimeImmutable())->add(new \DateInterval($expiresInterval))
             : null;
 
-        $altcha = new AltchaOrg\Altcha\Altcha($secret);
+        $altcha = new \AltchaOrg\Altcha\Altcha($secret);
 
         return new $requestedName(
             $altcha,
             // challenge options
             $algorithm,
-            $max_number,
+            $maxNumber,
             $expires,
             $params,
-            $salt_len,
+            $saltLength,
         );
     }
 }
