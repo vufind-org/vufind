@@ -26,7 +26,6 @@ module.exports = {
     "themes/bootstrap5/js/hierarchy_tree.js",
     "themes/bootstrap5/js/cookie.js",
     "themes/bootstrap5/js/record_versions.js",
-    "themes/bootstrap5/js/collection_record.js",
     "themes/bootstrap5/js/sticky_elements.js",
     "themes/bootstrap5/js/checkouts.js",
     "themes/bootstrap5/js/advanced_search.js",
