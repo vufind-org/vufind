@@ -14,7 +14,6 @@ module.exports = {
     "themes/bootstrap5/js/list_item_selection.js",
     "themes/bootstrap5/js/embedded_record.js",
     "themes/bootstrap5/js/openurl.js",
-    "themes/bootstrap5/js/ill.js",
     "themes/bootstrap5/js/record.js",
     "themes/bootstrap5/js/lib/ajax_request_queue.js",
     "themes/bootstrap5/js/covers.js",
