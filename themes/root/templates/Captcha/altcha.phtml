@@ -1,1 +1,1 @@
-<altcha-widget challengejson='<?=$this->captcha->getChallenge() ?>'></altcha-widget>
+<altcha-widget challengejson='<?=$this->escapeHtmlAttr($this->captcha->getChallenge()) ?>'></altcha-widget>
