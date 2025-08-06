@@ -30,7 +30,6 @@
 namespace VuFind\Captcha;
 
 use AltchaOrg\Altcha\ChallengeOptions;
-use AltchaOrg\Altcha\ChallengeParams;
 use AltchaOrg\Altcha\Hasher\Algorithm;
 use Laminas\Mvc\Controller\Plugin\Params;
 
@@ -48,10 +47,10 @@ class Altcha extends AbstractBase
     /**
      * Constructor
      *
-     * @param \AltchaOrg\Altcha\Altcha $altcha Required HMAC key for challenge calculation and solution verification.
-     * @param Algorithm                $algorithm  Hashing algorithm to use (`SHA-1`, `SHA-256`, `SHA-512`, default: `SHA-256`).
-	 * @param int                      $maxNumber  Maximum number for the random number generator (default: 1,000,000)
-	 * @param null|\DateTimeInterface  $expires    Optional expiration time for the challenge.
+     * @param \AltchaOrg\Altcha\Altcha $altcha     Required HMAC key for challenge calculation/solution verification.
+     * @param Algorithm                $algorithm  Hashing algorithm to use (SHA-1, SHA-256, SHA-512, default: SHA-256).
+     * @param int                      $maxNumber  Maximum number for the random number generator (default: 1,000,000)
+     * @param null|\DateTimeInterface  $expires    Optional expiration time for the challenge.
      * @param array                    $params     Optional URL-encoded query parameters.
      * @param int<1, max>              $saltLength Length of the random salt (default: 12 bytes).
      */
@@ -59,10 +58,10 @@ class Altcha extends AbstractBase
         protected \AltchaOrg\Altcha\Altcha $altcha,
         // Options for creation of a new challenge
         protected Algorithm $algorithm = Algorithm::SHA256,
-		protected int $maxNumber = 1000000,
+        protected int $maxNumber = 1000000,
         protected ?\DateTimeInterface $expires = null,
         protected array $params = [],
-		protected int $saltLength = 12,
+        protected int $saltLength = 12,
     ) {
     }
 
