@@ -191,7 +191,7 @@ function getBibKeyString() {
 }
 
 /**
- * Initiates request to various book preview APIs.
+ * Initiate request to various book preview APIs.
  */
 function getBookPreviews() {
   var skeys = getBibKeyString();
