@@ -93,7 +93,8 @@ VuFind.register('covers', function covers() {
     );
   }
   /**
-   * Check if a cover image is too small to be displayed.
+   * Check if a cover image is too small to be displayed. Unavailable images may be represented by a 1x1
+   * image, and this prevents them from cluttering the interface.
    * @param {HTMLImageElement} img The image element to check.
    */
   function checkImgSize(img) {
