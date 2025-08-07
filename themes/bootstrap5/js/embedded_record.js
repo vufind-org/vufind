@@ -105,7 +105,7 @@ VuFind.register('embedded', function embedded() {
   /**
    * Toggle the embedded detailed view of a record.
    * @param {jQuery} _link   The link element.
-   * @param {string} [tabid] The ID of the tab to open.
+   * @param {string} [tabid] The ID of the tab to open (default = first available tab).
    * @returns {boolean} Return false to prevent the default link behavior.
    */
   function toggleDataView(_link, tabid) {
