@@ -6,7 +6,7 @@ VuFind.register('embedded', function embedded() {
   var _STATUS = {};
 
   /**
-   * Save the current status of to session storage.
+   * Synchronize the current status information to session storage for persistence.
    */
   function saveStatusToStorage() {
     var storage = [];
