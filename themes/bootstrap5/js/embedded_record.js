@@ -45,7 +45,7 @@ VuFind.register('embedded', function embedded() {
   /**
    * Load the content for a specific record tab via AJAX.
    * @param {string}  tabid    The ID of the tab to load.
-   * @param {boolean} [_click] Whether to trigger a click on the tab after loading.
+   * @param {boolean} [_click] Whether to trigger a click on the tab after loading (default = false).
    * @returns {boolean} Returns false if the tab redirects to a new page, otherwise true.
    */
   function ajaxLoadTab(tabid, _click) {
