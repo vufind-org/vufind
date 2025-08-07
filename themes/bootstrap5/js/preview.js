@@ -1,7 +1,7 @@
 /*exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
 
 /**
- * Get the preview rights codes from a CSS class.
+ * Get the HathiTrust preview rights codes from a CSS class.
  * @returns {Array} An array of rights codes.
  */
 function getHathiOptions() {
