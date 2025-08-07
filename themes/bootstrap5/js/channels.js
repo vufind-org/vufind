@@ -3,7 +3,6 @@ VuFind.register('channels', function Channels() {
   /**
    * Add dropdown link buttons to an element based on a JSON data attribute.
    * @param {HTMLElement} elem The element containing the data-link-json attribute.
-   * @private
    */
   function addLinkButtons(elem) {
     var links;
@@ -87,10 +86,9 @@ VuFind.register('channels', function Channels() {
   }
 
   /**
-   * Set up a carouselww.
+   * Set up a carousel.
    * @param {number} i  The index of the channel.
    * @param {jQuery} op The channel element.
-   * @private
    */
   function setupChannelSlider(i, op) {
     $(op).find(".slide").removeClass("hidden");
