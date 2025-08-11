@@ -152,7 +152,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
 
   /**
    * Check the save status of all the records within a container
-   * @param {HTMLElement} container The container element.
+   * @param {HTMLElement} [container] The container element (default = document).
    */
   function checkAllSaveStatuses(container = document) {
     if (!userIsLoggedIn) {
