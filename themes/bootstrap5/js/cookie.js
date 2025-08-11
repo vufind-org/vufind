@@ -16,7 +16,7 @@ VuFind.register('cookie', function cookie() {
 
   /**
    * Set the path for the cookie
-   * @param {path} path The path to set
+   * @param {string} path The path to set
    */
   function setCookiePath(path) {
     _COOKIE_PATH = path;
@@ -24,7 +24,7 @@ VuFind.register('cookie', function cookie() {
 
   /**
    * Set the samesite attribute for the cookie
-   * @param {*} sameSite The samesite attribute to set.
+   * @param {string} sameSite The samesite attribute to set.
    */
   function setCookieSameSite(sameSite) {
     _COOKIE_SAMESITE = sameSite;
