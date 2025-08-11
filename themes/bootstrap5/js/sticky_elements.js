@@ -98,7 +98,7 @@ VuFind.register("sticky_elements", function StickyElements() {
 
   /**
    * Handle the sticking and unsticking of elements during scrolling.
-   * @param {boolean} [forceStyleCalculation] Whether to force a full style recalculation.
+   * @param {boolean} [forceStyleCalculation] Whether to force a full style recalculation (default = false).
    */
   function handleStickyElements(forceStyleCalculation = false) {
     let num = 0;
