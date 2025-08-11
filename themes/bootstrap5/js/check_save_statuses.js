@@ -50,7 +50,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   }
 
   /**
-   * Failure callback for the AJAX queue,
+   * Failure callback for the AJAX queue, displaying an error message or hiding the status element.
    * @param {Array}  items      The items passed to the AjaxRequestQueue
    * @param {object} response   The AJAX response object
    * @param {string} textStatus The status of the AJAX request
