@@ -21,8 +21,7 @@ module.exports = {
     "themes/bootstrap5/js/lightbox.js",
     "themes/bootstrap5/js/hierarchy_tree.js",
     "themes/bootstrap5/js/cookie.js",
-    "themes/bootstrap5/js/checkouts.js",
-    "themes/bootstrap5/js/advanced_search.js",
+    "themes/bootstrap5/js/checkouts.js"
   ],
   extends: [],
   env: {
