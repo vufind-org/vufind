@@ -20,7 +20,6 @@ module.exports = {
     "themes/bootstrap5/js/searchbox_controls.js",
     "themes/bootstrap5/js/lightbox.js",
     "themes/bootstrap5/js/hierarchy_tree.js",
-    "themes/bootstrap5/js/cookie.js",
     "themes/bootstrap5/js/checkouts.js",
     "themes/bootstrap5/js/check_save_statuses.js",
   ],
