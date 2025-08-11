@@ -23,7 +23,6 @@ module.exports = {
     "themes/bootstrap5/js/cookie.js",
     "themes/bootstrap5/js/checkouts.js",
     "themes/bootstrap5/js/advanced_search.js",
-    "themes/bootstrap5/js/check_save_statuses.js",
   ],
   extends: [],
   env: {
