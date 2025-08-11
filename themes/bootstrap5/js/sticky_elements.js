@@ -8,8 +8,8 @@ VuFind.register("sticky_elements", function StickyElements() {
   /**
    * Add, remove, or restore CSS classes on sticky element's children based on configuration
    * @param {HTMLElement} element     The sticky element
-   * @param {string|null} [action]    The action to perform (or null do nothing)
-   * @param {boolean}     [saveState] Whether to set the current class state to a data attribute
+   * @param {string|null} [action]    The action to perform (or null to do nothing -- the default)
+   * @param {boolean}     [saveState] Whether to set the current class state to a data attribute (default = false)
    */
   function setChildElementClasses(element, action = null, saveState = false) {
     _stickyChildrenClassesConfig.forEach(
