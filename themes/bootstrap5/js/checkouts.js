@@ -10,7 +10,7 @@ function confirmRenewRequest(link, action) {
 
 /**
  * Submit a form to process a purge request 
- * @param {jQuery} link The button or link that was clicked
+ * @param {jQuery} link   The button or link that was clicked
  * @param {string} action The action to perform
  */
 function confirmPurgeRequest(link, action) {
