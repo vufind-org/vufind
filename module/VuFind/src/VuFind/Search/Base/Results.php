@@ -92,6 +92,13 @@ abstract class Results
     protected $results = null;
 
     /**
+     * Array of range facet stats.
+     *
+     * @var array
+     */
+    protected array $rangeFacetStats = [];
+
+    /**
      * Any errors reported by the search backend
      *
      * @var array
@@ -451,6 +458,16 @@ abstract class Results
             $this->performAndProcessSearch();
         }
         return $this->results;
+    }
+
+    /**
+     * Get range facet stats.
+     *
+     * @return array
+     */
+    public function getRangeFacetStats()
+    {
+        return $this->rangeFacetStats;
     }
 
     /**

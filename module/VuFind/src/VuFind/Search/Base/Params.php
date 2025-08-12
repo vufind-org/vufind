@@ -174,6 +174,13 @@ class Params
     protected $checkboxFacets = [];
 
     /**
+     * Range facet configuration
+     *
+     * @var array
+     */
+    protected $rangeFacets = [];
+
+    /**
      * Whether to fetch result counts for checkbox facets
      *
      * @var bool
@@ -1090,6 +1097,18 @@ class Params
     }
 
     /**
+     * Add a range facet which stats will be queried in the search.
+     *
+     * @param string $facet Facet name
+     *
+     * @return void
+     */
+    public function addRangeFacet($facet)
+    {
+        $this->rangeFacets[] = $facet;
+    }
+
+    /**
      * Enable or disable fetching of checkbox facet counts
      *
      * @param bool $enable Whether to enable counts
@@ -1371,6 +1390,16 @@ class Params
     protected function getRawCheckboxFacets(): array
     {
         return $this->checkboxFacets;
+    }
+
+    /**
+     * Get the range facets that the minimal and maximal value shall be queried of.
+     *
+     * @return array
+     */
+    public function getRangeFacets()
+    {
+        return $this->rangeFacets;
     }
 
     /**

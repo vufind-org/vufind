@@ -81,6 +81,13 @@ class SideFacets extends AbstractFacets
     protected $numericRangeFacets = [];
 
     /**
+     * Range facets that should include values from stats as default range
+     *
+     * @var array
+     */
+    protected $statsRangeFacets = [];
+
+    /**
      * Main facet configuration
      *
      * @var array
@@ -208,6 +215,10 @@ class SideFacets extends AbstractFacets
             $this->numericRangeFacets
                 = $config->SpecialFacets->numericRange->toArray();
         }
+        if (isset($config->SpecialFacets->includeStats)) {
+            $this->statsRangeFacets
+                = $config->SpecialFacets->includeStats->toArray();
+        }
 
         // Checkbox facets:
         $flipCheckboxes = false;
@@ -284,6 +295,17 @@ class SideFacets extends AbstractFacets
         }
         foreach ($checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
+        }
+        $allRangeFacets = array_merge(
+            $this->dateFacets,
+            $this->fullDateFacets,
+            $this->genericRangeFacets,
+            $this->numericRangeFacets
+        );
+        foreach ($allRangeFacets as $rangeFacet) {
+            if (in_array($rangeFacet, $this->statsRangeFacets)) {
+                $params->addRangeFacet($rangeFacet);
+            }
         }
         $params->toggleCheckboxFacetCounts($this->showCheckboxFacetCounts);
     }
@@ -472,6 +494,7 @@ class SideFacets extends AbstractFacets
     protected function getRangeFacets($property)
     {
         $filters = $this->results->getParams()->getRawFilters();
+        $rangeFacetStats = $this->results->getRangeFacetStats();
         $result = [];
         if (isset($this->$property) && is_array($this->$property)) {
             foreach ($this->$property as $current) {
@@ -484,6 +507,10 @@ class SideFacets extends AbstractFacets
                             break;
                         }
                     }
+                } elseif (isset($rangeFacetStats[$current])) {
+                    $stats = $rangeFacetStats[$current];
+                    $from = $stats['min'] ?? '';
+                    $to = $stats['max'] ?? '';
                 }
                 $result[$current] = [$from, $to];
             }

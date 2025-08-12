@@ -624,6 +624,11 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->set('facet', 'true');
         }
 
+        foreach ($this->getRangeFacets() as $rangeFacet) {
+            $backendParams->add('stats', 'true');
+            $backendParams->add('stats.field', $rangeFacet);
+        }
+
         return $backendParams;
     }
 
