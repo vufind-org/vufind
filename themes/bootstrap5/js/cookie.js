@@ -60,7 +60,7 @@ VuFind.register('cookie', function cookie() {
   /**
    * Remove a cookie.
    * @param {string} name The name of the cookie to remove.
-   * @returns {boolean} Return whether if the cookie was removed.
+   * @returns {boolean} Return true if the cookie was removed.
    */
   function remove(name) {
     return window.Cookies.remove(name, _getCookieParams());
