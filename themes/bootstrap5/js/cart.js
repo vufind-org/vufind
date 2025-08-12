@@ -68,7 +68,7 @@ VuFind.register('cart', function Cart() {
   /**
    * Check if an item is already in the cart.
    * @param {string} id        The record ID.
-   * @param {string} [_source] The source of the record.
+   * @param {string} [_source] The source of the record (omit to use default source).
    * @returns {boolean} True if the item is in the cart, false otherwise.
    */
   function hasItem(id, _source) {
@@ -111,7 +111,7 @@ VuFind.register('cart', function Cart() {
   /**
    * Add an item to the cart.
    * @param {string} id        The record ID.
-   * @param {string} [_source] The source of the record.
+   * @param {string} [_source] The source of the record (omit to use default source).
    * @returns {boolean} Return true if the item was added to the cart.
    */
   function addItem(id, _source) {
@@ -138,7 +138,7 @@ VuFind.register('cart', function Cart() {
   /**
    * Remove an item from the cart.
    * @param {string} id     The record ID.
-   * @param {string} source The source of the record.
+   * @param {string} source The source of the record (omit to use default source).
    * @returns {boolean} Return true if the item was removed from the cart.
    */
   function removeItem(id, source) {
@@ -213,7 +213,7 @@ VuFind.register('cart', function Cart() {
 
   /**
    * Register the click handler for the "update cart" button.
-   * @param {HTMLElement|jQuery} [_form] The form element to process.
+   * @param {HTMLElement|jQuery} [_form] The form element to process (default = form named bulkActionForm).
    */
   function _registerUpdate(_form) {
     var $form = typeof _form === 'undefined'
@@ -263,7 +263,7 @@ VuFind.register('cart', function Cart() {
 
   /**
    * Register the click handlers for cart toggle buttons within a container.
-   * @param {HTMLElement|jQuery} [_container] The container to search for toggle buttons.
+   * @param {HTMLElement|jQuery} [_container] The container to search for toggle buttons (default = document).
    */
   function registerToggles(_container) {
     var container = typeof _container !== 'undefined' ? $(_container) : $(document);
@@ -327,8 +327,6 @@ VuFind.register('cart', function Cart() {
   };
 });
 
-// Building an array and checking indexes prevents a race situation
-// We want to prioritize empty over printing
 /**
  * Handle form submissions related to the cart.
  * @param {Event} event The form submission event.
