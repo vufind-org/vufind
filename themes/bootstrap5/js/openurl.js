@@ -30,7 +30,7 @@ VuFind.register('openurl', function OpenUrl() {
 
   /**
    * Embed resolver links into the DOM after a user clicks on an OpenURL control.
-   * @param {jQuery} el The element that was clicked.
+   * @param {HTMLElement|jQuery} el The element that was clicked.
    */
   function embedOpenUrlLinks(el) {
     var element = $(el);
