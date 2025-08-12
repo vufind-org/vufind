@@ -222,7 +222,6 @@ VuFind.register('explain', function explain() {
   /**
    * Callback function for the 'results-init' event to set up charts in new search results.
    * @param {object} [params] An object containing the container element (default = null).
-   * @private
    */
   function _resultsInitCallback(params = null) {
     _setupResultListChart(params && params.container ? params.container : document);
