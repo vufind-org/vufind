@@ -1,7 +1,7 @@
 /**
  * Submit a form to processe a renewal request
- * @param {jQuery} link   The button or link that was clicked
- * @param {string} action The action to perform 
+ * @param {jQuery|HTMLElement} link   The button or link that was clicked
+ * @param {string}             action The action to perform 
  */
 function confirmRenewRequest(link, action) {
   $('#submitType').attr('name', action);
@@ -10,8 +10,8 @@ function confirmRenewRequest(link, action) {
 
 /**
  * Submit a form to process a purge request 
- * @param {jQuery} link   The button or link that was clicked
- * @param {string} action The action to perform
+ * @param {jQuery|HTMLElement} link   The button or link that was clicked
+ * @param {string}             action The action to perform
  */
 function confirmPurgeRequest(link, action) {
   $('#submitType').attr('name', action);
