@@ -31,22 +31,10 @@ then
   SOLR_HOME="/opt/solr/server/solr"
 fi
 
-# This can point to an external Solr in e.g. a Docker container
-if [ -z "$SOLR_JAR_PATH" ]
-then
-  SOLR_JAR_PATH="${SOLR_HOME}/../vendor"
-fi
-
 set -e
 set -x
 
 cd "`dirname $0`/import"
-SOLRMARC_CLASSPATH=$(echo solrmarc_core*.jar)
-if [[ `wc -w <<<"$SOLRMARC_CLASSPATH"` -gt 1 ]]
-then
-  echo "Error: more than one solrmarc_core*.jar in import/; exiting."
-  exit 1
-fi
 CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:/usr/local/vufind/solr/vendor/contrib/analysis-extras/lib/*:/usr/local/vufind/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index
@@ -85,52 +73,22 @@ function build_browse
 
     extra_jvm_opts=$4
 
-    # Get the browse headings from Solr
     if [ "$skip_authority" = "1" ]; then
-        if ! output=$($JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "${browse}.tmp" 2>&1); then
-            echo "ERROR: Failed to create browse headings for ${browse}. ${output}."
-            exit 1
-        fi
+        $JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "${browse}.tmp"
     else
-        if ! output=$($JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "$auth_index" "${browse}.tmp" 2>&1); then
-            echo "ERROR: Failed to create browse headings for ${browse}. ${output}."
-            exit 1
-        fi
+        $JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH org.vufind.solr.indexing.PrintBrowseHeadings "$bib_index" "$field" "$auth_index" "${browse}.tmp"
     fi
 
-    # Sort the browse headings
-    if ! output=$(sort -T /var/tmp -u -t$'\1' -k1 "${browse}.tmp" -o "sorted-${browse}.tmp" 2>&1); then
-        echo "ERROR: Failed to sort ${browse}. ${output}."
-        exit 1
-    fi
+    sort -T /var/tmp -u -t$'\1' -k1 "${browse}.tmp" -o "sorted-${browse}.tmp"
+    $JAVA -Dfile.encoding="UTF-8" -cp $CLASSPATH org.vufind.solr.indexing.CreateBrowseSQLite "sorted-${browse}.tmp" "${browse}_browse.db"
 
-    # Build the SQLite database
-    if ! output=$($JAVA -Dfile.encoding="UTF-8" -cp $CLASSPATH org.vufind.solr.indexing.CreateBrowseSQLite "sorted-${browse}.tmp" "${browse}_browse.db" 2>&1); then
-        echo "ERROR: Failed to build the SQLite database for ${browse}. ${output}."
-        exit 1
-    fi
+    rm -f *.tmp
 
-    # Clear up temp files
-    if ! output=$(rm -f *.tmp 2>&1); then
-        echo "ERROR: Failed to clear out temp files for ${browse}. ${output}."
-        exit 1
-    fi
-
-    # Move the new database to the index directory
-    if ! output=$(mv "${browse}_browse.db" "$index_dir/${browse}_browse.db-updated" 2>&1); then
-        echo "ERROR: Failed to move ${browse}_browse.db database to ${index_dir}/${browse}_browse.db-updated. ${output}."
-        exit 1
-    fi
-
-    # Indicate that the new database is ready for use
-    if ! output=$(touch "$index_dir/${browse}_browse.db-ready" 2>&1); then
-        echo "ERROR: Failed to mark the new ${browse} database as ready for use. ${error}."
-        exit 1
-    fi
+    mv "${browse}_browse.db" "$index_dir/${browse}_browse.db-updated"
+    touch "$index_dir/${browse}_browse.db-ready"
 }
-# These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 build_browse "hierarchy" "hierarchy_browse"
-build_browse "title" "title_fullStr" 1 "-Dbib_field_iterator=org.vufind.solr.indexing.StoredFieldIterator -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
+build_browse "title" "title_fullStr" 1 "-Dbib_field_iterator=org.vufind.solr.indexing.StoredFieldIterator -Dsortfield=title_sort -Dvaluefield=title_fullStr"
 build_browse "topic" "topic_browse"
 build_browse "author" "author_browse"
 build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
