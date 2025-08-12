@@ -10,7 +10,6 @@ module.exports = {
     "themes/bootstrap5/js/check_item_statuses.js",
     "themes/bootstrap5/js/cart.js",
     "themes/bootstrap5/js/common.js",
-    "themes/bootstrap5/js/explain.js",
     "themes/bootstrap5/js/list_item_selection.js",
     "themes/bootstrap5/js/record.js",
     "themes/bootstrap5/js/lib/ajax_request_queue.js",
