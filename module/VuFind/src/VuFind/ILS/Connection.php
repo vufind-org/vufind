@@ -395,6 +395,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (!method_exists($this, $checkMethod)) {
                 return false;
             }
+            if ($this->methodIsBlocked($function)) {
+                return false;
+            }
 
             // Send back the settings:
             return $this->$checkMethod($functionConfig, $params);
@@ -1323,6 +1326,59 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         throw new ILSException(
             'Cannot call method: ' . $this->getDriverClass() . '::' . $methodName
         );
+    }
+
+    /**
+     * Check whether a method is currently blocked by TimedBlocks 
+     *
+     * @param string $methodName     Method to check
+     *
+     * @return bool
+     */
+    public function methodIsBlocked(string $methodName): bool {
+        $methodBlocks = [];
+        $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks'])
+        ? $this->getDriver()->getConfig('TimedBlocks')
+        : [];
+        if (empty($functionConfig)) {
+            return false;
+        }
+        foreach ($functionConfig as $key => $value) {
+            [$method, $setting] = explode(':', $key, 2);
+            $methodBlocks[$method][$setting] = $value;
+        }
+        if (!isset($methodBlocks[$methodName])) {
+            return false;
+        }
+
+        $now = time();
+        $methodBlock = $methodBlocks[$methodName];        
+        $startDate = strtotime($methodBlock['startDate'] ?? '');
+        $endDate = $methodBlock['endDate'] ?? '';
+        $noEndHours = empty(explode(' ', $endDate, 2)[1]);
+        if ($endDate && $noEndHours) {
+            $endDate .= ' 23.59.59';
+        }
+        $endDate = strtotime($endDate);
+
+        if ($startDate && !$endDate) {
+            return $now >= $startDate;
+        }
+        if ($endDate && !$startDate) {
+            return $now <= $endDate;
+        }
+        if ($startDate && $endDate) {
+            return $now >= $startDate && $now <= $endDate;
+        }
+
+        if (($startTime = strtotime($methodBlock['recurringStart'])) && ($endTime = strtotime($methodBlock['recurringEnd']))) {
+            if ($startTime < $endTime) {
+                return $now >= $startTime && $now <= $endTime;
+            } else {
+                return $now >= $startTime || $now <= $endTime;
+            }
+        }
+        return false;
     }
 
     /**
