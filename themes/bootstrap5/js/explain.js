@@ -6,7 +6,6 @@ VuFind.register('explain', function explain() {
    * @param {number} score The score of the record.
    * @param {number} maxScore The maximum possible score.
    * @returns {object} An object containing the border and fill colors.
-   * @private
    */
   function _getBarChartColor(score, maxScore) {
     let percentage = 0;
