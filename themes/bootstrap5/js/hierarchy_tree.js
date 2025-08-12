@@ -21,7 +21,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
    * Fetch and display record element in a preview element.
    * @param {HTMLElement} treeEl The hierarchy tree element.
    * @param {string}      id     The record ID to display.
-   * @returns {boolean}
+   * @returns {boolean} Return true if record elements were displayed
    */
   function showRecord(treeEl, id) {
     selectRecord(treeEl, id);
@@ -67,7 +67,6 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
    * @param {HTMLElement} treeEl The hierarchy tree element.
    * @param {string}      id     The record ID that matches the search.
    */
-
   function selectSearchMatch(treeEl, id) {
     const selectedEl = treeEl.querySelector('[data-record-id=' + CSS.escape(id) + ']');
     if (!selectedEl) {
@@ -115,7 +114,6 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
    * @param {HTMLElement} searchEl    The search form element.
    * @param {HTMLElement} treeEl      The hierarchy tree element.
    */
-
   function doTreeSearch(containerEl, searchEl, treeEl) {
     const loadIndicatorEl = searchEl.querySelector('.js-load-indicator');
     const searchTextEl = searchEl.querySelector('.js-search-text');
