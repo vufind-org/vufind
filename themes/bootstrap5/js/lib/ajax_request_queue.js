@@ -51,7 +51,6 @@ class AjaxRequestQueue {
 
   /**
    * Execute the payload, handling success and failure.
-   * @private
    */
   runPayloadImpl() {
     this.isRunning = true;
