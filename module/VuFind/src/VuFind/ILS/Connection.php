@@ -1329,29 +1329,29 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check whether a method is currently blocked by TimedBlocks 
+     * Get timed blocks for a method from driver configuration
      *
-     * @param string $methodName     Method to check
+     * @param string $methodName Method to check
      *
-     * @return bool
+     * @return array Array with keys 'start', 'end', 'recurring'
+     *               or empty array if no blocks are found
      */
-    public function methodIsBlocked(string $methodName): bool {
+    public function getMethodTimedBlocks($methodName)
+    {
         $methodBlocks = [];
         $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks'])
         ? $this->getDriver()->getConfig('TimedBlocks')
         : [];
         if (empty($functionConfig)) {
-            return false;
+            return [];
         }
         foreach ($functionConfig as $key => $value) {
             [$method, $setting] = explode(':', $key, 2);
             $methodBlocks[$method][$setting] = $value;
         }
         if (!isset($methodBlocks[$methodName])) {
-            return false;
+            return [];
         }
-
-        $now = time();
         $methodBlock = $methodBlocks[$methodName];        
         $startDate = strtotime($methodBlock['startDate'] ?? '');
         $endDate = $methodBlock['endDate'] ?? '';
@@ -1360,22 +1360,52 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             $endDate .= ' 23.59.59';
         }
         $endDate = strtotime($endDate);
-
-        if ($startDate && !$endDate) {
-            return $now >= $startDate;
+        if ($startDate || $endDate) {
+            return [
+                'start' => $startDate ?? '',
+                'end' => $endDate ?? '',
+                'recurring' => false,
+            ];
         }
-        if ($endDate && !$startDate) {
-            return $now <= $endDate;
+        if ($startTime = strtotime($methodBlock['recurringStart'] ?? '') && $endTime = strtotime($methodBlock['recurringEnd'] ?? '')) {
+            return [
+                'start' => $startTime,
+                'end' => $endTime,
+                'recurring' => true,
+            ];
         }
-        if ($startDate && $endDate) {
-            return $now >= $startDate && $now <= $endDate;
-        }
-
-        if (($startTime = strtotime($methodBlock['recurringStart'])) && ($endTime = strtotime($methodBlock['recurringEnd']))) {
-            if ($startTime < $endTime) {
-                return $now >= $startTime && $now <= $endTime;
-            } else {
-                return $now >= $startTime || $now <= $endTime;
+    }
+    /**
+     * Check whether a method is currently blocked by TimedBlocks 
+     *
+     * @param string $methodName     Method to check
+     *
+     * @return bool
+     */
+    public function methodIsBlocked(string $methodName): bool {
+        $now = time();
+        $blocks = $this->getMethodTimedBlocks($methodName);
+        if (!empty($blocks)) {
+            $start = $blocks['start'];
+            $end = $blocks['end'];
+            $recurring = $blocks['recurring'];
+            if (!$recurring) {
+                if ($start && !$end) {
+                    return $now >= $start;
+                }
+                if ($end && !$start) {
+                    return $now <= $end;
+                }
+                if ($start && $end) {
+                    return $now >= $start && $now <= $end;
+                }
+            }
+            if ($recurring) {
+                if ($start < $end) {
+                    return $now >= $start && $now <= $end;
+                } else {
+                    return $now >= $start || $now <= $end;
+                }
             }
         }
         return false;
