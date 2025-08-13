@@ -139,9 +139,21 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       if (!_keyboard.options.theme.includes('show-keyboard')) {
         return;
       }
+      /**
+       * Check if an element has a specific class
+       * @param {HTMLElement} el        The element to check. 
+       * @param {string}      className The class name to search for.
+       * @returns {boolean} Return true of the element has the class name.
+       */
       function hasClass(el, className) {
         return el.className !== undefined && el.className.includes(className);
       }
+      /**
+       * Check if an element has a specific id
+       * @param {HTMLElement} el The element to check.
+       * @param {string}      id The id to search for
+       * @returns {boolean} Return true if the element has the specific id.
+       */
       function hasId(el, id) {
         return el.id === id;
       }
@@ -190,7 +202,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     _hideKeyboard();
   }
 
-   /**
+  /**
    * Set up the searchbox autocomplete functionality.
    */
   function setupAutocomplete() {
