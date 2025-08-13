@@ -395,7 +395,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (!method_exists($this, $checkMethod)) {
                 return false;
             }
-            if ($this->methodIsBlocked($function)) {
+            if ($this->isMethodBlocked($function)) {
                 return false;
             }
 
@@ -1352,7 +1352,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         if (!isset($methodBlocks[$methodName])) {
             return [];
         }
-        $methodBlock = $methodBlocks[$methodName];        
+        $methodBlock = $methodBlocks[$methodName];
         $startDate = strtotime($methodBlock['startDate'] ?? '');
         $endDate = $methodBlock['endDate'] ?? '';
         $noEndHours = empty(explode(' ', $endDate, 2)[1]);
@@ -1362,30 +1362,36 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $endDate = strtotime($endDate);
         if ($startDate || $endDate) {
             return [
-                'start' => $startDate ?? '',
-                'end' => $endDate ?? '',
+                'start' => $startDate,
+                'end' => $endDate,
                 'recurring' => false,
             ];
         }
-        if ($startTime = strtotime($methodBlock['recurringStart'] ?? '') && $endTime = strtotime($methodBlock['recurringEnd'] ?? '')) {
+        if (
+            ($startTime = strtotime($methodBlock['recurringStart'] ?? ''))
+            && ($endTime = strtotime($methodBlock['recurringEnd'] ?? ''))
+        ) {
             return [
                 'start' => $startTime,
                 'end' => $endTime,
                 'recurring' => true,
             ];
         }
+        return [];
     }
+
     /**
-     * Check whether a method is currently blocked by TimedBlocks 
+     * Check whether a method is currently blocked by TimedBlocks
      *
-     * @param string $methodName     Method to check
+     * @param string $methodName Method to check
      *
      * @return bool
      */
-    public function methodIsBlocked(string $methodName): bool {
-        $now = time();
+    public function isMethodBlocked(string $methodName): bool
+    {
         $blocks = $this->getMethodTimedBlocks($methodName);
         if (!empty($blocks)) {
+            $now = time();
             $start = $blocks['start'];
             $end = $blocks['end'];
             $recurring = $blocks['recurring'];
@@ -1394,17 +1400,17 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                     return $now >= $start;
                 }
                 if ($end && !$start) {
-                    return $now <= $end;
+                    return $now < $end;
                 }
                 if ($start && $end) {
-                    return $now >= $start && $now <= $end;
+                    return $now >= $start && $now < $end;
                 }
             }
             if ($recurring) {
                 if ($start < $end) {
-                    return $now >= $start && $now <= $end;
+                    return $now >= $start && $now < $end;
                 } else {
-                    return $now >= $start || $now <= $end;
+                    return $now >= $start || $now < $end;
                 }
             }
         }
