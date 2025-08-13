@@ -31,7 +31,6 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
   /**
    * Hide the virtual keyboard.
-   * @private
    */
   function _hideKeyboard() {
     _keyboard.setOptions({
@@ -75,7 +74,6 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   /**
    * Update the virtual keyboard layout based on user selection.
    * @param {string} layoutName The name of the layout to switch to.
-   * @private
    */
   function _updateKeyboardLayout(layoutName) {
     $('.keyboard-selection-item').each(function deactivateItems() {
