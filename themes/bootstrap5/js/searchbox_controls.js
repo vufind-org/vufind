@@ -18,6 +18,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     "{lock}": "&#8681;",
   };
 
+  /**
+   * Show the virtual keyboard by applying a CSS class.
+   */
   function _showKeyboard() {
     if (_enabled) {
       _keyboard.setOptions({
@@ -26,17 +29,29 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     }
   }
 
+  /**
+   * Hide the virtual keyboard.
+   * @private
+   */
   function _hideKeyboard() {
     _keyboard.setOptions({
       theme: _defaultTheme
     });
   }
 
+  /**
+   * Handle changes from the virtual keyboard, updating the search input and dispatching an 'input' event.
+   * @param {string} input The new input value.
+   */
   function _onChange(input) {
     _textInput.value = input;
     _textInput.dispatchEvent(new Event("input"));
   }
 
+  /**
+   * Handle button presses on the virtual keyboard.
+   * @param {string} button The button pressed.
+   */
   function _onKeyPress(button) {
     if (button === "{shift}" || button === "{lock}") {
       let currentLayoutType = _keyboard.options.layoutName;
@@ -57,6 +72,11 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     });
   }
 
+  /**
+   * Update the virtual keyboard layout based on user selection.
+   * @param {string} layoutName The name of the layout to switch to.
+   * @private
+   */
   function _updateKeyboardLayout(layoutName) {
     $('.keyboard-selection-item').each(function deactivateItems() {
       $(this).removeClass("active");
@@ -77,6 +97,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     }
   }
 
+  /**
+   * Set up the virtual keyboard functionality.
+   */
   function setupKeyboard() {
     if (!_textInput) {
       return;
@@ -169,6 +192,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     _hideKeyboard();
   }
 
+   /**
+   * Set up the searchbox autocomplete functionality.
+   */
   function setupAutocomplete() {
     // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
     var $searchboxes = $('input.autocomplete');
@@ -278,6 +304,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     });
   }
 
+  /**
+   * Set up the searchbox reset button.
+   */
   function setupSearchResetButton() {
     _resetButton = document.getElementById("searchForm-reset");
 
@@ -303,6 +332,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     });
   }
 
+  /**
+   * Initialize the searchbox controls module.
+   */
   function init() {
     _textInput = document.getElementById("searchForm_lookfor");
 

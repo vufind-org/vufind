@@ -13,7 +13,6 @@ module.exports = {
     "themes/bootstrap5/js/record.js",
     "themes/bootstrap5/js/lib/ajax_request_queue.js",
     "themes/bootstrap5/js/facets.js",
-    "themes/bootstrap5/js/searchbox_controls.js",
     "themes/bootstrap5/js/lightbox.js"
   ],
   extends: [],
