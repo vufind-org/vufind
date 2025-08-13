@@ -524,9 +524,9 @@ class Folio extends AbstractAPI implements
             return;
         }
         foreach (array_chunk($ids, self::QUERY_BY_IDS_BATCH_SIZE) as $idsInBatch) {
-            $itemQueries = array_map(fn ($id) => $idField . '=="' . $this->escapeCql($id) . '"', $idsInBatch);
+            $idsWithQuotes = array_map(fn ($id) => '"' . $this->escapeCql($id) . '"', $idsInBatch);
             $query = [
-                'query' => '(' . implode(' OR ', $itemQueries) . ')' . $querySuffix,
+                'query' => $idField . ' == (' . implode(' OR ', $idsWithQuotes) . ')' . $querySuffix,
             ];
             foreach (
                 $this->getPagedResults(
