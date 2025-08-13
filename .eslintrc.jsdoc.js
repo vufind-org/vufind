@@ -7,7 +7,6 @@ module.exports = {
   ignorePatterns: [
     "themes/**/vendor/**",
     "themes/**/node_modules/**",
-    "themes/bootstrap5/js/check_item_statuses.js",
     "themes/bootstrap5/js/common.js",
     "themes/bootstrap5/js/list_item_selection.js",
     "themes/bootstrap5/js/record.js",
