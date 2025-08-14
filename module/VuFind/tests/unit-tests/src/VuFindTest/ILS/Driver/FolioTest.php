@@ -1054,8 +1054,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig = $this->defaultDriverConfig;
         $driverConfig['IDs']['type'] = 'hrid';
         $this->createConnector('get-holdings', $driverConfig);
-        $this->assertEquals($this->getExpectedGetHoldingsWithMultipleIdsResult(),
-            $this->driver->getHoldings(['foo', 'bar']));
+        $this->assertEquals(
+            $this->getExpectedGetHoldingsWithMultipleIdsResult(),
+            $this->driver->getHoldings(['foo', 'bar'])
+        );
     }
 
     /**
