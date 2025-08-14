@@ -3,7 +3,7 @@
         "expectedMethod": "GET",
         "expectedPath": "\/holdings-storage\/holdings",
         "expectedParams": {
-            "query": "(instanceId==\"instanceid\") NOT discoverySuppress==true",
+            "query": "instanceId == (\"instanceid\") NOT discoverySuppress==true",
             "offset": 0,
             "limit": 1000
         },
@@ -64,7 +64,7 @@
         "expectedMethod": "GET",
         "expectedPath": "\/inventory\/items-by-holdings-id",
         "expectedParams": {
-            "query": "(holdingsRecordId==\"holdingid\") sortby volume",
+            "query": "holdingsRecordId == (\"holdingid\") sortby volume",
             "offset": 0,
             "limit": 1000
         },
