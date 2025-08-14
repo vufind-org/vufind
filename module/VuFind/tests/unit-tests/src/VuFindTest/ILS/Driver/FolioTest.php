@@ -1038,7 +1038,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'electronic_holdings' => [],
-            ]
+            ],
         ];
     }
 
