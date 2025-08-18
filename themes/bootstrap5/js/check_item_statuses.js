@@ -193,7 +193,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   }
 
   /**
-   * Check the status of a single item and adds it to the request queue.
+   * Check the status of a single item and add it to the request queue.
    * @param {HTMLElement} el The element representing the item.
    */
   function checkItemStatus(el) {
