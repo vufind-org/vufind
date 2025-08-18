@@ -2,7 +2,10 @@
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
- * Functions and event handlers specific to record pages.
+ * Check if a user request is valid by making an AJAX call.
+ * @param {HTMLElement} element The link element to check.
+ * @param {string} requestType The type of request (e.g., 'Hold', 'StorageRetrievalRequest').
+ * @param {string} [icon='place-hold'] The icon to display.
  */
 function checkRequestIsValid(element, requestType, icon = 'place-hold') {
   const recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
@@ -33,6 +36,10 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
     .catch(() => element.parentNode.removeChild(element));
 }
 
+/**
+ * Set up the validity check for request links within a given context.
+ * @param {HTMLElement} [_context] The container element to search within (default = document).
+ */
 function setUpCheckRequest(_context) {
   const context = typeof _context === "undefined" ? document : _context;
   context.querySelectorAll('.checkRequest').forEach(
@@ -46,6 +53,13 @@ function setUpCheckRequest(_context) {
   );
 }
 
+/**
+ * Delete a record comment via an AJAX request.
+ * @param {HTMLElement} element The element that triggered the delete.
+ * @param {string} recordId The ID of the record.
+ * @param {string} recordSource The source of the record.
+ * @param {string} commentId The ID of the comment to delete.
+ */
 function deleteRecordComment(element, recordId, recordSource, commentId) {
   const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'deleteRecordComment', id: commentId });
   fetch(url, {
@@ -58,6 +72,12 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   });
 }
 
+/**
+ * Refresh the list of comments for a record.
+ * @param {HTMLElement} target The container element for the comments.
+ * @param {string} recordId The ID of the record.
+ * @param {string} recordSource The source of the record.
+ */
 function refreshCommentList(target, recordId, recordSource) {
   const commentList = target.querySelector('.comment-list');
   if (!commentList) return;
@@ -83,6 +103,11 @@ function refreshCommentList(target, recordId, recordSource) {
     });
 }
 
+/**
+ * Refresh the record rating display.
+ * @param {string} recordId The ID of the record.
+ * @param {string} recordSource The source of the record.
+ */
 function refreshRecordRating(recordId, recordSource) {
   const rating = document.querySelector('.media-left .rating');
   if (!rating) {
