@@ -122,7 +122,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
 
   /**
    * Check if all items across all pages are selected.
-   * @param {HTMLFormElement} form The form element.
+   * @param {HTMLElement} form The form element.
    * @returns {boolean} Return true if all items are selected across all pages.
    */
   function _allGlobalAreSelected(form) {
@@ -136,7 +136,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Updates the form inputs based on the input data. "data" can contain the values for "non_default_ids",
    * "checked_default" and if all single item checkboxes should be checked.
-   * @param {HTMLFormElement} form The form element.
+   * @param {HTMLElement} form The form element.
    * @param {object} [data] An object containing state data to apply (default = {}).
    */
   function _writeToForm(form, data = {}) {
@@ -270,7 +270,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
 
   /**
    * Initialize a form for multi-page selection, loading state from session storage.
-   * @param {HTMLFormElement} form The form to initialize.
+   * @param {HTMLElement} form The form to initialize.
    * @private
    */
   function _setupMultiPageSelectionForm(form) {
