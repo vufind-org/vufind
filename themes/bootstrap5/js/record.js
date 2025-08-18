@@ -412,7 +412,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 /**
  * Create a new tab content element for an AJAX tab.
  * @param {string} tabId The ID of the tab.
- * @returns {HTMLDivElement} The new tab element.
+ * @returns {HTMLElement} The new tab element.
  */
 function getNewRecordTab(tabId) {
   const newRecordTab = document.createElement("div");
