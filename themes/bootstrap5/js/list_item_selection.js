@@ -5,8 +5,8 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Store data in the session storage for a specific form
    * @param {HTMLElement} form The form element
-   * @param {string} key The key to store the data under
-   * @param {*} data The data to be stored.
+   * @param {string}      key  The key to store the data under
+   * @param {*}           data The data to be stored.
    */
   function _sessionSet(form, key, data) {
     let formId = form.id;
@@ -18,7 +18,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Retrieve data from session storage for a specific form.
    * @param {HTMLElement} form The form element.
-   * @param {string} key The key of the data to retrieve.
+   * @param {string}      key  The key of the data to retrieve.
    * @returns {*} The retrieved data (or undefined if not found).
    */
   function _sessionGet(form, key) {
@@ -30,7 +30,6 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Write the current multi-page selection state to session storage.
    * @param {HTMLElement} form The form element.
-   * @private
    */
   function _writeState(form) {
     if (form.classList.contains('multi-page-selection')) {
@@ -55,7 +54,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Check or uncheck a checkbox or a list of checkboxes.
    * @param {NodeList|HTMLElement} checkbox The checkbox or checkboxes to update.
-   * @param {boolean} checked The desired checked state.
+   * @param {boolean}              checked  The desired checked state.
    */
   function _check(checkbox, checked) {
     if (checkbox instanceof NodeList) {
@@ -68,8 +67,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Update the text and visibility of the clear selection button.
    * @param {HTMLElement} button The clear selection button element.
-   * @param {number} count The number of selected items.
-   * @private
+   * @param {number}      count  The number of selected items.
    */
   function _updateSelectionCount(button, count) {
     if (count < 1) {
@@ -271,7 +269,6 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Initialize a form for multi-page selection, loading state from session storage.
    * @param {HTMLElement} form The form to initialize.
-   * @private
    */
   function _setupMultiPageSelectionForm(form) {
     let nonDefaultIdsInput = document.createElement('input');
