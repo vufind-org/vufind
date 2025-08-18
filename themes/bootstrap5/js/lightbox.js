@@ -84,6 +84,7 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
   }
+
   /**
    * Hide the lightbox.
    */
@@ -202,8 +203,6 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   var _xhr = false;
-  // Public: Handle AJAX in the Lightbox
-
   /**
    * Perform an AJAX request to load content into the lightbox.
    * @param {object} obj The AJAX settings object.
@@ -499,7 +498,6 @@ VuFind.register('lightbox', function Lightbox() {
     document.removeEventListener('keydown', onKeydown);
   }
 
-  // Public: Attach listeners to the page
   /**
    * Bind lightbox event handlers to links and forms within a given element.
    * @param {HTMLElement} [el] The element to search for bindable items (default = document).
