@@ -134,8 +134,8 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Updates the form inputs based on the input data. "data" can contain the values for "non_default_ids",
    * "checked_default" and if all single item checkboxes should be checked.
-   * @param {HTMLElement} form The form element.
-   * @param {object} [data] An object containing state data to apply (default = {}).
+   * @param {HTMLElement} form   The form element.
+   * @param {object}      [data] An object containing state data to apply (default = {}).
    */
   function _writeToForm(form, data = {}) {
     if (data.nonDefaultIds !== undefined) {
