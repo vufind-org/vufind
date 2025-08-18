@@ -32,12 +32,12 @@ namespace Finna\Controller\Plugin;
 use DOMDocument;
 use DOMXPath;
 use Finna\Record\Schema\Schematron;
-use Finna\Util\CachingXmlEntityLoader;
+use Finna\Util\CachingHttpStreamWrapper;
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
-
-use function function_exists;
+use VuFindHttp\HttpServiceInterface;
 
 /**
  * VuFind Action Helper - Record Preview Support Methods
@@ -81,14 +81,16 @@ class Preview extends AbstractPlugin
     /**
      * Constructor
      *
-     * @param ContainerInterface     $serviceLocator  Service locator
-     * @param array                  $config          Main configuration
-     * @param CachingXmlEntityLoader $xmlEntityLoader XML entity loader for schema validation
+     * @param ContainerInterface   $serviceLocator Service locator
+     * @param array                $config         Main configuration
+     * @param HttpServiceInterface $httpService    HTTP Service for validation
+     * @param StorageInterface     $cacheStorage   Cache storage for validation
      */
     public function __construct(
         protected ContainerInterface $serviceLocator,
         protected array $config,
-        protected CachingXmlEntityLoader $xmlEntityLoader
+        protected HttpServiceInterface $httpService,
+        protected StorageInterface $cacheStorage
     ) {
     }
 
@@ -217,45 +219,46 @@ class Preview extends AbstractPlugin
         $recommendations = [];
         $xsd = $this->config['NormalizationPreview']['validation_xsd'][$format] ?? null;
         $schematronRule = $this->config['NormalizationPreview']['validation_schematron'][$format] ?? null;
-        if ($xsd || $schematronRule) {
-            if (!($document = $this->createDOMDocumentWithDefaultNamespace($metadata, $format))) {
-                $errors[] = 'Could not parse document XML';
-            } else {
-                if ($xsd) {
-                    $saveInternalErrors = libxml_use_internal_errors(true);
-                    // libxml_get_external_entity_loader is only available with PHP 8.2 onwards:
-                    $saveEntityLoader = function_exists('libxml_get_external_entity_loader')
-                        ? libxml_get_external_entity_loader()
-                        : null;
-                    libxml_set_external_entity_loader([$this->xmlEntityLoader, 'resolve']);
-                    try {
-                        if (!$document->schemaValidate($pathResolver->getConfigPath($xsd))) {
-                            foreach (libxml_get_errors() as $error) {
-                                $errorDesc = '[' . $error->line . '] ' . trim($error->message);
-                                if (LIBXML_ERR_WARNING !== $error->level) {
-                                    $errors[] = $errorDesc;
+
+        // Use our own stream wrappers to cache external entity loads:
+        CachingHttpStreamWrapper::enable($this->httpService, $this->cacheStorage);
+        try {
+            if ($xsd || $schematronRule) {
+                if (!($document = $this->createDOMDocumentWithDefaultNamespace($metadata, $format))) {
+                    $errors[] = 'Could not parse document XML';
+                } else {
+                    if ($xsd) {
+                        $saveInternalErrors = libxml_use_internal_errors(true);
+                        try {
+                            if (!$document->schemaValidate($pathResolver->getConfigPath($xsd))) {
+                                foreach (libxml_get_errors() as $error) {
+                                    $errorDesc = '[' . $error->line . '] ' . trim($error->message);
+                                    if (LIBXML_ERR_WARNING !== $error->level) {
+                                        $errors[] = $errorDesc;
+                                    }
                                 }
                             }
+                        } finally {
+                            libxml_use_internal_errors($saveInternalErrors);
                         }
-                    } finally {
-                        libxml_use_internal_errors($saveInternalErrors);
-                        libxml_set_external_entity_loader($saveEntityLoader);
                     }
-                }
-                if ($schematronRule) {
-                    $schematron = new Schematron();
-                    $schematron->load($pathResolver->getConfigPath($schematronRule));
-                    foreach ($schematron->validate($document) as $message) {
-                        if (str_starts_with($message, '[WARN] ')) {
-                            $warnings[] = substr($message, 7);
-                        } elseif (str_starts_with($message, '[INFO] ')) {
-                            $recommendations[] = substr($message, 7);
-                        } else {
-                            $warnings[] = $message;
+                    if ($schematronRule) {
+                        $schematron = new Schematron();
+                        $schematron->load($pathResolver->getConfigPath($schematronRule));
+                        foreach ($schematron->validate($document) as $message) {
+                            if (str_starts_with($message, '[WARN] ')) {
+                                $warnings[] = substr($message, 7);
+                            } elseif (str_starts_with($message, '[INFO] ')) {
+                                $recommendations[] = substr($message, 7);
+                            } else {
+                                $warnings[] = $message;
+                            }
                         }
                     }
                 }
             }
+        } finally {
+            CachingHttpStreamWrapper::disable();
         }
 
         if ($errors) {

@@ -411,7 +411,6 @@ $config = [
             \Finna\ReservationList\Form\Form::class => \Finna\Form\FormFactory::class,
             \Finna\ReservationList\ReservationListService::class => \Finna\ReservationList\ReservationListServiceFactory::class,
             \Finna\ReservationList\Handler\PluginManager::class => \VuFind\ServiceManager\AbstractPluginManagerFactory::class,
-            \Finna\Util\CachingXmlEntityLoader::class => \Finna\Util\CachingXmlEntityLoaderFactory::class,
             'Finna\View\CustomElement\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Video\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Video\Video' => 'Finna\Video\VideoFactory',

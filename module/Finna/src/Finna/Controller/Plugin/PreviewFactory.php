@@ -29,12 +29,12 @@
 
 namespace Finna\Controller\Plugin;
 
-use Finna\Util\CachingXmlEntityLoader;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\PluginManager as ConfigManager;
 
 /**
@@ -74,7 +74,8 @@ class PreviewFactory implements FactoryInterface
         return new $requestedName(
             $container,
             $container->get(ConfigManager::class)->get('config')->toArray(),
-            $container->get(CachingXmlEntityLoader::class)
+            $container->get(\VuFindHttp\HttpService::class),
+            $container->get(CacheManager::class)->getCache('object')
         );
     }
 }

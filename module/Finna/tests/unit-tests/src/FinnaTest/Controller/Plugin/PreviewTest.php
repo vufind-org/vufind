@@ -31,8 +31,8 @@ namespace FinnaTest\Controller\Plugin;
 
 use Finna\Controller\Plugin\Preview;
 use Finna\Controller\RecordPreviewController;
-use Finna\Util\CachingXmlEntityLoader;
 use FinnaTest\Container\MockContainer;
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -40,6 +40,7 @@ use VuFind\Config\Config;
 use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RecordDriver\PluginManager as RecordPluginManager;
+use VuFindHttp\HttpService;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
@@ -216,23 +217,11 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
             ->with('params', null)
             ->willReturn($params);
 
-        $entityLoader = $this->getMockBuilder(CachingXmlEntityLoader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $entityLoader->expects($this->any())
-            ->method('resolve')
-            ->willReturnCallback(
-                function ($publicId, $systemId, $context) {
-                    $data = file_get_contents($systemId);
-                    $f = fopen('php://temp', 'r+');
-                    fwrite($f, $data);
-                    rewind($f);
-                    return $f;
-                }
-            );
+        $httpService = $this->createMock(HttpService::class);
+        $cacheStorage = $this->createMock(StorageInterface::class);
 
         $preview = $this->getMockBuilder(Preview::class)
-            ->setConstructorArgs([$container, $config, $entityLoader])
+            ->setConstructorArgs([$container, $config, $httpService, $cacheStorage])
             ->onlyMethods(['loadPreviewRecordData', 'getController'])
             ->getMock();
 
