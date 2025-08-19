@@ -255,8 +255,8 @@ var VuFind = (function VuFind() {
     
     /**
      * Adds attributes to an HTML element.
-     * @param {*} _element The HTML element to which attributes will be added.
-     * @param {*} _attrs   An object of key-value pairs representing the attributes to add (default = {}).
+     * @param {HTMLElement} _element The HTML element to which attributes will be added.
+     * @param {object}      _attrs   An object of key-value pairs representing the attributes to add (default = {}).
      */
     function addAttrs(_element, _attrs = {}) {
       Object.keys(_attrs).forEach(key => {
@@ -304,7 +304,7 @@ var VuFind = (function VuFind() {
 
   /**
    * Return a spinner html element with loading text
-   * @param {string|null} [text]       Translation key to append inside span wrapper (default = null)
+   * @param {string|null} [text]       Translation key to append inside span wrapper; loading_ellipsis is used if null (default = null)
    * @param {string}      [extraClass] Extra class string to add for spinner wrapper (default = '')
    * @returns {HTMLSpanElement} The spinner HTML element with text.
    */
@@ -318,7 +318,7 @@ var VuFind = (function VuFind() {
 
   /**
    * Return an overlay html element that contains a spinner with loading text
-   * @param {string|null} [text]        Translation key to append inside span wrapper (default = null)
+   * @param {string|null} [text]       Translation key to append inside span wrapper; loading_ellipsis is used if null (default = null)
    * @param {string}      [extraClass] Extra class string to add for spinner wrapper (default = '')
    * @returns {HTMLDivElement} The loading overlay element.
    */
@@ -490,7 +490,7 @@ var VuFind = (function VuFind() {
 
   /**
    * Sets up click handlers for QR code links to display the QR code image on click.
-   * @param {Element} [_container] The container element to search for links; defaults to (default = document.body).
+   * @param {Element} [_container] The container element to search for links (default = document.body).
    * @returns {void}
    */
   function setupQRCodeLinks(_container) {
@@ -512,7 +512,7 @@ var VuFind = (function VuFind() {
 
   /**
    * Initialize result page scripts.
-   * @param {string|Element} [_container] The container element to initialize scripts on.
+   * @param {string|Element} _container The container element to initialize scripts on.
    * @returns {void}
    */
   var initResultScripts = function initResultScripts(_container) {
