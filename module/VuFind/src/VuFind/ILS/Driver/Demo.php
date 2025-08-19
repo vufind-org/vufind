@@ -2906,6 +2906,10 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             return ($config['enabled'] ?? false) ? $config : false;
         }
 
+        if ('TimedBlocks' === $function) {
+            return $this->config['TimedBlocks'] ?? [];
+        }
+
         return [];
     }
 

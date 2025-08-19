@@ -1336,15 +1336,15 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @return array Array with keys 'start', 'end', 'recurring'
      *               or empty array if no blocks are found
      */
-    public function getMethodTimedBlocks($methodName)
+    public function getMethodTimedBlocks(string $methodName): array
     {
-        $methodBlocks = [];
         $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks'])
-        ? $this->getDriver()->getConfig('TimedBlocks')
-        : [];
+            ? $this->getDriver()->getConfig('TimedBlocks')
+            : [];
         if (empty($functionConfig)) {
             return [];
         }
+        $methodBlocks = [];
         foreach ($functionConfig as $key => $value) {
             [$method, $setting] = explode(':', $key, 2);
             $methodBlocks[$method][$setting] = $value;
@@ -1381,7 +1381,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check whether a method is currently blocked by TimedBlocks
+     * Check whether a method is currently blocked in TimedBlocks section of
+     * driver configuration
      *
      * @param string $methodName Method to check
      *
