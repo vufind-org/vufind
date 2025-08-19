@@ -5,7 +5,7 @@
  * Check if a user request is valid by making an AJAX call.
  * @param {HTMLElement} element The link element to check.
  * @param {string} requestType The type of request (e.g., 'Hold', 'StorageRetrievalRequest').
- * @param {string} [icon='place-hold'] The icon to display.
+ * @param {string} [icon] The icon to display (default = 'place-hold').
  */
 function checkRequestIsValid(element, requestType, icon = 'place-hold') {
   const recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
