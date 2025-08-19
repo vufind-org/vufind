@@ -111,6 +111,7 @@ class FavoritesService implements TranslatorAwareInterface
         if (!$user) {
             throw new LoginRequiredException('Log in to create lists.');
         }
+
         return $this->userListService->createEntity()
             ->setCreated(new DateTime())
             ->setUser($user);
