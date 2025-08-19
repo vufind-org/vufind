@@ -145,55 +145,21 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a mock availability status for testing
+     * Create an availability status for testing
      *
      * @param bool   $available   Whether the item is available
      * @param string $description Status description
      *
-     * @return object
+     * @return AvailabilityStatus
      */
-    protected function createMockAvailabilityStatus($available = true, $description = 'Available')
+    protected function createAvailabilityStatus($available = true, $description = 'Available')
     {
-        // Create an anonymous class that implements the required methods
-        // generated with Claude Sonnet 4 - but there must be a better way to do this,
-        // i.e. by hooking into the AvailabilityStatusInterface directly.
-        return new class ($available, $description) {
-            private $available;
-
-            private $description;
-
-            /**
-             * Constructor to initialize properties
-             *
-             * @param bool   $available   Whether the item is available
-             * @param string $description Status description
-             */
-            public function __construct($available, $description)
-            {
-                $this->available = $available;
-                $this->description = $description;
-            }
-
-            /**
-             * Check if the item is available
-             *
-             * @return bool
-             */
-            public function isAvailable(): bool
-            {
-                return $this->available;
-            }
-
-            /**
-             * Get the status description
-             *
-             * @return string
-             */
-            public function getStatusDescription(): string
-            {
-                return $this->description;
-            }
-        };
+        // Use the real AvailabilityStatus class
+        $availability = $available ? 
+            \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE : 
+            \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE;
+        
+        return new \VuFind\ILS\Logic\AvailabilityStatus($availability, $description);
     }
 
     /**
@@ -217,18 +183,20 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         ];
         $i = 0;
         foreach ($result['holdings'] as &$holding) {
-            // Add 'availability' field to simulate different hold types
-            $holding['availability'] = $this->createMockAvailabilityStatus(
+            // Add 'availability' field using the real class
+            $holding['availability'] = $this->createAvailabilityStatus(
                 $availabilityStatus[$i][0],
                 $availabilityStatus[$i][1]
             );
             $i++;
         }
+        
         $holdConfig = [
             'function' => 'placeHold',
             'HMACKeys' => ['id', 'location'],
         ];
 
+        // Rest of the test remains the same...
         // Test 'all' mode (all items get a link)
         $holdings = $this->callMethod($logic, 'generateHoldings', [$result, 'all', $holdConfig]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
@@ -239,7 +207,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
 
-        // // Test 'recalls' mode (only unavailable items get a link)
+        // Test 'recalls' mode (only unavailable items get a link)
         $holdings = $this->callMethod($logic, 'generateHoldings', [$result, 'recalls', $holdConfig]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayNotHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
@@ -376,7 +344,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
                     'enumchron' => '',
                     'barcode' => '468109755',
                     'duedate' => '02.09.2025',
-                    'availability' => $this->createMockAvailabilityStatus(false, 'Checked Out'),
+                    'availability' => $this->createAvailabilityStatus(false, 'Checked Out'),
                     'bound_with_records' => [],
                     'loan_type_id' => 'loan_type_id',
                     'loan_type_name' => 'Circulating',
@@ -395,5 +363,5 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $result['holdings']['holdings_id_1|Main Library']['items']);
         $this->assertEquals('Main Library', $result['holdings']['holdings_id_1|Main Library']['location']);
         $this->assertFalse($result['blocks']);
-    }
+}
 }
