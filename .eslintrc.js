@@ -36,9 +36,6 @@ module.exports = {
     "linebreak-style": ["error", "unix"],
     "no-multi-spaces": "warn",
     "semi-spacing": ["warn", { "before": false, "after": true }],
-    "space-infix-ops": "warn",
-
-    // the following is required for Bootstrap 3 collapse:
-    "no-jquery/no-support": "off"
+    "space-infix-ops": "warn"
   }
 };
