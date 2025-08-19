@@ -289,8 +289,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
     return newParams;
   }
-
-  // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
+  
   /**
    * Compile modified facets into lists of added and removed URL parameters.
    */
@@ -559,7 +558,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     });
   }
 
-  // List all the forms for date range facets and add a listener on them to prevent submission
   /**
    * Initialize event listeners for date range selector forms.
    * @param {HTMLElement} context The container element.
