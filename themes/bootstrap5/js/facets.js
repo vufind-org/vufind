@@ -580,7 +580,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   /**
    * Initialize the multi-facets selection feature.
-   * @param {HTMLElement} [_context] The container element to initialize (default = defaultContext).
+   * @param {HTMLElement} [_context] The container element to initialize. Defaults to #search-sidebar, then .js-full-facet-list if not found.
    */
   function init(_context) {
     if (!isMultiFacetsSelectionEnabled()) {
