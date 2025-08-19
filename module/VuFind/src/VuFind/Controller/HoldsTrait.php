@@ -52,7 +52,7 @@ trait HoldsTrait
     public function holdAction()
     {
         $driver = $this->loadRecord();
-        // Holds on EDS API records require a different ID.
+        // Holds on API records (as opposed to Solr records; e.g. EDS) may require a different ID.
         // This id can be obtained from the getUniqueIDOverrideForRequest method
         $originalId = $driver->getUniqueID();
         $id = $driver->tryMethod('getUniqueIDOverrideForRequest', default: $originalId);
