@@ -16,7 +16,7 @@
     <?php endforeach; ?>
   </ul>
   <h2><?=$this->transEsc('Your Ratings')?></h2>
-  <?php if (count($this->ratings) !== 0): ?>  
+  <?php if (count($this->ratings) !== 0): ?>
     <nav class="search-header hidden-print">
       <?php
         $abs = $this->ratings->getAbsoluteItemNumber($this->ratings->getItemCountPerPage());
@@ -80,7 +80,7 @@
                   </div>
                 <?php endif; ?>
               </td>
-              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $rating['created'])?></td>
+              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $rating['created']->getTimestamp())?></td>
               <td data-label="<?=$this->transEscAttr('Title')?>">
                 <a href="<?=$this->url('record', ['id' => $rating['record_id']])?>"><?=$this->escapeHtml($rating['recordTitle'])?></a>
               </td>

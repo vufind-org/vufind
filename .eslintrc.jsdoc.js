@@ -7,9 +7,7 @@ module.exports = {
   ignorePatterns: [
     "themes/**/vendor/**",
     "themes/**/node_modules/**",
-    "themes/bootstrap5/js/common.js",
-    "themes/bootstrap5/js/facets.js",
-    "themes/bootstrap5/js/lightbox.js"
+    "themes/bootstrap5/js/common.js"
   ],
   extends: [],
   env: {

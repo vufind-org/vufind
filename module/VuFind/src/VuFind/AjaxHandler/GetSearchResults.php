@@ -34,7 +34,6 @@ use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\Search;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory;
