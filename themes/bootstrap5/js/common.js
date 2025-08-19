@@ -226,11 +226,10 @@ var VuFind = (function VuFind() {
 
   /**
    * Get an icon identified by a name.
-   * @param {string}  name          Name of the icon to create
-   * @param {object}  attrs         Object containing attributes, key is the attribute of an HTMLElement,
-   *                                value is the values to add for the attribute.
-   * @param {boolean} returnElement [Optional] Should the function return an HTMLElement.
-   *                                Default is false.
+   * @param {string}  name            Name of the icon to create
+   * @param {object}  attrs           Object containing attributes, key is the attribute of an HTMLElement,
+   *                                  value is the values to add for the attribute.
+   * @param {boolean} [returnElement] Should the function return an HTMLElement (default = false).
    * @returns {string|HTMLElement} Return the icon
    */
   var icon = function icon(name, attrs = {}, returnElement = false) {
