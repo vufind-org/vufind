@@ -48,9 +48,6 @@ use VuFind\Db\Service\SearchServiceInterface;
  */
 abstract class AbstractBase implements HandlerInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait {
-        getDbTable as getTable;
-    }
     // Note that we intentionally omit the DbServiceAwareInterface above; the service
     // manager is injected by AbstractBaseFactory explicitly for compatibility with
     // the secure delegator factory, so we don't need to auto-inject it.

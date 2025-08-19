@@ -464,10 +464,11 @@ $config = [
             'VuFind\Crypt\PasswordHasher' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Crypt\SecretCalculator' => 'VuFind\Crypt\SecretCalculatorFactory',
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
-            'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
-            'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Db\ConnectionFactory' => 'VuFind\Db\ConnectionFactoryFactory',
+            'VuFind\Db\Connection' => 'VuFind\Db\ConnectionFactory',
+            'VuFind\Db\Entity\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Db\PersistenceManager' => 'VuFind\Db\PersistenceManagerFactory',
             'VuFind\Db\Service\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
             'VuFind\Escaper\Escaper' => 'VuFind\Escaper\EscaperFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
@@ -555,7 +556,6 @@ $config = [
             'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
-            'Laminas\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
         'delegators' => [
@@ -570,6 +570,8 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'doctrine.connection.orm_vufind' => 'VuFind\Db\Connection',
+
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\AuthPluginManager' => 'VuFind\Auth\PluginManager',
@@ -586,10 +588,6 @@ $config = [
             'VuFind\ContentTOCPluginManager' => 'VuFind\Content\TOC\PluginManager',
             'VuFind\CookieManager' => 'VuFind\Cookie\CookieManager',
             'VuFind\DateConverter' => 'VuFind\Date\Converter',
-            'VuFind\DbAdapter' => 'Laminas\Db\Adapter\Adapter',
-            'VuFind\DbAdapterFactory' => 'VuFind\Db\AdapterFactory',
-            'VuFind\DbRowPluginManager' => 'VuFind\Db\Row\PluginManager',
-            'VuFind\DbTablePluginManager' => 'VuFind\Db\Table\PluginManager',
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
             'VuFind\HierarchyDriverPluginManager' => 'VuFind\Hierarchy\Driver\PluginManager',
             'VuFind\HierarchyTreeDataFormatterPluginManager' => 'VuFind\Hierarchy\TreeDataFormatter\PluginManager',
@@ -643,6 +641,47 @@ $config = [
             'VuFind\Http\CachingDownloader' => false,
         ],
     ],
+    'caches' => [
+        'doctrinemodule.cache.filesystem' => [
+            'options' => [
+                'cache_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/objects',
+            ],
+        ],
+    ],
+    'doctrine' => [
+        'configuration' => [
+            'orm_vufind' => [
+                'query_cache' => 'filesystem',
+                'result_cache' => 'filesystem',
+                'metadata_cache' => 'filesystem',
+                'hydration_cache' => 'filesystem',
+                'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
+            ],
+        ],
+        'driver' => [
+            'vufind_attribute_driver' => [
+                'class' => \Doctrine\ORM\Mapping\Driver\AttributeDriver::class,
+                'cache' => 'filesystem',
+                'paths' => [
+                    'module/VuFind/src/VuFind/Db/Entity',
+                ],
+            ],
+            'orm_default' => [
+                'drivers' => [
+                    'VuFind\Db\Entity' => 'vufind_attribute_driver',
+                ],
+            ],
+        ],
+        'entitymanager' => [
+            'orm_vufind' => [
+                'connection' => 'orm_vufind',
+                'configuration' => 'orm_vufind',
+            ],
+        ],
+    ],
+    'doctrine_factories' => [
+        'entitymanager' => \VuFind\Db\EntityManagerFactory::class,
+    ],
     'translator' => [],
     'translator_plugins' => [
         'factories' => [
@@ -669,27 +708,6 @@ $config = [
     'vufind' => [
         // The config reader is a special service manager for loading .ini files:
         'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
-        // PostgreSQL sequence mapping
-        'pgsql_seq_mapping'  => [
-            'auth_hash'        => ['id', 'auth_hash_id_seq'],
-            'comments'         => ['id', 'comments_id_seq'],
-            'external_session' => ['id', 'external_session_id_seq'],
-            'feedback'         => ['id', 'feedback_id_seq'],
-            'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
-            'ratings'          => ['id', 'ratings_id_seq'],
-            'record'           => ['id', 'record_id_seq'],
-            'resource'         => ['id', 'resource_id_seq'],
-            'resource_tags'    => ['id', 'resource_tags_id_seq'],
-            'search'           => ['id', 'search_id_seq'],
-            'session'          => ['id', 'session_id_seq'],
-            'shortlinks'       => ['id', 'shortlinks_id_seq'],
-            'tags'             => ['id', 'tags_id_seq'],
-            'user'             => ['id', 'user_id_seq'],
-            'user_card'        => ['id', 'user_card_id_seq'],
-            'user_list'        => ['id', 'user_list_id_seq'],
-            'user_resource'    => ['id', 'user_resource_id_seq'],
-            'login_token'      => ['id', 'login_token_id_seq'],
-        ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
@@ -708,9 +726,8 @@ $config = [
             'content_toc' => [ /* see VuFind\Content\TOC\PluginManager for defaults */ ],
             'contentblock' => [ /* see VuFind\ContentBlock\PluginManager for defaults */ ],
             'cover_layer' => [ /* see VuFind\Cover\Layer\PluginManager for defaults */ ],
-            'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
+            'db_entity' => [ /* see VuFind\Db\Entity\PluginManager for defaults */ ],
             'db_service' => [ /* see VuFind\Db\Service\PluginManager for defaults */ ],
-            'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
             'form_handler' => [ /* see VuFind\Form\Handler\PluginManager for defaults */],
             'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
             'hierarchy_treedataformatter' => [ /* see VuFind\Hierarchy\TreeDataFormatter\PluginManager for defaults */ ],

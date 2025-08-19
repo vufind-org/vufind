@@ -498,18 +498,6 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    public function getTable($table)
-    {
-        return $this->getService(\VuFind\Db\Table\PluginManager::class)->get($table);
-    }
-
-    /**
      * Get a database service object.
      *
      * @param class-string<T> $name Name of service to retrieve

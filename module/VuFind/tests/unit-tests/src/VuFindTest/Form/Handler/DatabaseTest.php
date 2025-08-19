@@ -34,6 +34,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Database;
 
@@ -80,7 +81,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $feedbackService = $this->createMock(FeedbackServiceInterface::class);
         $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
         $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
-        $handler = new Database($feedbackService, 'http://foo');
+        $userService = $this->createMock(UserService::class);
+        $handler = new Database($feedbackService, $userService, 'http://foo');
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');
@@ -101,7 +103,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $feedbackService = $this->createMock(FeedbackServiceInterface::class);
         $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
         $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
-        $handler = new Database($feedbackService, 'http://foo');
+        $userService = $this->createMock(UserService::class);
+        $handler = new Database($feedbackService, $userService, 'http://foo');
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');

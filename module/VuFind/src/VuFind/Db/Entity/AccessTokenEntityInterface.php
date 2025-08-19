@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for access tokens.
  *
@@ -41,7 +43,39 @@ namespace VuFind\Db\Entity;
 interface AccessTokenEntityInterface extends EntityInterface
 {
     /**
-     * Set user ID.
+     * Set access token identifier.
+     *
+     * @param string $id Access Token Identifier
+     *
+     * @return static
+     */
+    public function setId(string $id): static;
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?string
+     */
+    public function getId(): ?string;
+
+    /**
+     * Get type of access token.
+     *
+     * @return ?string
+     */
+    public function getType(): ?string;
+
+    /**
+     * Set type of access token.
+     *
+     * @param ?string $type Access Token Type
+     *
+     * @return static
+     */
+    public function setType(?string $type): static;
+
+    /**
+     * Set user.
      *
      * @param ?UserEntityInterface $user User owning token
      *
@@ -50,13 +84,43 @@ interface AccessTokenEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): static;
 
     /**
-     * Set data.
+     * Get user.
      *
-     * @param string $data Data
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
      *
      * @return static
      */
-    public function setData(string $data): static;
+    public function setCreated(DateTime $dateTime): static;
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string;
+
+    /**
+     * Set data.
+     *
+     * @param ?string $data Data
+     *
+     * @return static
+     */
+    public function setData(?string $data): static;
 
     /**
      * Is the access token revoked?

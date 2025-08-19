@@ -40,7 +40,11 @@ use DateTime;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface UserEntityInterface extends EntityInterface, \LmcRbacMvc\Identity\IdentityInterface
+
+interface UserEntityInterface extends
+    EntityInterface,
+    ExchangeArrayInterface,
+    \LmcRbacMvc\Identity\IdentityInterface
 {
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -340,18 +344,18 @@ interface UserEntityInterface extends EntityInterface, \LmcRbacMvc\Identity\Iden
     /**
      * Last login setter.
      *
-     * @param DateTime $dateTime Last login date
+     * @param ?DateTime $dateTime Last login date
      *
      * @return static
      */
-    public function setLastLogin(DateTime $dateTime): static;
+    public function setLastLogin(?DateTime $dateTime): static;
 
     /**
      * Last login getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
-    public function getLastLogin(): DateTime;
+    public function getLastLogin(): ?DateTime;
 
     /**
      * Created setter
