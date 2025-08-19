@@ -138,6 +138,18 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Does this record support the holdings tab?
+     *
+     * @return bool
+     */
+    public function supportsHoldingsTab()
+    {
+        // For EDS records, only show holdings tab if it's a catalog record
+        // and the publication type is not excluded from RTAC
+        return $this->hasCatalog() && $this->pubTypeRtacEnabled();
+    }
+
+    /**
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS. Instead of getUniqueID we use getUniqueIDOverrideForRequest
      *
