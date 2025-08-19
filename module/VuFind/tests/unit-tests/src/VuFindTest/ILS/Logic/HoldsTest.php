@@ -48,6 +48,7 @@ use VuFind\ILS\Logic\Holds;
 class HoldsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Get a Holds object for testing.
@@ -114,16 +115,12 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
 
         $logic = $this->getHoldsLogic(catalog: $catalog);
 
-        // Use reflection to access the protected formatHoldings method
-        $reflection = new \ReflectionClass($logic);
-        $method = $reflection->getMethod('formatHoldings');
-        $method->setAccessible(true);
-
         // Example holdings data
         // note that this is a simplified example; actual data may vary and include an availability object
         $holdings = $this->getJsonFixture('ils/holdings_example.json');
 
-        $result = $method->invoke($logic, $holdings);
+        // Use callMethod instead of manual reflection
+        $result = $this->callMethod($logic, 'formatHoldings', [$holdings]);
 
         // assert various properties of the result
         // I need to update the fixture and test to be more readable - remove UUIDs and replace with simple strings
@@ -211,10 +208,6 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
 
         $logic = $this->getHoldsLogic(hmac: $hmac);
 
-        $reflection = new \ReflectionClass($logic);
-        $method = $reflection->getMethod('generateHoldings');
-        $method->setAccessible(true);
-
         // Example holdings data; lacks 'availability' field
         $result = $this->getJsonFixture('ils/holdings_formatted_example.json');
         $availabilityStatus = [
@@ -237,17 +230,17 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         ];
 
         // Test 'all' mode (all items get a link)
-        $holdings = $method->invoke($logic, $result, 'all', $holdConfig);
+        $holdings = $this->callMethod($logic, 'generateHoldings', [$result, 'all', $holdConfig]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
 
         // Test 'holds' mode (only available items get a link)
-        $holdings = $method->invoke($logic, $result, 'holds', $holdConfig);
+        $holdings = $this->callMethod($logic, 'generateHoldings', [$result, 'holds', $holdConfig]);
         $this->assertArrayNotHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
 
         // // Test 'recalls' mode (only unavailable items get a link)
-        $holdings = $method->invoke($logic, $result, 'recalls', $holdConfig);
+        $holdings = $this->callMethod($logic, 'generateHoldings', [$result, 'recalls', $holdConfig]);
         $this->assertArrayHasKey('link', $holdings['holdings_id_1|Main Library'][0]);
         $this->assertArrayNotHasKey('link', $holdings['holdings_id_2|Secondary Library'][0]);
     }
@@ -264,10 +257,6 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
 
         $logic = $this->getHoldsLogic(hmac: $hmac);
 
-        $reflection = new \ReflectionClass($logic);
-        $method = $reflection->getMethod('getRequestDetails');
-        $method->setAccessible(true);
-
         $details = [
             'id' => 'test123',
             'location' => 'Main Library',
@@ -277,7 +266,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $hmacKeys = ['id', 'location'];
         $action = 'Hold';
 
-        $result = $method->invoke($logic, $details, $hmacKeys, $action);
+        $result = $this->callMethod($logic, 'getRequestDetails', [$details, $hmacKeys, $action]);
 
         $this->assertEquals('Hold', $result['action']);
         $this->assertEquals('test123', $result['record']);
@@ -287,7 +276,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
 
         // Test with link overrides
         $linkOverrides = ['id' => 'override123', 'source' => 'Override'];
-        $result = $method->invoke($logic, $details, $hmacKeys, $action, $linkOverrides);
+        $result = $this->callMethod($logic, 'getRequestDetails', [$details, $hmacKeys, $action, $linkOverrides]);
 
         $this->assertEquals('override123', $result['record']);
         $this->assertEquals('Override', $result['source']);
@@ -303,39 +292,27 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         // Test default grouping
         $logic = $this->getHoldsLogic();
 
-        $reflection = new \ReflectionClass($logic);
-        $method = $reflection->getMethod('getHoldingsGroupKey');
-        $method->setAccessible(true);
-
         $copy = [
             'holdings_id' => 'holdings_id_1',
             'location' => 'Main Library',
             'call_number' => 'c123456',
         ];
 
-        $result = $method->invoke($logic, $copy);
+        $result = $this->callMethod($logic, 'getHoldingsGroupKey', [$copy]);
         $this->assertEquals('holdings_id_1|Main Library', $result);
 
         // Test custom grouping
         $config['Catalog']['holdings_grouping'] = 'location,call_number';
         $logic = $this->getHoldsLogic(config: $config);
 
-        $reflection = new \ReflectionClass($logic);
-        $method = $reflection->getMethod('getHoldingsGroupKey');
-        $method->setAccessible(true);
-
-        $result = $method->invoke($logic, $copy);
+        $result = $this->callMethod($logic, 'getHoldingsGroupKey', [$copy]);
         $this->assertEquals('Main Library|c123456', $result);
 
         // Test legacy location_name
         $config['Catalog']['holdings_grouping'] = 'location_name';
         $logic = $this->getHoldsLogic(config: $config);
 
-        $reflection = new \ReflectionClass($logic);
-        $method = $reflection->getMethod('getHoldingsGroupKey');
-        $method->setAccessible(true);
-
-        $result = $method->invoke($logic, $copy);
+        $result = $this->callMethod($logic, 'getHoldingsGroupKey', [$copy]);
         $this->assertEquals('Main Library', $result);
     }
 
