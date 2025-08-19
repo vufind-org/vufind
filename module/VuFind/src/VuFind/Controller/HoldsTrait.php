@@ -52,7 +52,7 @@ trait HoldsTrait
     public function holdAction()
     {
         $driver = $this->loadRecord();
-        // Holds on EDS API records require a different ID.
+        // Holds on API records (as opposed to Solr records; e.g. EDS) may require a different ID.
         // This id can be obtained from the getUniqueIDOverrideForRequest method
         $originalId = $driver->getUniqueID();
         $id = $driver->tryMethod('getUniqueIDOverrideForRequest', default: $originalId);
@@ -75,8 +75,8 @@ trait HoldsTrait
         if (!$gatheredDetails) {
             return $this->redirectToRecord();
         }
-        // the gatheredDetails['id'] is the original ID, but for API Holds
-        // we need to use the originalId. So only in that case we will set it to the
+        // the gatheredDetails['id'] is the original ID, but for API Holds (e.g. EDS)
+        // we may need to use the originalId. So only in that case we will set it to the
         // value returned by getUniqueIDOverrideForRequest.
         if ($originalId != $id && $originalId == $gatheredDetails['id']) {
             $gatheredDetails['id'] = $id;
