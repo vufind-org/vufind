@@ -603,19 +603,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!$response->ValidPatron) {
             return null;
         }
-
-        $user = [];
-
-        $user['id']           = $response->PatronID;
-        $user['firstname']    = null;
-        $user['lastname']     = null;
-        $user['cat_username'] = $response->PatronBarcode;
-        $user['cat_password'] = $password;
-        $user['email']        = null;
-        $user['major']        = null;
-        $user['college']      = null;
-
-        return $user;
+        return $this->createPatronArray(
+            id: $response->PatronID,
+            cat_username: $response->PatronBarcode,
+            cat_password: $password
+        );
     }
 
     /**
@@ -674,12 +666,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['cat_password']
         );
         $profile_response = $response->PatronBasicData;
-        $profile = [
-          'firstname' => $profile_response->NameFirst,
-          'lastname'  => $profile_response->NameLast,
-          'phone'     => $profile_response->PhoneNumber,
-        ];
-        return $profile;
+        return $this->createProfileArray(
+            firstname:  $profile_response->NameFirst,
+            lastname:  $profile_response->NameLast,
+            phone:  $profile_response->PhoneNumber
+        );
     }
 
     /**

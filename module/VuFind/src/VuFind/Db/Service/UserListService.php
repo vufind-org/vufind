@@ -31,16 +31,16 @@
 namespace VuFind\Db\Service;
 
 use Exception;
-use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\ExpressionInterface;
-use Laminas\Db\Sql\Select;
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Log\LoggerAwareTrait;
 
-use function is_int;
+use function count;
 
 /**
  * Database service for UserList.
@@ -52,9 +52,13 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserListService extends AbstractDbService implements DbTableAwareInterface, UserListServiceInterface
+class UserListService extends AbstractDbService implements
+    UserListServiceInterface,
+    LoggerAwareInterface,
+    DbServiceAwareInterface
 {
-    use DbTableAwareTrait;
+    use LoggerAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Create a UserList entity object.
@@ -63,7 +67,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function createEntity(): UserListEntityInterface
     {
-        return $this->getDbTable('UserList')->createRow();
+        return $this->entityPluginManager->get(UserListEntityInterface::class);
     }
 
     /**
@@ -75,8 +79,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function deleteUserList(UserListEntityInterface|int $listOrId): void
     {
-        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $this->getDbTable('UserList')->delete(['id' => $listId]);
+        $this->deleteEntity($this->getDoctrineReference(UserListEntityInterface::class, $listOrId));
     }
 
     /**
@@ -89,7 +92,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getUserListById(int $id): UserListEntityInterface
     {
-        $result = $this->getDbTable('UserList')->select(['id' => $id])->current();
+        $result = $this->getEntityById(\VuFind\Db\Entity\UserList::class, $id);
         if (empty($result)) {
             throw new RecordMissingException('Cannot load list ' . $id);
         }
@@ -106,21 +109,24 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getPublicLists(array $includeFilter = [], array $excludeFilter = []): array
     {
-        $callback = function ($listOrId) {
-            return $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        };
-        $includeIds = array_map($callback, $includeFilter);
-        $excludeIds = array_map($callback, $excludeFilter);
-        $callback = function ($select) use ($includeIds, $excludeIds) {
-            $select->where->equalTo('public', 1);
-            if ($excludeIds) {
-                $select->where->notIn('id', $excludeIds);
-            }
-            if ($includeIds) {
-                $select->where->in('id', $includeIds);
-            }
-        };
-        return iterator_to_array($this->getDbTable('UserList')->select($callback));
+        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul ';
+
+        $parameters = [];
+        $where = ["ul.public = '1'"];
+        if (!empty($includeFilter)) {
+            $where[] = 'ul IN (:includeFilter)';
+            $parameters['includeFilter'] = $includeFilter;
+        }
+        if (!empty($excludeFilter)) {
+            $where[] = 'ul NOT IN (:excludeFilter)';
+            $parameters['excludeFilter'] = $excludeFilter;
+        }
+        $dql .= 'WHERE ' . implode(' AND ', $where);
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -134,39 +140,18 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array
     {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function (Select $select) use ($userId) {
-            $select->columns(
-                [
-                    Select::SQL_STAR,
-                    'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))',
-                        ['ur.resource_id'],
-                        [ExpressionInterface::TYPE_IDENTIFIER]
-                    ),
-                ]
-            );
-            $select->join(
-                ['ur' => 'user_resource'],
-                'user_list.id = ur.list_id',
-                [],
-                $select::JOIN_LEFT
-            );
-            $select->where->equalTo('user_list.user_id', $userId);
-            $select->group(
-                [
-                    'user_list.id', 'user_list.user_id', 'title', 'description',
-                    'created', 'public',
-                ]
-            );
-            $select->order(['title']);
-        };
+        $dql = 'SELECT ul AS list_entity, COUNT(DISTINCT(ur.resource)) AS count '
+            . 'FROM ' . UserListEntityInterface::class . ' ul '
+            . 'LEFT JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
+            . 'WHERE ul.user = :user '
+            . 'GROUP BY ul '
+            . 'ORDER BY ul.title';
 
-        $result = [];
-        foreach ($this->getDbTable('UserList')->select($callback) as $row) {
-            $result[] = ['list_entity' => $row, 'count' => $row->cnt];
-        }
-        return $result;
+        $parameters = ['user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId)];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -188,13 +173,48 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
         bool $andTags = true,
         bool $caseSensitiveTags = false
     ): array {
-        $lists = $this->getDbTable('ResourceTags')
-            ->getListsForTag($tag, $listId, $publicOnly, $andTags, $caseSensitiveTags);
-        $listIds = array_column(iterator_to_array($lists), 'list_id');
-        $callback = function ($select) use ($listIds) {
-            $select->where->in('id', $listIds);
-        };
-        return iterator_to_array($this->getDbTable('UserList')->select($callback));
+        $tag = $tag ? (array)$tag : null;
+        $listId = $listId ? (array)$listId : null;
+        $dql = 'SELECT IDENTITY(rt.list) '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'JOIN rt.tag t '
+            . 'JOIN rt.list l '
+            // Discard tags assigned to a user resource:
+            . 'WHERE rt.resource IS NULL '
+            // Restrict to tags by list owner:
+            . 'AND rt.user = l.user ';
+        $parameters = [];
+        if (null !== $listId) {
+            $dql .= 'AND rt.list IN (:listId) ';
+            $parameters['listId'] = $listId;
+        }
+        if ($publicOnly) {
+            $dql .= "AND l.public = '1' ";
+        }
+        if ($tag) {
+            if ($caseSensitiveTags) {
+                $dql .= 'AND t.tag IN (:tag) ';
+                $parameters['tag'] = $tag;
+            } else {
+                $tagClauses = [];
+                foreach ($tag as $i => $currentTag) {
+                    $tagPlaceholder = 'tag' . $i;
+                    $tagClauses[] = 'LOWER(t.tag) = LOWER(:' . $tagPlaceholder . ')';
+                    $parameters[$tagPlaceholder] = $currentTag;
+                }
+                $dql .= 'AND (' . implode(' OR ', $tagClauses) . ')';
+            }
+        }
+        $dql .= ' GROUP BY rt.list ';
+        if ($tag && $andTags) {
+            // If we are ANDing the tags together, only pick lists that match ALL tags:
+            $dql .= 'HAVING COUNT(DISTINCT(rt.tag)) = :cnt ';
+            $parameters['cnt'] = count(array_unique($tag));
+        }
+        $dql .= 'ORDER BY rt.list';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $this->getUserListsById($query->getSingleColumnResult());
     }
 
     /**
@@ -206,12 +226,34 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getUserListsByUser(UserEntityInterface|int $userOrId): array
     {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function ($select) use ($userId) {
-            $select->where->equalTo('user_id', $userId);
-            $select->order(['title']);
-        };
-        return iterator_to_array($this->getDbTable('UserList')->select($callback));
+        $dql = 'SELECT ul '
+            . 'FROM ' . UserListEntityInterface::class . ' ul '
+            . 'WHERE ul.user = :user '
+            . 'ORDER BY ul.title';
+
+        $parameters = ['user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId)];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
+    }
+
+    /**
+     * Retrieve a batch of list objects corresponding to the provided IDs
+     *
+     * @param int[] $ids List ids.
+     *
+     * @return array
+     */
+    protected function getUserListsById(array $ids): array
+    {
+        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
+            . 'WHERE ul.id IN (:ids)';
+        $parameters = compact('ids');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -229,12 +271,22 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
         string $source = DEFAULT_SEARCH_BACKEND,
         UserEntityInterface|int|null $userOrId = null
     ): array {
-        return iterator_to_array(
-            $this->getDbTable('UserList')->getListsContainingResource(
-                $recordId,
-                $source,
-                is_int($userOrId) ? $userOrId : $userOrId->getId()
-            )
-        );
+        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
+            . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
+            . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = ur.resource '
+            . 'WHERE r.recordId = :recordId AND r.source = :source ';
+
+        $parameters = compact('recordId', 'source');
+        if (null !== $userOrId) {
+            $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+            $dql .= 'AND ur.user = :userId ';
+            $parameters['userId'] = $userId;
+        }
+
+        $dql .= 'ORDER BY ul.title';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 }

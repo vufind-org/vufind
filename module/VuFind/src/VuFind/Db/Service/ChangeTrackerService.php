@@ -31,9 +31,10 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\ChangeTracker;
 use VuFind\Db\Entity\ChangeTrackerEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Database service for change tracker.
@@ -45,18 +46,9 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ChangeTrackerService extends AbstractDbService implements
-    ChangeTrackerServiceInterface,
-    DbTableAwareInterface
+class ChangeTrackerService extends AbstractDbService implements ChangeTrackerServiceInterface, LoggerAwareInterface
 {
-    use DbTableAwareTrait;
-
-    /**
-     * Format to use when sending dates to legacy code.
-     *
-     * @var string
-     */
-    protected string $dateFormat = 'Y-m-d H:i:s';
+    use LoggerAwareTrait;
 
     /**
      * Retrieve a row from the database based on primary key; return null if it
@@ -69,7 +61,15 @@ class ChangeTrackerService extends AbstractDbService implements
      */
     public function getChangeTrackerEntity(string $indexName, string $id): ?ChangeTrackerEntityInterface
     {
-        return $this->getDbTable('ChangeTracker')->retrieve($indexName, $id);
+        $dql = 'SELECT c '
+            . 'FROM ' . ChangeTrackerEntityInterface::class . ' c '
+            . 'WHERE c.core = :core AND c.id = :id';
+        $parameters = ['core' => $indexName, 'id' => $id];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $queryResult = $query->getResult();
+        $result = current($queryResult);
+        return $result ? $result : null;
     }
 
     /**
@@ -83,11 +83,14 @@ class ChangeTrackerService extends AbstractDbService implements
      */
     public function getDeletedCount(string $indexName, DateTime $from, DateTime $until): int
     {
-        return $this->getDbTable('ChangeTracker')->retrieveDeletedCount(
-            $indexName,
-            $from->format($this->dateFormat),
-            $until->format($this->dateFormat)
-        );
+        $dql = 'SELECT COUNT(c) as deletedcount '
+            . 'FROM ' . ChangeTrackerEntityInterface::class . ' c '
+            . 'WHERE c.core = :core AND c.deleted BETWEEN :from AND :until';
+        $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        return current($result)['deletedcount'];
     }
 
     /**
@@ -108,15 +111,43 @@ class ChangeTrackerService extends AbstractDbService implements
         int $offset = 0,
         ?int $limit = null
     ): array {
-        return iterator_to_array(
-            $this->getDbTable('ChangeTracker')->retrieveDeleted(
-                $indexName,
-                $from->format($this->dateFormat),
-                $until->format($this->dateFormat),
-                $offset,
-                $limit
-            )
-        );
+        $dql = 'SELECT c '
+            . 'FROM ' . ChangeTrackerEntityInterface::class . ' c '
+            . 'WHERE c.core = :core AND c.deleted BETWEEN :from AND :until '
+            . 'ORDER BY c.deleted';
+        $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->setFirstResult($offset);
+        if (null !== $limit) {
+            $query->setMaxResults($limit);
+        }
+        $result = $query->getResult();
+        return $result;
+    }
+
+    /**
+     * Retrieve a row from the database based on primary key; create a new
+     * row if no existing match is found.
+     *
+     * @param string $core The Solr core holding the record.
+     * @param string $id   The ID of the record being indexed.
+     *
+     * @return ChangeTracker
+     */
+    protected function retrieveOrCreate(string $core, string $id): ChangeTracker
+    {
+        $row = $this->getChangeTrackerEntity($core, $id);
+        if (empty($row)) {
+            $now = new \DateTime();
+            $row = $this->createEntity()
+                ->setIndexName($core)
+                ->setId($id)
+                ->setFirstIndexed($now)
+                ->setLastIndexed($now);
+            $this->persistEntity($row);
+        }
+        return $row;
     }
 
     /**
@@ -131,7 +162,18 @@ class ChangeTrackerService extends AbstractDbService implements
      */
     public function markDeleted(string $core, string $id): ChangeTrackerEntityInterface
     {
-        return $this->getDbTable('ChangeTracker')->markDeleted($core, $id);
+        // Get a row matching the specified details:
+        $row = $this->retrieveOrCreate($core, $id);
+
+        // If the record is already deleted, we don't need to do anything!
+        if (!empty($row->getDeleted())) {
+            return $row;
+        }
+
+        // Save new value to the object:
+        $row->setDeleted(new \DateTime());
+        $this->persistEntity($row);
+        return $row;
     }
 
     /**
@@ -150,6 +192,85 @@ class ChangeTrackerService extends AbstractDbService implements
      */
     public function index(string $core, string $id, int $change): ChangeTrackerEntityInterface
     {
-        return $this->getDbTable('ChangeTracker')->index($core, $id, $change);
+        // Get a row matching the specified details:
+        $row = $this->retrieveOrCreate($core, $id);
+
+        // Flag to indicate whether we need to save the contents of $row:
+        $saveNeeded = false;
+        $utcTime = \DateTime::createFromFormat('U', $change);
+
+        // Make sure there is a change date in the row (this will be empty
+        // if we just created a new row):
+        if (empty($row->getLastRecordChange())) {
+            $row->setLastRecordChange($utcTime);
+            $saveNeeded = true;
+        }
+
+        // Are we restoring a previously deleted record, or was the stored
+        // record change date before current record change date?  Either way,
+        // we need to update the table!
+        if (!empty($row->getDeleted()) || $row->getLastRecordChange() < $utcTime) {
+            // Save new values to the object:
+            $now = new \DateTime();
+            $row->setLastIndexed($now);
+            $row->setLastRecordChange($utcTime);
+
+            // If first indexed is null, we're restoring a deleted record, so
+            // we need to treat it as new -- we'll use the current time.
+            if (empty($row->getFirstIndexed())) {
+                $row->setFirstIndexed($now);
+            }
+
+            // Make sure the record is "undeleted" if necessary:
+            $row->setDeleted(null);
+
+            $saveNeeded = true;
+        }
+
+        // Save the row if changes were made:
+        if ($saveNeeded) {
+            $this->persistEntity($row);
+        }
+
+        // Send back the row:
+        return $row;
+    }
+
+    /**
+     * Remove all or selected rows from the database.
+     *
+     * @param ?string $core The Solr core holding the record.
+     * @param ?string $id   The ID of the record being indexed.
+     *
+     * @return void
+     */
+    public function deleteRows(?string $core = null, ?string $id = null): void
+    {
+        $dql = 'DELETE FROM ' . ChangeTrackerEntityInterface::class . ' c ';
+        $parameters = $dqlWhere = [];
+        if (null !== $core) {
+            $dqlWhere[] = 'c.core = :core';
+            $parameters['core'] = $core;
+        }
+        if (null !== $id) {
+            $dqlWhere[] = 'c.id = :id';
+            $parameters['id'] = $id;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
+     * Create a change tracker entity object.
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function createEntity(): ChangeTrackerEntityInterface
+    {
+        return $this->entityPluginManager->get(ChangeTrackerEntityInterface::class);
     }
 }

@@ -5,6 +5,12 @@ VuFind.register("sticky_elements", function StickyElements() {
   var _stickyChildrenClassesConfig;
   var _resizeObserver;
 
+  /**
+   * Add, remove, or restore CSS classes on sticky element's children based on configuration
+   * @param {HTMLElement} element     The sticky element
+   * @param {string|null} [action]    The action to perform (or null to do nothing -- the default)
+   * @param {boolean}     [saveState] Whether to set the current class state to a data attribute (default = false)
+   */
   function setChildElementClasses(element, action = null, saveState = false) {
     _stickyChildrenClassesConfig.forEach(
       (config) => {
@@ -44,6 +50,10 @@ VuFind.register("sticky_elements", function StickyElements() {
     );
   }
 
+  /**
+   * Set the size and the style of the sticky element's placeholder
+   * @param {HTMLElement} stickyElement The sticky element
+   */
   function setPlaceholderStyle (stickyElement) {
     setChildElementClasses(stickyElement, "remove", true);
     let style = window.getComputedStyle(stickyElement, null);
@@ -61,6 +71,10 @@ VuFind.register("sticky_elements", function StickyElements() {
     setChildElementClasses(stickyElement, "load");
   }
 
+  /**
+   * Get the default background color of the page.
+   * @returns {string} The default background color.
+   */
   function getDefaultBackground() {
     var div = document.createElement("div");
     document.head.appendChild(div);
@@ -69,6 +83,11 @@ VuFind.register("sticky_elements", function StickyElements() {
     return bg;
   }
 
+  /**
+   * Recursively get the first background color of the element's ancestors.
+   * @param {HTMLElement} el The element to get the inherited background color of.
+   * @returns {string} The inherited background color.
+   */
   function getInheritedBackgroundColor(el) {
     var defaultStyle = getDefaultBackground();
     var backgroundColor = window.getComputedStyle(el).backgroundColor;
@@ -77,6 +96,10 @@ VuFind.register("sticky_elements", function StickyElements() {
     return getInheritedBackgroundColor(el.parentElement);
   }
 
+  /**
+   * Handle the sticking and unsticking of elements during scrolling.
+   * @param {boolean} [forceStyleCalculation] Whether to force a full style recalculation (default = false).
+   */
   function handleStickyElements(forceStyleCalculation = false) {
     let num = 0;
     let count = _stickyElements.length;
@@ -147,6 +170,9 @@ VuFind.register("sticky_elements", function StickyElements() {
       });
   }
 
+  /**
+   * Recalculate the styles of all sticky elements and their placeholders.
+   */
   function calculateStyles () {
     _stickyElements.forEach(
       (stickyElement) => {
@@ -156,6 +182,9 @@ VuFind.register("sticky_elements", function StickyElements() {
     handleStickyElements(true);
   }
 
+  /**
+   * Update the container by finding sticky elements, wrapping them, and setting up initial styles and observers.
+   */
   function updateContainer() {
     let stickyElementsConfig = VuFind.config.get('sticky-elements', []);
     _stickyElements = stickyElementsConfig.flatMap(
@@ -192,6 +221,9 @@ VuFind.register("sticky_elements", function StickyElements() {
     handleStickyElements(true);
   }
 
+  /**
+   * Initialize the sticky elements module by setting up event listeners and observers.
+   */
   function init() {
     _resizeObserver = new ResizeObserver(calculateStyles);
     _stickyChildrenClassesConfig = VuFind.config.get('sticky-children-classes', []);

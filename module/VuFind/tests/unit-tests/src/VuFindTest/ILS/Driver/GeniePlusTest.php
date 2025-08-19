@@ -494,13 +494,17 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'firstname' => 'Fake',
                 'lastname' => 'User',
+                'birthdate' => null,
                 'address1' => 'Address 1',
                 'address2' => 'Address 2',
                 'zip' => '12345',
                 'city' => 'FakeCity, FakeState',
                 'country' => 'USA',
                 'phone' => '1234567890',
+                'mobile_phone' => null,
                 'expiration_date' => '12/31/2022 3:55:00 PM',
+                'group' => null,
+                'home_library' => null,
             ],
             $this->driver->getMyProfile($this->defaultPatron)
         );

@@ -23,7 +23,7 @@ CREATE TABLE `change_tracker` (
   `last_record_change` datetime DEFAULT NULL, -- last time original record was edited
   `deleted` datetime DEFAULT NULL,            -- time record was removed from index
   PRIMARY KEY (`core`,`id`),
-  KEY `deleted_index` (`deleted`)
+  KEY `change_tracker_deleted_idx` (`deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -40,8 +40,8 @@ CREATE TABLE `comments` (
   `comment` text NOT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `resource_id` (`resource_id`),
+  KEY `comments_user_id_idx` (`user_id`),
+  KEY `comments_resource_id_idx` (`resource_id`),
   CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
   CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -60,8 +60,8 @@ CREATE TABLE `ratings` (
   `rating` int(3) NOT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `resource_id` (`resource_id`),
+  KEY `ratings_user_id_idx` (`user_id`),
+  KEY `ratings_resource_id_idx` (`resource_id`),
   CONSTRAINT `ratings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
   CONSTRAINT `ratings_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -79,7 +79,7 @@ CREATE TABLE `oai_resumption` (
   `params` text,
   `expires` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY (`token`)
+  UNIQUE KEY `oai_resumption_token_idx` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -98,7 +98,7 @@ CREATE TABLE `resource` (
   `source` varchar(50) NOT NULL DEFAULT 'Solr',
   `extra_metadata` mediumtext DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `record_id` (`record_id`(190))
+  KEY `resource_record_id_idx` (`record_id`(190))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -116,10 +116,10 @@ CREATE TABLE `resource_tags` (
   `user_id` int(11) DEFAULT NULL,
   `posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `resource_id` (`resource_id`),
-  KEY `tag_id` (`tag_id`),
-  KEY `list_id` (`list_id`),
+  KEY `resource_tags_user_id_idx` (`user_id`),
+  KEY `resource_tags_resource_id_idx` (`resource_id`),
+  KEY `resource_tags_tag_id_idx` (`tag_id`),
+  KEY `resource_tags_list_id_idx` (`list_id`),
   CONSTRAINT `resource_tags_ibfk_14` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE,
   CONSTRAINT `resource_tags_ibfk_15` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE,
   CONSTRAINT `resource_tags_ibfk_16` FOREIGN KEY (`list_id`) REFERENCES `user_list` (`id`) ON DELETE SET NULL,
@@ -146,11 +146,11 @@ CREATE TABLE `search` (
   `last_notification_sent` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `notification_base_url` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `session_id` (`session_id`),
-  KEY `notification_frequency` (`notification_frequency`),
-  KEY `notification_base_url` (`notification_base_url`(190)),
-  KEY `created_saved` (`created`, `saved`),
+  KEY `search_user_id_idx` (`user_id`),
+  KEY `session_id_idx` (`session_id`),
+  KEY `notification_frequency_idx` (`notification_frequency`),
+  KEY `notification_base_url_idx` (`notification_base_url`(190)),
+  KEY `search_created_saved_idx` (`created`, `saved`),
   CONSTRAINT `search_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -168,8 +168,8 @@ CREATE TABLE `session` (
   `last_used` int(12) NOT NULL DEFAULT '0',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `session_id` (`session_id`),
-  KEY `last_used` (`last_used`)
+  UNIQUE KEY `session_session_id_idx` (`session_id`),
+  KEY `session_last_used_idx` (`last_used`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -185,8 +185,8 @@ CREATE TABLE `external_session` (
   `external_session_id` varchar(255) NOT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `session_id` (`session_id`),
-  KEY `external_session_id` (`external_session_id`(190))
+  UNIQUE KEY `external_session_session_id_idx` (`session_id`),
+  KEY `external_session_id_idx` (`external_session_id`(190))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -202,7 +202,7 @@ CREATE TABLE `shortlinks` (
   `hash` varchar(32),
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `shortlinks_hash_IDX` USING HASH (`hash`)
+  UNIQUE KEY `shortlinks_hash_idx` USING HASH (`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -249,10 +249,10 @@ CREATE TABLE `user` (
   `auth_method` varchar(50) DEFAULT NULL,
   `last_language` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`(190)),
-  UNIQUE KEY `cat_id` (`cat_id`(190)),
-  KEY `email` (`email`(190)),
-  KEY `verify_hash` (`verify_hash`)
+  UNIQUE KEY `user_username_idx` (`username`(190)),
+  UNIQUE KEY `user_cat_id_idx` (`cat_id`(190)),
+  KEY `user_email_idx` (`email`(190)),
+  KEY `user_verify_hash_idx` (`verify_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -270,7 +270,7 @@ CREATE TABLE `user_list` (
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `public` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
+  KEY `user_list_user_id_idx` (`user_id`),
   CONSTRAINT `user_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -289,9 +289,9 @@ CREATE TABLE `user_resource` (
   `notes` text,
   `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `resource_id` (`resource_id`),
-  KEY `user_id` (`user_id`),
-  KEY `list_id` (`list_id`),
+  KEY `user_resource_resource_id_idx` (`resource_id`),
+  KEY `user_resource_user_id_idx` (`user_id`),
+  KEY `user_resource_list_id_idx` (`list_id`),
   CONSTRAINT `user_resource_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `user_resource_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE,
   CONSTRAINT `user_resource_ibfk_5` FOREIGN KEY (`list_id`) REFERENCES `user_list` (`id`) ON DELETE CASCADE
@@ -315,8 +315,8 @@ CREATE TABLE `user_card` (
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `user_card_cat_username` (`cat_username`),
+  KEY `user_card_user_id_idx` (`user_id`),
+  KEY `user_card_cat_username_idx` (`cat_username`),
   CONSTRAINT `user_card_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -345,7 +345,7 @@ CREATE TABLE `record` (
   `data` longtext DEFAULT NULL,
   `updated` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `record_id_source` (`record_id`(140), `source`)
+  UNIQUE KEY `record_record_id_source_index` (`record_id`(140), `source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -363,9 +363,9 @@ CREATE TABLE `auth_hash` (
   `data` mediumtext,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `session_id` (`session_id`),
-  UNIQUE KEY `hash_type` (`hash`(140), `type`),
-  KEY `created` (`created`)
+  KEY `auth_hash_session_id_idx` (`session_id`),
+  UNIQUE KEY `auth_hash_hash_type_idx` (`hash`(140), `type`),
+  KEY `auth_hash_created_idx` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -387,10 +387,11 @@ CREATE TABLE `feedback` (
   `status` varchar(255) NOT NULL DEFAULT 'open',
   `site_url` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `created` (`created`),
-  KEY `status` (`status`(191)),
-  KEY `form_name` (`form_name`(191)),
+  KEY `feedback_user_id_idx` (`user_id`),
+  KEY `feedback_updated_by_idx` (`updated_by`),
+  KEY `feedback_created_idx` (`created`),
+  KEY `feedback_status_idx` (`status`(191)),
+  KEY `feedback_form_name_idx` (`form_name`(191)),
   CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
   CONSTRAINT `feedback_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -410,7 +411,7 @@ CREATE TABLE `access_token` (
   `data` mediumtext DEFAULT NULL,
   `revoked` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`, `type`),
-  KEY `user_id` (`user_id`),
+  KEY `access_token_user_id_idx` (`user_id`),
   CONSTRAINT `access_token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -432,7 +433,8 @@ CREATE TABLE `login_token` (
   `expires` int NOT NULL,
   `last_session_id` varchar(255) NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `series` (`series`)
+  KEY `login_token_user_id_idx` (`user_id`),
+  KEY `login_token_series_idx` (`series`),
+  CONSTRAINT `login_token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
