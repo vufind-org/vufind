@@ -67,7 +67,9 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Constructor
      *
-     * @param callable $callback Callback for creating the actual class
+     * @param callable $callback Callback for creating the actual class. The first argument is passed by
+     * reference and should be set to a PSR-3 logger by the callback (in order to populate $this->logger).
+     * This proxy class will be passed as the second argument in case it is needed by the callback.
      */
     public function __construct(callable $callback)
     {
