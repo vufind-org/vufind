@@ -155,10 +155,10 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     protected function createAvailabilityStatus($available = true, $description = 'Available')
     {
         // Use the real AvailabilityStatus class
-        $availability = $available ? 
-            \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE : 
+        $availability = $available ?
+            \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE :
             \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE;
-        
+
         return new \VuFind\ILS\Logic\AvailabilityStatus($availability, $description);
     }
 
@@ -190,7 +190,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             );
             $i++;
         }
-        
+
         $holdConfig = [
             'function' => 'placeHold',
             'HMACKeys' => ['id', 'location'],
@@ -363,5 +363,5 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $result['holdings']['holdings_id_1|Main Library']['items']);
         $this->assertEquals('Main Library', $result['holdings']['holdings_id_1|Main Library']['location']);
         $this->assertFalse($result['blocks']);
-}
+    }
 }
