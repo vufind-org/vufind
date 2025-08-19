@@ -1,5 +1,5 @@
-/*global grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*global grecaptcha, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -802,29 +802,6 @@ function getUrlRoot(url) {
     urlroot = '/' + parts[0] + '/' + parts[1];
   }
   return urlroot;
-}
-
-/**
- * Phone number validation
- * @param {String} numID Phone number field ID
- * @param {String} regionCode Region code
- * @deprecated See validation.js for replacement
- */
-function phoneNumberFormHandler(numID, regionCode) {
-  var phoneInput = document.getElementById(numID);
-  var number = phoneInput.value;
-  var valid = isPhoneNumberValid(number, regionCode);
-  if (valid !== true) {
-    if (typeof valid === 'string') {
-      valid = VuFind.translate(valid);
-    } else {
-      valid = VuFind.translate('libphonenumber_invalid');
-    }
-    phoneInput.setCustomValidity(valid);
-    return false;
-  } else {
-    phoneInput.setCustomValidity('');
-  }
 }
 
 // Setup captchas after Google script loads

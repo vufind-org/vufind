@@ -1,6 +1,11 @@
 /*global VuFind */
 VuFind.register('hierarchyTree', function HierarchyTree() {
   /* Utility functions */
+  /**
+   * Highlight a record in the tree.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   * @param {string}      id     The record ID to select.
+   */
   function selectRecord(treeEl, id) {
     treeEl.querySelectorAll('.hierarchy-tree__selected').forEach(el => el.classList.remove('hierarchy-tree__selected'));
     const selectedEl = treeEl.querySelector('[data-record-id=' + CSS.escape(id) + ']');
@@ -12,6 +17,12 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     selectedLiEl.classList.add('hierarchy-tree__selected');
   }
 
+  /**
+   * Fetch and display record element in a preview element.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   * @param {string}      id     The record ID to display.
+   * @returns {boolean} Return true if record elements were displayed
+   */
   function showRecord(treeEl, id) {
     selectRecord(treeEl, id);
     if (!treeEl.dataset.previewElement) {
@@ -32,6 +43,10 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     return true;
   }
 
+  /**
+   * Reset the tree to its default expanded state and remove search highlights.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   */
   function resetTree(treeEl) {
     treeEl.querySelectorAll('.js-toggle-expanded').forEach(el => {
       el.setAttribute('aria-expanded', el.dataset.defaultExpanded);
@@ -39,10 +54,19 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     treeEl.querySelectorAll('.hierarchy-tree__search-match').forEach(el => el.classList.remove('hierarchy-tree__search-match'));
   }
 
+  /**
+   * Collapse all nodes in the tree.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   */
   function closeTree(treeEl) {
     treeEl.querySelectorAll('.js-toggle-expanded').forEach(el => el.setAttribute('aria-expanded', 'false'));
   }
 
+  /**
+   * Highlight a search match and expand its parent nodes.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   * @param {string}      id     The record ID that matches the search.
+   */
   function selectSearchMatch(treeEl, id) {
     const selectedEl = treeEl.querySelector('[data-record-id=' + CSS.escape(id) + ']');
     if (!selectedEl) {
@@ -63,6 +87,10 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
   }
 
+  /**
+   * Hide all unselected nodes in the tree.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   */
   function hideFullHierarchy(treeEl) {
     treeEl.querySelectorAll('li').forEach(el => el.classList.add('hidden'));
     let liEl = treeEl.querySelector('.hierarchy-tree__selected');
@@ -72,10 +100,20 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
   }
 
+  /**
+   * Show all nodes in the tree.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   */
   function showFullHierarchy(treeEl) {
     treeEl.querySelectorAll('li').forEach(el => el.classList.remove('hidden'));
   }
 
+  /**
+   * Perform an AJAX search within the tree and update the display.
+   * @param {HTMLElement} containerEl The container element.
+   * @param {HTMLElement} searchEl    The search form element.
+   * @param {HTMLElement} treeEl      The hierarchy tree element.
+   */
   function doTreeSearch(containerEl, searchEl, treeEl) {
     const loadIndicatorEl = searchEl.querySelector('.js-load-indicator');
     const searchTextEl = searchEl.querySelector('.js-search-text');
@@ -158,6 +196,10 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
       });
   }
 
+  /**
+   * Scroll the tree to the selected record.
+   * @param {HTMLElement} treeEl The hierarchy tree element.
+   */
   function scrollToSelected(treeEl) {
     const selectedEl = treeEl.querySelector('.hierarchy-tree__selected');
     if (selectedEl) {
@@ -165,6 +207,10 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
   }
 
+  /**
+   * Set up event listeners for a loaded tree.
+   * @param {HTMLElement} containerEl The container element.
+   */
   function setupTree(containerEl) {
     const treeEl = containerEl.querySelector('.js-hierarchy-tree');
     if (!treeEl) {
@@ -223,6 +269,10 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     scrollToSelected(treeEl);
   }
 
+  /**
+   * Initialize the tree by fetching its content from the server.
+   * @param {HTMLElement} containerEl The container for the tree.
+   */
   function initTree(containerEl) {
     const treePlaceholderEl = containerEl.querySelector('.js-hierarchy-tree-placeholder');
     if (!treePlaceholderEl) {

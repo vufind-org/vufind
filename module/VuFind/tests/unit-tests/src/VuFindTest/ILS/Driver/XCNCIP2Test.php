@@ -275,39 +275,47 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'lookupUserResponse.xml',
             'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
-                'address1' => 'Trvalá ulice 123, Big City, 12345', 'address2' => '',
-                'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'address1' => 'Trvalá ulice 123, Big City, 12345',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'address2' => null, 'city' => null, 'country' => null,
+                'zip' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
             'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
                 'address1' => 'Trvalá ulice 123, Big City, 12345',
-                'address2' => '', 'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'address2' => null, 'city' => null, 'country' => null,
+                'zip' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseStructuredAddress.xml', 'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
                 'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
-                'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'city' => null, 'country' => null,
+                'zip' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseStructuredAddressDetail.xml',
             'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
                 'address1' => 'Trvalá ulice 123', 'address2' => 'Big City',
-                'zip' => '12345', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'zip' => '12345', 'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'city' => null, 'country' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseUnstructuredName.xml', 'result' => [
                 'firstname' => '', 'lastname' => 'John Smith Jr.',
                 'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
-                'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'city' => null, 'country' => null, 'zip' => null,
+                'phone' => null, 'mobile_phone' => null, 'group' => null, 'home_library' => null,
             ],
         ],
     ];

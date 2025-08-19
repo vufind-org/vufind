@@ -1,4 +1,19 @@
 <?php
+  /**
+   * Component to display a button that drops down a menu of options.
+   *
+   * @param ?string $href         URL to link the menu button to, as a non-Javascript fallback (optional)
+   * @param array   $menuItems    Array of arrays representing menu items; each element can/should contain these keys:
+   *                              - external (bool): if true, apply a target of _blank to the link (default = false)
+   *                              - label (string): text of menu option link (required, will be translated)
+   *                              - lightbox (bool): if true, open the link in a lightbox (default = false)
+   *                              - selected (bool): is this the active menu item? (default = false)
+   *                              - url (string): target link for menu option (required)
+   * @param ?array  $toggleAttrs  Additional attributes to apply to the toggle button
+   * @param string  $toggleLabel  The label for the toggle button (will be translated)
+   * @param ?string $wrapperTag   Tag to use as a wrapper around the control (default = div)
+   * @param ?string $wrapperClass Extra CSS class(es) to apply to the wrapper tag
+   */
   $wrapperTag = $this->wrapperTag ?? 'div';
   $wrapperClass = 'dropdown'; // Bootstrap class
 

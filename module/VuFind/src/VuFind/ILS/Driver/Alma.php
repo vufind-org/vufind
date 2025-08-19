@@ -817,18 +817,15 @@ class Alma extends AbstractBase implements
             true
         );
 
-        if ($status != 400 && $response !== null) {
-            // We may already have some information, so just fill the gaps
-            $patron['id'] = (string)$response->primary_id;
-            $patron['cat_username'] = trim($username);
-            $patron['cat_password'] = trim($password);
-            $patron['firstname'] = (string)$response->first_name ?? '';
-            $patron['lastname'] = (string)$response->last_name ?? '';
-            $patron['email'] = $this->getPreferredEmail($response);
-            return $patron;
-        }
-
-        return null;
+        // We may already have some information, so just fill the gaps
+        return ($status !== 400 && $response !== null) ? $this->createPatronArray(
+            id: (string)$response->primary_id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: (string)$response?->first_name,
+            lastname: (string)$response?->last_name,
+            email: $this->getPreferredEmail($response)
+        ) : null;
     }
 
     /**
@@ -847,55 +844,28 @@ class Alma extends AbstractBase implements
         if (empty($xml)) {
             return [];
         }
-        $profile = [
-            'firstname' => (isset($xml->first_name))
-                ? (string)$xml->first_name
-                : null,
-            'lastname' => (isset($xml->last_name))
-                ? (string)$xml->last_name
-                : null,
-            'group' => isset($xml->user_group)
-                ? $this->getTranslatableString($xml->user_group)
-                : null,
-            'group_code' => (isset($xml->user_group))
-                ? (string)$xml->user_group
-                : null,
-        ];
-        $contact = $xml->contact_info;
-        if ($contact) {
-            if ($contact->addresses) {
-                $address = $contact->addresses[0]->address;
-                $profile['address1'] = (isset($address->line1))
-                    ? (string)$address->line1
-                    : null;
-                $profile['address2'] = (isset($address->line2))
-                    ? (string)$address->line2
-                    : null;
-                $profile['address3'] = (isset($address->line3))
-                    ? (string)$address->line3
-                    : null;
-                $profile['zip'] = (isset($address->postal_code))
-                    ? (string)$address->postal_code
-                    : null;
-                $profile['city'] = (isset($address->city))
-                    ? (string)$address->city
-                    : null;
-                $profile['country'] = (isset($address->country))
-                    ? (string)$address->country
-                    : null;
-            }
-            if ($contact->phones) {
-                $profile['phone'] = (isset($contact->phones[0]->phone->phone_number))
-                    ? (string)$contact->phones[0]->phone->phone_number
-                    : null;
-            }
-            $profile['email'] = $this->getPreferredEmail($xml);
-        }
-        if ($xml->birth_date) {
-            // Drop any time zone designator from the date:
-            $profile['birthdate'] = substr((string)$xml->birth_date, 0, 10);
-        }
 
+        $group = $xml?->user_group;
+        $contact = $xml?->contact_info;
+        $address = $contact?->addresses[0]?->address;
+
+        $profile = $this->createProfileArray(
+            firstname: (string)$xml?->first_name,
+            lastname: (string)$xml?->last_name,
+            address1: (string)$address?->line1,
+            address2: (string)$address?->line2,
+            city: (string)$address?->city,
+            zip: (string)$address?->postal_code,
+            country: (string)$address?->country,
+            group: $group ? $this->getTranslatableString($group) : null,
+            phone: (string)$contact?->phones[0]?->phone?->phone_number,
+            birthdate: $xml?->birth_date ? substr((string)$xml->birth_date, 0, 10) : '',
+            nonDefaultFields: [
+                'address3' => (string)$address?->line3,
+                'group_code' => (string)$group,
+                'email' => $this->getPreferredEmail($xml),
+            ]
+        );
         // Cache the user group code
         $cacheId = 'alma|user|' . $patronId . '|group_code';
         $this->putCachedData($cacheId, $profile['group_code'] ?? null);

@@ -254,4 +254,41 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test->clear('z', 'z');     // clear value that does not exist
         $this->assertEquals("[a]\n[b]", trim($test->getContent()));
     }
+
+    /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction(): void
+    {
+        $comments = Writer::extractComments($this->getFixtureDir() . 'configs/comments/config.ini');
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $comments
+        );
+    }
 }

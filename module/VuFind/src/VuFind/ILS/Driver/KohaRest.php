@@ -646,18 +646,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (200 !== $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
-
-        return [
-            'id' => $data['patron_id'],
-            'firstname' => $data['firstname'],
-            'lastname' => $data['surname'],
-            'cat_username' => $username,
-            'cat_password' => (string)$password,
-            'email' => $data['email'],
-            'major' => null,
-            'college' => null,
-            'home_library' => $data['library_id'],
-        ];
+        return $this->createPatronArray(
+            id: $data['patron_id'],
+            cat_username: $username,
+            cat_password: (string)$password,
+            firstname:  $data['firstname'],
+            lastname: $data['surname'],
+            email: $data['email'],
+            nonDefaultFields: [
+                'home_library' => $data['library_id'],
+            ]
+        );
     }
 
     /**
@@ -705,20 +704,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $result = $result['data'];
-        return [
-            'firstname' => $result['firstname'],
-            'lastname' => $result['surname'],
-            'phone' => $result['phone'],
-            'mobile_phone' => $result['mobile'],
-            'email' => $result['email'],
-            'address1' => $result['address'],
-            'address2' => $result['address2'],
-            'zip' => $result['postal_code'],
-            'city' => $result['city'],
-            'country' => $result['country'],
-            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null),
-            'birthdate' => $result['date_of_birth'] ?? '',
-        ];
+        return $this->createProfileArray(
+            firstname: $result['firstname'],
+            lastname: $result['surname'],
+            phone: $result['phone'],
+            mobile_phone: $result['mobile'],
+            address1: $result['address'],
+            address2: $result['address2'],
+            zip: $result['postal_code'],
+            city: $result['city'],
+            country: $result['country'],
+            expiration_date: $this->convertDate($result['expiry_date'] ?? null),
+            birthdate: $result['date_of_birth'] ?? '',
+            home_library: isset($result['library_id']) ? (string)$result['library_id'] : null,
+            nonDefaultFields: [
+                'email' => $result['email'],
+            ]
+        );
     }
 
     /**

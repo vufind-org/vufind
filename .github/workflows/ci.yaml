@@ -33,7 +33,7 @@ jobs:
           ini-values: error_reporting=E_ALL
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall

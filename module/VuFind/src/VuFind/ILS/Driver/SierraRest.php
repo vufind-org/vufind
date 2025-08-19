@@ -675,25 +675,16 @@ class SierraRest extends AbstractBase implements
                 return null;
             }
         }
-
-        $firstname = '';
-        $lastname = '';
-        if (!empty($patron['names'])) {
-            $name = $patron['names'][0];
-            $parts = explode(', ', $name, 2);
-            $lastname = $parts[0];
-            $firstname = $parts[1] ?? '';
-        }
-        return [
-            'id' => $patron['id'],
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => !empty($patron['emails']) ? $patron['emails'][0] : '',
-            'major' => null,
-            'college' => null,
-        ];
+        $name = $patron['names'][0] ?? '';
+        [$lastname, $firstname] = $this->getLastAndFirstName($name);
+        return $this->createPatronArray(
+            id: $patron['id'],
+            firstname: $firstname,
+            lastname: $lastname,
+            cat_username: $username,
+            cat_password: $password,
+            email: $patron['emails'][0] ?? null
+        );
     }
 
     /**
@@ -746,16 +737,11 @@ class SierraRest extends AbstractBase implements
         if (empty($result)) {
             return [];
         }
-        $firstname = '';
-        $lastname = '';
         $address = '';
         $zip = '';
         $city = '';
-        if (!empty($result['names'])) {
-            $nameParts = explode(', ', $result['names'][0], 2);
-            $lastname = $nameParts[0];
-            $firstname = $nameParts[1] ?? '';
-        }
+        [$lastname, $firstname] = $this->getLastAndFirstName($result['names'][0] ?? '');
+
         if (!empty($result['addresses'][0]['lines'][1])) {
             $address = $result['addresses'][0]['lines'][0];
             $postalParts = explode(' ', $result['addresses'][0]['lines'][1], 2);
@@ -766,23 +752,23 @@ class SierraRest extends AbstractBase implements
                 $city = $postalParts[0];
             }
         }
-        $expirationDate = !empty($result['expirationDate'])
+        return $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            phone: $result['phones'][0]['number'] ?? null,
+            address1: $address,
+            zip: $zip,
+            city: $city,
+            birthdate: $result['birthDate'] ?? '',
+            expiration_date: !empty($result['expirationDate'])
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : null;
-        return [
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'phone' => !empty($result['phones'][0]['number'])
-                ? $result['phones'][0]['number'] : '',
-            'email' => !empty($result['emails']) ? $result['emails'][0] : '',
-            'address1' => $address,
-            'zip' => $zip,
-            'city' => $city,
-            'birthdate' => $result['birthDate'] ?? '',
-            'expiration_date' => $expirationDate,
-        ];
+                ) : null,
+            nonDefaultFields: [
+                'email' => $result['emails'][0] ?? null,
+            ]
+        );
     }
 
     /**
