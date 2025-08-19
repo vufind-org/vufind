@@ -102,7 +102,7 @@ class HoldingsILS extends AbstractBase
     {
         // Check if the driver has a supportsHoldingsTab method and use it,
         // defaulting to true (visible) if the method doesn't exist
-        return $this->driver->tryMethod('supportsHoldingsTab', true);
+        return $this->driver->tryMethod('supportsHoldingsTab', [], true);
     }
 
     /**

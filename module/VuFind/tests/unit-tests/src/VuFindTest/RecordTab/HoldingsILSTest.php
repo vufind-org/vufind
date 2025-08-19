@@ -150,7 +150,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())
             ->method('tryMethod')
-            ->with('supportsHoldingsTab', true)
+            ->with('supportsHoldingsTab', [], true)
             ->willReturn(true);
         
         $obj->setRecordDriver($driver);
@@ -171,7 +171,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())
             ->method('tryMethod')
-            ->with('supportsHoldingsTab', true)
+            ->with('supportsHoldingsTab', [], true)
             ->willReturn(false);
         
         $obj->setRecordDriver($driver);
@@ -192,7 +192,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())
             ->method('tryMethod')
-            ->with('supportsHoldingsTab', true)
+            ->with('supportsHoldingsTab', [], true)
             ->willReturn(true); // This simulates the default behavior
         
         $obj->setRecordDriver($driver);
