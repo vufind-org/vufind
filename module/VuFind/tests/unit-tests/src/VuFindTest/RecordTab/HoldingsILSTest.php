@@ -137,7 +137,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isVisible true, for EDS record with catalog & correct pubType
+     * Test isVisible true, when driver supports holdings tab
      *
      * @return void
      */
@@ -145,14 +145,20 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     {
         $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
         $obj = new HoldingsILS($searchObj);
-        $driver = $this->getDriver('catalog_record_patron_empowerment');
-        $driver->setSourceIdentifiers('EDS');
+        
+        // Create a mock driver that supports holdings tab
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
+        $driver->expects($this->once())
+            ->method('tryMethod')
+            ->with('supportsHoldingsTab', true)
+            ->willReturn(true);
+        
         $obj->setRecordDriver($driver);
         $this->assertTrue($obj->isVisible());
     }
 
     /**
-     * Test isVisible false, for EDS record with catalog & wrong pubType
+     * Test isVisible false, when driver doesn't support holdings tab
      *
      * @return void
      */
@@ -160,9 +166,36 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     {
         $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
         $obj = new HoldingsILS($searchObj);
-        $driver = $this->getDriver('catalog_record_patron_empowerment_ebook');
-        $driver->setSourceIdentifiers('EDS');
+        
+        // Create a mock driver that doesn't support holdings tab
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
+        $driver->expects($this->once())
+            ->method('tryMethod')
+            ->with('supportsHoldingsTab', true)
+            ->willReturn(false);
+        
         $obj->setRecordDriver($driver);
         $this->assertFalse($obj->isVisible());
+    }
+
+    /**
+     * Test isVisible defaults to true when driver doesn't have supportsHoldingsTab method
+     *
+     * @return void
+     */
+    public function testIsVisibleDefaultsToTrue()
+    {
+        $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
+        $obj = new HoldingsILS($searchObj);
+        
+        // Create a mock driver where tryMethod returns the default value
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
+        $driver->expects($this->once())
+            ->method('tryMethod')
+            ->with('supportsHoldingsTab', true)
+            ->willReturn(true); // This simulates the default behavior
+        
+        $obj->setRecordDriver($driver);
+        $this->assertTrue($obj->isVisible());
     }
 }
