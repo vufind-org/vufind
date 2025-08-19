@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\Query\ResultSetMapping;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;

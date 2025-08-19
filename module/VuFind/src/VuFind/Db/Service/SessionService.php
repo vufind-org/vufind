@@ -31,7 +31,7 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 use VuFind\Log\LoggerAwareTrait;
