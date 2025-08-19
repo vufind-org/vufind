@@ -306,7 +306,6 @@ class NewGenLib extends AbstractBase
      */
     public function getMyProfile($patron)
     {
-        $profile = null;
         $catusr = $patron['cat_username'];
         $catpswd = $patron['cat_password'];
         $sql = 'select p.patron_id as patron_id,p.user_password as ' .
@@ -321,19 +320,18 @@ class NewGenLib extends AbstractBase
             $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            if ($catusr != $row['patron_id'] || $catpswd != $row['user_password']) {
-                return null;
-            } else {
-                $profile = ['firstname' => $row['fname'],
-                    'lastname' => $row['lname'],
-                    'address1' => $row['address1'],
-                    'address2' => $row['address2'],
-                    'zip' => $row['pin'],
-                    'phone' => $row['phone1'],
-                    'group' => null];
+            if ($catusr === $row['patron_id'] && $catpswd === $row['user_password']) {
+                return $this->createProfileArray(
+                    firstname: $row['fname'],
+                    lastname: $row['lname'],
+                    address1: $row['address1'],
+                    address2: $row['address2'],
+                    zip: $row['pin'],
+                    phone: $row['phone1'],
+                );
             }
         }
-        return $profile;
+        return null;
     }
 
     /**
@@ -472,16 +470,14 @@ class NewGenLib extends AbstractBase
         if (!$row) {
             return null;
         }
-        return [
-            'id' => $row['patron_id'],
-            'firstname' => $row['fname'],
-            'lastname' => $row['lname'],
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => $row['email'],
-            'major' => null,
-            'college' => null,
-        ];
+        return $this->createPatronArray(
+            id: $row['patron_id'],
+            firstname: $row['fname'],
+            lastname: $row['lname'],
+            cat_username: $username,
+            cat_password: $password,
+            email: $row['email'],
+        );
     }
 
     /**
