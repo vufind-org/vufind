@@ -103,15 +103,12 @@ class LoggerFactory implements FactoryInterface
         $parts = explode(':', $config->Logging->database);
         $table_name = $parts[0];
         $error_types = $parts[1] ?? '';
-
-        $columnMapping = [
-            'priority' => 'priority',
-            'message' => 'message',
-            'logtime' => 'timestamp',
-            'ident' => 'ident',
-        ];
-
         $filters = explode(',', $error_types);
+
+        $baseDatabaseHandler = new \VuFind\Log\Handler\DatabaseHandler($table_name);
+        $baseDatabaseHandler->setDbService($container->get(\VuFind\Db\Service\PluginManager::class));
+
+        $this->addHandlers($logger, $baseDatabaseHandler, $filters);
     }
 
     /**
@@ -270,6 +267,11 @@ class LoggerFactory implements FactoryInterface
         // Activate file logging, if applicable:
         if (isset($config->Logging->file)) {
             $this->addFileHandler($monologLogger, $config->Logging->file);
+        }
+
+        // Activate database logging, if applicable:
+        if (isset($config->Logging->database)) {
+            $this->addDbHandler($monologLogger, $config, $container);
         }
 
         // Activate email logging, if applicable:
