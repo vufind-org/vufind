@@ -61,6 +61,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 function refreshCommentList(target, recordId, recordSource) {
   const commentList = target.querySelector('.comment-list');
   if (!commentList) return;
+  commentList.prepend(VuFind.loadingOverlay());
   const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
     method: 'getRecordCommentsAsHTML',
     id: recordId,
@@ -107,6 +108,13 @@ function postComment(event) {
   const recordSource = form.source.value;
   const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'commentRecord' });
   const data = {};
+  const loadingSpinner = form.querySelector('.js-loading-spinner');
+  if (loadingSpinner) {
+    loadingSpinner.classList.remove('hidden');
+  }
+  const submitButtons = form.querySelectorAll('[type=submit]');
+  // Disable submit buttons (we don't use the data-disable-on-submit attribute because we need to also enable them):
+  submitButtons.forEach(btn => btn.disabled = true);
   form.querySelectorAll('input,textarea').forEach((input) => {
     if (input.type !== 'radio' || input.checked) {
       data[input.name] = input.value;
@@ -125,6 +133,8 @@ function postComment(event) {
     .then((optionalError) => {
       if (optionalError) {
         VuFind.lightbox.alert(optionalError.data, 'danger');
+        submitButtons.forEach(btn => btn.disabled = false);
+        loadingSpinner.classList.add('hidden');
         return;
       }
       let tab = form.closest('.list-tab-content');
@@ -146,6 +156,8 @@ function postComment(event) {
         }
       }
       resetCaptcha(form);
+      submitButtons.forEach(btn => btn.disabled = false);
+      loadingSpinner.classList.add('hidden');
     });
 }
 

@@ -1,5 +1,5 @@
-/*global grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*global grecaptcha, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -295,6 +295,21 @@ var VuFind = (function VuFind() {
     spinnerSpan.appendChild(spinnerText);
     return spinnerSpan;
   };
+
+  /**
+   * Return an overlay html element that contains a spinner with loading text
+   * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
+   * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
+   * @returns {HTMLDivElement}
+   */
+  function loadingOverlay(text = null, extraClass = '') {
+    const overlay = document.createElement('div');
+    overlay.classList = 'loading-overlay';
+    overlay.setAttribute('aria-live', 'polite');
+    overlay.setAttribute('role', 'status');
+    overlay.append(loadingElement(text, extraClass));
+    return overlay;
+  }
 
   /**
    * Reload the page without causing trouble with POST parameters while keeping hash
@@ -632,6 +647,7 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     loadingElement: loadingElement,
+    loadingOverlay,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
@@ -786,29 +802,6 @@ function getUrlRoot(url) {
     urlroot = '/' + parts[0] + '/' + parts[1];
   }
   return urlroot;
-}
-
-/**
- * Phone number validation
- * @param {String} numID Phone number field ID
- * @param {String} regionCode Region code
- * @deprecated See validation.js for replacement
- */
-function phoneNumberFormHandler(numID, regionCode) {
-  var phoneInput = document.getElementById(numID);
-  var number = phoneInput.value;
-  var valid = isPhoneNumberValid(number, regionCode);
-  if (valid !== true) {
-    if (typeof valid === 'string') {
-      valid = VuFind.translate(valid);
-    } else {
-      valid = VuFind.translate('libphonenumber_invalid');
-    }
-    phoneInput.setCustomValidity(valid);
-    return false;
-  } else {
-    phoneInput.setCustomValidity('');
-  }
 }
 
 // Setup captchas after Google script loads

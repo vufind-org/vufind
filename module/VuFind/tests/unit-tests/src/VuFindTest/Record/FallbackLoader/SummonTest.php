@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Summon;
 use VuFind\Record\RecordIdUpdater;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
 use VuFindSearch\ParamBag;
 
 /**

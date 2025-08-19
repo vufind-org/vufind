@@ -138,7 +138,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $basePath Base path
      *
-     * @return void
+     * @return static
      */
     public function setBasePath(string $basePath): static
     {
@@ -161,7 +161,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $fileName string
      *
-     * @return void
+     * @return static
      */
     public function setFileName(string $fileName): static
     {
@@ -184,7 +184,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $configName Config name
      *
-     * @return void
+     * @return static
      */
     public function setConfigName(string $configName): static
     {
@@ -207,7 +207,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param array $subsection Subsection
      *
-     * @return void
+     * @return static
      */
     public function setSubsection(array $subsection): static
     {
@@ -230,7 +230,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
-     * @return void
+     * @return static
      */
     public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static
     {

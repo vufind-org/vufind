@@ -176,9 +176,10 @@ VuFind.register('lightbox', function Lightbox() {
       return;
     }
     // Loading
-    _modalBody.find('.modal-loading-overlay,.loading-spinner').remove();
+    _modalBody.find('.loading-overlay,.loading-spinner').remove();
     if (_modalBody.children().length > 0) {
-      _modalBody.prepend('<div class="modal-loading-overlay">' + VuFind.loading() + '</div>');
+
+      _modalBody.prepend(VuFind.loadingOverlay());
     } else {
       _modalBody.prepend(VuFind.loading());
     }

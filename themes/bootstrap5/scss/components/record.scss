@@ -74,6 +74,16 @@
 .comment-name { font-style: italic; }
 .comment { margin-bottom: 1rem; }
 .comment-name .delete { color: $state-danger-text; }
+.comment-form {
+  .loading-spinner {
+    display: inline-block;
+    vertical-align: middle;
+    padding: $btn-padding-y $btn-padding-x;
+  }
+  .btn, .loading-spinner {
+    margin-top: 0.25rem;
+  }
+}
 @include media-breakpoint-up(sm) {
   .comment-form,
   .comment {
@@ -101,12 +111,18 @@
       float: left;
       margin: 0.5rem 1rem;
     }
-    .btn {
-      margin-top: 0.5rem;
-    }
   }
   .comment-list .comment-rating {
     margin-left: 1rem;
+  }
+}
+.comment-list {
+  position: relative;
+
+  // Loading spinner
+  .loading-overlay {
+    @include loading-overlay();
+    background-color: transparent;
   }
 }
 
