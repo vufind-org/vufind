@@ -6,9 +6,7 @@ module.exports = {
   plugins: ["jsdoc"],
   ignorePatterns: [
     "themes/**/vendor/**",
-    "themes/**/node_modules/**",
-    "themes/bootstrap5/js/record.js",
-    "themes/bootstrap5/js/facets.js"
+    "themes/**/node_modules/**"
   ],
   extends: [],
   env: {
