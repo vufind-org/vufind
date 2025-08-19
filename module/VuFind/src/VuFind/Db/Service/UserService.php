@@ -32,7 +32,6 @@ namespace VuFind\Db\Service;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Laminas\Session\Container as SessionContainer;
-use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\User;

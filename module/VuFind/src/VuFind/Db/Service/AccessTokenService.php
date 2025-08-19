@@ -30,7 +30,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\User;
 
