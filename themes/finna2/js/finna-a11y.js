@@ -24,6 +24,19 @@ finna.a11y = (function a11y() {
         }
       });
     });
+
+    // Add aria-expanded attribute to priority nav menu button
+    const priorityNavToggle = document.querySelector('.priority-nav__dropdown-toggle');
+
+    if (priorityNavToggle) {
+      // Initialize the aria-expanded attribute
+      priorityNavToggle.setAttribute('aria-expanded', 'false');
+      priorityNavToggle.addEventListener('click', function togglePriorityNavMenu() {
+        // Toggle the aria-expanded attribute
+        const isExpanded = priorityNavToggle.getAttribute('aria-expanded') === 'true';
+        priorityNavToggle.setAttribute('aria-expanded', !isExpanded);
+      });
+    }
   }
   var my = {
     init: function init() {
