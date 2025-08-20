@@ -6,7 +6,7 @@
   <?php $langs = $this->driver->getLanguages();
   if (!empty($langs)): ?>
     <tr class="recordLanguage">
-      <th><?=$this->transEsc('Language')?>: </th>
+      <th scope="row"><?=$this->transEsc('Language')?>: </th>
       <td><?php foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br><?php endforeach; ?></td>
     </tr>
   <?php endif; ?>
@@ -14,7 +14,7 @@
   <?php $publications = $this->driver->getPublicationDetails();
   if (!empty($publications)): ?>
     <tr class="recordPublications">
-      <th><?=$this->transEsc('Publisher')?>: </th>
+      <th scope="row"><?=$this->transEsc('Publisher')?>: </th>
       <td>
       <?php foreach ($publications as $field): ?>
         <span>
@@ -40,7 +40,7 @@
   if (!empty($issns)): ?>
     <?php $contentDisplayed = true; ?>
     <tr>
-      <th><?=$this->transEsc('ISSN')?>: </th>
+      <th scope="row"><?=$this->transEsc('ISSN')?>: </th>
       <td>
         <?php foreach ($issns as $field): ?>
           <?=$this->escapeHtml($field)?><br>
@@ -52,7 +52,7 @@
   <?php $subjects = $this->driver->getAllSubjectHeadings();
   if (!empty($subjects)): ?>
     <tr>
-      <th><?=$this->transEsc('Subjects')?>:</th>
+      <th scope="row"><?=$this->transEsc('Subjects')?>:</th>
       <td>
       <?php foreach ($subjects as $field): ?>
       <div class="subjectLine">
@@ -75,7 +75,7 @@
   <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
     <?php /* Saved lists */ ?>
     <tr class="savedLists">
-      <th><?=$this->transEsc('Saved in')?>:</th>
+      <th scope="row"><?=$this->transEsc('Saved in')?>:</th>
       <td>
         <div class="alert alert-info">
           <ul>

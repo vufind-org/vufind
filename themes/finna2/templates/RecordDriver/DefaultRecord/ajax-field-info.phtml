@@ -27,7 +27,7 @@
   <table class="table table-finna-record record-details">
     <?php foreach ($coreFields as $current): ?>
       <tr<?=!empty($current['context']['class']) ? (' class="' . $current['context']['class'] . '"') : ''?>>
-        <th><?=$this->transEsc($current['label'])?>:</th>
+        <th scope="row"><?=$this->transEsc($current['label'])?>:</th>
         <td><?=$current['value']?></td>
       </tr>
     <?php endforeach; ?>

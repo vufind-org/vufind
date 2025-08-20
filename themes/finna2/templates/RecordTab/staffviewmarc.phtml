@@ -7,7 +7,7 @@
   ksort($rawData);
   foreach ($rawData as $field => $values): ?>
     <tr>
-      <th><?=$this->escapeHtml($field)?></th>
+      <th scope="row"><?=$this->escapeHtml($field)?></th>
       <td>
         <?php if (!is_array($values)) {
           $values = [$values];

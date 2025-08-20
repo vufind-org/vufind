@@ -26,13 +26,13 @@
     <table class="table-condensed" role="presentation">
       <?php if (!empty($this->image['identifier'])): ?>
         <tr>
-          <th><?=$this->transEsc('image_identifier')?></th>
+          <th scope="row"><?=$this->transEsc('image_identifier')?></th>
           <td><?=$this->transEsc($this->image['identifier'])?></td>
         </tr>
       <?php endif; ?>
       <?php if (!empty($rights['rightsHolders'])): ?>
         <tr>
-          <th><?=$this->transEsc('image_rights_holders')?></th>
+          <th scope="row"><?=$this->transEsc('image_rights_holders')?></th>
           <td>
             <?php $i = 0; ?>
             <?php foreach ($rights['rightsHolders'] as $rightsHolder): ?>
@@ -51,7 +51,7 @@
 
       <?php if (!empty($rights['creditLine'])): ?>
         <tr>
-          <th><?=$this->transEsc('image_rights_credits')?></th>
+          <th scope="row"><?=$this->transEsc('image_rights_credits')?></th>
           <td>
             <?=$this->escapeHtml($rights['creditLine'])?>
           </td>
@@ -60,7 +60,7 @@
       <?php foreach ($arrayElements as $field => $translation): ?>
         <?php if (!empty($this->image[$field])): ?>
           <tr>
-            <th><?=$this->transEsc($translation)?></th>
+            <th scope="row"><?=$this->transEsc($translation)?></th>
             <td>
               <?=implode('<br>', array_map([$this, 'transEsc'], (array)$this->image[$field]))?>
             </td>

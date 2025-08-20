@@ -9,7 +9,7 @@
       <?php if (!empty($item['Data']) && !in_array($item['Label'], $this->ignoreDetailsFields ?? [])): ?>
         <?php if ('Au' == $item['Group'] && $authorDisplay == 'short'): ?>
           <tr class="record-<?=strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $item['Label']))?>">
-            <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
+            <th scope="row"><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
             <?php
               $authors = $driver->getPrimaryAuthorsWithHighlighting();
               $authorCount = count($authors);
@@ -35,7 +35,7 @@
           <?php /* Do nothing: skip AuInfo data in short author mode... */ ?>
         <?php else: ?>
           <tr class="record-<?=strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $item['Label']))?>">
-            <th><?php if (!empty($item['Label'])): ?><?=$this->transEsc($item['Label'])?>:<?php endif; ?></th>
+            <th scope="row"><?php if (!empty($item['Label'])): ?><?=$this->transEsc($item['Label'])?>:<?php endif; ?></th>
             <td class="record__biblio-value">
               <div class="truncate-field">
                 <p><?=$this->driver->linkUrls($item['Data'])?></p>
@@ -48,7 +48,7 @@
 
     <?php if (!empty($this->dbLabel)): ?>
       <tr>
-        <th><?=$this->transEsc('Database')?>:</th>
+        <th scope="row"><?=$this->transEsc('Database')?>:</th>
         <td><?=$this->escapeHtml($this->dbLabel)?></td>
       </tr>
     <?php endif; ?>

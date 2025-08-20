@@ -29,12 +29,12 @@
         <table class="table finna-table-striped useraccount-table library-cards mobile-table" tabindex="0">
           <thead>
             <tr class="headers">
-              <th class="card-name"><?=$this->transEsc('Library Card Name')?></th>
+              <th class="card-name" scope="col"><?=$this->transEsc('Library Card Name')?></th>
               <?php if ($this->multipleTargets): ?>
-              <th><?=$this->transEsc('login_target')?></th>
+              <th scope="col"><?=$this->transEsc('login_target')?></th>
               <?php endif; ?>
-              <th><?=$this->transEsc('Username')?></th>
-              <th class="library-card-actions"><?=$this->transEsc('Actions')?></th>
+              <th scope="col"><?=$this->transEsc('Username')?></th>
+              <th class="library-card-actions" scope="col"><?=$this->transEsc('Actions')?></th>
             </tr>
           </thead>
           <tbody>

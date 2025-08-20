@@ -46,7 +46,7 @@
   ksort($rawData);
   foreach ($rawData as $field => $values): ?>
     <tr>
-      <th><?=$this->escapeHtml($field)?></th>
+      <th scope="row"><?=$this->escapeHtml($field)?></th>
       <td><?=$this->printArrayHtml($values)?></td>
     </tr>
   <?php endforeach; ?>

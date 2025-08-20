@@ -16,13 +16,13 @@
 <table id="componentparts" class="display table">
   <thead>
     <tr>
-      <th><?=$this->translate('No.') ?></th>
-      <th><?=$this->translate('Title and Authors') ?></th>
+      <th scope="col"><?=$this->translate('No.') ?></th>
+      <th scope="col"><?=$this->translate('Title and Authors') ?></th>
       <?php if ($havePresenters): ?>
-        <th><?=$this->translate('Presenters') ?></th>
+        <th scope="col"><?=$this->translate('Presenters') ?></th>
       <?php endif; ?>
       <?php if ($haveDuration): ?>
-        <th><?=$this->translate('Playing Time') ?></th>
+        <th scope="col"><?=$this->translate('Playing Time') ?></th>
       <?php endif; ?>
     </tr>
   </thead>
