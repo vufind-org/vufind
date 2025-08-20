@@ -1,7 +1,7 @@
 <?php if ($QRCode = $this->record($this->driver)->getQRCode('results')): ?>
-<!-- START of: finna - RecordDriver/DefaultRecord/record-qrcode.phtml -->
+<!-- START of: finna - RecordDriver/DefaultRecord/result-qrcode.phtml -->
   <div class="dropdown hidden-xs">
-    <a href="#" class="dropdown-toggle qrcodeLink" data-bs-toggle="dropdown" title="<?=$this->transEsc('QR Code')?>" rel="nofollow" aria-expanded="false">
+    <a href="#" class="dropdown-toggle qrcodeLink" role="button" data-bs-toggle="dropdown" title="<?=$this->transEsc('QR Code')?>" rel="nofollow" aria-expanded="false">
       <?=$this->icon('qrcode')?><span class="visually-hidden"><?=$this->transEsc('QR Code')?></span>
     </a>
     <ul class="dropdown-menu dropdown-menu-right qrcode dropdown-menu-end">
@@ -12,5 +12,5 @@
       </li>
     </ul>
   </div>
-<!-- END of: finna - RecordDriver/DefaultRecord/record-qrcode.phtml -->
+<!-- END of: finna - RecordDriver/DefaultRecord/result-qrcode.phtml -->
 <?php endif; ?>
