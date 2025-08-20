@@ -36,19 +36,19 @@
         <?php endif; ?>
           <?php if ($this->plugin('organisationInfo')->isAvailable() && $organisationInfoId = $this->driver->getOrganisationInfoId()): ?><li class="organisation-page-link" data-organisation="<?=$this->escapeHtmlAttr($organisationInfoId)?>" data-organisation-name="<?=$this->escapeHtmlAttr($currentSourceTranslated)?>" data-organisation-sector="<?=$this->escapeHtmlAttr($sector)?>"></li><?php endif; ?>
           <li class="material-questions-feedback"><?=$this->transEsc('material_questions_feedback')?></li>
-          <li><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Feedback'))?>" data-lightbox class="btn btn-primary feedback-record"><?=$this->transEsc('Send feedback on record')?></a></li>
+          <li><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Feedback'))?>" role="button" data-lightbox class="btn btn-primary feedback-record"><?=$this->transEsc('Send feedback on record')?></a></li>
           <?php if ($this->record($this->driver)->repositoryLibraryRequestEnabled('organisation_info')): ?>
             <li class="repository-library-request"><?=$this->transEsc('repository_library_request')?></li>
             <li>
               <?php $user = $this->auth()->getUserObject();
               if ($user): ?>
                 <?php if ($this->libraryCards()->getCardsForUser($user)): ?>
-                  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'RepositoryLibraryRequest'))?>" data-lightbox class="btn btn-primary repository-library-request-order"><?=$this->transEsc('repository_library_request_order')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
+                  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'RepositoryLibraryRequest'))?>" role="button" data-lightbox class="btn btn-primary repository-library-request-order"><?=$this->transEsc('repository_library_request_order')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
                 <?php else: ?>
                   <a href="<?=$this->url('editLibraryCard', ['id' => 'NEW'])?>" class="login hidden-print"><?=$this->transEsc('repository_library_request_add_library_card')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
                 <?php endif; ?>
               <?php else: ?>
-                <a href="?login=true&catalogLogin=true" class="login hidden-print" data-lightbox><?=$this->transEsc('repository_library_request_login')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
+                <a href="?login=true&catalogLogin=true" class="login hidden-print" role="button" data-lightbox><?=$this->transEsc('repository_library_request_login')?><span class="visually-hidden"> - <?=$this->escapeHtml($this->driver->getTitle())?></span></a>
               <?php endif; ?>
             </li>
           <?php endif; ?>
