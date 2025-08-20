@@ -1341,18 +1341,11 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks'])
             ? $this->getDriver()->getConfig('TimedBlocks')
             : [];
-        if (empty($functionConfig)) {
+
+        if (!isset($functionConfig[$methodName])) {
             return [];
         }
-        $methodBlocks = [];
-        foreach ($functionConfig as $key => $value) {
-            [$method, $setting] = explode(':', $key, 2);
-            $methodBlocks[$method][$setting] = $value;
-        }
-        if (!isset($methodBlocks[$methodName])) {
-            return [];
-        }
-        $methodBlock = $methodBlocks[$methodName];
+        $methodBlock = $functionConfig[$methodName];
         $startDate = strtotime($methodBlock['startDate'] ?? '');
         $endDate = $methodBlock['endDate'] ?? '';
         $noEndHours = empty(explode(' ', $endDate, 2)[1]);

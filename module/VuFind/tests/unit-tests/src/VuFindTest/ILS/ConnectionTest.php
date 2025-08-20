@@ -250,4 +250,23 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
         $this->setTimedBlocks($timedBlocks);
         $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
     }
+
+    /**
+     * Test that methods are not blocked with invalid date values
+     *
+     * @return void
+     */
+    public function testIsMethodBlockedWithInvalidValues()
+    {
+        $timedBlocks = [
+            'Renewals' => [
+                'startDate' => 'testing string',
+                'endDate' => 'true',
+                'recurringStart' => 'starting',
+                'recurringEnd' => 'ending',
+            ],
+        ];
+        $this->setTimedBlocks($timedBlocks);
+        $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
+    }
 }
