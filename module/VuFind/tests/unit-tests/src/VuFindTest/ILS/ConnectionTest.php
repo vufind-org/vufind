@@ -202,10 +202,6 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     public function testIsMethodBlocked(array $timedBlocks, bool $expectedResult): void
     {
         $this->setTimedBlocks($timedBlocks);
-        if ($expectedResult) {
-            $this->assertTrue($this->connection->isMethodBlocked('Renewals'));
-        } else {
-            $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
-        }
+        $this->assertEquals($this->connection->isMethodBlocked('Renewals'), $expectedResult);
     }
 }
