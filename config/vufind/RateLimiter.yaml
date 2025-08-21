@@ -114,6 +114,15 @@ Storage:
 #                              rateLimiterSettings quota is still separately applied.
 #                              Default (not defined) means don't use Turnstile.
 #
+# turnstileIgnoredRateLimiterSettings 
+#                              Bots may ignore all Javascript, and thus never actually
+#                              submit a generated Turnstile challenge, so that it is
+#                              issued again on every request. This limits the number
+#                              of times the challenge will be presented and not
+#                              completed, before it will be recorded as failed.
+#                              Defined like rateLimiterSettings, but it decrements each
+#                              time the challenge is presented.
+#
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
 #
 # reportOnly            If set to true, will not enforce the policy even if the main
