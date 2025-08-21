@@ -38,7 +38,7 @@ VuFind.register("channels", function Channels() {
       // Prev Item buttons (in quick look)
       if (event.target.closest(".ql-prev-item-btn")) {
         const group = event.target.closest(".channels-quick-look");
-        const record = queryChannelItem(
+        const record = findChannelItem(
           group.dataset.recordSource,
           group.dataset.recordId
         );
@@ -52,7 +52,7 @@ VuFind.register("channels", function Channels() {
       // Next Item buttons (in quick look)
       if (event.target.closest(".ql-next-item-btn")) {
         const group = event.target.closest(".channels-quick-look");
-        const record = queryChannelItem(
+        const record = findChannelItem(
           group.dataset.recordSource,
           group.dataset.recordId
         );
@@ -77,12 +77,20 @@ VuFind.register("channels", function Channels() {
     }
   }
 
-  function queryChannelItem(source, id) {
+  /**
+   * @param {string} source Record source
+   * @param {string} id Record ID
+   * @returns {HTMLElement}
+   */
+  function findChannelItem(source, id) {
     return document.querySelector(
       `[data-record-source="${source}"][data-record-id="${id}"]`
     );
   }
 
+  /**
+   * @param {Event} event Click event from .channel-add-link
+   */
   async function addChannel(event) {
     const link = event.target;
 
@@ -93,6 +101,7 @@ VuFind.register("channels", function Channels() {
     const parser = new DOMParser();
     const resDOM = parser.parseFromString(resHTML, "text/html");
 
+    // Add channels to DOM
     let callerChannelEl = link.closest(".channel");
     for (const channelEl of resDOM.querySelectorAll(".channel")) {
       // Make sure the channel has content
@@ -123,6 +132,9 @@ VuFind.register("channels", function Channels() {
     link.closest(".dropdown-menu").removeChild(link.closest("li"));
   }
 
+  /**
+   * @param {Event} event Click event from .channel-load-more-btn
+   */
   async function loadMoreItems(event) {
     const btn = event.target;
     if (btn.classList.contains("disabled")) {
@@ -158,6 +170,9 @@ VuFind.register("channels", function Channels() {
     }
   }
 
+  /**
+   * @param {HTMLElement} record Channel item to preview
+   */
   function quickLook(record) {
     const titleLink = record.querySelector(".channel-item-title");
     const href = titleLink.getAttribute("href");
@@ -172,11 +187,15 @@ VuFind.register("channels", function Channels() {
       body: formData,
     })
       .then((res) => res.text())
-      .then(function channelPopoverDone(htmlContent) {
+      .then(function quickLookFetchDone(htmlContent) {
         VuFind.lightbox.render(`${quickLookHeader(record)} ${htmlContent}`);
       });
   }
 
+  /**
+   * @param {HTMLElement} record Channel item to preview
+   * @returns {string} HTML of quick look controls
+   */
   function quickLookHeader(record) {
     const template = document.getElementById("template-channels-quick-look");
     const content = template.content.cloneNode(true).children[0];
@@ -211,7 +230,17 @@ VuFind.register("channels", function Channels() {
 
     return content.outerHTML;
   }
-  // Truncate lines to height with ellipses
+
+  /**
+   * Truncate lines to a number of lines. Truncated text will end in ellipses.
+   *
+   * Works by removing words and saving the string every time the element shrinks.
+   *   This results in a list of strings by number of lines (one-indexed).
+   *   We then select the appropriate string for our target (or the last if less).
+   *
+   * @param {HTMLElement} el Target element
+   * @param {number} targetLines Maximum number of lines
+   */
   function clampLines(el, targetLines = 3) {
     const strings = [el.textContent];
 
