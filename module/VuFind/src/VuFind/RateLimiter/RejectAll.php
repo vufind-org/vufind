@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\RateLimiter\Turnstile;
+namespace VuFind\RateLimiter;
 
 use Symfony\Component\RateLimiter\Exception\ReserveNotSupportedException;
 use Symfony\Component\RateLimiter\LimiterInterface;

@@ -41,7 +41,6 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
 use Symfony\Component\RateLimiter\Storage\StorageInterface;
 use VuFind\RateLimiter\Storage\CredisStorage;
-use VuFind\RateLimiter\Turnstile\RejectAll;
 use VuFind\Service\GetServiceTrait;
 
 /**
