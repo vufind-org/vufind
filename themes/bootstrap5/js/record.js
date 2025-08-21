@@ -2,7 +2,10 @@
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
- * Functions and event handlers specific to record pages.
+ * Check if a user request is valid by making an AJAX call.
+ * @param {HTMLElement} element The link element to check.
+ * @param {string} requestType The type of request (e.g., 'Hold', 'StorageRetrievalRequest').
+ * @param {string} [icon] The icon to display (default = 'place-hold').
  */
 function checkRequestIsValid(element, requestType, icon = 'place-hold') {
   const recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
@@ -33,6 +36,10 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
     .catch(() => element.parentNode.removeChild(element));
 }
 
+/**
+ * Set up the validity check for request links within a given context.
+ * @param {HTMLElement} [_context] The container element to search within (default = document).
+ */
 function setUpCheckRequest(_context) {
   const context = typeof _context === "undefined" ? document : _context;
   context.querySelectorAll('.checkRequest').forEach(
@@ -46,6 +53,13 @@ function setUpCheckRequest(_context) {
   );
 }
 
+/**
+ * Delete a record comment via an AJAX request.
+ * @param {HTMLElement} element The element that triggered the delete.
+ * @param {string} recordId The ID of the record.
+ * @param {string} recordSource The source of the record.
+ * @param {string} commentId The ID of the comment to delete.
+ */
 function deleteRecordComment(element, recordId, recordSource, commentId) {
   const url = VuFind.path + '/AJAX/JSON?' + new URLSearchParams({ method: 'deleteRecordComment', id: commentId });
   fetch(url, {
@@ -58,6 +72,12 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   });
 }
 
+/**
+ * Refresh the list of comments for a record.
+ * @param {HTMLElement} target The container element for the comments.
+ * @param {string} recordId The ID of the record.
+ * @param {string} recordSource The source of the record.
+ */
 function refreshCommentList(target, recordId, recordSource) {
   const commentList = target.querySelector('.comment-list');
   if (!commentList) return;
@@ -83,6 +103,11 @@ function refreshCommentList(target, recordId, recordSource) {
     });
 }
 
+/**
+ * Refresh the record rating display.
+ * @param {string} recordId The ID of the record.
+ * @param {string} recordSource The source of the record.
+ */
 function refreshRecordRating(recordId, recordSource) {
   const rating = document.querySelector('.media-left .rating');
   if (!rating) {
@@ -101,6 +126,10 @@ function refreshRecordRating(recordId, recordSource) {
     });
 }
 
+/**
+ * Handle the submission of a comment form via AJAX.
+ * @param {Event} event The form submission event.
+ */
 function postComment(event) {
   event.preventDefault();
   const form = event.target;
@@ -161,6 +190,10 @@ function postComment(event) {
     });
 }
 
+/**
+ * Register event listeners for AJAX-based comment submission and deletion.
+ * @param {HTMLElement} [_context] The container element to search within (default = document).
+ */
 function registerAjaxCommentRecord(_context) {
   const context = typeof _context === "undefined" ? document : _context;
 
@@ -185,6 +218,10 @@ function registerAjaxCommentRecord(_context) {
 let ajaxLoadTab = function ajaxLoadTabForward() {
 };
 
+/**
+ * Handle a click on an AJAX tab link.
+ * @param {Event} event The click event.
+ */
 function handleAjaxTabLinkClick(event){
   event.preventDefault();
   const href = event.target.href;
@@ -198,6 +235,9 @@ function handleAjaxTabLinkClick(event){
   }
 }
 
+/**
+ * Register click handlers for AJAX tab links.
+ */
 function handleAjaxTabLinks() {
   // Form submission
   document.querySelectorAll('a').forEach((a) => {
@@ -208,6 +248,10 @@ function handleAjaxTabLinks() {
   });
 }
 
+/**
+ * Register various events and functions for a record tab container.
+ * @param {object} params The object with the container element.
+ */
 function registerTabEvents(params) {
   const container = params.container;
 
@@ -222,7 +266,10 @@ function registerTabEvents(params) {
 }
 VuFind.listen('record-tab-init', registerTabEvents);
 
-// Update print button to correct tab prints
+/**
+ * Update the print button's URL hash.
+ * @param {string|null} hash The hash to set.
+ */
 function setPrintBtnHash(hash) {
   const printBtn = document.querySelector(".print-record");
   if (!printBtn) {
@@ -234,11 +281,18 @@ function setPrintBtnHash(hash) {
   printBtn.setAttribute("href", printURL.href);
 }
 
+/**
+ * Add a tab ID to the URL hash.
+ * @param {string} tabId The ID of the tab.
+ */
 function addTabToURL(tabId) {
   window.location.hash = tabId;
   setPrintBtnHash(tabId);
 }
 
+/**
+ * Remove the hash from the URL.
+ */
 function removeHashFromLocation() {
   if (window.history.replaceState) {
     const href = window.location.href.split('#');
@@ -288,6 +342,11 @@ ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
     });
 };
 
+/**
+ * Refresh the tag list for a record.
+ * @param {HTMLElement} [_target]   The container element for the record (default = document).
+ * @param {boolean}     [_loggedin] Whether the user is logged in.
+ */
 function refreshTagList(_target, _loggedin) {
   const loggedin = !!_loggedin || userIsLoggedIn;
   const target = _target || document;
@@ -314,10 +373,20 @@ function refreshTagList(_target, _loggedin) {
       });
   }
 }
+
+/**
+ * Callback function to refresh the tag list for a logged-in user.
+ */
 function refreshTagListCallback() {
   refreshTagList(false, true);
 }
 
+/**
+ * Update a record tag via an AJAX call.
+ * @param {HTMLElement} [_link]   The link element that triggered the update (default = document).
+ * @param {string}      tag       The tag to add or remove.
+ * @param {boolean}     [_remove] Whether to remove the tag (default = false).
+ */
 function ajaxTagUpdate(_link, tag, _remove) {
   const link = _link || document;
   const remove = _remove || false;
@@ -340,6 +409,11 @@ function ajaxTagUpdate(_link, tag, _remove) {
   });
 }
 
+/**
+ * Create a new tab content element for an AJAX tab.
+ * @param {string} tabId The ID of the tab.
+ * @returns {HTMLElement} The new tab element.
+ */
 function getNewRecordTab(tabId) {
   const newRecordTab = document.createElement("div");
   newRecordTab.role = 'tabpanel';
@@ -349,6 +423,10 @@ function getNewRecordTab(tabId) {
   return newRecordTab;
 }
 
+/**
+ * Load a record tab in the background if it's not already present.
+ * @param {string} tabId The ID of the tab to load.
+ */
 function backgroundLoadTab(tabId) {
   if (document.querySelector('.' + tabId + '-tab')) {
     return;
@@ -364,6 +442,10 @@ function backgroundLoadTab(tabId) {
   ajaxLoadTab(newTab, tabId, false);
 }
 
+/**
+ * Apply the tab hash from the URL to open the corresponding tab.
+ * @param {boolean} scrollToTabs Whether to scroll to the tabs section.
+ */
 function applyRecordTabHash(scrollToTabs) {
   const activeLi = document.querySelector('.record-tabs li.active');
   const activeTab = activeLi ? activeLi.dataset.tab : undefined;
@@ -389,6 +471,9 @@ function applyRecordTabHash(scrollToTabs) {
 
 window.addEventListener('hashchange', applyRecordTabHash);
 
+/**
+ * Remove the 'checkRoute' parameter from the URL.
+ */
 function removeCheckRouteParam() {
   if (window.location.search.indexOf('checkRoute=1') >= 0) {
     const newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
@@ -398,6 +483,9 @@ function removeCheckRouteParam() {
   }
 }
 
+/**
+ * Initialize the record page functionality when the document is ready.
+ */
 function recordDocReady() {
   removeCheckRouteParam();
   document.querySelectorAll('.record-tabs .nav-tabs a')
@@ -457,6 +545,9 @@ function recordDocReady() {
   applyRecordTabHash(false);
 }
 
+/**
+ * Handle adding a rating to a record by programmatically clicking the rating link.
+ */
 function addRecordRating() {
   const ratingLink = document.querySelector('.rating-average a');
   if (ratingLink) {

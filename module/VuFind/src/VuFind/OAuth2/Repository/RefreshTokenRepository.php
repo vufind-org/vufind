@@ -73,7 +73,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @return RefreshTokenEntityInterface
      */
-    public function getNewRefreshToken()
+    public function getNewRefreshToken(): RefreshTokenEntityInterface
     {
         return $this->getNew();
     }
@@ -87,7 +87,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @throws InvalidArgumentException
      */
-    public function persistNewRefreshToken(RefreshTokenEntityInterface $entity)
+    public function persistNewRefreshToken(RefreshTokenEntityInterface $entity): void
     {
         $this->persistNew($entity);
     }
@@ -99,7 +99,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @return void
      */
-    public function revokeRefreshToken($tokenId)
+    public function revokeRefreshToken($tokenId): void
     {
         $this->revoke($tokenId);
     }
@@ -111,7 +111,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @return bool Return true if this token has been revoked
      */
-    public function isRefreshTokenRevoked($tokenId)
+    public function isRefreshTokenRevoked($tokenId): bool
     {
         return $this->isRevoked($tokenId);
     }
