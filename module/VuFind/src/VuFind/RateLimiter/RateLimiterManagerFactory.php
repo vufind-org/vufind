@@ -41,6 +41,7 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
 use Symfony\Component\RateLimiter\Storage\StorageInterface;
 use VuFind\RateLimiter\Storage\CredisStorage;
+use VuFind\RateLimiter\Turnstile\RejectAll;
 use VuFind\Service\GetServiceTrait;
 
 /**
@@ -135,6 +136,9 @@ class RateLimiterManagerFactory implements FactoryInterface
         }
 
         $rateLimiterConfig = $policy[$configSection] ?? [];
+        if ('reject_all' == $rateLimiterConfig['policy'] ?? null) {
+            return new RejectAll();
+        }
         $rateLimiterConfig['id'] = $policyId;
         if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {
             $clientId = "u:$userId";
