@@ -117,7 +117,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->channelSize = $options['channelSize'] ?? 6;
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
     }
 

@@ -30,6 +30,7 @@
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
@@ -57,6 +58,13 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      * @var array
      */
     protected $fields;
+
+    /**
+     * Maximum number of results to suggest in the channel list.
+     *
+     * @var int
+     */
+    protected $channelSize;
 
     /**
      * Maximum number of different fields to suggest in the channel list.
@@ -109,6 +117,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
+		$this->channelSize = $options['channelSize'] ?? 6;
         $this->fields = $options['fields']
             ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
@@ -128,6 +137,13 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         foreach ($this->fields as $field => $desc) {
             $params->addFacet($field, $desc);
         }
+
+		// Add pagination params
+		$request = new HttpRequest();
+		$params->setPage($request->getQuery('page', 1));
+		if ($limit = $request->getQuery('limit', false)) {
+			$params->setLimit($limit);
+		}
     }
 
     /**
@@ -281,6 +297,17 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
             'url' => $this->url->fromRoute('channels-search')
                 . $query . '&source=' . urlencode($params->getSearchClassId()),
         ];
+
+		// Add pagination
+        $pagedParams = $newResults->getParams();
+		$request = new HttpRequest();
+		if ($page = $request->getQuery('page', false)) {
+			$pagedParams->setPage($page);
+		}
+		if ($limit = $request->getQuery('limit', $this->channelSize)) {
+			$pagedParams->setLimit($limit);
+		}
+		$newResults->setParams($pagedParams);
 
         // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();
