@@ -97,7 +97,8 @@ Storage:
 #
 # rateLimiterSettings   Rate Limiter settings.
 #                       See https://symfony.com/doc/current/rate_limiter.html#rate-limiting-policies
-#                       for more information and policy settings.
+#                       for more information and policy settings.  In addition to those
+#                       policies, a "reject_all" policy is available to block all requests.
 #                       For a limiter using the token bucket algorithm, the following
 #                       settings could be used to e.g. allow 500 requests initially,
 #                       and add 100 more to the bucket every 10 minutes:
@@ -112,6 +113,7 @@ Storage:
 #                              Failing the challenge results in standard 429 behavior.
 #                              Passing the challenge bypasses this check, but note the
 #                              rateLimiterSettings quota is still separately applied.
+#                              To show the challenge immediately, use policy reject_all.
 #                              Default (not defined) means don't use Turnstile.
 #
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
