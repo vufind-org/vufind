@@ -64,14 +64,7 @@ VuFind.register("channels", function Channels() {
       }
     });
 
-    // Bootstrap
-    for (const dropdownToggleEl of document.querySelectorAll("[data-toggle]")) {
-      dropdownToggleEl.setAttribute(
-        "data-bs-toggle",
-        dropdownToggleEl.getAttribute("data-toggle")
-      );
-    }
-
+    // Clamp lines
     for (const title of document.querySelectorAll(".channel-item-title")) {
       clampLines(title, 3);
     }
