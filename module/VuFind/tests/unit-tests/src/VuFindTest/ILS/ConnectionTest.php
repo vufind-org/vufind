@@ -58,11 +58,9 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $config = new Config(['driver' => 'Demo']);
-        $driverManager = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $driverManager = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $driverManager->method('has')->willReturn('Demo');
-        $configReader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $configReader = $this->createMock(\VuFind\Config\PluginManager::class);
         $this->connection = new Connection(
             $config,
             $driverManager,
@@ -73,14 +71,13 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     /**
      * Set TimedBlocks driver configuration
      *
-     * @param array $timedBlocks timed blocks as defined in driver.ini
+     * @param array $timedBlocks timed blocks as defined in Demo.ini
      *
      * @return void
      */
     public function setTimedBlocks(array $timedBlocks): void
     {
-        $driver = $this->getMockBuilder(\VuFind\ILS\Driver\Demo::class)
-            ->disableOriginalConstructor()->getMock();
+        $driver = $this->createMock(\VuFind\ILS\Driver\Demo::class);
         $driver->method('supportsMethod')->willReturn(true);
         $driver->method('getConfig')->with('TimedBlocks')->willReturn($timedBlocks);
 
@@ -88,185 +85,127 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that methods are blocked with only startDate defined and the block starts now
+     * Data provider for testIsMethodBlocked
      *
-     * @return void
+     * @return array
      */
-    public function testIsMethodBlockedWithStartDate()
+    public static function isMethodBlockedProvider()
     {
-        $timedBlocks = [
-            'Renewals' => [
-                'startDate' => date('Y-m-d', strtotime('now')),
+        return [
+            'only startDate' => [
+                [
+                    'Renewals' => [
+                        'startDate' => date('Y-m-d', strtotime('now')),
+                    ],
+                ],
+                true,
+            ],
+            'only endDate' => [
+                [
+                    'Renewals' => [
+                        'endDate' => date('Y-m-d', strtotime('now + 1 days')),
+                    ],
+                ],
+                true,
+            ],
+            'future startDate' => [
+                [
+                    'Renewals' => [
+                        'startDate' => date('Y-m-d', strtotime('now + 1 days')),
+                        'endDate' => date('Y-m-d', strtotime('now + 2 days')),
+                    ],
+                ],
+                false,
+            ],
+            'startDate in the past and endDate in the future' => [
+                [
+                    'Renewals' => [
+                        'startDate' => date('Y-m-d', strtotime('now - 1 days')),
+                        'endDate' => date('Y-m-d', strtotime('now + 1 days')),
+                    ],
+                ],
+                true,
+            ],
+            'inside recurring limits' => [
+                [
+                    'Renewals' => [
+                        'recurringStart' => date('H:i', strtotime('now - 1 hours')),
+                        'recurringEnd' => date('H:i', strtotime('now + 1 hours')),
+                    ],
+                ],
+                true,
+            ],
+            'outside recurring limits' => [
+                [
+                    'Renewals' => [
+                        'recurringStart' => date('H:i', strtotime('now + 1 hours')),
+                        'recurringEnd' => date('H:i', strtotime('now - 1 hours')),
+                    ],
+                ],
+                false,
+            ],
+            'recurring crossing midnight' => [
+                [
+                    'Renewals' => [
+                        'recurringStart' => date('H:i', strtotime('now + 2 hours')),
+                        'recurringEnd' => date('H:i', strtotime('now + 1 hours')),
+                    ],
+                ],
+                true,
+            ],
+            'empty configuration' => [
+                [],
+                false,
+            ],
+            'startDate and endDate in the past' => [
+                [
+                    'Renewals' => [
+                        'startDate' => date('Y-m-d', strtotime('now - 2 days')),
+                        'endDate' => date('Y-m-d', strtotime('now - 1 days')),
+                    ],
+                ],
+                false,
+            ],
+            'startDate after endDate' => [
+                [
+                    'Renewals' => [
+                        'startDate' => date('Y-m-d', strtotime('now - 1 days')),
+                        'endDate' => date('Y-m-d', strtotime('now - 2 days')),
+                    ],
+                ],
+                false,
+            ],
+            'invalid values' => [
+                [
+                    'Renewals' => [
+                        'startDate' => 'testing string',
+                        'endDate' => 'true',
+                        'recurringStart' => 'starting',
+                        'recurringEnd' => 'ending',
+                    ],
+                ],
+                false,
             ],
         ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertTrue($this->connection->isMethodBlocked('Renewals'));
     }
 
     /**
-     * Test that methods are not blocked with startDate and endDate in the future
+     * Test that methods are blocked correctly according to configuration
+     *
+     * @param array $timedBlocks    timedBlocks as defined in Demo.ini
+     * @param bool  $expectedResult The expected result
+     *
+     * @dataProvider isMethodBlockedProvider
      *
      * @return void
      */
-    public function testIsMethodBlockedWithFutureStartAndEndDate()
+    public function testIsMethodBlocked(array $timedBlocks, bool $expectedResult): void
     {
-        $timedBlocks = [
-            'Renewals' => [
-                'startDate' => date('Y-m-d', strtotime('now + 1 days')),
-                'endDate' => date('Y-m-d', strtotime('now + 2 days')),
-            ],
-        ];
         $this->setTimedBlocks($timedBlocks);
-        $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are blocked with startDate in the past and endDate in the future
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedWithStartAndEndDate()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'startDate' => date('Y-m-d', strtotime('now - 1 days')),
-                'endDate' => date('Y-m-d', strtotime('now + 1 days')),
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertTrue($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are blocked with recurringStart in the past and recurringEnd in the future
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedInsideRecurringLimits()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'recurringStart' => date('H:i', strtotime('now - 1 hours')),
-                'recurringEnd' => date('H:i', strtotime('now + 1 hours')),
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertTrue($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are not blocked with recurringStart in the future and recurringEnd in the past
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedOutsideRecurringLimits()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'recurringStart' => date('H:i', strtotime('now + 1 hours')),
-                'recurringEnd' => date('H:i', strtotime('now - 1 hours')),
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are blocked with recurringStart and recurringEnd in the future
-     * and recurringStart is greater than recurringEnd, simulating crossing midnight
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedWithRecurringCrossingMidnight()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'recurringStart' => date('H:i', strtotime('now + 2 hours')),
-                'recurringEnd' => date('H:i', strtotime('now + 1 hours')),
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertTrue($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are not blocked with empty configuration
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedWithEmptyConf()
-    {
-        $timedBlocks = [];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are blocked with only endDate defined and in the future
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedWithEndDate()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'endDate' => date('Y-m-d', strtotime('now + 1 days')),
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertTrue($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are not blocked with startDate and endDate in the past
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedWithPastStartAndEndDate()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'startDate' => date('Y-m-d', strtotime('now - 2 days')),
-                'endDate' => date('Y-m-d', strtotime('now - 1 days')),
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are not blocked with startDate being after endDate
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedWithStartDateAfterEndDate()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'startDate' => date('Y-m-d', strtotime('now - 1 days')),
-                'endDate' => date('Y-m-d', strtotime('now - 2 days')),
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
-    }
-
-    /**
-     * Test that methods are not blocked with invalid date values
-     *
-     * @return void
-     */
-    public function testIsMethodBlockedWithInvalidValues()
-    {
-        $timedBlocks = [
-            'Renewals' => [
-                'startDate' => 'testing string',
-                'endDate' => 'true',
-                'recurringStart' => 'starting',
-                'recurringEnd' => 'ending',
-            ],
-        ];
-        $this->setTimedBlocks($timedBlocks);
-        $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
+        if ($expectedResult) {
+            $this->assertTrue($this->connection->isMethodBlocked('Renewals'));
+        } else {
+            $this->assertFalse($this->connection->isMethodBlocked('Renewals'));
+        }
     }
 }
