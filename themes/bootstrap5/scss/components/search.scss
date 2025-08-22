@@ -692,8 +692,14 @@ header .container.navbar { margin-bottom: 0; }
         padding: 0px;
       }
     }
+    .operator-and-term {
+      white-space:nowrap;
+    }
     .filters-term {
       font-size: 0.8em
+    }
+    .filters-not, .filters-or, .filters-and {
+      font-weight: bold;
     }
     .filter-value {
       display: inline-block;

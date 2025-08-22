@@ -901,20 +901,35 @@ abstract class Results
             $filter = $this->getParams()->getFacetConfig();
         }
 
-        // Start building the facet list:
-        $result = [];
-
-        // Loop through every field returned by the result set
-        $translatedFacets = $this->getOptions()->getTranslatedFacets();
         $hierarchicalFacets
             = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
             ? $this->getOptions()->getHierarchicalFacets()
             : [];
-        $hierarchicalFacetSortSettings
-            = is_callable([$this->getOptions(), 'getHierarchicalFacetSortSettings'])
-            ? $this->getOptions()->getHierarchicalFacetSortSettings()
-            : [];
 
+        $result = $this->initializeFacetResults($facetList, $filter);
+
+        $this->addExcludeFilters($result, $filter);
+
+        $this->setDisplayTextForFacetValues($result, $hierarchicalFacets);
+
+        $this->buildHierarchicalFacets($result, $hierarchicalFacets);
+
+        return $result;
+    }
+
+    /**
+     * Helper for buildFacetList. Initializes the facet list.
+     *
+     * @param array $facetList Facet list
+     * @param array $filter    Array of field => on-screen description listing
+     * all of the desired facet fields
+     *
+     * @return array Facets data arrays
+     */
+    protected function initializeFacetResults(array $facetList, array $filter): array
+    {
+        $result = [];
+        // Loop through every field returned by the result set
         foreach (array_keys($filter) as $field) {
             $data = $facetList[$field] ?? [];
             // Skip empty arrays:
@@ -927,12 +942,80 @@ abstract class Results
                 'list' => [],
             ];
             // Should we translate values for the current facet?
-            $translate = in_array($field, $translatedFacets);
-            $hierarchical = in_array($field, $hierarchicalFacets);
             $operator = $this->getParams()->getFacetOperator($field);
             $resultList = [];
-            // Loop through values:
+
             foreach ($data as $value => $count) {
+                $isApplied = $this->getParams()->hasFilter("$field:" . $value)
+                    || $this->getParams()->hasFilter("~$field:" . $value);
+                $isExcluded = false;
+                $resultList[] = compact(
+                    'value',
+                    'count',
+                    'operator',
+                    'isApplied',
+                    'isExcluded'
+                );
+            }
+            $result[$field]['list'] = $resultList;
+        }
+        return $result;
+    }
+
+    /**
+     * Helper for buildFacetList. Adds exclude filters (they are not included in the search result facet values).
+     *
+     * @param array $result Facet data arrays (passed by reference)
+     * @param array $filter Array of field => on-screen description listing
+     * all of the desired facet fields
+     *
+     * @return void
+     */
+    protected function addExcludeFilters(array &$result, array $filter)
+    {
+        foreach ($this->getParams()->getExcludeFilters() as $field => $values) {
+            if (!isset($filter[$field])) {
+                continue;
+            }
+            if (isset($result[$field])) {
+                $resultList = $result[$field]['list'];
+            } else {
+                $result[$field] = [
+                    'label' => $filter[$field],
+                    'list' => [],
+                ];
+                $resultList = [];
+            }
+            foreach ($values as $value) {
+                array_unshift($resultList, [
+                    'value' => $value,
+                    'count' => 0,
+                    'operator' => 'NOT',
+                    'isApplied' => false,
+                    'isExcluded' => true,
+                ]);
+            }
+            $result[$field]['list'] = $resultList;
+        }
+    }
+
+    /**
+     * Helper for buildFacetList. Sets displayText for facet values.
+     *
+     * @param array $result             Facet data arrays (passed by reference)
+     * @param array $hierarchicalFacets List of hierarchical facets
+     *
+     * @return void
+     */
+    protected function setDisplayTextForFacetValues(&$result, $hierarchicalFacets)
+    {
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        foreach ($result as $field => $fieldResult) {
+            $resultList = $fieldResult['list'];
+            $hierarchical = in_array($field, $hierarchicalFacets);
+            $translate = in_array($field, $translatedFacets);
+            foreach ($resultList as $index => $valueResult) {
+                $value = $valueResult['value'];
                 $displayText = $this->getParams()
                     ->getFacetValueRawDisplayText($field, $value);
                 if ($hierarchical) {
@@ -948,30 +1031,37 @@ abstract class Results
                 $displayText = $translate
                     ? $this->getParams()->translateFacetValue($field, $displayText)
                     : $displayText;
-                $isApplied = $this->getParams()->hasFilter("$field:" . $value)
-                    || $this->getParams()->hasFilter("~$field:" . $value);
-
-                // Store the collected values:
-                $resultList[] = compact(
-                    'value',
-                    'displayText',
-                    'count',
-                    'operator',
-                    'isApplied'
-                );
+                $valueResult['displayText'] = $displayText;
+                $resultList[$index] = $valueResult;
             }
-
-            if ($hierarchical) {
-                $sort = $hierarchicalFacetSortSettings[$field]
-                    ?? $hierarchicalFacetSortSettings['*'] ?? 'count';
-                $this->hierarchicalFacetHelper->sortFacetList($resultList, $sort);
-
-                $resultList
-                    = $this->hierarchicalFacetHelper->buildFacetArray($field, $resultList);
-            }
-
             $result[$field]['list'] = $resultList;
         }
-        return $result;
+    }
+
+    /**
+     * Helper for buildFacetList. Builds hierarchical facets.
+     *
+     * @param array $result             Facet data arrays (passed by reference)
+     * @param array $hierarchicalFacets List of hierarchical facets
+     *
+     * @return void
+     */
+    protected function buildHierarchicalFacets(&$result, $hierarchicalFacets)
+    {
+        $hierarchicalFacetSortSettings
+            = is_callable([$this->getOptions(), 'getHierarchicalFacetSortSettings'])
+            ? $this->getOptions()->getHierarchicalFacetSortSettings()
+            : [];
+        foreach ($result as $field => $fieldResult) {
+            if (!in_array($field, $hierarchicalFacets)) {
+                continue;
+            }
+            $resultList = $fieldResult['list'];
+            $sort = $hierarchicalFacetSortSettings[$field]
+                ?? $hierarchicalFacetSortSettings['*'] ?? 'count';
+            $this->hierarchicalFacetHelper->sortFacetList($resultList, $sort);
+            $resultList = $this->hierarchicalFacetHelper->buildFacetArray($field, $resultList);
+            $result[$field]['list'] = $resultList;
+        }
     }
 }

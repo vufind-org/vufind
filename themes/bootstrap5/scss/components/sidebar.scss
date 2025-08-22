@@ -171,6 +171,11 @@
   }
 }
 
+.top-facet-inner > .excluded,
+.facet-group .facet.excluded {
+  text-decoration: line-through;
+}
+
 .narrow-toggle { text-align: center; }
 
 .sidebar .format {

@@ -157,6 +157,10 @@ class HierarchicalFacetHelper implements
             if ($a['level'] != $b['level']) {
                 return $a['level'] <=> $b['level'];
             }
+            // Exclude first
+            if ($a['isExcluded'] != $b['isExcluded']) {
+                return $a['isExcluded'] ? -1 : 1;
+            }
             // Sort by display text:
             if (($sort === static::SORT_ALL || ($a['level'] == 0 && $sort === static::SORT_TOP))) {
                 $aText = $a['displayText'] == $a['value']
@@ -440,7 +444,7 @@ class HierarchicalFacetHelper implements
         foreach ($list as &$item) {
             $item['hasAppliedChildren'] = !empty($item['children'])
                 && $this->updateAppliedChildrenStatus($item['children']);
-            if ($item['isApplied'] || $item['hasAppliedChildren']) {
+            if ($item['isApplied'] || $item['isExcluded'] || $item['hasAppliedChildren']) {
                 $result = true;
             }
         }

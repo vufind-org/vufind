@@ -1208,6 +1208,22 @@ class Params
     }
 
     /**
+     * Returns only the exclude filters (field starting with '-').
+     *
+     * @return array an array field => value without the '-' for the field
+     */
+    public function getExcludeFilters()
+    {
+        $result = [];
+        foreach ($this->filterList as $field => $values) {
+            if (str_starts_with($field, '-')) {
+                $result[substr($field, 1)] = $values;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get the filter list as a query parameter array.
      *
      * Returns an array of strings that parseFilter can parse.
